@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:035",
+  "unit_ordinal": 513,
+  "unit_label": "PSA 35",
+  "book_code": "PSA",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:35:1",
+      "sequence": 14412,
+      "chapter_label": "PSA 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "Contend, LORD, with those who contend with me. Fight against those who fight against me.",
+      "ko": "여호와여 나와 다투는 자와 다투시고 나와 싸우는 자와 싸우소서",
+      "source_text_hash": "4363f60d665c0c0979a907b38638e5df1c078164390947cef1758d99b4a7d58a",
+      "translation_text_hash": "59912c5bf610d4d0eab00071b2aa977c241a61b208ef45ff1069fe8a3563c56c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나와 다투는 자와 다투시고 나와 싸우는 자와 싸우소서"
+      ],
+      "raw_text_hashes": [
+        "59912c5bf610d4d0eab00071b2aa977c241a61b208ef45ff1069fe8a3563c56c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:2",
+      "sequence": 14413,
+      "chapter_label": "PSA 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "Take hold of shield and buckler, and stand up for my help.",
+      "ko": "방패와 손 방패를 잡으시고 일어나 나를 도우소서",
+      "source_text_hash": "b261b825c30d7e299a7b729825af1780ae059d4b1be31014cb254e6c8a3dc2ee",
+      "translation_text_hash": "5f04c83b205f74a4ff67bd02609292525955591c6c33fcf1133d7d258136a00d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방패와 손 방패를 잡으시고 일어나 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "5f04c83b205f74a4ff67bd02609292525955591c6c33fcf1133d7d258136a00d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:3",
+      "sequence": 14414,
+      "chapter_label": "PSA 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "Brandish the spear and block those who pursue me. Tell my soul, “I am your salvation.”",
+      "ko": "창을 빼사 나를 쫓는 자의 길을 막으시고 또 내 영혼에게 나는 네 구원이라 이르소서",
+      "source_text_hash": "6a614211726f56bfc2bb062f3490949d9a9ca97b9d73d065fa9cebe8b154d540",
+      "translation_text_hash": "58aca4e4e6af91c8b087d945c857e5ca48204b64ea01b8e3b9c5db26bd98fda8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창을 빼사 나를 쫓는 자의 길을 막으시고 또 내 영혼에게 나는 네 구원이라 이르소서"
+      ],
+      "raw_text_hashes": [
+        "58aca4e4e6af91c8b087d945c857e5ca48204b64ea01b8e3b9c5db26bd98fda8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:4",
+      "sequence": 14415,
+      "chapter_label": "PSA 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "Let those who seek after my soul be disappointed and brought to dishonor. Let those who plot my ruin be turned back and confounded.",
+      "ko": "내 생명을 찾는 자로 부끄러워 수치를 당케 하시며 나를 상해하려 하는 자로 물러가 낭패케 하소서",
+      "source_text_hash": "960d25d5570369d841b825b216355ecc868185bbd1ce66aa39583ec0e9f6cf36",
+      "translation_text_hash": "8bfd3712af1796828f798510bdc4145b3ef2bafb2ad5b332e0d6ea19d19c21b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생명을 찾는 자로 부끄러워 수치를 당케 하시며 나를 상해하려 하는 자로 물러가 낭패케 하소서"
+      ],
+      "raw_text_hashes": [
+        "8bfd3712af1796828f798510bdc4145b3ef2bafb2ad5b332e0d6ea19d19c21b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:5",
+      "sequence": 14416,
+      "chapter_label": "PSA 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "Let them be as chaff before the wind, the LORD’s angel driving them on.",
+      "ko": "저희로 바람 앞에 겨와 같게 하시고 여호와의 사자로 몰아내소서",
+      "source_text_hash": "60c8208e53785ee482c05ee5d7f90d1b626a9b1f2e4766827b0539d459336c7b",
+      "translation_text_hash": "c7376aaee70f35a10311a5210259c23636749337549e4d7a66d045357d90ffb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 바람 앞에 겨와 같게 하시고 여호와의 사자로 몰아내소서"
+      ],
+      "raw_text_hashes": [
+        "c7376aaee70f35a10311a5210259c23636749337549e4d7a66d045357d90ffb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:6",
+      "sequence": 14417,
+      "chapter_label": "PSA 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "Let their way be dark and slippery, the LORD’s angel pursuing them.",
+      "ko": "저희 길을 어둡고 미끄럽게 하시고 여호와의 사자로 저희를 따르게 하소서",
+      "source_text_hash": "733e43f0795748e7f40c40b362d1c0a58cd6c17419e88773b7787a30a327cebf",
+      "translation_text_hash": "a679a40391c49ea61b3d07c013793fce3357bd0edb45337e4e9f412ca0076ded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 길을 어둡고 미끄럽게 하시고 여호와의 사자로 저희를 따르게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a679a40391c49ea61b3d07c013793fce3357bd0edb45337e4e9f412ca0076ded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:7",
+      "sequence": 14418,
+      "chapter_label": "PSA 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "For without cause they have hidden their net in a pit for me. Without cause they have dug a pit for my soul.",
+      "ko": "저희가 무고히 나를 잡으려고 그 그물을 웅덩이에 숨기며 무고히 내 생명을 해하려고 함정을 팠사오니",
+      "source_text_hash": "dd277596f7941acd6d2c8caf141a19d42b19588d0d31c69a0f435d5ca4d4ef71",
+      "translation_text_hash": "909817b77b21d70b6606c41d50f232fe84aabc31b2b4ecbefa84479f94e12b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 무고히 나를 잡으려고 그 그물을 웅덩이에 숨기며 무고히 내 생명을 해하려고 함정을 팠사오니"
+      ],
+      "raw_text_hashes": [
+        "909817b77b21d70b6606c41d50f232fe84aabc31b2b4ecbefa84479f94e12b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:8",
+      "sequence": 14419,
+      "chapter_label": "PSA 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "Let destruction come on him unawares. Let his net that he has hidden catch himself. Let him fall into that destruction.",
+      "ko": "멸망으로 졸지에 저에게 임하게 하시며 그 숨긴 그물에 스스로 잡히게 하시며 멸망 중에 떨어지게 하소서",
+      "source_text_hash": "e85926699ace75076493b99cfe18eb3c1c63505c5761987f73a0c4564bee263f",
+      "translation_text_hash": "0761ac7cda5542e7b1d22f37eccd11e0dddeca2b892c93cb7cfdb833cf391baa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멸망으로 졸지에 저에게 임하게 하시며 그 숨긴 그물에 스스로 잡히게 하시며 멸망 중에 떨어지게 하소서"
+      ],
+      "raw_text_hashes": [
+        "0761ac7cda5542e7b1d22f37eccd11e0dddeca2b892c93cb7cfdb833cf391baa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:9",
+      "sequence": 14420,
+      "chapter_label": "PSA 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "My soul shall be joyful in the LORD. It shall rejoice in his salvation.",
+      "ko": "내 영혼이 여호와를 즐거워함이여 그 구원을 기뻐하리로다",
+      "source_text_hash": "48ad08e512f7113c9d9a690c66d0d55fc13c13b5d789a35dce429e617c192d00",
+      "translation_text_hash": "d8dabde68e1212ece27cc6500dfc51f5402a7b9397f654c29e7311a261e3b151",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 여호와를 즐거워함이여 그 구원을 기뻐하리로다"
+      ],
+      "raw_text_hashes": [
+        "d8dabde68e1212ece27cc6500dfc51f5402a7b9397f654c29e7311a261e3b151"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:10",
+      "sequence": 14421,
+      "chapter_label": "PSA 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "All my bones shall say, “LORD, who is like you, who delivers the poor from him who is too strong for him; yes, the poor and the needy from him who robs him?”",
+      "ko": "내 모든 뼈가 이르기를 여호와와 같은 자 누구리요 그는 가난한 자를 그보다 강한 자에게서 건지시고 가난하고 궁핍한 자를 노략하는 자에게서 건지시는 이라 하리로다",
+      "source_text_hash": "10a1b428a17ba457f45c033f3f35e728ce127503af296c96a7a19bdd8944c308",
+      "translation_text_hash": "e04d7b6a1d52d9b058dc059e2d12f69725cd24a81dfd1c40b01ab3a9fbae03cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 모든 뼈가 이르기를 여호와와 같은 자 누구리요 그는 가난한 자를 그보다 강한 자에게서 건지시고 가난하고 궁핍한 자를 노략하는 자에게서 건지시는 이라 하리로다"
+      ],
+      "raw_text_hashes": [
+        "e04d7b6a1d52d9b058dc059e2d12f69725cd24a81dfd1c40b01ab3a9fbae03cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:11",
+      "sequence": 14422,
+      "chapter_label": "PSA 35",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 11
+        }
+      ],
+      "en": "Unrighteous witnesses rise up. They ask me about things that I don’t know about.",
+      "ko": "불의한 증인이 일어나서 내가 알지 못하는 일로 내게 힐문하며",
+      "source_text_hash": "ce7c658c11cbb0cd829dd555bc9a486b59aabab393419c90c2da84d575d35f8e",
+      "translation_text_hash": "4f4cdf58aace5d163410909f73ecca4d21d7cd5005eef0178c1dacedffe765de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의한 증인이 일어나서 내가 알지 못하는 일로 내게 힐문하며"
+      ],
+      "raw_text_hashes": [
+        "4f4cdf58aace5d163410909f73ecca4d21d7cd5005eef0178c1dacedffe765de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:12",
+      "sequence": 14423,
+      "chapter_label": "PSA 35",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 12
+        }
+      ],
+      "en": "They reward me evil for good, to the bereaving of my soul.",
+      "ko": "내게 선을 악으로 갚아 나의 영혼을 외롭게 하나",
+      "source_text_hash": "306555b7c70a39084367087aa4ccb5be093113d3b4c38ed27e88fabac61c055f",
+      "translation_text_hash": "d1025419f29de31ad82cfa0f13150f63c7eb81b265a63679f9a93a72af9a707c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 선을 악으로 갚아 나의 영혼을 외롭게 하나"
+      ],
+      "raw_text_hashes": [
+        "d1025419f29de31ad82cfa0f13150f63c7eb81b265a63679f9a93a72af9a707c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:13",
+      "sequence": 14424,
+      "chapter_label": "PSA 35",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 13
+        }
+      ],
+      "en": "But as for me, when they were sick, my clothing was sackcloth. I afflicted my soul with fasting. My prayer returned into my own bosom.",
+      "ko": "나는 저희가 병 들었을 때에 굵은 베옷을 입으며 금식하여 내 영혼을 괴롭게 하였더니 내 기도가 내 품으로 돌아왔도다",
+      "source_text_hash": "1adf2cc143540cce6a69359a9c5a080f9ef1f8fcb08a0a4e7f9271c568ea8420",
+      "translation_text_hash": "0c9c0c4cedb1555f7feaa300bb45404577f2afae92c2766b56740983a62d984c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 저희가 병 들었을 때에 굵은 베옷을 입으며 금식하여 내 영혼을 괴롭게 하였더니 내 기도가 내 품으로 돌아왔도다"
+      ],
+      "raw_text_hashes": [
+        "0c9c0c4cedb1555f7feaa300bb45404577f2afae92c2766b56740983a62d984c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:14",
+      "sequence": 14425,
+      "chapter_label": "PSA 35",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 14
+        }
+      ],
+      "en": "I behaved myself as though it had been my friend or my brother. I bowed down mourning, as one who mourns his mother.",
+      "ko": "내가 나의 친구와 형제에게 행함 같이 저희에게 행하였으며 내가 굽히고 슬퍼하기를 모친을 곡함 같이 하였도다",
+      "source_text_hash": "b7b6bcbf2f173e52a45b09910a2a5228c96e05d1f57aaf6e07fdc178b451351d",
+      "translation_text_hash": "449828db290f0d9bf7054b5e91d1504e9351f5133e87754786ada6b74086f05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 친구와 형제에게 행함 같이 저희에게 행하였으며 내가 굽히고 슬퍼하기를 모친을 곡함 같이 하였도다"
+      ],
+      "raw_text_hashes": [
+        "449828db290f0d9bf7054b5e91d1504e9351f5133e87754786ada6b74086f05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:15",
+      "sequence": 14426,
+      "chapter_label": "PSA 35",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 15
+        }
+      ],
+      "en": "But in my adversity, they rejoiced, and gathered themselves together. The attackers gathered themselves together against me, and I didn’t know it. They tore at me, and didn’t cease.",
+      "ko": "오직 내가 환난을 당하매 저희가 기뻐하여 서로 모임이여 비류가 나의 알지 못하는 중에 모여 나를 치며 찢기를 마지 아니하도다",
+      "source_text_hash": "9547645a4cf7e87d2039dac607b7dff9e461d8165786d1ca110fa18c62bd37db",
+      "translation_text_hash": "fe409f55ce189eeba77ad27b0a5e460e5b5e315bc71c6ffb2b07eb5a14b6a69e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내가 환난을 당하매 저희가 기뻐하여 서로 모임이여 비류가 나의 알지 못하는 중에 모여 나를 치며 찢기를 마지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "fe409f55ce189eeba77ad27b0a5e460e5b5e315bc71c6ffb2b07eb5a14b6a69e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:16",
+      "sequence": 14427,
+      "chapter_label": "PSA 35",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 16
+        }
+      ],
+      "en": "Like the profane mockers in feasts, they gnashed their teeth at me.",
+      "ko": "저희는 연회에서 망령되이 조롱하는 자 같이 나를 향하여 그 이를 갈도다",
+      "source_text_hash": "4c157b24881f37264986d527d2c5e4ee77f98bf3da87b0a4c2f584ab746f08bf",
+      "translation_text_hash": "5db195a50808e664396ac276dc6cc4aa77919971e89240ea5f8e24b2d3ce0134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 연회에서 망령되이 조롱하는 자 같이 나를 향하여 그 이를 갈도다"
+      ],
+      "raw_text_hashes": [
+        "5db195a50808e664396ac276dc6cc4aa77919971e89240ea5f8e24b2d3ce0134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:17",
+      "sequence": 14428,
+      "chapter_label": "PSA 35",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 17
+        }
+      ],
+      "en": "Lord, how long will you look on? Rescue my soul from their destruction, my precious life from the lions.",
+      "ko": "주여 어느 때까지 관망하시리이까 내 영혼을 저 멸망자에게서 구원하시며 내 유일한 것을 사자들에게서 건지소서",
+      "source_text_hash": "46494fcef5a724e9ed37c34d9da3703876f02a0efc9514b1b8d72a3abf7270f9",
+      "translation_text_hash": "a3fe42db390e30c8a3c3c147e2f08a10af64c7846581d5578728d29d0754d447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 어느 때까지 관망하시리이까 내 영혼을 저 멸망자에게서 구원하시며 내 유일한 것을 사자들에게서 건지소서"
+      ],
+      "raw_text_hashes": [
+        "a3fe42db390e30c8a3c3c147e2f08a10af64c7846581d5578728d29d0754d447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:18",
+      "sequence": 14429,
+      "chapter_label": "PSA 35",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 18
+        }
+      ],
+      "en": "I will give you thanks in the great assembly. I will praise you among many people.",
+      "ko": "내가 대회 중에서 주께 감사하며 많은 백성 중에서 주를 찬송하리이다",
+      "source_text_hash": "8dfa1ba32e1357db7842ff52ee327bcc423dc7fe4aebbba5f2dfcf960d33674b",
+      "translation_text_hash": "cd0f63c0b4143b8ee0a11bb22ecfeb132e87e171dbda087b8e2457383cdff270",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대회 중에서 주께 감사하며 많은 백성 중에서 주를 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "cd0f63c0b4143b8ee0a11bb22ecfeb132e87e171dbda087b8e2457383cdff270"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:19",
+      "sequence": 14430,
+      "chapter_label": "PSA 35",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 19
+        }
+      ],
+      "en": "Don’t let those who are my enemies wrongfully rejoice over me; neither let those who hate me without a cause wink their eyes.",
+      "ko": "무리하게 나의 원수된 자로 나를 인하여 기뻐하지 못하게 하시며 무고히 나를 미워하는 자로 눈짓하지 못하게 하소서",
+      "source_text_hash": "5c6d029c715976e8d07d1907da92e8727f0e4ff78d7fd864d641fa6759d45ecd",
+      "translation_text_hash": "20d7be2f9a28be64dae97b24c29ff1854404324b3acedaace453f91c959e69a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리하게 나의 원수된 자로 나를 인하여 기뻐하지 못하게 하시며 무고히 나를 미워하는 자로 눈짓하지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "20d7be2f9a28be64dae97b24c29ff1854404324b3acedaace453f91c959e69a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:20",
+      "sequence": 14431,
+      "chapter_label": "PSA 35",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 20
+        }
+      ],
+      "en": "For they don’t speak peace, but they devise deceitful words against those who are quiet in the land.",
+      "ko": "대저 저희는 화평을 말하지 아니하고 평안히 땅에 거하는 자를 거짓말로 모해하며",
+      "source_text_hash": "97d05d94653d9bbd8bd65112a514c93772ec5e282fcc3a3c77cdc5605f91d156",
+      "translation_text_hash": "1adcd15a539e3abb9f7ef865829b0623efa9cb9b890f40774cc378732df9fea6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 저희는 화평을 말하지 아니하고 평안히 땅에 거하는 자를 거짓말로 모해하며"
+      ],
+      "raw_text_hashes": [
+        "1adcd15a539e3abb9f7ef865829b0623efa9cb9b890f40774cc378732df9fea6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:21",
+      "sequence": 14432,
+      "chapter_label": "PSA 35",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 21
+        }
+      ],
+      "en": "Yes, they opened their mouth wide against me. They said, “Aha! Aha! Our eye has seen it!”",
+      "ko": "또 저희가 나를 향하여 입을 크게 벌리고 하하 우리가 목도하였다 하나이다",
+      "source_text_hash": "2371d272bb362b27fe074c0d27398c64f662282a7851228b086d47cfb6afa53f",
+      "translation_text_hash": "62662152ba6752f8dfe1ef6dc6bd46737edf510c2738b5318e2dccfb8adbf755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희가 나를 향하여 입을 크게 벌리고 하하 우리가 목도하였다 하나이다"
+      ],
+      "raw_text_hashes": [
+        "62662152ba6752f8dfe1ef6dc6bd46737edf510c2738b5318e2dccfb8adbf755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:22",
+      "sequence": 14433,
+      "chapter_label": "PSA 35",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 22
+        }
+      ],
+      "en": "You have seen it, LORD. Don’t keep silent. Lord, don’t be far from me.",
+      "ko": "여호와여 주께서 이를 보셨사오니 잠잠하지 마옵소서 주여 나를 멀리하지 마옵소서",
+      "source_text_hash": "7a0630d49c172ac88858353493393a6667ce823281258c5de9f6dc74e56b307e",
+      "translation_text_hash": "e9a64a00283c594abbb0a2412f4b50e3e22031ad0aa3350d23acc65ef4a4dfdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 이를 보셨사오니 잠잠하지 마옵소서 주여 나를 멀리하지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "e9a64a00283c594abbb0a2412f4b50e3e22031ad0aa3350d23acc65ef4a4dfdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:23",
+      "sequence": 14434,
+      "chapter_label": "PSA 35",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 23
+        }
+      ],
+      "en": "Wake up! Rise up to defend me, my God! My Lord, contend for me!",
+      "ko": "나의 하나님, 나의 주여 떨치고 깨셔서 나를 공판하시며 나의 송사를 다스리소서",
+      "source_text_hash": "87faa9f1408e7954cfc65a5ca58946ee1f78434d8c5b1978eeb7efe287bca6a2",
+      "translation_text_hash": "7512d5d61f5d715567727a8a84bbe5cf24b72df502f9294047ccb82181a203e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님, 나의 주여 떨치고 깨셔서 나를 공판하시며 나의 송사를 다스리소서"
+      ],
+      "raw_text_hashes": [
+        "7512d5d61f5d715567727a8a84bbe5cf24b72df502f9294047ccb82181a203e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:24",
+      "sequence": 14435,
+      "chapter_label": "PSA 35",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 24
+        }
+      ],
+      "en": "Vindicate me, LORD my God, according to your righteousness. Don’t let them gloat over me.",
+      "ko": "여호와 나의 하나님이여 주의 공의대로 나를 판단하사 저희로 나를 인하여 기뻐하지 못하게 하소서",
+      "source_text_hash": "5acabaa12dbdfe7c92c4acf2d0db8e30ec639cf25535096ceb2b345f7a60f540",
+      "translation_text_hash": "38b9aecbd3d36e571b9077e7a9387c5d8a2fb9374258684f2bf3983d4160fe8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 나의 하나님이여 주의 공의대로 나를 판단하사 저희로 나를 인하여 기뻐하지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "38b9aecbd3d36e571b9077e7a9387c5d8a2fb9374258684f2bf3983d4160fe8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:25",
+      "sequence": 14436,
+      "chapter_label": "PSA 35",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 25
+        }
+      ],
+      "en": "Don’t let them say in their heart, “Aha! That’s the way we want it!” Don’t let them say, “We have swallowed him up!”",
+      "ko": "저희로 그 마음에 이르기를 아하 소원 성취하였다 하지 못하게 하시며 우리가 저를 삼켰다 하지 못하게 하소서",
+      "source_text_hash": "33420b5ed2199834d7f775a011c24028796dd999ab2dbc6824b9ad5be5a8ed21",
+      "translation_text_hash": "fa2bb89d1e2acfeba52b34a87a4165a098a1b92776ae1d318d54cbeaa6c426a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 그 마음에 이르기를 아하 소원 성취하였다 하지 못하게 하시며 우리가 저를 삼켰다 하지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "fa2bb89d1e2acfeba52b34a87a4165a098a1b92776ae1d318d54cbeaa6c426a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:26",
+      "sequence": 14437,
+      "chapter_label": "PSA 35",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 26
+        }
+      ],
+      "en": "Let them be disappointed and confounded together who rejoice at my calamity. Let them be clothed with shame and dishonor who magnify themselves against me.",
+      "ko": "나의 해를 기뻐하는 자들로 부끄러워 낭패하게 하시며 나를 향하여 자긍하는 자로 수치와 욕을 당케 하소서",
+      "source_text_hash": "03bb5a553285eebdcfef976c8d612e6180295c2974bc1b319ea2822359664c1f",
+      "translation_text_hash": "0d3855d5513f16d733e1e08a09bac91278133385ee336d3fbbe8c91c04e34416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 해를 기뻐하는 자들로 부끄러워 낭패하게 하시며 나를 향하여 자긍하는 자로 수치와 욕을 당케 하소서"
+      ],
+      "raw_text_hashes": [
+        "0d3855d5513f16d733e1e08a09bac91278133385ee336d3fbbe8c91c04e34416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:27",
+      "sequence": 14438,
+      "chapter_label": "PSA 35",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 27
+        }
+      ],
+      "en": "Let those who favor my righteous cause shout for joy and be glad. Yes, let them say continually, “May the LORD be magnified, who has pleasure in the prosperity of his servant!”",
+      "ko": "나의 의를 즐거워하는 자로 기꺼이 부르고 즐겁게 하시며 그 종의 형통을 기뻐하시는 여호와는 광대하시다 하는 말을 저희로 항상 하게하소서",
+      "source_text_hash": "fd1ac58e36618bfbf1cda4b085848ff4fec4fc332eeb4794adf864a87f5be2cd",
+      "translation_text_hash": "99ab832cd75784bda98307996fe6392823147a98291259aed056b09da5e354e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 의를 즐거워하는 자로 기꺼이 부르고 즐겁게 하시며 그 종의 형통을 기뻐하시는 여호와는 광대하시다 하는 말을 저희로 항상 하게하소서"
+      ],
+      "raw_text_hashes": [
+        "99ab832cd75784bda98307996fe6392823147a98291259aed056b09da5e354e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:35:28",
+      "sequence": 14439,
+      "chapter_label": "PSA 35",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 35,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 35,
+          "verse": 28
+        }
+      ],
+      "en": "My tongue shall talk about your righteousness and about your praise all day long.",
+      "ko": "나의 혀가 주의 의를 말하며 종일토록 주를 찬송하리이다",
+      "source_text_hash": "7c6fd629ce93e59f01c7db218c168942c387a3cfd4d9f15b0ea15dd6c9a2496b",
+      "translation_text_hash": "3546857e16e926ff3409cf2261848c825ed1c208b0439edb44f6cd76063f3e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 혀가 주의 의를 말하며 종일토록 주를 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "3546857e16e926ff3409cf2261848c825ed1c208b0439edb44f6cd76063f3e8c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:013",
+  "unit_ordinal": 351,
+  "unit_label": "1CH 13",
+  "book_code": "1CH",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:13:1",
+      "sequence": 10762,
+      "chapter_label": "1CH 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "David consulted with the captains of thousands and of hundreds, even with every leader.",
+      "ko": "다윗이 천부장과 백부장 곧 모든 장수로 더불어 의논하고",
+      "source_text_hash": "6da2c3c9df58a45b6daedc90dfbca1e75b7e512969b2cc4476e6e83e783467f1",
+      "translation_text_hash": "71023ef2a996e8985f9bc6b175c90649173b8d838b75d5922f530281cc6d9a6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 천부장과 백부장 곧 모든 장수로 더불어 의논하고"
+      ],
+      "raw_text_hashes": [
+        "71023ef2a996e8985f9bc6b175c90649173b8d838b75d5922f530281cc6d9a6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:2",
+      "sequence": 10763,
+      "chapter_label": "1CH 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "David said to all the assembly of Israel, “If it seems good to you, and if it is of the LORD our God, let’s send word everywhere to our brothers who are left in all the land of Israel, with whom the priests and Levites are in their cities that have pasture lands, that they may gather themselves to us.",
+      "ko": "이스라엘의 온 회중에게 이르되 만일 너희가 선히 여기고 또 우리의 하나님 여호와께로 말미암았으면 우리가 이스라엘 온 땅에 남아 있는 우리 형제와 또 저희와 함께 들어 있는 성읍에 거하는 제사장과 레위 사람에게 보내어 저희를 우리에게로 모이게 하고",
+      "source_text_hash": "97d8a0ffba14355795396a76a4e9724fd400f34111f7eed21f712b80dbc9cb12",
+      "translation_text_hash": "ca42176b8080da705837799a9634927f37ca9da057f9b1ea201c5a990ccb3416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 온 회중에게 이르되 만일 너희가 선히 여기고 또 우리의 하나님 여호와께로 말미암았으면 우리가 이스라엘 온 땅에 남아 있는 우리 형제와 또 저희와 함께 들어 있는 성읍에 거하는 제사장과 레위 사람에게 보내어 저희를 우리에게로 모이게 하고"
+      ],
+      "raw_text_hashes": [
+        "ca42176b8080da705837799a9634927f37ca9da057f9b1ea201c5a990ccb3416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:3",
+      "sequence": 10764,
+      "chapter_label": "1CH 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Also, let’s bring the ark of our God back to us again, for we didn’t seek it in the days of Saul.”",
+      "ko": "우리가 우리 하나님의 궤를 옮겨오자 사울 때에는 우리가 궤 앞에서 묻지 아니하였느니라 하매",
+      "source_text_hash": "db249214a763fb6e8996e1d5066e2377d587292b1aea5e41017868c803b7367a",
+      "translation_text_hash": "aa497570584e0ec69f491cf9127288297cd8224abf7ddd2a8eac0d5aebaa8c3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 하나님의 궤를 옮겨오자 사울 때에는 우리가 궤 앞에서 묻지 아니하였느니라 하매"
+      ],
+      "raw_text_hashes": [
+        "aa497570584e0ec69f491cf9127288297cd8224abf7ddd2a8eac0d5aebaa8c3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:4",
+      "sequence": 10765,
+      "chapter_label": "1CH 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "All the assembly said that they would do so, for the thing was right in the eyes of all the people.",
+      "ko": "뭇 백성이 이 일을 선히 여기므로 온 회중이 그대로 행하겠다 한지라",
+      "source_text_hash": "e9c56080b364973f1b92d40c5c53321a95192398b7154caa10d42ed40c596d80",
+      "translation_text_hash": "a2f2d3958235a09b86d73345b64965edc68116f4b79c9a524ef07ee1fa9c498d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뭇 백성이 이 일을 선히 여기므로 온 회중이 그대로 행하겠다 한지라"
+      ],
+      "raw_text_hashes": [
+        "a2f2d3958235a09b86d73345b64965edc68116f4b79c9a524ef07ee1fa9c498d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:5",
+      "sequence": 10766,
+      "chapter_label": "1CH 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "So David assembled all Israel together, from the Shihor River of Egypt even to the entrance of Hamath, to bring God’s ark from Kiriath Jearim.",
+      "ko": "이에 다윗이 애굽의 시홀 시내에서부터 하맛 어귀까지 온 이스라엘을 불러 모으고 기럇여아림에서부터 하나님의 궤를 메어 오고자 할쌔",
+      "source_text_hash": "e79af9c13b724eafb01aa26a490a4ff749cda0150154ca1da28ab211e7e0b6ad",
+      "translation_text_hash": "5a895d7d1cf504f3cbed594492487c1b41188be50c0a45e44866dcf72791a404",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 애굽의 시홀 시내에서부터 하맛 어귀까지 온 이스라엘을 불러 모으고 기럇여아림에서부터 하나님의 궤를 메어 오고자 할쌔"
+      ],
+      "raw_text_hashes": [
+        "5a895d7d1cf504f3cbed594492487c1b41188be50c0a45e44866dcf72791a404"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:6",
+      "sequence": 10767,
+      "chapter_label": "1CH 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "David went up with all Israel to Baalah, that is, to Kiriath Jearim, which belonged to Judah, to bring up from there God the LORD’s ark that sits above the cherubim, that is called by the Name.",
+      "ko": "다윗이 온 이스라엘을 거느리고 바알라 곧 유다에 속한 기럇여아림에 올라가서 여호와 하나님의 궤를 메어오려 하니 이는 여호와께서 두 그룹 사이에 계시므로 그 이름으로 일컫는 궤라",
+      "source_text_hash": "a0446c6b41106434a83d141924b0f27d104ba51bf5a08ef9c0d4710ddec441e5",
+      "translation_text_hash": "e54d2a0682f04df0299bdf669545187c0828a8c1c2b45fe9c729abe9c807e3e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 온 이스라엘을 거느리고 바알라 곧 유다에 속한 기럇여아림에 올라가서 여호와 하나님의 궤를 메어오려 하니 이는 여호와께서 두 그룹 사이에 계시므로 그 이름으로 일컫는 궤라"
+      ],
+      "raw_text_hashes": [
+        "e54d2a0682f04df0299bdf669545187c0828a8c1c2b45fe9c729abe9c807e3e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:7",
+      "sequence": 10768,
+      "chapter_label": "1CH 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "They carried God’s ark on a new cart, and brought it out of Abinadab’s house; and Uzza and Ahio drove the cart.",
+      "ko": "하나님의 궤를 새 수레에 싣고 아비나답의 집에서 나오는데 웃사와 아히오는 수레를 몰며",
+      "source_text_hash": "38687b21f801797283d5b21ab2b49a4385ccdefa90e182764d762e6b795818ac",
+      "translation_text_hash": "65639cd44c895d7d679bd84c2c73b2626d3bafa6d4e9502fbe9de6bb3e3623e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 궤를 새 수레에 싣고 아비나답의 집에서 나오는데 웃사와 아히오는 수레를 몰며"
+      ],
+      "raw_text_hashes": [
+        "65639cd44c895d7d679bd84c2c73b2626d3bafa6d4e9502fbe9de6bb3e3623e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:8",
+      "sequence": 10769,
+      "chapter_label": "1CH 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "David and all Israel played before God with all their might, even with songs, with harps, with stringed instruments, with tambourines, with cymbals, and with trumpets.",
+      "ko": "다윗과 이스라엘 온 무리는 하나님 앞에서 힘을 다하여 뛰놀며 노래하며 수금과 비파와 소고와 제금과 나팔로 주악하니라",
+      "source_text_hash": "85cca8b05a926d042deaa2b19780adc2dc7a8e05287f368c74ea3e07d3aa9bf5",
+      "translation_text_hash": "97e5a4836a6c10b8e9c750d58056df220c61462a4b58197957c5351bece1c1c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 이스라엘 온 무리는 하나님 앞에서 힘을 다하여 뛰놀며 노래하며 수금과 비파와 소고와 제금과 나팔로 주악하니라"
+      ],
+      "raw_text_hashes": [
+        "97e5a4836a6c10b8e9c750d58056df220c61462a4b58197957c5351bece1c1c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:9",
+      "sequence": 10770,
+      "chapter_label": "1CH 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "When they came to Chidon’s threshing floor, Uzza put out his hand to hold the ark, for the oxen stumbled.",
+      "ko": "기돈의 타작 마당에 이르러서는 소들이 뛰므로 웃사가 손을 펴서 궤를 붙들었더니",
+      "source_text_hash": "b90e7b927f3ca8d298cea89da5d8cb0540080b81bf4b207d702c891e8bd4a45f",
+      "translation_text_hash": "fb184b7017daa24acd53acb0077a969caeda2155ecb4f1ced306aee2bbfc18e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기돈의 타작 마당에 이르러서는 소들이 뛰므로 웃사가 손을 펴서 궤를 붙들었더니"
+      ],
+      "raw_text_hashes": [
+        "fb184b7017daa24acd53acb0077a969caeda2155ecb4f1ced306aee2bbfc18e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:10",
+      "sequence": 10771,
+      "chapter_label": "1CH 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD’s anger burned against Uzza, and he struck him because he put his hand on the ark; and he died there before God.",
+      "ko": "웃사가 손을 펴서 궤를 붙듦을 인하여 여호와께서 진노하사 치시매 웃사가 거기 하나님 앞에서 죽으니라",
+      "source_text_hash": "42712b89d1fa14587035dea235b33d2113b0bd70cf923a05e2d070223fc0c2b2",
+      "translation_text_hash": "963f529e3b7b66d502f8e0d0cfb91d3421ad3c434048ef63a9fc67be0a0c8433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃사가 손을 펴서 궤를 붙듦을 인하여 여호와께서 진노하사 치시매 웃사가 거기 하나님 앞에서 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "963f529e3b7b66d502f8e0d0cfb91d3421ad3c434048ef63a9fc67be0a0c8433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:11",
+      "sequence": 10772,
+      "chapter_label": "1CH 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "David was displeased, because the LORD had broken out against Uzza. He called that place Perez Uzza, to this day.",
+      "ko": "여호와께서 웃사를 충돌하시므로 다윗이 분하여 그곳을 베레스 웃사라 칭하니 그 이름이 오늘날까지 이르니라",
+      "source_text_hash": "69bf8d8c8755313fc7ae8fc713753ba7e9ff71c64c12f59189a3c87c2813397b",
+      "translation_text_hash": "da5184023f9b7eb3200ddf3b24c4559d16e274f2d684a254cbeeb052236c9fde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 웃사를 충돌하시므로 다윗이 분하여 그곳을 베레스 웃사라 칭하니 그 이름이 오늘날까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "da5184023f9b7eb3200ddf3b24c4559d16e274f2d684a254cbeeb052236c9fde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:12",
+      "sequence": 10773,
+      "chapter_label": "1CH 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "David was afraid of God that day, saying, “How can I bring God’s ark home to me?”",
+      "ko": "그 날에 다윗이 하나님을 두려워하여 가로되 내가 어찌 하나님의 궤를 내 곳으로 오게 하리요 하고",
+      "source_text_hash": "5b3dc2d74edf1ba8bd934319269fda95766304e6ec789cb396909ef19b4cfb98",
+      "translation_text_hash": "e4a6f5c31d234fddb043125dbc29709699c5552f234782f6b89b5b05fb183a3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 다윗이 하나님을 두려워하여 가로되 내가 어찌 하나님의 궤를 내 곳으로 오게 하리요 하고"
+      ],
+      "raw_text_hashes": [
+        "e4a6f5c31d234fddb043125dbc29709699c5552f234782f6b89b5b05fb183a3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:13",
+      "sequence": 10774,
+      "chapter_label": "1CH 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "So David didn’t move the ark with him into David’s city, but carried it aside into Obed-Edom the Gittite’s house.",
+      "ko": "궤를 옮겨 다윗성 자기에게 메어들이지 못하고 치우쳐 가드 사람 오벧에돔의 집으로 메어가니라",
+      "source_text_hash": "400e90c4f76ffba4010c00a72b19993aea8026db1234b1e0066efe629d810c38",
+      "translation_text_hash": "e8c333b0edabae41feba4da12f6a57f5806e83edc5e95288b8c6634c47d3836e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤를 옮겨 다윗성 자기에게 메어들이지 못하고 치우쳐 가드 사람 오벧에돔의 집으로 메어가니라"
+      ],
+      "raw_text_hashes": [
+        "e8c333b0edabae41feba4da12f6a57f5806e83edc5e95288b8c6634c47d3836e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:13:14",
+      "sequence": 10775,
+      "chapter_label": "1CH 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "God’s ark remained with the family of Obed-Edom in his house three months; and the LORD blessed Obed-Edom’s house and all that he had.",
+      "ko": "하나님의 궤가 오벧에돔의 집에서 그 권속과 함께 석달을 있으니라 여호와께서 오벧에돔의 집과 그 모든 소유에 복을 내리셨더라",
+      "source_text_hash": "26e68091f0d8488988908ab16c2aa2435808cb2d81c8eedd1a706d3f2f8c04ea",
+      "translation_text_hash": "8a7638bbe62682cc3a6ed0c8e464cdd13ac8cfc41b109944e303e7de5b702a46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 궤가 오벧에돔의 집에서 그 권속과 함께 석달을 있으니라 여호와께서 오벧에돔의 집과 그 모든 소유에 복을 내리셨더라"
+      ],
+      "raw_text_hashes": [
+        "8a7638bbe62682cc3a6ed0c8e464cdd13ac8cfc41b109944e303e7de5b702a46"
+      ]
+    }
+  ]
+}

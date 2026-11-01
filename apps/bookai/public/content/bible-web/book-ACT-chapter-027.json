@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:027",
+  "unit_ordinal": 1045,
+  "unit_label": "ACT 27",
+  "book_code": "ACT",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:27:1",
+      "sequence": 27853,
+      "chapter_label": "ACT 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "When it was determined that we should sail for Italy, they delivered Paul and certain other prisoners to a centurion named Julius, of the Augustan band.",
+      "ko": "우리의 배 타고 이달리야로 갈 일이 작정되매 바울과 다른 죄수 몇 사람을 아구사도대의 백부장 율리오란 사람에게 맡기니",
+      "source_text_hash": "3c2f62957e71a91237ad1867127618f53fb64e99a49728ab1659b35c143e7564",
+      "translation_text_hash": "e3fa57361ba44d7bc40e14fcb44cdc5a99b96228b62465ac68282666f46009c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 배 타고 이달리야로 갈 일이 작정되매 바울과 다른 죄수 몇 사람을 아구사도대의 백부장 율리오란 사람에게 맡기니"
+      ],
+      "raw_text_hashes": [
+        "e3fa57361ba44d7bc40e14fcb44cdc5a99b96228b62465ac68282666f46009c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:2",
+      "sequence": 27854,
+      "chapter_label": "ACT 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "Embarking in a ship of Adramyttium, which was about to sail to places on the coast of Asia, we put to sea, Aristarchus, a Macedonian of Thessalonica being with us.",
+      "ko": "아시아 해변 각처로 가려 하는 아드라뭇데노 배에 우리가 올라 행선할쌔 마게도냐의 데살로니가 사람 아리스다고도 함께 하니라",
+      "source_text_hash": "ca6fbb80698b19313215733035bc560e62ae4619e528aadac8996cbe85bccbcb",
+      "translation_text_hash": "65b6fe0ed10e53243cc76257e83a55f8280e9cdd845ef67cd1eb89a16bf5cb07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아시아 해변 각처로 가려 하는 아드라뭇데노 배에 우리가 올라 행선할쌔 마게도냐의 데살로니가 사람 아리스다고도 함께 하니라"
+      ],
+      "raw_text_hashes": [
+        "65b6fe0ed10e53243cc76257e83a55f8280e9cdd845ef67cd1eb89a16bf5cb07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:3",
+      "sequence": 27855,
+      "chapter_label": "ACT 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "The next day, we touched at Sidon. Julius treated Paul kindly and gave him permission to go to his friends and refresh himself.",
+      "ko": "이튿날 시돈에 대니 율리오가 바울을 친절히 하여 친구들에게 가서 대접 받음을 허락하더니",
+      "source_text_hash": "6e840c43a2bcc864ebccb16d73e60e1b14521441faafc75b583fed8b250d8b40",
+      "translation_text_hash": "5d4238a065c96daecceff13b431f421835650db1854833cc336b1dcf07358df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 시돈에 대니 율리오가 바울을 친절히 하여 친구들에게 가서 대접 받음을 허락하더니"
+      ],
+      "raw_text_hashes": [
+        "5d4238a065c96daecceff13b431f421835650db1854833cc336b1dcf07358df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:4",
+      "sequence": 27856,
+      "chapter_label": "ACT 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Putting to sea from there, we sailed under the lee of Cyprus, because the winds were contrary.",
+      "ko": "또 거기서 우리가 떠나가다가 바람의 거스림을 피하여 구브로 해안을 의지하고 행선하여",
+      "source_text_hash": "3a5ca1a0b23e4c8f7f837d9a81ae68e387954f0b1eb63774f42d90d1a01dc5ed",
+      "translation_text_hash": "004fc64fdacccf10ea06ac9952ea557311a880a570c6039c29ba553ce075ada6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거기서 우리가 떠나가다가 바람의 거스림을 피하여 구브로 해안을 의지하고 행선하여"
+      ],
+      "raw_text_hashes": [
+        "004fc64fdacccf10ea06ac9952ea557311a880a570c6039c29ba553ce075ada6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:5",
+      "sequence": 27857,
+      "chapter_label": "ACT 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "When we had sailed across the sea which is off Cilicia and Pamphylia, we came to Myra, a city of Lycia.",
+      "ko": "길리기아와 밤빌리아 바다를 건너 루기아의 무라성에 이르러",
+      "source_text_hash": "8f82932bb0e36c7faba6323a206faba07394f943503baeeafbc64a16c3d1d5e8",
+      "translation_text_hash": "7114d0fcaf368be9c1630d5b92cf5e0ae23450989d0ec224fe5155467ff77399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길리기아와 밤빌리아 바다를 건너 루기아의 무라성에 이르러"
+      ],
+      "raw_text_hashes": [
+        "7114d0fcaf368be9c1630d5b92cf5e0ae23450989d0ec224fe5155467ff77399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:6",
+      "sequence": 27858,
+      "chapter_label": "ACT 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "There the centurion found a ship of Alexandria sailing for Italy, and he put us on board.",
+      "ko": "거기서 백부장이 이달리야로 가려하는 알렉산드리아 배를 만나 우리를 오르게 하니",
+      "source_text_hash": "1b6d49da0ede574003e92454eb61dd390360ec4407a2e43f6795cc484f40f0eb",
+      "translation_text_hash": "8c61696472edee072986167a4b262b0490159d20064248888360f8613d3098f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 백부장이 이달리야로 가려하는 알렉산드리아 배를 만나 우리를 오르게 하니"
+      ],
+      "raw_text_hashes": [
+        "8c61696472edee072986167a4b262b0490159d20064248888360f8613d3098f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:7",
+      "sequence": 27859,
+      "chapter_label": "ACT 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "When we had sailed slowly many days, and had come with difficulty opposite Cnidus, the wind not allowing us further, we sailed under the lee of Crete, opposite Salmone.",
+      "ko": "배가 더디 가 여러 날만에 간신히 니도 맞은편에 이르러 풍세가 더 허락지 아니하므로 살모네 앞을 지나 그레데 해안을 의지하고 행선하여",
+      "source_text_hash": "0bc27c229a5118e4a68553f4eb694f7bd3c213ea5121bf7ea164ce4fd69275a1",
+      "translation_text_hash": "439db1adacc36ef90b5da9ac6563c2710526133e8f35671fcd983a45deb83b1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배가 더디 가 여러 날만에 간신히 니도 맞은편에 이르러 풍세가 더 허락지 아니하므로 살모네 앞을 지나 그레데 해안을 의지하고 행선하여"
+      ],
+      "raw_text_hashes": [
+        "439db1adacc36ef90b5da9ac6563c2710526133e8f35671fcd983a45deb83b1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:8",
+      "sequence": 27860,
+      "chapter_label": "ACT 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "With difficulty sailing along it we came to a certain place called Fair Havens, near the city of Lasea.",
+      "ko": "간신히 그 연안을 지나 미항이라는 곳에 이르니 라새아성에서 가깝더라",
+      "source_text_hash": "9f5638b76bbb8ac4219a282899f0938dda6ac0cc8e230ff017e9baf82732cf1b",
+      "translation_text_hash": "e544626530ea69163e5a19cf0370c3fd64c21f2e5f69c9111c90a0176f3b03cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간신히 그 연안을 지나 미항이라는 곳에 이르니 라새아성에서 가깝더라"
+      ],
+      "raw_text_hashes": [
+        "e544626530ea69163e5a19cf0370c3fd64c21f2e5f69c9111c90a0176f3b03cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:9",
+      "sequence": 27861,
+      "chapter_label": "ACT 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "When much time had passed and the voyage was now dangerous because the Fast had now already gone by, Paul admonished them",
+      "ko": "여러 날이 걸려 금식하는 절기가 이미 지났으므로 행선하기가 위태한지라 바울이 저희를 권하여",
+      "source_text_hash": "527cb9e235eba5a0386593eace25524519dcfff57c16a2e7bfdb20e1600557d2",
+      "translation_text_hash": "f82dd3ace935f43ef90829cfd46ed467e83300a71c8098daf4ec086366af990b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 날이 걸려 금식하는 절기가 이미 지났으므로 행선하기가 위태한지라 바울이 저희를 권하여"
+      ],
+      "raw_text_hashes": [
+        "f82dd3ace935f43ef90829cfd46ed467e83300a71c8098daf4ec086366af990b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:10",
+      "sequence": 27862,
+      "chapter_label": "ACT 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "and said to them, “Sirs, I perceive that the voyage will be with injury and much loss, not only of the cargo and the ship, but also of our lives.”",
+      "ko": "말하되 여러분이여 내가 보니 이번 행선이 하물과 배만 아니라 우리 생명에도 타격과 많은 손해가 있으리라 하되",
+      "source_text_hash": "c911976f03360a0f1b90279c3d19b4afeab4f47089cf10718175cfec3de486c5",
+      "translation_text_hash": "6d87730b8ae0a072a2495bfa9f75287c0df942079f685ac9fc65ad3e4777f9cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 여러분이여 내가 보니 이번 행선이 하물과 배만 아니라 우리 생명에도 타격과 많은 손해가 있으리라 하되"
+      ],
+      "raw_text_hashes": [
+        "6d87730b8ae0a072a2495bfa9f75287c0df942079f685ac9fc65ad3e4777f9cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:11",
+      "sequence": 27863,
+      "chapter_label": "ACT 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "But the centurion gave more heed to the master and to the owner of the ship than to those things which were spoken by Paul.",
+      "ko": "백부장이 선장과 선주의 말을 바울의 말보다 더 믿더라",
+      "source_text_hash": "ebe28405bc9f55d87ecbd12015537844a737aeee28a9be9ef65df8950744faa1",
+      "translation_text_hash": "44ca3401ce619edcbe96d6c1504a33c4d3c9a7181551e3f56841a1517c94660c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장이 선장과 선주의 말을 바울의 말보다 더 믿더라"
+      ],
+      "raw_text_hashes": [
+        "44ca3401ce619edcbe96d6c1504a33c4d3c9a7181551e3f56841a1517c94660c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:12",
+      "sequence": 27864,
+      "chapter_label": "ACT 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "Because the haven was not suitable to winter in, the majority advised going to sea from there, if by any means they could reach Phoenix and winter there, which is a port of Crete, looking southwest and northwest.",
+      "ko": "그 항구가 과동하기에 불편하므로 거기서 떠나 아무쪼록 뵈닉스에 가서 과동하자 하는 자가 더 많으니 뵈닉스는 그레데 항구라 한편은 동북을, 한편은 동남을 향하였더라",
+      "source_text_hash": "fd68b18cce5fc0aa53737eb9cc5680ed3e7f9c0bc86b8669eca24b6d0c071992",
+      "translation_text_hash": "d66680f38a4186501a933916d121bfbaadd8b3c5c623698e1f05fca838f028e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 항구가 과동하기에 불편하므로 거기서 떠나 아무쪼록 뵈닉스에 가서 과동하자 하는 자가 더 많으니 뵈닉스는 그레데 항구라 한편은 동북을, 한편은 동남을 향하였더라"
+      ],
+      "raw_text_hashes": [
+        "d66680f38a4186501a933916d121bfbaadd8b3c5c623698e1f05fca838f028e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:13",
+      "sequence": 27865,
+      "chapter_label": "ACT 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "When the south wind blew softly, supposing that they had obtained their purpose, they weighed anchor and sailed along Crete, close to shore.",
+      "ko": "남풍이 순하게 불매 저희가 득의한줄 알고 닻을 감아 그레데 해변을 가까이 하고 행선하더니",
+      "source_text_hash": "9afaa44c04a8f0191544138707e9706bbff3e3c7ece317f46f43754c800c5522",
+      "translation_text_hash": "0da69348edc7359e9aae0e9b77cfc37b8008bc454472969fff2f0de7b23f78d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남풍이 순하게 불매 저희가 득의한줄 알고 닻을 감아 그레데 해변을 가까이 하고 행선하더니"
+      ],
+      "raw_text_hashes": [
+        "0da69348edc7359e9aae0e9b77cfc37b8008bc454472969fff2f0de7b23f78d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:14",
+      "sequence": 27866,
+      "chapter_label": "ACT 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "But before long, a stormy wind beat down from shore, which is called Euroclydon.",
+      "ko": "얼마 못되어 섬 가운데로서 유라굴로라는 광풍이 대작하니",
+      "source_text_hash": "cd5aee326e0ad0df34c2a42aeb4a3cc0df199b452b91d1e78a28aa5fd1321fc3",
+      "translation_text_hash": "4924025cce8f89fdbc45e52b63432cd966f42135515ae8ba185b36672108fb04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼마 못되어 섬 가운데로서 유라굴로라는 광풍이 대작하니"
+      ],
+      "raw_text_hashes": [
+        "4924025cce8f89fdbc45e52b63432cd966f42135515ae8ba185b36672108fb04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:15",
+      "sequence": 27867,
+      "chapter_label": "ACT 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "When the ship was caught and couldn’t face the wind, we gave way to it and were driven along.",
+      "ko": "배가 밀려 바람을 맞추어 갈 수 없어 가는 대로 두고 쫓겨 가다가",
+      "source_text_hash": "4b21cc87d3a9dbbb37c034e6affed4d59f41df13d168a5415dc77bf42ca923f8",
+      "translation_text_hash": "9a83440494dac29ded040d459d71720b9e7490d085438c1ad8861ee832a94de3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배가 밀려 바람을 맞추어 갈 수 없어 가는 대로 두고 쫓겨 가다가"
+      ],
+      "raw_text_hashes": [
+        "9a83440494dac29ded040d459d71720b9e7490d085438c1ad8861ee832a94de3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:16",
+      "sequence": 27868,
+      "chapter_label": "ACT 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "Running under the lee of a small island called Clauda, we were able, with difficulty, to secure the boat.",
+      "ko": "가우다라는 작은 섬 아래로 지나 간신히 거루를 잡아",
+      "source_text_hash": "0b857bb0829838e5801cf0622b2f4b3376c85fa809de92d254338d03dca0bd4c",
+      "translation_text_hash": "9150d54f837daec13fd3615e9da116630f49befbfd4c3591dbc88bad9765e8de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가우다라는 작은 섬 아래로 지나 간신히 거루를 잡아"
+      ],
+      "raw_text_hashes": [
+        "9150d54f837daec13fd3615e9da116630f49befbfd4c3591dbc88bad9765e8de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:17",
+      "sequence": 27869,
+      "chapter_label": "ACT 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "After they had hoisted it up, they used cables to help reinforce the ship. Fearing that they would run aground on the Syrtis sand bars, they lowered the sea anchor, and so were driven along.",
+      "ko": "끌어 올리고 줄을 가지고 선체를 둘러 감고 스르디스에 걸릴까 두려워 연장을 내리고 그냥 쫓겨가더니",
+      "source_text_hash": "b618d91f101bd385142fef9bf000ec0d82edcef2e28500f1adaac619d117eee8",
+      "translation_text_hash": "b3dd766ed64b02c136701ee058c5dd86ea38f4a2aee9284ff6a2e6ba58adbc91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "끌어 올리고 줄을 가지고 선체를 둘러 감고 스르디스에 걸릴까 두려워 연장을 내리고 그냥 쫓겨가더니"
+      ],
+      "raw_text_hashes": [
+        "b3dd766ed64b02c136701ee058c5dd86ea38f4a2aee9284ff6a2e6ba58adbc91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:18",
+      "sequence": 27870,
+      "chapter_label": "ACT 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "As we labored exceedingly with the storm, the next day they began to throw things overboard.",
+      "ko": "우리가 풍랑으로 심히 애쓰다가 이튿날 사공들이 짐을 바다에 풀어 버리고",
+      "source_text_hash": "94bc9494c34925c4336a463ebf18bff6c750e148bf2f519a964e0f90b7d747ca",
+      "translation_text_hash": "fa86d4700ce0c8adb3e209348ce279bcada298f268fab9cf72e0b7274efcd983",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 풍랑으로 심히 애쓰다가 이튿날 사공들이 짐을 바다에 풀어 버리고"
+      ],
+      "raw_text_hashes": [
+        "fa86d4700ce0c8adb3e209348ce279bcada298f268fab9cf72e0b7274efcd983"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:19",
+      "sequence": 27871,
+      "chapter_label": "ACT 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "On the third day, they threw out the ship’s tackle with their own hands.",
+      "ko": "사흘째 되는 날에 배의 기구를 저희 손으로 내어 버리니라",
+      "source_text_hash": "665614b26a2bdf22ee6451ee01f38f6cb2c501aa855e8b57bce697b78170afc8",
+      "translation_text_hash": "41c8137759245dc5659e0311712bed23e506e56471c99e4a64b1bdce9b3cfa63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사흘째 되는 날에 배의 기구를 저희 손으로 내어 버리니라"
+      ],
+      "raw_text_hashes": [
+        "41c8137759245dc5659e0311712bed23e506e56471c99e4a64b1bdce9b3cfa63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:20",
+      "sequence": 27872,
+      "chapter_label": "ACT 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "When neither sun nor stars shone on us for many days, and no small storm pressed on us, all hope that we would be saved was now taken away.",
+      "ko": "여러 날 동안 해와 별이 보이지 아니하고 큰 풍랑이 그대로 있으매 구원의 여망이 다 없어졌더라",
+      "source_text_hash": "b67d4d7af8049dd4018353d91c24c0cf87634acec55fa6f1cf45624b1c96a4d7",
+      "translation_text_hash": "66bf058a081d339c6d78fdeaf4c53f0bf4a200844190dbad8cd75079de79f3e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 날 동안 해와 별이 보이지 아니하고 큰 풍랑이 그대로 있으매 구원의 여망이 다 없어졌더라"
+      ],
+      "raw_text_hashes": [
+        "66bf058a081d339c6d78fdeaf4c53f0bf4a200844190dbad8cd75079de79f3e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:21",
+      "sequence": 27873,
+      "chapter_label": "ACT 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "When they had been long without food, Paul stood up in the middle of them and said, “Sirs, you should have listened to me, and not have set sail from Crete and have gotten this injury and loss.",
+      "ko": "여러 사람이 오래 먹지 못하였으매 바울이 가운데 서서 말하되 여러분이여 내 말을 듣고 그레데에서 떠나지 아니하여 이 타격과 손상을 면하였더면 좋을뻔 하였느니라",
+      "source_text_hash": "f82631e4b22b4b1d359d88f20bab89715a837713d1b448b9bf4bca5f9e4bddaa",
+      "translation_text_hash": "938b467dee3308846a761c2cae889e463ce35b4b8919cba7b6a5c528c6643891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 사람이 오래 먹지 못하였으매 바울이 가운데 서서 말하되 여러분이여 내 말을 듣고 그레데에서 떠나지 아니하여 이 타격과 손상을 면하였더면 좋을뻔 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "938b467dee3308846a761c2cae889e463ce35b4b8919cba7b6a5c528c6643891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:22",
+      "sequence": 27874,
+      "chapter_label": "ACT 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "Now I exhort you to cheer up, for there will be no loss of life among you, but only of the ship.",
+      "ko": "내가 너희를 권하노니 이제는 안심하라 너희 중 생명에는 아무 손상이 없겠고 오직 배 뿐이리라",
+      "source_text_hash": "5610c0effde014706975f2c7bcb1d041a6e385751d276ea716913a0e7ed2e9a2",
+      "translation_text_hash": "5759a6866543d803117a2ba509003ba1494e1e289d4ab611946474a5f3415adb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 권하노니 이제는 안심하라 너희 중 생명에는 아무 손상이 없겠고 오직 배 뿐이리라"
+      ],
+      "raw_text_hashes": [
+        "5759a6866543d803117a2ba509003ba1494e1e289d4ab611946474a5f3415adb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:23",
+      "sequence": 27875,
+      "chapter_label": "ACT 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "For there stood by me this night an angel, belonging to the God whose I am and whom I serve,",
+      "ko": "나의 속한바 곧 나의 섬기는 하나님의 사자가 어제 밤에 내 곁에 서서 말하되",
+      "source_text_hash": "27683d7e144a276a21fd83c9816847117c99c0698b2be4ca950c872b5231215f",
+      "translation_text_hash": "80d06a7cbaa0d34a253727f6a6e508eea1484622d7752d059ae46c7061c1c2e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 속한바 곧 나의 섬기는 하나님의 사자가 어제 밤에 내 곁에 서서 말하되"
+      ],
+      "raw_text_hashes": [
+        "80d06a7cbaa0d34a253727f6a6e508eea1484622d7752d059ae46c7061c1c2e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:24",
+      "sequence": 27876,
+      "chapter_label": "ACT 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "saying, ‘Don’t be afraid, Paul. You must stand before Caesar. Behold, God has granted you all those who sail with you.’",
+      "ko": "바울아 두려워 말라 네가 가이사 앞에 서야 하겠고 또 하나님께서 너와 함께 행선하는 자를 다 네게 주셨다 하였으니",
+      "source_text_hash": "50c238822b6e69a858f5d997501bc90132a268e99f07abe610c228efc52667b2",
+      "translation_text_hash": "98b06427f74eca5ee0ad0685c9e341f3fcb6c20e8fdffb8fe567e2060f2636d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울아 두려워 말라 네가 가이사 앞에 서야 하겠고 또 하나님께서 너와 함께 행선하는 자를 다 네게 주셨다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "98b06427f74eca5ee0ad0685c9e341f3fcb6c20e8fdffb8fe567e2060f2636d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:25",
+      "sequence": 27877,
+      "chapter_label": "ACT 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore, sirs, cheer up! For I believe God, that it will be just as it has been spoken to me.",
+      "ko": "그러므로 여러분이여 안심하라 나는 내게 말씀하신 그대로 되리라고 하나님을 믿노라",
+      "source_text_hash": "0dd7d14d0a37b1c8c437fa410a1fd23a5b8edd2e1c96c2a72257a2bfa2d05223",
+      "translation_text_hash": "6462e5b2589ce09b36daeeacf1578e5c89024bc78a00cdb7e80e0f0c74a7860b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여러분이여 안심하라 나는 내게 말씀하신 그대로 되리라고 하나님을 믿노라"
+      ],
+      "raw_text_hashes": [
+        "6462e5b2589ce09b36daeeacf1578e5c89024bc78a00cdb7e80e0f0c74a7860b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:26",
+      "sequence": 27878,
+      "chapter_label": "ACT 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "But we must run aground on a certain island.”",
+      "ko": "그러나 우리가 한 섬에 걸리리라 하더라",
+      "source_text_hash": "44ef562fce9669fd8e35f5fc3a5bbb6f883a9dc8539ebadf74d636a65f8bddd0",
+      "translation_text_hash": "3264e1f20c31ff3ac0922b3435a0e92ad21a879b6a44070df2c8f426d82cea47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리가 한 섬에 걸리리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "3264e1f20c31ff3ac0922b3435a0e92ad21a879b6a44070df2c8f426d82cea47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:27",
+      "sequence": 27879,
+      "chapter_label": "ACT 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "But when the fourteenth night had come, as we were driven back and forth in the Adriatic Sea, about midnight the sailors surmised that they were drawing near to some land.",
+      "ko": "열 나흘째 되는 날 밤에 우리가 아드리아 바다에 이리 저리 쫓겨 가더니 밤중쯤 되어 사공들이 어느 육지에 가까와지는 줄을 짐작하고",
+      "source_text_hash": "4c237e41f7205b139db74e19187c8f791e64d5ba2f926a81ba32d43a5d58942f",
+      "translation_text_hash": "09133951c8201ac19f4a4afe861a6cd1e6fbaa8283351edd251328acde053596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 나흘째 되는 날 밤에 우리가 아드리아 바다에 이리 저리 쫓겨 가더니 밤중쯤 되어 사공들이 어느 육지에 가까와지는 줄을 짐작하고"
+      ],
+      "raw_text_hashes": [
+        "09133951c8201ac19f4a4afe861a6cd1e6fbaa8283351edd251328acde053596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:28",
+      "sequence": 27880,
+      "chapter_label": "ACT 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "They took soundings and found twenty fathoms. After a little while, they took soundings again, and found fifteen fathoms.",
+      "ko": "물을 재어보니 이십 길이 되고 조금 가다가 다시 재니 열다섯 길이라",
+      "source_text_hash": "953cf13d440b00ed258ea33c09d373802a88e68567119596c506712dc5721cbc",
+      "translation_text_hash": "b8cfc7b61fd9d0b951822719cad14d42a195591ab3fb16d1a0b6f7335832fa56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물을 재어보니 이십 길이 되고 조금 가다가 다시 재니 열다섯 길이라"
+      ],
+      "raw_text_hashes": [
+        "b8cfc7b61fd9d0b951822719cad14d42a195591ab3fb16d1a0b6f7335832fa56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:29",
+      "sequence": 27881,
+      "chapter_label": "ACT 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "Fearing that we would run aground on rocky ground, they let go four anchors from the stern, and wished for daylight.",
+      "ko": "암초에 걸릴까 하여 고물로 닻 넷을 주고 날이 새기를 고대하더니",
+      "source_text_hash": "eda4085627919ad286261713addc4b23775d6c0ff8e35424e2051d56ba2302eb",
+      "translation_text_hash": "000c325bd71aef7d53cb55b9869625bae971c209aa65b4538606ec4355143fe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암초에 걸릴까 하여 고물로 닻 넷을 주고 날이 새기를 고대하더니"
+      ],
+      "raw_text_hashes": [
+        "000c325bd71aef7d53cb55b9869625bae971c209aa65b4538606ec4355143fe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:30",
+      "sequence": 27882,
+      "chapter_label": "ACT 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "As the sailors were trying to flee out of the ship and had lowered the boat into the sea, pretending that they would lay out anchors from the bow,",
+      "ko": "사공들이 도망하고자 하여 이물에서 닻을 주려는체하고 거루를 바다에 내려 놓거늘",
+      "source_text_hash": "15e0f8ca362b80fac3664f21f4de290561324221c6049a97648eb6ebaae9971e",
+      "translation_text_hash": "799bc311842a7e5313f739be7d82f7d046f92cbbe5be19cd639defa3ba8dee03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사공들이 도망하고자 하여 이물에서 닻을 주려는체하고 거루를 바다에 내려 놓거늘"
+      ],
+      "raw_text_hashes": [
+        "799bc311842a7e5313f739be7d82f7d046f92cbbe5be19cd639defa3ba8dee03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:31",
+      "sequence": 27883,
+      "chapter_label": "ACT 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "Paul said to the centurion and to the soldiers, “Unless these stay in the ship, you can’t be saved.”",
+      "ko": "바울이 백부장과 군사들에게 이르되 이 사람들이 배에 있지 아니하면 너희가 구원을 얻지 못하리라 하니",
+      "source_text_hash": "855b6bf305173bda252acd0609c8eafd1c255a957215945032bc9064c3aa800d",
+      "translation_text_hash": "aeefd4359fe39f63631c48a09ce7ac5afc1ee654c5c27f1bfcb9ac060f1b58f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 백부장과 군사들에게 이르되 이 사람들이 배에 있지 아니하면 너희가 구원을 얻지 못하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "aeefd4359fe39f63631c48a09ce7ac5afc1ee654c5c27f1bfcb9ac060f1b58f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:32",
+      "sequence": 27884,
+      "chapter_label": "ACT 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "Then the soldiers cut away the ropes of the boat and let it fall off.",
+      "ko": "이에 군사들이 거룻줄을 끊어 떼어 버리니라",
+      "source_text_hash": "f7385773ae8877a85c14b203a5cb876fdc6c979cdf1eef81e5b3c635c2057516",
+      "translation_text_hash": "b99a11622e14b5ce69a3a945e9141f43061fd4b90fa1c486c3c1ab12f10b4bbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 군사들이 거룻줄을 끊어 떼어 버리니라"
+      ],
+      "raw_text_hashes": [
+        "b99a11622e14b5ce69a3a945e9141f43061fd4b90fa1c486c3c1ab12f10b4bbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:33",
+      "sequence": 27885,
+      "chapter_label": "ACT 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "While the day was coming on, Paul begged them all to take some food, saying, “Today is the fourteenth day that you wait and continue fasting, having taken nothing.",
+      "ko": "날이 새어가매 바울이 여러 사람을 음식 먹으라 권하여 가로되 너희가 기다리고 기다리며 먹지 못하고 주린지가 오늘까지 열 나흘인즉",
+      "source_text_hash": "4d8148b0b557bfe5a8faed42c0e46d6ea4b5b1b3df0c527cc85ea9a674b7ede7",
+      "translation_text_hash": "5ac7f478610737d36bf350ad7c8c003b9238db3d95361c9f8538c4420d7a8451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새어가매 바울이 여러 사람을 음식 먹으라 권하여 가로되 너희가 기다리고 기다리며 먹지 못하고 주린지가 오늘까지 열 나흘인즉"
+      ],
+      "raw_text_hashes": [
+        "5ac7f478610737d36bf350ad7c8c003b9238db3d95361c9f8538c4420d7a8451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:34",
+      "sequence": 27886,
+      "chapter_label": "ACT 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "Therefore I beg you to take some food, for this is for your safety; for not a hair will perish from any of your heads.”",
+      "ko": "음식 먹으라 권하노니 이것이 너희 구원을 위하는 것이요 너희 중 머리터럭 하나라도 잃을 자가 없느니라 하고",
+      "source_text_hash": "7a9828e0abe98731fee6cbea558d714f4978867c505d547bfd6b3c286944c2b0",
+      "translation_text_hash": "67a6faf93bd02b1e9a5ba16aab8dcfe7171a6edad84d50ce16c4bdfd4123c593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음식 먹으라 권하노니 이것이 너희 구원을 위하는 것이요 너희 중 머리터럭 하나라도 잃을 자가 없느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "67a6faf93bd02b1e9a5ba16aab8dcfe7171a6edad84d50ce16c4bdfd4123c593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:35",
+      "sequence": 27887,
+      "chapter_label": "ACT 27",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 35
+        }
+      ],
+      "en": "When he had said this and had taken bread, he gave thanks to God in the presence of all; then he broke it and began to eat.",
+      "ko": "떡을 가져다가 모든 사람 앞에서 하나님께 축사하고 떼어 먹기를 시작하매",
+      "source_text_hash": "0cb78c18504ee507b378ac4a578621e41cff0aa785c78ac36e50d555f7851847",
+      "translation_text_hash": "7b4fa84476647222d8ac704466f32738cfae2dd7054eca23471f89dfed136b0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡을 가져다가 모든 사람 앞에서 하나님께 축사하고 떼어 먹기를 시작하매"
+      ],
+      "raw_text_hashes": [
+        "7b4fa84476647222d8ac704466f32738cfae2dd7054eca23471f89dfed136b0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:36",
+      "sequence": 27888,
+      "chapter_label": "ACT 27",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 36
+        }
+      ],
+      "en": "Then they all cheered up, and they also took food.",
+      "ko": "저희도 다 안심하고 받아 먹으니",
+      "source_text_hash": "77cfd71e2fc7243605f8ce4a1eeadf5b52b3f5ada5cc75f86de8ac24933e2b75",
+      "translation_text_hash": "f027c7e144490a34b6846f786a583aeb14906ee9bd7b726d31aa289bfe1e986f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희도 다 안심하고 받아 먹으니"
+      ],
+      "raw_text_hashes": [
+        "f027c7e144490a34b6846f786a583aeb14906ee9bd7b726d31aa289bfe1e986f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:37",
+      "sequence": 27889,
+      "chapter_label": "ACT 27",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 37
+        }
+      ],
+      "en": "In all, we were two hundred seventy-six souls on the ship.",
+      "ko": "배에 있는 우리의 수는 전부 이백 칠십 륙인이러라",
+      "source_text_hash": "09bfda940a31d8d2e9eac2ba7c871cee727db3dc958d95e6b38c24ca6f34bf58",
+      "translation_text_hash": "ed2a1fa031b6920b9fd10289a9c7a6f9681e2dcf6cea93a2148f9c713e7ace2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에 있는 우리의 수는 전부 이백 칠십 륙인이러라"
+      ],
+      "raw_text_hashes": [
+        "ed2a1fa031b6920b9fd10289a9c7a6f9681e2dcf6cea93a2148f9c713e7ace2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:38",
+      "sequence": 27890,
+      "chapter_label": "ACT 27",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 38
+        }
+      ],
+      "en": "When they had eaten enough, they lightened the ship, throwing out the wheat into the sea.",
+      "ko": "배부르게 먹고 밀을 바다에 버려 배를 가볍게 하였더니",
+      "source_text_hash": "b1eed35aa31eeb375084e6caa67f6a23e47c3e5f848083762ecefe0d3f2ed361",
+      "translation_text_hash": "c39ce730c63c9c1fc9757c0a6526af5e246c30b971505ad570b21cf0c864169f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배부르게 먹고 밀을 바다에 버려 배를 가볍게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "c39ce730c63c9c1fc9757c0a6526af5e246c30b971505ad570b21cf0c864169f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:39",
+      "sequence": 27891,
+      "chapter_label": "ACT 27",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 39
+        }
+      ],
+      "en": "When it was day, they didn’t recognize the land, but they noticed a certain bay with a beach, and they decided to try to drive the ship onto it.",
+      "ko": "날이 새매 어느 땅인지 알지 못하나 경사진 해안으로 된 항만이 눈에 띄거늘 배를 거기에 들여다 댈 수 있는가 의논한 후",
+      "source_text_hash": "1bb0ea1d25dea2037b69a1504cae33bf2edc4fecb15e164b3f3713767c977ada",
+      "translation_text_hash": "55613e0811e0b2a0ed7b4503e7a62b9e5897de191ba9c1e44ad68a25214eeeaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새매 어느 땅인지 알지 못하나 경사진 해안으로 된 항만이 눈에 띄거늘 배를 거기에 들여다 댈 수 있는가 의논한 후"
+      ],
+      "raw_text_hashes": [
+        "55613e0811e0b2a0ed7b4503e7a62b9e5897de191ba9c1e44ad68a25214eeeaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:40",
+      "sequence": 27892,
+      "chapter_label": "ACT 27",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 40
+        }
+      ],
+      "en": "Casting off the anchors, they left them in the sea, at the same time untying the rudder ropes. Hoisting up the foresail to the wind, they made for the beach.",
+      "ko": "닻을 끊어 바다에 버리는 동시에 킷줄을 늦추고 돛을 달고 바람을 맞추어 해안을 향하여 들어가다가",
+      "source_text_hash": "f1834b332fe858b77cf0e9d50d90be6af10421b0f3a5273be43a4875c35c4827",
+      "translation_text_hash": "9ee6e8e6f522048af4edd38a2705d682024375c5d4e30062e84313e2bef8f046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "닻을 끊어 바다에 버리는 동시에 킷줄을 늦추고 돛을 달고 바람을 맞추어 해안을 향하여 들어가다가"
+      ],
+      "raw_text_hashes": [
+        "9ee6e8e6f522048af4edd38a2705d682024375c5d4e30062e84313e2bef8f046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:41",
+      "sequence": 27893,
+      "chapter_label": "ACT 27",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 41
+        }
+      ],
+      "en": "But coming to a place where two seas met, they ran the vessel aground. The bow struck and remained immovable, but the stern began to break up by the violence of the waves.",
+      "ko": "두 물이 합하여 흐르는 곳을 당하여 배를 걸매 이물은 부딪혀 움직일 수 없이 붙고 고물은 큰 물결에 깨어져가니",
+      "source_text_hash": "e9f8bd3743af1a28e65817f085af6967736574bf7e7e9b2c1f054c723157a81b",
+      "translation_text_hash": "3c3ec30170e4888b429b6e4cdec6616ca61ee69240370147596f3c7f1445eccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 물이 합하여 흐르는 곳을 당하여 배를 걸매 이물은 부딪혀 움직일 수 없이 붙고 고물은 큰 물결에 깨어져가니"
+      ],
+      "raw_text_hashes": [
+        "3c3ec30170e4888b429b6e4cdec6616ca61ee69240370147596f3c7f1445eccb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:42",
+      "sequence": 27894,
+      "chapter_label": "ACT 27",
+      "verse_label": "42",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 42
+        }
+      ],
+      "en": "The soldiers’ counsel was to kill the prisoners, so that none of them would swim out and escape.",
+      "ko": "군사들은 죄수가 헤엄쳐서 도망할까 하여 저희를 죽이는 것이 좋다 하였으나",
+      "source_text_hash": "2740d5e94b523546fa65c2be6b8bf6c6297c3c75effcfad44eadb699ddbd8c71",
+      "translation_text_hash": "7d494abf973d4624a25a79b693742c219ef5a8b7b47a9a086bcc8552011cd852",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군사들은 죄수가 헤엄쳐서 도망할까 하여 저희를 죽이는 것이 좋다 하였으나"
+      ],
+      "raw_text_hashes": [
+        "7d494abf973d4624a25a79b693742c219ef5a8b7b47a9a086bcc8552011cd852"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:43",
+      "sequence": 27895,
+      "chapter_label": "ACT 27",
+      "verse_label": "43",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 43
+        }
+      ],
+      "en": "But the centurion, desiring to save Paul, stopped them from their purpose, and commanded that those who could swim should throw themselves overboard first to go toward the land;",
+      "ko": "백부장이 바울을 구원하려 하여 저희의 뜻을 막고 헤엄칠줄 아는 사람들을 명하여 물에 뛰어내려 먼저 육지에 나가게 하고",
+      "source_text_hash": "474ed21da336e64888ca2c559207577f7f46ae78cc578c290acf1dbcd58e5f2e",
+      "translation_text_hash": "1245292337bae82ad8ac18f7158a1115d5ded1ac4c005529199e6658d893f2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장이 바울을 구원하려 하여 저희의 뜻을 막고 헤엄칠줄 아는 사람들을 명하여 물에 뛰어내려 먼저 육지에 나가게 하고"
+      ],
+      "raw_text_hashes": [
+        "1245292337bae82ad8ac18f7158a1115d5ded1ac4c005529199e6658d893f2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:27:44",
+      "sequence": 27896,
+      "chapter_label": "ACT 27",
+      "verse_label": "44",
+      "locator": {
+        "book": "ACT",
+        "chapter": 27,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 27,
+          "verse": 44
+        }
+      ],
+      "en": "and the rest should follow, some on planks and some on other things from the ship. So they all escaped safely to the land.",
+      "ko": "그 남은 사람들은 널조각 혹은 배 물건에 의지하여 나가게 하니 마침내 사람들이 다 상륙하여 구원을 얻으니라",
+      "source_text_hash": "a4cc46515e9ba5b424977549d17bcda0c65b00304fc8fcc6e7ff2ab03a4b3037",
+      "translation_text_hash": "42bec3f71fbbc11de8dc490df82c4e91c02b362a32d8717913c265fcdafa9d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 사람들은 널조각 혹은 배 물건에 의지하여 나가게 하니 마침내 사람들이 다 상륙하여 구원을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "42bec3f71fbbc11de8dc490df82c4e91c02b362a32d8717913c265fcdafa9d49"
+      ]
+    }
+  ]
+}

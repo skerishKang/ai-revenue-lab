@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TH:chapter:001",
+  "unit_ordinal": 1117,
+  "unit_label": "2TH 1",
+  "book_code": "2TH",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TH:1:1",
+      "sequence": 29647,
+      "chapter_label": "2TH 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, Silvanus, and Timothy, to the assembly of the Thessalonians in God our Father and the Lord Jesus Christ:",
+      "ko": "바울과 실루아노와 디모데는 하나님 우리 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니",
+      "source_text_hash": "dfffd39c11a5d4624a49f768c95aae3007b805350d422f20bbbfc93b4e7b5aa1",
+      "translation_text_hash": "000fc5c99c610ea200ed51cf54cd7f347b6dbb14215d163857a7d515247a5079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 실루아노와 디모데는 하나님 우리 아버지와 주 예수 그리스도 안에 있는 데살로니가인의 교회에 편지하노니"
+      ],
+      "raw_text_hashes": [
+        "000fc5c99c610ea200ed51cf54cd7f347b6dbb14215d163857a7d515247a5079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:2",
+      "sequence": 29648,
+      "chapter_label": "2TH 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "하나님 아버지와 주 예수 그리스도로부터 은혜와 평강이 너희에게 있을찌어다",
+      "source_text_hash": "4b0c50bd93c1ece92cdc3eb0ce96aa9db845690c46dccfc6611823b4dce05733",
+      "translation_text_hash": "9fac167297738d41d363c92eb5c29eca7bf3b046294364709e73fdba8bb54fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 아버지와 주 예수 그리스도로부터 은혜와 평강이 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "9fac167297738d41d363c92eb5c29eca7bf3b046294364709e73fdba8bb54fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:3",
+      "sequence": 29649,
+      "chapter_label": "2TH 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "We are bound to always give thanks to God for you, brothers, even as it is appropriate, because your faith grows exceedingly, and the love of each and every one of you toward one another abounds,",
+      "ko": "형제들아 우리가 너희를 위하여 항상 하나님께 감사할찌니 이것이 당연함은 너희 믿음이 더욱 자라고 너희가 다 각기 서로 사랑함이 풍성함이며",
+      "source_text_hash": "60dc2c02cc4247be3de83792c87293d94f5fd1603676212f540287fa4d5a825c",
+      "translation_text_hash": "4e53f16f214c9f641c0ad024a6a443f56d49567eb36c25bcec105c9b3c67e61b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 너희를 위하여 항상 하나님께 감사할찌니 이것이 당연함은 너희 믿음이 더욱 자라고 너희가 다 각기 서로 사랑함이 풍성함이며"
+      ],
+      "raw_text_hashes": [
+        "4e53f16f214c9f641c0ad024a6a443f56d49567eb36c25bcec105c9b3c67e61b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:4",
+      "sequence": 29650,
+      "chapter_label": "2TH 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "so that we ourselves boast about you in the assemblies of God for your perseverance and faith in all your persecutions and in the afflictions which you endure.",
+      "ko": "그리고 너희의 참는 모든 핍박과 환난 중에서 너희 인내와 믿음을 인하여 하나님의 여러 교회에서 우리가 친히 자랑함이라",
+      "source_text_hash": "5bc37281ef7c00fabf9023219082002e4742f47704a2fd71061757706f9c30f3",
+      "translation_text_hash": "262516ab14f528e6a554ae9285f2185d2781a26a485357dd1c678dd885e14692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리고 너희의 참는 모든 핍박과 환난 중에서 너희 인내와 믿음을 인하여 하나님의 여러 교회에서 우리가 친히 자랑함이라"
+      ],
+      "raw_text_hashes": [
+        "262516ab14f528e6a554ae9285f2185d2781a26a485357dd1c678dd885e14692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:5",
+      "sequence": 29651,
+      "chapter_label": "2TH 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "This is an obvious sign of the righteous judgment of God, to the end that you may be counted worthy of God’s Kingdom, for which you also suffer.",
+      "ko": "이는 하나님의 공의로운 심판의 표요 너희로 하여금 하나님 나라에 합당한 자로 여기심을 얻게 하려 함이니 그 나라를 위하여 너희가 또한 고난을 받느니라",
+      "source_text_hash": "7549cd720728d86cfc6e41469274349c36d257bc960823ed8d2ca3ade4575b5c",
+      "translation_text_hash": "e4c5114b0a92aadfd18f13ab928e94db009cb07e0660a5be3fc35e19e7ec9c3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님의 공의로운 심판의 표요 너희로 하여금 하나님 나라에 합당한 자로 여기심을 얻게 하려 함이니 그 나라를 위하여 너희가 또한 고난을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "e4c5114b0a92aadfd18f13ab928e94db009cb07e0660a5be3fc35e19e7ec9c3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:6",
+      "sequence": 29652,
+      "chapter_label": "2TH 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "For it is a righteous thing with God to repay affliction to those who afflict you,",
+      "ko": "너희로 환난 받게 하는 자들에게는 환난으로 갚으시고",
+      "source_text_hash": "d331f4ea30f2ebac4ba12dc03b8c47bd454a892e8ad9734cd7ffb8bffb186647",
+      "translation_text_hash": "bdeee688fee97223ce08050e57f85f3cbe6c8acb96b2d6fa7db5a002731a08f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 환난 받게 하는 자들에게는 환난으로 갚으시고"
+      ],
+      "raw_text_hashes": [
+        "bdeee688fee97223ce08050e57f85f3cbe6c8acb96b2d6fa7db5a002731a08f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:7",
+      "sequence": 29653,
+      "chapter_label": "2TH 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "and to give relief to you who are afflicted with us when the Lord Jesus is revealed from heaven with his mighty angels in flaming fire,",
+      "ko": "환난 받는 너희에게는 우리와 함께 안식으로 갚으시는 것이 하나님의 공의시니 주 예수께서 저의 능력의 천사들과 함께 하늘로부터 불꽃 중에 나타나실 때에",
+      "source_text_hash": "bc17ba307cc0e5de134f01fbeff4a06c8cdf8a2d162e8e1c5a38b73d583fc9f7",
+      "translation_text_hash": "ef1690d3597090fabea5d87e71cc6721866b0a25fd96e915c3286de3a4364822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난 받는 너희에게는 우리와 함께 안식으로 갚으시는 것이 하나님의 공의시니 주 예수께서 저의 능력의 천사들과 함께 하늘로부터 불꽃 중에 나타나실 때에"
+      ],
+      "raw_text_hashes": [
+        "ef1690d3597090fabea5d87e71cc6721866b0a25fd96e915c3286de3a4364822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:8",
+      "sequence": 29654,
+      "chapter_label": "2TH 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "punishing those who don’t know God, and to those who don’t obey the Good News of our Lord Jesus,",
+      "ko": "하나님을 모르는 자들과 우리 주 예수의 복음을 복종치 않는 자들에게 형벌을 주시리니",
+      "source_text_hash": "d31bfac25cb91649d05f55f4bb7ad3a7f3954b98e3c309a9428376e26321a34e",
+      "translation_text_hash": "3bc8c286f64adb187876313e81915594dc8fa821b3549d02379380f940cbba12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 모르는 자들과 우리 주 예수의 복음을 복종치 않는 자들에게 형벌을 주시리니"
+      ],
+      "raw_text_hashes": [
+        "3bc8c286f64adb187876313e81915594dc8fa821b3549d02379380f940cbba12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:9",
+      "sequence": 29655,
+      "chapter_label": "2TH 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "who will pay the penalty: eternal destruction from the face of the Lord and from the glory of his might,",
+      "ko": "이런 자들이 주의 얼굴과 그의 힘의 영광을 떠나 영원한 멸망의 형벌을 받으리로다",
+      "source_text_hash": "2b365ea52eaaefefd0efd38b3f80444d5923b799adea0806558010306dbce568",
+      "translation_text_hash": "a9fd773b81d5f3b8d0bc0bd096876e09ea80db1e9f0d8a901a4f8e4b5bf06daa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 자들이 주의 얼굴과 그의 힘의 영광을 떠나 영원한 멸망의 형벌을 받으리로다"
+      ],
+      "raw_text_hashes": [
+        "a9fd773b81d5f3b8d0bc0bd096876e09ea80db1e9f0d8a901a4f8e4b5bf06daa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:10",
+      "sequence": 29656,
+      "chapter_label": "2TH 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "when he comes in that day to be glorified in his saints and to be admired among all those who have believed, because our testimony to you was believed.",
+      "ko": "그 날에 강림하사 그의 성도들에게서 영광을 얻으시고 모든 믿는 자에게서 기이히 여김을 얻으시리라 (우리의 증거가 너희에게 믿어졌음이라)",
+      "source_text_hash": "120c709ecf4deb3e1fdf1080d6e9a83041422ce6559494f6d3c98e7b92639bce",
+      "translation_text_hash": "ac07999cd3726939f677af01b0c3adbe606cc1521caa41fcd7e2e449f1f8064f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 강림하사 그의 성도들에게서 영광을 얻으시고 모든 믿는 자에게서 기이히 여김을 얻으시리라 (우리의 증거가 너희에게 믿어졌음이라)"
+      ],
+      "raw_text_hashes": [
+        "ac07999cd3726939f677af01b0c3adbe606cc1521caa41fcd7e2e449f1f8064f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:11",
+      "sequence": 29657,
+      "chapter_label": "2TH 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "To this end we also pray always for you that our God may count you worthy of your calling, and fulfill every desire of goodness and work of faith with power,",
+      "ko": "이러므로 우리도 항상 너희를 위하여 기도함은 우리 하나님이 너희를 그 부르심에 합당한 자로 여기시고 모든 선을 기뻐함과 믿음의 역사를 능력으로 이루게 하시고",
+      "source_text_hash": "97c3d75b3f1d3ce4df9723023dc545fed3244b7c4a9911dee167de30780c1fd0",
+      "translation_text_hash": "8da96cbfa3563c8294e376d31ff1116f172b76660c132cdf7c4bc87ab9618b6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리도 항상 너희를 위하여 기도함은 우리 하나님이 너희를 그 부르심에 합당한 자로 여기시고 모든 선을 기뻐함과 믿음의 역사를 능력으로 이루게 하시고"
+      ],
+      "raw_text_hashes": [
+        "8da96cbfa3563c8294e376d31ff1116f172b76660c132cdf7c4bc87ab9618b6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:1:12",
+      "sequence": 29658,
+      "chapter_label": "2TH 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TH",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "that the name of our Lord Jesus may be glorified in you, and you in him, according to the grace of our God and the Lord Jesus Christ.",
+      "ko": "우리 하나님과 주 예수 그리스도의 은혜대로 우리 주 예수의 이름이 너희 가운데서 영광을 얻으시고 너희도 그 안에서 영광을 얻게 하려 함이니라",
+      "source_text_hash": "38ec5efa33e1ddd73be1e6421d635a371233d6c05e3959cf92f7cc4ca154d8ee",
+      "translation_text_hash": "3170a07a19fd555937f22923fd16d74f4ba75ed1c753017ee6657391b8e80f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님과 주 예수 그리스도의 은혜대로 우리 주 예수의 이름이 너희 가운데서 영광을 얻으시고 너희도 그 안에서 영광을 얻게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "3170a07a19fd555937f22923fd16d74f4ba75ed1c753017ee6657391b8e80f49"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:015",
+  "unit_ordinal": 226,
+  "unit_label": "JDG 15",
+  "book_code": "JDG",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:15:1",
+      "sequence": 6931,
+      "chapter_label": "JDG 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "But after a while, in the time of wheat harvest, Samson visited his wife with a young goat. He said, “I will go in to my wife’s room.” But her father wouldn’t allow him to go in.",
+      "ko": "얼마 후 밀 거둘 때에 삼손이 염소 새끼를 가지고 그 아내에게로 찾아 가서 가로되 내가 침실에 들어가 아내를 보고자 하노라 장인이 들어 오지 못하게 하고",
+      "source_text_hash": "769da8b0c4e2d7889a0f55a561ee77c8ba0ca3b94a6e1a878baa04809a70082d",
+      "translation_text_hash": "b73135428912ab26939938a3bca8c384ebb3a13052d8451e14221b7a27d449fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼마 후 밀 거둘 때에 삼손이 염소 새끼를 가지고 그 아내에게로 찾아 가서 가로되 내가 침실에 들어가 아내를 보고자 하노라 장인이 들어 오지 못하게 하고"
+      ],
+      "raw_text_hashes": [
+        "b73135428912ab26939938a3bca8c384ebb3a13052d8451e14221b7a27d449fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:2",
+      "sequence": 6932,
+      "chapter_label": "JDG 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Her father said, “I most certainly thought that you utterly hated her; therefore I gave her to your companion. Isn’t her younger sister more beautiful than she? Please, take her instead.”",
+      "ko": "가로되 네가 그를 심히 미워하는 줄로 내가 생각한고로 그를 네 동무에게 주었노라 그 동생이 그보다 더욱 아름답지 아니하냐 청하노니 너는 그의 대신에 이를 취하라",
+      "source_text_hash": "f80d896569ee278a8a79f88b884bf9ee68e29d7e20c742e8b1de2dcf0bf79a15",
+      "translation_text_hash": "f24e9f0a48315347d3e975cbfdd4b886639ed066c8024bff6f2b32b054627080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 그를 심히 미워하는 줄로 내가 생각한고로 그를 네 동무에게 주었노라 그 동생이 그보다 더욱 아름답지 아니하냐 청하노니 너는 그의 대신에 이를 취하라"
+      ],
+      "raw_text_hashes": [
+        "f24e9f0a48315347d3e975cbfdd4b886639ed066c8024bff6f2b32b054627080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:3",
+      "sequence": 6933,
+      "chapter_label": "JDG 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Samson said to them, “This time I will be blameless in the case of the Philistines when I harm them.”",
+      "ko": "삼손이 그들에게 이르되 이번은 내가 블레셋 사람을 해할찌라도 그들에게 대하여 내게 허물이 없을 것이니라 하고",
+      "source_text_hash": "d490ddda57d5d2c974e3d902cc84e660f468c4ca2716e307bc729aadd6ea4b64",
+      "translation_text_hash": "4faa68ce171473bec3b93a803a60b7ed5ac9fa25450d70b7f550fcba59009945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그들에게 이르되 이번은 내가 블레셋 사람을 해할찌라도 그들에게 대하여 내게 허물이 없을 것이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "4faa68ce171473bec3b93a803a60b7ed5ac9fa25450d70b7f550fcba59009945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:4",
+      "sequence": 6934,
+      "chapter_label": "JDG 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Samson went and caught three hundred foxes, and took torches, and turned tail to tail, and put a torch in the middle between every two tails.",
+      "ko": "삼손이 가서 여우 삼백을 붙들어서 그 꼬리와 꼬리를 매고 홰를 취하고 그 두 꼬리 사이에 한 홰를 달고",
+      "source_text_hash": "4d5a9fc88a1191a8afb0c62b19939c7b398c878793094d397fd7ead0d6311aab",
+      "translation_text_hash": "0a293dd3002d1cac1d5a2336d567d57f2d72adc42431df2949f0d63433075e62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 가서 여우 삼백을 붙들어서 그 꼬리와 꼬리를 매고 홰를 취하고 그 두 꼬리 사이에 한 홰를 달고"
+      ],
+      "raw_text_hashes": [
+        "0a293dd3002d1cac1d5a2336d567d57f2d72adc42431df2949f0d63433075e62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:5",
+      "sequence": 6935,
+      "chapter_label": "JDG 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "When he had set the torches on fire, he let them go into the standing grain of the Philistines, and burned up both the shocks and the standing grain, and also the olive groves.",
+      "ko": "홰에 불을 켜고 그것을 블레셋 사람의 곡식 밭으로 몰아 들여서 곡식단과 아직 베지 아니한 곡식과 감람원을 사른지라",
+      "source_text_hash": "b89ad84cc05170c64ab941a1b6265c2061426a3817550d2030ac63cfe53ee387",
+      "translation_text_hash": "e52ea89a65f4f3386474102a2f58eecfd646a48b5845a25d5f41577e3e25c7c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홰에 불을 켜고 그것을 블레셋 사람의 곡식 밭으로 몰아 들여서 곡식단과 아직 베지 아니한 곡식과 감람원을 사른지라"
+      ],
+      "raw_text_hashes": [
+        "e52ea89a65f4f3386474102a2f58eecfd646a48b5845a25d5f41577e3e25c7c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:6",
+      "sequence": 6936,
+      "chapter_label": "JDG 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Then the Philistines said, “Who has done this?” They said, “Samson, the son-in-law of the Timnite, because he has taken his wife and given her to his companion.” The Philistines came up, and burned her and her father with fire.",
+      "ko": "블레셋 사람이 가로되 누가 이 일을 행하였느냐 혹이 대답하되 딤나 사람의 사위 삼손이니 장인이 삼손의 아내를 취하여 그 동무 되었던 자에게 준 연고니라 블레셋 사람이 올라가서 그 여인과 그의 아비를 불사르니라",
+      "source_text_hash": "b7252f6a49bd05a823e9b90f9613eab66aaaf11f2fef40ed591f15d55cdbbf80",
+      "translation_text_hash": "290e5175b0dd8e2b250060c883ae0c1eff2ad90b06dd5eea390d2696b77f75a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 가로되 누가 이 일을 행하였느냐 혹이 대답하되 딤나 사람의 사위 삼손이니 장인이 삼손의 아내를 취하여 그 동무 되었던 자에게 준 연고니라 블레셋 사람이 올라가서 그 여인과 그의 아비를 불사르니라"
+      ],
+      "raw_text_hashes": [
+        "290e5175b0dd8e2b250060c883ae0c1eff2ad90b06dd5eea390d2696b77f75a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:7",
+      "sequence": 6937,
+      "chapter_label": "JDG 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "Samson said to them, “If you behave like this, surely I will take revenge on you, and after that I will cease.”",
+      "ko": "삼손이 그들에게 이르되 너희가 이같이 행하였은즉 내가 너희에게 원수를 갚은 후에야 말리라 하고",
+      "source_text_hash": "0fb1c2f9e8d83976377d41f9f7074edec5fdbc85e4191875f86362bf0b8e24ee",
+      "translation_text_hash": "00e21d09431a2002a25b577207599fb5ca063ccbf9cb3456294322ccd0aaf717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그들에게 이르되 너희가 이같이 행하였은즉 내가 너희에게 원수를 갚은 후에야 말리라 하고"
+      ],
+      "raw_text_hashes": [
+        "00e21d09431a2002a25b577207599fb5ca063ccbf9cb3456294322ccd0aaf717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:8",
+      "sequence": 6938,
+      "chapter_label": "JDG 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "He struck them hip and thigh with a great slaughter; and he went down and lived in the cave in Etam’s rock.",
+      "ko": "블레셋 사람을 크게 도륙하고 내려가서 에담 바위 틈에 거하니라",
+      "source_text_hash": "97dca7b92561b0287b73fafcef1f1f99716b2e901754277998908b4d21246f17",
+      "translation_text_hash": "66cc92de47831c230c260db2554cc739b0b7c84f78193c60c11244da0edb0093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람을 크게 도륙하고 내려가서 에담 바위 틈에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "66cc92de47831c230c260db2554cc739b0b7c84f78193c60c11244da0edb0093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:9",
+      "sequence": 6939,
+      "chapter_label": "JDG 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "Then the Philistines went up, encamped in Judah, and spread themselves in Lehi.",
+      "ko": "이에 블레셋 사람이 올라와서 유다에 진을 치고 레히에 편만한지라",
+      "source_text_hash": "29bfe91fd143a327326e6059398127b3312e3b1b409a1eefd0f75cefdd9a3836",
+      "translation_text_hash": "8f2d0d1d01994813f66343ed23d91d46510f2bc23d5c15235a874229c24cd14f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 블레셋 사람이 올라와서 유다에 진을 치고 레히에 편만한지라"
+      ],
+      "raw_text_hashes": [
+        "8f2d0d1d01994813f66343ed23d91d46510f2bc23d5c15235a874229c24cd14f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:10",
+      "sequence": 6940,
+      "chapter_label": "JDG 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "The men of Judah said, “Why have you come up against us?” They said, “We have come up to bind Samson, to do to him as he has done to us.”",
+      "ko": "유다 사람들이 가로되 너희가 어찌하여 올라와서 우리를 치느냐 그들이 대답하되 우리가 올라오기는 삼손을 결박하여 그가 우리에게 행한대로 그에게 행하려 함이로라",
+      "source_text_hash": "05090c55bde79f1c6c67ac6306aee09c0161b319fa23435a94e7834cfb058afc",
+      "translation_text_hash": "8a1ac905b51ba8cebab67a79c09b47db294727ff924e7676f5a400a065bf0a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람들이 가로되 너희가 어찌하여 올라와서 우리를 치느냐 그들이 대답하되 우리가 올라오기는 삼손을 결박하여 그가 우리에게 행한대로 그에게 행하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "8a1ac905b51ba8cebab67a79c09b47db294727ff924e7676f5a400a065bf0a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:11",
+      "sequence": 6941,
+      "chapter_label": "JDG 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Then three thousand men of Judah went down to the cave in Etam’s rock, and said to Samson, “Don’t you know that the Philistines are rulers over us? What then is this that you have done to us?” He said to them, “As they did to me, so I have done to them.”",
+      "ko": "유다 사람 삼천명이 에담 바위 틈에 내려가서 삼손에게 이르되 너는 블레셋 사람이 우리를 관할하는 줄을 알지 못하느냐 네가 어찌하여 우리에게 이같이 행하였느냐 삼손이 그들에게 이르되 그들이 내게 행한대로 나도 그들에게 행하였노라",
+      "source_text_hash": "6173d58bd6caaa350175930108817bab9eab1684bac33324ccc689083b4a93fb",
+      "translation_text_hash": "24be17983096c0f21a8006b5b4c3b0497db6fb497831d9e5c5896f07471e97b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람 삼천명이 에담 바위 틈에 내려가서 삼손에게 이르되 너는 블레셋 사람이 우리를 관할하는 줄을 알지 못하느냐 네가 어찌하여 우리에게 이같이 행하였느냐 삼손이 그들에게 이르되 그들이 내게 행한대로 나도 그들에게 행하였노라"
+      ],
+      "raw_text_hashes": [
+        "24be17983096c0f21a8006b5b4c3b0497db6fb497831d9e5c5896f07471e97b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:12",
+      "sequence": 6942,
+      "chapter_label": "JDG 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "They said to him, “We have come down to bind you, that we may deliver you into the hand of the Philistines.” Samson said to them, “Swear to me that you will not attack me yourselves.”",
+      "ko": "그들이 삼손에게 이르되 우리가 너를 결박하여 블레셋 사람의 손에 붙이려고 이제 내려왔노라 삼손이 그들에게 이르되 너희는 친히 나를 치지 않겠다고 내게 맹세하라",
+      "source_text_hash": "9d10a3880ed84c0a2e2c9dedab17a6cc0252d3c7773b54e3f8cfe621299e11b1",
+      "translation_text_hash": "f1ab903e58e5acf79b12cf81f5f2870a4bbf94cc0ec06f26f1bc063adabe26c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 삼손에게 이르되 우리가 너를 결박하여 블레셋 사람의 손에 붙이려고 이제 내려왔노라 삼손이 그들에게 이르되 너희는 친히 나를 치지 않겠다고 내게 맹세하라"
+      ],
+      "raw_text_hashes": [
+        "f1ab903e58e5acf79b12cf81f5f2870a4bbf94cc0ec06f26f1bc063adabe26c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:13",
+      "sequence": 6943,
+      "chapter_label": "JDG 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "They spoke to him, saying, “No, but we will bind you securely and deliver you into their hands; but surely we will not kill you.” They bound him with two new ropes, and brought him up from the rock.",
+      "ko": "그들이 삼손에게 일러 가로되 아니라 우리가 다만 너를 단단히 결박하여 그들의 손에 붙일 뿐이요 우리가 결단코 너를 죽이지 아니하리라 하고 새 줄 둘로 결박하고 바위 틈에서 그를 끌어내니라",
+      "source_text_hash": "b746d1c368ecf8d4a6f551f3d9100c27f9d068541edf76a1dc0e672d831dc99d",
+      "translation_text_hash": "fb73701506b80703584f848a7800b2994bcc71c37abbbfe40e2bcbe5e4ff557c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 삼손에게 일러 가로되 아니라 우리가 다만 너를 단단히 결박하여 그들의 손에 붙일 뿐이요 우리가 결단코 너를 죽이지 아니하리라 하고 새 줄 둘로 결박하고 바위 틈에서 그를 끌어내니라"
+      ],
+      "raw_text_hashes": [
+        "fb73701506b80703584f848a7800b2994bcc71c37abbbfe40e2bcbe5e4ff557c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:14",
+      "sequence": 6944,
+      "chapter_label": "JDG 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "When he came to Lehi, the Philistines shouted as they met him. Then the LORD’s Spirit came mightily on him, and the ropes that were on his arms became as flax that was burned with fire; and his bands dropped from off his hands.",
+      "ko": "삼손이 레히에 이르매 블레셋 사람이 그에게로 마주 나가며 소리 지르는 동시에 여호와의 신의 권능이 삼손에게 임하매 그 팔 위의 줄이 불탄 삼과 같아서 그 결박되었던 손에서 떨어진지라",
+      "source_text_hash": "255508e7deadf815404ac94da132e6c41796fc6c9b7d717fcaadcf7f4b169981",
+      "translation_text_hash": "6923e052de11fb3ee1d7c9e7e28adad6a633f6ed60fa5a0a9bbf579a29e417b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 레히에 이르매 블레셋 사람이 그에게로 마주 나가며 소리 지르는 동시에 여호와의 신의 권능이 삼손에게 임하매 그 팔 위의 줄이 불탄 삼과 같아서 그 결박되었던 손에서 떨어진지라"
+      ],
+      "raw_text_hashes": [
+        "6923e052de11fb3ee1d7c9e7e28adad6a633f6ed60fa5a0a9bbf579a29e417b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:15",
+      "sequence": 6945,
+      "chapter_label": "JDG 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "He found a fresh jawbone of a donkey, put out his hand, took it, and struck a thousand men with it.",
+      "ko": "삼손이 나귀의 새 턱뼈를 보고 손을 내밀어 취하고 그것으로 일천명을 죽이고",
+      "source_text_hash": "80fb26e758866427f2f3d9e7aef17e534309ccd84d7f63c65928a63c258f31a4",
+      "translation_text_hash": "3beeb94820e716cdbe7cde4716ddec838487c392a11a58d7293c92d859a0e345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 나귀의 새 턱뼈를 보고 손을 내밀어 취하고 그것으로 일천명을 죽이고"
+      ],
+      "raw_text_hashes": [
+        "3beeb94820e716cdbe7cde4716ddec838487c392a11a58d7293c92d859a0e345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:16",
+      "sequence": 6946,
+      "chapter_label": "JDG 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Samson said, “With the jawbone of a donkey, heaps on heaps; with the jawbone of a donkey I have struck a thousand men.”",
+      "ko": "가로되 나귀의 턱뼈로 한더미, 두더미를 쌓았음이여 나귀의 턱뼈로 내가 일천명을 죽였도다",
+      "source_text_hash": "6e5351c1becfba9b9f41fb32b977a3566122f0bba2f59e634e578f7748ab2498",
+      "translation_text_hash": "54c95b31a0967755b935378404f04ec682fb0a68a6753e6a71ac5b0ef594af20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 나귀의 턱뼈로 한더미, 두더미를 쌓았음이여 나귀의 턱뼈로 내가 일천명을 죽였도다"
+      ],
+      "raw_text_hashes": [
+        "54c95b31a0967755b935378404f04ec682fb0a68a6753e6a71ac5b0ef594af20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:17",
+      "sequence": 6947,
+      "chapter_label": "JDG 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "When he had finished speaking, he threw the jawbone out of his hand; and that place was called Ramath Lehi.",
+      "ko": "말을 마치고 턱뼈를 그 손에서 내어던지고 그곳을 라맛 레히라 이름하였더라",
+      "source_text_hash": "77c4f8f61f4087369ec276aa8afdef04bc924f5b5536ae75a85032f1749a2023",
+      "translation_text_hash": "b801372e38788d3f71c43308441b3ca8fa44b89c889dfbb33a85c11c8b7311ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말을 마치고 턱뼈를 그 손에서 내어던지고 그곳을 라맛 레히라 이름하였더라"
+      ],
+      "raw_text_hashes": [
+        "b801372e38788d3f71c43308441b3ca8fa44b89c889dfbb33a85c11c8b7311ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:18",
+      "sequence": 6948,
+      "chapter_label": "JDG 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "He was very thirsty, and called on the LORD and said, “You have given this great deliverance by the hand of your servant; and now shall I die of thirst, and fall into the hands of the uncircumcised?”",
+      "ko": "삼손이 심히 목마르므로 여호와께 부르짖어 가로되 주께서 종의 손으로 이 큰 구원을 베푸셨사오나 내가 이제 목말라 죽어서 할례 받지못한 자의 손에 빠지겠나이다",
+      "source_text_hash": "df601ef4bc2bd8c4664d72e3f8b4d2159ee3a1c9b6d4ed8cf76c1bbd016450e5",
+      "translation_text_hash": "0973a53fe83dec7246a460e790b6dd8d4732d8382a02887dba0635927a4f7c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 심히 목마르므로 여호와께 부르짖어 가로되 주께서 종의 손으로 이 큰 구원을 베푸셨사오나 내가 이제 목말라 죽어서 할례 받지못한 자의 손에 빠지겠나이다"
+      ],
+      "raw_text_hashes": [
+        "0973a53fe83dec7246a460e790b6dd8d4732d8382a02887dba0635927a4f7c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:19",
+      "sequence": 6949,
+      "chapter_label": "JDG 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "But God split the hollow place that is in Lehi, and water came out of it. When he had drunk, his spirit came again, and he revived. Therefore its name was called En Hakkore, which is in Lehi, to this day.",
+      "ko": "하나님이 레히에 한 우묵한 곳을 터치시니 물이 거기서 솟아나오는지라 삼손이 그것을 마시고 정신이 회복되어 소생하니 그러므로 그 샘 이름은 엔학고레라 이 샘이 레히에 오늘까지 있더라",
+      "source_text_hash": "ae1fc7b2ae41a9e2d85b190a03e80ec81e2a74059c9fb1d8e0438f54ce2c2171",
+      "translation_text_hash": "f17bcf3f351e3abe301cb91b6b10ff4d07587d11ac9cf32dc7b4c26d9fe7b87b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 레히에 한 우묵한 곳을 터치시니 물이 거기서 솟아나오는지라 삼손이 그것을 마시고 정신이 회복되어 소생하니 그러므로 그 샘 이름은 엔학고레라 이 샘이 레히에 오늘까지 있더라"
+      ],
+      "raw_text_hashes": [
+        "f17bcf3f351e3abe301cb91b6b10ff4d07587d11ac9cf32dc7b4c26d9fe7b87b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:15:20",
+      "sequence": 6950,
+      "chapter_label": "JDG 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "He judged Israel twenty years in the days of the Philistines.",
+      "ko": "블레셋 사람의 때에 삼손이 이스라엘 사사로 이십년을 지내었더라",
+      "source_text_hash": "dc543866d9e7aba874de2415ee2268b04e9f89f28f910a5cad0d42837c90a321",
+      "translation_text_hash": "e6c693d66d70c12252cd719cc7afc276da013df8d9e8ab086955c189a802edce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 때에 삼손이 이스라엘 사사로 이십년을 지내었더라"
+      ],
+      "raw_text_hashes": [
+        "e6c693d66d70c12252cd719cc7afc276da013df8d9e8ab086955c189a802edce"
+      ]
+    }
+  ]
+}

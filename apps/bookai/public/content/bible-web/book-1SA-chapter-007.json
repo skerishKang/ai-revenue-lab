@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:007",
+  "unit_ordinal": 243,
+  "unit_label": "1SA 7",
+  "book_code": "1SA",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:7:1",
+      "sequence": 7354,
+      "chapter_label": "1SA 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "The men of Kiriath Jearim came and took the LORD’s ark, and brought it into Abinadab’s house on the hill, and consecrated Eleazar his son to keep the LORD’s ark.",
+      "ko": "기럇여아림 사람들이 와서 여호와의 궤를 옮겨 산에 사는 아비나답의 집에 들여놓고 그 아들 엘리아살을 거룩히 구별하여 여호와의 궤를 지키게 하였더니",
+      "source_text_hash": "47555ba291a2448439f551569ec3d66966bbfda5cba8ad5823f58be24dd8f16b",
+      "translation_text_hash": "2ac8c92a6399c2c7842a36af4f6da6efbb720b0cba303eaf323fc4522094050a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기럇여아림 사람들이 와서 여호와의 궤를 옮겨 산에 사는 아비나답의 집에 들여놓고 그 아들 엘리아살을 거룩히 구별하여 여호와의 궤를 지키게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "2ac8c92a6399c2c7842a36af4f6da6efbb720b0cba303eaf323fc4522094050a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:2",
+      "sequence": 7355,
+      "chapter_label": "1SA 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "From the day that the ark stayed in Kiriath Jearim, the time was long—for it was twenty years; and all the house of Israel lamented after the LORD.",
+      "ko": "궤가 기럇여아림에 들어간 날부터 이십년 동안을 오래 있은지라 이스라엘 온 족속이 여호와를 사모하니라",
+      "source_text_hash": "ccae928586084a87a6c0707a9c77bf3c1429ee392968747d9a9eb62d5b12e6f9",
+      "translation_text_hash": "3c9444900799e7fecacbda445bcace70d542468c72fbbfce6d94407d891c5d0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤가 기럇여아림에 들어간 날부터 이십년 동안을 오래 있은지라 이스라엘 온 족속이 여호와를 사모하니라"
+      ],
+      "raw_text_hashes": [
+        "3c9444900799e7fecacbda445bcace70d542468c72fbbfce6d94407d891c5d0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:3",
+      "sequence": 7356,
+      "chapter_label": "1SA 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Samuel spoke to all the house of Israel, saying, “If you are returning to the LORD with all your heart, then put away the foreign gods and the Ashtaroth from among you, and direct your hearts to the LORD, and serve him only; and he will deliver you out of the hand of the Philistines.”",
+      "ko": "사무엘이 이스라엘 온 족속에게 일러 가로되 너희가 전심으로 여호와께 돌아오려거든 이방 신들과 아스다롯을 너희 중에서 제하고 너희 마음을 여호와께로 향하여 그만 섬기라 너희를 블레셋 사람의 손에서 건져내시리라",
+      "source_text_hash": "7dc06d28e8b8a223bdebfaea4308e2fe2a88eb1942a2914a9b83dcde98b84a11",
+      "translation_text_hash": "c05b8c5082b14b71e21d181ce2440d0210d4c9819669da72de3da17be7b12acb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 이스라엘 온 족속에게 일러 가로되 너희가 전심으로 여호와께 돌아오려거든 이방 신들과 아스다롯을 너희 중에서 제하고 너희 마음을 여호와께로 향하여 그만 섬기라 너희를 블레셋 사람의 손에서 건져내시리라"
+      ],
+      "raw_text_hashes": [
+        "c05b8c5082b14b71e21d181ce2440d0210d4c9819669da72de3da17be7b12acb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:4",
+      "sequence": 7357,
+      "chapter_label": "1SA 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Then the children of Israel removed the Baals and the Ashtaroth, and served the LORD only.",
+      "ko": "이에 이스라엘 자손이 바알들과 아스다롯을 제하고 여호와만 섬기니라",
+      "source_text_hash": "97d0b76eb41d4eb3e627dad000503499009dfb69ae9a4c6b0f96753d99fb7bd7",
+      "translation_text_hash": "64ad4adad9ca4d133f75e8d314788fd0cffc477bb06db5cfe0ec42b31bcab6a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 자손이 바알들과 아스다롯을 제하고 여호와만 섬기니라"
+      ],
+      "raw_text_hashes": [
+        "64ad4adad9ca4d133f75e8d314788fd0cffc477bb06db5cfe0ec42b31bcab6a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:5",
+      "sequence": 7358,
+      "chapter_label": "1SA 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Samuel said, “Gather all Israel to Mizpah, and I will pray to the LORD for you.”",
+      "ko": "사무엘이 가로되 온 이스라엘은 미스바로 모이라 내가 너희를 위하여 여호와께 기도하리라 하매",
+      "source_text_hash": "8d10d478df17f32f96fefbb808152eaf18699123458af4832ce6309007e727d2",
+      "translation_text_hash": "7c5bec6c235668b434db4ee9e31fc84859d84e763b70d079b50fe146b4940972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 온 이스라엘은 미스바로 모이라 내가 너희를 위하여 여호와께 기도하리라 하매"
+      ],
+      "raw_text_hashes": [
+        "7c5bec6c235668b434db4ee9e31fc84859d84e763b70d079b50fe146b4940972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:6",
+      "sequence": 7359,
+      "chapter_label": "1SA 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "They gathered together to Mizpah, and drew water, and poured it out before the LORD, and fasted on that day, and said there, “We have sinned against the LORD.” Samuel judged the children of Israel in Mizpah.",
+      "ko": "그들이 미스바에 모여 물을 길어 여호와 앞에 붓고 그 날에 금식하고 거기서 가로되 우리가 여호와께 범죄하였나이다 하니라 사무엘이 미스바에서 이스라엘 자손을 다스리니라",
+      "source_text_hash": "1519501d01184844ab3dd0050914e87f4cb0091249d0a318a0242f4ac9651715",
+      "translation_text_hash": "5077f30e21eb2b0ab586e4b1545d0e797991d33a861d9af454a8d612a02850f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 미스바에 모여 물을 길어 여호와 앞에 붓고 그 날에 금식하고 거기서 가로되 우리가 여호와께 범죄하였나이다 하니라 사무엘이 미스바에서 이스라엘 자손을 다스리니라"
+      ],
+      "raw_text_hashes": [
+        "5077f30e21eb2b0ab586e4b1545d0e797991d33a861d9af454a8d612a02850f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:7",
+      "sequence": 7360,
+      "chapter_label": "1SA 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "When the Philistines heard that the children of Israel were gathered together at Mizpah, the lords of the Philistines went up against Israel. When the children of Israel heard it, they were afraid of the Philistines.",
+      "ko": "이스라엘 자손이 미스바에 모였다 함을 블레셋 사람이 듣고 그 방백들이 이스라엘을 치러 올라온지라 이스라엘 자손이 듣고 블레셋 사람을 두려워하여",
+      "source_text_hash": "6fefd49025455473d57708b9cd79f0c4bb65cf648b37f8006e0cd5e5cdb828cd",
+      "translation_text_hash": "8976e3f4911ba8c3f42b2b17eabca47ac06236f6fdf7a21682ef69ffa27c4553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 미스바에 모였다 함을 블레셋 사람이 듣고 그 방백들이 이스라엘을 치러 올라온지라 이스라엘 자손이 듣고 블레셋 사람을 두려워하여"
+      ],
+      "raw_text_hashes": [
+        "8976e3f4911ba8c3f42b2b17eabca47ac06236f6fdf7a21682ef69ffa27c4553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:8",
+      "sequence": 7361,
+      "chapter_label": "1SA 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Israel said to Samuel, “Don’t stop crying to the LORD our God for us, that he will save us out of the hand of the Philistines.”",
+      "ko": "사무엘에게 이르되 당신은 우리를 위하여 우리 하나님 여호와께 쉬지 말고 부르짖어 우리를 블레셋 사람의 손에서 구원하시게 하소서",
+      "source_text_hash": "348017852a37519ca188001847d81f5e7d8380728d7f798eb3a625f81160f48f",
+      "translation_text_hash": "26c2312e5f406a6a3bcd058e79e808b663a31b61d447f8b7b4beb656f0bc1b1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘에게 이르되 당신은 우리를 위하여 우리 하나님 여호와께 쉬지 말고 부르짖어 우리를 블레셋 사람의 손에서 구원하시게 하소서"
+      ],
+      "raw_text_hashes": [
+        "26c2312e5f406a6a3bcd058e79e808b663a31b61d447f8b7b4beb656f0bc1b1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:9",
+      "sequence": 7362,
+      "chapter_label": "1SA 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Samuel took a suckling lamb, and offered it for a whole burnt offering to the LORD. Samuel cried to the LORD for Israel, and the LORD answered him.",
+      "ko": "사무엘이 젖 먹는 어린 양을 취하여 온전한 번제를 여호와께 드리고 이스라엘을 위하여 여호와께 부르짖으매 여호와께서 응답하셨더라",
+      "source_text_hash": "a48336c602edee8e61d050196c8e92fb8a610dd29e2f302fb284341407346761",
+      "translation_text_hash": "97b9127881f94d29e9203aaf6ccbac0b7fd7361e0c1862ff82fe6a3ca74dd002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 젖 먹는 어린 양을 취하여 온전한 번제를 여호와께 드리고 이스라엘을 위하여 여호와께 부르짖으매 여호와께서 응답하셨더라"
+      ],
+      "raw_text_hashes": [
+        "97b9127881f94d29e9203aaf6ccbac0b7fd7361e0c1862ff82fe6a3ca74dd002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:10",
+      "sequence": 7363,
+      "chapter_label": "1SA 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "As Samuel was offering up the burnt offering, the Philistines came near to battle against Israel; but the LORD thundered with a great thunder on that day on the Philistines and confused them; and they were struck down before Israel.",
+      "ko": "사무엘이 번제를 드릴 때에 블레셋 사람이 이스라엘과 싸우려고 가까이 오매 그 날에 여호와께서 블레셋 사람에게 큰 우뢰를 발하여 그들을 어지럽게 하시니 그들이 이스라엘 앞에 패한지라",
+      "source_text_hash": "26a9969bf3c86dc9957b0882060f1df0622f7ff6827880808d41c2e41d870fb5",
+      "translation_text_hash": "5b8999154649cda6b653ba6fc52256a554c8683a9cc90668a99bfeff8cc5757b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 번제를 드릴 때에 블레셋 사람이 이스라엘과 싸우려고 가까이 오매 그 날에 여호와께서 블레셋 사람에게 큰 우뢰를 발하여 그들을 어지럽게 하시니 그들이 이스라엘 앞에 패한지라"
+      ],
+      "raw_text_hashes": [
+        "5b8999154649cda6b653ba6fc52256a554c8683a9cc90668a99bfeff8cc5757b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:11",
+      "sequence": 7364,
+      "chapter_label": "1SA 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "The men of Israel went out of Mizpah and pursued the Philistines, and struck them until they came under Beth Kar.",
+      "ko": "이스라엘 사람들이 미스바에서 나가서 블레셋 사람을 따라 벧갈 아래에 이르기까지 쳤더라",
+      "source_text_hash": "ff1d6aee59dce795b90cb8bbee04dc2e3d5bb3b10d8a9f4d0c0e1636000b06c3",
+      "translation_text_hash": "7da9fdec90b31f771c534dc87975a145ced46e8e018e865adca2a99f701c15a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 미스바에서 나가서 블레셋 사람을 따라 벧갈 아래에 이르기까지 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "7da9fdec90b31f771c534dc87975a145ced46e8e018e865adca2a99f701c15a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:12",
+      "sequence": 7365,
+      "chapter_label": "1SA 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Then Samuel took a stone and set it between Mizpah and Shen, and called its name Ebenezer, saying, “The LORD helped us until now.”",
+      "ko": "사무엘이 돌을 취하여 미스바와 센 사이에 세워 가로되 여호와께서 여기까지 우리를 도우셨다 하고 그 이름을 에벤에셀이라 하니라",
+      "source_text_hash": "88a0ba5aa29b23a71cc509124dbdd9cfd88738c3cf1737d56f2c8249b45c4bcf",
+      "translation_text_hash": "52adb35a81f91aea4654af25225a8750a2b1dfac4fef782e33016e97c9faa639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 돌을 취하여 미스바와 센 사이에 세워 가로되 여호와께서 여기까지 우리를 도우셨다 하고 그 이름을 에벤에셀이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "52adb35a81f91aea4654af25225a8750a2b1dfac4fef782e33016e97c9faa639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:13",
+      "sequence": 7366,
+      "chapter_label": "1SA 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "So the Philistines were subdued, and they stopped coming within the border of Israel. The LORD’s hand was against the Philistines all the days of Samuel.",
+      "ko": "이에 블레셋 사람이 굴복하여 다시는 이스라엘 경내에 들어오지 못하였으며 여호와의 손이 사무엘의 사는 날 동안에 블레셋 사람을 막으시매",
+      "source_text_hash": "2eedc35004f713070b027fb3492876793e557c79ad860a281e7bd19e6f0f11a5",
+      "translation_text_hash": "9ff60b202ab106dc7927d0f17057201674340f52650d4b4bd228d59387e02627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 블레셋 사람이 굴복하여 다시는 이스라엘 경내에 들어오지 못하였으며 여호와의 손이 사무엘의 사는 날 동안에 블레셋 사람을 막으시매"
+      ],
+      "raw_text_hashes": [
+        "9ff60b202ab106dc7927d0f17057201674340f52650d4b4bd228d59387e02627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:14",
+      "sequence": 7367,
+      "chapter_label": "1SA 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "The cities which the Philistines had taken from Israel were restored to Israel, from Ekron even to Gath; and Israel recovered its border out of the hand of the Philistines. There was peace between Israel and the Amorites.",
+      "ko": "블레셋 사람이 이스라엘에게서 빼앗았던 성읍이 에그론부터 가드까지 이스라엘에게 회복되니 이스라엘이 그 사방 지경을 블레셋 사람의 손에서 도로 찾았고 또 이스라엘과 아모리 사람 사이에 평화가 있었더라",
+      "source_text_hash": "23ed0bc7dde5d059bf3cf327bf64a934849c01eeac519f19c4c6f03c00f393eb",
+      "translation_text_hash": "70b233dc0f2a4d7cc68ee4369be82ab3ef4041c0f1748ad24e524baccd8d3fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 이스라엘에게서 빼앗았던 성읍이 에그론부터 가드까지 이스라엘에게 회복되니 이스라엘이 그 사방 지경을 블레셋 사람의 손에서 도로 찾았고 또 이스라엘과 아모리 사람 사이에 평화가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "70b233dc0f2a4d7cc68ee4369be82ab3ef4041c0f1748ad24e524baccd8d3fbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:15",
+      "sequence": 7368,
+      "chapter_label": "1SA 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Samuel judged Israel all the days of his life.",
+      "ko": "사무엘이 사는 날 동안에 이스라엘을 다스렸으되",
+      "source_text_hash": "cdb9f7bcf43bdfed3bdcc1b1134bc6d3f581bc961dbae682653392592bf584bd",
+      "translation_text_hash": "aa356d35eaa58c0a03c785a1847caebbf24977cddfab8934ff2393754a639606",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사는 날 동안에 이스라엘을 다스렸으되"
+      ],
+      "raw_text_hashes": [
+        "aa356d35eaa58c0a03c785a1847caebbf24977cddfab8934ff2393754a639606"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:16",
+      "sequence": 7369,
+      "chapter_label": "1SA 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "He went from year to year in a circuit to Bethel, Gilgal, and Mizpah; and he judged Israel in all those places.",
+      "ko": "해마다 벧엘과 길갈과 미스바로 순회하여 그 모든 곳에서 이스라엘을 다스렸고",
+      "source_text_hash": "55ffa5a6a241dedb25873bc6e0dcbcd842ba4292b4911ac2e9a8c825037769c3",
+      "translation_text_hash": "351a5b3d4c86174fcf991fd4baf0bba218f9a15d05221238c40d548cbf78b601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해마다 벧엘과 길갈과 미스바로 순회하여 그 모든 곳에서 이스라엘을 다스렸고"
+      ],
+      "raw_text_hashes": [
+        "351a5b3d4c86174fcf991fd4baf0bba218f9a15d05221238c40d548cbf78b601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:7:17",
+      "sequence": 7370,
+      "chapter_label": "1SA 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "His return was to Ramah, for his house was there, and he judged Israel there; and he built an altar to the LORD there.",
+      "ko": "라마로 돌아왔으니 이는 거기 자기 집이 있음이라 거기서도 이스라엘을 다스렸으며 또 거기 여호와를 위하여 단을 쌓았더라",
+      "source_text_hash": "88458f0bf088936bdd9217660d3661e9c82b0516af92b7d2438af1198bc05c72",
+      "translation_text_hash": "3ecbf1c7fc07c081f9de574c4ed673a083ec7e758acbde1ac24d86182577223d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라마로 돌아왔으니 이는 거기 자기 집이 있음이라 거기서도 이스라엘을 다스렸으며 또 거기 여호와를 위하여 단을 쌓았더라"
+      ],
+      "raw_text_hashes": [
+        "3ecbf1c7fc07c081f9de574c4ed673a083ec7e758acbde1ac24d86182577223d"
+      ]
+    }
+  ]
+}

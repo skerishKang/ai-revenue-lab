@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PHP:chapter:004",
+  "unit_ordinal": 1107,
+  "unit_label": "PHP 4",
+  "book_code": "PHP",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PHP:4:1",
+      "sequence": 29440,
+      "chapter_label": "PHP 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore, my brothers, beloved and longed for, my joy and crown, stand firm in the Lord in this way, my beloved.",
+      "ko": "그러므로 나의 사랑하고 사모하는 형제들, 나의 기쁨이요 면류관인 사랑하는 자들아 이와 같이 주 안에 서라",
+      "source_text_hash": "8dab32a584e96fd7a9a6c5fb8bfdb808c84b973c6553cd58c6361427e8e8c65f",
+      "translation_text_hash": "eb05c75156ca875d2f2273c6692ad0c29e8fdd8957cd555cf076170c5a153cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나의 사랑하고 사모하는 형제들, 나의 기쁨이요 면류관인 사랑하는 자들아 이와 같이 주 안에 서라"
+      ],
+      "raw_text_hashes": [
+        "eb05c75156ca875d2f2273c6692ad0c29e8fdd8957cd555cf076170c5a153cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:2",
+      "sequence": 29441,
+      "chapter_label": "PHP 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "I exhort Euodia, and I exhort Syntyche, to think the same way in the Lord.",
+      "ko": "내가 유오디아를 권하고 순두게를 권하노니 주 안에서 같은 마음을 품으라",
+      "source_text_hash": "98efa8121362f48c22617cdf632d245b643309af0d93af2ed6a9378d7d885bbe",
+      "translation_text_hash": "f3e6491d19a6aaa8d411dabe5c2f90f7e38e2d074a58402651061151431eb959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유오디아를 권하고 순두게를 권하노니 주 안에서 같은 마음을 품으라"
+      ],
+      "raw_text_hashes": [
+        "f3e6491d19a6aaa8d411dabe5c2f90f7e38e2d074a58402651061151431eb959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:3",
+      "sequence": 29442,
+      "chapter_label": "PHP 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, I beg you also, true partner, help these women, for they labored with me in the Good News with Clement also, and the rest of my fellow workers, whose names are in the book of life.",
+      "ko": "또 참으로 나와 멍에를 같이 한 자 네게 구하노니 복음에 나와 함께 힘쓰던 저 부녀들을 돕고 또한 글레멘드와 그 외에 나의 동역자들을 도우라 그 이름들이 생명책에 있느니라",
+      "source_text_hash": "216cf46fa9eee59c1ab22a21c54298a635ec0736e72762f55702427766204a0f",
+      "translation_text_hash": "02df6a36bd3413430065b66360e29ab2c8e168f62642da824844db8bc15bb081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 참으로 나와 멍에를 같이 한 자 네게 구하노니 복음에 나와 함께 힘쓰던 저 부녀들을 돕고 또한 글레멘드와 그 외에 나의 동역자들을 도우라 그 이름들이 생명책에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "02df6a36bd3413430065b66360e29ab2c8e168f62642da824844db8bc15bb081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:4",
+      "sequence": 29443,
+      "chapter_label": "PHP 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Rejoice in the Lord always! Again I will say, “Rejoice!”",
+      "ko": "주 안에서 항상 기뻐하라 내가 다시 말하노니 기뻐하라",
+      "source_text_hash": "5848fa8b4119b9be856e4646f3e416d221a481398319da1fd89118a29dda3d31",
+      "translation_text_hash": "c97a8efd330d4ab9362cddc6d4f347cce3e99111a4b285702765236f30a6afa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 안에서 항상 기뻐하라 내가 다시 말하노니 기뻐하라"
+      ],
+      "raw_text_hashes": [
+        "c97a8efd330d4ab9362cddc6d4f347cce3e99111a4b285702765236f30a6afa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:5",
+      "sequence": 29444,
+      "chapter_label": "PHP 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Let your gentleness be known to all men. The Lord is at hand.",
+      "ko": "너희 관용을 모든 사람에게 알게 하라 주께서 가까우시니라",
+      "source_text_hash": "af68634b7a4639cef88247f2a4f77c5b44279fcbc53598c32664b84366f1b28e",
+      "translation_text_hash": "5b7a5da8871934f6a35b9f8cabcd8aa4df604a5ec1c3af7e8ec4e7cf3cf9173a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 관용을 모든 사람에게 알게 하라 주께서 가까우시니라"
+      ],
+      "raw_text_hashes": [
+        "5b7a5da8871934f6a35b9f8cabcd8aa4df604a5ec1c3af7e8ec4e7cf3cf9173a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:6",
+      "sequence": 29445,
+      "chapter_label": "PHP 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God.",
+      "ko": "아무 것도 염려하지 말고 오직 모든 일에 기도와 간구로, 너희 구할 것을 감사함으로 하나님께 아뢰라",
+      "source_text_hash": "8e4809c19b406f6b3c22f09db9576951eaab68df9349646224863e1dbea34101",
+      "translation_text_hash": "0e1b215240f8336264a4cc59d55eed368425e9a7752378bcbc1e22e17b95c11f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 것도 염려하지 말고 오직 모든 일에 기도와 간구로, 너희 구할 것을 감사함으로 하나님께 아뢰라"
+      ],
+      "raw_text_hashes": [
+        "0e1b215240f8336264a4cc59d55eed368425e9a7752378bcbc1e22e17b95c11f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:7",
+      "sequence": 29446,
+      "chapter_label": "PHP 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "And the peace of God, which surpasses all understanding, will guard your hearts and your thoughts in Christ Jesus.",
+      "ko": "그리하면 모든 지각에 뛰어난 하나님의 평강이 그리스도 예수 안에서 너희 마음과 생각을 지키시리라",
+      "source_text_hash": "79c16acc1aa522aa57af15b82be95c441e5b4edf80954e09d9bbf32fc26360f7",
+      "translation_text_hash": "de644c61660bd78adaa84d31eb4dc89e581b76a5565b997aae983b2a0b02f1f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 모든 지각에 뛰어난 하나님의 평강이 그리스도 예수 안에서 너희 마음과 생각을 지키시리라"
+      ],
+      "raw_text_hashes": [
+        "de644c61660bd78adaa84d31eb4dc89e581b76a5565b997aae983b2a0b02f1f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:8",
+      "sequence": 29447,
+      "chapter_label": "PHP 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report: if there is any virtue and if there is anything worthy of praise, think about these things.",
+      "ko": "종말로 형제들아 무엇에든지 참되며 무엇에든지 경건하며 무엇에든지 옳으며 무엇에든지 정결하며 무엇에든지 사랑할만하며 무엇에든지 칭찬할만하며 무슨 덕이 있든지 무슨 기림이 있든지 이것들을 생각하라",
+      "source_text_hash": "f16db8cf7c00da8bd01c08decc81cc22a6c7560a1507360f671bd2161e71f96c",
+      "translation_text_hash": "b3f3d655039efdcd66a3984b56e2b0e4699bc8174406f1f5929bd9994ac87344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종말로 형제들아 무엇에든지 참되며 무엇에든지 경건하며 무엇에든지 옳으며 무엇에든지 정결하며 무엇에든지 사랑할만하며 무엇에든지 칭찬할만하며 무슨 덕이 있든지 무슨 기림이 있든지 이것들을 생각하라"
+      ],
+      "raw_text_hashes": [
+        "b3f3d655039efdcd66a3984b56e2b0e4699bc8174406f1f5929bd9994ac87344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:9",
+      "sequence": 29448,
+      "chapter_label": "PHP 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Do the things which you learned, received, heard, and saw in me, and the God of peace will be with you.",
+      "ko": "너희는 내게 배우고 받고 듣고 본 바를 행하라 그리하면 평강의 하나님이 너희와 함께 계시리라",
+      "source_text_hash": "1f0169be3115cb02fd78c3d139611fb1d45b1c4eea1ba957c23b3a7140604df5",
+      "translation_text_hash": "62f8a683a9d364e1c549ee4bac68c0f3f6ec2e760bc3c40f6b53ba57448ff8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내게 배우고 받고 듣고 본 바를 행하라 그리하면 평강의 하나님이 너희와 함께 계시리라"
+      ],
+      "raw_text_hashes": [
+        "62f8a683a9d364e1c549ee4bac68c0f3f6ec2e760bc3c40f6b53ba57448ff8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:10",
+      "sequence": 29449,
+      "chapter_label": "PHP 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "But I rejoice in the Lord greatly that now at length you have revived your thought for me; in which you did indeed take thought, but you lacked opportunity.",
+      "ko": "내가 주 안에서 크게 기뻐함은 너희가 나를 생각하던 것이 이제 다시 싹이 남이니 너희가 또한 이를 위하여 생각은 하였으나 기회가 없었느니라",
+      "source_text_hash": "3c88baad5ef9a453734bdc5896b9d167a0ebc9c231b26ebf4d025a966a84bdfb",
+      "translation_text_hash": "43099f15f227c7595afc055313d30bc2f29c28ad4c319b2d4a06e96ce4993087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주 안에서 크게 기뻐함은 너희가 나를 생각하던 것이 이제 다시 싹이 남이니 너희가 또한 이를 위하여 생각은 하였으나 기회가 없었느니라"
+      ],
+      "raw_text_hashes": [
+        "43099f15f227c7595afc055313d30bc2f29c28ad4c319b2d4a06e96ce4993087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:11",
+      "sequence": 29450,
+      "chapter_label": "PHP 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Not that I speak because of lack, for I have learned in whatever state I am, to be content in it.",
+      "ko": "내가 궁핍하므로 말하는 것이 아니라 어떠한 형편에든지 내가 자족하기를 배웠노니",
+      "source_text_hash": "3e75c2987d545f4264920e101db0491315106a4430f6368104e5374268f41aef",
+      "translation_text_hash": "c698aa5be6048f60e77696bd7215195081bc5ad3668486f7c6dbf9a06aa7b344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 궁핍하므로 말하는 것이 아니라 어떠한 형편에든지 내가 자족하기를 배웠노니"
+      ],
+      "raw_text_hashes": [
+        "c698aa5be6048f60e77696bd7215195081bc5ad3668486f7c6dbf9a06aa7b344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:12",
+      "sequence": 29451,
+      "chapter_label": "PHP 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "I know how to be humbled, and I also know how to abound. In any and all circumstances I have learned the secret both to be filled and to be hungry, both to abound and to be in need.",
+      "ko": "내가 비천에 처할 줄도 알고 풍부에 처할 줄도 알아 모든 일에 배부르며 배고픔과 풍부와 궁핍에도 일체의 비결을 배웠노라",
+      "source_text_hash": "7d50631aca263614a56959baa45f18da4b1308049ed1af892b876a1b2d0daf7e",
+      "translation_text_hash": "4dd85ab6212f3957d48c774a9fc0981a21a2a97a359f7395ad86b785c2be3da8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 비천에 처할 줄도 알고 풍부에 처할 줄도 알아 모든 일에 배부르며 배고픔과 풍부와 궁핍에도 일체의 비결을 배웠노라"
+      ],
+      "raw_text_hashes": [
+        "4dd85ab6212f3957d48c774a9fc0981a21a2a97a359f7395ad86b785c2be3da8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:13",
+      "sequence": 29452,
+      "chapter_label": "PHP 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "I can do all things through Christ who strengthens me.",
+      "ko": "내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라",
+      "source_text_hash": "122d5e26e306589315f7c1eada0bebf1e18fcf7aa8308d868170c6e9dcdd5449",
+      "translation_text_hash": "06271c4f56612e6394c5a2285ef1b060f15cc32480e08796627fea1b162d04a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "06271c4f56612e6394c5a2285ef1b060f15cc32480e08796627fea1b162d04a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:14",
+      "sequence": 29453,
+      "chapter_label": "PHP 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "However you did well that you shared in my affliction.",
+      "ko": "그러나 너희가 내 괴로움에 함께 참예하였으니 잘하였도다",
+      "source_text_hash": "36f15c1998f01029e51d475423818cf2f0c010d5299de09acd326e9630839a45",
+      "translation_text_hash": "64939d27f17c898baad79713dff1e62446a549af73b21d1cecaf13ca2e549f92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 내 괴로움에 함께 참예하였으니 잘하였도다"
+      ],
+      "raw_text_hashes": [
+        "64939d27f17c898baad79713dff1e62446a549af73b21d1cecaf13ca2e549f92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:15",
+      "sequence": 29454,
+      "chapter_label": "PHP 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "You yourselves also know, you Philippians, that in the beginning of the Good News, when I departed from Macedonia, no assembly shared with me in the matter of giving and receiving but you only.",
+      "ko": "빌립보 사람들아 너희도 알거니와 복음의 시초에 내가 마게도냐를 떠날 때에 주고 받는 내 일에 참예한 교회가 너희 외에 아무도 없었느니라",
+      "source_text_hash": "3c9bd227f17c2f3122daccfb5592e867de874d51a886b8aed59e7dcd1e0ba6e9",
+      "translation_text_hash": "a8c01825dfe0378922f4639e87da4b6398be4fc0d1ad5a4d8aac8cb6277f049b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립보 사람들아 너희도 알거니와 복음의 시초에 내가 마게도냐를 떠날 때에 주고 받는 내 일에 참예한 교회가 너희 외에 아무도 없었느니라"
+      ],
+      "raw_text_hashes": [
+        "a8c01825dfe0378922f4639e87da4b6398be4fc0d1ad5a4d8aac8cb6277f049b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:16",
+      "sequence": 29455,
+      "chapter_label": "PHP 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "For even in Thessalonica you sent once and again to my need.",
+      "ko": "데살로니가에 있을 때에도 너희가 한번 두번 나의 쓸것을 보내었도다",
+      "source_text_hash": "ff8eae312457ea1aa2e11e8afadfb5d3dc2d6447cbe0d83fecc604fbcefe0ac8",
+      "translation_text_hash": "963e2d42293efd1d5df645bc4491860e4c8270e5f7d850e97b63c01cfc2b061b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데살로니가에 있을 때에도 너희가 한번 두번 나의 쓸것을 보내었도다"
+      ],
+      "raw_text_hashes": [
+        "963e2d42293efd1d5df645bc4491860e4c8270e5f7d850e97b63c01cfc2b061b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:17",
+      "sequence": 29456,
+      "chapter_label": "PHP 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Not that I seek for the gift, but I seek for the fruit that increases to your account.",
+      "ko": "내가 선물을 구함이 아니요 오직 너희에게 유익하도록 과실이 번성하기를 구함이라",
+      "source_text_hash": "eb16c942f08336183bbc2028f6fe09ae471f7b582057e7467bd3a2c9f4f2a899",
+      "translation_text_hash": "51d8f77f3dabcb29fd37163981e7055d22469f83bca4b1a788cc6b8850da749f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 선물을 구함이 아니요 오직 너희에게 유익하도록 과실이 번성하기를 구함이라"
+      ],
+      "raw_text_hashes": [
+        "51d8f77f3dabcb29fd37163981e7055d22469f83bca4b1a788cc6b8850da749f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:18",
+      "sequence": 29457,
+      "chapter_label": "PHP 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "But I have all things and abound. I am filled, having received from Epaphroditus the things that came from you, a sweet-smelling fragrance, an acceptable and well-pleasing sacrifice to God.",
+      "ko": "내게는 모든 것이 있고 또 풍부한지라 에바브로디도 편에 너희의 준 것을 받으므로 내가 풍족하니 이는 받으실만한 향기로운 제물이요 하나님을 기쁘시게 한 것이라",
+      "source_text_hash": "8fc0409c58d0ed4899875725d5d15d536821956bde7bf082987a17a926dd763e",
+      "translation_text_hash": "465ed2a57b60b9d93c2800cd0468c3c0d6fb89c5c72b8aba40d7318c19affb5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게는 모든 것이 있고 또 풍부한지라 에바브로디도 편에 너희의 준 것을 받으므로 내가 풍족하니 이는 받으실만한 향기로운 제물이요 하나님을 기쁘시게 한 것이라"
+      ],
+      "raw_text_hashes": [
+        "465ed2a57b60b9d93c2800cd0468c3c0d6fb89c5c72b8aba40d7318c19affb5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:19",
+      "sequence": 29458,
+      "chapter_label": "PHP 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "My God will supply every need of yours according to his riches in glory in Christ Jesus.",
+      "ko": "나의 하나님이 그리스도 예수 안에서 영광 가운데 그 풍성한대로 너희 모든 쓸 것을 채우시리라",
+      "source_text_hash": "ed19440263365072c922c2b34a2c39619378d76aa58d1f787ccdd9cb1dea6e5c",
+      "translation_text_hash": "bd122a958911eef51631500ece00abf34f56425454b4217c430787a8c5d78576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이 그리스도 예수 안에서 영광 가운데 그 풍성한대로 너희 모든 쓸 것을 채우시리라"
+      ],
+      "raw_text_hashes": [
+        "bd122a958911eef51631500ece00abf34f56425454b4217c430787a8c5d78576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:20",
+      "sequence": 29459,
+      "chapter_label": "PHP 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Now to our God and Father be the glory forever and ever! Amen.",
+      "ko": "하나님 곧 우리 아버지께 세세 무궁토록 영광을 돌릴찌어다 아멘",
+      "source_text_hash": "324d5abbc5223ee16fac6909f91cdf32f8e91e4a3d212545cb82069ee8e10b9c",
+      "translation_text_hash": "5f1f29a21d8b84990d8e4139c6a1e3d9ad0b38e7aa2dc75f4cb1d714c3789270",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 곧 우리 아버지께 세세 무궁토록 영광을 돌릴찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "5f1f29a21d8b84990d8e4139c6a1e3d9ad0b38e7aa2dc75f4cb1d714c3789270"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:21",
+      "sequence": 29460,
+      "chapter_label": "PHP 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Greet every saint in Christ Jesus. The brothers who are with me greet you.",
+      "ko": "그리스도 예수 안에 있는 성도에게 각각 문안하라 나와 함께 있는 형제들이 너희에게 문안하고",
+      "source_text_hash": "3d7cd9daac5d76e3be7593b981b481c61584b2fa89d2c299648b4863f34fc65d",
+      "translation_text_hash": "572fe01f6f5796d07941ad728abae1ab166a37cd355c5c6d7abcea74148e90c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수 안에 있는 성도에게 각각 문안하라 나와 함께 있는 형제들이 너희에게 문안하고"
+      ],
+      "raw_text_hashes": [
+        "572fe01f6f5796d07941ad728abae1ab166a37cd355c5c6d7abcea74148e90c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:22",
+      "sequence": 29461,
+      "chapter_label": "PHP 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "All the saints greet you, especially those who are of Caesar’s household.",
+      "ko": "모든 성도들이 너희에게 문안하되 특별히 가이사집 사람 중 몇이니라",
+      "source_text_hash": "8b54c50a89a869be93d3482c451d70d2a6373d34db670fd3c9ac63a247056d76",
+      "translation_text_hash": "a39353646bce686e3dcfb407ff0bda5d647846429fd06332e4878e3206fadfe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 성도들이 너희에게 문안하되 특별히 가이사집 사람 중 몇이니라"
+      ],
+      "raw_text_hashes": [
+        "a39353646bce686e3dcfb407ff0bda5d647846429fd06332e4878e3206fadfe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:4:23",
+      "sequence": 29462,
+      "chapter_label": "PHP 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "PHP",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "The grace of the Lord Jesus Christ be with you all. Amen.",
+      "ko": "주 예수 그리스도의 은혜가 너희 심령에 있을찌어다",
+      "source_text_hash": "a2b82f77a16b283b529c1420b07c629cabb59ef7247472ad609801c441b132e3",
+      "translation_text_hash": "a148fdfe8b579e6bdc0a543124a30f4da51986661fcc19f71e2e364fb89b6e27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수 그리스도의 은혜가 너희 심령에 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "a148fdfe8b579e6bdc0a543124a30f4da51986661fcc19f71e2e364fb89b6e27"
+      ]
+    }
+  ]
+}

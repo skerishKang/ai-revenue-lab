@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HAB:chapter:003",
+  "unit_ordinal": 906,
+  "unit_label": "HAB 3",
+  "book_code": "HAB",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HAB:3:1",
+      "sequence": 22770,
+      "chapter_label": "HAB 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "A prayer of Habakkuk, the prophet, set to victorious music.",
+      "ko": "시기오놋에 맞춘바 선지자 하박국의 기도라",
+      "source_text_hash": "288e1191c65e94c1bffd33a6ed89966391e5ff4ab5a8be922a59f0bbc9cc5673",
+      "translation_text_hash": "5546a8dc97928ea482cbdafa01af2c807573f30fa017a6eb3224af115c34d297",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시기오놋에 맞춘바 선지자 하박국의 기도라"
+      ],
+      "raw_text_hashes": [
+        "5546a8dc97928ea482cbdafa01af2c807573f30fa017a6eb3224af115c34d297"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:2",
+      "sequence": 22771,
+      "chapter_label": "HAB 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "LORD, I have heard of your fame. I stand in awe of your deeds, LORD. Renew your work in the middle of the years. In the middle of the years make it known. In wrath, you remember mercy.",
+      "ko": "여호와여 내가 주께 대한 소문을 듣고 놀랐나이다 여호와여 주는 주의 일을 이 수년 내에 부흥케 하옵소서 이 수년 내에 나타내시옵소서 진노 중에라도 긍휼을 잊지 마옵소서",
+      "source_text_hash": "861795debae47fb42f87b8b00ce5989f0039dc75b0f83f94e2e265e9c1c4b15e",
+      "translation_text_hash": "7a2b6bdf889abfc7e711b272a9aafca7eeca3fee4fd35fe8e2541e28c7efc57e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 대한 소문을 듣고 놀랐나이다 여호와여 주는 주의 일을 이 수년 내에 부흥케 하옵소서 이 수년 내에 나타내시옵소서 진노 중에라도 긍휼을 잊지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "7a2b6bdf889abfc7e711b272a9aafca7eeca3fee4fd35fe8e2541e28c7efc57e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:3",
+      "sequence": 22772,
+      "chapter_label": "HAB 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "God came from Teman, the Holy One from Mount Paran. Selah. His glory covered the heavens, and his praise filled the earth.",
+      "ko": "하나님이 데만에서부터 오시며 거룩한 자가 바란산에서부터 오시도다 (셀라) 그 영광이 하늘을 덮었고 그 찬송이 세계에 가득하도다",
+      "source_text_hash": "5fccb27fc241ceee86cef6dd8a0de54edb01486c1461d33ae91e4a6f4ccac814",
+      "translation_text_hash": "413d5c825053bb66b983f57b2b032d050ec2a7159b1657fafc4753704159fcf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 데만에서부터 오시며 거룩한 자가 바란산에서부터 오시도다 (셀라) 그 영광이 하늘을 덮었고 그 찬송이 세계에 가득하도다"
+      ],
+      "raw_text_hashes": [
+        "413d5c825053bb66b983f57b2b032d050ec2a7159b1657fafc4753704159fcf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:4",
+      "sequence": 22773,
+      "chapter_label": "HAB 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "His splendor is like the sunrise. Rays shine from his hand, where his power is hidden.",
+      "ko": "그 광명이 햇빛 같고 광선이 그 손에서 나오니 그 권능이 그 속에 감취었도다",
+      "source_text_hash": "82fa4b047e6731b84d71c6cc668e11ec7329e7a60e9c1a41525ea1667d8008ff",
+      "translation_text_hash": "0e98ce0816e353a745d2b3c35993f40b814db1110a0b026dcc2ef924dc869e22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 광명이 햇빛 같고 광선이 그 손에서 나오니 그 권능이 그 속에 감취었도다"
+      ],
+      "raw_text_hashes": [
+        "0e98ce0816e353a745d2b3c35993f40b814db1110a0b026dcc2ef924dc869e22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:5",
+      "sequence": 22774,
+      "chapter_label": "HAB 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Plague went before him, and pestilence followed his feet.",
+      "ko": "온역이 그 앞에서 행하며 불덩이가 그 발밑에서 나오도다",
+      "source_text_hash": "a673e88445fa9325dab416e85ba54cf097ba4fdcd69bd05e0ed659b3c383ebf4",
+      "translation_text_hash": "50417e15d265a2e87813d16131943d9f48ca230bcae4287283144da2bcacf03e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온역이 그 앞에서 행하며 불덩이가 그 발밑에서 나오도다"
+      ],
+      "raw_text_hashes": [
+        "50417e15d265a2e87813d16131943d9f48ca230bcae4287283144da2bcacf03e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:6",
+      "sequence": 22775,
+      "chapter_label": "HAB 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "He stood, and shook the earth. He looked, and made the nations tremble. The ancient mountains were crumbled. The age-old hills collapsed. His ways are eternal.",
+      "ko": "그가 서신즉 땅이 진동하며 그가 보신즉 열국이 전률하며 영원한 산이 무너지며 무궁한 작은 산이 엎드러지나니 그 행하심이 예로부터 그러하시도다",
+      "source_text_hash": "7e2db7979b5eefc729eb6702d65e87344ec01d43743bba872abc6ed5922007b2",
+      "translation_text_hash": "6baa7fffc843971a7d2581bbc9dd5fab16fba9990e3f29cdf02518a6f68b2226",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 서신즉 땅이 진동하며 그가 보신즉 열국이 전률하며 영원한 산이 무너지며 무궁한 작은 산이 엎드러지나니 그 행하심이 예로부터 그러하시도다"
+      ],
+      "raw_text_hashes": [
+        "6baa7fffc843971a7d2581bbc9dd5fab16fba9990e3f29cdf02518a6f68b2226"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:7",
+      "sequence": 22776,
+      "chapter_label": "HAB 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "I saw the tents of Cushan in affliction. The dwellings of the land of Midian trembled.",
+      "ko": "내가 본즉 구산의 장막이 환난을 당하고 미디안 땅의 휘장이 흔들리도다",
+      "source_text_hash": "e4165472c561b8cd882f720c4f474d23767597393fee3c77f7cbe4da6829b092",
+      "translation_text_hash": "9eb8b1f2b6a56baf90e008102c96eff79c78fba480942259bc73bfd148131beb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 구산의 장막이 환난을 당하고 미디안 땅의 휘장이 흔들리도다"
+      ],
+      "raw_text_hashes": [
+        "9eb8b1f2b6a56baf90e008102c96eff79c78fba480942259bc73bfd148131beb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:8",
+      "sequence": 22777,
+      "chapter_label": "HAB 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Was the LORD displeased with the rivers? Was your anger against the rivers, or your wrath against the sea, that you rode on your horses, on your chariots of salvation?",
+      "ko": "여호와여 주께서 말을 타시며 구원의 병거를 모시오니 하수를 분히 여기심이니이까 강을 노여워하심이니이까 바다를 대하여 성내심이니이까",
+      "source_text_hash": "189a20eb242f894695a2046d45743035591d54d8f999d4cb2dfbd6b14be1f485",
+      "translation_text_hash": "f59f357ea2de91c44af846f1b4f8f81f664746f2eafdb639d7864a03da359a8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 말을 타시며 구원의 병거를 모시오니 하수를 분히 여기심이니이까 강을 노여워하심이니이까 바다를 대하여 성내심이니이까"
+      ],
+      "raw_text_hashes": [
+        "f59f357ea2de91c44af846f1b4f8f81f664746f2eafdb639d7864a03da359a8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:9",
+      "sequence": 22778,
+      "chapter_label": "HAB 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "You uncovered your bow. You called for your sworn arrows. Selah. You split the earth with rivers.",
+      "ko": "주께서 활을 꺼내시고 살을 바로 발하셨나이다 (셀라) 주께서 하수들로 땅을 쪼개셨나이다",
+      "source_text_hash": "eb933cd19ede30aaad83fb74ba040cfd76997539502cecf2ed26912fbcd5bbbb",
+      "translation_text_hash": "f607423fca84f96164b4a16da601e4b55c542240ec126e435b7e0e3d8cb0dee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 활을 꺼내시고 살을 바로 발하셨나이다 (셀라) 주께서 하수들로 땅을 쪼개셨나이다"
+      ],
+      "raw_text_hashes": [
+        "f607423fca84f96164b4a16da601e4b55c542240ec126e435b7e0e3d8cb0dee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:10",
+      "sequence": 22779,
+      "chapter_label": "HAB 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "The mountains saw you, and were afraid. The storm of waters passed by. The deep roared and lifted up its hands on high.",
+      "ko": "산들이 주를 보고 흔들리며 창수가 넘치고 바다가 소리를 지르며 손을 높이 들었나이다",
+      "source_text_hash": "613a32eda6bb5be399a1d738c891d9823e7a21edbd4c78f99e3904bb07ea7df7",
+      "translation_text_hash": "cfadbf15f1e3a6af4db4f09d374ff25523246f01bb50df243889114bdd1166e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들이 주를 보고 흔들리며 창수가 넘치고 바다가 소리를 지르며 손을 높이 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "cfadbf15f1e3a6af4db4f09d374ff25523246f01bb50df243889114bdd1166e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:11",
+      "sequence": 22780,
+      "chapter_label": "HAB 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The sun and moon stood still in the sky at the light of your arrows as they went, at the shining of your glittering spear.",
+      "ko": "주의 날으는 살의 빛과 주의 번쩍이는 창의 광채로 인하여 해와 달이 그 처소에 멈추었나이다",
+      "source_text_hash": "69422e61cf34f967d5e47c9b21c5ec94111e940e119e8d8555eac8d7264ed3b0",
+      "translation_text_hash": "dc27bc611bb58b9235d017350c9d94c92ef351b7e5964186301f10b9dec33003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 날으는 살의 빛과 주의 번쩍이는 창의 광채로 인하여 해와 달이 그 처소에 멈추었나이다"
+      ],
+      "raw_text_hashes": [
+        "dc27bc611bb58b9235d017350c9d94c92ef351b7e5964186301f10b9dec33003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:12",
+      "sequence": 22781,
+      "chapter_label": "HAB 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "You marched through the land in wrath. You threshed the nations in anger.",
+      "ko": "주께서 노를 발하사 땅에 둘리셨으며 분을 내사 열국을 밟으셨나이다",
+      "source_text_hash": "3c02010cb913cde452df381cf93941460c89691cb666341728ec20a75584eff2",
+      "translation_text_hash": "dc796a3a93b0660347959fc67c2fe3e1fc498e357c5c814b5b07df659b039bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 노를 발하사 땅에 둘리셨으며 분을 내사 열국을 밟으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "dc796a3a93b0660347959fc67c2fe3e1fc498e357c5c814b5b07df659b039bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:13",
+      "sequence": 22782,
+      "chapter_label": "HAB 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "You went out for the salvation of your people, for the salvation of your anointed. You crushed the head of the land of wickedness. You stripped them head to foot. Selah.",
+      "ko": "주께서 주의 백성을 구원하시려고, 기름 받은 자를 구원하시려고 나오사 악인의 집머리를 치시며 그 기초를 끝까지 드러내셨나이다 (셀라)",
+      "source_text_hash": "0b5023d062817e8738ff36b28748de4aad9fe55cfad4b69885d947b29704639c",
+      "translation_text_hash": "5ab3737f853dcb22405c737739545da22241cc6d9c7bf5fe3de4cbfcbfd59926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 백성을 구원하시려고, 기름 받은 자를 구원하시려고 나오사 악인의 집머리를 치시며 그 기초를 끝까지 드러내셨나이다 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "5ab3737f853dcb22405c737739545da22241cc6d9c7bf5fe3de4cbfcbfd59926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:14",
+      "sequence": 22783,
+      "chapter_label": "HAB 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "You pierced the heads of his warriors with their own spears. They came as a whirlwind to scatter me, gloating as if to devour the wretched in secret.",
+      "ko": "그들이 회리바람처럼 이르러 나를 흩으려 하며 가만히 가난한 자 삼키기를 즐거워하나 오직 주께서 그들의 전사의 머리를 그들의 창으로 찌르셨나이다",
+      "source_text_hash": "524cb7f47716e08702cd02abfc71d95f93ccbd10eb2348e06b711136d3056f3a",
+      "translation_text_hash": "c51f91d218e6fc6499496eba0413fdc43a77ceba0fd91814a0d151e9f01187d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 회리바람처럼 이르러 나를 흩으려 하며 가만히 가난한 자 삼키기를 즐거워하나 오직 주께서 그들의 전사의 머리를 그들의 창으로 찌르셨나이다"
+      ],
+      "raw_text_hashes": [
+        "c51f91d218e6fc6499496eba0413fdc43a77ceba0fd91814a0d151e9f01187d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:15",
+      "sequence": 22784,
+      "chapter_label": "HAB 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "You trampled the sea with your horses, churning mighty waters.",
+      "ko": "주께서 말을 타시고 바다 곧 큰 물의 파도를 밟으셨나이다",
+      "source_text_hash": "c264a49cc67cd77b4be5e8feeaa2ba92f9c0dbcfef5a327a22119b1e93e09454",
+      "translation_text_hash": "e8680c818ee4cba44cb17df3ca47802dcb52a7e7aa627ac6bde5310d69d8fb58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 말을 타시고 바다 곧 큰 물의 파도를 밟으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "e8680c818ee4cba44cb17df3ca47802dcb52a7e7aa627ac6bde5310d69d8fb58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:16",
+      "sequence": 22785,
+      "chapter_label": "HAB 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "I heard, and my body trembled. My lips quivered at the voice. Rottenness enters into my bones, and I tremble in my place because I must wait quietly for the day of trouble, for the coming up of the people who invade us.",
+      "ko": "내가 들었으므로 내 창자가 흔들렸고 그 목소리로 인하여 내 입술이 떨렸도다 무리가 우리를 치러 올라 오는 환난날을 내가 기다리므로 내 뼈에 썩이는 것이 들어 왔으며 내 몸은 내 처소에서 떨리는도다",
+      "source_text_hash": "bcb8b44fa42df17e22afb2543d0265e1ae8d0364295a690853e285be5690ea80",
+      "translation_text_hash": "c612b348573f71e2a99279d9ee916e87cc694f539081e018f765d563966692da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들었으므로 내 창자가 흔들렸고 그 목소리로 인하여 내 입술이 떨렸도다 무리가 우리를 치러 올라 오는 환난날을 내가 기다리므로 내 뼈에 썩이는 것이 들어 왔으며 내 몸은 내 처소에서 떨리는도다"
+      ],
+      "raw_text_hashes": [
+        "c612b348573f71e2a99279d9ee916e87cc694f539081e018f765d563966692da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:17",
+      "sequence": 22786,
+      "chapter_label": "HAB 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "For even though the fig tree doesn’t flourish, nor fruit be in the vines, the labor of the olive fails, the fields yield no food, the flocks are cut off from the fold, and there is no herd in the stalls,",
+      "ko": "비록 무화과나무가 무성치 못하며 포도나무에 열매가 없으며 감람나무에 소출이 없으며 밭에 식물이 없으며 우리에 양이 없으며 외양간에 소가 없을찌라도",
+      "source_text_hash": "a6669832a96a8b3fcb45201ae1453d8d17062267afd927888812a3cfcbe6f161",
+      "translation_text_hash": "ab5c0378c04542de2cf0aab2febf228c76b2f1ea9c5ec8bd1c65ca9809fb72cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 무화과나무가 무성치 못하며 포도나무에 열매가 없으며 감람나무에 소출이 없으며 밭에 식물이 없으며 우리에 양이 없으며 외양간에 소가 없을찌라도"
+      ],
+      "raw_text_hashes": [
+        "ab5c0378c04542de2cf0aab2febf228c76b2f1ea9c5ec8bd1c65ca9809fb72cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:18",
+      "sequence": 22787,
+      "chapter_label": "HAB 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "yet I will rejoice in the LORD. I will be joyful in the God of my salvation!",
+      "ko": "나는 여호와를 인하여 즐거워하며 나의 구원의 하나님을 인하여 기뻐하리로다",
+      "source_text_hash": "7d69e5b562b2551532e8383927d7ffb563ab55af00746dbd475d406c6f4c58a5",
+      "translation_text_hash": "360276bff0fec90b6b49f9ad45b951345ee53bdbbd81f573adc32e18a38c5385",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와를 인하여 즐거워하며 나의 구원의 하나님을 인하여 기뻐하리로다"
+      ],
+      "raw_text_hashes": [
+        "360276bff0fec90b6b49f9ad45b951345ee53bdbbd81f573adc32e18a38c5385"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAB:3:19",
+      "sequence": 22788,
+      "chapter_label": "HAB 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "HAB",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HAB",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "GOD, the Lord, is my strength. He makes my feet like deer’s feet, and enables me to go in high places. For the music director, on my stringed instruments.",
+      "ko": "주 여호와는 나의 힘이시라 나의 발을 사슴과 같게 하사 나로 나의 높은 곳에 다니게 하시리로다 이 노래는 영장을 위하여 내 수금에 맞춘 것이니라",
+      "source_text_hash": "899eec36d2f611884689876a53c3a7254989ad43ec96b35bb2934901c9d50cfa",
+      "translation_text_hash": "ea51bffc09aef77351ba9e5f3e48610143e4ad29681a9f091ce6787b982025b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와는 나의 힘이시라 나의 발을 사슴과 같게 하사 나로 나의 높은 곳에 다니게 하시리로다 이 노래는 영장을 위하여 내 수금에 맞춘 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ea51bffc09aef77351ba9e5f3e48610143e4ad29681a9f091ce6787b982025b0"
+      ]
+    }
+  ]
+}

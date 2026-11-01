@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:023",
+  "unit_ordinal": 825,
+  "unit_label": "EZK 23",
+  "book_code": "EZK",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:23:1",
+      "sequence": 21009,
+      "chapter_label": "EZK 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came again to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "53317430a9b7a9fdbe9156a35ae512112bae6b6f909738ce12aa74f8e4a71377",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:2",
+      "sequence": 21010,
+      "chapter_label": "EZK 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, there were two women, the daughters of one mother.",
+      "ko": "인자야 두 여인이 있었으니 한 어미의 딸이라",
+      "source_text_hash": "fb868465d1e585cd28d7d025f71cfa2da8e75377a706d0e2ecf37c7d14c945b6",
+      "translation_text_hash": "27201c89892aca50b02a7f2e8d0df3feefeddd050af9498686c8bddac99945b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 두 여인이 있었으니 한 어미의 딸이라"
+      ],
+      "raw_text_hashes": [
+        "27201c89892aca50b02a7f2e8d0df3feefeddd050af9498686c8bddac99945b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:3",
+      "sequence": 21011,
+      "chapter_label": "EZK 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "They played the prostitute in Egypt. They played the prostitute in their youth. Their breasts were fondled there, and their youthful nipples were caressed there.",
+      "ko": "그들이 애굽에서 행음하되 어렸을 때에 행음하여 그들의 유방이 눌리며 그 처녀의 가슴이 어루만진바 되었었나니",
+      "source_text_hash": "0bbc563a41d358ee5b25eca1fcebba042a0a7a97f07bf9c698f9104914a24fe6",
+      "translation_text_hash": "48c03a0192ef7c52571214696ae06978ee31a7832a126a5127a7bb4d85ccbab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 애굽에서 행음하되 어렸을 때에 행음하여 그들의 유방이 눌리며 그 처녀의 가슴이 어루만진바 되었었나니"
+      ],
+      "raw_text_hashes": [
+        "48c03a0192ef7c52571214696ae06978ee31a7832a126a5127a7bb4d85ccbab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:4",
+      "sequence": 21012,
+      "chapter_label": "EZK 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Their names were Oholah the elder, and Oholibah her sister. They became mine, and they bore sons and daughters. As for their names, Samaria is Oholah, and Jerusalem Oholibah.",
+      "ko": "그 이름이 형은 오홀라요 아우는 오홀리바라 그들이 내게 속하여 자녀를 낳았나니 그 이름으로 말하면 오홀라는 사마리아요 오홀리바는 예루살렘이니라",
+      "source_text_hash": "5a4b6ec9adda0e7597a299435198a67c385af5f4933612ffa995ed12278474a5",
+      "translation_text_hash": "2fbd4c284042794c43010ebdbd2a4691852d8ac62dceac74f50c84adcd1c32d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이름이 형은 오홀라요 아우는 오홀리바라 그들이 내게 속하여 자녀를 낳았나니 그 이름으로 말하면 오홀라는 사마리아요 오홀리바는 예루살렘이니라"
+      ],
+      "raw_text_hashes": [
+        "2fbd4c284042794c43010ebdbd2a4691852d8ac62dceac74f50c84adcd1c32d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:5",
+      "sequence": 21013,
+      "chapter_label": "EZK 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "“Oholah played the prostitute when she was mine. She doted on her lovers, on the Assyrians her neighbors,",
+      "ko": "오홀라가 내게 속하였을 때에 행음하여 그 연애하는 자 곧 그 이웃 앗수르 사람을 사모하였나니",
+      "source_text_hash": "835449d803323f968116b411aea5b56eba3345d93262ffca4cd27aebf11b9347",
+      "translation_text_hash": "ae5faf08f0f5b223a58751ac31226fe2acde3e8ac256dd471fefd07b4f3e2f02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오홀라가 내게 속하였을 때에 행음하여 그 연애하는 자 곧 그 이웃 앗수르 사람을 사모하였나니"
+      ],
+      "raw_text_hashes": [
+        "ae5faf08f0f5b223a58751ac31226fe2acde3e8ac256dd471fefd07b4f3e2f02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:6",
+      "sequence": 21014,
+      "chapter_label": "EZK 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "who were clothed with blue—governors and rulers, all of them desirable young men, horsemen riding on horses.",
+      "ko": "그들은 다 자색 옷을 입은 방백과 감독이요 준수한 소년, 말 타는 자들이라",
+      "source_text_hash": "dc8394472624982562a2419586ebc21f99d4530157b2d063fd47663aa9186f9f",
+      "translation_text_hash": "d1176d069986e59e406e667f004992acdcc1eab146fce64324af2bc24e3ba177",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다 자색 옷을 입은 방백과 감독이요 준수한 소년, 말 타는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "d1176d069986e59e406e667f004992acdcc1eab146fce64324af2bc24e3ba177"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:7",
+      "sequence": 21015,
+      "chapter_label": "EZK 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "She gave herself as a prostitute to them, all of them the choicest men of Assyria. She defiled herself with the idols of whomever she lusted after.",
+      "ko": "그가 앗수르 중에 잘 생긴 그 모든 자들과 행음하고 누구를 연애하든지 그들의 모든 우상으로 스스로 더럽혔으며",
+      "source_text_hash": "610bfec84ab2800afb9786a2af37559b6dd60592f0d8d0f5c75709f3f947718d",
+      "translation_text_hash": "ac016aa56ee91324bceeb2e6497352ba86e350b40fcfdda1c59dacb11c233d54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 앗수르 중에 잘 생긴 그 모든 자들과 행음하고 누구를 연애하든지 그들의 모든 우상으로 스스로 더럽혔으며"
+      ],
+      "raw_text_hashes": [
+        "ac016aa56ee91324bceeb2e6497352ba86e350b40fcfdda1c59dacb11c233d54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:8",
+      "sequence": 21016,
+      "chapter_label": "EZK 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "She hasn’t left her prostitution since leaving Egypt; for in her youth they lay with her. They caressed her youthful nipples and they poured out their prostitution on her.",
+      "ko": "그가 젊었을 때에 애굽 사람과 동침하매 그 처녀의 가슴이 어루만진바 되며 그 몸에 음란을 쏟음을 당한바 되었더니 그가 그 때부터 행음함을 마지아니하였느니라",
+      "source_text_hash": "e7b76df41cd279a0040f9e74e04b8ade7ffe745f9ce8a0b0bcb84677250714b6",
+      "translation_text_hash": "5e2cde14d2a287ac51fe9fc1ad672e9ece935764edfd0a93c3fabceb39773da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 젊었을 때에 애굽 사람과 동침하매 그 처녀의 가슴이 어루만진바 되며 그 몸에 음란을 쏟음을 당한바 되었더니 그가 그 때부터 행음함을 마지아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5e2cde14d2a287ac51fe9fc1ad672e9ece935764edfd0a93c3fabceb39773da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:9",
+      "sequence": 21017,
+      "chapter_label": "EZK 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "“Therefore I delivered her into the hand of her lovers, into the hand of the Assyrians on whom she doted.",
+      "ko": "그러므로 내가 그를 그 정든 자 곧 그 연애하는 앗수르 사람의 손에 붙였더니",
+      "source_text_hash": "773feca489fc040559038c68584c62256ab58b5bfd9c42820e6f86514edc1ae9",
+      "translation_text_hash": "bc108164e3c2d42fd36783e2499e17f2c6adb36edc52810fec67e2e4ff802978",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그를 그 정든 자 곧 그 연애하는 앗수르 사람의 손에 붙였더니"
+      ],
+      "raw_text_hashes": [
+        "bc108164e3c2d42fd36783e2499e17f2c6adb36edc52810fec67e2e4ff802978"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:10",
+      "sequence": 21018,
+      "chapter_label": "EZK 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "These uncovered her nakedness. They took her sons and her daughters, and they killed her with the sword. She became a byword among women; for they executed judgments on her.",
+      "ko": "그들이 그 하체를 드러내고 그 자녀를 빼앗으며 칼로 그를 죽여 그 누명을 여자에게 드러내었나니 이는 그들이 그에게 심문을 행함이니라",
+      "source_text_hash": "69751088ef70eea7f244367ef5e969f329abe7bf5acee1f6684372428a2ec111",
+      "translation_text_hash": "0a07a30804c86b1c26f17276cf87ef558a92d75170e95df1595dc2f646e786c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 하체를 드러내고 그 자녀를 빼앗으며 칼로 그를 죽여 그 누명을 여자에게 드러내었나니 이는 그들이 그에게 심문을 행함이니라"
+      ],
+      "raw_text_hashes": [
+        "0a07a30804c86b1c26f17276cf87ef558a92d75170e95df1595dc2f646e786c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:11",
+      "sequence": 21019,
+      "chapter_label": "EZK 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "“Her sister Oholibah saw this, yet she was more corrupt in her lusting than she, and in her prostitution which was more depraved than the prostitution of her sister.",
+      "ko": "그 아우 오홀리바가 이것을 보고도 그 형보다 음욕을 더하며 그 형의 간음함보다 그 간음이 더 심하므로 그 형보다 더 부패하여졌느니라",
+      "source_text_hash": "365b06baaef204a30065cee32acfa6a69917dc3f0f0bcbadea4b65aae0f99f4f",
+      "translation_text_hash": "3b4602bffcead533c1e05904762a7bb32acff6fd391f2de620736871615969d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아우 오홀리바가 이것을 보고도 그 형보다 음욕을 더하며 그 형의 간음함보다 그 간음이 더 심하므로 그 형보다 더 부패하여졌느니라"
+      ],
+      "raw_text_hashes": [
+        "3b4602bffcead533c1e05904762a7bb32acff6fd391f2de620736871615969d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:12",
+      "sequence": 21020,
+      "chapter_label": "EZK 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "She lusted after the Assyrians, governors and rulers—her neighbors, clothed most gorgeously, horsemen riding on horses, all of them desirable young men.",
+      "ko": "그가 그 이웃 앗수르 사람을 연애하였나니 그들은 화려한 의복을 입은 방백과 감독이요 말 타는 자들과 준수한 소년이었느니라",
+      "source_text_hash": "f49fc6a6341831031d2f46dc5acaa9cd69092fb299864ca2babc1d23a0dadc67",
+      "translation_text_hash": "c796167e0031ebb3eec1b75e72c8dffca9db256575e9e5660af3c412a818749e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 이웃 앗수르 사람을 연애하였나니 그들은 화려한 의복을 입은 방백과 감독이요 말 타는 자들과 준수한 소년이었느니라"
+      ],
+      "raw_text_hashes": [
+        "c796167e0031ebb3eec1b75e72c8dffca9db256575e9e5660af3c412a818749e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:13",
+      "sequence": 21021,
+      "chapter_label": "EZK 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "I saw that she was defiled. They both went the same way.",
+      "ko": "그 두 여인이 한길로 행하므로 그도 더러워졌음을 내가 보았노라",
+      "source_text_hash": "f49d46efbf878621f7b41a9935875f58f46da9a23bbed454eb6c6e7b9a8a51e5",
+      "translation_text_hash": "e9982e38d8303a2e560faddc91353111987218031b0c24484fc2a82915b8bee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 여인이 한길로 행하므로 그도 더러워졌음을 내가 보았노라"
+      ],
+      "raw_text_hashes": [
+        "e9982e38d8303a2e560faddc91353111987218031b0c24484fc2a82915b8bee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:14",
+      "sequence": 21022,
+      "chapter_label": "EZK 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "“She increased her prostitution; for she saw men portrayed on the wall, the images of the Chaldeans portrayed with red,",
+      "ko": "그가 음행을 더하였음은 붉은 것으로 벽에 그린 사람의 형상 곧 갈대아 사람의 형상을 보았음이니",
+      "source_text_hash": "0e5ce4170c822535cc0d3005fa11b28e4057e58065914a7c7f0f593727acef5e",
+      "translation_text_hash": "994431e541b7deb58c76f74d6e1cfca434c5f9dd3ef9c83a8dce27ca5c5adf57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 음행을 더하였음은 붉은 것으로 벽에 그린 사람의 형상 곧 갈대아 사람의 형상을 보았음이니"
+      ],
+      "raw_text_hashes": [
+        "994431e541b7deb58c76f74d6e1cfca434c5f9dd3ef9c83a8dce27ca5c5adf57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:15",
+      "sequence": 21023,
+      "chapter_label": "EZK 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "dressed with belts on their waists, with flowing turbans on their heads, all of them looking like princes, after the likeness of the Babylonians in Chaldea, the land of their birth.",
+      "ko": "그 형상은 허리를 띠로 동이고 머리를 긴 수건으로 쌌으며 용모는 다 존귀한 자 곧 그 고토 갈대아 바벨론 사람 같은 것이라",
+      "source_text_hash": "63744523f3cb20449276ac085f374ee5d94d0bf32dd80da28176307c9d4ea717",
+      "translation_text_hash": "a0886339dbe229ab01be964c533fa70b54c3e6f130c9a6317145176335fb1ce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형상은 허리를 띠로 동이고 머리를 긴 수건으로 쌌으며 용모는 다 존귀한 자 곧 그 고토 갈대아 바벨론 사람 같은 것이라"
+      ],
+      "raw_text_hashes": [
+        "a0886339dbe229ab01be964c533fa70b54c3e6f130c9a6317145176335fb1ce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:16",
+      "sequence": 21024,
+      "chapter_label": "EZK 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "As soon as she saw them, she lusted after them and sent messengers to them into Chaldea.",
+      "ko": "그가 보고 곧 연애하여 사자를 갈대아 그들에게로 보내매",
+      "source_text_hash": "0ca0e92949338c1767467e0c7c4d81b54e3967acd09557e495dfcb8945739c03",
+      "translation_text_hash": "e4e35cc2e56b2bdc7165b794f429e835a48ca2fda460c542e7cb3787bf76bccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 보고 곧 연애하여 사자를 갈대아 그들에게로 보내매"
+      ],
+      "raw_text_hashes": [
+        "e4e35cc2e56b2bdc7165b794f429e835a48ca2fda460c542e7cb3787bf76bccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:17",
+      "sequence": 21025,
+      "chapter_label": "EZK 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "The Babylonians came to her into the bed of love, and they defiled her with their prostitution. She was polluted with them, and her soul was alienated from them.",
+      "ko": "바벨론 사람이 나아와 연애하는 침상에 올라 음란으로 그를 더럽히매 그가 더럽힘을 입은 후에 그들을 싫어하는 마음이 생겼느니라",
+      "source_text_hash": "35a593ae25cf7211f83653e1d8581d905d534b752d972fa8197c1c9411ee6774",
+      "translation_text_hash": "87fd2822c9d86fd10402285a8c525fcb5ec2df4abeab82ec7910ab0a3b479960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 사람이 나아와 연애하는 침상에 올라 음란으로 그를 더럽히매 그가 더럽힘을 입은 후에 그들을 싫어하는 마음이 생겼느니라"
+      ],
+      "raw_text_hashes": [
+        "87fd2822c9d86fd10402285a8c525fcb5ec2df4abeab82ec7910ab0a3b479960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:18",
+      "sequence": 21026,
+      "chapter_label": "EZK 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "So she uncovered her prostitution and uncovered her nakedness. Then my soul was alienated from her, just like my soul was alienated from her sister.",
+      "ko": "그가 이와 같이 그 음행을 나타내며 그 하체를 드러내므로 내 마음이 그 형을 싫어한 것 같이 그를 싫어하였으나",
+      "source_text_hash": "41ac36cd5e95dc8a596a2e2ed9b1e5db1eca1b74a63bbc5453b15ae7990f995c",
+      "translation_text_hash": "4b0e035d88671de4386660cfcd3cfc9dd10e9614b12196bfbe63362196dafa79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이와 같이 그 음행을 나타내며 그 하체를 드러내므로 내 마음이 그 형을 싫어한 것 같이 그를 싫어하였으나"
+      ],
+      "raw_text_hashes": [
+        "4b0e035d88671de4386660cfcd3cfc9dd10e9614b12196bfbe63362196dafa79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:19",
+      "sequence": 21027,
+      "chapter_label": "EZK 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "Yet she multiplied her prostitution, remembering the days of her youth, in which she had played the prostitute in the land of Egypt.",
+      "ko": "그가 그 음행을 더하여 그 젊었을 때 곧 애굽 땅에서 음행하던 때를 생각하고",
+      "source_text_hash": "011f9365458eb039f2af2994fb0d32a9547a23487e69f4301728b6b10ec3e449",
+      "translation_text_hash": "37d4cd71a1f11710cd602625d089f1bde5b423d24b66994ff41ef80f4634d344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 음행을 더하여 그 젊었을 때 곧 애굽 땅에서 음행하던 때를 생각하고"
+      ],
+      "raw_text_hashes": [
+        "37d4cd71a1f11710cd602625d089f1bde5b423d24b66994ff41ef80f4634d344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:20",
+      "sequence": 21028,
+      "chapter_label": "EZK 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "She lusted after their lovers, whose flesh is as the flesh of donkeys, and whose issue is like the issue of horses.",
+      "ko": "그 하체는 나귀 같고 그 정수는 말 같은 음란한 간부를 연애하였도다",
+      "source_text_hash": "23ee20518f0475cbadf40ca30551c7b304dcd0ac3b6aaabdeb8787da3c51f2cc",
+      "translation_text_hash": "1058f646164cd611c69096effb5d848a34a76d34ccf9b98e9ea37a37439d8099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 하체는 나귀 같고 그 정수는 말 같은 음란한 간부를 연애하였도다"
+      ],
+      "raw_text_hashes": [
+        "1058f646164cd611c69096effb5d848a34a76d34ccf9b98e9ea37a37439d8099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:21",
+      "sequence": 21029,
+      "chapter_label": "EZK 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "Thus you called to memory the lewdness of your youth, in the caressing of your nipples by the Egyptians because of your youthful breasts.",
+      "ko": "네가 젊었을 때에 행음하여 애굽 사람에게 네 가슴과 유방이 어루만진바 되었던 것을 오히려 생각하도다",
+      "source_text_hash": "fcaa4ce2345e3722c0843c8ca0c9dcf933f297ada341657bc12b466071666e6a",
+      "translation_text_hash": "4bac99d302a492a9eb359fa90790623edc87694b284cad077e0f49b34457b046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 젊었을 때에 행음하여 애굽 사람에게 네 가슴과 유방이 어루만진바 되었던 것을 오히려 생각하도다"
+      ],
+      "raw_text_hashes": [
+        "4bac99d302a492a9eb359fa90790623edc87694b284cad077e0f49b34457b046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:22",
+      "sequence": 21030,
+      "chapter_label": "EZK 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "“Therefore, Oholibah, the Lord GOD says: ‘Behold, I will raise up your lovers against you, from whom your soul is alienated, and I will bring them against you on every side:",
+      "ko": "그러므로 오홀리바야 나 주 여호와가 말하노라 내가 너의 연애하다가 싫어하던 자들을 격동시켜서 그들로 사방에서 와서 너를 치게 하리니",
+      "source_text_hash": "176bb2ee883c0698b2689b16b0169b99bab1657cd499cc54cd6a73603993414c",
+      "translation_text_hash": "f72506ae46a07d1771533f48be0f85450ab74030dcb2f7aa57155bd8a5d6986b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 오홀리바야 나 주 여호와가 말하노라 내가 너의 연애하다가 싫어하던 자들을 격동시켜서 그들로 사방에서 와서 너를 치게 하리니"
+      ],
+      "raw_text_hashes": [
+        "f72506ae46a07d1771533f48be0f85450ab74030dcb2f7aa57155bd8a5d6986b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:23",
+      "sequence": 21031,
+      "chapter_label": "EZK 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "the Babylonians and all the Chaldeans, Pekod, Shoa, Koa, and all the Assyrians with them; all of them desirable young men, governors and rulers, princes and men of renown, all of them riding on horses.",
+      "ko": "그들은 바벨론 사람과 갈대아 모든 무리 브곳과 소아와 고아 사람과 또 그와 함께 한 모든 앗수르 사람 곧 준수한 소년이며 다 방백과 감독이며 귀인과 유명한 자, 다 말 타는 자들이라",
+      "source_text_hash": "39d8a9ecaf383633e102048ce89e31ae2b2bf32ac000e1c00958509eb1afb880",
+      "translation_text_hash": "9660443741fa97a9c605dffd84e5fc4160399ff9f380a11ccfe32d7dffe3d125",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 바벨론 사람과 갈대아 모든 무리 브곳과 소아와 고아 사람과 또 그와 함께 한 모든 앗수르 사람 곧 준수한 소년이며 다 방백과 감독이며 귀인과 유명한 자, 다 말 타는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "9660443741fa97a9c605dffd84e5fc4160399ff9f380a11ccfe32d7dffe3d125"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:24",
+      "sequence": 21032,
+      "chapter_label": "EZK 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "They will come against you with weapons, chariots, and wagons, and with a company of peoples. They will set themselves against you with buckler, shield, and helmet all around. I will commit the judgment to them, and they will judge you according to their judgments.",
+      "ko": "그들이 병기와 병거와 수레와 크고 작은 방패를 이끌고 투구 쓴 군대를 거느리고 치러 와서 너를 에워쌀찌라 내가 심문권을 그들에게 맡긴즉 그들이 그 심문권대로 너를 심문하리라",
+      "source_text_hash": "515a6b435d4763fe2c996ada9e73b2ad038a1feda655491b8f70e3fc31ada729",
+      "translation_text_hash": "a7d1fe4565ad2af3b56b002c27e3a05404d9b291129030e2e8f173712880ec51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 병기와 병거와 수레와 크고 작은 방패를 이끌고 투구 쓴 군대를 거느리고 치러 와서 너를 에워쌀찌라 내가 심문권을 그들에게 맡긴즉 그들이 그 심문권대로 너를 심문하리라"
+      ],
+      "raw_text_hashes": [
+        "a7d1fe4565ad2af3b56b002c27e3a05404d9b291129030e2e8f173712880ec51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:25",
+      "sequence": 21033,
+      "chapter_label": "EZK 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "I will set my jealousy against you, and they will deal with you in fury. They will take away your nose and your ears. Your remnant will fall by the sword. They will take your sons and your daughters; and the rest of you will be devoured by the fire.",
+      "ko": "내가 너를 향하여 투기를 발하리니 그들이 분노로 네게 행하여 네 코와 귀를 깎아버리고 남은 자를 칼로 엎드러뜨리며 네 자녀를 빼앗고 그 남은 자를 불에 사르며",
+      "source_text_hash": "660155ffd8ccdef84306eb0ccfab5f24d4b27044aee8c3aa5d7c15a9cd23ee66",
+      "translation_text_hash": "5bf710f5dcf99bcccdf1f8cb201791a27dc56c4aebdb2a5e6f177e0a8c5df23a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 향하여 투기를 발하리니 그들이 분노로 네게 행하여 네 코와 귀를 깎아버리고 남은 자를 칼로 엎드러뜨리며 네 자녀를 빼앗고 그 남은 자를 불에 사르며"
+      ],
+      "raw_text_hashes": [
+        "5bf710f5dcf99bcccdf1f8cb201791a27dc56c4aebdb2a5e6f177e0a8c5df23a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:26",
+      "sequence": 21034,
+      "chapter_label": "EZK 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "They will also strip you of your clothes and take away your beautiful jewels.",
+      "ko": "또 네 옷을 벗기며 네 장식품을 빼앗을찌라",
+      "source_text_hash": "dfed8a3b0b006c44d27a183320aca0f7153523368be56d281218c5b236475d17",
+      "translation_text_hash": "33effda312addbc20a774a8f0876c0ea265244acba0f2143db4d348bc35a8a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 옷을 벗기며 네 장식품을 빼앗을찌라"
+      ],
+      "raw_text_hashes": [
+        "33effda312addbc20a774a8f0876c0ea265244acba0f2143db4d348bc35a8a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:27",
+      "sequence": 21035,
+      "chapter_label": "EZK 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "Thus I will make your lewdness to cease from you, and remove your prostitution from the land of Egypt, so that you will not lift up your eyes to them, nor remember Egypt any more.’",
+      "ko": "이와 같이 내가 네 음란과 애굽 땅에서부터 음행하던 것을 그치게 하여 너로 그들을 향하여 눈을 들지도 못하게 하며 다시는 애굽을 기억하지도 못하게 하리라",
+      "source_text_hash": "f0521fd13c64b6faf3d61998dd8923a70797d7231878b3729853bace2f3c90c5",
+      "translation_text_hash": "a43d8a08289956f99a3e399fe739924c5a51bbfea517d55f131a9853fd0ba680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내가 네 음란과 애굽 땅에서부터 음행하던 것을 그치게 하여 너로 그들을 향하여 눈을 들지도 못하게 하며 다시는 애굽을 기억하지도 못하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "a43d8a08289956f99a3e399fe739924c5a51bbfea517d55f131a9853fd0ba680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:28",
+      "sequence": 21036,
+      "chapter_label": "EZK 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "“For the Lord GOD says: ‘Behold, I will deliver you into the hand of them whom you hate, into the hand of them from whom your soul is alienated.",
+      "ko": "나 주 여호와가 말하노라 내가 너의 미워하는 자와 네 마음에 싫어하는 자의 손에 너를 붙이리니",
+      "source_text_hash": "8d845bb4e327a8be165f8710c83adfd3414fa55861a697fbf6b8c6a9bd456a14",
+      "translation_text_hash": "7ad725eaf79df0f1b5481f234b50728378c81f7c73f902f19593d5b2606e9a9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 너의 미워하는 자와 네 마음에 싫어하는 자의 손에 너를 붙이리니"
+      ],
+      "raw_text_hashes": [
+        "7ad725eaf79df0f1b5481f234b50728378c81f7c73f902f19593d5b2606e9a9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:29",
+      "sequence": 21037,
+      "chapter_label": "EZK 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "They will deal with you in hatred, and will take away all your labor, and will leave you naked and bare. The nakedness of your prostitution will be uncovered, both your lewdness and your prostitution.",
+      "ko": "그들이 미워하는 마음으로 네게 행하여 네 모든 수고한 것을 빼앗고 너를 벌거벗겨 적신으로 두어서 네 음행의 벗은 몸 곧 네 음란하며 음행하던 것을 드러낼 것이라",
+      "source_text_hash": "94705a849d3ba9585a5c821db8e0fd04eb3bc5dd8433abb5e3b3223fc8218b69",
+      "translation_text_hash": "4e1869b072c9bb8567a0a2d14cefba11462d1de080a142ac232c51e18bc88b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 미워하는 마음으로 네게 행하여 네 모든 수고한 것을 빼앗고 너를 벌거벗겨 적신으로 두어서 네 음행의 벗은 몸 곧 네 음란하며 음행하던 것을 드러낼 것이라"
+      ],
+      "raw_text_hashes": [
+        "4e1869b072c9bb8567a0a2d14cefba11462d1de080a142ac232c51e18bc88b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:30",
+      "sequence": 21038,
+      "chapter_label": "EZK 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "These things will be done to you because you have played the prostitute after the nations, and because you are polluted with their idols.",
+      "ko": "네가 이같이 당할 것은 네가 음란히 이방을 좇고 그 우상들로 더럽혔음이로다",
+      "source_text_hash": "44b55302f731f0dc78f7f83940501a35799f5f956dfd534f51c7d9813e224066",
+      "translation_text_hash": "f0ab55ca2317f10ba6fd2345e5221288a10dfa07736c7be5c311f0053abda391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이같이 당할 것은 네가 음란히 이방을 좇고 그 우상들로 더럽혔음이로다"
+      ],
+      "raw_text_hashes": [
+        "f0ab55ca2317f10ba6fd2345e5221288a10dfa07736c7be5c311f0053abda391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:31",
+      "sequence": 21039,
+      "chapter_label": "EZK 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "You have walked in the way of your sister; therefore I will give her cup into your hand.’",
+      "ko": "네가 네 형의 길로 행하였은즉 내가 그의 잔을 네 손에 주리라",
+      "source_text_hash": "2dfc1a0b2bc7d9d2318fb83aab51ce035ef34dd357395044e474d97408de78b7",
+      "translation_text_hash": "5f631e8b387cecf9c62b4fd90acfed63cd848bbf26d853efd4da8bf88c16f6be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 형의 길로 행하였은즉 내가 그의 잔을 네 손에 주리라"
+      ],
+      "raw_text_hashes": [
+        "5f631e8b387cecf9c62b4fd90acfed63cd848bbf26d853efd4da8bf88c16f6be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:32",
+      "sequence": 21040,
+      "chapter_label": "EZK 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "“The Lord GOD says: ‘You will drink of your sister’s cup, which is deep and large. You will be ridiculed and held in derision. It contains much.",
+      "ko": "나 주 여호와가 말하노라 깊고 크고 가득히 담긴 네 형의 잔을 네가 마시고 비소와 조롱을 당하리라",
+      "source_text_hash": "64825379eeda5a34efb0544b37fb16fa3989aec53ccdd7d2730c8c442e817afb",
+      "translation_text_hash": "a0564eaf33f03ca9ab8c95eeb452b899ab005668c3bbb031c39731840f09fa40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 깊고 크고 가득히 담긴 네 형의 잔을 네가 마시고 비소와 조롱을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "a0564eaf33f03ca9ab8c95eeb452b899ab005668c3bbb031c39731840f09fa40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:33",
+      "sequence": 21041,
+      "chapter_label": "EZK 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "You will be filled with drunkenness and sorrow, with the cup of astonishment and desolation, with the cup of your sister Samaria.",
+      "ko": "네가 네 형 사마리아의 잔 곧 놀람과 패망의 잔에 넘치게 취하고 근심할찌라",
+      "source_text_hash": "f16069849f3fece4676d6daea7f29e3e82a4b74bcec4ac17d5caa1a38832aa0b",
+      "translation_text_hash": "fe61c574aee2dcb2208e8348d807567824dada227a97ee9323efd44a954e53d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 형 사마리아의 잔 곧 놀람과 패망의 잔에 넘치게 취하고 근심할찌라"
+      ],
+      "raw_text_hashes": [
+        "fe61c574aee2dcb2208e8348d807567824dada227a97ee9323efd44a954e53d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:34",
+      "sequence": 21042,
+      "chapter_label": "EZK 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "You will even drink it and drain it out. You will gnaw the broken pieces of it, and will tear your breasts; for I have spoken it,’ says the Lord GOD.",
+      "ko": "네가 그 잔을 다 기울여 마시고 그 깨어진 조각을 씹으며 네 유방을 꼬집을 것은 내가 이렇게 말하였음이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "a652aa0c55265789d7be1ece72ccef72f3d1d768dd16f62709e04c281fcbcb3a",
+      "translation_text_hash": "c1e29f6203f45215f0089bd4020e9fef1aee23a9a72fc3d42d4b9517e6742190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그 잔을 다 기울여 마시고 그 깨어진 조각을 씹으며 네 유방을 꼬집을 것은 내가 이렇게 말하였음이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "c1e29f6203f45215f0089bd4020e9fef1aee23a9a72fc3d42d4b9517e6742190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:35",
+      "sequence": 21043,
+      "chapter_label": "EZK 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘Because you have forgotten me and cast me behind your back, therefore you also bear your lewdness and your prostitution.’”",
+      "ko": "그러므로 나 주 여호와가 말하노라 네가 나를 잊었고 또 나를 네 등 뒤에 버렸은즉 너는 네 음란과 네 음행의 죄를 담당할찌니라 하시니라",
+      "source_text_hash": "fee0d2d568dc22ce3f6da07452249ae68743259d698a00e6e58f6433f043e809",
+      "translation_text_hash": "14e4e6b22ab3a5d6c3f20de45a1b8f27329cb2fbad3f98dc2ed3bde9a6acb1e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 네가 나를 잊었고 또 나를 네 등 뒤에 버렸은즉 너는 네 음란과 네 음행의 죄를 담당할찌니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "14e4e6b22ab3a5d6c3f20de45a1b8f27329cb2fbad3f98dc2ed3bde9a6acb1e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:36",
+      "sequence": 21044,
+      "chapter_label": "EZK 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "The LORD said moreover to me: “Son of man, will you judge Oholah and Oholibah? Then declare to them their abominations.",
+      "ko": "여호와께서 또 내게 이르시되 인자야 네가 오홀라와 오홀리바를 국문하려느냐 그러면 그 가증한 일을 그들에게 고하라",
+      "source_text_hash": "91756e8f66e62b77361079e9a53a5243c632c113afbabc722e2755544667122c",
+      "translation_text_hash": "cd9f3edad11cb9ef809160bb485184230c840818602177ad847c00ea5b37b725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 내게 이르시되 인자야 네가 오홀라와 오홀리바를 국문하려느냐 그러면 그 가증한 일을 그들에게 고하라"
+      ],
+      "raw_text_hashes": [
+        "cd9f3edad11cb9ef809160bb485184230c840818602177ad847c00ea5b37b725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:37",
+      "sequence": 21045,
+      "chapter_label": "EZK 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "For they have committed adultery, and blood is in their hands. They have committed adultery with their idols. They have also caused their sons, whom they bore to me, to pass through the fire to them to be devoured.",
+      "ko": "그들이 행음하였으며 피를 손에 묻혔으며 또 그 우상과 행음하며 내게 낳아준 자식들을 우상을 위하여 화제로 살랐으며",
+      "source_text_hash": "218cab2db9755daa56c6c7136270ff3c03d6518f87e1d19aa289c24525425289",
+      "translation_text_hash": "25b92e3a55e5ab1878ab1cbe1b058e540661b17fd00a2a96bac3e79083a0418a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 행음하였으며 피를 손에 묻혔으며 또 그 우상과 행음하며 내게 낳아준 자식들을 우상을 위하여 화제로 살랐으며"
+      ],
+      "raw_text_hashes": [
+        "25b92e3a55e5ab1878ab1cbe1b058e540661b17fd00a2a96bac3e79083a0418a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:38",
+      "sequence": 21046,
+      "chapter_label": "EZK 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "Moreover this they have done to me: they have defiled my sanctuary in the same day, and have profaned my Sabbaths.",
+      "ko": "이 외에도 그들이 내게 행한 것이 있나니 당일에 내 성소를 더럽히며 내 안식일을 범하였도다",
+      "source_text_hash": "c676159a73111a2b8e2b931ea7dfce7430ec9eb13533e372217d6d73411833e3",
+      "translation_text_hash": "11060d226fe85268db5891e832d396f521e114c8ed11bbd5fdedc2817353f3cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 외에도 그들이 내게 행한 것이 있나니 당일에 내 성소를 더럽히며 내 안식일을 범하였도다"
+      ],
+      "raw_text_hashes": [
+        "11060d226fe85268db5891e832d396f521e114c8ed11bbd5fdedc2817353f3cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:39",
+      "sequence": 21047,
+      "chapter_label": "EZK 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "For when they had slain their children to their idols, then they came the same day into my sanctuary to profane it; and behold, they have done this in the middle of my house.",
+      "ko": "그들이 자녀를 죽여 그 우상에게 드린 당일에 내 성소에 들어와서 더럽혔으되 그들이 내 성전 가운데서 그렇게 행하였으며",
+      "source_text_hash": "4c9adfed3d8f89dfff8fb7f2dadf8eb27b86a074aa0af4e57edd5e96e692b3a1",
+      "translation_text_hash": "5aeb857aaa680dd7c48942a4bf8afaf747c743923fca4b212a05bc56334b30ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 자녀를 죽여 그 우상에게 드린 당일에 내 성소에 들어와서 더럽혔으되 그들이 내 성전 가운데서 그렇게 행하였으며"
+      ],
+      "raw_text_hashes": [
+        "5aeb857aaa680dd7c48942a4bf8afaf747c743923fca4b212a05bc56334b30ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:40",
+      "sequence": 21048,
+      "chapter_label": "EZK 23",
+      "verse_label": "40",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 40
+        }
+      ],
+      "en": "“Furthermore you sisters have sent for men who come from far away, to whom a messenger was sent, and behold, they came; for whom you washed yourself, painted your eyes, decorated yourself with ornaments,",
+      "ko": "또 사자를 원방에 보내어 사람을 불러오게 하고 그들이 오매 그들을 위하여 목욕하며 눈썹을 그리며 스스로 단장하고",
+      "source_text_hash": "283ca5876405b8f13457dcb53ed6c21e2826cc1bc6bf72888f82627f7d3a449d",
+      "translation_text_hash": "682f8795c13ba108e3a3f13e81913841c5d0fdc574ed8548949b2de6a29ef96a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 사자를 원방에 보내어 사람을 불러오게 하고 그들이 오매 그들을 위하여 목욕하며 눈썹을 그리며 스스로 단장하고"
+      ],
+      "raw_text_hashes": [
+        "682f8795c13ba108e3a3f13e81913841c5d0fdc574ed8548949b2de6a29ef96a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:41",
+      "sequence": 21049,
+      "chapter_label": "EZK 23",
+      "verse_label": "41",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 41
+        }
+      ],
+      "en": "and sat on a stately bed, with a table prepared before it, whereupon you set my incense and my oil.",
+      "ko": "화려한 자리에 앉아 앞에 상을 베풀고 내 향과 기름을 그 위에 놓고",
+      "source_text_hash": "fc43e550a747981c0ce45dcffe60c4da4a23a3b5121ced17ac498037c3890d53",
+      "translation_text_hash": "8588506d5955d600e735308771ac2a4dc733098b6b9e4505589bac0203014f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화려한 자리에 앉아 앞에 상을 베풀고 내 향과 기름을 그 위에 놓고"
+      ],
+      "raw_text_hashes": [
+        "8588506d5955d600e735308771ac2a4dc733098b6b9e4505589bac0203014f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:42",
+      "sequence": 21050,
+      "chapter_label": "EZK 23",
+      "verse_label": "42",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 42
+        }
+      ],
+      "en": "“The voice of a multitude being at ease was with her. With men of the common sort were brought drunkards from the wilderness; and they put bracelets on their hands, and beautiful crowns on their heads.",
+      "ko": "그 무리와 편히 지꺼리고 즐겼으며 또 광야에서 잡류와 술 취한 사람을 청하여 오매 그들이 팔쇠를 그 손목에 끼우고 아름다운 면류관을 그 머리에 씌웠도다",
+      "source_text_hash": "1b3ed75b156e5229375659109a8d379dbe5a5ca5a95ef5354fcaa2304c8ba856",
+      "translation_text_hash": "8d2aa07f35ba2522610e145a6be07cd528f9e556d2e5e7b306593177e9cb4881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무리와 편히 지꺼리고 즐겼으며 또 광야에서 잡류와 술 취한 사람을 청하여 오매 그들이 팔쇠를 그 손목에 끼우고 아름다운 면류관을 그 머리에 씌웠도다"
+      ],
+      "raw_text_hashes": [
+        "8d2aa07f35ba2522610e145a6be07cd528f9e556d2e5e7b306593177e9cb4881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:43",
+      "sequence": 21051,
+      "chapter_label": "EZK 23",
+      "verse_label": "43",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 43
+        }
+      ],
+      "en": "Then I said of her who was old in adulteries, ‘Now they will play the prostitute with her, and she with them.’",
+      "ko": "내가 음행으로 쇠한 여인을 가리켜 말하노라 그가 그래도 그들과 피차 행음하는도다",
+      "source_text_hash": "73e84b183f235e17b4423527db9a7d11fb34f7cb8877e1fabcd19db361fc5e04",
+      "translation_text_hash": "ab0b92ce2e34983f4124eef850b94ec519a1abadb607d83791b5a930d9f59213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 음행으로 쇠한 여인을 가리켜 말하노라 그가 그래도 그들과 피차 행음하는도다"
+      ],
+      "raw_text_hashes": [
+        "ab0b92ce2e34983f4124eef850b94ec519a1abadb607d83791b5a930d9f59213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:44",
+      "sequence": 21052,
+      "chapter_label": "EZK 23",
+      "verse_label": "44",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 44
+        }
+      ],
+      "en": "They went in to her, as they go in to a prostitute. So they went in to Oholah and to Oholibah, the lewd women.",
+      "ko": "그들이 그에게 나아오기를 기생에게 나아옴 같이 음란한 여인 오홀라와 오홀리바에게 나아왔은즉",
+      "source_text_hash": "78b8d3252e605b1f31690a19a9a592be8d7f42bcbe9fcc0de77ffd89b16010ea",
+      "translation_text_hash": "026a8a78801fbbb86dba9797874b58254c22706baf05fa9d2edb2cbeec927b6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그에게 나아오기를 기생에게 나아옴 같이 음란한 여인 오홀라와 오홀리바에게 나아왔은즉"
+      ],
+      "raw_text_hashes": [
+        "026a8a78801fbbb86dba9797874b58254c22706baf05fa9d2edb2cbeec927b6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:45",
+      "sequence": 21053,
+      "chapter_label": "EZK 23",
+      "verse_label": "45",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 45
+        }
+      ],
+      "en": "Righteous men will judge them with the judgment of adulteresses and with the judgment of women who shed blood, because they are adulteresses, and blood is in their hands.",
+      "ko": "의인이 음부를 심문함 같이 심문하며 피를 흘린 여인을 심문함 같이 심문하리니 그들은 음부요 또 피가 그 손에 묻었음이니라",
+      "source_text_hash": "321a9d987039a60bd3bf9bc4013769b39cbbe2faed96598c8e5ceedff6924059",
+      "translation_text_hash": "3ae7f630d6a03bfdcdc3c225e331924bddc4ccf2c7de49c299f61b01a851adf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 음부를 심문함 같이 심문하며 피를 흘린 여인을 심문함 같이 심문하리니 그들은 음부요 또 피가 그 손에 묻었음이니라"
+      ],
+      "raw_text_hashes": [
+        "3ae7f630d6a03bfdcdc3c225e331924bddc4ccf2c7de49c299f61b01a851adf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:46",
+      "sequence": 21054,
+      "chapter_label": "EZK 23",
+      "verse_label": "46",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 46
+        }
+      ],
+      "en": "“For the Lord GOD says: ‘I will bring up a mob against them, and will give them to be tossed back and forth and robbed.",
+      "ko": "나 주 여호와가 말하노라 내가 군대를 거느리고 와서 치게 하여 그들로 학대와 약탈을 당하게 하리니",
+      "source_text_hash": "b08ae0e53472a088e74cd06b0ca380419c6c20d1e3004cdb6a6871cf8ba2828e",
+      "translation_text_hash": "04cfe9072bf3eb1a16e3af8e3e9b9e9de75761b618a6763e14444025240056f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 군대를 거느리고 와서 치게 하여 그들로 학대와 약탈을 당하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "04cfe9072bf3eb1a16e3af8e3e9b9e9de75761b618a6763e14444025240056f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:47",
+      "sequence": 21055,
+      "chapter_label": "EZK 23",
+      "verse_label": "47",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 47
+        }
+      ],
+      "en": "The company will stone them with stones and dispatch them with their swords. They will kill their sons and their daughters, and burn up their houses with fire.",
+      "ko": "그 군대가 그들을 돌로 치며 칼로 죽이고 그 자녀도 죽이며 그 집들을 불사르리라",
+      "source_text_hash": "7b07a1df4f9f7a13079e5573c5eac138ee70588446eb2df6f53fee228e886e42",
+      "translation_text_hash": "64f039dd30f5b0f3bca090b570f966d95efb6d749a1563d738c45b01fbc4ae6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대가 그들을 돌로 치며 칼로 죽이고 그 자녀도 죽이며 그 집들을 불사르리라"
+      ],
+      "raw_text_hashes": [
+        "64f039dd30f5b0f3bca090b570f966d95efb6d749a1563d738c45b01fbc4ae6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:48",
+      "sequence": 21056,
+      "chapter_label": "EZK 23",
+      "verse_label": "48",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 48
+        }
+      ],
+      "en": "“‘Thus I will cause lewdness to cease out of the land, that all women may be taught not to be lewd like you.",
+      "ko": "이와 같이 내가 이 땅에서 음란을 그치게 한즉 모든 여인이 경성하여 너희 음행을 본받지 아니하리라",
+      "source_text_hash": "a71bc359ec932fa097ce4d33135112419503758162b2288b47fa8eb89ffc0f9d",
+      "translation_text_hash": "1d9650695bc5465f08ea10053e973766ac2d00006aa68209e4d221ac04beccad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내가 이 땅에서 음란을 그치게 한즉 모든 여인이 경성하여 너희 음행을 본받지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "1d9650695bc5465f08ea10053e973766ac2d00006aa68209e4d221ac04beccad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:23:49",
+      "sequence": 21057,
+      "chapter_label": "EZK 23",
+      "verse_label": "49",
+      "locator": {
+        "book": "EZK",
+        "chapter": 23,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 23,
+          "verse": 49
+        }
+      ],
+      "en": "They will recompense your lewdness on you, and you will bear the sins of your idols. Then you will know that I am the Lord GOD.’”",
+      "ko": "그들이 너희 음란으로 너희에게 보응한즉 너희가 모든 우상을 위하던 죄를 담당할찌라 너희가 나를 주 여호와인줄 알리라 하시니라",
+      "source_text_hash": "80313ef1795f003f9e51c394443077c5d5fc1aab45f44ef78783a42ce16a1af9",
+      "translation_text_hash": "74cc549d6fc4952c0631fcaf13ef6097444eb4f8ef22528ec3e7043ecb346172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너희 음란으로 너희에게 보응한즉 너희가 모든 우상을 위하던 죄를 담당할찌라 너희가 나를 주 여호와인줄 알리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "74cc549d6fc4952c0631fcaf13ef6097444eb4f8ef22528ec3e7043ecb346172"
+      ]
+    }
+  ]
+}

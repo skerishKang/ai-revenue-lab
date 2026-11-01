@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:008",
+  "unit_ordinal": 58,
+  "unit_label": "EXO 8",
+  "book_code": "EXO",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:8:1",
+      "sequence": 1712,
+      "chapter_label": "EXO 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, “Go in to Pharaoh, and tell him, ‘This is what the LORD says, “Let my people go, that they may serve me.",
+      "ko": "여호와께서 모세에게 이르시되 너는 바로에게 가서 그에게 이르기를 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라",
+      "source_text_hash": "825623bceae5934cb33f54f56771c848d260bdf10a0b168fc648a9545ae25e80",
+      "translation_text_hash": "3a8e165cf2a7d8505bc2abc16c60b93a89eaa0a66bad267c36326ada8b9f17f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 바로에게 가서 그에게 이르기를 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3a8e165cf2a7d8505bc2abc16c60b93a89eaa0a66bad267c36326ada8b9f17f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:2",
+      "sequence": 1713,
+      "chapter_label": "EXO 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "If you refuse to let them go, behold, I will plague all your borders with frogs.",
+      "ko": "네가 만일 보내기를 거절하면 내가 개구리로 너의 온 지경을 칠찌라",
+      "source_text_hash": "f372a8c3b06767da040844602704f6a2815caabec8725307427103bd72523b9a",
+      "translation_text_hash": "998c62f3ac3ddb737a91915cc6aff8a13ee49a452d974ca5bcc690d3fcd72e06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 보내기를 거절하면 내가 개구리로 너의 온 지경을 칠찌라"
+      ],
+      "raw_text_hashes": [
+        "998c62f3ac3ddb737a91915cc6aff8a13ee49a452d974ca5bcc690d3fcd72e06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:3",
+      "sequence": 1714,
+      "chapter_label": "EXO 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "The river will swarm with frogs, which will go up and come into your house, and into your bedroom, and on your bed, and into the house of your servants, and on your people, and into your ovens, and into your kneading troughs.",
+      "ko": "개구리가 하수에서 무수히 생기고 올라와서 네 궁에와 네 침실에와 네 침상 위에와 네 신하의 집에와 네 백성에게와 네 화덕에와 네 떡반죽 그릇에 들어갈찌며",
+      "source_text_hash": "86abbcda21e06c3c23a244df503b3a32f47d32199607ba8ce81e1c306697a656",
+      "translation_text_hash": "aa03d8e0c2bc27f704fcf7c3de84d15c8e8d4da6fd0250e915c150bf5a2f8586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개구리가 하수에서 무수히 생기고 올라와서 네 궁에와 네 침실에와 네 침상 위에와 네 신하의 집에와 네 백성에게와 네 화덕에와 네 떡반죽 그릇에 들어갈찌며"
+      ],
+      "raw_text_hashes": [
+        "aa03d8e0c2bc27f704fcf7c3de84d15c8e8d4da6fd0250e915c150bf5a2f8586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:4",
+      "sequence": 1715,
+      "chapter_label": "EXO 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "The frogs shall come up both on you, and on your people, and on all your servants.”’”",
+      "ko": "개구리가 네게와 네 백성에게와 네 모든 신하에게 오르리라 하셨다 하라",
+      "source_text_hash": "405939d0864e166fdd7e153e954a0b0738eddcb18acd546a0752cfc154283d5a",
+      "translation_text_hash": "793a1c536c6e44e5a23cd25f33fd7cf3a6e8db5db01bafcbf2b7faec59827199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개구리가 네게와 네 백성에게와 네 모든 신하에게 오르리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "793a1c536c6e44e5a23cd25f33fd7cf3a6e8db5db01bafcbf2b7faec59827199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:5",
+      "sequence": 1716,
+      "chapter_label": "EXO 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD said to Moses, “Tell Aaron, ‘Stretch out your hand with your rod over the rivers, over the streams, and over the pools, and cause frogs to come up on the land of Egypt.’”",
+      "ko": "여호와께서 모세에게 이르시되 아론에게 명하기를 네 지팡이를 잡고 네 팔을 강들과 운하들과 못 위에 펴서 개구리로 애굽 땅에 올라오게 하라 할찌니라",
+      "source_text_hash": "a886fda265ef08f5164100ccaa35ffb3d6474bf81b571c5a08257f861a2cb145",
+      "translation_text_hash": "8522a9c1260ce968c240cac7bf9f798831a3fa6ef1c24bc1f687a66e887acfb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 아론에게 명하기를 네 지팡이를 잡고 네 팔을 강들과 운하들과 못 위에 펴서 개구리로 애굽 땅에 올라오게 하라 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "8522a9c1260ce968c240cac7bf9f798831a3fa6ef1c24bc1f687a66e887acfb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:6",
+      "sequence": 1717,
+      "chapter_label": "EXO 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Aaron stretched out his hand over the waters of Egypt; and the frogs came up, and covered the land of Egypt.",
+      "ko": "아론이 팔을 애굽 물들 위에 펴매 개구리가 올라와서 애굽 땅에 덮이니",
+      "source_text_hash": "2b8abbf2911dffcff32466ca0359c56d91568f892c72487edbed2762e4ba78cc",
+      "translation_text_hash": "28cc92c2101cf87809c2f369515fd2dc720c36f1088696175294ad6f9fd2be9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 팔을 애굽 물들 위에 펴매 개구리가 올라와서 애굽 땅에 덮이니"
+      ],
+      "raw_text_hashes": [
+        "28cc92c2101cf87809c2f369515fd2dc720c36f1088696175294ad6f9fd2be9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:7",
+      "sequence": 1718,
+      "chapter_label": "EXO 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "The magicians did the same thing with their enchantments, and brought up frogs on the land of Egypt.",
+      "ko": "술객들도 자기 술법대로 이와 같이 행하여 개구리로 애굽 땅에 올라오게 하였더라",
+      "source_text_hash": "aad4296300c6b2164ffda0967fc59570f55b234d7dfaefecf9261ce755118538",
+      "translation_text_hash": "58239bbe49df3752a541df678a0d9b5896bd33b46a9ed1a6dabf3019dd4244ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술객들도 자기 술법대로 이와 같이 행하여 개구리로 애굽 땅에 올라오게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "58239bbe49df3752a541df678a0d9b5896bd33b46a9ed1a6dabf3019dd4244ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:8",
+      "sequence": 1719,
+      "chapter_label": "EXO 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Then Pharaoh called for Moses and Aaron, and said, “Entreat the LORD, that he take away the frogs from me and from my people; and I will let the people go, that they may sacrifice to the LORD.”",
+      "ko": "바로가 모세와 아론을 불러 이르되 여호와께 구하여 개구리를 나와 내 백성에게서 떠나게 하라 내가 이 백성을 보내리니 그들이 여호와께 희생을 드릴 것이니라",
+      "source_text_hash": "e9390673e6a8d0f8524d438e963fb15e1b920889487e9f172fa437475d41190b",
+      "translation_text_hash": "cb5be2c8b4f581574834c7eec0342ecec7bb1a3d609a3a06fd196140a8ab179a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 모세와 아론을 불러 이르되 여호와께 구하여 개구리를 나와 내 백성에게서 떠나게 하라 내가 이 백성을 보내리니 그들이 여호와께 희생을 드릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "cb5be2c8b4f581574834c7eec0342ecec7bb1a3d609a3a06fd196140a8ab179a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:9",
+      "sequence": 1720,
+      "chapter_label": "EXO 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Moses said to Pharaoh, “I give you the honor of setting the time that I should pray for you, and for your servants, and for your people, that the frogs be destroyed from you and your houses, and remain in the river only.”",
+      "ko": "모세가 바로에게 이르되 내가 왕과 왕의 신하와 왕의 백성을 위하여 어느 때에 구하여 이 개구리를 왕과 왕궁에서 끊어서 하수에만 있게 하오리이까 내게 보이소서",
+      "source_text_hash": "c51806c7ab3a1d8bb1fa7ea0104c88ae970694bfcf2d1d1dddbce9f30549251b",
+      "translation_text_hash": "e315fc82c02a331637687a2bb7ad97f99f5ad915c78846bdaf1764f71cc4e126",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 바로에게 이르되 내가 왕과 왕의 신하와 왕의 백성을 위하여 어느 때에 구하여 이 개구리를 왕과 왕궁에서 끊어서 하수에만 있게 하오리이까 내게 보이소서"
+      ],
+      "raw_text_hashes": [
+        "e315fc82c02a331637687a2bb7ad97f99f5ad915c78846bdaf1764f71cc4e126"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:10",
+      "sequence": 1721,
+      "chapter_label": "EXO 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Pharaoh said, “Tomorrow.” Moses said, “Let it be according to your word, that you may know that there is no one like the LORD our God.",
+      "ko": "그가 가로되 내일이니라 모세가 가로되 왕의 말씀대로 하여 왕으로 우리 하나님 여호와와 같은 이가 없는 줄을 알게 하리니",
+      "source_text_hash": "25aaf8aa9c75ea4bd68b6bad486fa9355bc31e62ea26a95fd1ecdc26fadacb7c",
+      "translation_text_hash": "3c8d66558486e26d7c72258c694c6e7371fdc0aa5a01353fcbf22d1b7db20c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 내일이니라 모세가 가로되 왕의 말씀대로 하여 왕으로 우리 하나님 여호와와 같은 이가 없는 줄을 알게 하리니"
+      ],
+      "raw_text_hashes": [
+        "3c8d66558486e26d7c72258c694c6e7371fdc0aa5a01353fcbf22d1b7db20c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:11",
+      "sequence": 1722,
+      "chapter_label": "EXO 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "The frogs shall depart from you, and from your houses, and from your servants, and from your people. They shall remain in the river only.”",
+      "ko": "개구리가 왕과 왕궁과 왕의 신하와 왕의 백성을 떠나서 하수에만 있으리이다 하고",
+      "source_text_hash": "8ec0ed28df6874fc2bf5e060290e1c34b6e74610d77bafff2a6265aa2c1b79a8",
+      "translation_text_hash": "a027922b7bb237c75440a6f5a6775f282d1a1e9cd58a1d0d050ba035565fd69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개구리가 왕과 왕궁과 왕의 신하와 왕의 백성을 떠나서 하수에만 있으리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "a027922b7bb237c75440a6f5a6775f282d1a1e9cd58a1d0d050ba035565fd69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:12",
+      "sequence": 1723,
+      "chapter_label": "EXO 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Moses and Aaron went out from Pharaoh, and Moses cried to the LORD concerning the frogs which he had brought on Pharaoh.",
+      "ko": "모세와 아론이 바로를 떠나 나가서 바로에게 내리신 개구리에 대하여 모세가 여호와께 간구하매",
+      "source_text_hash": "e54bab954497359316f4d31df87339dbb3c4f6c9d045af53c69a41ce5b55b153",
+      "translation_text_hash": "f796a90edd5b195ae4399577cd9d69ee8d2cd039dcbb291ea888c20f6b326d3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 바로를 떠나 나가서 바로에게 내리신 개구리에 대하여 모세가 여호와께 간구하매"
+      ],
+      "raw_text_hashes": [
+        "f796a90edd5b195ae4399577cd9d69ee8d2cd039dcbb291ea888c20f6b326d3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:13",
+      "sequence": 1724,
+      "chapter_label": "EXO 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD did according to the word of Moses, and the frogs died out of the houses, out of the courts, and out of the fields.",
+      "ko": "여호와께서 모세의 말대로 하시니 개구리가 집에서, 마당에서, 밭에서 나와서 죽은지라",
+      "source_text_hash": "c7b93dab501b8138b478a76c2567d832bc097b89ca843c861d4e74835ddfc123",
+      "translation_text_hash": "0a2a2732255ddf4a06ca6239231e94cde85648fb14f3294a49734ed19b6241bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세의 말대로 하시니 개구리가 집에서, 마당에서, 밭에서 나와서 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "0a2a2732255ddf4a06ca6239231e94cde85648fb14f3294a49734ed19b6241bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:14",
+      "sequence": 1725,
+      "chapter_label": "EXO 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "They gathered them together in heaps, and the land stank.",
+      "ko": "사람들이 모아 무더기로 쌓으니 땅에서 악취가 나더라",
+      "source_text_hash": "84386079335c98cf15aca6a09e0ec639b228c94523a5917423e354bf11e058b0",
+      "translation_text_hash": "1cb7213e1bde55294b507eebf228362b49e03c99d1a3ca6d19cd27320cba8cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 모아 무더기로 쌓으니 땅에서 악취가 나더라"
+      ],
+      "raw_text_hashes": [
+        "1cb7213e1bde55294b507eebf228362b49e03c99d1a3ca6d19cd27320cba8cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:15",
+      "sequence": 1726,
+      "chapter_label": "EXO 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "But when Pharaoh saw that there was a respite, he hardened his heart, and didn’t listen to them, as the LORD had spoken.",
+      "ko": "그러나 바로가 숨을 통할 수 있음을 볼 때에 그 마음을 완강케 하여 그들을 듣지 아니하였으니 여호와의 말씀과 같더라",
+      "source_text_hash": "84238eaf5e47cfb1ec31726c66b98f5564c048a25e2664f97dfa326c7efd309c",
+      "translation_text_hash": "523678bcf440a4a12390e4dcfc852a545f5a55dbf8e11e5873801ec6c4d28627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 바로가 숨을 통할 수 있음을 볼 때에 그 마음을 완강케 하여 그들을 듣지 아니하였으니 여호와의 말씀과 같더라"
+      ],
+      "raw_text_hashes": [
+        "523678bcf440a4a12390e4dcfc852a545f5a55dbf8e11e5873801ec6c4d28627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:16",
+      "sequence": 1727,
+      "chapter_label": "EXO 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD said to Moses, “Tell Aaron, ‘Stretch out your rod, and strike the dust of the earth, that it may become lice throughout all the land of Egypt.’”",
+      "ko": "여호와께서 모세에게 이르시되 아론에게 명하기를 네 지팡이를 들어 땅의 티끌을 치라 하라 그것이 애굽 온 땅에서 이가 되리라",
+      "source_text_hash": "bba8d162479c830b3a48845a051f57298255e319d890a644621034c7cd186959",
+      "translation_text_hash": "6ff661f58244d4c53c60f5c208320d12e30ba83222ce32e472778bd616e97859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 아론에게 명하기를 네 지팡이를 들어 땅의 티끌을 치라 하라 그것이 애굽 온 땅에서 이가 되리라"
+      ],
+      "raw_text_hashes": [
+        "6ff661f58244d4c53c60f5c208320d12e30ba83222ce32e472778bd616e97859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:17",
+      "sequence": 1728,
+      "chapter_label": "EXO 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "They did so; and Aaron stretched out his hand with his rod, and struck the dust of the earth, and there were lice on man, and on animal; all the dust of the earth became lice throughout all the land of Egypt.",
+      "ko": "그들이 그대로 행할쌔 아론이 지팡이를 잡고 손을 들어 땅의 티끌을 치매 애굽 온 땅의 티끌이 다 이가 되어 사람과 생축에게 오르니",
+      "source_text_hash": "3ca78eba81a552fa57fb117c92249e69ea43f023699975b131b26183d95b26e0",
+      "translation_text_hash": "06fdea55ff5b5ae1840576ceed4f24fd6e896ac18445eb643f20c88151c63c42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그대로 행할쌔 아론이 지팡이를 잡고 손을 들어 땅의 티끌을 치매 애굽 온 땅의 티끌이 다 이가 되어 사람과 생축에게 오르니"
+      ],
+      "raw_text_hashes": [
+        "06fdea55ff5b5ae1840576ceed4f24fd6e896ac18445eb643f20c88151c63c42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:18",
+      "sequence": 1729,
+      "chapter_label": "EXO 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "The magicians tried with their enchantments to produce lice, but they couldn’t. There were lice on man, and on animal.",
+      "ko": "술객들이 자기 술법으로 이같이 행하여 이를 내려 하였으나 못 하였고 이는 사람과 생축에게 있은지라",
+      "source_text_hash": "df4b4f2df01fbba8d8c8ecbc2f63297fc298d845eab74afced82a590fb848560",
+      "translation_text_hash": "0c7556d2226e16bebde790055d56c732625604ba979782a9c635258b6bb10c56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술객들이 자기 술법으로 이같이 행하여 이를 내려 하였으나 못 하였고 이는 사람과 생축에게 있은지라"
+      ],
+      "raw_text_hashes": [
+        "0c7556d2226e16bebde790055d56c732625604ba979782a9c635258b6bb10c56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:19",
+      "sequence": 1730,
+      "chapter_label": "EXO 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Then the magicians said to Pharaoh, “This is God’s finger;” but Pharaoh’s heart was hardened, and he didn’t listen to them, as the LORD had spoken.",
+      "ko": "술객이 바로에게 고하되 이는 하나님의 권능이니이다 하나 바로의 마음이 강퍅케 되어 그들을 듣지 아니하였으니 여호와의 말씀과 같더라",
+      "source_text_hash": "b2033f91966104cc5771acc9182b63aebc27525f20dd1944450afa28ae267954",
+      "translation_text_hash": "2f60a5815ade9deaa98f8535718e591871437bcca09522af558040574e022dd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술객이 바로에게 고하되 이는 하나님의 권능이니이다 하나 바로의 마음이 강퍅케 되어 그들을 듣지 아니하였으니 여호와의 말씀과 같더라"
+      ],
+      "raw_text_hashes": [
+        "2f60a5815ade9deaa98f8535718e591871437bcca09522af558040574e022dd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:20",
+      "sequence": 1731,
+      "chapter_label": "EXO 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD said to Moses, “Rise up early in the morning, and stand before Pharaoh; behold, he comes out to the water; and tell him, ‘This is what the LORD says, “Let my people go, that they may serve me.",
+      "ko": "여호와께서 모세에게 이르시되 아침에 일찌기 일어나 바로 앞에 서라 그가 물로 나오리니 그에게 이르기를 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라",
+      "source_text_hash": "10bf87b9042d63715469747dc9666ceec69bed5357b3531bd20d864f939c065e",
+      "translation_text_hash": "f2deb58a3d6cf6de0c83ca17032611885bac94a80dcb71966a7fe61f32601428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 아침에 일찌기 일어나 바로 앞에 서라 그가 물로 나오리니 그에게 이르기를 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f2deb58a3d6cf6de0c83ca17032611885bac94a80dcb71966a7fe61f32601428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:21",
+      "sequence": 1732,
+      "chapter_label": "EXO 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Else, if you will not let my people go, behold, I will send swarms of flies on you, and on your servants, and on your people, and into your houses. The houses of the Egyptians shall be full of swarms of flies, and also the ground they are on.",
+      "ko": "네가 만일 내 백성을 보내지 아니하면 내가 너와 네 신하와 네 백성과 네 집들에 파리 떼를 보내리니 애굽 사람의 집집에 파리 떼가 가득할 것이며 그들의 거하는 땅에도 그러하리라",
+      "source_text_hash": "a5a18b1c9b75edc7c1c2a10a17f4f48d2abce9b70445d8812446cfef7515770f",
+      "translation_text_hash": "935bff837ea479587e1d1de1f82bc96226508f53855c4d3352d137468cb5a64d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 내 백성을 보내지 아니하면 내가 너와 네 신하와 네 백성과 네 집들에 파리 떼를 보내리니 애굽 사람의 집집에 파리 떼가 가득할 것이며 그들의 거하는 땅에도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "935bff837ea479587e1d1de1f82bc96226508f53855c4d3352d137468cb5a64d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:22",
+      "sequence": 1733,
+      "chapter_label": "EXO 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "I will set apart in that day the land of Goshen, in which my people dwell, that no swarms of flies shall be there, to the end you may know that I am the LORD on the earth.",
+      "ko": "그 날에 내가 내 백성의 거하는 고센 땅을 구별하여 그곳에는 파리 떼가 없게 하리니 이로 말미암아 나는 세상 중의 여호와인 줄을 네가 알게 될 것이라",
+      "source_text_hash": "96c66047ae8fddf617dea3cf76e18acf3a87f7787692ceec93ea5b5482a7dc5f",
+      "translation_text_hash": "2c9f69a72416b9442d26f5248f8a04cde86491af5757de716651fe0d50306b1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 내 백성의 거하는 고센 땅을 구별하여 그곳에는 파리 떼가 없게 하리니 이로 말미암아 나는 세상 중의 여호와인 줄을 네가 알게 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "2c9f69a72416b9442d26f5248f8a04cde86491af5757de716651fe0d50306b1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:23",
+      "sequence": 1734,
+      "chapter_label": "EXO 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "I will put a division between my people and your people. This sign shall happen by tomorrow.”’”",
+      "ko": "내가 내 백성과 네 백성 사이에 구별을 두리니 내일 이 표징이 있으리라 하셨다 하라 하시고",
+      "source_text_hash": "93e6db9d20c166f789a49c8959407e6d974329e474306564b60230428c4a2eef",
+      "translation_text_hash": "a96406bf639dc2026f91da7af1571c02f58bf53266a643b3f83edd6a0d69bcda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 백성과 네 백성 사이에 구별을 두리니 내일 이 표징이 있으리라 하셨다 하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "a96406bf639dc2026f91da7af1571c02f58bf53266a643b3f83edd6a0d69bcda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:24",
+      "sequence": 1735,
+      "chapter_label": "EXO 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD did so; and there came grievous swarms of flies into the house of Pharaoh, and into his servants’ houses. In all the land of Egypt the land was corrupted by reason of the swarms of flies.",
+      "ko": "여호와께서 그와 같이 하시니 무수한 파리 떼가 바로의 궁에와 그 신하의 집에와 애굽 전국에 이르니 파리 떼로 인하여 땅이 해를 받더라",
+      "source_text_hash": "79a7dc80161b27b9491c9875a44336998402b38e27010a34c91c91d7a4b489c5",
+      "translation_text_hash": "f455699ba2fbdc574c63ccbdfe40b89e6ea87930b1403c80052e07aa79eed143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그와 같이 하시니 무수한 파리 떼가 바로의 궁에와 그 신하의 집에와 애굽 전국에 이르니 파리 떼로 인하여 땅이 해를 받더라"
+      ],
+      "raw_text_hashes": [
+        "f455699ba2fbdc574c63ccbdfe40b89e6ea87930b1403c80052e07aa79eed143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:25",
+      "sequence": 1736,
+      "chapter_label": "EXO 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Pharaoh called for Moses and for Aaron, and said, “Go, sacrifice to your God in the land!”",
+      "ko": "바로가 모세와 아론을 불러 이르되 너희는 가서 이 땅에서 너희 하나님께 희생을 드리라",
+      "source_text_hash": "9c5f92be040a2a48851b78ccf39cdef0eef82b3913f1575fb947a1a15077f177",
+      "translation_text_hash": "af078e60676bbc8f9e7607ee07d2b286c01d6fea7e83a063ebd21b1945ebebce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 모세와 아론을 불러 이르되 너희는 가서 이 땅에서 너희 하나님께 희생을 드리라"
+      ],
+      "raw_text_hashes": [
+        "af078e60676bbc8f9e7607ee07d2b286c01d6fea7e83a063ebd21b1945ebebce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:26",
+      "sequence": 1737,
+      "chapter_label": "EXO 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "Moses said, “It isn’t appropriate to do so; for we shall sacrifice the abomination of the Egyptians to the LORD our God. Behold, if we sacrifice the abomination of the Egyptians before their eyes, won’t they stone us?",
+      "ko": "모세가 가로되 그리함은 불가하니이다 우리가 우리 하나님 여호와께 희생을 드리는 것은 애굽 사람의 미워하는 바이온즉 우리가 만일 애굽 사람의 목전에서 희생을 드리면 그들이 그것을 미워하여 우리를 돌로 치지 아니하리이까",
+      "source_text_hash": "128860d3f9980535bd954cc598ad0a54ed93fb1c754ef7a714a5a3f5c85ca405",
+      "translation_text_hash": "5e14dfbae4ea9e81ca65624610d4bbac90f0a097dcee17a2af4c7dfdaff4f62a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 그리함은 불가하니이다 우리가 우리 하나님 여호와께 희생을 드리는 것은 애굽 사람의 미워하는 바이온즉 우리가 만일 애굽 사람의 목전에서 희생을 드리면 그들이 그것을 미워하여 우리를 돌로 치지 아니하리이까"
+      ],
+      "raw_text_hashes": [
+        "5e14dfbae4ea9e81ca65624610d4bbac90f0a097dcee17a2af4c7dfdaff4f62a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:27",
+      "sequence": 1738,
+      "chapter_label": "EXO 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "We will go three days’ journey into the wilderness, and sacrifice to the LORD our God, as he shall command us.”",
+      "ko": "우리가 사흘길쯤 광야로 들어가서 우리 하나님 여호와께 희생을 드리되 우리에게 명하시는대로 하려하나이다",
+      "source_text_hash": "d3067fea2a346e72f859c1299f1f016309c296e9724982dd57fe05870876f35d",
+      "translation_text_hash": "69c91448f51097c6fe7bb765a7fab9e287fd377f69faaf701b9094456f22715a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 사흘길쯤 광야로 들어가서 우리 하나님 여호와께 희생을 드리되 우리에게 명하시는대로 하려하나이다"
+      ],
+      "raw_text_hashes": [
+        "69c91448f51097c6fe7bb765a7fab9e287fd377f69faaf701b9094456f22715a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:28",
+      "sequence": 1739,
+      "chapter_label": "EXO 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "Pharaoh said, “I will let you go, that you may sacrifice to the LORD your God in the wilderness, only you shall not go very far away. Pray for me.”",
+      "ko": "바로가 가로되 내가 너희를 보내리니 너희가 너희 하나님 여호와께 광야에서 희생을 드릴 것이나 너무 멀리는 가지 말라 그런즉 너희는 나를 위하여 기도하라",
+      "source_text_hash": "a06da633db2b76f441039cef8f9614ad0559ab264e2fd86886994339e9b70f17",
+      "translation_text_hash": "4de698cb7d37adb0bf440ab2924e18f6834873283910aa7f8a9e92b8005801e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 가로되 내가 너희를 보내리니 너희가 너희 하나님 여호와께 광야에서 희생을 드릴 것이나 너무 멀리는 가지 말라 그런즉 너희는 나를 위하여 기도하라"
+      ],
+      "raw_text_hashes": [
+        "4de698cb7d37adb0bf440ab2924e18f6834873283910aa7f8a9e92b8005801e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:29",
+      "sequence": 1740,
+      "chapter_label": "EXO 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said, “Behold, I am going out from you. I will pray to the LORD that the swarms of flies may depart from Pharaoh, from his servants, and from his people, tomorrow; only don’t let Pharaoh deal deceitfully any more in not letting the people go to sacrifice to the LORD.”",
+      "ko": "모세가 가로되 내가 왕을 떠나 가서 여호와께 기도하리니 내일이면 파리 떼가 바로와 바로의 신하와 바로의 백성을 떠나려니와 바로는 이 백성을 보내어 여호와께 희생을 드리는 일에 다시 거짓을 행치 마소서 하고",
+      "source_text_hash": "fa2ec9c06a6d8aa7767a3c76bcb9be566a04b30a155bac839403e1c8c4168e7e",
+      "translation_text_hash": "97431fa31f3a273e4a89e70c6d6b3455c36e08fbc25b2edfcb7704a5705f618c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 내가 왕을 떠나 가서 여호와께 기도하리니 내일이면 파리 떼가 바로와 바로의 신하와 바로의 백성을 떠나려니와 바로는 이 백성을 보내어 여호와께 희생을 드리는 일에 다시 거짓을 행치 마소서 하고"
+      ],
+      "raw_text_hashes": [
+        "97431fa31f3a273e4a89e70c6d6b3455c36e08fbc25b2edfcb7704a5705f618c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:30",
+      "sequence": 1741,
+      "chapter_label": "EXO 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Moses went out from Pharaoh, and prayed to the LORD.",
+      "ko": "모세가 바로를 떠나 나와서 여호와께 기도하니",
+      "source_text_hash": "11622d1abeda0488dc9acb7fd81544cd80320699330bffe743bae7e6f7b96c9b",
+      "translation_text_hash": "3590cd7b3452c6ae880fb013f58ba10a7d91aed6208b7dd172d2db20f239daab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 바로를 떠나 나와서 여호와께 기도하니"
+      ],
+      "raw_text_hashes": [
+        "3590cd7b3452c6ae880fb013f58ba10a7d91aed6208b7dd172d2db20f239daab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:31",
+      "sequence": 1742,
+      "chapter_label": "EXO 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "The LORD did according to the word of Moses, and he removed the swarms of flies from Pharaoh, from his servants, and from his people. There remained not one.",
+      "ko": "여호와께서 모세의 말대로 하사 파리를 바로와 그 신하와 그 백성에게서 몰수히 떠나게 하시니라",
+      "source_text_hash": "55e5394fd7b4428e01ac81b4c664e8a32ea82875035246f0ab47a84fa3cdd1fc",
+      "translation_text_hash": "d254bd28186b00b71515d21828b814deaa13955049ccea16ffd88120af9ac12c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세의 말대로 하사 파리를 바로와 그 신하와 그 백성에게서 몰수히 떠나게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d254bd28186b00b71515d21828b814deaa13955049ccea16ffd88120af9ac12c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:8:32",
+      "sequence": 1743,
+      "chapter_label": "EXO 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "Pharaoh hardened his heart this time also, and he didn’t let the people go.",
+      "ko": "그러나 바로가 이 때에도 마음을 완강케 하여 백성을 보내지 아니하였더라",
+      "source_text_hash": "89b851aa3c59a38352d202a97eb7bdf256c040fcdace18010b8d3f69d7028b29",
+      "translation_text_hash": "3b8180e4a65d74f93850addb15e385819952a03e51539929ccf5ebded6434e63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 바로가 이 때에도 마음을 완강케 하여 백성을 보내지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "3b8180e4a65d74f93850addb15e385819952a03e51539929ccf5ebded6434e63"
+      ]
+    }
+  ]
+}

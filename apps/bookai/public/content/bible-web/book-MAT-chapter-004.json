@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:004",
+  "unit_ordinal": 933,
+  "unit_label": "MAT 4",
+  "book_code": "MAT",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:4:1",
+      "sequence": 23211,
+      "chapter_label": "MAT 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Then Jesus was led up by the Spirit into the wilderness to be tempted by the devil.",
+      "ko": "그 때에 예수께서 성령에게 이끌리어 마귀에게 시험을 받으러 광야로 가사",
+      "source_text_hash": "b501fd468986bf45c620c9b5d57f6a75fc15332ebb2d4c2ad9f6d79311f9b85f",
+      "translation_text_hash": "61da0e38a840b0ff22f125e1a7dc37dd3e4dd526fa599be7fe17d0ea11c1b115",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예수께서 성령에게 이끌리어 마귀에게 시험을 받으러 광야로 가사"
+      ],
+      "raw_text_hashes": [
+        "61da0e38a840b0ff22f125e1a7dc37dd3e4dd526fa599be7fe17d0ea11c1b115"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:2",
+      "sequence": 23212,
+      "chapter_label": "MAT 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "When he had fasted forty days and forty nights, he was hungry afterward.",
+      "ko": "사십 일을 밤낮으로 금식하신 후에 주리신지라",
+      "source_text_hash": "434088751c07b9450afb9b084d5374557b6f74530eb62860b1ac7df95dd002e4",
+      "translation_text_hash": "84f5210e401691f6330e0fd26754896f6e0630a8da3d4a2a25eebe3b4f0a5226",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십 일을 밤낮으로 금식하신 후에 주리신지라"
+      ],
+      "raw_text_hashes": [
+        "84f5210e401691f6330e0fd26754896f6e0630a8da3d4a2a25eebe3b4f0a5226"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:3",
+      "sequence": 23213,
+      "chapter_label": "MAT 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "The tempter came and said to him, “If you are the Son of God, command that these stones become bread.”",
+      "ko": "시험하는 자가 예수께 나아와서 가로되 네가 만일 하나님의 아들이어든 명하여 이 돌들이 떡덩이가 되게 하라",
+      "source_text_hash": "f5134a71359d4299f1b67f0f16e90e06d6dc5b46691d6575cddef5dd7ceddc04",
+      "translation_text_hash": "8cae36ee1cf44627493ee84f465bc3f6984f7a53f9c11f7975dc222d98b18c21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시험하는 자가 예수께 나아와서 가로되 네가 만일 하나님의 아들이어든 명하여 이 돌들이 떡덩이가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "8cae36ee1cf44627493ee84f465bc3f6984f7a53f9c11f7975dc222d98b18c21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:4",
+      "sequence": 23214,
+      "chapter_label": "MAT 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "But he answered, “It is written, ‘Man shall not live by bread alone, but by every word that proceeds out of God’s mouth.’”",
+      "ko": "예수께서 대답하여 가라사대 기록되었으되 사람이 떡으로만 살것이 아니요 하나님의 입으로 나오는 모든 말씀으로 살 것이라 하였느니라 하시니",
+      "source_text_hash": "8cb1832f94c3e167784d97e7653ad1ff9afec68430f93871cc4ced112c02dbbc",
+      "translation_text_hash": "c90312b383bca8bcdb4d4e929314b59f935954c5d725401e4912f86dc46774c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 기록되었으되 사람이 떡으로만 살것이 아니요 하나님의 입으로 나오는 모든 말씀으로 살 것이라 하였느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "c90312b383bca8bcdb4d4e929314b59f935954c5d725401e4912f86dc46774c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:5",
+      "sequence": 23215,
+      "chapter_label": "MAT 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Then the devil took him into the holy city. He set him on the pinnacle of the temple,",
+      "ko": "이에 마귀가 예수를 거룩한 성으로 데려다가 성전 꼭대기에 세우고",
+      "source_text_hash": "e5bd59006bc799c94875e7ccf4cc1bc49748facba4c608714a0fa7f1393e2d2a",
+      "translation_text_hash": "c4951b07a49b0cd3e832cc60186583fb033c20a542361acb276f2d3a01dbfb9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 마귀가 예수를 거룩한 성으로 데려다가 성전 꼭대기에 세우고"
+      ],
+      "raw_text_hashes": [
+        "c4951b07a49b0cd3e832cc60186583fb033c20a542361acb276f2d3a01dbfb9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:6",
+      "sequence": 23216,
+      "chapter_label": "MAT 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "and said to him, “If you are the Son of God, throw yourself down, for it is written, ‘He will command his angels concerning you,’ and, ‘On their hands they will bear you up, so that you don’t dash your foot against a stone.’”",
+      "ko": "가로되 네가 만일 하나님의 아들이어든 뛰어내리라 기록하였으되 저가 너를 위하여 그 사자들을 명하시리니 저희가 손으로 너를 받들어 발이 돌에 부딪히지 않게 하리로다 하였느니라",
+      "source_text_hash": "13210e28b447888b84ba08857d2e4fcd9c7b8f994968ee6a1096905f40491571",
+      "translation_text_hash": "d437f0b52b1bee3eff0a08f1a65bc93593b13ca93149444633ad7fc658509b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 만일 하나님의 아들이어든 뛰어내리라 기록하였으되 저가 너를 위하여 그 사자들을 명하시리니 저희가 손으로 너를 받들어 발이 돌에 부딪히지 않게 하리로다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d437f0b52b1bee3eff0a08f1a65bc93593b13ca93149444633ad7fc658509b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:7",
+      "sequence": 23217,
+      "chapter_label": "MAT 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus said to him, “Again, it is written, ‘You shall not test the Lord, your God.’”",
+      "ko": "예수께서 이르시되 또 기록되었으되 주 너의 하나님을 시험치 말라 하였느니라 하신대",
+      "source_text_hash": "32d456458389e9a194b5230b5a918918a1d948a66971541ab27cfb9be3c8698d",
+      "translation_text_hash": "17558784fce1738c91be8be8aa81d77883eaf31f08141b18e197241a8c6c24e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 또 기록되었으되 주 너의 하나님을 시험치 말라 하였느니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "17558784fce1738c91be8be8aa81d77883eaf31f08141b18e197241a8c6c24e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:8",
+      "sequence": 23218,
+      "chapter_label": "MAT 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Again, the devil took him to an exceedingly high mountain, and showed him all the kingdoms of the world and their glory.",
+      "ko": "마귀가 또 그를 데리고 지극히 높은 산으로 가서 천하 만국과 그 영광을 보여",
+      "source_text_hash": "6012b2d5b72c9da3787a3bc4c889b91926d22f60280024f24e2cab6da9ac1711",
+      "translation_text_hash": "204b4bbefad60817aa21d5cd806413667d0b5f4959f44a45e02af306f85a83d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀가 또 그를 데리고 지극히 높은 산으로 가서 천하 만국과 그 영광을 보여"
+      ],
+      "raw_text_hashes": [
+        "204b4bbefad60817aa21d5cd806413667d0b5f4959f44a45e02af306f85a83d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:9",
+      "sequence": 23219,
+      "chapter_label": "MAT 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "He said to him, “I will give you all of these things, if you will fall down and worship me.”",
+      "ko": "가로되 만일 내게 엎드려 경배하면 이 모든 것을 네게 주리라",
+      "source_text_hash": "5801ffd91e6f1bc1e9bae4b2be4a738029528ed37feb771356ea4c8d66c55333",
+      "translation_text_hash": "49044da420da6e9ec11f0987df1936aa91430c4f4dd04960c93050ea83ab8a7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 만일 내게 엎드려 경배하면 이 모든 것을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "49044da420da6e9ec11f0987df1936aa91430c4f4dd04960c93050ea83ab8a7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:10",
+      "sequence": 23220,
+      "chapter_label": "MAT 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Then Jesus said to him, “Get behind me,Satan! For it is written, ‘You shall worship the Lord your God, and you shall serve him only.’”",
+      "ko": "이에 예수께서 말씀하시되 사단아 물러가라 기록되었으되 주 너의 하나님께 경배하고 다만 그를 섬기라 하였느니라",
+      "source_text_hash": "ee8de7d10fe70d4fe03989d75739e4ab35c7b8e187fcc1904f9780d4be7cd3aa",
+      "translation_text_hash": "a28f61ca5ceda6285dbfb0e5f00970f87e4820423f6bfc41d5c81a90b4e7ee32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 말씀하시되 사단아 물러가라 기록되었으되 주 너의 하나님께 경배하고 다만 그를 섬기라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a28f61ca5ceda6285dbfb0e5f00970f87e4820423f6bfc41d5c81a90b4e7ee32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:11",
+      "sequence": 23221,
+      "chapter_label": "MAT 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Then the devil left him, and behold, angels came and served him.",
+      "ko": "이에 마귀는 예수를 떠나고 천사들이 나아와서 수종드니라",
+      "source_text_hash": "2b196215f6a6f3850d27a926a3c70e5bc88d62b4a3ce00c3308f1a5620860325",
+      "translation_text_hash": "68589dffd35563c15588a89f416325f5783c3c4f6cc4aa00012bb0c25c29d08e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 마귀는 예수를 떠나고 천사들이 나아와서 수종드니라"
+      ],
+      "raw_text_hashes": [
+        "68589dffd35563c15588a89f416325f5783c3c4f6cc4aa00012bb0c25c29d08e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:12",
+      "sequence": 23222,
+      "chapter_label": "MAT 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Now when Jesus heard that John was delivered up, he withdrew into Galilee.",
+      "ko": "예수께서 요한의 잡힘을 들으시고 갈릴리로 물러 가셨다가",
+      "source_text_hash": "2dc1c91031372a0d6921c0ceefd79b99e0b36bb5a561cf2ff822ec0445a04c7f",
+      "translation_text_hash": "c1639d7c2bc6b1d7a23746019ff11355ad84228ae357a84f0f5a9c0fdd83d6cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 요한의 잡힘을 들으시고 갈릴리로 물러 가셨다가"
+      ],
+      "raw_text_hashes": [
+        "c1639d7c2bc6b1d7a23746019ff11355ad84228ae357a84f0f5a9c0fdd83d6cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:13",
+      "sequence": 23223,
+      "chapter_label": "MAT 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Leaving Nazareth, he came and lived in Capernaum, which is by the sea, in the region of Zebulun and Naphtali,",
+      "ko": "나사렛을 떠나 스불론과 납달리 지경 해변에 있는 가버나움에 가서 사시니",
+      "source_text_hash": "5e6466b8b1ba334a67e402f6fb11944e77515964ec993f1da93ef41483f28407",
+      "translation_text_hash": "97f3c6f657a9ef261f914274ca40fd802a46fd7a6e30abe38896081bb18816a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사렛을 떠나 스불론과 납달리 지경 해변에 있는 가버나움에 가서 사시니"
+      ],
+      "raw_text_hashes": [
+        "97f3c6f657a9ef261f914274ca40fd802a46fd7a6e30abe38896081bb18816a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:14",
+      "sequence": 23224,
+      "chapter_label": "MAT 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "that it might be fulfilled which was spoken through Isaiah the prophet, saying,",
+      "ko": "이는 선지자 이사야로 하신 말씀을 이루려 하심이라 일렀으되",
+      "source_text_hash": "b8eec41addacaa0077310c8c825aab7828c753b0abd33ec6814f8361f962a8ea",
+      "translation_text_hash": "caf72e255c355d1bfe3cd3740d3493ed0f6ab2fd7d298bc0295e9d8d6fff8bcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자 이사야로 하신 말씀을 이루려 하심이라 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "caf72e255c355d1bfe3cd3740d3493ed0f6ab2fd7d298bc0295e9d8d6fff8bcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:15",
+      "sequence": 23225,
+      "chapter_label": "MAT 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "“The land of Zebulun and the land of Naphtali, toward the sea, beyond the Jordan, Galilee of the Gentiles,",
+      "ko": "스불론 땅과 납달리 땅과 요단강 저편 해변 길과 이방의 갈릴리여",
+      "source_text_hash": "b19e8ba1538469915f42887f9ee9b9cd8769506baa45754a68969682db6ad43e",
+      "translation_text_hash": "37f52776ca7b4bfb90516f6819cc051094fb1c3cf23a62d90ffecababe4a891d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 땅과 납달리 땅과 요단강 저편 해변 길과 이방의 갈릴리여"
+      ],
+      "raw_text_hashes": [
+        "37f52776ca7b4bfb90516f6819cc051094fb1c3cf23a62d90ffecababe4a891d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:16",
+      "sequence": 23226,
+      "chapter_label": "MAT 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "the people who sat in darkness saw a great light; to those who sat in the region and shadow of death, to them light has dawned.”",
+      "ko": "흑암에 앉은 백성이 큰 빛을 보았고 사망의 땅과 그늘에 앉은 자들에게 빛이 비취었도다 하였느니라",
+      "source_text_hash": "181a8ecf609e19dbe7c2df5ce07bbcff19432dd773720228c0ebfb7cd785f9be",
+      "translation_text_hash": "a549904af85d278056d42f4871ba03be8853bd1f92b5551761667f16da168d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑암에 앉은 백성이 큰 빛을 보았고 사망의 땅과 그늘에 앉은 자들에게 빛이 비취었도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a549904af85d278056d42f4871ba03be8853bd1f92b5551761667f16da168d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:17",
+      "sequence": 23227,
+      "chapter_label": "MAT 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "From that time, Jesus began to preach, and to say, “Repent! For the Kingdom of Heaven is at hand.”",
+      "ko": "이때부터 예수께서 비로소 전파하여 가라사대 회개하라 천국이 가까왔느니라 하시더라",
+      "source_text_hash": "e21b352af0e1f05231b40ac904442ddf0261cb070a7c23c9d195e80d0de22092",
+      "translation_text_hash": "ba1c29e755e0e8e0407e013c6ec9e1c6bc38c3fa45e06887003f895d255bcb25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이때부터 예수께서 비로소 전파하여 가라사대 회개하라 천국이 가까왔느니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "ba1c29e755e0e8e0407e013c6ec9e1c6bc38c3fa45e06887003f895d255bcb25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:18",
+      "sequence": 23228,
+      "chapter_label": "MAT 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Walking by the sea of Galilee, he saw two brothers: Simon, who is called Peter, and Andrew, his brother, casting a net into the sea; for they were fishermen.",
+      "ko": "갈릴리 해변에 다니시다가 두 형제 곧 베드로라 하는 시몬과 그 형제 안드레가 바다에 그물 던지는 것을 보시니 저희는 어부라",
+      "source_text_hash": "cd414805e0e375b725cf997ea295b07983340b6f815a8abec9f68df5afe6e992",
+      "translation_text_hash": "5495cb9072a15e4797ac8a5d6635d7d840b81621cd700dedc9317ca046bb1d9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 해변에 다니시다가 두 형제 곧 베드로라 하는 시몬과 그 형제 안드레가 바다에 그물 던지는 것을 보시니 저희는 어부라"
+      ],
+      "raw_text_hashes": [
+        "5495cb9072a15e4797ac8a5d6635d7d840b81621cd700dedc9317ca046bb1d9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:19",
+      "sequence": 23229,
+      "chapter_label": "MAT 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "He said to them, “Come after me, and I will make you fishers for men.”",
+      "ko": "말씀하시되 나를 따라 오너라 내가 너희로 사람을 낚는 어부가 되게 하리라 하시니",
+      "source_text_hash": "f4848797fe0f7f007674325ba923e935fe0a561151575290746e2841d24f6a7e",
+      "translation_text_hash": "d5d9f3849d3236922a02340c8aa8c6077ea6931f24abe605504be0a14a99ab96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하시되 나를 따라 오너라 내가 너희로 사람을 낚는 어부가 되게 하리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d5d9f3849d3236922a02340c8aa8c6077ea6931f24abe605504be0a14a99ab96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:20",
+      "sequence": 23230,
+      "chapter_label": "MAT 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "They immediately left their nets and followed him.",
+      "ko": "저희가 곧 그물을 버려 두고 예수를 좇으니라",
+      "source_text_hash": "602b3f30053e2abf00503210086fd9e9c6bcb7a834a076b07552c32e5ab5c748",
+      "translation_text_hash": "cdfcf0bd4b09cc54d5c70be998e6aeb07de25ac66d56e95684486da5f808c9dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 곧 그물을 버려 두고 예수를 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "cdfcf0bd4b09cc54d5c70be998e6aeb07de25ac66d56e95684486da5f808c9dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:21",
+      "sequence": 23231,
+      "chapter_label": "MAT 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Going on from there, he saw two other brothers, James the son of Zebedee, and John his brother, in the boat with Zebedee their father, mending their nets. He called them.",
+      "ko": "거기서 더 가시다가 다른 두 형제 곧 세베대의 아들 야고보와 그 형제 요한이 그 부친 세베대와 한가지로 배에서 그물 깁는 것을 보시고 부르시니",
+      "source_text_hash": "9cba87d5bcd787b58a70d25a133feda7d8abb925629a5f3f0e2e74f470b2a112",
+      "translation_text_hash": "0268a4fe30eecd95398f325cdb1c1f3060336d321956e69f12ff8e78a8347acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 더 가시다가 다른 두 형제 곧 세베대의 아들 야고보와 그 형제 요한이 그 부친 세베대와 한가지로 배에서 그물 깁는 것을 보시고 부르시니"
+      ],
+      "raw_text_hashes": [
+        "0268a4fe30eecd95398f325cdb1c1f3060336d321956e69f12ff8e78a8347acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:22",
+      "sequence": 23232,
+      "chapter_label": "MAT 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "They immediately left the boat and their father, and followed him.",
+      "ko": "저희가 곧 배와 부친을 버려두고 예수를 좇으니라",
+      "source_text_hash": "df0e0d5daa77f1c0cc36b798036346751d93c5e96e168566a09a7a577ce6c39b",
+      "translation_text_hash": "39b7bff94d260a6f988aa74acdb37cd87086595b8ddcde0efcce75fba060c4ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 곧 배와 부친을 버려두고 예수를 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "39b7bff94d260a6f988aa74acdb37cd87086595b8ddcde0efcce75fba060c4ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:23",
+      "sequence": 23233,
+      "chapter_label": "MAT 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus went about in all Galilee, teaching in their synagogues, preaching the Good News of the Kingdom, and healing every disease and every sickness among the people.",
+      "ko": "예수께서 온 갈릴리에 두루 다니사 저희 회당에서 가르치시며 천국 복음을 전파하시며 백성 중에 모든 병과 모든 약한 것을 고치시니",
+      "source_text_hash": "ef90a5585caf3a2c5bd4b2b1d09208d2758ebf8f48f636f6803b4e807cfd2d4a",
+      "translation_text_hash": "af202d39932770fc8558d878addb6f36ce73484c99fdc260f3a517bacb7a410e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 온 갈릴리에 두루 다니사 저희 회당에서 가르치시며 천국 복음을 전파하시며 백성 중에 모든 병과 모든 약한 것을 고치시니"
+      ],
+      "raw_text_hashes": [
+        "af202d39932770fc8558d878addb6f36ce73484c99fdc260f3a517bacb7a410e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:24",
+      "sequence": 23234,
+      "chapter_label": "MAT 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "The report about him went out into all Syria. They brought to him all who were sick, afflicted with various diseases and torments, possessed with demons, epileptics, and paralytics; and he healed them.",
+      "ko": "그의 소문이 온 수리아에 퍼진지라 사람들이 모든 앓는 자 곧 각색 병과 고통에 걸린 자, 귀신 들린 자, 간질하는 자, 중풍병자들을 데려오니 저희를 고치시더라",
+      "source_text_hash": "ca8f64d83b64735f11f6d03c726b9d0c97f3514147734022489ae1f47151105f",
+      "translation_text_hash": "176e14d63da9682d86724d88c64b936ad8435b57eceed323b7227de91dd20ab4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 소문이 온 수리아에 퍼진지라 사람들이 모든 앓는 자 곧 각색 병과 고통에 걸린 자, 귀신 들린 자, 간질하는 자, 중풍병자들을 데려오니 저희를 고치시더라"
+      ],
+      "raw_text_hashes": [
+        "176e14d63da9682d86724d88c64b936ad8435b57eceed323b7227de91dd20ab4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:4:25",
+      "sequence": 23235,
+      "chapter_label": "MAT 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Great multitudes from Galilee, Decapolis, Jerusalem, Judea, and from beyond the Jordan followed him.",
+      "ko": "갈릴리와 데가볼리와 예루살렘과 유대와 요단강 건너편에서 허다한 무리가 좇으니라",
+      "source_text_hash": "f77107e50f9b251278035996640304dee754e74343272de3bf680e69b83dd062",
+      "translation_text_hash": "e4972c13e7462d11038dd683ab1a3f97f527384b8353124fa0479f7b0e0bd5d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리와 데가볼리와 예루살렘과 유대와 요단강 건너편에서 허다한 무리가 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "e4972c13e7462d11038dd683ab1a3f97f527384b8353124fa0479f7b0e0bd5d2"
+      ]
+    }
+  ]
+}

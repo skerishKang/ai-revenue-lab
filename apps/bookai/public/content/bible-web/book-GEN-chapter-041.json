@@ -1,0 +1,1837 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:041",
+  "unit_ordinal": 41,
+  "unit_label": "GEN 41",
+  "book_code": "GEN",
+  "chapter_number": 41,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:41:1",
+      "sequence": 1197,
+      "chapter_label": "GEN 41",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 1
+        }
+      ],
+      "en": "At the end of two full years, Pharaoh dreamed, and behold, he stood by the river.",
+      "ko": "만 이년 후에 바로가 꿈을 꾼즉 자기가 하숫가에 섰는데",
+      "source_text_hash": "ae4643ff5306b74eb7da657437c6256f01bffddfb7052d6c3b9c0e37646c4a33",
+      "translation_text_hash": "dc195e81911b96cbb32425ddf66f66ecc00360183a8f6c203f9e087a903df2c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만 이년 후에 바로가 꿈을 꾼즉 자기가 하숫가에 섰는데"
+      ],
+      "raw_text_hashes": [
+        "dc195e81911b96cbb32425ddf66f66ecc00360183a8f6c203f9e087a903df2c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:2",
+      "sequence": 1198,
+      "chapter_label": "GEN 41",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, seven cattle came up out of the river. They were sleek and fat, and they fed in the marsh grass.",
+      "ko": "보니 아름답고 살진 일곱 암소가 하수에서 올라와 갈밭에서 뜯어먹고",
+      "source_text_hash": "8e3c4180fd6a05cd30ff076eade701117e9c066a9866fd20ca7b5b9c34cd17a3",
+      "translation_text_hash": "8eb9b9272119a523b00676bffc95d31197c26783683155904e963590a8db441a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보니 아름답고 살진 일곱 암소가 하수에서 올라와 갈밭에서 뜯어먹고"
+      ],
+      "raw_text_hashes": [
+        "8eb9b9272119a523b00676bffc95d31197c26783683155904e963590a8db441a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:3",
+      "sequence": 1199,
+      "chapter_label": "GEN 41",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, seven other cattle came up after them out of the river, ugly and thin, and stood by the other cattle on the brink of the river.",
+      "ko": "그 뒤에 또 흉악하고 파리한 다른 일곱 암소가 하수에서 올라와 그 소와 함께 하숫가에 섰더니",
+      "source_text_hash": "cf59769bd40d36b137d2cef914567bc5307465b8564b1092f94f7256c90e1476",
+      "translation_text_hash": "35f76da623ae9814b5f5f7e231c7641100460b7e84ab8a13e528937f16537a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뒤에 또 흉악하고 파리한 다른 일곱 암소가 하수에서 올라와 그 소와 함께 하숫가에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "35f76da623ae9814b5f5f7e231c7641100460b7e84ab8a13e528937f16537a31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:4",
+      "sequence": 1200,
+      "chapter_label": "GEN 41",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 4
+        }
+      ],
+      "en": "The ugly and thin cattle ate up the seven sleek and fat cattle. So Pharaoh awoke.",
+      "ko": "그 흉악하고 파리한 소가 그 아름답고 살진 일곱 소를 먹은지라 바로가 곧 깨었다가",
+      "source_text_hash": "2eb22a90a5451416fae81d2c593cd6bda9c2dddf6f7ff139fa4fc02ec3ac161b",
+      "translation_text_hash": "92b2f4a0f3e0eb85144092568acfc2db16e78365513b5ffd0019ac7d685b2464",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 흉악하고 파리한 소가 그 아름답고 살진 일곱 소를 먹은지라 바로가 곧 깨었다가"
+      ],
+      "raw_text_hashes": [
+        "92b2f4a0f3e0eb85144092568acfc2db16e78365513b5ffd0019ac7d685b2464"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:5",
+      "sequence": 1201,
+      "chapter_label": "GEN 41",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 5
+        }
+      ],
+      "en": "He slept and dreamed a second time; and behold, seven heads of grain came up on one stalk, healthy and good.",
+      "ko": "다시 잠이 들어 꿈을 꾸니 한 줄기에 무성하고 충실한 일곱 이삭이 나오고",
+      "source_text_hash": "11b354fcb9c70f8534751b353db09a8fc988d8e87fe1e747b31c901521a52d60",
+      "translation_text_hash": "19d40ba807c0b0f5c9dc314a67b0fed1628ac0332e47a1922135ccd8745dea6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 잠이 들어 꿈을 꾸니 한 줄기에 무성하고 충실한 일곱 이삭이 나오고"
+      ],
+      "raw_text_hashes": [
+        "19d40ba807c0b0f5c9dc314a67b0fed1628ac0332e47a1922135ccd8745dea6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:6",
+      "sequence": 1202,
+      "chapter_label": "GEN 41",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, seven heads of grain, thin and blasted with the east wind, sprung up after them.",
+      "ko": "그 후에 또 세약하고 동풍에 마른 일곱 이삭이 나오더니",
+      "source_text_hash": "ef072c2f75d773ca04b32c0061b68c840da8e17b05509ab8b120e24b49022164",
+      "translation_text_hash": "a8f4aee6d65b1a87075a903c7018ed87dc0b20574f856897fc3e4436d6578689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 또 세약하고 동풍에 마른 일곱 이삭이 나오더니"
+      ],
+      "raw_text_hashes": [
+        "a8f4aee6d65b1a87075a903c7018ed87dc0b20574f856897fc3e4436d6578689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:7",
+      "sequence": 1203,
+      "chapter_label": "GEN 41",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 7
+        }
+      ],
+      "en": "The thin heads of grain swallowed up the seven healthy and full ears. Pharaoh awoke, and behold, it was a dream.",
+      "ko": "그 세약한 일곱 이삭이 무성하고 충실한 일곱 이삭을 삼킨지라 바로가 깬즉 꿈이라",
+      "source_text_hash": "68eec74820027916d727ef64521b264f2554d312dd6dba01ba8051a0ecc82381",
+      "translation_text_hash": "55df47f7cf4c16f3e12fb2c3f13936156649c890daf461e16583ee638b219d1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 세약한 일곱 이삭이 무성하고 충실한 일곱 이삭을 삼킨지라 바로가 깬즉 꿈이라"
+      ],
+      "raw_text_hashes": [
+        "55df47f7cf4c16f3e12fb2c3f13936156649c890daf461e16583ee638b219d1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:8",
+      "sequence": 1204,
+      "chapter_label": "GEN 41",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 8
+        }
+      ],
+      "en": "In the morning, his spirit was troubled, and he sent and called for all of Egypt’s magicians and wise men. Pharaoh told them his dreams, but there was no one who could interpret them to Pharaoh.",
+      "ko": "아침에 그 마음이 번민하여 보내어 애굽의 술객과 박사를 모두 불러 그들에게 그 꿈을 고하였으나 그것을 바로에게 해석하는 자가 없었더라",
+      "source_text_hash": "c66ac0b273d03ed06a6832af35b4c4b5c3f6d0a5bc59d530db5fecd4d62590bc",
+      "translation_text_hash": "71cbac34c854cab7143e43a62c8a2d96fc9b6ab8b160097c893bdbd4255aa14a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 그 마음이 번민하여 보내어 애굽의 술객과 박사를 모두 불러 그들에게 그 꿈을 고하였으나 그것을 바로에게 해석하는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "71cbac34c854cab7143e43a62c8a2d96fc9b6ab8b160097c893bdbd4255aa14a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:9",
+      "sequence": 1205,
+      "chapter_label": "GEN 41",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 9
+        }
+      ],
+      "en": "Then the chief cup bearer spoke to Pharaoh, saying, “I remember my faults today.",
+      "ko": "술 맡은 관원장이 바로에게 고하여 가로되 내가 오늘날 나의 허물을 추억하나이다",
+      "source_text_hash": "054fc92044cc0739b41cf806f48ba2f68420c5804dce7a91fdc6aeb3250860c4",
+      "translation_text_hash": "5582704d3b99a4e3abb0911ae6b82a9aece7803b2f4320f06f700db8e304ca28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술 맡은 관원장이 바로에게 고하여 가로되 내가 오늘날 나의 허물을 추억하나이다"
+      ],
+      "raw_text_hashes": [
+        "5582704d3b99a4e3abb0911ae6b82a9aece7803b2f4320f06f700db8e304ca28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:10",
+      "sequence": 1206,
+      "chapter_label": "GEN 41",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 10
+        }
+      ],
+      "en": "Pharaoh was angry with his servants, and put me in custody in the house of the captain of the guard, with the chief baker.",
+      "ko": "바로께서 종들에게 노하사 나와 떡 굽는 관원장을 시위대장의 집에 가두셨을 때에",
+      "source_text_hash": "63d597b73e165704d93370c441f97f95d8f74622019bab6613184163d1c7f094",
+      "translation_text_hash": "be996467191e6f0d23cf8a81b373eaa15abf001607f4a52fbba25ffdc8ec357d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로께서 종들에게 노하사 나와 떡 굽는 관원장을 시위대장의 집에 가두셨을 때에"
+      ],
+      "raw_text_hashes": [
+        "be996467191e6f0d23cf8a81b373eaa15abf001607f4a52fbba25ffdc8ec357d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:11",
+      "sequence": 1207,
+      "chapter_label": "GEN 41",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 11
+        }
+      ],
+      "en": "We dreamed a dream in one night, he and I. Each man dreamed according to the interpretation of his dream.",
+      "ko": "나와 그가 하룻밤에 꿈을 꾼즉 각기 징조가 있는 꿈이라",
+      "source_text_hash": "19a45dfb7806bf2bb5977ebb77704343c816cf0c1556d2bfe317cfa02dddd3a9",
+      "translation_text_hash": "9646dd773c6e55ff9efe10ce48be30b5a1fea9f7f6f3c45bb4b7cd34a29f51b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 그가 하룻밤에 꿈을 꾼즉 각기 징조가 있는 꿈이라"
+      ],
+      "raw_text_hashes": [
+        "9646dd773c6e55ff9efe10ce48be30b5a1fea9f7f6f3c45bb4b7cd34a29f51b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:12",
+      "sequence": 1208,
+      "chapter_label": "GEN 41",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 12
+        }
+      ],
+      "en": "There was with us there a young man, a Hebrew, servant to the captain of the guard, and we told him, and he interpreted to us our dreams. He interpreted to each man according to his dream.",
+      "ko": "그곳에 시위대장의 종된 히브리 소년이 우리와 함께 있기로 우리가 그에게 고하매 그가 우리의 꿈을 풀되 그 꿈대로 각인에게 해석하더니",
+      "source_text_hash": "f2141c6e488fe338766664d9c1e670fb705a5b68ca3f9b6192b6ecbb884b76e4",
+      "translation_text_hash": "d0c11d21032290f0fc38529e36863b4dcf028f12db9bda9324f27ca8759f08ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳에 시위대장의 종된 히브리 소년이 우리와 함께 있기로 우리가 그에게 고하매 그가 우리의 꿈을 풀되 그 꿈대로 각인에게 해석하더니"
+      ],
+      "raw_text_hashes": [
+        "d0c11d21032290f0fc38529e36863b4dcf028f12db9bda9324f27ca8759f08ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:13",
+      "sequence": 1209,
+      "chapter_label": "GEN 41",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 13
+        }
+      ],
+      "en": "As he interpreted to us, so it was. He restored me to my office, and he hanged him.”",
+      "ko": "그 해석한대로 되어 나는 복직하고 그는 매여 달렸나이다",
+      "source_text_hash": "bba427161f06a9554fc7d1c92de016684126e53ca5fa62b3fbbaef8b09da9363",
+      "translation_text_hash": "ea432071ef14fb66f76b4b6aa0d0ab17de92910b741f6b5d2da07ab12c59310c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 해석한대로 되어 나는 복직하고 그는 매여 달렸나이다"
+      ],
+      "raw_text_hashes": [
+        "ea432071ef14fb66f76b4b6aa0d0ab17de92910b741f6b5d2da07ab12c59310c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:14",
+      "sequence": 1210,
+      "chapter_label": "GEN 41",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 14
+        }
+      ],
+      "en": "Then Pharaoh sent and called Joseph, and they brought him hastily out of the dungeon. He shaved himself, changed his clothing, and came in to Pharaoh.",
+      "ko": "이에 바로가 보내어 요셉을 부르매 그들이 급히 그를 옥에서 낸지라 요셉이 곧 수염을 깎고 그 옷을 갈아 입고 바로에게 들어오니",
+      "source_text_hash": "f0485836ac6b28140b225da7d86fd8139166e1333b5ef1ab1798bd7675f0f28e",
+      "translation_text_hash": "4a7c15af93543c646c7f3a897d2eaccdc30ce535dce819b4f76e6f18e1906419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바로가 보내어 요셉을 부르매 그들이 급히 그를 옥에서 낸지라 요셉이 곧 수염을 깎고 그 옷을 갈아 입고 바로에게 들어오니"
+      ],
+      "raw_text_hashes": [
+        "4a7c15af93543c646c7f3a897d2eaccdc30ce535dce819b4f76e6f18e1906419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:15",
+      "sequence": 1211,
+      "chapter_label": "GEN 41",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 15
+        }
+      ],
+      "en": "Pharaoh said to Joseph, “I have dreamed a dream, and there is no one who can interpret it. I have heard it said of you, that when you hear a dream you can interpret it.”",
+      "ko": "바로가 요셉에게 이르되 내가 한 꿈을 꾸었으나 그것을 해석하는 자가 없더니 들은즉 너는 꿈을 들으면 능히 푼다더라",
+      "source_text_hash": "4db90fded401d9b4dca524429cbed9043d7956e798296e90cd710d153959a736",
+      "translation_text_hash": "169ec7118ecfadca69a8c1a4936ef8471204d15760283ca325db80fca2769c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 요셉에게 이르되 내가 한 꿈을 꾸었으나 그것을 해석하는 자가 없더니 들은즉 너는 꿈을 들으면 능히 푼다더라"
+      ],
+      "raw_text_hashes": [
+        "169ec7118ecfadca69a8c1a4936ef8471204d15760283ca325db80fca2769c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:16",
+      "sequence": 1212,
+      "chapter_label": "GEN 41",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 16
+        }
+      ],
+      "en": "Joseph answered Pharaoh, saying, “It isn’t in me. God will give Pharaoh an answer of peace.”",
+      "ko": "요셉이 바로에게 대답하여 가로되 이는 내게 있는 것이 아니라 하나님이 바로에게 평안한 대답을 하시리이다",
+      "source_text_hash": "bdfe4632428b64276fb92c3bc1dc31adaeae8aca166aebba309a008b66f6ad7e",
+      "translation_text_hash": "6952b4884e368e53d908c1ab8f5bbeff17d55a31d49c4858fd9ad70cf622579a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 바로에게 대답하여 가로되 이는 내게 있는 것이 아니라 하나님이 바로에게 평안한 대답을 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "6952b4884e368e53d908c1ab8f5bbeff17d55a31d49c4858fd9ad70cf622579a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:17",
+      "sequence": 1213,
+      "chapter_label": "GEN 41",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 17
+        }
+      ],
+      "en": "Pharaoh spoke to Joseph, “In my dream, behold, I stood on the brink of the river;",
+      "ko": "바로가 요셉에게 이르되 내가 꿈에 하숫가에 서서",
+      "source_text_hash": "8251d23a090bded188ff3cb3ab6cc048484de746a730263b0243f1cd28a2d72f",
+      "translation_text_hash": "8eef58218a28d946f39347a3a3d33d5e1e7ed6d05d82b7b6f7d48d056a21a946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 요셉에게 이르되 내가 꿈에 하숫가에 서서"
+      ],
+      "raw_text_hashes": [
+        "8eef58218a28d946f39347a3a3d33d5e1e7ed6d05d82b7b6f7d48d056a21a946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:18",
+      "sequence": 1214,
+      "chapter_label": "GEN 41",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 18
+        }
+      ],
+      "en": "and behold, seven fat and sleek cattle came up out of the river. They fed in the marsh grass;",
+      "ko": "보니 살지고 아름다운 일곱 암소가 하숫가에 올라와 갈밭에서 뜯어 먹고",
+      "source_text_hash": "0e11945b21270caa30dd2fe5bc44f0d6c6587a3ce6e5fc7fe42e1800bae69980",
+      "translation_text_hash": "66123f75281dda7df3ac402f8ec8beba495141d774c9a80df0e30401c36be83e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보니 살지고 아름다운 일곱 암소가 하숫가에 올라와 갈밭에서 뜯어 먹고"
+      ],
+      "raw_text_hashes": [
+        "66123f75281dda7df3ac402f8ec8beba495141d774c9a80df0e30401c36be83e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:19",
+      "sequence": 1215,
+      "chapter_label": "GEN 41",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 19
+        }
+      ],
+      "en": "and behold, seven other cattle came up after them, poor and very ugly and thin, such as I never saw in all the land of Egypt for ugliness.",
+      "ko": "그 뒤에 또 약하고 심히 흉악하고 파리한 일곱 암소가 올라오니 그같이 흉악한 것들은 애굽 땅에서 내가 아직 보지 못한 것이라",
+      "source_text_hash": "7a49642c79203e84384994012c103dcdebffa968d2e2490eada01c42b6896031",
+      "translation_text_hash": "5e10dc844f86aaed4c685de473cb308cb4b6ac5553d21eb8aa7c91a33d857d1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뒤에 또 약하고 심히 흉악하고 파리한 일곱 암소가 올라오니 그같이 흉악한 것들은 애굽 땅에서 내가 아직 보지 못한 것이라"
+      ],
+      "raw_text_hashes": [
+        "5e10dc844f86aaed4c685de473cb308cb4b6ac5553d21eb8aa7c91a33d857d1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:20",
+      "sequence": 1216,
+      "chapter_label": "GEN 41",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 20
+        }
+      ],
+      "en": "The thin and ugly cattle ate up the first seven fat cattle;",
+      "ko": "그 파리하고 흉악한 소가 처음의 일곱 살진 소를 먹었으며",
+      "source_text_hash": "1fdc1e28c77ba20a0a203e3fb7617f599f343e0b9d7f23d9a02e7a61849d052d",
+      "translation_text_hash": "c1ea485d273c28bb461d80170d5d1618345894df435a4f047c9f0942ba8d9519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 파리하고 흉악한 소가 처음의 일곱 살진 소를 먹었으며"
+      ],
+      "raw_text_hashes": [
+        "c1ea485d273c28bb461d80170d5d1618345894df435a4f047c9f0942ba8d9519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:21",
+      "sequence": 1217,
+      "chapter_label": "GEN 41",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 21
+        }
+      ],
+      "en": "and when they had eaten them up, it couldn’t be known that they had eaten them, but they were still ugly, as at the beginning. So I awoke.",
+      "ko": "먹었으나 먹은듯하지 아니하여 여전히 흉악하더라 내가 곧 깨었다가",
+      "source_text_hash": "36078a650e8ecb9f4f8cd1e12e11440d34f29bff0d46cca2723c20f5844677eb",
+      "translation_text_hash": "f0281a4fae21533b12733567335fc1091370159f7982bf9702697bcab97c0f5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹었으나 먹은듯하지 아니하여 여전히 흉악하더라 내가 곧 깨었다가"
+      ],
+      "raw_text_hashes": [
+        "f0281a4fae21533b12733567335fc1091370159f7982bf9702697bcab97c0f5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:22",
+      "sequence": 1218,
+      "chapter_label": "GEN 41",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 22
+        }
+      ],
+      "en": "I saw in my dream, and behold, seven heads of grain came up on one stalk, full and good;",
+      "ko": "다시 꿈에 보니 한 줄기에 무성하고 충실한 일곱 이삭이 나오고",
+      "source_text_hash": "2661163424627b9f7e2196af4747d97ade8a0beaf41f776b42575306b8a7216f",
+      "translation_text_hash": "22f40119e72178327436728655a6cf838fd2b293f810851d09a6a6903103793e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 꿈에 보니 한 줄기에 무성하고 충실한 일곱 이삭이 나오고"
+      ],
+      "raw_text_hashes": [
+        "22f40119e72178327436728655a6cf838fd2b293f810851d09a6a6903103793e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:23",
+      "sequence": 1219,
+      "chapter_label": "GEN 41",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 23
+        }
+      ],
+      "en": "and behold, seven heads of grain, withered, thin, and blasted with the east wind, sprung up after them.",
+      "ko": "그 후에 또 세약하고 동풍에 마른 일곱 이삭이 나더니",
+      "source_text_hash": "b2874d472ca73c2c785ecd766a18364e2c20d91f5144564259943b6a2aa93520",
+      "translation_text_hash": "ffdf538374f6719f77f0544af1effe20fa8fada363088697c2032af60798d72e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 또 세약하고 동풍에 마른 일곱 이삭이 나더니"
+      ],
+      "raw_text_hashes": [
+        "ffdf538374f6719f77f0544af1effe20fa8fada363088697c2032af60798d72e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:24",
+      "sequence": 1220,
+      "chapter_label": "GEN 41",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 24
+        }
+      ],
+      "en": "The thin heads of grain swallowed up the seven good heads of grain. I told it to the magicians, but there was no one who could explain it to me.”",
+      "ko": "그 세약한 이삭이 좋은 일곱 이삭을 삼키더라 내가 그 꿈을 술객에게 말하였으나 그것을 내게 보이는 자가 없느니라",
+      "source_text_hash": "6352d8b3a70d89cd3356ea067bf6799b5bb5e3aa0a0d4b1e5cee10eb5514f711",
+      "translation_text_hash": "93f2e66cb774d95a7191337b367c59a4ffeb09c3e86a1e3fa6c1b12dfaf3e36a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 세약한 이삭이 좋은 일곱 이삭을 삼키더라 내가 그 꿈을 술객에게 말하였으나 그것을 내게 보이는 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "93f2e66cb774d95a7191337b367c59a4ffeb09c3e86a1e3fa6c1b12dfaf3e36a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:25",
+      "sequence": 1221,
+      "chapter_label": "GEN 41",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 25
+        }
+      ],
+      "en": "Joseph said to Pharaoh, “The dream of Pharaoh is one. What God is about to do he has declared to Pharaoh.",
+      "ko": "요셉이 바로에게 고하되 바로의 꿈은 하나이라 하나님이 그 하실 일을 바로에게 보이심이니이다",
+      "source_text_hash": "4db03b18e2abf656a60dc73f7ccf8642bd767cb44b75a4c28e67884d34e7a973",
+      "translation_text_hash": "ad91870fbe44249566f2720c98fb8c38b2124995d880545df5f9f7326d1044ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 바로에게 고하되 바로의 꿈은 하나이라 하나님이 그 하실 일을 바로에게 보이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "ad91870fbe44249566f2720c98fb8c38b2124995d880545df5f9f7326d1044ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:26",
+      "sequence": 1222,
+      "chapter_label": "GEN 41",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 26
+        }
+      ],
+      "en": "The seven good cattle are seven years; and the seven good heads of grain are seven years. The dream is one.",
+      "ko": "일곱 좋은 암소는 일곱해요 일곱 좋은 이삭도 일곱해니 그 꿈은 하나이라",
+      "source_text_hash": "ac6dfbfa23e27f8f6e23373c1b5d4917466fd936045f50df4538148f48bde832",
+      "translation_text_hash": "7ac5e1243adc1a175ed778559b6439862aa972702032d8bd925f7c14284debbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 좋은 암소는 일곱해요 일곱 좋은 이삭도 일곱해니 그 꿈은 하나이라"
+      ],
+      "raw_text_hashes": [
+        "7ac5e1243adc1a175ed778559b6439862aa972702032d8bd925f7c14284debbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:27",
+      "sequence": 1223,
+      "chapter_label": "GEN 41",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 27
+        }
+      ],
+      "en": "The seven thin and ugly cattle that came up after them are seven years, and also the seven empty heads of grain blasted with the east wind; they will be seven years of famine.",
+      "ko": "그 후에 올라온 파리하고 흉악한 일곱 소는 칠년이요 동풍에 말라 속이 빈 일곱 이삭도 일곱해 흉년이니",
+      "source_text_hash": "7723ecdea4564f83ea99ce694914e11ee8ac8a72d10c888e0cdd958bb0d7cd8b",
+      "translation_text_hash": "5c0e1562dbbe5e1c81007b367b9324fc527d5ebd64460d7aac38d7af29b57928",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 올라온 파리하고 흉악한 일곱 소는 칠년이요 동풍에 말라 속이 빈 일곱 이삭도 일곱해 흉년이니"
+      ],
+      "raw_text_hashes": [
+        "5c0e1562dbbe5e1c81007b367b9324fc527d5ebd64460d7aac38d7af29b57928"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:28",
+      "sequence": 1224,
+      "chapter_label": "GEN 41",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 28
+        }
+      ],
+      "en": "That is the thing which I have spoken to Pharaoh. God has shown Pharaoh what he is about to do.",
+      "ko": "내가 바로에게 고하기를 하나님이 그 하실 일로 바로에게 보이신다 함이 이것이라",
+      "source_text_hash": "0d17f446bc7b02bba593cc5f7bb82434a08a6cf588b80af246a6af03399f2a1e",
+      "translation_text_hash": "e0da3763079460f9b54698e7cb81aabf7705553adc2879e477fca2a5934b9ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바로에게 고하기를 하나님이 그 하실 일로 바로에게 보이신다 함이 이것이라"
+      ],
+      "raw_text_hashes": [
+        "e0da3763079460f9b54698e7cb81aabf7705553adc2879e477fca2a5934b9ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:29",
+      "sequence": 1225,
+      "chapter_label": "GEN 41",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 29
+        }
+      ],
+      "en": "Behold, seven years of great plenty throughout all the land of Egypt are coming.",
+      "ko": "온 애굽 땅에 일곱해 큰 풍년이 있겠고",
+      "source_text_hash": "0441b021bdbe4cf454aed1adb87946cf2d954a6ca2166fec610da2f4e144c1e2",
+      "translation_text_hash": "e30d7edf8dfa3fb0fcee38281c1f9f698bc4517849bd1e460a0c586a4ee88df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 애굽 땅에 일곱해 큰 풍년이 있겠고"
+      ],
+      "raw_text_hashes": [
+        "e30d7edf8dfa3fb0fcee38281c1f9f698bc4517849bd1e460a0c586a4ee88df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:30",
+      "sequence": 1226,
+      "chapter_label": "GEN 41",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 30
+        }
+      ],
+      "en": "Seven years of famine will arise after them, and all the plenty will be forgotten in the land of Egypt. The famine will consume the land,",
+      "ko": "후에 일곱해 흉년이 들므로 애굽 땅에 있던 풍년을 다 잊어버리게 되고 이 땅이 기근으로 멸망되리니",
+      "source_text_hash": "d925143e1f9248bc9dc835bf4f81515eb09757b32920bc8e81542ec31be5b916",
+      "translation_text_hash": "00aab6be17444fc376e21f3a696f9cf9751dbad49ca762efea775adf03107a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 일곱해 흉년이 들므로 애굽 땅에 있던 풍년을 다 잊어버리게 되고 이 땅이 기근으로 멸망되리니"
+      ],
+      "raw_text_hashes": [
+        "00aab6be17444fc376e21f3a696f9cf9751dbad49ca762efea775adf03107a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:31",
+      "sequence": 1227,
+      "chapter_label": "GEN 41",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 31
+        }
+      ],
+      "en": "and the plenty will not be known in the land by reason of that famine which follows; for it will be very grievous.",
+      "ko": "후에 든 그 흉년이 너무 심하므로 이전 풍년을 이 땅에서 기억하지 못하게 되리이다",
+      "source_text_hash": "6048978ba467fbd19e11fde39a49e4aa52dc58b00785fee21580510ab302d337",
+      "translation_text_hash": "d2d1479cdbf4bdd837a8eab7ea27066c45f1eca7c00db43ad857d9969b06ad05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 든 그 흉년이 너무 심하므로 이전 풍년을 이 땅에서 기억하지 못하게 되리이다"
+      ],
+      "raw_text_hashes": [
+        "d2d1479cdbf4bdd837a8eab7ea27066c45f1eca7c00db43ad857d9969b06ad05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:32",
+      "sequence": 1228,
+      "chapter_label": "GEN 41",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 32
+        }
+      ],
+      "en": "The dream was doubled to Pharaoh, because the thing is established by God, and God will shortly bring it to pass.",
+      "ko": "바로께서 꿈을 두번 겹쳐 꾸신 것은 하나님이 이 일을 정하셨음이라 속히 행하시리니",
+      "source_text_hash": "2d223d12b32b9149ed3653857062dd7c54499544536d85da03797797df8654f4",
+      "translation_text_hash": "f0e46233e4f64d7e2436fbee5da3b861469758c262e19ce9c4b92a7ef0c12c7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로께서 꿈을 두번 겹쳐 꾸신 것은 하나님이 이 일을 정하셨음이라 속히 행하시리니"
+      ],
+      "raw_text_hashes": [
+        "f0e46233e4f64d7e2436fbee5da3b861469758c262e19ce9c4b92a7ef0c12c7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:33",
+      "sequence": 1229,
+      "chapter_label": "GEN 41",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 33
+        }
+      ],
+      "en": "“Now therefore let Pharaoh look for a discreet and wise man, and set him over the land of Egypt.",
+      "ko": "이제 바로께서는 명철하고 지혜 있는 사람을 택하여 애굽 땅을 치리하게 하시고",
+      "source_text_hash": "32f45b3e97f6480f28ea053b692d43337640b7b52b8f1f3367666748b640232f",
+      "translation_text_hash": "3e46583eff6a711b847da2185dddeb79d32b5d35a83189ffb089117cd8c5491f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 바로께서는 명철하고 지혜 있는 사람을 택하여 애굽 땅을 치리하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "3e46583eff6a711b847da2185dddeb79d32b5d35a83189ffb089117cd8c5491f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:34",
+      "sequence": 1230,
+      "chapter_label": "GEN 41",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 34
+        }
+      ],
+      "en": "Let Pharaoh do this, and let him appoint overseers over the land, and take up the fifth part of the land of Egypt’s produce in the seven plenteous years.",
+      "ko": "바로께서는 또 이같이 행하사 국중에 여러 관리를 두어 그 일곱해 풍년에 애굽 땅의 오분의 일을 거두되",
+      "source_text_hash": "b38b7499f9b04ae8926d023afbccfce33994200cbd15c940a636093097e69135",
+      "translation_text_hash": "9108db8e5a3d8f2b136d7cbfef0796ed76cc47f06cbf8b947d394b581261a38a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로께서는 또 이같이 행하사 국중에 여러 관리를 두어 그 일곱해 풍년에 애굽 땅의 오분의 일을 거두되"
+      ],
+      "raw_text_hashes": [
+        "9108db8e5a3d8f2b136d7cbfef0796ed76cc47f06cbf8b947d394b581261a38a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:35",
+      "sequence": 1231,
+      "chapter_label": "GEN 41",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 35
+        }
+      ],
+      "en": "Let them gather all the food of these good years that come, and store grain under the hand of Pharaoh for food in the cities, and let them keep it.",
+      "ko": "그 관리로 장차 올 풍년의 모든 곡물을 거두고 그 곡물을 바로의 손에 돌려 양식을 위하여 각 성에 적치하게 하소서",
+      "source_text_hash": "acd1c1587203341ac402c56b0f74a24465fdd3c93029c32c3d33387dcb7183bd",
+      "translation_text_hash": "9b5521cadffb20abafb67c82be14e7c1c6fdc53b7626286b1ecc05ad7203ebce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 관리로 장차 올 풍년의 모든 곡물을 거두고 그 곡물을 바로의 손에 돌려 양식을 위하여 각 성에 적치하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "9b5521cadffb20abafb67c82be14e7c1c6fdc53b7626286b1ecc05ad7203ebce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:36",
+      "sequence": 1232,
+      "chapter_label": "GEN 41",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 36
+        }
+      ],
+      "en": "The food will be to supply the land against the seven years of famine, which will be in the land of Egypt; so that the land will not perish through the famine.”",
+      "ko": "이와 같이 그 곡물을 이 땅에 저장하여 애굽 땅에 임할 일곱해 흉년을 예비하시면 땅이 이 흉년을 인하여 멸망치 아니하리이다",
+      "source_text_hash": "ba09831ac64b0a34315920bde48c2be95e2100ff9f84239ecde05a2e63a02681",
+      "translation_text_hash": "a37edd171f63c674788ecfc3304b93a804e6bd34b9e9c929e2e109d45345cf68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그 곡물을 이 땅에 저장하여 애굽 땅에 임할 일곱해 흉년을 예비하시면 땅이 이 흉년을 인하여 멸망치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "a37edd171f63c674788ecfc3304b93a804e6bd34b9e9c929e2e109d45345cf68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:37",
+      "sequence": 1233,
+      "chapter_label": "GEN 41",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 37
+        }
+      ],
+      "en": "The thing was good in the eyes of Pharaoh, and in the eyes of all his servants.",
+      "ko": "바로와 그 모든 신하가 이 일을 좋게 여긴지라",
+      "source_text_hash": "3f630985c48b158e7a1c3eb0338dd8db5e5a3b3f7ee0f36c6f0cb2aa73a53278",
+      "translation_text_hash": "15c610c85cfb9c330df522cfb984c1aa5fd2dcfbafb69c7543bc51c455fbd9d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로와 그 모든 신하가 이 일을 좋게 여긴지라"
+      ],
+      "raw_text_hashes": [
+        "15c610c85cfb9c330df522cfb984c1aa5fd2dcfbafb69c7543bc51c455fbd9d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:38",
+      "sequence": 1234,
+      "chapter_label": "GEN 41",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 38
+        }
+      ],
+      "en": "Pharaoh said to his servants, “Can we find such a one as this, a man in whom is the Spirit of God?”",
+      "ko": "바로가 그 신하들에게 이르되 이와 같이 하나님의 신이 감동한 사람을 우리가 어찌 얻을 수 있으리요 하고",
+      "source_text_hash": "db805d85c33dbda0c96de724cb3fe7c094af3a7a9ab7abfd2e837a9332c780a4",
+      "translation_text_hash": "26aeac7da96d8d4406d31a02c15e10f053d2043afaab00eff04f44bed7fd3c81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 그 신하들에게 이르되 이와 같이 하나님의 신이 감동한 사람을 우리가 어찌 얻을 수 있으리요 하고"
+      ],
+      "raw_text_hashes": [
+        "26aeac7da96d8d4406d31a02c15e10f053d2043afaab00eff04f44bed7fd3c81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:39",
+      "sequence": 1235,
+      "chapter_label": "GEN 41",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 39
+        }
+      ],
+      "en": "Pharaoh said to Joseph, “Because God has shown you all of this, there is no one so discreet and wise as you.",
+      "ko": "요셉에게 이르되 하나님이 이 모든 것을 네게 보이셨으니 너와 같이 명철하고 지혜 있는 자가 없도다",
+      "source_text_hash": "6d7887df2fd4eda12d6bf8811a3740e7ae8a2a30f18e66b8514b4e52ff91946b",
+      "translation_text_hash": "e9be927677515ef00833df75d2d4f62c3d432a725755fb13fdf7f247ae89ce00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉에게 이르되 하나님이 이 모든 것을 네게 보이셨으니 너와 같이 명철하고 지혜 있는 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "e9be927677515ef00833df75d2d4f62c3d432a725755fb13fdf7f247ae89ce00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:40",
+      "sequence": 1236,
+      "chapter_label": "GEN 41",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 40
+        }
+      ],
+      "en": "You shall be over my house. All my people will be ruled according to your word. Only in the throne I will be greater than you.”",
+      "ko": "너는 내 집을 치리하라 내 백성이 다 네 명을 복종하리니 나는 너보다 높음이 보좌 뿐이니라",
+      "source_text_hash": "a47c966c92945ba6c28f8c496b339da430be22d0c703fd9c06e63f92878464e7",
+      "translation_text_hash": "13afbf7107c308854ec09406ba428a4ca3333764598add89b4a9fadd2a4a6959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내 집을 치리하라 내 백성이 다 네 명을 복종하리니 나는 너보다 높음이 보좌 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "13afbf7107c308854ec09406ba428a4ca3333764598add89b4a9fadd2a4a6959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:41",
+      "sequence": 1237,
+      "chapter_label": "GEN 41",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 41
+        }
+      ],
+      "en": "Pharaoh said to Joseph, “Behold, I have set you over all the land of Egypt.”",
+      "ko": "바로가 또 요셉에게 이르되 내가 너로 애굽 온 땅을 총리하게 하노라 하고",
+      "source_text_hash": "f8c54005a25a119ab5c70e1bdb664bca980c3b2c15a79f421bf707bcff3250dd",
+      "translation_text_hash": "f6e406adc7affbd232fce62acbb9f0bd3febb5221cf0bfb36374b06a786c6ab4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 또 요셉에게 이르되 내가 너로 애굽 온 땅을 총리하게 하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "f6e406adc7affbd232fce62acbb9f0bd3febb5221cf0bfb36374b06a786c6ab4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:42",
+      "sequence": 1238,
+      "chapter_label": "GEN 41",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 42
+        }
+      ],
+      "en": "Pharaoh took off his signet ring from his hand, and put it on Joseph’s hand, and arrayed him in robes of fine linen, and put a gold chain about his neck.",
+      "ko": "자기의 인장 반지를 빼어 요셉의 손에 끼우고 그에게 세마포 옷을 입히고 금사슬을 목에 걸고",
+      "source_text_hash": "0ba4e5d311d8d957f26ff8b4a886e6bfe82248a3dbb480dbf115ad919602e42b",
+      "translation_text_hash": "0355fe2006a68193d77615bceff143296272ba4db4f7cd7bad2021ff019337bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 인장 반지를 빼어 요셉의 손에 끼우고 그에게 세마포 옷을 입히고 금사슬을 목에 걸고"
+      ],
+      "raw_text_hashes": [
+        "0355fe2006a68193d77615bceff143296272ba4db4f7cd7bad2021ff019337bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:43",
+      "sequence": 1239,
+      "chapter_label": "GEN 41",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 43
+        }
+      ],
+      "en": "He made him ride in the second chariot which he had. They cried before him, “Bow the knee!” He set him over all the land of Egypt.",
+      "ko": "자기에게 있는 버금 수레에 그를 태우매 무리가 그 앞에서 소리 지르기를 엎드리라 하더라 바로가 그로 애굽 전국을 총리하게 하였더라",
+      "source_text_hash": "274b908eb4af94b08e170fbc75c6c00eb59ab1522777deb08ab4e791a962a4ba",
+      "translation_text_hash": "c5c0cbe4836c77ce1c0a015ef76ad5af642185843e4494f681af95af22c3a53b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기에게 있는 버금 수레에 그를 태우매 무리가 그 앞에서 소리 지르기를 엎드리라 하더라 바로가 그로 애굽 전국을 총리하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c5c0cbe4836c77ce1c0a015ef76ad5af642185843e4494f681af95af22c3a53b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:44",
+      "sequence": 1240,
+      "chapter_label": "GEN 41",
+      "verse_label": "44",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 44
+        }
+      ],
+      "en": "Pharaoh said to Joseph, “I am Pharaoh. Without you, no man shall lift up his hand or his foot in all the land of Egypt.”",
+      "ko": "바로가 요셉에게 이르되 나는 바로라 애굽 온 땅에서 네 허락 없이는 수족을 놀릴 자가 없으리라 하고",
+      "source_text_hash": "5244df81a010fd4b103e2d9b85cfab47431248d5eededeeb5db93b2d9fd7c344",
+      "translation_text_hash": "899a89b768aad684d087f0245c83c2d46bb480a998f11ff55ad81d25ad12aa13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 요셉에게 이르되 나는 바로라 애굽 온 땅에서 네 허락 없이는 수족을 놀릴 자가 없으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "899a89b768aad684d087f0245c83c2d46bb480a998f11ff55ad81d25ad12aa13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:45",
+      "sequence": 1241,
+      "chapter_label": "GEN 41",
+      "verse_label": "45",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 45
+        }
+      ],
+      "en": "Pharaoh called Joseph’s name Zaphenath-Paneah. He gave him Asenath, the daughter of Potiphera priest of On as a wife. Joseph went out over the land of Egypt.",
+      "ko": "그가 요셉의 이름을 사브낫바네아라 하고 또 온 제사장 보디베라의 딸 아스낫을 그에게 주어 아내를 삼게 하니라 요셉이 나가 애굽 온 땅을 순찰하니라",
+      "source_text_hash": "4017f14457ba1708b139c155eacf67fa64189cd1590fbf4d95bba0b0ac8f6aa6",
+      "translation_text_hash": "8591d6dda1dde85c238e42ad308f87cd1de6680a844aa6394c82647cc4895610",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 요셉의 이름을 사브낫바네아라 하고 또 온 제사장 보디베라의 딸 아스낫을 그에게 주어 아내를 삼게 하니라 요셉이 나가 애굽 온 땅을 순찰하니라"
+      ],
+      "raw_text_hashes": [
+        "8591d6dda1dde85c238e42ad308f87cd1de6680a844aa6394c82647cc4895610"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:46",
+      "sequence": 1242,
+      "chapter_label": "GEN 41",
+      "verse_label": "46",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 46
+        }
+      ],
+      "en": "Joseph was thirty years old when he stood before Pharaoh king of Egypt. Joseph went out from the presence of Pharaoh, and went throughout all the land of Egypt.",
+      "ko": "요셉이 애굽왕 바로 앞에 설 때에 삼십세라 그가 바로 앞을 떠나 애굽 온 땅을 순찰하니",
+      "source_text_hash": "64d8769de920e6c3b1248def8534490032a7f99ea98a183e36722b1c01b2da51",
+      "translation_text_hash": "c3540a39a0ba67d95258eff5f0f2c26570cdeb5420c0cf824dd1bfb28db54f4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 애굽왕 바로 앞에 설 때에 삼십세라 그가 바로 앞을 떠나 애굽 온 땅을 순찰하니"
+      ],
+      "raw_text_hashes": [
+        "c3540a39a0ba67d95258eff5f0f2c26570cdeb5420c0cf824dd1bfb28db54f4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:47",
+      "sequence": 1243,
+      "chapter_label": "GEN 41",
+      "verse_label": "47",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 47
+        }
+      ],
+      "en": "In the seven plenteous years the earth produced abundantly.",
+      "ko": "일곱해 풍년에 토지 소출이 심히 많은지라",
+      "source_text_hash": "2cc818aa239b6e47f179fec1b9e4667a0687cb0d675f2f6f0f383959a77f6eb4",
+      "translation_text_hash": "4a3ec809430ed0b9811cf032a0566ed47b3145cc5649db3c194c990dc43844ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱해 풍년에 토지 소출이 심히 많은지라"
+      ],
+      "raw_text_hashes": [
+        "4a3ec809430ed0b9811cf032a0566ed47b3145cc5649db3c194c990dc43844ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:48",
+      "sequence": 1244,
+      "chapter_label": "GEN 41",
+      "verse_label": "48",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 48
+        }
+      ],
+      "en": "He gathered up all the food of the seven years which were in the land of Egypt, and laid up the food in the cities. He stored food in each city from the fields around that city.",
+      "ko": "요셉이 애굽 땅에 있는 그 칠년 곡물을 거두어 각성에 저축하되 각성 주위의 밭의 곡물을 그 성중에 저장하매",
+      "source_text_hash": "7b8f2053cbdf5a3e0f82ee6ca24e5de98042eeef4e19b3d59f9622f2f9825a45",
+      "translation_text_hash": "57807a1506fc787c151ea00ec7cf0a141a269010e71565395638baab6c0cd6fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 애굽 땅에 있는 그 칠년 곡물을 거두어 각성에 저축하되 각성 주위의 밭의 곡물을 그 성중에 저장하매"
+      ],
+      "raw_text_hashes": [
+        "57807a1506fc787c151ea00ec7cf0a141a269010e71565395638baab6c0cd6fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:49",
+      "sequence": 1245,
+      "chapter_label": "GEN 41",
+      "verse_label": "49",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 49
+        }
+      ],
+      "en": "Joseph laid up grain as the sand of the sea, very much, until he stopped counting, for it was without number.",
+      "ko": "저장한 곡식이 바다 모래 같이 심히 많아 세기를 그쳤으니 그 수가 한이 없음이었더라",
+      "source_text_hash": "ff4fb41a90f68c12c6d864d2c32114113544d17e37d13e2e0e277f458b09205c",
+      "translation_text_hash": "7b789f4e334063e85667db03f65f2e2a19f9f95c461f3bf3257d8fdf7470c9d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저장한 곡식이 바다 모래 같이 심히 많아 세기를 그쳤으니 그 수가 한이 없음이었더라"
+      ],
+      "raw_text_hashes": [
+        "7b789f4e334063e85667db03f65f2e2a19f9f95c461f3bf3257d8fdf7470c9d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:50",
+      "sequence": 1246,
+      "chapter_label": "GEN 41",
+      "verse_label": "50",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 50
+        }
+      ],
+      "en": "To Joseph were born two sons before the year of famine came, whom Asenath, the daughter of Potiphera priest of On, bore to him.",
+      "ko": "흉년이 들기 전에 요셉에게 두 아들을 낳되 곧 온 제사장 보디베라의 딸 아스낫이 그에게 낳은지라",
+      "source_text_hash": "6e8e2f2e9bc004f6d118877ceda6c3872b9b86d94862e1b0f35e8f6e3c106944",
+      "translation_text_hash": "083340d8a970d52dcb4c1b4b3763f0184cc70c74fd9ba03c55b55fa9c2cef790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흉년이 들기 전에 요셉에게 두 아들을 낳되 곧 온 제사장 보디베라의 딸 아스낫이 그에게 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "083340d8a970d52dcb4c1b4b3763f0184cc70c74fd9ba03c55b55fa9c2cef790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:51",
+      "sequence": 1247,
+      "chapter_label": "GEN 41",
+      "verse_label": "51",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 51
+        }
+      ],
+      "en": "Joseph called the name of the firstborn Manasseh, “For”, he said, “God has made me forget all my toil, and all my father’s house.”",
+      "ko": "요셉이 그 장자의 이름을 므낫세라 하였으니 하나님이 나로 나의 모든 고난과 나의 아비의 온 집 일을 잊어버리게 하셨다 함이요",
+      "source_text_hash": "be090480740302ad2cde02053683f0030ecf92b10fcd2163511e095772a17fce",
+      "translation_text_hash": "81f7f5ed05b3706a2cf1087fca07b3b098f8fd775d597563b2a79fec2837eab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 장자의 이름을 므낫세라 하였으니 하나님이 나로 나의 모든 고난과 나의 아비의 온 집 일을 잊어버리게 하셨다 함이요"
+      ],
+      "raw_text_hashes": [
+        "81f7f5ed05b3706a2cf1087fca07b3b098f8fd775d597563b2a79fec2837eab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:52",
+      "sequence": 1248,
+      "chapter_label": "GEN 41",
+      "verse_label": "52",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 52
+        }
+      ],
+      "en": "The name of the second, he called Ephraim: “For God has made me fruitful in the land of my affliction.”",
+      "ko": "차자의 이름을 에브라임이라 하였으니 하나님이 나로 나의 수고한 땅에서 창성하게 하셨다 함이었더라",
+      "source_text_hash": "50d9bb0427de2c381edd973430d514e0d94c1449f22fbbf0f2559499030cfafd",
+      "translation_text_hash": "020bdaf338643395b9a463b42737b29c317c6b0102cb362173fec3479f7ac436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "차자의 이름을 에브라임이라 하였으니 하나님이 나로 나의 수고한 땅에서 창성하게 하셨다 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "020bdaf338643395b9a463b42737b29c317c6b0102cb362173fec3479f7ac436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:53",
+      "sequence": 1249,
+      "chapter_label": "GEN 41",
+      "verse_label": "53",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 53
+        }
+      ],
+      "en": "The seven years of plenty, that were in the land of Egypt, came to an end.",
+      "ko": "애굽 땅에 일곱해 풍년이 그치고",
+      "source_text_hash": "652691793da4dd872d9920f0e9844b250267c5aa586d0666cfbb7665276c9d09",
+      "translation_text_hash": "dd4f177c2b7e177336ef00e0fd79bd0d7c5eb3d5013a87ddf9d8bb74a9f7e551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에 일곱해 풍년이 그치고"
+      ],
+      "raw_text_hashes": [
+        "dd4f177c2b7e177336ef00e0fd79bd0d7c5eb3d5013a87ddf9d8bb74a9f7e551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:54",
+      "sequence": 1250,
+      "chapter_label": "GEN 41",
+      "verse_label": "54",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 54
+        }
+      ],
+      "en": "The seven years of famine began to come, just as Joseph had said. There was famine in all lands, but in all the land of Egypt there was bread.",
+      "ko": "요셉의 말과 같이 일곱해 흉년이 들기 시작하매 각국에는 기근이 있으나 애굽 온 땅에는 식물이 있더니",
+      "source_text_hash": "82832b187bc45ecf18537ab15bdaee52dcd10af1b7141384cde8bec51f11cf77",
+      "translation_text_hash": "1de4b6206967d35846082a6ac007b98909aa194f17e9db0042ade428fc1f3969",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 말과 같이 일곱해 흉년이 들기 시작하매 각국에는 기근이 있으나 애굽 온 땅에는 식물이 있더니"
+      ],
+      "raw_text_hashes": [
+        "1de4b6206967d35846082a6ac007b98909aa194f17e9db0042ade428fc1f3969"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:55",
+      "sequence": 1251,
+      "chapter_label": "GEN 41",
+      "verse_label": "55",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 55
+        }
+      ],
+      "en": "When all the land of Egypt was famished, the people cried to Pharaoh for bread, and Pharaoh said to all the Egyptians, “Go to Joseph. What he says to you, do.”",
+      "ko": "애굽 온 땅이 주리매 백성이 바로에게 부르짖어 양식을 구하는지라 바로가 애굽 모든 백성에게 이르되 요셉에게 가서 그가 너희에게 이르는대로 하라 하니라",
+      "source_text_hash": "a463f24402fc19426c9a73a1cf4cbedec00d6065d80c9c11c6dbf6e0f15ae08c",
+      "translation_text_hash": "d95047cddaf632d1ec7c8637bf7c66b5be320b14c88032000b84f875575f81c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 온 땅이 주리매 백성이 바로에게 부르짖어 양식을 구하는지라 바로가 애굽 모든 백성에게 이르되 요셉에게 가서 그가 너희에게 이르는대로 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "d95047cddaf632d1ec7c8637bf7c66b5be320b14c88032000b84f875575f81c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:56",
+      "sequence": 1252,
+      "chapter_label": "GEN 41",
+      "verse_label": "56",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 56
+        }
+      ],
+      "en": "The famine was over all the surface of the earth. Joseph opened all the store houses, and sold to the Egyptians. The famine was severe in the land of Egypt.",
+      "ko": "온 지면에 기근이 있으매 요셉이 모든 창고를 열고 애굽 백성에게 팔쌔 애굽 땅에 기근이 심하며",
+      "source_text_hash": "587b14d62fab5b699f0aa1fe2dd4fabe8e15345803ac470e2da7bfd6256ae73a",
+      "translation_text_hash": "aa9e9b16644a1d03b6a304f15d23386e5fe1964f56f95510cf8c5b750ea1b70b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 지면에 기근이 있으매 요셉이 모든 창고를 열고 애굽 백성에게 팔쌔 애굽 땅에 기근이 심하며"
+      ],
+      "raw_text_hashes": [
+        "aa9e9b16644a1d03b6a304f15d23386e5fe1964f56f95510cf8c5b750ea1b70b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:41:57",
+      "sequence": 1253,
+      "chapter_label": "GEN 41",
+      "verse_label": "57",
+      "locator": {
+        "book": "GEN",
+        "chapter": 41,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 41,
+          "verse": 57
+        }
+      ],
+      "en": "All countries came into Egypt, to Joseph, to buy grain, because the famine was severe in all the earth.",
+      "ko": "각국 백성도 양식을 사려고 애굽으로 들어와 요셉에게 이르렀으니 기근이 온 세상에 심함이었더라",
+      "source_text_hash": "de8d658f44f4dee1db8fa15ecdd7512b7da8483e672a0c4425acb7e48bbe6fe5",
+      "translation_text_hash": "40312383cedaeb4eb6ff81506c9838f6263bfd036bf577c4568fa6fef45f0904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각국 백성도 양식을 사려고 애굽으로 들어와 요셉에게 이르렀으니 기근이 온 세상에 심함이었더라"
+      ],
+      "raw_text_hashes": [
+        "40312383cedaeb4eb6ff81506c9838f6263bfd036bf577c4568fa6fef45f0904"
+      ]
+    }
+  ]
+}

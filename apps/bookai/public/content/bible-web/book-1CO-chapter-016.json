@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:016",
+  "unit_ordinal": 1078,
+  "unit_label": "1CO 16",
+  "book_code": "1CO",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:16:1",
+      "sequence": 28774,
+      "chapter_label": "1CO 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Now concerning the collection for the saints: as I commanded the assemblies of Galatia, you do likewise.",
+      "ko": "성도를 위하는 연보에 대하여는 내가 갈라디아 교회들에게 명한것 같이 너희도 그렇게 하라",
+      "source_text_hash": "843a2c4e3c904c9ef5925cf263b1dcc96896ec185223476dc5d109ef5f31fd35",
+      "translation_text_hash": "f8efb6aa428bd72fa05e2eb8f617672856a86e899cdd485a0c29e265a90bb5b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도를 위하는 연보에 대하여는 내가 갈라디아 교회들에게 명한것 같이 너희도 그렇게 하라"
+      ],
+      "raw_text_hashes": [
+        "f8efb6aa428bd72fa05e2eb8f617672856a86e899cdd485a0c29e265a90bb5b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:2",
+      "sequence": 28775,
+      "chapter_label": "1CO 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "On the first day of every week, let each one of you save as he may prosper, that no collections are made when I come.",
+      "ko": "매주일 첫날에 너희 각 사람이 이를 얻은대로 저축하여 두어서 내가 갈 때에 연보를 하지 않게 하라",
+      "source_text_hash": "9ec24aac6438097089fe6169c320454cbc5c2c34146dbd5df7f7de221a51b58c",
+      "translation_text_hash": "a9f93592fcfc30bd3b76fd4932a97cc5b1209f2a6d5b1cc043894806ebc5344c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매주일 첫날에 너희 각 사람이 이를 얻은대로 저축하여 두어서 내가 갈 때에 연보를 하지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "a9f93592fcfc30bd3b76fd4932a97cc5b1209f2a6d5b1cc043894806ebc5344c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:3",
+      "sequence": 28776,
+      "chapter_label": "1CO 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "When I arrive, I will send whoever you approve with letters to carry your gracious gift to Jerusalem.",
+      "ko": "내가 이를 때에 너희의 인정한 사람에게 편지를 주어 너희의 은혜를 예루살렘으로 가지고 가게 하리니",
+      "source_text_hash": "538f1831f7023443251f7dfb710653a29021ec06d5fa9c5f1eb6b664d8a8ec66",
+      "translation_text_hash": "9793543a3c860f39c5163d812b325bdd69ed8ef20828a558a48ce93f2261f789",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이를 때에 너희의 인정한 사람에게 편지를 주어 너희의 은혜를 예루살렘으로 가지고 가게 하리니"
+      ],
+      "raw_text_hashes": [
+        "9793543a3c860f39c5163d812b325bdd69ed8ef20828a558a48ce93f2261f789"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:4",
+      "sequence": 28777,
+      "chapter_label": "1CO 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "If it is appropriate for me to go also, they will go with me.",
+      "ko": "만일 나도 가는 것이 합당하면 저희가 나와 함께 가리라",
+      "source_text_hash": "278c84ae93bfa341c3951cd1713ec0cb86d74f8a42c7b4082857229c4413d065",
+      "translation_text_hash": "6a7e7cba50de95494d6ffbeface5494ad8f3cc0c8511c31d9df04a10c71a6c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 나도 가는 것이 합당하면 저희가 나와 함께 가리라"
+      ],
+      "raw_text_hashes": [
+        "6a7e7cba50de95494d6ffbeface5494ad8f3cc0c8511c31d9df04a10c71a6c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:5",
+      "sequence": 28778,
+      "chapter_label": "1CO 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "I will come to you when I have passed through Macedonia, for I am passing through Macedonia.",
+      "ko": "내가 마게도냐를 지날터이니 마게도냐를 지난 후에 너희에게 나아가서",
+      "source_text_hash": "f33363da3e53756dec9163e5b53c943c105e72a03b034aed3786c76abe97bf3e",
+      "translation_text_hash": "37494687558585e576b76dfcdd1d9dd72015df5076240f1570593170a46fa100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마게도냐를 지날터이니 마게도냐를 지난 후에 너희에게 나아가서"
+      ],
+      "raw_text_hashes": [
+        "37494687558585e576b76dfcdd1d9dd72015df5076240f1570593170a46fa100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:6",
+      "sequence": 28779,
+      "chapter_label": "1CO 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "But with you it may be that I will stay with you, or even winter with you, that you may send me on my journey wherever I go.",
+      "ko": "혹 너희와 함께 머물며 과동할듯도 하니 이는 너희가 나를 나의 갈 곳으로 보내어 주게 하려 함이라",
+      "source_text_hash": "bab444abd7fdf5c35d382de49d9b117bb2cdb500c69990715cdb546583c39594",
+      "translation_text_hash": "efb1180e9e422cf9fdc72c0b1ea7ba441e4ef8bc33595857128a982d716391a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 너희와 함께 머물며 과동할듯도 하니 이는 너희가 나를 나의 갈 곳으로 보내어 주게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "efb1180e9e422cf9fdc72c0b1ea7ba441e4ef8bc33595857128a982d716391a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:7",
+      "sequence": 28780,
+      "chapter_label": "1CO 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "For I do not wish to see you now in passing, but I hope to stay a while with you, if the Lord permits.",
+      "ko": "이제는 지나는 길에 너희 보기를 원치 아니하노니 이는 주께서 만일 허락하시면 얼마 동안 너희와 함께 유하기를 바람이라",
+      "source_text_hash": "57c15f08c5c4cd75b3d30b5f3af3060ac4a630ed40cf8c22161179c52f6b0226",
+      "translation_text_hash": "cda227a9147d699d3c49ddf2edccb5fa934c552fa129b6a17d79cb0d004cdfce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 지나는 길에 너희 보기를 원치 아니하노니 이는 주께서 만일 허락하시면 얼마 동안 너희와 함께 유하기를 바람이라"
+      ],
+      "raw_text_hashes": [
+        "cda227a9147d699d3c49ddf2edccb5fa934c552fa129b6a17d79cb0d004cdfce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:8",
+      "sequence": 28781,
+      "chapter_label": "1CO 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "But I will stay at Ephesus until Pentecost,",
+      "ko": "내가 오순절까지 에베소에 유하려 함은",
+      "source_text_hash": "846a3dbee9f26b2305fcef28eecee947384c889cf7db05c64b5597cfdc8d323a",
+      "translation_text_hash": "1e62b8d45f8d51039b413a123eb85c36283b259cfe2438618533a7f0cc3a78bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오순절까지 에베소에 유하려 함은"
+      ],
+      "raw_text_hashes": [
+        "1e62b8d45f8d51039b413a123eb85c36283b259cfe2438618533a7f0cc3a78bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:9",
+      "sequence": 28782,
+      "chapter_label": "1CO 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "for a great and effective door has opened to me, and there are many adversaries.",
+      "ko": "내게 광대하고 공효를 이루는 문이 열리고 대적하는 자가 많음이니라",
+      "source_text_hash": "1ce80eda3b98c04c8c505af90a8c45c5b1bb279a6558976d4deac17e461f0663",
+      "translation_text_hash": "e1bb8ffec796c220440110237f0ad2338a304e9a9b1191606de2ecbd69f2d7ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 광대하고 공효를 이루는 문이 열리고 대적하는 자가 많음이니라"
+      ],
+      "raw_text_hashes": [
+        "e1bb8ffec796c220440110237f0ad2338a304e9a9b1191606de2ecbd69f2d7ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:10",
+      "sequence": 28783,
+      "chapter_label": "1CO 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Now if Timothy comes, see that he is with you without fear, for he does the work of the Lord, as I also do.",
+      "ko": "디모데가 이르거든 너희는 조심하여 저로 두려움이 없이 너희 가운데 있게 하라 이는 저도 나와 같이 주의 일을 힘쓰는 자임이니라",
+      "source_text_hash": "73eb47aef3a065a51cd2d06483dfc45448e3a71bb9a3de568927d50ab7858279",
+      "translation_text_hash": "6526442a7a7c73b8e252ef17c32992dead8434eb939e71718520830b32a287e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디모데가 이르거든 너희는 조심하여 저로 두려움이 없이 너희 가운데 있게 하라 이는 저도 나와 같이 주의 일을 힘쓰는 자임이니라"
+      ],
+      "raw_text_hashes": [
+        "6526442a7a7c73b8e252ef17c32992dead8434eb939e71718520830b32a287e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:11",
+      "sequence": 28784,
+      "chapter_label": "1CO 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore let no one despise him. But set him forward on his journey in peace, that he may come to me; for I expect him with the brothers.",
+      "ko": "그러므로 누구든지 저를 멸시하지 말고 평안히 보내어 내게로 오게 하라 나는 저가 형제들과 함께 오기를 기다리노라",
+      "source_text_hash": "0577d8b977395c68b7cb9b07e90eba2459db411a6558338241caf8d6411ee775",
+      "translation_text_hash": "2bd0da25645238a7ba38932a34feb6745689f40039160616360a99df1de8b91a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 저를 멸시하지 말고 평안히 보내어 내게로 오게 하라 나는 저가 형제들과 함께 오기를 기다리노라"
+      ],
+      "raw_text_hashes": [
+        "2bd0da25645238a7ba38932a34feb6745689f40039160616360a99df1de8b91a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:12",
+      "sequence": 28785,
+      "chapter_label": "1CO 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Now concerning Apollos the brother, I strongly urged him to come to you with the brothers, but it was not at all his desire to come now; but he will come when he has an opportunity.",
+      "ko": "형제 아볼로에 대하여는 저더러 형제들과 함께 너희에게 가라고 내가 많이 권하되 지금은 갈 뜻이 일절 없으나 기회가 있으면 가리라",
+      "source_text_hash": "ca1e1b82d4dda9a753d9a3aa0e228a8e39d3ebbe937dbcdc9a4b6c71bf137844",
+      "translation_text_hash": "193ceb23cf4165d5336d833c23bd95b33928ba38ae4cc05ed01e3509063ee411",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제 아볼로에 대하여는 저더러 형제들과 함께 너희에게 가라고 내가 많이 권하되 지금은 갈 뜻이 일절 없으나 기회가 있으면 가리라"
+      ],
+      "raw_text_hashes": [
+        "193ceb23cf4165d5336d833c23bd95b33928ba38ae4cc05ed01e3509063ee411"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:13",
+      "sequence": 28786,
+      "chapter_label": "1CO 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Watch! Stand firm in the faith! Be courageous! Be strong!",
+      "ko": "깨어 믿음에 굳게 서서 남자답게 강건하여라",
+      "source_text_hash": "d5ed988e5bfec347996c6e8b1276913babb87374426ae40be472e76462dca9ac",
+      "translation_text_hash": "ddb9b906fec514a2170d7a063fafee6b9bbe5bc362ae40d3856719ed92b67d97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨어 믿음에 굳게 서서 남자답게 강건하여라"
+      ],
+      "raw_text_hashes": [
+        "ddb9b906fec514a2170d7a063fafee6b9bbe5bc362ae40d3856719ed92b67d97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:14",
+      "sequence": 28787,
+      "chapter_label": "1CO 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "Let all that you do be done in love.",
+      "ko": "너희 모든 일을 사랑으로 행하라",
+      "source_text_hash": "fa90c11fe5414cb8be267dcb25f38a1606629254a7a24c3f43b249d5634a2ee0",
+      "translation_text_hash": "e4fa044cdf8373271eb493763c9f4affa99db9ff4640d00925b505d9a9387adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 모든 일을 사랑으로 행하라"
+      ],
+      "raw_text_hashes": [
+        "e4fa044cdf8373271eb493763c9f4affa99db9ff4640d00925b505d9a9387adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:15",
+      "sequence": 28788,
+      "chapter_label": "1CO 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "Now I beg you, brothers—you know the house of Stephanas, that it is the first fruits of Achaia, and that they have set themselves to serve the saints—",
+      "ko": "형제들아 스데바나의 집은 곧 아가야의 첫 열매요 또 성도 섬기기로 작정한 줄을 너희가 아는지라 내가 너희를 권하노니",
+      "source_text_hash": "1fa5081209ce9aa11efc8d670b95bf96d786dc0cbe5001e4d2736b35d9547fd3",
+      "translation_text_hash": "9a4576cea7739407b0b0eec2fe4d6ef54c6b19281e1ff7cc273e4a5f1793fcf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 스데바나의 집은 곧 아가야의 첫 열매요 또 성도 섬기기로 작정한 줄을 너희가 아는지라 내가 너희를 권하노니"
+      ],
+      "raw_text_hashes": [
+        "9a4576cea7739407b0b0eec2fe4d6ef54c6b19281e1ff7cc273e4a5f1793fcf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:16",
+      "sequence": 28789,
+      "chapter_label": "1CO 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "that you also be in subjection to such, and to everyone who helps in the work and labors.",
+      "ko": "이같은 자들과 또 함께 일하며 수고하는 모든 자에게 복종하라",
+      "source_text_hash": "8c751e0172ba6caf96f8e0e95da0c497d2be0f11c8b82d9752935838551a8887",
+      "translation_text_hash": "1bf4519e5dd448e064191a57e70929c982778780f4be4857672b514b10bf40d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같은 자들과 또 함께 일하며 수고하는 모든 자에게 복종하라"
+      ],
+      "raw_text_hashes": [
+        "1bf4519e5dd448e064191a57e70929c982778780f4be4857672b514b10bf40d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:17",
+      "sequence": 28790,
+      "chapter_label": "1CO 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "I rejoice at the coming of Stephanas, Fortunatus, and Achaicus; for that which was lacking on your part, they supplied.",
+      "ko": "내가 스데바나와 브드나도와 아가이고의 온 것을 기뻐하노니 저희가 너희의 부족한 것을 보충하였음이니라",
+      "source_text_hash": "c7b7c32cbb0155cf029ddb0231275a76a38c6bbbcde3f5ac852507d7adcaef2a",
+      "translation_text_hash": "c47d27d1c84ede6dd5188df16cc59f801ce99637a14989ad5007fe5ae38131f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 스데바나와 브드나도와 아가이고의 온 것을 기뻐하노니 저희가 너희의 부족한 것을 보충하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "c47d27d1c84ede6dd5188df16cc59f801ce99637a14989ad5007fe5ae38131f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:18",
+      "sequence": 28791,
+      "chapter_label": "1CO 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "For they refreshed my spirit and yours. Therefore acknowledge those who are like that.",
+      "ko": "저희가 나와 너희 마음을 시원케 하였으니 그러므로 너희는 이런 자들을 알아 주라",
+      "source_text_hash": "4669a2bdd096d45f3ea50b6b9d4e2e56653df2db9974ac2402a8b0478a1ff825",
+      "translation_text_hash": "8b91f4e1bb3b5a44aa0cbe371565c1e27ed217e04129139e67fa257eb6e9b173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나와 너희 마음을 시원케 하였으니 그러므로 너희는 이런 자들을 알아 주라"
+      ],
+      "raw_text_hashes": [
+        "8b91f4e1bb3b5a44aa0cbe371565c1e27ed217e04129139e67fa257eb6e9b173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:19",
+      "sequence": 28792,
+      "chapter_label": "1CO 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "The assemblies of Asia greet you. Aquila and Priscilla greet you warmly in the Lord, together with the assembly that is in their house.",
+      "ko": "아시아의 교회들이 너희에게 문안하고 아굴라와 브리스가와 및 그 집에 있는 교회가 주 안에서 너희에게 간절히 문안하고",
+      "source_text_hash": "4514af154f239a7985bb2dea7c5051f7ee3e460e7ab795a0bc27938f866320e8",
+      "translation_text_hash": "266eb7c6eb2d15dc669914cb0e06adc9fc13b70f74dcc3b385b9d66963f3c578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아시아의 교회들이 너희에게 문안하고 아굴라와 브리스가와 및 그 집에 있는 교회가 주 안에서 너희에게 간절히 문안하고"
+      ],
+      "raw_text_hashes": [
+        "266eb7c6eb2d15dc669914cb0e06adc9fc13b70f74dcc3b385b9d66963f3c578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:20",
+      "sequence": 28793,
+      "chapter_label": "1CO 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "All the brothers greet you. Greet one another with a holy kiss.",
+      "ko": "모든 형제도 너희에게 문안하니 너희는 거룩하게 입맞춤으로 서로 문안하라",
+      "source_text_hash": "6a4694ee476382b1a6c7c36634377b02000e824661f9edabdfda27ad140aff57",
+      "translation_text_hash": "18342517dc66c4267515078f6c2fec72c56e2966087d4ae55b21a68bb20bf16b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 형제도 너희에게 문안하니 너희는 거룩하게 입맞춤으로 서로 문안하라"
+      ],
+      "raw_text_hashes": [
+        "18342517dc66c4267515078f6c2fec72c56e2966087d4ae55b21a68bb20bf16b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:21",
+      "sequence": 28794,
+      "chapter_label": "1CO 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "This greeting is by me, Paul, with my own hand.",
+      "ko": "나 바울은 친필로 너희에게 문안하노니",
+      "source_text_hash": "b57a00ca2bf097b7e494dcdf53834760d9e443721cf86af9f6c4b72b3a776670",
+      "translation_text_hash": "c03a9c725fccad9879572e6e619eebfd6cf9affa56054b2cfee08ba6f51e2bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 바울은 친필로 너희에게 문안하노니"
+      ],
+      "raw_text_hashes": [
+        "c03a9c725fccad9879572e6e619eebfd6cf9affa56054b2cfee08ba6f51e2bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:22",
+      "sequence": 28795,
+      "chapter_label": "1CO 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "If any man doesn’t love the Lord Jesus Christ, let him be cursed. Come, Lord!",
+      "ko": "만일 누구든지 주를 사랑하지 아니하거든 저주를 받을찌어다 주께서 임하시느니라",
+      "source_text_hash": "2350b10d347e2c0d12a129dd3aed43fb1ad36d27b234a423899178f315a4f080",
+      "translation_text_hash": "89eec9c9f571d5ff3f554599617885d36e3bf6f58203dd17204f2e94e115853c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 주를 사랑하지 아니하거든 저주를 받을찌어다 주께서 임하시느니라"
+      ],
+      "raw_text_hashes": [
+        "89eec9c9f571d5ff3f554599617885d36e3bf6f58203dd17204f2e94e115853c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:23",
+      "sequence": 28796,
+      "chapter_label": "1CO 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "The grace of the Lord Jesus Christ be with you.",
+      "ko": "주 예수 그리스도의 은혜가 너희와 함께 하고",
+      "source_text_hash": "5b213455b548886032ebe4d567d6bec5e8bb281e4d5028eb7fc86f803c74cf15",
+      "translation_text_hash": "02960b98d5ce24a47774ccf4fc27b5893b8f8d903c5188bc0a41c63d71f17146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수 그리스도의 은혜가 너희와 함께 하고"
+      ],
+      "raw_text_hashes": [
+        "02960b98d5ce24a47774ccf4fc27b5893b8f8d903c5188bc0a41c63d71f17146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:16:24",
+      "sequence": 28797,
+      "chapter_label": "1CO 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "My love to all of you in Christ Jesus. Amen.",
+      "ko": "나의 사랑이 그리스도 예수의 안에서 너희 무리와 함께 할찌어다",
+      "source_text_hash": "c2d6f3c8ebeb5d18f13c7e4fba5a7049249e0027060f4c2e13cf654fa8464946",
+      "translation_text_hash": "a880bbc0e9fe8f5a0e8d61a8fb820a70d74f804fc0c7c150a9856b85823b7f41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑이 그리스도 예수의 안에서 너희 무리와 함께 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "a880bbc0e9fe8f5a0e8d61a8fb820a70d74f804fc0c7c150a9856b85823b7f41"
+      ]
+    }
+  ]
+}

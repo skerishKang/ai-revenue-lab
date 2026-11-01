@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:013",
+  "unit_ordinal": 1091,
+  "unit_label": "2CO 13",
+  "book_code": "2CO",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:13:1",
+      "sequence": 29041,
+      "chapter_label": "2CO 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "This is the third time I am coming to you. “At the mouth of two or three witnesses shall every word be established.”",
+      "ko": "내가 이제 세 번째 너희에게 갈터이니 두세 증인의 입으로 말마다 확정하리라",
+      "source_text_hash": "e8611389ab6772ab143528b70cf1ac82eccca8a0ed56528976a74f2112e97f9b",
+      "translation_text_hash": "881cc41b5182ff68f97fbcb1b8ea0f65a48874bef133d2ae3937333232dbd5d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제 세 번째 너희에게 갈터이니 두세 증인의 입으로 말마다 확정하리라"
+      ],
+      "raw_text_hashes": [
+        "881cc41b5182ff68f97fbcb1b8ea0f65a48874bef133d2ae3937333232dbd5d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:2",
+      "sequence": 29042,
+      "chapter_label": "2CO 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "I have warned previously, and I warn again, as when I was present the second time, so now, being absent, I write to those who have sinned before now and to all the rest that if I come again, I will not spare,",
+      "ko": "내가 이미 말하였거니와 지금 떠나 있으나 두 번째 대면하였을 때와 같이 전에 죄 지은 자들과 그 남은 모든 사람에게 미리 말하노니 내가 다시 가면 용서하지 아니하리라",
+      "source_text_hash": "135fb78c55bee78f0006eaed33307af48f924c8fb804f61d3f77da51fad56167",
+      "translation_text_hash": "5bf69652172862f522e3090e4afdbff84d8a245ab06ff5367934b3128c29e2f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이미 말하였거니와 지금 떠나 있으나 두 번째 대면하였을 때와 같이 전에 죄 지은 자들과 그 남은 모든 사람에게 미리 말하노니 내가 다시 가면 용서하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "5bf69652172862f522e3090e4afdbff84d8a245ab06ff5367934b3128c29e2f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:3",
+      "sequence": 29043,
+      "chapter_label": "2CO 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "seeing that you seek a proof of Christ who speaks in me who is not weak, but is powerful in you.",
+      "ko": "이는 그리스도께서 내 안에서 말씀하시는 증거를 너희가 구함이니 저가 너희를 향하여 약하지 않고 도리어 너희 안에서 강하시니라",
+      "source_text_hash": "8541b88c6f58b363fb75de8fa01f56276e77f53134a4627e59cf1dc3db565687",
+      "translation_text_hash": "c3b5ef47ac06545156f433feeac73e1968432f43eabd4c6fe736480d6d5d5255",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도께서 내 안에서 말씀하시는 증거를 너희가 구함이니 저가 너희를 향하여 약하지 않고 도리어 너희 안에서 강하시니라"
+      ],
+      "raw_text_hashes": [
+        "c3b5ef47ac06545156f433feeac73e1968432f43eabd4c6fe736480d6d5d5255"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:4",
+      "sequence": 29044,
+      "chapter_label": "2CO 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "For he was crucified through weakness, yet he lives through the power of God. For we also are weak in him, but we will live with him through the power of God toward you.",
+      "ko": "그리스도께서 약하심으로 십자가에 못 박히셨으나 오직 하나님의 능력으로 살으셨으니 우리도 저의 안에서 약하나 너희를 향하여 하나님의 능력으로 저와 함께 살리라",
+      "source_text_hash": "55b9bfe8db01b72485346970f6f22f56e9c67dd07060f11518d5e84cfdb2e0d7",
+      "translation_text_hash": "7f0b097094ea4454d5249e24ad94de7a83ba58a14160ba7b1b2e7d7d93c165f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 약하심으로 십자가에 못 박히셨으나 오직 하나님의 능력으로 살으셨으니 우리도 저의 안에서 약하나 너희를 향하여 하나님의 능력으로 저와 함께 살리라"
+      ],
+      "raw_text_hashes": [
+        "7f0b097094ea4454d5249e24ad94de7a83ba58a14160ba7b1b2e7d7d93c165f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:5",
+      "sequence": 29045,
+      "chapter_label": "2CO 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Examine your own selves, whether you are in the faith. Test your own selves. Or don’t you know about your own selves, that Jesus Christ is in you?—unless indeed you are disqualified.",
+      "ko": "너희가 믿음에 있는가 너희 자신을 시험하고 너희 자신을 확증하라 예수 그리스도께서 너희 안에 계신 줄을 너희가 스스로 알지 못하느냐 그렇지 않으면 너희가 버리운 자니라",
+      "source_text_hash": "1834abb4e0fa778238baeaa3c914b3345024e2236b8969a690e4b734e93f1452",
+      "translation_text_hash": "d6a764eb50f57fb7079dd4cba80adf261bf259e8bb09e9cf631cb26ad92aded3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 믿음에 있는가 너희 자신을 시험하고 너희 자신을 확증하라 예수 그리스도께서 너희 안에 계신 줄을 너희가 스스로 알지 못하느냐 그렇지 않으면 너희가 버리운 자니라"
+      ],
+      "raw_text_hashes": [
+        "d6a764eb50f57fb7079dd4cba80adf261bf259e8bb09e9cf631cb26ad92aded3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:6",
+      "sequence": 29046,
+      "chapter_label": "2CO 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "But I hope that you will know that we aren’t disqualified.",
+      "ko": "우리가 버리운 자 되지 아니한 것을 너희가 알기를 내가 바라고",
+      "source_text_hash": "bc2942559f8afe4d4f319feacd65d399a5f4be03936ec7621b54ae8b60e768e4",
+      "translation_text_hash": "626409031ce59cbeed57b958e04f803ae5280d854d8ab9bf7ff68042644ddce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 버리운 자 되지 아니한 것을 너희가 알기를 내가 바라고"
+      ],
+      "raw_text_hashes": [
+        "626409031ce59cbeed57b958e04f803ae5280d854d8ab9bf7ff68042644ddce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:7",
+      "sequence": 29047,
+      "chapter_label": "2CO 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Now I pray to God that you do no evil; not that we may appear approved, but that you may do that which is honorable, though we may seem to have failed.",
+      "ko": "우리가 하나님께서 너희로 악을 조금도 행하지 않게 하시기를 구하노니 이는 우리가 옳은 자임을 나타내고자 함이 아니라 오직 우리는 버리운 자 같을찌라도 너희로 선을 행하게 하고자 함이라",
+      "source_text_hash": "c1e1d1a66e26e3c0b4cad77402d17091459efcb2e6bc6e0b73179bf64ec533a7",
+      "translation_text_hash": "3fb12cf0321f829fba98f261af1d91f3af7a6f40a7b4c656e33e01a20ed43a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하나님께서 너희로 악을 조금도 행하지 않게 하시기를 구하노니 이는 우리가 옳은 자임을 나타내고자 함이 아니라 오직 우리는 버리운 자 같을찌라도 너희로 선을 행하게 하고자 함이라"
+      ],
+      "raw_text_hashes": [
+        "3fb12cf0321f829fba98f261af1d91f3af7a6f40a7b4c656e33e01a20ed43a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:8",
+      "sequence": 29048,
+      "chapter_label": "2CO 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "For we can do nothing against the truth, but for the truth.",
+      "ko": "우리는 진리를 거스려 아무 것도 할 수 없고 오직 진리를 위할 뿐이니",
+      "source_text_hash": "da0dee5d131fd6a2c6bfbf737cec76971594db0f3c7d96c655aa2f3630032e86",
+      "translation_text_hash": "b91533e48cf07430f5be75cddc423a3b113a483e46869c7b42deb42d9ea39e53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 진리를 거스려 아무 것도 할 수 없고 오직 진리를 위할 뿐이니"
+      ],
+      "raw_text_hashes": [
+        "b91533e48cf07430f5be75cddc423a3b113a483e46869c7b42deb42d9ea39e53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:9",
+      "sequence": 29049,
+      "chapter_label": "2CO 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "For we rejoice when we are weak and you are strong. We also pray for this: your becoming perfect.",
+      "ko": "우리가 약할 때에 너희의 강한 것을 기뻐하고 또 이것을 위하여 구하니 곧 너희의 온전하게 되는 것이라",
+      "source_text_hash": "f0cd3ebc7cf8fc52d0558683268fdc90b9e85e2ad1eb9442a9a04bd3f411748f",
+      "translation_text_hash": "4674dd715670e83706f6ae323cb9c5390b8ff426594f4978e69eb65b25c14d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 약할 때에 너희의 강한 것을 기뻐하고 또 이것을 위하여 구하니 곧 너희의 온전하게 되는 것이라"
+      ],
+      "raw_text_hashes": [
+        "4674dd715670e83706f6ae323cb9c5390b8ff426594f4978e69eb65b25c14d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:10",
+      "sequence": 29050,
+      "chapter_label": "2CO 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "For this cause I write these things while absent, that I may not deal sharply when present, according to the authority which the Lord gave me for building up and not for tearing down.",
+      "ko": "이를 인하여 내가 떠나 있을 때에 이렇게 쓰는 것은 대면할 때에 주께서 너희를 파하려 하지 않고 세우려 하여 내게 주신 그 권세를 따라 엄하지 않게 하려 함이니라",
+      "source_text_hash": "1bf68c2f77b59e0856bd2fa54b4ef85eed671839b6ab93952ec959a744c42a88",
+      "translation_text_hash": "7d482575958e81011ff9123fd3f07ed2f6e38e473fa7ac9937a106a455692b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 내가 떠나 있을 때에 이렇게 쓰는 것은 대면할 때에 주께서 너희를 파하려 하지 않고 세우려 하여 내게 주신 그 권세를 따라 엄하지 않게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "7d482575958e81011ff9123fd3f07ed2f6e38e473fa7ac9937a106a455692b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:11",
+      "sequence": 29051,
+      "chapter_label": "2CO 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Finally, brothers, rejoice! Be perfected. Be comforted. Be of the same mind. Live in peace, and the God of love and peace will be with you.",
+      "ko": "마지막으로 말하노니 형제들아 기뻐하라 온전케 되며 위로를 받으며 마음을 같이 하며 평안할찌어다 또 사랑과 평강의 하나님이 너희와 함께 계시리라 거룩하게 입맞춤으로 서로 문안하라",
+      "source_text_hash": "4762d63c0cae176122995662495f7beb23fefe6dc0dd2e8d435b4e0fd7e659c2",
+      "translation_text_hash": "954e121b67c59e072252ac9e8378da807fdbc287da2a0c3b7910f56b711923fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV 2CO 13:11 contains the WEB 13:11/13:12 boundary.",
+      "raw_texts": [
+        "마지막으로 말하노니 형제들아 기뻐하라 온전케 되며 위로를 받으며 마음을 같이 하며 평안할찌어다 또 사랑과 평강의 하나님이 너희와 함께 계시리라 거룩하게 입맞춤으로 서로 문안하라"
+      ],
+      "raw_text_hashes": [
+        "954e121b67c59e072252ac9e8378da807fdbc287da2a0c3b7910f56b711923fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:12",
+      "sequence": 29052,
+      "chapter_label": "2CO 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Greet one another with a holy kiss.",
+      "ko": "마지막으로 말하노니 형제들아 기뻐하라 온전케 되며 위로를 받으며 마음을 같이 하며 평안할찌어다 또 사랑과 평강의 하나님이 너희와 함께 계시리라 거룩하게 입맞춤으로 서로 문안하라",
+      "source_text_hash": "806c74640b50671265c63a7d363aba08688c2bb2a4c4076d6993d5d4a2c02fa9",
+      "translation_text_hash": "954e121b67c59e072252ac9e8378da807fdbc287da2a0c3b7910f56b711923fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV 2CO 13:11 contains the WEB 13:11/13:12 boundary.",
+      "raw_texts": [
+        "마지막으로 말하노니 형제들아 기뻐하라 온전케 되며 위로를 받으며 마음을 같이 하며 평안할찌어다 또 사랑과 평강의 하나님이 너희와 함께 계시리라 거룩하게 입맞춤으로 서로 문안하라"
+      ],
+      "raw_text_hashes": [
+        "954e121b67c59e072252ac9e8378da807fdbc287da2a0c3b7910f56b711923fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:13",
+      "sequence": 29053,
+      "chapter_label": "2CO 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "All the saints greet you.",
+      "ko": "모든 성도가 너희에게 문안하느니라",
+      "source_text_hash": "487f2d3677fe25c9994dc29240b869d9ff5260a15198c772852f3c37e5dc9280",
+      "translation_text_hash": "9b244aaece631f9869852dff08346a8822197de9207a28e50a1cd71099d7fcdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "number_shift",
+      "mapping_note": "KRV numbering resumes one verse later after the merge.",
+      "raw_texts": [
+        "모든 성도가 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "9b244aaece631f9869852dff08346a8822197de9207a28e50a1cd71099d7fcdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:13:14",
+      "sequence": 29054,
+      "chapter_label": "2CO 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "The grace of the Lord Jesus Christ, God’s love, and the fellowship of the Holy Spirit be with you all. Amen.",
+      "ko": "주 예수 그리스도의 은혜와 하나님의 사랑과 성령의 교통하심이 너희 무리와 함께 있을찌어다",
+      "source_text_hash": "71f64d8cb6920e14b3dd3fef04d4becb77eb7d8e45ec1eff6a8a251c75365d6c",
+      "translation_text_hash": "3b29b3ef68597597ed18ffcea8901f717c3b04cbc0fe668e548c16c213149686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "number_shift",
+      "mapping_note": "KRV numbering resumes one verse later after the merge.",
+      "raw_texts": [
+        "주 예수 그리스도의 은혜와 하나님의 사랑과 성령의 교통하심이 너희 무리와 함께 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "3b29b3ef68597597ed18ffcea8901f717c3b04cbc0fe668e548c16c213149686"
+      ]
+    }
+  ]
+}

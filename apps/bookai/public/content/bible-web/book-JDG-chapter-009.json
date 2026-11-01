@@ -1,0 +1,1837 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:009",
+  "unit_ordinal": 220,
+  "unit_label": "JDG 9",
+  "book_code": "JDG",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:9:1",
+      "sequence": 6756,
+      "chapter_label": "JDG 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Abimelech the son of Jerubbaal went to Shechem to his mother’s brothers, and spoke with them and with all the family of the house of his mother’s father, saying,",
+      "ko": "여룹바알의 아들 아비멜렉이 세겜에 가서 그 어미의 형제에게 이르러 그들과 외조부의 온 가족에게 말하여 가로되",
+      "source_text_hash": "1fea27e23706cc31b861e2a9819f9202eac9d05017ed19925891fc39e0cb9c04",
+      "translation_text_hash": "0eeac64949b91e4236b30d4e4d08374aaf00c06ffdb0b11c166997c142d47869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여룹바알의 아들 아비멜렉이 세겜에 가서 그 어미의 형제에게 이르러 그들과 외조부의 온 가족에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "0eeac64949b91e4236b30d4e4d08374aaf00c06ffdb0b11c166997c142d47869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:2",
+      "sequence": 6757,
+      "chapter_label": "JDG 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "“Please speak in the ears of all the men of Shechem, ‘Is it better for you that all the sons of Jerubbaal, who are seventy persons, rule over you, or that one rule over you?’ Remember also that I am your bone and your flesh.”",
+      "ko": "청하노니 너희는 세겜 사람들의 귀에 말하라 여룹바알의 아들 칠십인이 다 너희를 다스림과 한 사람이 너희를 다스림이 어느 것이 너희에게 나으냐 또 나는 너희의 골육지친임을 생각하라",
+      "source_text_hash": "265310e6b1f514f25d12b0222303996017db40f6d8778aa37acd38637c356a0b",
+      "translation_text_hash": "a4e628173a75afbdf40e9af67a4dbad68274f3a379641d5fba605ec1d0ec80ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청하노니 너희는 세겜 사람들의 귀에 말하라 여룹바알의 아들 칠십인이 다 너희를 다스림과 한 사람이 너희를 다스림이 어느 것이 너희에게 나으냐 또 나는 너희의 골육지친임을 생각하라"
+      ],
+      "raw_text_hashes": [
+        "a4e628173a75afbdf40e9af67a4dbad68274f3a379641d5fba605ec1d0ec80ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:3",
+      "sequence": 6758,
+      "chapter_label": "JDG 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "His mother’s brothers spoke of him in the ears of all the men of Shechem all these words. Their hearts inclined to follow Abimelech; for they said, “He is our brother.”",
+      "ko": "그 어미의 형제들이 그를 위하여 이 모든 말을 온 세겜 사람들의 귀에 고하매 그들의 마음이 아비멜렉에게로 기울어서 말하기를 그는 우리 형제라 하고",
+      "source_text_hash": "ddbf8ff61a7a86914ca59de271bd897facd9d785a64699ef2ef3c62a11145836",
+      "translation_text_hash": "ab632ef5867b2189b4b7ec1f65fa52f39c04bdd08247a82a4c18837d17a449df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어미의 형제들이 그를 위하여 이 모든 말을 온 세겜 사람들의 귀에 고하매 그들의 마음이 아비멜렉에게로 기울어서 말하기를 그는 우리 형제라 하고"
+      ],
+      "raw_text_hashes": [
+        "ab632ef5867b2189b4b7ec1f65fa52f39c04bdd08247a82a4c18837d17a449df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:4",
+      "sequence": 6759,
+      "chapter_label": "JDG 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "They gave him seventy pieces of silver out of the house of Baal Berith, with which Abimelech hired vain and reckless fellows who followed him.",
+      "ko": "바알브릿 묘에서 은 칠십개를 내어 그에게 주매 아비멜렉이 그것으로 방탕하고 경박한 유를 사서 자기를 좇게 하고",
+      "source_text_hash": "c295b224892b5fe5a429a024aaa5854d7a35a1bb44af5c63ac3a8d785caffec1",
+      "translation_text_hash": "3834db666a99789ea66b554ef983adbf1dbf8c82425c3414841a6a8b72e266b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바알브릿 묘에서 은 칠십개를 내어 그에게 주매 아비멜렉이 그것으로 방탕하고 경박한 유를 사서 자기를 좇게 하고"
+      ],
+      "raw_text_hashes": [
+        "3834db666a99789ea66b554ef983adbf1dbf8c82425c3414841a6a8b72e266b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:5",
+      "sequence": 6760,
+      "chapter_label": "JDG 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "He went to his father’s house at Ophrah, and killed his brothers the sons of Jerubbaal, being seventy persons, on one stone; but Jotham the youngest son of Jerubbaal was left, for he hid himself.",
+      "ko": "오브라에 있는 그 아비의 집으로 가서 여룹바알의 아들 곧 자기 형제 칠십인을 한 반석 위에서 죽였으되 오직 여룹바알의 말째 아들 요담은 스스로 숨었으므로 남으니라",
+      "source_text_hash": "9473fa7e7f2ceaead30155797a67901ca05e07c844b1c14b2e3083a10281cb3e",
+      "translation_text_hash": "88d6f04761aa9c9194f451f49da3f2eb73fc573449130fc6e284a68f10b075e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오브라에 있는 그 아비의 집으로 가서 여룹바알의 아들 곧 자기 형제 칠십인을 한 반석 위에서 죽였으되 오직 여룹바알의 말째 아들 요담은 스스로 숨었으므로 남으니라"
+      ],
+      "raw_text_hashes": [
+        "88d6f04761aa9c9194f451f49da3f2eb73fc573449130fc6e284a68f10b075e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:6",
+      "sequence": 6761,
+      "chapter_label": "JDG 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "All the men of Shechem assembled themselves together with all the house of Millo, and went and made Abimelech king by the oak of the pillar that was in Shechem.",
+      "ko": "세겜 모든 사람과 밀로 모든 족속이 모여 가서 세겜에 있는 기둥 상수리나무 아래서 아비멜렉으로 왕을 삼으니라",
+      "source_text_hash": "73fe2e064491f9db672383eca9641f234051aa76716bd0f9613b25c6de931252",
+      "translation_text_hash": "f86fbaf1fdf96f02df66864cfa8aabfa2e41a9a3c819eea7c9f21f6954273691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜 모든 사람과 밀로 모든 족속이 모여 가서 세겜에 있는 기둥 상수리나무 아래서 아비멜렉으로 왕을 삼으니라"
+      ],
+      "raw_text_hashes": [
+        "f86fbaf1fdf96f02df66864cfa8aabfa2e41a9a3c819eea7c9f21f6954273691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:7",
+      "sequence": 6762,
+      "chapter_label": "JDG 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "When they told it to Jotham, he went and stood on the top of Mount Gerizim and lifted up his voice, cried out, and said to them, “Listen to me, you men of Shechem, that God may listen to you.",
+      "ko": "혹이 요담에게 그 일을 고하매 요담이 그리심산 꼭대기로 가서 서서 소리를 높이 외쳐 그들에게 이르되 세겜 사람들아 나를 들으라 그리하여야 하나님이 너희를 들으시리라",
+      "source_text_hash": "73d02f719e1e91de30cfbe8c81a338a90794cc572d282a546624f7dca3df790d",
+      "translation_text_hash": "040c77f50549aa200f716eb5a7633fbc10517f83131b1fccb4eaf341ca78a415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 요담에게 그 일을 고하매 요담이 그리심산 꼭대기로 가서 서서 소리를 높이 외쳐 그들에게 이르되 세겜 사람들아 나를 들으라 그리하여야 하나님이 너희를 들으시리라"
+      ],
+      "raw_text_hashes": [
+        "040c77f50549aa200f716eb5a7633fbc10517f83131b1fccb4eaf341ca78a415"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:8",
+      "sequence": 6763,
+      "chapter_label": "JDG 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "The trees set out to anoint a king over themselves. They said to the olive tree, ‘Reign over us.’",
+      "ko": "하루는 나무들이 나가서 기름을 부어 왕을 삼으려 하여 감람나무에게 이르되 너는 우리 왕이 되라 하매",
+      "source_text_hash": "cfb5bc2c68d48ae9b1ed794ded4bfdb04f21b77ee2a593840f31b6e660130409",
+      "translation_text_hash": "ad66a3d191946782500c524c431f52157e5f916f6b19618e3fb0e4744cc2ea62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 나무들이 나가서 기름을 부어 왕을 삼으려 하여 감람나무에게 이르되 너는 우리 왕이 되라 하매"
+      ],
+      "raw_text_hashes": [
+        "ad66a3d191946782500c524c431f52157e5f916f6b19618e3fb0e4744cc2ea62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:9",
+      "sequence": 6764,
+      "chapter_label": "JDG 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "“But the olive tree said to them, ‘Should I stop producing my oil, with which they honor God and man by me, and go to wave back and forth over the trees?’",
+      "ko": "감람나무가 그들에게 이르되 나의 기름은 하나님과 사람을 영화롭게 하나니 내가 어찌 그것을 버리고 가서 나무들 위에 요동하리요 한지라",
+      "source_text_hash": "42d85ae4aa698dd542d90de1d5f8ab95ff940b37bb53617d9e40fc2b12b8cbdd",
+      "translation_text_hash": "717abfe8c07ef8cc02170247fdc965e2fa5bbdffe4a53ce2141ba556de8a2d33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감람나무가 그들에게 이르되 나의 기름은 하나님과 사람을 영화롭게 하나니 내가 어찌 그것을 버리고 가서 나무들 위에 요동하리요 한지라"
+      ],
+      "raw_text_hashes": [
+        "717abfe8c07ef8cc02170247fdc965e2fa5bbdffe4a53ce2141ba556de8a2d33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:10",
+      "sequence": 6765,
+      "chapter_label": "JDG 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "“The trees said to the fig tree, ‘Come and reign over us.’",
+      "ko": "나무들이 또 무화과나무에게 이르되 너는 와서 우리의 왕이 되라 하매",
+      "source_text_hash": "c0e7a137ef6fb5d9afb7d37c2b2d4427c65ba88051a9b831b4344e8e3f5dd97b",
+      "translation_text_hash": "e8f09e391d24e8f16c3980d4287b58ee7f32cc21d301676b2e5d08d38ee8d8a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무들이 또 무화과나무에게 이르되 너는 와서 우리의 왕이 되라 하매"
+      ],
+      "raw_text_hashes": [
+        "e8f09e391d24e8f16c3980d4287b58ee7f32cc21d301676b2e5d08d38ee8d8a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:11",
+      "sequence": 6766,
+      "chapter_label": "JDG 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "“But the fig tree said to them, ‘Should I leave my sweetness, and my good fruit, and go to wave back and forth over the trees?’",
+      "ko": "무화과나무가 그들에게 이르되 나의 단것, 나의 아름다운 실과를 내가 어찌 버리고 가서 나무들 위에 요동하리요 한지라",
+      "source_text_hash": "874d2c76a7ebc982df3cccce4ec727469739486d0d966a2a9c653c0497600d5e",
+      "translation_text_hash": "9c2218508e5c3df7014ef7176613b056b77f56c33d815755a3cd2f820e3b3de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무화과나무가 그들에게 이르되 나의 단것, 나의 아름다운 실과를 내가 어찌 버리고 가서 나무들 위에 요동하리요 한지라"
+      ],
+      "raw_text_hashes": [
+        "9c2218508e5c3df7014ef7176613b056b77f56c33d815755a3cd2f820e3b3de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:12",
+      "sequence": 6767,
+      "chapter_label": "JDG 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "“The trees said to the vine, ‘Come and reign over us.’",
+      "ko": "나무들이 또 포도나무에게 이르되 너는 와서 우리의 왕이 되라 하매",
+      "source_text_hash": "048f1f01d4bf6e19b456fbdb77844eca2a2019e9f7c51b72646466e5f250c5e6",
+      "translation_text_hash": "4dfc8337f3439476a6effe0dbca7090306a357ce90ded3919f0d2487a771d3d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무들이 또 포도나무에게 이르되 너는 와서 우리의 왕이 되라 하매"
+      ],
+      "raw_text_hashes": [
+        "4dfc8337f3439476a6effe0dbca7090306a357ce90ded3919f0d2487a771d3d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:13",
+      "sequence": 6768,
+      "chapter_label": "JDG 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "“The vine said to them, ‘Should I leave my new wine, which cheers God and man, and go to wave back and forth over the trees?’",
+      "ko": "포도나무가 그들에게 이르되 하나님과 사람을 기쁘게 하는 나의 새 술을 내가 어찌 버리고 가서 나무들 위에 요동하리요 한지라",
+      "source_text_hash": "872dc01ddd6cbb179d73ef1ed44acd029e0cb0820e3a601e9a08a173e65d4670",
+      "translation_text_hash": "3db879a9198a797f7f7d050f76cd3ac164cf22032d57093b85209d0b63e28ec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도나무가 그들에게 이르되 하나님과 사람을 기쁘게 하는 나의 새 술을 내가 어찌 버리고 가서 나무들 위에 요동하리요 한지라"
+      ],
+      "raw_text_hashes": [
+        "3db879a9198a797f7f7d050f76cd3ac164cf22032d57093b85209d0b63e28ec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:14",
+      "sequence": 6769,
+      "chapter_label": "JDG 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "“Then all the trees said to the bramble, ‘Come and reign over us.’",
+      "ko": "이에 모든 나무가 가시나무에게 이르되 너는 와서 우리의 왕이 되라 하매",
+      "source_text_hash": "8055aead870bdbc14305edde4718108982fdc01a6e9c2c0bb426e8ec8812daa0",
+      "translation_text_hash": "7900ab9c752ef54f300b39c3ef5a865de872ec8ad403433e79af447cd93919f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모든 나무가 가시나무에게 이르되 너는 와서 우리의 왕이 되라 하매"
+      ],
+      "raw_text_hashes": [
+        "7900ab9c752ef54f300b39c3ef5a865de872ec8ad403433e79af447cd93919f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:15",
+      "sequence": 6770,
+      "chapter_label": "JDG 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "“The bramble said to the trees, ‘If in truth you anoint me king over you, then come and take refuge in my shade; and if not, let fire come out of the bramble, and devour the cedars of Lebanon.’",
+      "ko": "가시나무가 나무들에게 이르되 너희가 참으로 내게 기름을 부어 너희 왕을 삼겠거든 와서 내 그늘에 피하라 그리하지 아니하면 불이 가시나무에서 나와서 레바논의 백향목을 사를 것이니라 하였느니라",
+      "source_text_hash": "c68229c3539edc6ab6de7d96b1538194bec19ff5c90747e59164a246508ea01f",
+      "translation_text_hash": "367838d4d649a31fb14fb127791b4dc070bcc6b5895b22f5ac9e26846429ef7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가시나무가 나무들에게 이르되 너희가 참으로 내게 기름을 부어 너희 왕을 삼겠거든 와서 내 그늘에 피하라 그리하지 아니하면 불이 가시나무에서 나와서 레바논의 백향목을 사를 것이니라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "367838d4d649a31fb14fb127791b4dc070bcc6b5895b22f5ac9e26846429ef7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:16",
+      "sequence": 6771,
+      "chapter_label": "JDG 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "“Now therefore, if you have dealt truly and righteously, in that you have made Abimelech king, and if you have dealt well with Jerubbaal and his house, and have done to him according to the deserving of his hands",
+      "ko": "이제 너희가 아비멜렉을 세워 왕을 삼았으니 너희 행한 것이 과연 진실하고 의로우냐 이것이 여룹바알과 그 집을 선대함이냐 이것이 그 행한대로 그에게 보답함이냐",
+      "source_text_hash": "ece3906612ab71326ab346bc1803ee8ac1720d2ae3bb6f5a7f3040f936d12995",
+      "translation_text_hash": "87b4b2355c5e1733060748dffc31ee9dfdf08f8f53fb096f3edf04382c35d007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희가 아비멜렉을 세워 왕을 삼았으니 너희 행한 것이 과연 진실하고 의로우냐 이것이 여룹바알과 그 집을 선대함이냐 이것이 그 행한대로 그에게 보답함이냐"
+      ],
+      "raw_text_hashes": [
+        "87b4b2355c5e1733060748dffc31ee9dfdf08f8f53fb096f3edf04382c35d007"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:17",
+      "sequence": 6772,
+      "chapter_label": "JDG 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "(for my father fought for you, risked his life, and delivered you out of the hand of Midian;",
+      "ko": "우리 아버지가 전에 죽음을 무릅쓰고 너희를 위하여 싸워 미디안의 손에서 너희를 건져내었거늘",
+      "source_text_hash": "2dfe7fe1c3ca73659714d1c8a200d76876102bf855457bef50e6a5dbac87b1cb",
+      "translation_text_hash": "046091d8d9e403771e7e8c6f2fa587fcf34398e72643c6046e139d6b7d78543c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 아버지가 전에 죽음을 무릅쓰고 너희를 위하여 싸워 미디안의 손에서 너희를 건져내었거늘"
+      ],
+      "raw_text_hashes": [
+        "046091d8d9e403771e7e8c6f2fa587fcf34398e72643c6046e139d6b7d78543c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:18",
+      "sequence": 6773,
+      "chapter_label": "JDG 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "and you have risen up against my father’s house today and have slain his sons, seventy persons, on one stone, and have made Abimelech, the son of his female servant, king over the men of Shechem, because he is your brother);",
+      "ko": "너희가 오늘날 일어나서 우리 아버지의 집을 쳐서 그 아들 칠십인을 한 반석 위에서 죽이고 그 여종의 아들 아비멜렉이 너희 형제가 된다고 그를 세워 세겜 사람의 왕을 삼았도다",
+      "source_text_hash": "23a34e64f10dcb4ef3e520b2e431f0311395375e00d8b8f7f24c7e4c5a7da7cb",
+      "translation_text_hash": "924ccad43455b8264046d34915d315dcbea0d9a7675b40490944c5c3f244b695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 오늘날 일어나서 우리 아버지의 집을 쳐서 그 아들 칠십인을 한 반석 위에서 죽이고 그 여종의 아들 아비멜렉이 너희 형제가 된다고 그를 세워 세겜 사람의 왕을 삼았도다"
+      ],
+      "raw_text_hashes": [
+        "924ccad43455b8264046d34915d315dcbea0d9a7675b40490944c5c3f244b695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:19",
+      "sequence": 6774,
+      "chapter_label": "JDG 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "if you then have dealt truly and righteously with Jerubbaal and with his house today, then rejoice in Abimelech, and let him also rejoice in you;",
+      "ko": "만일 너희가 오늘날 여룹바알과 그 집을 대접한 것이 진실과 의로움이면 너희가 아비멜렉을 인하여 즐길 것이요 아비멜렉도 너희를 인하여 즐기려니와",
+      "source_text_hash": "03c09e082afba02b5df1adb676445ccb397bc43d995473af482ec0cd73550a12",
+      "translation_text_hash": "90004eafe7898bc053e57dfd3e8a940c73e8dc59654ee3ed525aead7b29c91f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 오늘날 여룹바알과 그 집을 대접한 것이 진실과 의로움이면 너희가 아비멜렉을 인하여 즐길 것이요 아비멜렉도 너희를 인하여 즐기려니와"
+      ],
+      "raw_text_hashes": [
+        "90004eafe7898bc053e57dfd3e8a940c73e8dc59654ee3ed525aead7b29c91f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:20",
+      "sequence": 6775,
+      "chapter_label": "JDG 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "but if not, let fire come out from Abimelech and devour the men of Shechem and the house of Millo; and let fire come out from the men of Shechem and from the house of Millo and devour Abimelech.”",
+      "ko": "그렇지 아니하면 아비멜렉에게서 불이 나와서 세겜 사람들과 밀로 족속을 사를것이요 세겜 사람들과 밀로 족속에게서도 불이 나와서 아비멜렉을 사를 것이니라 하고",
+      "source_text_hash": "8da1ebb3feeef8de776cb2608e28d8dbc2955c3e3515425d702d4ec353ad3b9b",
+      "translation_text_hash": "fa060316ffbdd62962acdbaf9641326b17942d1c9e0254839220198e2c0c3df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그렇지 아니하면 아비멜렉에게서 불이 나와서 세겜 사람들과 밀로 족속을 사를것이요 세겜 사람들과 밀로 족속에게서도 불이 나와서 아비멜렉을 사를 것이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "fa060316ffbdd62962acdbaf9641326b17942d1c9e0254839220198e2c0c3df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:21",
+      "sequence": 6776,
+      "chapter_label": "JDG 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Jotham ran away and fled, and went to Beer and lived there, for fear of Abimelech his brother.",
+      "ko": "요담이 그 형제 아비멜렉을 두려워하여 달려 도망하여 브엘로 가서 거기 거하니라",
+      "source_text_hash": "f2d5a2dee4e332586943d177e8e155bb2605704e54e1f09ccabdc65f8551f055",
+      "translation_text_hash": "3a1cc30923ce3d1efa51fc8afd508fa03ed120443c47f5cda5b22941b8566be6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요담이 그 형제 아비멜렉을 두려워하여 달려 도망하여 브엘로 가서 거기 거하니라"
+      ],
+      "raw_text_hashes": [
+        "3a1cc30923ce3d1efa51fc8afd508fa03ed120443c47f5cda5b22941b8566be6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:22",
+      "sequence": 6777,
+      "chapter_label": "JDG 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Abimelech was prince over Israel three years.",
+      "ko": "아비멜렉이 이스라엘을 다스린지 삼년에",
+      "source_text_hash": "9a27c7f9ed3dc829d06d6aa13dcef9ee6f8aeaa31ee09d1c3eefcd4e1d7fd832",
+      "translation_text_hash": "ced8da9066efcc5cb7d9bb7b24c450d599b9d2264b011cf2b9b2965c3f98651e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 이스라엘을 다스린지 삼년에"
+      ],
+      "raw_text_hashes": [
+        "ced8da9066efcc5cb7d9bb7b24c450d599b9d2264b011cf2b9b2965c3f98651e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:23",
+      "sequence": 6778,
+      "chapter_label": "JDG 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Then God sent an evil spirit between Abimelech and the men of Shechem; and the men of Shechem dealt treacherously with Abimelech,",
+      "ko": "하나님이 아비멜렉과 세겜 사람들 사이에 악한 신을 보내시매 세겜 사람들이 아비멜렉을 배반하였으니",
+      "source_text_hash": "e60250567a71d5dc9294883b316894195469f4286d0eef42c6cb87eb89e7e2b6",
+      "translation_text_hash": "5f06010157d6d078be79dd72b43745667048cae94eb8ad192140cf98cb670390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 아비멜렉과 세겜 사람들 사이에 악한 신을 보내시매 세겜 사람들이 아비멜렉을 배반하였으니"
+      ],
+      "raw_text_hashes": [
+        "5f06010157d6d078be79dd72b43745667048cae94eb8ad192140cf98cb670390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:24",
+      "sequence": 6779,
+      "chapter_label": "JDG 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "that the violence done to the seventy sons of Jerubbaal might come, and that their blood might be laid on Abimelech their brother who killed them, and on the men of Shechem who strengthened his hands to kill his brothers.",
+      "ko": "이는 여룹바알의 아들 칠십인에게 행한 포학한 일을 갚되 그 형제를 죽여 피 흘린 죄를 아비멜렉과 아비멜렉의 손을 도와서 그 형제를 죽이게 한 세겜 사람에게로 돌아가게 하심이라",
+      "source_text_hash": "583749da88b90a2ebaa745703773f159a650b4f32b338537f81a1d0c0447abd4",
+      "translation_text_hash": "0329ea0f1a3ecaa7ff7a11721048a35133fb2a46d4294b0b02583656b229aed7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여룹바알의 아들 칠십인에게 행한 포학한 일을 갚되 그 형제를 죽여 피 흘린 죄를 아비멜렉과 아비멜렉의 손을 도와서 그 형제를 죽이게 한 세겜 사람에게로 돌아가게 하심이라"
+      ],
+      "raw_text_hashes": [
+        "0329ea0f1a3ecaa7ff7a11721048a35133fb2a46d4294b0b02583656b229aed7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:25",
+      "sequence": 6780,
+      "chapter_label": "JDG 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "The men of Shechem set an ambush for him on the tops of the mountains, and they robbed all who came along that way by them; and Abimelech was told about it.",
+      "ko": "세겜 사람들이 산들 꼭대기에 사람을 매복하여 아비멜렉을 엿보게 하고 무릇 그 길로 지나는 자를 다 겁탈하게 하니 혹이 그것을 아비멜렉에게 고하니라",
+      "source_text_hash": "e903e17a0a13a02f8ae761457a236142bb5f9098302ba566252e88159901238d",
+      "translation_text_hash": "761cbbba6860e33f56df5603e3879dda98f08b3172d47688f3e9f840af9d7211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜 사람들이 산들 꼭대기에 사람을 매복하여 아비멜렉을 엿보게 하고 무릇 그 길로 지나는 자를 다 겁탈하게 하니 혹이 그것을 아비멜렉에게 고하니라"
+      ],
+      "raw_text_hashes": [
+        "761cbbba6860e33f56df5603e3879dda98f08b3172d47688f3e9f840af9d7211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:26",
+      "sequence": 6781,
+      "chapter_label": "JDG 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "Gaal the son of Ebed came with his brothers and went over to Shechem; and the men of Shechem put their trust in him.",
+      "ko": "에벳의 아들 가알이 그 형제로 더불어 세겜에 이르니 세겜 사람들이 그를 의뢰하니라",
+      "source_text_hash": "f8bf20ae53655373d00722c1fce23e9bfa1bd3f3a748b755be103f1ef1b6f485",
+      "translation_text_hash": "b2e9b77e5eb1ceaf0bf3a34a70cbf22337ce90a049eb12a760535faf1a5fff8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벳의 아들 가알이 그 형제로 더불어 세겜에 이르니 세겜 사람들이 그를 의뢰하니라"
+      ],
+      "raw_text_hashes": [
+        "b2e9b77e5eb1ceaf0bf3a34a70cbf22337ce90a049eb12a760535faf1a5fff8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:27",
+      "sequence": 6782,
+      "chapter_label": "JDG 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "They went out into the field, harvested their vineyards, trod the grapes, celebrated, and went into the house of their god and ate and drank, and cursed Abimelech.",
+      "ko": "그들이 밭에 가서 포도를 거두어다가 밟아 짜서 연회를 배설하고 그 신당에 들어가서 먹고 마시며 아비멜렉을 저주하니",
+      "source_text_hash": "36215ee8e78756ac2890cb6046cdf2b5ca601d61797cdc405814956cdf98a9eb",
+      "translation_text_hash": "e44907a233e314431ade189d6bc7da5e6dbf0dbf1d4b88e460f97c04a2c8dee9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 밭에 가서 포도를 거두어다가 밟아 짜서 연회를 배설하고 그 신당에 들어가서 먹고 마시며 아비멜렉을 저주하니"
+      ],
+      "raw_text_hashes": [
+        "e44907a233e314431ade189d6bc7da5e6dbf0dbf1d4b88e460f97c04a2c8dee9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:28",
+      "sequence": 6783,
+      "chapter_label": "JDG 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "Gaal the son of Ebed said, “Who is Abimelech, and who is Shechem, that we should serve him? Isn’t he the son of Jerubbaal? Isn’t Zebul his officer? Serve the men of Hamor the father of Shechem, but why should we serve him?",
+      "ko": "에벳의 아들 가알이 가로되 아비멜렉은 누구며 세겜은 누구기에 우리가 아비멜렉을 섬기리요 그가 여룹바알의 아들이 아니냐 그 장관은 스불이 아니냐 차라리 세겜의 아비 하몰의 후손을 섬길 것이라 우리가 어찌 아비멜렉을 섬기리요",
+      "source_text_hash": "09c1f1ab53f86c42b5069ee1df0fe069d6a9aa733a4fcfd3e2cbb72437db3d31",
+      "translation_text_hash": "db3293564174a877e472564bccd233656838a847c66951eada81c385ba2c1fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벳의 아들 가알이 가로되 아비멜렉은 누구며 세겜은 누구기에 우리가 아비멜렉을 섬기리요 그가 여룹바알의 아들이 아니냐 그 장관은 스불이 아니냐 차라리 세겜의 아비 하몰의 후손을 섬길 것이라 우리가 어찌 아비멜렉을 섬기리요"
+      ],
+      "raw_text_hashes": [
+        "db3293564174a877e472564bccd233656838a847c66951eada81c385ba2c1fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:29",
+      "sequence": 6784,
+      "chapter_label": "JDG 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "I wish that this people were under my hand! Then I would remove Abimelech.” He said to Abimelech, “Increase your army and come out!”",
+      "ko": "아하, 이 백성이 내 수하에 있었더면 내가 아비멜렉을 제하였으리라 하고 아비멜렉에게 네 군대를 더하고 나오라고 말하니라",
+      "source_text_hash": "c4d0c5d69b10315ba6e8c54dc36cad6466abf7e5be221badb815072d003f7d22",
+      "translation_text_hash": "e9da9fc5e3d5740fec80e7eeff04c7c0a5e0bf009bd3c35f76e30a7c1f6926a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하, 이 백성이 내 수하에 있었더면 내가 아비멜렉을 제하였으리라 하고 아비멜렉에게 네 군대를 더하고 나오라고 말하니라"
+      ],
+      "raw_text_hashes": [
+        "e9da9fc5e3d5740fec80e7eeff04c7c0a5e0bf009bd3c35f76e30a7c1f6926a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:30",
+      "sequence": 6785,
+      "chapter_label": "JDG 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "When Zebul the ruler of the city heard the words of Gaal the son of Ebed, his anger burned.",
+      "ko": "그 성읍 장관 스불이 에벳의 아들 가알의 말을 듣고 노하여",
+      "source_text_hash": "2f3747055925664554c02b7203bc25c22ff07ecde90e40916ef34d94e4376fea",
+      "translation_text_hash": "ce48b1e6c2102293ac15ba09cdeb5655a723f17b19d0e36c6d6b1616cd993e33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 장관 스불이 에벳의 아들 가알의 말을 듣고 노하여"
+      ],
+      "raw_text_hashes": [
+        "ce48b1e6c2102293ac15ba09cdeb5655a723f17b19d0e36c6d6b1616cd993e33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:31",
+      "sequence": 6786,
+      "chapter_label": "JDG 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "He sent messengers to Abimelech craftily, saying, “Behold, Gaal the son of Ebed and his brothers have come to Shechem; and behold, they incite the city against you.",
+      "ko": "사자를 아비멜렉에게 가만히 보내어 가로되 보소서 에벳의 아들 가알과 그 형제가 세겜에 이르러 성읍 무리를 충동하여 당신을 대적하게 하나니",
+      "source_text_hash": "753e37c2e58a853f318209874e5512c3b9ed1440b652273a471b2d15b7989f3b",
+      "translation_text_hash": "dca370dad9112380cb0dc7d346e2088a56850aea47702fb06e0efddffba0fc01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자를 아비멜렉에게 가만히 보내어 가로되 보소서 에벳의 아들 가알과 그 형제가 세겜에 이르러 성읍 무리를 충동하여 당신을 대적하게 하나니"
+      ],
+      "raw_text_hashes": [
+        "dca370dad9112380cb0dc7d346e2088a56850aea47702fb06e0efddffba0fc01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:32",
+      "sequence": 6787,
+      "chapter_label": "JDG 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Now therefore, go up by night, you and the people who are with you, and lie in wait in the field.",
+      "ko": "당신은 당신을 좇은 백성으로 더불어 밤에 일어나서 밭에 매복하였다가",
+      "source_text_hash": "766202b2d1caf19de9e03c0112f05c1f5e6c6cd1c26aea266ed28e64bb958ba4",
+      "translation_text_hash": "7f1622590b5d2298761490dc7bfbffb12786cbab61bf347bc9862583b98389fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신은 당신을 좇은 백성으로 더불어 밤에 일어나서 밭에 매복하였다가"
+      ],
+      "raw_text_hashes": [
+        "7f1622590b5d2298761490dc7bfbffb12786cbab61bf347bc9862583b98389fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:33",
+      "sequence": 6788,
+      "chapter_label": "JDG 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "It shall be that in the morning, as soon as the sun is up, you shall rise early and rush on the city. Behold, when he and the people who are with him come out against you, then may you do to them as you shall find occasion.”",
+      "ko": "아침 해 뜰 때에 당신은 일찌기 일어나 이 성읍을 엄습하면 가알과 그를 좇은 백성이 나와서 당신을 대적하리니 당신은 기회를 보아 그들에게 행하소서",
+      "source_text_hash": "4f7dee898549a9741e6c451f913cc091478eb37ab6b267cdf46aef3393d51538",
+      "translation_text_hash": "bc6a4facc2e6926985b9fd11a91bc535535344d49458ecd9c684748261677821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침 해 뜰 때에 당신은 일찌기 일어나 이 성읍을 엄습하면 가알과 그를 좇은 백성이 나와서 당신을 대적하리니 당신은 기회를 보아 그들에게 행하소서"
+      ],
+      "raw_text_hashes": [
+        "bc6a4facc2e6926985b9fd11a91bc535535344d49458ecd9c684748261677821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:34",
+      "sequence": 6789,
+      "chapter_label": "JDG 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "Abimelech rose up, and all the people who were with him, by night, and they laid wait against Shechem in four companies.",
+      "ko": "아비멜렉과 그를 좇은 모든 백성이 밤에 일어나 네 떼로 나눠 세겜을 대하여 매복하였더니",
+      "source_text_hash": "40d5f83eea42f6612ba4aab9eaad064147299d0c87c83044e2cc67373ffa8ea5",
+      "translation_text_hash": "5d58434a622190a16a57c5b4029aa3129b01875bd6fa063b60d2c81a3aeb7c9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉과 그를 좇은 모든 백성이 밤에 일어나 네 떼로 나눠 세겜을 대하여 매복하였더니"
+      ],
+      "raw_text_hashes": [
+        "5d58434a622190a16a57c5b4029aa3129b01875bd6fa063b60d2c81a3aeb7c9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:35",
+      "sequence": 6790,
+      "chapter_label": "JDG 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "Gaal the son of Ebed went out, and stood in the entrance of the gate of the city. Abimelech rose up, and the people who were with him, from the ambush.",
+      "ko": "에벳의 아들 가알이 나와서 성읍문 입구에 설 때에 아비멜렉과 그를 좇은 백성이 매복하였던 곳에서 일어난지라",
+      "source_text_hash": "1f13fc726e46729383e1097acdc84e98f75ad69e7d3411b9f30195f21070accd",
+      "translation_text_hash": "69d11985e27b238a3a14df926defd896ff51b0a4da0124ac7085a1fc378f1214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벳의 아들 가알이 나와서 성읍문 입구에 설 때에 아비멜렉과 그를 좇은 백성이 매복하였던 곳에서 일어난지라"
+      ],
+      "raw_text_hashes": [
+        "69d11985e27b238a3a14df926defd896ff51b0a4da0124ac7085a1fc378f1214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:36",
+      "sequence": 6791,
+      "chapter_label": "JDG 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "When Gaal saw the people, he said to Zebul, “Behold, people are coming down from the tops of the mountains.” Zebul said to him, “You see the shadows of the mountains as if they were men.”",
+      "ko": "가알이 그 백성을 보고 스불에게 이르되 보라 백성이 산 꼭대기에서부터 내려 오는도다 스불이 그에게 대답하되 네가 산 그림자를 사람으로 보았느니라",
+      "source_text_hash": "15c27a719a8f40b9ea1a6eef0a5529af2f162216f6b97fff08f7412bb9622de6",
+      "translation_text_hash": "03bbfddc4ece2101a1cd2f4bd03ebb2f72c68dc76af7076a388649ed258bbf27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가알이 그 백성을 보고 스불에게 이르되 보라 백성이 산 꼭대기에서부터 내려 오는도다 스불이 그에게 대답하되 네가 산 그림자를 사람으로 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "03bbfddc4ece2101a1cd2f4bd03ebb2f72c68dc76af7076a388649ed258bbf27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:37",
+      "sequence": 6792,
+      "chapter_label": "JDG 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "Gaal spoke again and said, “Behold, people are coming down by the middle of the land, and one company comes by the way of the oak of Meonenim.”",
+      "ko": "가알이 다시 말하여 가로되 보라 백성이 밭 가운데로 좇아 내려오고 또 한 떼는 므오느님 상수리나무 길로 좇아 오는도다",
+      "source_text_hash": "48d0c3014f8ac5e283de798ebeb245c00d64e01a8b2382bc6f97aa9c057deb03",
+      "translation_text_hash": "5b98c83a6eb988faf5af7705b3b7f991a9064310150db8783990df4e1fe5d66e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가알이 다시 말하여 가로되 보라 백성이 밭 가운데로 좇아 내려오고 또 한 떼는 므오느님 상수리나무 길로 좇아 오는도다"
+      ],
+      "raw_text_hashes": [
+        "5b98c83a6eb988faf5af7705b3b7f991a9064310150db8783990df4e1fe5d66e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:38",
+      "sequence": 6793,
+      "chapter_label": "JDG 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "Then Zebul said to him, “Now where is your mouth, that you said, ‘Who is Abimelech, that we should serve him?’ Isn’t this the people that you have despised? Please go out now and fight with them.”",
+      "ko": "스불이 그에게 이르되 네가 전에 말하기를 아비멜렉이 누구관대 우리가 그를 섬기리요 하던 그 입이 이제 어디 있느냐 이가 너의 업신여기던 백성이 아니냐 청하노니 이제 나가서 그들과 싸우라",
+      "source_text_hash": "2141c2ea9ed4f251060128a4df5c3c6adce2cabff7cd2eb9b340be8d55f8ee27",
+      "translation_text_hash": "cfdff222ed73a62fbd9eff0db206eb7165fab8f14f520153caa0f55ec172642e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불이 그에게 이르되 네가 전에 말하기를 아비멜렉이 누구관대 우리가 그를 섬기리요 하던 그 입이 이제 어디 있느냐 이가 너의 업신여기던 백성이 아니냐 청하노니 이제 나가서 그들과 싸우라"
+      ],
+      "raw_text_hashes": [
+        "cfdff222ed73a62fbd9eff0db206eb7165fab8f14f520153caa0f55ec172642e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:39",
+      "sequence": 6794,
+      "chapter_label": "JDG 9",
+      "verse_label": "39",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 39
+        }
+      ],
+      "en": "Gaal went out before the men of Shechem, and fought with Abimelech.",
+      "ko": "가알이 세겜 사람들의 앞서 나가서 아비멜렉과 싸우다가",
+      "source_text_hash": "eae346d3a1c63c2841156451dd34fa067d80a17b396b67cdccea3f60a876dca0",
+      "translation_text_hash": "2698743e11dda57a249751452fc2a0e79b30af9c3785d493050c2c808d4aa44e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가알이 세겜 사람들의 앞서 나가서 아비멜렉과 싸우다가"
+      ],
+      "raw_text_hashes": [
+        "2698743e11dda57a249751452fc2a0e79b30af9c3785d493050c2c808d4aa44e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:40",
+      "sequence": 6795,
+      "chapter_label": "JDG 9",
+      "verse_label": "40",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 40
+        }
+      ],
+      "en": "Abimelech chased him, and he fled before him, and many fell wounded, even to the entrance of the gate.",
+      "ko": "아비멜렉에게 쫓겨 그 앞에서 도망하였고 상하여 엎드러진 자가 많아서 성문 입구까지 이르렀더라",
+      "source_text_hash": "3b2e65c15943816f671c087c4ce970d39c73dded9924d2fa1561d779a6348ca5",
+      "translation_text_hash": "d292fb0366b6baa573218b421656f44ac4cc5dd90011acbbe9d60f530a3a4cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉에게 쫓겨 그 앞에서 도망하였고 상하여 엎드러진 자가 많아서 성문 입구까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "d292fb0366b6baa573218b421656f44ac4cc5dd90011acbbe9d60f530a3a4cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:41",
+      "sequence": 6796,
+      "chapter_label": "JDG 9",
+      "verse_label": "41",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 41
+        }
+      ],
+      "en": "Abimelech lived at Arumah; and Zebul drove out Gaal and his brothers, that they should not dwell in Shechem.",
+      "ko": "아비멜렉은 아루마에 거하고 스불은 가알과 그 형제를 쫓아 내어 세겜에 거하지 못하게 하더니",
+      "source_text_hash": "b09a45f927508b0e91f245f9d335b55d6dd44ebc038ace25fa0b31783713de93",
+      "translation_text_hash": "f9c55b6b445df798d2796321960c75b5d855cde14bfbe5757195e64cd6e4cf69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉은 아루마에 거하고 스불은 가알과 그 형제를 쫓아 내어 세겜에 거하지 못하게 하더니"
+      ],
+      "raw_text_hashes": [
+        "f9c55b6b445df798d2796321960c75b5d855cde14bfbe5757195e64cd6e4cf69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:42",
+      "sequence": 6797,
+      "chapter_label": "JDG 9",
+      "verse_label": "42",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 42
+        }
+      ],
+      "en": "On the next day, the people went out into the field; and they told Abimelech.",
+      "ko": "이튿날 백성이 밭으로 나오매 혹이 그것을 아비멜렉에게 고하니라",
+      "source_text_hash": "7a23278c7b1da4641ede92946a931299ff552d9680a655b7fa7b8b156789b319",
+      "translation_text_hash": "27aa70a13a777f17c960759208c1aab747d4e48c9c812b367fe2aab9fe1cd35a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 백성이 밭으로 나오매 혹이 그것을 아비멜렉에게 고하니라"
+      ],
+      "raw_text_hashes": [
+        "27aa70a13a777f17c960759208c1aab747d4e48c9c812b367fe2aab9fe1cd35a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:43",
+      "sequence": 6798,
+      "chapter_label": "JDG 9",
+      "verse_label": "43",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 43
+        }
+      ],
+      "en": "He took the people and divided them into three companies, and laid wait in the field; and he looked, and behold, the people came out of the city. So, he rose up against them and struck them.",
+      "ko": "아비멜렉이 자기 백성을 세 떼로 나눠 밭에 매복하였더니 백성이 성에서 나오는 것을 보고 일어나서 그들을 치되",
+      "source_text_hash": "51fc77bec7098c0629db0f6b24a34fbdeb6a3debf83cb39fd0197da096b084e0",
+      "translation_text_hash": "b839313fee03fda065b90394c39cded4025de6b982df9b5ef722796bf628c372",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 자기 백성을 세 떼로 나눠 밭에 매복하였더니 백성이 성에서 나오는 것을 보고 일어나서 그들을 치되"
+      ],
+      "raw_text_hashes": [
+        "b839313fee03fda065b90394c39cded4025de6b982df9b5ef722796bf628c372"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:44",
+      "sequence": 6799,
+      "chapter_label": "JDG 9",
+      "verse_label": "44",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 44
+        }
+      ],
+      "en": "Abimelech and the companies that were with him rushed forward and stood in the entrance of the gate of the city; and the two companies rushed on all who were in the field and struck them.",
+      "ko": "아비멜렉과 그를 좇은 떼는 앞으로 달려가서 성문 입구에 서고 그 나머지 두 떼는 밭에 있는 모든 자에게 달려들어 그들을 죽이니",
+      "source_text_hash": "de94bb6510af8a02010504ec90619a7dbe76d1e45f61808c497fbec8a3795e8b",
+      "translation_text_hash": "398ccadf0a341deed4a12278ac857e0b2eb51e2ad5db00bce3ac603c2873dc80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉과 그를 좇은 떼는 앞으로 달려가서 성문 입구에 서고 그 나머지 두 떼는 밭에 있는 모든 자에게 달려들어 그들을 죽이니"
+      ],
+      "raw_text_hashes": [
+        "398ccadf0a341deed4a12278ac857e0b2eb51e2ad5db00bce3ac603c2873dc80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:45",
+      "sequence": 6800,
+      "chapter_label": "JDG 9",
+      "verse_label": "45",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 45
+        }
+      ],
+      "en": "Abimelech fought against the city all that day; and he took the city and killed the people in it. He beat down the city and sowed it with salt.",
+      "ko": "아비멜렉이 그 날 종일토록 그 성을 쳐서 필경은 취하고 거기 있는 백성을 죽이며 그 성을 헐고 소금을 뿌리니라",
+      "source_text_hash": "04fb9e6352988d4b6d8a7c6bf3571c2ba9dce280e4c44f88a4807d010735b0ea",
+      "translation_text_hash": "f4f4c3577fe411cdc96bd4ee70f984bd7cfdffa3cfa4638ce864270a3934c27c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 그 날 종일토록 그 성을 쳐서 필경은 취하고 거기 있는 백성을 죽이며 그 성을 헐고 소금을 뿌리니라"
+      ],
+      "raw_text_hashes": [
+        "f4f4c3577fe411cdc96bd4ee70f984bd7cfdffa3cfa4638ce864270a3934c27c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:46",
+      "sequence": 6801,
+      "chapter_label": "JDG 9",
+      "verse_label": "46",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 46
+        }
+      ],
+      "en": "When all the men of the tower of Shechem heard of it, they entered into the stronghold of the house of Elberith.",
+      "ko": "세겜 망대의 사람들이 이를 듣고 엘브릿 신당의 보장으로 들어갔더니",
+      "source_text_hash": "5ec1b3b831d7c7a788cfacfb8ab0a935ecdded5a7ca800ae8e470cc3c0dd2d22",
+      "translation_text_hash": "d78c330a9ac556987bb416f65cd60b2be065fcbcd2f7da1c56d64b445d5f9183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜 망대의 사람들이 이를 듣고 엘브릿 신당의 보장으로 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "d78c330a9ac556987bb416f65cd60b2be065fcbcd2f7da1c56d64b445d5f9183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:47",
+      "sequence": 6802,
+      "chapter_label": "JDG 9",
+      "verse_label": "47",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 47
+        }
+      ],
+      "en": "Abimelech was told that all the men of the tower of Shechem were gathered together.",
+      "ko": "세겜 망대의 모든 사람의 모인 것이 아비멜렉에게 들리매",
+      "source_text_hash": "ee0cc8f59a53524388600153cc6d746e6a38fc4184af2a04c27b91f89bcf8474",
+      "translation_text_hash": "c034393fcef7c8589e97355217ef87469b666c3b679e787b63d33ca2f598b99b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세겜 망대의 모든 사람의 모인 것이 아비멜렉에게 들리매"
+      ],
+      "raw_text_hashes": [
+        "c034393fcef7c8589e97355217ef87469b666c3b679e787b63d33ca2f598b99b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:48",
+      "sequence": 6803,
+      "chapter_label": "JDG 9",
+      "verse_label": "48",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 48
+        }
+      ],
+      "en": "Abimelech went up to Mount Zalmon, he and all the people who were with him; and Abimelech took an ax in his hand, and cut down a bough from the trees, and took it up, and laid it on his shoulder. Then he said to the people who were with him, “What you have seen me do, make haste, and do as I have done!”",
+      "ko": "아비멜렉과 그를 좇은 모든 백성이 살몬산에 오르고 아비멜렉이 손에 도끼를 들고 나무가지를 찍고 그것을 가져 자기 어깨에 메고 좇은 백성에게 이르되 너희는 나의 행하는 것을 보나니 빨리 나와 같이 행하라 하니",
+      "source_text_hash": "1218df6e01502f348acfed190600f8dfe23acffd320a934a460ea2e48df2d026",
+      "translation_text_hash": "7e971c55e7339f8db5691a477d5b5ef277be8bf90eb92bf420c46cc29a4267a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉과 그를 좇은 모든 백성이 살몬산에 오르고 아비멜렉이 손에 도끼를 들고 나무가지를 찍고 그것을 가져 자기 어깨에 메고 좇은 백성에게 이르되 너희는 나의 행하는 것을 보나니 빨리 나와 같이 행하라 하니"
+      ],
+      "raw_text_hashes": [
+        "7e971c55e7339f8db5691a477d5b5ef277be8bf90eb92bf420c46cc29a4267a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:49",
+      "sequence": 6804,
+      "chapter_label": "JDG 9",
+      "verse_label": "49",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 49
+        }
+      ],
+      "en": "All the people likewise each cut down his bough, followed Abimelech, and put them at the base of the stronghold, and set the stronghold on fire over them, so that all the people of the tower of Shechem died also, about a thousand men and women.",
+      "ko": "모든 백성도 각각 나무가지를 찍어서 아비멜렉을 좇아 보장에 대어 놓고 그곳에 불을 놓으매 세겜 망대에 있는 사람들도 다 죽었으니 남녀가 대략 일천명이었더라",
+      "source_text_hash": "d93119362720fb0ce0e94bb4a95a5a7ba85a9862f9665c9249d0c4bb9e9cb097",
+      "translation_text_hash": "61981bdd33ea02094e63de6fa518a0818fa68523fa06f12440a31aac015db45c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성도 각각 나무가지를 찍어서 아비멜렉을 좇아 보장에 대어 놓고 그곳에 불을 놓으매 세겜 망대에 있는 사람들도 다 죽었으니 남녀가 대략 일천명이었더라"
+      ],
+      "raw_text_hashes": [
+        "61981bdd33ea02094e63de6fa518a0818fa68523fa06f12440a31aac015db45c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:50",
+      "sequence": 6805,
+      "chapter_label": "JDG 9",
+      "verse_label": "50",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 50
+        }
+      ],
+      "en": "Then Abimelech went to Thebez and encamped against Thebez, and took it.",
+      "ko": "아비멜렉이 데베스에 가서 데베스를 대하여 진 치고 그것을 취하였더니",
+      "source_text_hash": "d83884fe26e1eebf42bf10c38062ae78846d61ccafe4d40cb45dbf6eb7853e82",
+      "translation_text_hash": "c602f1c7cef83c4126e52ddbeacbdf0810415191afbb878aaa3f2bbecc43b749",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 데베스에 가서 데베스를 대하여 진 치고 그것을 취하였더니"
+      ],
+      "raw_text_hashes": [
+        "c602f1c7cef83c4126e52ddbeacbdf0810415191afbb878aaa3f2bbecc43b749"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:51",
+      "sequence": 6806,
+      "chapter_label": "JDG 9",
+      "verse_label": "51",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 51
+        }
+      ],
+      "en": "But there was a strong tower within the city, and all the men and women of the city fled there, and shut themselves in, and went up to the roof of the tower.",
+      "ko": "성중에 견고한 망대가 있으므로 그 성 백성의 남녀가 모두 그리로 도망하여 들어가서 문을 잠그고 망대 꼭대기로 올라간지라",
+      "source_text_hash": "f2b535f7d673f8a59f4e27c2ee9adad28348fc63575cdc5c3c32e1349c75b49a",
+      "translation_text_hash": "fff9949aa0072587e644655747a0081bc2d9db9e90a390e49fef1e9235bb27cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성중에 견고한 망대가 있으므로 그 성 백성의 남녀가 모두 그리로 도망하여 들어가서 문을 잠그고 망대 꼭대기로 올라간지라"
+      ],
+      "raw_text_hashes": [
+        "fff9949aa0072587e644655747a0081bc2d9db9e90a390e49fef1e9235bb27cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:52",
+      "sequence": 6807,
+      "chapter_label": "JDG 9",
+      "verse_label": "52",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 52
+        }
+      ],
+      "en": "Abimelech came to the tower and fought against it, and came near to the door of the tower to burn it with fire.",
+      "ko": "아비멜렉이 망대 앞에 이르러서 치며 망대의 문에 가까이 나아가서 그것을 불사르려 하더니",
+      "source_text_hash": "694b1a274294ac408b32c3e291d5c7ae68563c74824aef26035ae390e40be0d9",
+      "translation_text_hash": "625c6b499b1647a06dd824f8c9c5647cf8430ef66c4b0ceed11f0a0525b2989c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 망대 앞에 이르러서 치며 망대의 문에 가까이 나아가서 그것을 불사르려 하더니"
+      ],
+      "raw_text_hashes": [
+        "625c6b499b1647a06dd824f8c9c5647cf8430ef66c4b0ceed11f0a0525b2989c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:53",
+      "sequence": 6808,
+      "chapter_label": "JDG 9",
+      "verse_label": "53",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 53
+        }
+      ],
+      "en": "A certain woman cast an upper millstone on Abimelech’s head, and broke his skull.",
+      "ko": "한 여인이 맷돌 윗짝을 아비멜렉의 머리 위에 내려던져 그 두골을 깨뜨리니",
+      "source_text_hash": "387872b7d00ce81a28f9f9bf44f77d97f24c9732214ce71cd83348f3147d3e84",
+      "translation_text_hash": "2bf399f44ce6094e98b0a3364a607a70678c27d60e95358d6eb0c29c7dbe84df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 여인이 맷돌 윗짝을 아비멜렉의 머리 위에 내려던져 그 두골을 깨뜨리니"
+      ],
+      "raw_text_hashes": [
+        "2bf399f44ce6094e98b0a3364a607a70678c27d60e95358d6eb0c29c7dbe84df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:54",
+      "sequence": 6809,
+      "chapter_label": "JDG 9",
+      "verse_label": "54",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 54
+        }
+      ],
+      "en": "Then he called hastily to the young man, his armor bearer, and said to him, “Draw your sword and kill me, that men not say of me, ‘A woman killed him.’ His young man thrust him through, and he died.”",
+      "ko": "아비멜렉이 자기의 병기 잡은 소년을 급히 불러 그에게 이르되 너는 칼을 빼어 나를 죽이라 사람들이 나를 가리켜 이르기를 그가 여인에게 죽었다 할까 하노라 소년이 찌르매 그가 곧 죽은지라",
+      "source_text_hash": "fa22347bcaa8ab0a5e5f3fe5dff7a4d5f58806b3dc7d48e4afd7f654896936fb",
+      "translation_text_hash": "7a3bb7dc1bcae3ec13658824bbdde07af306c906ac8bae9beb13493c4dc70eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 자기의 병기 잡은 소년을 급히 불러 그에게 이르되 너는 칼을 빼어 나를 죽이라 사람들이 나를 가리켜 이르기를 그가 여인에게 죽었다 할까 하노라 소년이 찌르매 그가 곧 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "7a3bb7dc1bcae3ec13658824bbdde07af306c906ac8bae9beb13493c4dc70eae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:55",
+      "sequence": 6810,
+      "chapter_label": "JDG 9",
+      "verse_label": "55",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 55
+        }
+      ],
+      "en": "When the men of Israel saw that Abimelech was dead, they each departed to his place.",
+      "ko": "이스라엘 사람들이 아비멜렉의 죽은 것을 보고 각각 자기 처소로 떠나갔더라",
+      "source_text_hash": "7b427a649e4e95589114462ee7327257fb9d43635ee9ca84d5ad56ab5cca65c0",
+      "translation_text_hash": "f85d46635efcb025c8330cb53616af73f3f8eb99653588fc1cfd37960e263f79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 아비멜렉의 죽은 것을 보고 각각 자기 처소로 떠나갔더라"
+      ],
+      "raw_text_hashes": [
+        "f85d46635efcb025c8330cb53616af73f3f8eb99653588fc1cfd37960e263f79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:56",
+      "sequence": 6811,
+      "chapter_label": "JDG 9",
+      "verse_label": "56",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 56
+        }
+      ],
+      "en": "Thus God repaid the wickedness of Abimelech, which he did to his father in killing his seventy brothers;",
+      "ko": "아비멜렉이 그 형제 칠십인을 죽여 자기 아비에게 행한 악을 하나님이 이같이 갚으셨고",
+      "source_text_hash": "4acb4161c420ac6b0e5c2517e86f1e797bbafb57b0e1f6a51a34ef892972ac72",
+      "translation_text_hash": "31825ed22cabdb03cec4974fabfea655fb2e209537be6f3ad1c4492254752055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 그 형제 칠십인을 죽여 자기 아비에게 행한 악을 하나님이 이같이 갚으셨고"
+      ],
+      "raw_text_hashes": [
+        "31825ed22cabdb03cec4974fabfea655fb2e209537be6f3ad1c4492254752055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:9:57",
+      "sequence": 6812,
+      "chapter_label": "JDG 9",
+      "verse_label": "57",
+      "locator": {
+        "book": "JDG",
+        "chapter": 9,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 9,
+          "verse": 57
+        }
+      ],
+      "en": "and God repaid all the wickedness of the men of Shechem on their heads; and the curse of Jotham the son of Jerubbaal came on them.",
+      "ko": "또 세겜 사람들의 모든 악을 하나님이 그들의 머리에 갚으셨으니 여룹바알의 아들 요담의 저주가 그들에게 응하니라",
+      "source_text_hash": "63a88e1e3cf0b3054f403fc1909658f8bcef0cbacd052667673299cd82f56ce7",
+      "translation_text_hash": "c4b2bbfc0c1b70b2f9ce22760f6f32e2385cc3ee5f74b37ff934a47f9122716b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 세겜 사람들의 모든 악을 하나님이 그들의 머리에 갚으셨으니 여룹바알의 아들 요담의 저주가 그들에게 응하니라"
+      ],
+      "raw_text_hashes": [
+        "c4b2bbfc0c1b70b2f9ce22760f6f32e2385cc3ee5f74b37ff934a47f9122716b"
+      ]
+    }
+  ]
+}

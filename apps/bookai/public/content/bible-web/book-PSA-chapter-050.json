@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:050",
+  "unit_ordinal": 528,
+  "unit_label": "PSA 50",
+  "book_code": "PSA",
+  "chapter_number": 50,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:50:1",
+      "sequence": 14670,
+      "chapter_label": "PSA 50",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 1
+        }
+      ],
+      "en": "The Mighty One, God, the LORD, speaks, and calls the earth from sunrise to sunset.",
+      "ko": "전능하신 자 하나님 여호와께서 말씀하사 해 돋는 데서부터 지는 데까지 세상을 부르셨도다",
+      "source_text_hash": "690f22585a0c451b78823f30ab99dfdf75f6c3a77832d60ada0ebc1b8ba027ac",
+      "translation_text_hash": "c1dab3c56f5307b40936180b791c1c977106175496620a4f685337fe82a79e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능하신 자 하나님 여호와께서 말씀하사 해 돋는 데서부터 지는 데까지 세상을 부르셨도다"
+      ],
+      "raw_text_hashes": [
+        "c1dab3c56f5307b40936180b791c1c977106175496620a4f685337fe82a79e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:2",
+      "sequence": 14671,
+      "chapter_label": "PSA 50",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 2
+        }
+      ],
+      "en": "Out of Zion, the perfection of beauty, God shines out.",
+      "ko": "온전히 아름다운 시온에서 하나님이 빛을 발하셨도다",
+      "source_text_hash": "2dc5890d5403deccec20234f78b47b4e625b1105dd644c6a645249cad9899819",
+      "translation_text_hash": "ed84aa1881a9249cafe4a681ea1d5ca620aafc2efc9c948308722e0b9771e8f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온전히 아름다운 시온에서 하나님이 빛을 발하셨도다"
+      ],
+      "raw_text_hashes": [
+        "ed84aa1881a9249cafe4a681ea1d5ca620aafc2efc9c948308722e0b9771e8f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:3",
+      "sequence": 14672,
+      "chapter_label": "PSA 50",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 3
+        }
+      ],
+      "en": "Our God comes, and does not keep silent. A fire devours before him. It is very stormy around him.",
+      "ko": "우리 하나님이 임하사 잠잠치 아니하시니 그 앞에는 불이 삼키고 그 사방에는 광풍이 불리로다",
+      "source_text_hash": "d2b471bfb990e24f46ecc3e00632e6c4bd67cbf9865bdb2a05df4f673458ac2c",
+      "translation_text_hash": "12a9a09ed2fe10b3401483ec075e8d93b15a1687d77ccddb1ec29169ecf74e2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이 임하사 잠잠치 아니하시니 그 앞에는 불이 삼키고 그 사방에는 광풍이 불리로다"
+      ],
+      "raw_text_hashes": [
+        "12a9a09ed2fe10b3401483ec075e8d93b15a1687d77ccddb1ec29169ecf74e2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:4",
+      "sequence": 14673,
+      "chapter_label": "PSA 50",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 4
+        }
+      ],
+      "en": "He calls to the heavens above, to the earth, that he may judge his people:",
+      "ko": "하나님이 그 백성을 판단하시려고 윗 하늘과 아래 땅에 반포하여",
+      "source_text_hash": "c5662ea3d660c9b7f939ceeea10b79b8f1b0b5c7fa1c073b1a5c3dea21e1ab5d",
+      "translation_text_hash": "92e99836c5bda9189122cf2caa8405bd2415f3e3f86de70a67d28318519af075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 백성을 판단하시려고 윗 하늘과 아래 땅에 반포하여"
+      ],
+      "raw_text_hashes": [
+        "92e99836c5bda9189122cf2caa8405bd2415f3e3f86de70a67d28318519af075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:5",
+      "sequence": 14674,
+      "chapter_label": "PSA 50",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 5
+        }
+      ],
+      "en": "“Gather my saints together to me, those who have made a covenant with me by sacrifice.”",
+      "ko": "이르시되 나의 성도를 내 앞에 모으라 곧 제사로 나와 언약한 자니라 하시도다",
+      "source_text_hash": "cbe9311e8edba997061e36abc490efed85439a67517e793fea6a8836a153055f",
+      "translation_text_hash": "4f6a148fc7dedb1f02ccc101ca13d29f0a8073f6bcec8df65bcafc350a999fef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 나의 성도를 내 앞에 모으라 곧 제사로 나와 언약한 자니라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "4f6a148fc7dedb1f02ccc101ca13d29f0a8073f6bcec8df65bcafc350a999fef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:6",
+      "sequence": 14675,
+      "chapter_label": "PSA 50",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 6
+        }
+      ],
+      "en": "The heavens shall declare his righteousness, for God himself is judge. Selah.",
+      "ko": "하늘이 그 공의를 선포하리니 하나님 그는 심판장이심이로다(셀라)",
+      "source_text_hash": "5673bdc12443141d33d9f32cc6e91cc553af4ab05100f703e3c45f2c3279b924",
+      "translation_text_hash": "a851058ace8a6a3514166c7cda65a0018cf494fb47b76fb3c8795b2ce076d442",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이 그 공의를 선포하리니 하나님 그는 심판장이심이로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a851058ace8a6a3514166c7cda65a0018cf494fb47b76fb3c8795b2ce076d442"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:7",
+      "sequence": 14676,
+      "chapter_label": "PSA 50",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 7
+        }
+      ],
+      "en": "“Hear, my people, and I will speak. Israel, I will testify against you. I am God, your God.",
+      "ko": "내 백성아 들을찌어다 내가 말하리라 이스라엘아 내가 네게 증거하리라 나는 하나님 곧 네 하나님이로다",
+      "source_text_hash": "62e96f1736871170d440717ec36720ac41a124f58ce01f5c57b7d5ac1b3eeb15",
+      "translation_text_hash": "2ae8acbdd1e922c2a47222179da6e0482542bb3a5f61920b534b23816e619b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성아 들을찌어다 내가 말하리라 이스라엘아 내가 네게 증거하리라 나는 하나님 곧 네 하나님이로다"
+      ],
+      "raw_text_hashes": [
+        "2ae8acbdd1e922c2a47222179da6e0482542bb3a5f61920b534b23816e619b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:8",
+      "sequence": 14677,
+      "chapter_label": "PSA 50",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 8
+        }
+      ],
+      "en": "I don’t rebuke you for your sacrifices. Your burnt offerings are continually before me.",
+      "ko": "내가 너의 제물을 인하여는 너를 책망치 아니하리니 네 번제가 항상 내 앞에 있음이로다",
+      "source_text_hash": "7b15a97238c21ce3d010f78c527cb886b1746e31616e309c49d2bf37cb41fd77",
+      "translation_text_hash": "c34556c1ee5204dcdb4e44265549f74e735781b72aa93e57fbd7f5195f38ad9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너의 제물을 인하여는 너를 책망치 아니하리니 네 번제가 항상 내 앞에 있음이로다"
+      ],
+      "raw_text_hashes": [
+        "c34556c1ee5204dcdb4e44265549f74e735781b72aa93e57fbd7f5195f38ad9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:9",
+      "sequence": 14678,
+      "chapter_label": "PSA 50",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 9
+        }
+      ],
+      "en": "I have no need for a bull from your stall, nor male goats from your pens.",
+      "ko": "내가 네 집에서 수소나 네 우리에서 수염소를 취치 아니하리니",
+      "source_text_hash": "fe12f250ab78191e47cd6540019c7fc4cd7ae38f0d8188b7ce9a376ed588f882",
+      "translation_text_hash": "3ef3b99b6a57606c7084f7ce3a878c5385a5b094f124c249b1ad2fc7f0299256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 집에서 수소나 네 우리에서 수염소를 취치 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "3ef3b99b6a57606c7084f7ce3a878c5385a5b094f124c249b1ad2fc7f0299256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:10",
+      "sequence": 14679,
+      "chapter_label": "PSA 50",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 10
+        }
+      ],
+      "en": "For every animal of the forest is mine, and the livestock on a thousand hills.",
+      "ko": "이는 삼림의 짐승들과 천산의 생축이 다 내 것이며",
+      "source_text_hash": "42c92a57e346e4acbc6bd3c8db536ca0e28b1002c55921d6284bef7754b0a5f7",
+      "translation_text_hash": "ed9b1884f999a31fee6c99d5a10bf2627bc378408d9909725349b751dbb6e19e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 삼림의 짐승들과 천산의 생축이 다 내 것이며"
+      ],
+      "raw_text_hashes": [
+        "ed9b1884f999a31fee6c99d5a10bf2627bc378408d9909725349b751dbb6e19e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:11",
+      "sequence": 14680,
+      "chapter_label": "PSA 50",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 11
+        }
+      ],
+      "en": "I know all the birds of the mountains. The wild animals of the field are mine.",
+      "ko": "산의 새들도 나의 아는 것이며 들의 짐승도 내 것임이로다",
+      "source_text_hash": "e16706fd0c7805658ce2626b2c97b13b08f617d473683d9e564bc07c41c440a3",
+      "translation_text_hash": "72461416e130f2258c5fead63fc76dc4db3d3d86643c87f35aa16cc45fba99e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산의 새들도 나의 아는 것이며 들의 짐승도 내 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "72461416e130f2258c5fead63fc76dc4db3d3d86643c87f35aa16cc45fba99e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:12",
+      "sequence": 14681,
+      "chapter_label": "PSA 50",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 12
+        }
+      ],
+      "en": "If I were hungry, I would not tell you, for the world is mine, and all that is in it.",
+      "ko": "내가 가령 주려도 네게 이르지 않을 것은 세계와 거기 충만한 것이 내 것임이로다",
+      "source_text_hash": "45e34c5bb1206b0edd9a15fd677931b6caa57e1f3da76d0e8d4ca149df49503b",
+      "translation_text_hash": "cc3929785cb5f81b90fba2475519ff4df7e28d09f585097c2f601df7709c7a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가령 주려도 네게 이르지 않을 것은 세계와 거기 충만한 것이 내 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "cc3929785cb5f81b90fba2475519ff4df7e28d09f585097c2f601df7709c7a55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:13",
+      "sequence": 14682,
+      "chapter_label": "PSA 50",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 13
+        }
+      ],
+      "en": "Will I eat the meat of bulls, or drink the blood of goats?",
+      "ko": "내가 수소의 고기를 먹으며 염소의 피를 마시겠느냐",
+      "source_text_hash": "a23bb23d897619db742930e62b1f161c6ecb24db9aff6b157bfbdba9558c88a7",
+      "translation_text_hash": "3c58039b5f01c4299f338cb69e6b7b71b5c1b37b14e0d3722ebf529909b51886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 수소의 고기를 먹으며 염소의 피를 마시겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3c58039b5f01c4299f338cb69e6b7b71b5c1b37b14e0d3722ebf529909b51886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:14",
+      "sequence": 14683,
+      "chapter_label": "PSA 50",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 14
+        }
+      ],
+      "en": "Offer to God the sacrifice of thanksgiving. Pay your vows to the Most High.",
+      "ko": "감사로 하나님께 제사를 드리며 지극히 높으신 자에게 네 서원을 갚으며",
+      "source_text_hash": "e6b523ccd794704df12376f6c88d2e51bae55434c0e3b1080f2beeedf3f2f08a",
+      "translation_text_hash": "5eaeea3350dc234aa9f0df1807b517a72d544373f6fbce64594e4461f89b2af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사로 하나님께 제사를 드리며 지극히 높으신 자에게 네 서원을 갚으며"
+      ],
+      "raw_text_hashes": [
+        "5eaeea3350dc234aa9f0df1807b517a72d544373f6fbce64594e4461f89b2af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:15",
+      "sequence": 14684,
+      "chapter_label": "PSA 50",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 15
+        }
+      ],
+      "en": "Call on me in the day of trouble. I will deliver you, and you will honor me.”",
+      "ko": "환난 날에 나를 부르라 내가 너를 건지리니 네가 나를 영화롭게 하리로다",
+      "source_text_hash": "b651a68760c004f4245f97e1209966f7577840b3cf2e34fe5f742f6e052ed0f4",
+      "translation_text_hash": "076cb999369303d7fa3fcb7c7da6009af0fa27e86847dea923df1d0c37db07dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난 날에 나를 부르라 내가 너를 건지리니 네가 나를 영화롭게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "076cb999369303d7fa3fcb7c7da6009af0fa27e86847dea923df1d0c37db07dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:16",
+      "sequence": 14685,
+      "chapter_label": "PSA 50",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 16
+        }
+      ],
+      "en": "But to the wicked God says, “What right do you have to declare my statutes, that you have taken my covenant on your lips,",
+      "ko": "악인에게는 하나님이 이르시되 네가 어찌 내 율례를 전하며 내 언약을 네 입에 두느냐",
+      "source_text_hash": "a5201d66318f187971c6e23480a37910f8b802efef42b977e4e621229110f38c",
+      "translation_text_hash": "50d4d763361b728d866ade3e825a7c03b4d81a5197bf05d6e824ed4dfa20a4c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게는 하나님이 이르시되 네가 어찌 내 율례를 전하며 내 언약을 네 입에 두느냐"
+      ],
+      "raw_text_hashes": [
+        "50d4d763361b728d866ade3e825a7c03b4d81a5197bf05d6e824ed4dfa20a4c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:17",
+      "sequence": 14686,
+      "chapter_label": "PSA 50",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 17
+        }
+      ],
+      "en": "since you hate instruction, and throw my words behind you?",
+      "ko": "네가 교훈을 미워하고 내 말을 네 뒤로 던지며",
+      "source_text_hash": "100269257c71281326c3e13415c9522166bc543021c1e02ff4b1b8449ac1eac3",
+      "translation_text_hash": "95ac775530a6af00acdeb8b03b47d0a0306e5f4aa2dfc26b8e82f8cd83bf891f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 교훈을 미워하고 내 말을 네 뒤로 던지며"
+      ],
+      "raw_text_hashes": [
+        "95ac775530a6af00acdeb8b03b47d0a0306e5f4aa2dfc26b8e82f8cd83bf891f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:18",
+      "sequence": 14687,
+      "chapter_label": "PSA 50",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 18
+        }
+      ],
+      "en": "When you saw a thief, you consented with him, and have participated with adulterers.",
+      "ko": "도적을 본즉 연합하고 간음하는 자와 동류가 되며",
+      "source_text_hash": "ec8fb83d553062146503e6805bbfefeabe4495746230940792182fb7b4cb3bba",
+      "translation_text_hash": "e2860fc6d625433e477d9607f1a19bcfbecd05dff0142ab0ebfd23dad91208c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적을 본즉 연합하고 간음하는 자와 동류가 되며"
+      ],
+      "raw_text_hashes": [
+        "e2860fc6d625433e477d9607f1a19bcfbecd05dff0142ab0ebfd23dad91208c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:19",
+      "sequence": 14688,
+      "chapter_label": "PSA 50",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 19
+        }
+      ],
+      "en": "“You give your mouth to evil. Your tongue frames deceit.",
+      "ko": "네 입을 악에게 주고 네 혀로 궤사를 지으며",
+      "source_text_hash": "4ea8dfb1e53fc45ee64ae82daa906cd2cbf4150b493a6673c4d9e9e4296f9052",
+      "translation_text_hash": "70487846a006589074885a263633b401c8b5e91e182b09f04a84c96676fa27d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 입을 악에게 주고 네 혀로 궤사를 지으며"
+      ],
+      "raw_text_hashes": [
+        "70487846a006589074885a263633b401c8b5e91e182b09f04a84c96676fa27d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:20",
+      "sequence": 14689,
+      "chapter_label": "PSA 50",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 20
+        }
+      ],
+      "en": "You sit and speak against your brother. You slander your own mother’s son.",
+      "ko": "앉아서 네 형제를 공박하며 네 어미의 아들을 비방하는도다",
+      "source_text_hash": "7fdc649c048bdecd0eee74194ef5c8f5a6b623b368a0008640e73defc14f618d",
+      "translation_text_hash": "7dc83f5882e1c8694f8a8940050ddee5c752d3eea7be7face618ff66130aee28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앉아서 네 형제를 공박하며 네 어미의 아들을 비방하는도다"
+      ],
+      "raw_text_hashes": [
+        "7dc83f5882e1c8694f8a8940050ddee5c752d3eea7be7face618ff66130aee28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:21",
+      "sequence": 14690,
+      "chapter_label": "PSA 50",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 21
+        }
+      ],
+      "en": "You have done these things, and I kept silent. You thought that I was just like you. I will rebuke you, and accuse you in front of your eyes.",
+      "ko": "네가 이 일을 행하여도 내가 잠잠하였더니 네가 나를 너와 같은 줄로 생각하였도다 그러나 내가 너를 책망하여 네 죄를 네 목전에 차례로 베풀리라 하시는도다",
+      "source_text_hash": "b00a86b05b971ebffeba91eaf8c1b4682920d429fb91c2caf648de6906081d4f",
+      "translation_text_hash": "b48e8e9c003b4545e9f2318a5de4c1383afa8837f3756922477c9b24befa2dd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이 일을 행하여도 내가 잠잠하였더니 네가 나를 너와 같은 줄로 생각하였도다 그러나 내가 너를 책망하여 네 죄를 네 목전에 차례로 베풀리라 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "b48e8e9c003b4545e9f2318a5de4c1383afa8837f3756922477c9b24befa2dd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:22",
+      "sequence": 14691,
+      "chapter_label": "PSA 50",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 22
+        }
+      ],
+      "en": "“Now consider this, you who forget God, lest I tear you into pieces, and there be no one to deliver.",
+      "ko": "하나님을 잊어버린 너희여 이제 이를 생각하라 그렇지 않으면 내가 너희를 찢으리니 건질 자 없으리라",
+      "source_text_hash": "715c35fb2f3d490d80fd8865409aeb872b9c75b5a9c448f7e54d0931525bc2ca",
+      "translation_text_hash": "6de84afd149b2a05b0f1e9cd96b01d28e6ba3e92e8cd4c61c10fa74fabc93a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 잊어버린 너희여 이제 이를 생각하라 그렇지 않으면 내가 너희를 찢으리니 건질 자 없으리라"
+      ],
+      "raw_text_hashes": [
+        "6de84afd149b2a05b0f1e9cd96b01d28e6ba3e92e8cd4c61c10fa74fabc93a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:50:23",
+      "sequence": 14692,
+      "chapter_label": "PSA 50",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 50,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 50,
+          "verse": 23
+        }
+      ],
+      "en": "Whoever offers the sacrifice of thanksgiving glorifies me, and prepares his way so that I will show God’s salvation to him.”",
+      "ko": "감사로 제사를 드리는 자가 나를 영화롭게 하나니 그 행위를 옳게 하는 자에게 내가 하나님의 구원을 보이리라",
+      "source_text_hash": "3f738908c8afecc9bd3994baaa1cc13c0eae9aafac32dbe82cd468f8201b0a48",
+      "translation_text_hash": "17eff4da2a4cde93321b4b89b28ce5b7c0370570b2e6f3ce9c8db69253f7bcd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사로 제사를 드리는 자가 나를 영화롭게 하나니 그 행위를 옳게 하는 자에게 내가 하나님의 구원을 보이리라"
+      ],
+      "raw_text_hashes": [
+        "17eff4da2a4cde93321b4b89b28ce5b7c0370570b2e6f3ce9c8db69253f7bcd0"
+      ]
+    }
+  ]
+}

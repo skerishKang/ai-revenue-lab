@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:018",
+  "unit_ordinal": 1015,
+  "unit_label": "JHN 18",
+  "book_code": "JHN",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:18:1",
+      "sequence": 26786,
+      "chapter_label": "JHN 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "When Jesus had spoken these words, he went out with his disciples over the brook Kidron, where there was a garden, into which he and his disciples entered.",
+      "ko": "예수께서 이 말씀을 하시고 제자들과 함께 기드론 시내 저편으로 나가시니 거기 동산이 있는데 제자들과 함께 들어가시다",
+      "source_text_hash": "736510b30d329ccc6a936e6c65b6e5e7e00067924a40080cc39d00c62545d67e",
+      "translation_text_hash": "090c696cf885fd5f4715f734d0b6bee456d3e1b9b629f2c72aa3aa018f7831b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하시고 제자들과 함께 기드론 시내 저편으로 나가시니 거기 동산이 있는데 제자들과 함께 들어가시다"
+      ],
+      "raw_text_hashes": [
+        "090c696cf885fd5f4715f734d0b6bee456d3e1b9b629f2c72aa3aa018f7831b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:2",
+      "sequence": 26787,
+      "chapter_label": "JHN 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "Now Judas, who betrayed him, also knew the place, for Jesus often met there with his disciples.",
+      "ko": "거기는 예수께서 제자들과 가끔 모이시는 곳이므로 예수를 파는 유다도 그곳을 알더라",
+      "source_text_hash": "1343d60558fcf0627485783c104944d0018929bf066eb5c63730afab1a97cf27",
+      "translation_text_hash": "c042f860590eaeafcd56d6f36160aebb578bb89b54c768d61df4c3c659d9073b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 예수께서 제자들과 가끔 모이시는 곳이므로 예수를 파는 유다도 그곳을 알더라"
+      ],
+      "raw_text_hashes": [
+        "c042f860590eaeafcd56d6f36160aebb578bb89b54c768d61df4c3c659d9073b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:3",
+      "sequence": 26788,
+      "chapter_label": "JHN 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "Judas then, having taken a detachment of soldiers and officers from the chief priests and the Pharisees, came there with lanterns, torches, and weapons.",
+      "ko": "유다가 군대와 및 대제사장들과 바리새인들에게서 얻은 하속들을 데리고 등과 홰와 병기를 가지고 그리로 오는지라",
+      "source_text_hash": "69185a3fa01b16c77ec643a13b484b84e1e95f8c167abf4f211eb3e1a9ec1ebc",
+      "translation_text_hash": "81dca470953129646db61bde9d83302d21b17f50480a0cd0e4d959bd5726508b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 군대와 및 대제사장들과 바리새인들에게서 얻은 하속들을 데리고 등과 홰와 병기를 가지고 그리로 오는지라"
+      ],
+      "raw_text_hashes": [
+        "81dca470953129646db61bde9d83302d21b17f50480a0cd0e4d959bd5726508b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:4",
+      "sequence": 26789,
+      "chapter_label": "JHN 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus therefore, knowing all the things that were happening to him, went out and said to them, “Who are you looking for?”",
+      "ko": "예수께서 그 당할 일을 다 아시고 나아가 가라사대 너희가 누구를 찾느냐",
+      "source_text_hash": "28f5e59d82358caacc71e24fffbf1775bd9cbb159a8bba466f0c86ed5245f6b9",
+      "translation_text_hash": "d3ba89ef598c4c629d5ba2bdb9622d48a10c75a8cd689b9eba3039dfcca1fa88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 당할 일을 다 아시고 나아가 가라사대 너희가 누구를 찾느냐"
+      ],
+      "raw_text_hashes": [
+        "d3ba89ef598c4c629d5ba2bdb9622d48a10c75a8cd689b9eba3039dfcca1fa88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:5",
+      "sequence": 26790,
+      "chapter_label": "JHN 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "They answered him, “Jesus of Nazareth.” Jesus said to them, “I am he.” Judas also, who betrayed him, was standing with them.",
+      "ko": "대답하되 나사렛 예수라 하거늘 가라사대 내로라 하시니라 그를 파는 유다도 저희와 함께 섰더라",
+      "source_text_hash": "11f3af4ae88a193cdd3b8b51ad0ede271246162ef8e4d80b014a4bfdc4f556fb",
+      "translation_text_hash": "85b23d876c8de1fecfef427976f1d965c03e26a8ab8f32728ed0ed913801efea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 나사렛 예수라 하거늘 가라사대 내로라 하시니라 그를 파는 유다도 저희와 함께 섰더라"
+      ],
+      "raw_text_hashes": [
+        "85b23d876c8de1fecfef427976f1d965c03e26a8ab8f32728ed0ed913801efea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:6",
+      "sequence": 26791,
+      "chapter_label": "JHN 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "When therefore he said to them, “I am he,”they went backward and fell to the ground.",
+      "ko": "예수께서 저희에게 내로라 하실 때에 저희가 물러가서 땅에 엎드러지는지라",
+      "source_text_hash": "4ddfcf88996f2ce330413e9d939f4ee1b19c2a277c7f2578ab9e8a74d68da6d5",
+      "translation_text_hash": "cb0ceabad5e03bde496fc31e3b8e4fa25e446722fdd46cfc7099f4d1667ba397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 내로라 하실 때에 저희가 물러가서 땅에 엎드러지는지라"
+      ],
+      "raw_text_hashes": [
+        "cb0ceabad5e03bde496fc31e3b8e4fa25e446722fdd46cfc7099f4d1667ba397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:7",
+      "sequence": 26792,
+      "chapter_label": "JHN 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Again therefore he asked them, “Who are you looking for?”They said, “Jesus of Nazareth.”",
+      "ko": "이에 다시 누구를 찾느냐고 물으신대 저희가 말하되 나사렛 예수라 하거늘",
+      "source_text_hash": "cc928e5b1ed0a2d49e7094b3aaeeafb955be25fc6f564a7937a76ffed76986b9",
+      "translation_text_hash": "ca8970ead0c408717026b8811f2470a2a49b0acb173a7991f40ffc0e3f2ae111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다시 누구를 찾느냐고 물으신대 저희가 말하되 나사렛 예수라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "ca8970ead0c408717026b8811f2470a2a49b0acb173a7991f40ffc0e3f2ae111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:8",
+      "sequence": 26793,
+      "chapter_label": "JHN 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus answered, “I told you that I am he. If therefore you seek me, let these go their way,”",
+      "ko": "예수께서 대답하시되 너희에게 내로라 하였으니 나를 찾거든 이 사람들의 가는 것을 용납하라 하시니",
+      "source_text_hash": "a76083f71717d8879fe34ecfed03f3f6125951baaa0d230130ef60fe9457928e",
+      "translation_text_hash": "6c49cdd5cfd0b45a57ac62b5173b1804398bfab45ab25001a7913f0091ebbbe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 너희에게 내로라 하였으니 나를 찾거든 이 사람들의 가는 것을 용납하라 하시니"
+      ],
+      "raw_text_hashes": [
+        "6c49cdd5cfd0b45a57ac62b5173b1804398bfab45ab25001a7913f0091ebbbe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:9",
+      "sequence": 26794,
+      "chapter_label": "JHN 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "that the word might be fulfilled which he spoke, “Of those whom you have given me, I have lost none.”",
+      "ko": "이는 아버지께서 내게 주신 자 중에서 하나도 잃지 아니하였삽나이다 하신 말씀을 응하게 하려 함이러라",
+      "source_text_hash": "92e853c777c6d353c573d235ff8456262ed0c273e98c3e8ab0997d9d356bfb0e",
+      "translation_text_hash": "6852fd049dd78f1688a08b9da7e85824255d7a4247d3eef1fb4d5778a47cd761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아버지께서 내게 주신 자 중에서 하나도 잃지 아니하였삽나이다 하신 말씀을 응하게 하려 함이러라"
+      ],
+      "raw_text_hashes": [
+        "6852fd049dd78f1688a08b9da7e85824255d7a4247d3eef1fb4d5778a47cd761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:10",
+      "sequence": 26795,
+      "chapter_label": "JHN 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "Simon Peter therefore, having a sword, drew it, struck the high priest’s servant, and cut off his right ear. The servant’s name was Malchus.",
+      "ko": "이에 시몬 베드로가 검을 가졌는데 이것을 빼어 대제사장의 종을 쳐서 오른편 귀를 베어버리니 그 종의 이름은 말고라",
+      "source_text_hash": "bf2ed997477539f0899c1d1f5a004969330021e2345b2e4a039a8b95e61feecf",
+      "translation_text_hash": "9c47aeecb2845fd0b4010405df708b8afd56c4e6a08cc82f415d368eef859efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 시몬 베드로가 검을 가졌는데 이것을 빼어 대제사장의 종을 쳐서 오른편 귀를 베어버리니 그 종의 이름은 말고라"
+      ],
+      "raw_text_hashes": [
+        "9c47aeecb2845fd0b4010405df708b8afd56c4e6a08cc82f415d368eef859efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:11",
+      "sequence": 26796,
+      "chapter_label": "JHN 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Jesus therefore said to Peter, “Put the sword into its sheath. The cup which the Father has given me, shall I not surely drink it?”",
+      "ko": "예수께서 베드로더러 이르시되 검을 집에 꽂으라 아버지께서 주신 잔을 내가 마시지 아니하겠느냐 하시니라",
+      "source_text_hash": "4cfcedf8b1c245677c8aa51a6e6ec5c3695b1fd21a8c60c9578c8aa7d3403098",
+      "translation_text_hash": "f8112c69824f6e7f947696369ceb6110b9458f42340147a3605d1e8a35db5ec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 베드로더러 이르시되 검을 집에 꽂으라 아버지께서 주신 잔을 내가 마시지 아니하겠느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "f8112c69824f6e7f947696369ceb6110b9458f42340147a3605d1e8a35db5ec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:12",
+      "sequence": 26797,
+      "chapter_label": "JHN 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "So the detachment, the commanding officer, and the officers of the Jews seized Jesus and bound him,",
+      "ko": "이에 군대와 천부장과 유대인의 하속들이 예수를 잡아 결박하여",
+      "source_text_hash": "f57bb9326d6325bcbb09009bcfbb9c5b7664f797b882d7b077f2b7134f3cf1a8",
+      "translation_text_hash": "f5606fd825b53cc7956642880da07485b29aedc901fccb899344fa9183d82093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 군대와 천부장과 유대인의 하속들이 예수를 잡아 결박하여"
+      ],
+      "raw_text_hashes": [
+        "f5606fd825b53cc7956642880da07485b29aedc901fccb899344fa9183d82093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:13",
+      "sequence": 26798,
+      "chapter_label": "JHN 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "and led him to Annas first, for he was father-in-law to Caiaphas, who was high priest that year.",
+      "ko": "먼저 안나스에게로 끌고 가니 안나스는 그 해의 대제사장인 가야바의 장인이라",
+      "source_text_hash": "0d92480defbcb6b4591c1af2b280f64f7a0f7f03e88c75719e8491c751614f5a",
+      "translation_text_hash": "cc3b13d6b358f923771ffbfdf501d9851925780ca7ff6a844d9f55f941aa2708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 안나스에게로 끌고 가니 안나스는 그 해의 대제사장인 가야바의 장인이라"
+      ],
+      "raw_text_hashes": [
+        "cc3b13d6b358f923771ffbfdf501d9851925780ca7ff6a844d9f55f941aa2708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:14",
+      "sequence": 26799,
+      "chapter_label": "JHN 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Now it was Caiaphas who advised the Jews that it was expedient that one man should perish for the people.",
+      "ko": "가야바는 유대인들에게 한 사람이 백성을 위하여 죽는 것이 유익하다 권고하던 자러라",
+      "source_text_hash": "b18ca92d7cb76c8822c8594dbe90159d36efdec0a30976e80cfc52c9d286c40a",
+      "translation_text_hash": "f055de89fc671bdfdead7522d1d569db05761074b884769a6e1635fab3635234",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가야바는 유대인들에게 한 사람이 백성을 위하여 죽는 것이 유익하다 권고하던 자러라"
+      ],
+      "raw_text_hashes": [
+        "f055de89fc671bdfdead7522d1d569db05761074b884769a6e1635fab3635234"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:15",
+      "sequence": 26800,
+      "chapter_label": "JHN 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Simon Peter followed Jesus, as did another disciple. Now that disciple was known to the high priest, and entered in with Jesus into the court of the high priest;",
+      "ko": "시몬 베드로와 또 다른 제자 하나가 예수를 따르니 이 제자는 대제사장과 아는 사람이라 예수와 함께 대제사장의 집 뜰에 들어가고",
+      "source_text_hash": "e1383677b684e46c136d165770c384d38d935d6dc422d1aebecd42d00ecef812",
+      "translation_text_hash": "90b78fda93ecc0b93f466b76fc490b93b06ddef8af3d9cefa2f96a949700a291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로와 또 다른 제자 하나가 예수를 따르니 이 제자는 대제사장과 아는 사람이라 예수와 함께 대제사장의 집 뜰에 들어가고"
+      ],
+      "raw_text_hashes": [
+        "90b78fda93ecc0b93f466b76fc490b93b06ddef8af3d9cefa2f96a949700a291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:16",
+      "sequence": 26801,
+      "chapter_label": "JHN 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "but Peter was standing at the door outside. So the other disciple, who was known to the high priest, went out and spoke to her who kept the door, and brought in Peter.",
+      "ko": "베드로는 문 밖에 섰는지라 대제사장과 아는 그 다른 제자가 나가서 문 지키는 여자에게 말하여 베드로를 데리고 들어왔더니",
+      "source_text_hash": "2ebf7340d9ca56a2de33d104a2c17ef783cdf08a0da474eea7293296da9ae519",
+      "translation_text_hash": "4b0895cc4ead9b97e09f0791f0ddf0aee0237a3daca99dc930cef057eb52268b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로는 문 밖에 섰는지라 대제사장과 아는 그 다른 제자가 나가서 문 지키는 여자에게 말하여 베드로를 데리고 들어왔더니"
+      ],
+      "raw_text_hashes": [
+        "4b0895cc4ead9b97e09f0791f0ddf0aee0237a3daca99dc930cef057eb52268b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:17",
+      "sequence": 26802,
+      "chapter_label": "JHN 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "Then the maid who kept the door said to Peter, “Are you also one of this man’s disciples?” He said, “I am not.”",
+      "ko": "문 지키는 여종이 베드로에게 말하되 너도 이 사람의 제자 중 하나가 아니냐 하니 그가 말하되 나는 아니라 하고",
+      "source_text_hash": "8b9dfb373136b4d915bd6b075f1102133822cbec1b70972c83713fe177dc735b",
+      "translation_text_hash": "d14b2ccb39bd13bc1f682d66ef1c5716bf428870a26fbbab44ac71fd1d509bf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문 지키는 여종이 베드로에게 말하되 너도 이 사람의 제자 중 하나가 아니냐 하니 그가 말하되 나는 아니라 하고"
+      ],
+      "raw_text_hashes": [
+        "d14b2ccb39bd13bc1f682d66ef1c5716bf428870a26fbbab44ac71fd1d509bf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:18",
+      "sequence": 26803,
+      "chapter_label": "JHN 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Now the servants and the officers were standing there, having made a fire of coals, for it was cold. They were warming themselves. Peter was with them, standing and warming himself.",
+      "ko": "그 때가 추운고로 종과 하속들이 숯불을 피우고 서서 쬐니 베드로도 함께 서서 쬐더라",
+      "source_text_hash": "99841902c636b3dc1ced8c5ebdc0fce890caa47b426d4b7b93355a875c2e26fb",
+      "translation_text_hash": "e75cfd3af8dbc946988e37197ea8127417c58d72f40840f4075dc2d10c7fbb93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때가 추운고로 종과 하속들이 숯불을 피우고 서서 쬐니 베드로도 함께 서서 쬐더라"
+      ],
+      "raw_text_hashes": [
+        "e75cfd3af8dbc946988e37197ea8127417c58d72f40840f4075dc2d10c7fbb93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:19",
+      "sequence": 26804,
+      "chapter_label": "JHN 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "The high priest therefore asked Jesus about his disciples and about his teaching.",
+      "ko": "대제사장이 예수에게 그의 제자들과 그의 교훈에 대하여 물으니",
+      "source_text_hash": "1b93cc301d358ff4eb7c5bd7dfb151a725af92a8a974933c84fa69d10cec5d3f",
+      "translation_text_hash": "c517d789d4d34688330c08b3aa2e786cb0f58c5b36e4a3b2272689eddffe5e20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장이 예수에게 그의 제자들과 그의 교훈에 대하여 물으니"
+      ],
+      "raw_text_hashes": [
+        "c517d789d4d34688330c08b3aa2e786cb0f58c5b36e4a3b2272689eddffe5e20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:20",
+      "sequence": 26805,
+      "chapter_label": "JHN 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "Jesus answered him, “I spoke openly to the world. I always taught in synagogues and in the temple, where the Jews always meet. I said nothing in secret.",
+      "ko": "예수께서 대답하시되 내가 드러내어 놓고 세상에 말하였노라 모든 유대인들의 모이는 회당과 성전에서 항상 가르쳤고 은밀히는 아무 것도 말하지 아니하였거늘",
+      "source_text_hash": "52078353ac88c84310d1ca973fc836e4de85e22844f4e7b0ed7c0491f3ec3f6b",
+      "translation_text_hash": "de770f5b6ae23935ab1cbdab304138234a9a28e8a904da338f36f5a990128b32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 드러내어 놓고 세상에 말하였노라 모든 유대인들의 모이는 회당과 성전에서 항상 가르쳤고 은밀히는 아무 것도 말하지 아니하였거늘"
+      ],
+      "raw_text_hashes": [
+        "de770f5b6ae23935ab1cbdab304138234a9a28e8a904da338f36f5a990128b32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:21",
+      "sequence": 26806,
+      "chapter_label": "JHN 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Why do you ask me? Ask those who have heard me what I said to them. Behold, they know the things which I said.”",
+      "ko": "어찌하여 내게 묻느냐 내가 무슨 말을 하였는지 들은 자들에게 물어 보라 저희가 나의 하던 말을 아느니라",
+      "source_text_hash": "20cb97661fc5da14dbcaca8e4966331a0802d452719db36aea69ae67ce3961d9",
+      "translation_text_hash": "55aceb78dfa19890dfd0be93c42cfb7977ca2ab5fc1ac04fd0bf7c782b481fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 내게 묻느냐 내가 무슨 말을 하였는지 들은 자들에게 물어 보라 저희가 나의 하던 말을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "55aceb78dfa19890dfd0be93c42cfb7977ca2ab5fc1ac04fd0bf7c782b481fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:22",
+      "sequence": 26807,
+      "chapter_label": "JHN 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "When he had said this, one of the officers standing by slapped Jesus with his hand, saying, “Do you answer the high priest like that?”",
+      "ko": "이 말씀을 하시매 곁에 섰는 하속 하나가 손으로 예수를 쳐 가로되 네가 대제사장에게 이 같이 대답하느냐 하니",
+      "source_text_hash": "e502008d85d035e2863ea7a59b9ab66a6051fbf3674fcb175c17b25e2fa81f08",
+      "translation_text_hash": "19ea7080406a80ffc27e9b4b3cad32c8f8fde56c864535b998e12f4843485e20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시매 곁에 섰는 하속 하나가 손으로 예수를 쳐 가로되 네가 대제사장에게 이 같이 대답하느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "19ea7080406a80ffc27e9b4b3cad32c8f8fde56c864535b998e12f4843485e20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:23",
+      "sequence": 26808,
+      "chapter_label": "JHN 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus answered him, “If I have spoken evil, testify of the evil; but if well, why do you beat me?”",
+      "ko": "예수께서 대답하시되 내가 말을 잘못하였으면 그 잘못한 것을 증거하라 잘하였으면 네가 어찌하여 나를 치느냐 하시더라",
+      "source_text_hash": "7ed56a3450390a330fd150ea19540b53d8573d347b3577b165fc97fdfe52d39b",
+      "translation_text_hash": "afed062fa7c75b24c168942f4cafd04e8a3e84837108f6d6dc79f595a3b29dfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 말을 잘못하였으면 그 잘못한 것을 증거하라 잘하였으면 네가 어찌하여 나를 치느냐 하시더라"
+      ],
+      "raw_text_hashes": [
+        "afed062fa7c75b24c168942f4cafd04e8a3e84837108f6d6dc79f595a3b29dfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:24",
+      "sequence": 26809,
+      "chapter_label": "JHN 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Annas sent him bound to Caiaphas, the high priest.",
+      "ko": "안나스가 예수를 결박한 그대로 대제사장 가야바에게 보내니라",
+      "source_text_hash": "891da14a0eb883fa854910031396bd8ab402c667167bb0c4e7318153bee52bed",
+      "translation_text_hash": "7f75219e3d647d0824133745a56f5920cb12359c3b148dc906facc5fb1f48b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안나스가 예수를 결박한 그대로 대제사장 가야바에게 보내니라"
+      ],
+      "raw_text_hashes": [
+        "7f75219e3d647d0824133745a56f5920cb12359c3b148dc906facc5fb1f48b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:25",
+      "sequence": 26810,
+      "chapter_label": "JHN 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "Now Simon Peter was standing and warming himself. They said therefore to him, “You aren’t also one of his disciples, are you?” He denied it and said, “I am not.”",
+      "ko": "시몬 베드로가 서서 불을 쬐더니 사람들이 묻되 너도 그 제자 중 하나가 아니냐 베드로가 부인하여 가로되 나는 아니라 하니",
+      "source_text_hash": "55ae642cd0e52b41e9f5c44b79e8f72c6d635eb46a0d38ca8902baa1344ceb36",
+      "translation_text_hash": "c7a9f1a644a55158d700c8a618b58a316d58cd0fcda7ca4ae0a3472fb2bd9841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 서서 불을 쬐더니 사람들이 묻되 너도 그 제자 중 하나가 아니냐 베드로가 부인하여 가로되 나는 아니라 하니"
+      ],
+      "raw_text_hashes": [
+        "c7a9f1a644a55158d700c8a618b58a316d58cd0fcda7ca4ae0a3472fb2bd9841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:26",
+      "sequence": 26811,
+      "chapter_label": "JHN 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "One of the servants of the high priest, being a relative of him whose ear Peter had cut off, said, “Didn’t I see you in the garden with him?”",
+      "ko": "대제사장의 종 하나는 베드로에게 귀를 베어 버리운 사람의 일가라 가로되 네가 그 사람과 함께 동산에 있던 것을 내가 보지 아니하였느냐",
+      "source_text_hash": "c8878a0181ab6740ba7e2f32248175c2347c1953b3f5ce2a99eebe558d50449d",
+      "translation_text_hash": "88c6aadf8371482ee091001732f590b3f9d087b1020c81141d468d62dd0093a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장의 종 하나는 베드로에게 귀를 베어 버리운 사람의 일가라 가로되 네가 그 사람과 함께 동산에 있던 것을 내가 보지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "88c6aadf8371482ee091001732f590b3f9d087b1020c81141d468d62dd0093a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:27",
+      "sequence": 26812,
+      "chapter_label": "JHN 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Peter therefore denied it again, and immediately the rooster crowed.",
+      "ko": "이에 베드로가 또 부인하니 곧 닭이 울더라",
+      "source_text_hash": "63685414fe8f9ad134e78daaa50a7ffc389662e49559ee11fcdaf204d36b2f3d",
+      "translation_text_hash": "58f41d9dcc52d0f6a9bdb56622f06a865cbbc583aba75d1c3b4932b68b88ce85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 또 부인하니 곧 닭이 울더라"
+      ],
+      "raw_text_hashes": [
+        "58f41d9dcc52d0f6a9bdb56622f06a865cbbc583aba75d1c3b4932b68b88ce85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:28",
+      "sequence": 26813,
+      "chapter_label": "JHN 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "They led Jesus therefore from Caiaphas into the Praetorium. It was early, and they themselves didn’t enter into the Praetorium, that they might not be defiled, but might eat the Passover.",
+      "ko": "저희가 예수를 가야바에게서 관정으로 끌고 가니 새벽이라 저희는 더럽힘을 받지 아니하고 유월절 잔치를 먹고자 하여 관정에 들어가지 아니하더라",
+      "source_text_hash": "e7fe0907b876cd89d41048d448dda62e6052d3cc5f28e3a39d8852a211f9cc6b",
+      "translation_text_hash": "3a364f8f35ae2558f30b86b7df2c4d9e982d61902647dbead89f3f0cafba0f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 가야바에게서 관정으로 끌고 가니 새벽이라 저희는 더럽힘을 받지 아니하고 유월절 잔치를 먹고자 하여 관정에 들어가지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "3a364f8f35ae2558f30b86b7df2c4d9e982d61902647dbead89f3f0cafba0f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:29",
+      "sequence": 26814,
+      "chapter_label": "JHN 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "Pilate therefore went out to them and said, “What accusation do you bring against this man?”",
+      "ko": "그러므로 빌라도가 밖으로 저희에게 나가서 말하되 너희가 무슨 일로 이 사람을 고소하느냐",
+      "source_text_hash": "b7691acee9bfc3a387399afe65df2d5fa3a2738aa10515c12d3a2d9da8157767",
+      "translation_text_hash": "478a22ad9f8cf34348ce86cbbefcb18ca55a47cb07cf8911311fdfe347a8c2ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 빌라도가 밖으로 저희에게 나가서 말하되 너희가 무슨 일로 이 사람을 고소하느냐"
+      ],
+      "raw_text_hashes": [
+        "478a22ad9f8cf34348ce86cbbefcb18ca55a47cb07cf8911311fdfe347a8c2ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:30",
+      "sequence": 26815,
+      "chapter_label": "JHN 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "They answered him, “If this man weren’t an evildoer, we wouldn’t have delivered him up to you.”",
+      "ko": "대답하여 가로되 이 사람이 행악자가 아니었더면 우리가 당신에게 넘기지 아니하였겠나이다",
+      "source_text_hash": "bf6fe4074ea7ef32ee6178a82f905e52750d42f564ec629bba8bd2db7687c58f",
+      "translation_text_hash": "1dc55d5d4b5c6ea53bdc90a851d59d8c098cf2350b0b30f3fafbc4b28ca18bca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 이 사람이 행악자가 아니었더면 우리가 당신에게 넘기지 아니하였겠나이다"
+      ],
+      "raw_text_hashes": [
+        "1dc55d5d4b5c6ea53bdc90a851d59d8c098cf2350b0b30f3fafbc4b28ca18bca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:31",
+      "sequence": 26816,
+      "chapter_label": "JHN 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "Pilate therefore said to them, “Take him yourselves, and judge him according to your law.” Therefore the Jews said to him, “It is illegal for us to put anyone to death,”",
+      "ko": "빌라도가 가로되 너희가 저를 데려다가 너희 법대로 재판하라 유대인들이 가로되 우리에게는 사람을 죽이는 권이 없나이다 하니",
+      "source_text_hash": "eea34ead0631e18befbd8bc481c781c4b30cc8b4699cc9531011a526dc8a0b46",
+      "translation_text_hash": "1897f06e3b3b03ab9ea4031ad0246104d21108297ec87b27bf62393190f8bc19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 너희가 저를 데려다가 너희 법대로 재판하라 유대인들이 가로되 우리에게는 사람을 죽이는 권이 없나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "1897f06e3b3b03ab9ea4031ad0246104d21108297ec87b27bf62393190f8bc19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:32",
+      "sequence": 26817,
+      "chapter_label": "JHN 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "that the word of Jesus might be fulfilled, which he spoke, signifying by what kind of death he should die.",
+      "ko": "이는 예수께서 자기가 어떠한 죽음으로 죽을 것을 가리켜 하신 말씀을 응하게 하려 함이러라",
+      "source_text_hash": "8da1872366aa014bd59cb8b92bf5546736ac9a480949b895665858096b594331",
+      "translation_text_hash": "12184d80438d8f447bffd8293812078396325aae5c7a26a335f3d579490ff456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 예수께서 자기가 어떠한 죽음으로 죽을 것을 가리켜 하신 말씀을 응하게 하려 함이러라"
+      ],
+      "raw_text_hashes": [
+        "12184d80438d8f447bffd8293812078396325aae5c7a26a335f3d579490ff456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:33",
+      "sequence": 26818,
+      "chapter_label": "JHN 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "Pilate therefore entered again into the Praetorium, called Jesus, and said to him, “Are you the King of the Jews?”",
+      "ko": "이에 빌라도가 다시 관정에 들어가 예수를 불러 가로되 네가 유대인의 왕이냐",
+      "source_text_hash": "4d1f669c1bc49c3ef1977f67befe48e5a81eac1bbfb56722dd577ace4964c346",
+      "translation_text_hash": "8fa068b708ec194bd29eb33cae107ccd974839f2beaf634eb919eb8916d56937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 빌라도가 다시 관정에 들어가 예수를 불러 가로되 네가 유대인의 왕이냐"
+      ],
+      "raw_text_hashes": [
+        "8fa068b708ec194bd29eb33cae107ccd974839f2beaf634eb919eb8916d56937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:34",
+      "sequence": 26819,
+      "chapter_label": "JHN 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus answered him, “Do you say this by yourself, or did others tell you about me?”",
+      "ko": "예수께서 대답하시되 이는 네가 스스로 하는 말이뇨 다른 사람들이 나를 대하여 네게 한 말이뇨",
+      "source_text_hash": "659ea0f13ad87bffe6deabceb8156f6eb3c18ba0d4a91c2f50396ff9c712cca3",
+      "translation_text_hash": "067a540ee83e9544cc2cd4ace417ad93663150751f1e540be7ad928185c4f2cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 이는 네가 스스로 하는 말이뇨 다른 사람들이 나를 대하여 네게 한 말이뇨"
+      ],
+      "raw_text_hashes": [
+        "067a540ee83e9544cc2cd4ace417ad93663150751f1e540be7ad928185c4f2cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:35",
+      "sequence": 26820,
+      "chapter_label": "JHN 18",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 35
+        }
+      ],
+      "en": "Pilate answered, “I’m not a Jew, am I? Your own nation and the chief priests delivered you to me. What have you done?”",
+      "ko": "빌라도가 대답하되 내가 유대인이냐 네 나라 사람과 대제사장들이 너를 내게 넘겼으니 네가 무엇을 하였느냐",
+      "source_text_hash": "b42c9cfc1c320ca68fdae68e7cc4cb1443859d202a2535ce92ccce58b9577bab",
+      "translation_text_hash": "8834417a1d53b8c30404cc8a37cebfd10c84986d2476a5409cb695e3dccbb9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 대답하되 내가 유대인이냐 네 나라 사람과 대제사장들이 너를 내게 넘겼으니 네가 무엇을 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "8834417a1d53b8c30404cc8a37cebfd10c84986d2476a5409cb695e3dccbb9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:36",
+      "sequence": 26821,
+      "chapter_label": "JHN 18",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 36
+        }
+      ],
+      "en": "Jesus answered, “My Kingdom is not of this world. If my Kingdom were of this world, then my servants would fight, that I wouldn’t be delivered to the Jews. But now my Kingdom is not from here.”",
+      "ko": "예수께서 대답하시되 내 나라는 이 세상에 속한 것이 아니라 만일 내 나라가 이 세상에 속한 것이었더면 내 종들이 싸워 나로 유대인들에게 넘기우지 않게 하였으리라 이제 내 나라는 여기에 속한 것이 아니니라",
+      "source_text_hash": "74a3f0cd4b1d31b4cbd5d6c61979ff806557f023c13ce7caa7e161a583754ccf",
+      "translation_text_hash": "fba336ea04f7d15918c2fc17bc30252c193f9da6cca1781c85787486f94348d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내 나라는 이 세상에 속한 것이 아니라 만일 내 나라가 이 세상에 속한 것이었더면 내 종들이 싸워 나로 유대인들에게 넘기우지 않게 하였으리라 이제 내 나라는 여기에 속한 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "fba336ea04f7d15918c2fc17bc30252c193f9da6cca1781c85787486f94348d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:37",
+      "sequence": 26822,
+      "chapter_label": "JHN 18",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 37
+        }
+      ],
+      "en": "Pilate therefore said to him, “Are you a king then?” Jesus answered, “You say that I am a king. For this reason I have been born, and for this reason I have come into the world, that I should testify to the truth. Everyone who is of the truth listens to my voice.”",
+      "ko": "빌라도가 가로되 그러면 네가 왕이 아니냐 예수께서 대답하시되 네 말과 같이 내가 왕이니라 내가 이를 위하여 났으며 이를 위하여 세상에 왔나니 곧 진리에 대하여 증거하려 함이로라 무릇 진리에 속한 자는 내 소리를 듣느니라 하신대",
+      "source_text_hash": "131455b416f008d3a96c7480c30082d350e292b68aa3eefa76481274fbd5a9ed",
+      "translation_text_hash": "446b980ea8f0fab78552fa5a370a71086e834bda9e2cfdc62e3a42c02ba4ba67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 그러면 네가 왕이 아니냐 예수께서 대답하시되 네 말과 같이 내가 왕이니라 내가 이를 위하여 났으며 이를 위하여 세상에 왔나니 곧 진리에 대하여 증거하려 함이로라 무릇 진리에 속한 자는 내 소리를 듣느니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "446b980ea8f0fab78552fa5a370a71086e834bda9e2cfdc62e3a42c02ba4ba67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:38",
+      "sequence": 26823,
+      "chapter_label": "JHN 18",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 38
+        }
+      ],
+      "en": "Pilate said to him, “What is truth?” When he had said this, he went out again to the Jews, and said to them, “I find no basis for a charge against him.",
+      "ko": "빌라도가 가로되 진리가 무엇이냐 하더라 이 말을 하고 다시 유대인들에게 나가서 이르되 나는 그에게서 아무 죄도 찾지 못하노라",
+      "source_text_hash": "a20d8424a57df32428a3698846973871c64f1f6875e87b4f3a3dafb46b7531db",
+      "translation_text_hash": "6e0f9a62a61afe6250a55abb5d1b6b55432b8ddaf8f1ccccc00d80517d489d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 진리가 무엇이냐 하더라 이 말을 하고 다시 유대인들에게 나가서 이르되 나는 그에게서 아무 죄도 찾지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "6e0f9a62a61afe6250a55abb5d1b6b55432b8ddaf8f1ccccc00d80517d489d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:39",
+      "sequence": 26824,
+      "chapter_label": "JHN 18",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 39
+        }
+      ],
+      "en": "But you have a custom that I should release someone to you at the Passover. Therefore, do you want me to release to you the King of the Jews?”",
+      "ko": "유월절이면 내가 너희에게 한 사람을 놓아 주는 전례가 있으니 그러면 너희는 내가 유대인의 왕을 너희에게 놓아 주기를 원하느냐 하니",
+      "source_text_hash": "6a98531feb512e38a877548fd7f12932e29507f98cf41b3794ca9c4789e8bffb",
+      "translation_text_hash": "53ccd1ce4edff3193ad65cdd0f8bcfa838b050a606258e5f6dd9e481165f2e2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절이면 내가 너희에게 한 사람을 놓아 주는 전례가 있으니 그러면 너희는 내가 유대인의 왕을 너희에게 놓아 주기를 원하느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "53ccd1ce4edff3193ad65cdd0f8bcfa838b050a606258e5f6dd9e481165f2e2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:18:40",
+      "sequence": 26825,
+      "chapter_label": "JHN 18",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 18,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 18,
+          "verse": 40
+        }
+      ],
+      "en": "Then they all shouted again, saying, “Not this man, but Barabbas!” Now Barabbas was a robber.",
+      "ko": "저희가 또 소리질러 가로되 이 사람이 아니라 바라바라 하니 바라바는 강도러라",
+      "source_text_hash": "c9cb13bbf8d0f3a67b25eae33b0751f74e7c76b1c547a8177eac3fdb3112e142",
+      "translation_text_hash": "925c42b9d14b03a797133c73674c4fba1670023ecb888e967fc3c82267db3cd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 또 소리질러 가로되 이 사람이 아니라 바라바라 하니 바라바는 강도러라"
+      ],
+      "raw_text_hashes": [
+        "925c42b9d14b03a797133c73674c4fba1670023ecb888e967fc3c82267db3cd9"
+      ]
+    }
+  ]
+}

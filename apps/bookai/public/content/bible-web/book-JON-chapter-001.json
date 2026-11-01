@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JON:chapter:001",
+  "unit_ordinal": 890,
+  "unit_label": "JON 1",
+  "book_code": "JON",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JON:1:1",
+      "sequence": 22533,
+      "chapter_label": "JON 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Now the LORD’s word came to Jonah the son of Amittai, saying,",
+      "ko": "여호와의 말씀이 아밋대의 아들 요나에게 임하니라 이르시되",
+      "source_text_hash": "28d3f4ab36412835cd2d774541ceeaff61bd02835d135d88ed902fbde100a599",
+      "translation_text_hash": "6d383aeeb3e387fff3a042c6c7693f0b39c3eee2de2c1f7b48ef34ddf8fe638c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 아밋대의 아들 요나에게 임하니라 이르시되"
+      ],
+      "raw_text_hashes": [
+        "6d383aeeb3e387fff3a042c6c7693f0b39c3eee2de2c1f7b48ef34ddf8fe638c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:2",
+      "sequence": 22534,
+      "chapter_label": "JON 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“Arise, go to Nineveh, that great city, and preach against it, for their wickedness has come up before me.”",
+      "ko": "너는 일어나 저 큰 성읍 니느웨로 가서 그것을 쳐서 외치라 그 악독이 내 앞에 상달하였음이니라 하시니라",
+      "source_text_hash": "497f6353693ac5ad06fc3cddde0a4684a1bd3c97efd368cf2f10c5c896125f9a",
+      "translation_text_hash": "7077dc51cac2ead7a09ac74ff0ca6415f36a0c83ff7e0c8e85b9d2e876b12ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 저 큰 성읍 니느웨로 가서 그것을 쳐서 외치라 그 악독이 내 앞에 상달하였음이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "7077dc51cac2ead7a09ac74ff0ca6415f36a0c83ff7e0c8e85b9d2e876b12ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:3",
+      "sequence": 22535,
+      "chapter_label": "JON 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "But Jonah rose up to flee to Tarshish from the presence of the LORD. He went down to Joppa, and found a ship going to Tarshish; so he paid its fare, and went down into it, to go with them to Tarshish from the presence of the LORD.",
+      "ko": "그러나 요나가 여호와의 낯을 피하려고 일어나 다시스로 도망하려 하여 욥바로 내려갔더니 마침 다시스로 가는 배를 만난지라 여호와의 낯을 피하여 함께 다시스로 가려고 선가를 주고 배에 올랐더라",
+      "source_text_hash": "dc29a3f0f286e5f866d41fee2d4d7d2429288603ead0fd27e7f0c591c0ff286a",
+      "translation_text_hash": "9192b6afaa7123bd035d320e01f0c1b4ff8fc7c6fdf7bdaad3be33ceb3fb775f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 요나가 여호와의 낯을 피하려고 일어나 다시스로 도망하려 하여 욥바로 내려갔더니 마침 다시스로 가는 배를 만난지라 여호와의 낯을 피하여 함께 다시스로 가려고 선가를 주고 배에 올랐더라"
+      ],
+      "raw_text_hashes": [
+        "9192b6afaa7123bd035d320e01f0c1b4ff8fc7c6fdf7bdaad3be33ceb3fb775f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:4",
+      "sequence": 22536,
+      "chapter_label": "JON 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "But the LORD sent out a great wind on the sea, and there was a mighty storm on the sea, so that the ship was likely to break up.",
+      "ko": "여호와께서 대풍을 바다 위에 내리시매 바다 가운데 폭풍이 대작하여 배가 거의 깨어지게 된지라",
+      "source_text_hash": "2de139549fda8a9d325f4d8de44b4ad8ef422d3db2b019e47b6999c2b03c643c",
+      "translation_text_hash": "7921afd625ba9b6ca98103bcd5d164223389005d3a72623d1ce90d430dc15d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 대풍을 바다 위에 내리시매 바다 가운데 폭풍이 대작하여 배가 거의 깨어지게 된지라"
+      ],
+      "raw_text_hashes": [
+        "7921afd625ba9b6ca98103bcd5d164223389005d3a72623d1ce90d430dc15d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:5",
+      "sequence": 22537,
+      "chapter_label": "JON 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Then the mariners were afraid, and every man cried to his god. They threw the cargo that was in the ship into the sea to lighten the ship. But Jonah had gone down into the innermost parts of the ship and he was laying down, and was fast asleep.",
+      "ko": "사공이 두려워하여 각각 자기의 신을 부르고 또 배를 가볍게 하려고 그 가운데 물건을 바다에 던지니라 그러나 요나는 배 밑층에 내려가서 누워 깊이 잠이 든지라",
+      "source_text_hash": "81aafcfa081a2c6aa9316123946db6a8c1638adca54854e4ea1e30c2fb34754e",
+      "translation_text_hash": "99897fafb162848310df5f5d4cf87fd3bbccbe2e961913d9dffd0eab5dd8311c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사공이 두려워하여 각각 자기의 신을 부르고 또 배를 가볍게 하려고 그 가운데 물건을 바다에 던지니라 그러나 요나는 배 밑층에 내려가서 누워 깊이 잠이 든지라"
+      ],
+      "raw_text_hashes": [
+        "99897fafb162848310df5f5d4cf87fd3bbccbe2e961913d9dffd0eab5dd8311c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:6",
+      "sequence": 22538,
+      "chapter_label": "JON 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "So the ship master came to him, and said to him, “What do you mean, sleeper? Arise, call on your God! Maybe your God will notice us, so that we won’t perish.”",
+      "ko": "선장이 나아가서 그에게 이르되 자는 자여 어찜이뇨 일어나서 네 하나님께 구하라 혹시 하나님이 우리를 생각하사 망하지 않게 하시리라 하니라",
+      "source_text_hash": "908fceccb8c5a9cec897b08e9fd8f1abb7148afd8bb30a3a67c78178032c2433",
+      "translation_text_hash": "684dca38b7c021db20244034bb6a5a587cd36aa9386d139a33a8d4b85ab35492",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선장이 나아가서 그에게 이르되 자는 자여 어찜이뇨 일어나서 네 하나님께 구하라 혹시 하나님이 우리를 생각하사 망하지 않게 하시리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "684dca38b7c021db20244034bb6a5a587cd36aa9386d139a33a8d4b85ab35492"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:7",
+      "sequence": 22539,
+      "chapter_label": "JON 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "They all said to each other, “Come! Let’s cast lots, that we may know who is responsible for this evil that is on us.” So they cast lots, and the lot fell on Jonah.",
+      "ko": "그들이 서로 이르되 자 우리가 제비를 뽑아 이 재앙이 누구로 인하여 우리에게 임하였나 알자 하고 곧 제비를 뽑으니 제비가 요나에게 당한지라",
+      "source_text_hash": "62dbcdcd9d172f8855fa3293073624910ee1f1deb8acd381e003769b4a6086fe",
+      "translation_text_hash": "251b76a1865acc7561bfc36252f303ca01f489dbe5b7e1b16827215ee91c5396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 서로 이르되 자 우리가 제비를 뽑아 이 재앙이 누구로 인하여 우리에게 임하였나 알자 하고 곧 제비를 뽑으니 제비가 요나에게 당한지라"
+      ],
+      "raw_text_hashes": [
+        "251b76a1865acc7561bfc36252f303ca01f489dbe5b7e1b16827215ee91c5396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:8",
+      "sequence": 22540,
+      "chapter_label": "JON 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Then they asked him, “Tell us, please, for whose cause this evil is on us. What is your occupation? Where do you come from? What is your country? Of what people are you?”",
+      "ko": "무리가 그에게 이르되 청컨대 이 재앙이 무슨 연고로 우리에게 임하였는가 고하라 네 생업이 무엇이며 어디서 왔으며 고국이 어디며 어느 민족에 속하였느냐",
+      "source_text_hash": "6a3e72e268e0a30ea799f8bac0c857aad9e84eabf70b7ae1da895e380dc72b85",
+      "translation_text_hash": "7ce0f8bbb202cbb5809ec2f4cd72097e3c809b5b08f04a1b6e9f730fa58938ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 그에게 이르되 청컨대 이 재앙이 무슨 연고로 우리에게 임하였는가 고하라 네 생업이 무엇이며 어디서 왔으며 고국이 어디며 어느 민족에 속하였느냐"
+      ],
+      "raw_text_hashes": [
+        "7ce0f8bbb202cbb5809ec2f4cd72097e3c809b5b08f04a1b6e9f730fa58938ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:9",
+      "sequence": 22541,
+      "chapter_label": "JON 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "He said to them, “I am a Hebrew, and I fear the LORD, the God of heaven, who has made the sea and the dry land.”",
+      "ko": "그가 대답하되 나는 히브리 사람이요 바다와 육지를 지으신 하늘의 하나님 여호와를 경외하는 자로라 하고",
+      "source_text_hash": "c0ebc0d04d0e95480154ea941b12db2ac5843587516c793bc1fb658d20ba073d",
+      "translation_text_hash": "dc35657c6d8341c244a722a85cc1bf94a9ae859334534d0b0ce839e9115300ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 대답하되 나는 히브리 사람이요 바다와 육지를 지으신 하늘의 하나님 여호와를 경외하는 자로라 하고"
+      ],
+      "raw_text_hashes": [
+        "dc35657c6d8341c244a722a85cc1bf94a9ae859334534d0b0ce839e9115300ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:10",
+      "sequence": 22542,
+      "chapter_label": "JON 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Then the men were exceedingly afraid, and said to him, “What have you done?” For the men knew that he was fleeing from the presence of the LORD, because he had told them.",
+      "ko": "자기가 여호와의 낯을 피함인줄을 그들에게 고하였으므로 무리가 알고 심히 두려워하여 이르되 네가 어찌하여 이렇게 행하였느냐 하니라",
+      "source_text_hash": "60ea4d57b37b2485c6d832cd99641777986f9543f9e280a522aaca15d9aa2e3d",
+      "translation_text_hash": "1785d78e75488c1b1a841f9e21c10234a5b75c7d0226340c7f44abc22a85e5ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기가 여호와의 낯을 피함인줄을 그들에게 고하였으므로 무리가 알고 심히 두려워하여 이르되 네가 어찌하여 이렇게 행하였느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "1785d78e75488c1b1a841f9e21c10234a5b75c7d0226340c7f44abc22a85e5ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:11",
+      "sequence": 22543,
+      "chapter_label": "JON 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Then they said to him, “What shall we do to you, that the sea may be calm to us?” For the sea grew more and more stormy.",
+      "ko": "바다가 점점 흉용한지라 무리가 그에게 이르되 우리가 너를 어떻게 하여야 바다가 우리를 위하여 잔잔하겠느냐",
+      "source_text_hash": "8f86c0d1945c07dc82ad8fa510786cc65771b4ef4c6eb3f432a13e90e16412a3",
+      "translation_text_hash": "65140b72756c1361273e7770d14a2b3b96becc4a8254153b4c1284ba22c7db96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다가 점점 흉용한지라 무리가 그에게 이르되 우리가 너를 어떻게 하여야 바다가 우리를 위하여 잔잔하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "65140b72756c1361273e7770d14a2b3b96becc4a8254153b4c1284ba22c7db96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:12",
+      "sequence": 22544,
+      "chapter_label": "JON 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "He said to them, “Take me up, and throw me into the sea. Then the sea will be calm for you; for I know that because of me this great storm is on you.”",
+      "ko": "그가 대답하되 나를 들어 바다에 던지라 그리하면 바다가 너희를 위하여 잔잔하리라 너희가 이 큰 폭풍을 만난 것이 나의 연고인줄을 내가 아노라 하니라",
+      "source_text_hash": "ffa8437d8b94578d6b26a0ea5521d4284be3fd7708218a4395fc831ccca03c6f",
+      "translation_text_hash": "59a3f484cb9d6697d6242ff6c0e8f1a94aae1a97e372f83b324c89d891c4b44e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 대답하되 나를 들어 바다에 던지라 그리하면 바다가 너희를 위하여 잔잔하리라 너희가 이 큰 폭풍을 만난 것이 나의 연고인줄을 내가 아노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "59a3f484cb9d6697d6242ff6c0e8f1a94aae1a97e372f83b324c89d891c4b44e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:13",
+      "sequence": 22545,
+      "chapter_label": "JON 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Nevertheless the men rowed hard to get them back to the land; but they could not, for the sea grew more and more stormy against them.",
+      "ko": "그러나 그 사람들이 힘써 노를 저어 배를 육지에 돌리고자 하다가 바다가 그들을 향하여 점점 더 흉용하므로 능히 못한지라",
+      "source_text_hash": "50ef24875ce0900947ab5cc8c5190be3e9edf52ca345deef76a987df7d9e95b9",
+      "translation_text_hash": "3482ef1430a992823315ee3b69035d7e8074a3bd8f09b0f187d452199648ca9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 사람들이 힘써 노를 저어 배를 육지에 돌리고자 하다가 바다가 그들을 향하여 점점 더 흉용하므로 능히 못한지라"
+      ],
+      "raw_text_hashes": [
+        "3482ef1430a992823315ee3b69035d7e8074a3bd8f09b0f187d452199648ca9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:14",
+      "sequence": 22546,
+      "chapter_label": "JON 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore they cried to the LORD, and said, “We beg you, LORD, we beg you, don’t let us die for this man’s life, and don’t lay on us innocent blood; for you, LORD, have done as it pleased you.”",
+      "ko": "무리가 여호와께 부르짖어 가로되 여호와여 구하고 구하오니 이 사람의 생명 까닭에 우리를 멸망시키지 마옵소서 무죄한 피를 우리에게 돌리지 마옵소서 주 여호와께서는 주의 뜻대로 행하심이니이다 하고",
+      "source_text_hash": "2291f88bbefb78b5a166019b9cf3eabe81518bd9ff0ce54574deca38bc5f8bed",
+      "translation_text_hash": "e4cafb4601cc5a2829ebf28d48a0d8dbff63c3ad21de4c264812b19536532f2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 여호와께 부르짖어 가로되 여호와여 구하고 구하오니 이 사람의 생명 까닭에 우리를 멸망시키지 마옵소서 무죄한 피를 우리에게 돌리지 마옵소서 주 여호와께서는 주의 뜻대로 행하심이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "e4cafb4601cc5a2829ebf28d48a0d8dbff63c3ad21de4c264812b19536532f2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:15",
+      "sequence": 22547,
+      "chapter_label": "JON 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "So they took up Jonah and threw him into the sea; and the sea ceased its raging.",
+      "ko": "요나를 들어 바다에 던지매 바다의 뛰노는 것이 곧 그친지라",
+      "source_text_hash": "1b53279e6d23bcca270f676e26b080f659614c3eb8b8e19ce87e67263bd2258b",
+      "translation_text_hash": "ce28623362453d301299230b2598d70c93b2ee7da350ae12f3f3dbb9ceb95888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나를 들어 바다에 던지매 바다의 뛰노는 것이 곧 그친지라"
+      ],
+      "raw_text_hashes": [
+        "ce28623362453d301299230b2598d70c93b2ee7da350ae12f3f3dbb9ceb95888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:16",
+      "sequence": 22548,
+      "chapter_label": "JON 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Then the men feared the LORD exceedingly; and they offered a sacrifice to the LORD and made vows.",
+      "ko": "그 사람들이 여호와를 크게 두려워하여 여호와께 제물을 드리고 서원을 하였더라",
+      "source_text_hash": "26c8f58cb671a9b94adb760a553689010f0ab02047a927c2ddb3944b660db52d",
+      "translation_text_hash": "c3e6a92880fa6bafb0eab6f9980ad9dcc07995aeb186e9dd7beceb969268a164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 여호와를 크게 두려워하여 여호와께 제물을 드리고 서원을 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c3e6a92880fa6bafb0eab6f9980ad9dcc07995aeb186e9dd7beceb969268a164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:1:17",
+      "sequence": 22549,
+      "chapter_label": "JON 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JON",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD prepared a huge fish to swallow up Jonah, and Jonah was in the belly of the fish three days and three nights.",
+      "ko": "여호와께서 이미 큰 물고기를 예비하사 요나를 삼키게 하셨으므로 요나가 삼일 삼야를 물고기 배에 있으니라",
+      "source_text_hash": "1a6215c4a6259832e874bc180c4c36cf3f87f1436f0ab38e4921e3f85c2c0eac",
+      "translation_text_hash": "0742365d3a60ac42c26aa1bd8fae2ebcfe753b5e435b8f0f714204dc3740ed11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이미 큰 물고기를 예비하사 요나를 삼키게 하셨으므로 요나가 삼일 삼야를 물고기 배에 있으니라"
+      ],
+      "raw_text_hashes": [
+        "0742365d3a60ac42c26aa1bd8fae2ebcfe753b5e435b8f0f714204dc3740ed11"
+      ]
+    }
+  ]
+}

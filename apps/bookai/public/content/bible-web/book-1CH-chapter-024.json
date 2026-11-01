@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:024",
+  "unit_ordinal": 362,
+  "unit_label": "1CH 24",
+  "book_code": "1CH",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:24:1",
+      "sequence": 11017,
+      "chapter_label": "1CH 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "These were the divisions of the sons of Aaron. The sons of Aaron: Nadab, Abihu, Eleazar, and Ithamar.",
+      "ko": "아론 자손의 반차가 이러하니라 아론의 아들들은 나답과 아비후와 엘르아살과 이다말이라",
+      "source_text_hash": "24a4e7988f35c2529fa31767b17c6cfbe144cbe245d74b6bdc408eaa887e5e4a",
+      "translation_text_hash": "ac6f3041cc8425e2cc44bf2161ef59812741bbf5883bae317c7ecf952d655461",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론 자손의 반차가 이러하니라 아론의 아들들은 나답과 아비후와 엘르아살과 이다말이라"
+      ],
+      "raw_text_hashes": [
+        "ac6f3041cc8425e2cc44bf2161ef59812741bbf5883bae317c7ecf952d655461"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:2",
+      "sequence": 11018,
+      "chapter_label": "1CH 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "But Nadab and Abihu died before their father, and had no children; therefore Eleazar and Ithamar served as priests.",
+      "ko": "나답과 아비후가 그 아비보다 먼저 죽고 아들이 없으므로 엘르아살과 이다말이 제사장의 직분을 행하였더라",
+      "source_text_hash": "864a68240b353e1512f63f16ec9fdd407117e81d9f9e7a0a865c18eed23ed6db",
+      "translation_text_hash": "3688d00cddd797becb655db57591487b4af329167be15a11bf24c2345ce68d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나답과 아비후가 그 아비보다 먼저 죽고 아들이 없으므로 엘르아살과 이다말이 제사장의 직분을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "3688d00cddd797becb655db57591487b4af329167be15a11bf24c2345ce68d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:3",
+      "sequence": 11019,
+      "chapter_label": "1CH 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "David, with Zadok of the sons of Eleazar and Ahimelech of the sons of Ithamar, divided them according to their ordering in their service.",
+      "ko": "다윗이 엘르아살의 자손 사독과 이다말의 자손 아히멜렉으로 더불어 저희를 나누어 각각 그 섬기는 직무를 맡겼는데",
+      "source_text_hash": "5f59d71c12af97f567229517125aa0872760ccbdc8a268f2228011c5597682c9",
+      "translation_text_hash": "5931d5d20e879f7c26821af1842c9ada1bea297bd74ceadd08ed67272da77e98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 엘르아살의 자손 사독과 이다말의 자손 아히멜렉으로 더불어 저희를 나누어 각각 그 섬기는 직무를 맡겼는데"
+      ],
+      "raw_text_hashes": [
+        "5931d5d20e879f7c26821af1842c9ada1bea297bd74ceadd08ed67272da77e98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:4",
+      "sequence": 11020,
+      "chapter_label": "1CH 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "There were more chief men found of the sons of Eleazar than of the sons of Ithamar; and they were divided like this: of the sons of Eleazar there were sixteen, heads of fathers’ houses; and of the sons of Ithamar, according to their fathers’ houses, eight.",
+      "ko": "엘르아살의 자손 중에 족장이 이다말의 자손보다 많으므로 나눈 것이 이러하니 엘르아살 자손의 족장이 십 륙이요 이다말 자손은 그 열조의 집을 따라 여덟이라",
+      "source_text_hash": "c82b5fee8ecfd69cfb508e0ea00c748af941f81a93c731950f5f764e07e72bcd",
+      "translation_text_hash": "b71f5873470d974bc636f69579c84fc1741f3a288ad66a7ed58e12e2c98ac3af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘르아살의 자손 중에 족장이 이다말의 자손보다 많으므로 나눈 것이 이러하니 엘르아살 자손의 족장이 십 륙이요 이다말 자손은 그 열조의 집을 따라 여덟이라"
+      ],
+      "raw_text_hashes": [
+        "b71f5873470d974bc636f69579c84fc1741f3a288ad66a7ed58e12e2c98ac3af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:5",
+      "sequence": 11021,
+      "chapter_label": "1CH 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Thus they were divided impartially by drawing lots; for there were princes of the sanctuary and princes of God, both of the sons of Eleazar, and of the sons of Ithamar.",
+      "ko": "이에 제비 뽑아 피차에 차등이 없이 나누었으니 이는 성소의 일을 다스리는 자와 하나님의 일을 다스리는 자가 엘르아살의 자손 중에도 있고 이다말의 자손 중에도 있음이라",
+      "source_text_hash": "7658e1e29df6c70c6cabbd5df25d1afc946adabfd2d28f38147bbc5ff481f765",
+      "translation_text_hash": "f31dabf90df77463de2c4cf93a453a2bd38ccdc1c8804bba7ca00e0eef9b47e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제비 뽑아 피차에 차등이 없이 나누었으니 이는 성소의 일을 다스리는 자와 하나님의 일을 다스리는 자가 엘르아살의 자손 중에도 있고 이다말의 자손 중에도 있음이라"
+      ],
+      "raw_text_hashes": [
+        "f31dabf90df77463de2c4cf93a453a2bd38ccdc1c8804bba7ca00e0eef9b47e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:6",
+      "sequence": 11022,
+      "chapter_label": "1CH 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "Shemaiah the son of Nethanel the scribe, who was of the Levites, wrote them in the presence of the king, the princes, Zadok the priest, Ahimelech the son of Abiathar, and the heads of the fathers’ households of the priests and of the Levites; one fathers’ house being taken for Eleazar, and one taken for Ithamar.",
+      "ko": "레위 사람 느다넬의 아들 서기관 스마야가 왕과 방백과 제사장 사독과 아비아달의 아들 아히멜렉과 및 제사장과 레위 사람의 족장 앞에서 그 이름을 기록하여 엘르아살의 자손 중에서 한 집을 취하고 이다말의 자손 중에서 한 집을 취하였으니",
+      "source_text_hash": "97682718a9f9fdacaf5aa328e25531ca17e3eedc8166c3a2fd9d3e49cea213e4",
+      "translation_text_hash": "84adbb2ab1bfcfabff5c4e69f368765d48d38aec668118106d916897756479ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 느다넬의 아들 서기관 스마야가 왕과 방백과 제사장 사독과 아비아달의 아들 아히멜렉과 및 제사장과 레위 사람의 족장 앞에서 그 이름을 기록하여 엘르아살의 자손 중에서 한 집을 취하고 이다말의 자손 중에서 한 집을 취하였으니"
+      ],
+      "raw_text_hashes": [
+        "84adbb2ab1bfcfabff5c4e69f368765d48d38aec668118106d916897756479ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:7",
+      "sequence": 11023,
+      "chapter_label": "1CH 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "Now the first lot came out to Jehoiarib, the second to Jedaiah,",
+      "ko": "첫째로 제비뽑힌 자는 여호야립이요 둘째는 여다야요",
+      "source_text_hash": "1551d9ce9d73bb8f1cdf05d3032dde9ccc2fae7770e0149fc8f619e2589dd71e",
+      "translation_text_hash": "baabd1700e35588a84a157a4949e48fb3f276d13b983b8abbf6528f150b60095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째로 제비뽑힌 자는 여호야립이요 둘째는 여다야요"
+      ],
+      "raw_text_hashes": [
+        "baabd1700e35588a84a157a4949e48fb3f276d13b983b8abbf6528f150b60095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:8",
+      "sequence": 11024,
+      "chapter_label": "1CH 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "the third to Harim, the fourth to Seorim,",
+      "ko": "세째는 하림이요 네째는 스오림이요",
+      "source_text_hash": "09edeed5726660453a710bf67dd618567ba87524a7a86f7e408d81641b23a876",
+      "translation_text_hash": "b80c5c4a139f437ab36e9f40fd10be8f862e26e1f5d9a66faf17247b8c881433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째는 하림이요 네째는 스오림이요"
+      ],
+      "raw_text_hashes": [
+        "b80c5c4a139f437ab36e9f40fd10be8f862e26e1f5d9a66faf17247b8c881433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:9",
+      "sequence": 11025,
+      "chapter_label": "1CH 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "the fifth to Malchijah, the sixth to Mijamin,",
+      "ko": "다섯째는 말기야요 여섯째는 미야민이요",
+      "source_text_hash": "1facdb9aa1b8ca53c9a643e2f96bf89663b054e25f7253e91aa5e85f95dc6e6d",
+      "translation_text_hash": "c6af3f49ab578380ed916f648f2e57724f8f9c19868a859df7c0e4deecbf7a34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째는 말기야요 여섯째는 미야민이요"
+      ],
+      "raw_text_hashes": [
+        "c6af3f49ab578380ed916f648f2e57724f8f9c19868a859df7c0e4deecbf7a34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:10",
+      "sequence": 11026,
+      "chapter_label": "1CH 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "the seventh to Hakkoz, the eighth to Abijah,",
+      "ko": "일곱째는 학고스요 여덟째는 아비야요",
+      "source_text_hash": "45ac7f25602faa9263507ebfe3f6a0f8b3c1593693409fe28aa4a752b6551f45",
+      "translation_text_hash": "5f8b7f1c07c533436b2a00604217e0f50fb6feefcd4428ee2de4709e57d81847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째는 학고스요 여덟째는 아비야요"
+      ],
+      "raw_text_hashes": [
+        "5f8b7f1c07c533436b2a00604217e0f50fb6feefcd4428ee2de4709e57d81847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:11",
+      "sequence": 11027,
+      "chapter_label": "1CH 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "the ninth to Jeshua, the tenth to Shecaniah,",
+      "ko": "아홉째는 예수아요 열째는 스가냐요",
+      "source_text_hash": "daa0b10fb47b6412ff6abbb5e90741e6d3db1b73de0148663f762d6686ebd063",
+      "translation_text_hash": "5b4f4ba720ae1139f5dbe503afe35513e546018082bdb5432ddc1f40dfe75ecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아홉째는 예수아요 열째는 스가냐요"
+      ],
+      "raw_text_hashes": [
+        "5b4f4ba720ae1139f5dbe503afe35513e546018082bdb5432ddc1f40dfe75ecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:12",
+      "sequence": 11028,
+      "chapter_label": "1CH 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "the eleventh to Eliashib, the twelfth to Jakim,",
+      "ko": "열 한째는 엘리아십이요 열 둘째는 야김이요",
+      "source_text_hash": "43e8725036c27c56b74586744d41517b3c1fa12a90aab7967bf90affb5819c98",
+      "translation_text_hash": "28d873e5fb3465bfe67af0e8272ad96de061e0bc19082a53ca18b426626d37bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 한째는 엘리아십이요 열 둘째는 야김이요"
+      ],
+      "raw_text_hashes": [
+        "28d873e5fb3465bfe67af0e8272ad96de061e0bc19082a53ca18b426626d37bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:13",
+      "sequence": 11029,
+      "chapter_label": "1CH 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "the thirteenth to Huppah, the fourteenth to Jeshebeab,",
+      "ko": "열 세째는 훕바요 열 네째는 예세브압이요",
+      "source_text_hash": "f4d23081fc409c777641360ef3090b4e37d2f77507b11bae2dd71eb38231b2ae",
+      "translation_text_hash": "c70cdadb992d24bc9b5d41001fd9e8d43c8e2f1d7789711849a00afc5dac55b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 세째는 훕바요 열 네째는 예세브압이요"
+      ],
+      "raw_text_hashes": [
+        "c70cdadb992d24bc9b5d41001fd9e8d43c8e2f1d7789711849a00afc5dac55b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:14",
+      "sequence": 11030,
+      "chapter_label": "1CH 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "the fifteenth to Bilgah, the sixteenth to Immer,",
+      "ko": "열 다섯째는 빌가요 열 여섯째는 임멜이요",
+      "source_text_hash": "b4341c47d3932f0c3d67ebf0ab38197f01b9fffa591790c50e2c04de23abd186",
+      "translation_text_hash": "d2f04fe523ed21c7d8dfbd1c5bc806d7ec9423cf2e704b993ed8d93cf1be1508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 다섯째는 빌가요 열 여섯째는 임멜이요"
+      ],
+      "raw_text_hashes": [
+        "d2f04fe523ed21c7d8dfbd1c5bc806d7ec9423cf2e704b993ed8d93cf1be1508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:15",
+      "sequence": 11031,
+      "chapter_label": "1CH 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "the seventeenth to Hezir, the eighteenth to Happizzez,",
+      "ko": "열 일곱째는 헤실이요 열 여덟째는 합비세스요",
+      "source_text_hash": "5a6c05264758ae1d98b03374026935ea6607dbef1fa88d20f6587a329b8a4481",
+      "translation_text_hash": "20532625e34f160fb39f8fb1885209ee3fd00589813b7d91a3a3adc4ff34a3b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 일곱째는 헤실이요 열 여덟째는 합비세스요"
+      ],
+      "raw_text_hashes": [
+        "20532625e34f160fb39f8fb1885209ee3fd00589813b7d91a3a3adc4ff34a3b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:16",
+      "sequence": 11032,
+      "chapter_label": "1CH 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "the nineteenth to Pethahiah, the twentieth to Jehezkel,",
+      "ko": "열 아홉째는 브다히야요 스무째는 여헤스겔이요",
+      "source_text_hash": "f4c09953d93ff4d3a3c75715e3f74d2058e08cef4193edfbf243a22780b0aba2",
+      "translation_text_hash": "15eeed5324a80775406446dc225944f871e336c0846533fa4ce514d2ca6e4f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 아홉째는 브다히야요 스무째는 여헤스겔이요"
+      ],
+      "raw_text_hashes": [
+        "15eeed5324a80775406446dc225944f871e336c0846533fa4ce514d2ca6e4f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:17",
+      "sequence": 11033,
+      "chapter_label": "1CH 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "the twenty-first to Jachin, the twenty-second to Gamul,",
+      "ko": "스물 한째는 야긴이요 스물 둘째는 가물이요",
+      "source_text_hash": "3b5f794dd86b9e0b5a215de91fea7a14baa23de312c7aff55b32148482285bd6",
+      "translation_text_hash": "4587bd311f45ef7dc4e29875dfb8a80f047201be0451f6aeee73d0249cbaf9f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 한째는 야긴이요 스물 둘째는 가물이요"
+      ],
+      "raw_text_hashes": [
+        "4587bd311f45ef7dc4e29875dfb8a80f047201be0451f6aeee73d0249cbaf9f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:18",
+      "sequence": 11034,
+      "chapter_label": "1CH 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "the twenty-third to Delaiah, and the twenty-fourth to Maaziah.",
+      "ko": "스물 세째는 들라야요 스물 네째는 마아시야라",
+      "source_text_hash": "b985c9546b3bdd36056f99c50276b6cbe7547b85843a11789950601d65c27345",
+      "translation_text_hash": "63f2a3416c34032c6cd6bda0846e9bbe34c6fb4852f192d15a6c6f5214f09cb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스물 세째는 들라야요 스물 네째는 마아시야라"
+      ],
+      "raw_text_hashes": [
+        "63f2a3416c34032c6cd6bda0846e9bbe34c6fb4852f192d15a6c6f5214f09cb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:19",
+      "sequence": 11035,
+      "chapter_label": "1CH 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "This was their ordering in their service, to come into the LORD’s house according to the ordinance given to them by Aaron their father, as the LORD, the God of Israel, had commanded him.",
+      "ko": "이와 같은 반차로 여호와의 전에 들어가서 이스라엘 하나님 여호와께서 저희 조상 아론에게 명하신 규례대로 수종들었더라",
+      "source_text_hash": "3580ce8310282bb929390e57bd851c0c3be4ea50182cdd1c98491478f608421f",
+      "translation_text_hash": "5b736411c13d8d363059b767b54a155934c72220c397974aa98b3d48afbb2565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같은 반차로 여호와의 전에 들어가서 이스라엘 하나님 여호와께서 저희 조상 아론에게 명하신 규례대로 수종들었더라"
+      ],
+      "raw_text_hashes": [
+        "5b736411c13d8d363059b767b54a155934c72220c397974aa98b3d48afbb2565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:20",
+      "sequence": 11036,
+      "chapter_label": "1CH 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "Of the rest of the sons of Levi: of the sons of Amram, Shubael; of the sons of Shubael, Jehdeiah.",
+      "ko": "레위 자손 중에 남은 자는 이러하니 아므람의 아들 중에는 수바엘이요 수바엘의 아들 중에는 예드야며",
+      "source_text_hash": "151a340154d3752d3e5deff03d697f68fe8f71f6dc8d68a51f2463238d8fc163",
+      "translation_text_hash": "13bfcc91dc8ec3f5ed6f4c768fd72bb65d434d447499e919d085a2dba1d74bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손 중에 남은 자는 이러하니 아므람의 아들 중에는 수바엘이요 수바엘의 아들 중에는 예드야며"
+      ],
+      "raw_text_hashes": [
+        "13bfcc91dc8ec3f5ed6f4c768fd72bb65d434d447499e919d085a2dba1d74bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:21",
+      "sequence": 11037,
+      "chapter_label": "1CH 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "Of Rehabiah: of the sons of Rehabiah, Isshiah the chief.",
+      "ko": "르하뱌에게 이르러는 그 아들 중에 족장 잇시야요",
+      "source_text_hash": "c24bbd116a5d17075a4521ae377740cba76f33810d2770ccfd44a26250da969b",
+      "translation_text_hash": "131fbc13a080b913ff51099f7c8767147f94d3eef3c80aac247a8c73c104be58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르하뱌에게 이르러는 그 아들 중에 족장 잇시야요"
+      ],
+      "raw_text_hashes": [
+        "131fbc13a080b913ff51099f7c8767147f94d3eef3c80aac247a8c73c104be58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:22",
+      "sequence": 11038,
+      "chapter_label": "1CH 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Of the Izharites, Shelomoth; of the sons of Shelomoth, Jahath.",
+      "ko": "이스할의 아들 중에는 슬로못이요 슬로못의 아들 중에는 야핫이요",
+      "source_text_hash": "778d90ea72f94e8f88074ca3407dd3cca8a6be2da4870824f5073ce2b17fa575",
+      "translation_text_hash": "656a3e5914dc5999cdaea4f0147edd4bec87ddcd4cd3636dc5161ff07c3ed98c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스할의 아들 중에는 슬로못이요 슬로못의 아들 중에는 야핫이요"
+      ],
+      "raw_text_hashes": [
+        "656a3e5914dc5999cdaea4f0147edd4bec87ddcd4cd3636dc5161ff07c3ed98c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:23",
+      "sequence": 11039,
+      "chapter_label": "1CH 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Hebron: Jeriah, Amariah the second, Jahaziel the third, and Jekameam the fourth.",
+      "ko": "헤브론의 아들들은 장자 여리야와 둘째 아마랴와 세째 야하시엘과 네째 여가므암이요",
+      "source_text_hash": "321ec2d5bf63df291e5fa67932140330750d5e411419aff7c41f438adef06f56",
+      "translation_text_hash": "d6addb7a1c46687e9e11dec2d0c2c75e2f422b854e567f917ebb9a7b37063573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론의 아들들은 장자 여리야와 둘째 아마랴와 세째 야하시엘과 네째 여가므암이요"
+      ],
+      "raw_text_hashes": [
+        "d6addb7a1c46687e9e11dec2d0c2c75e2f422b854e567f917ebb9a7b37063573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:24",
+      "sequence": 11040,
+      "chapter_label": "1CH 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "The sons of Uzziel: Micah; of the sons of Micah, Shamir.",
+      "ko": "웃시엘의 아들은 미가요 미가의 아들 중에는 사밀이요",
+      "source_text_hash": "7d9e76ee0c1fcc8db914e09aafb74ad251c57dde8928855bb58b947a8fa4357e",
+      "translation_text_hash": "09de0bf54a51d700354288edf4bca84ea1d23bc5527ec797258c3504f51103cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시엘의 아들은 미가요 미가의 아들 중에는 사밀이요"
+      ],
+      "raw_text_hashes": [
+        "09de0bf54a51d700354288edf4bca84ea1d23bc5527ec797258c3504f51103cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:25",
+      "sequence": 11041,
+      "chapter_label": "1CH 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "The brother of Micah: Isshiah; of the sons of Isshiah, Zechariah.",
+      "ko": "미가의 아우는 잇시야라 잇시야의 아들 중에는 스가랴며",
+      "source_text_hash": "828d2b742f8dbedf6d9630b6102c391566b0660f94f7badc65984ef3a4ea4d5f",
+      "translation_text_hash": "c5a1d1cc19f1c1ad1d5bbc5c0e878891d91a41d88712cc95f3a4819d9741302d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가의 아우는 잇시야라 잇시야의 아들 중에는 스가랴며"
+      ],
+      "raw_text_hashes": [
+        "c5a1d1cc19f1c1ad1d5bbc5c0e878891d91a41d88712cc95f3a4819d9741302d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:26",
+      "sequence": 11042,
+      "chapter_label": "1CH 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "The sons of Merari: Mahli and Mushi. The son of Jaaziah: Beno.",
+      "ko": "므라리의 아들은 마흘리와 무시요 야아시야의 아들은 브노니",
+      "source_text_hash": "18ce1a010c8b633ccbf15e00e22c66c276ec1dacdf2aa1d8c0facb273ee77a4f",
+      "translation_text_hash": "5386f55ce88fc91a045e183103255e2843ee4e2637831a45952743110a22ee9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 아들은 마흘리와 무시요 야아시야의 아들은 브노니"
+      ],
+      "raw_text_hashes": [
+        "5386f55ce88fc91a045e183103255e2843ee4e2637831a45952743110a22ee9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:27",
+      "sequence": 11043,
+      "chapter_label": "1CH 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "The sons of Merari by Jaaziah: Beno, Shoham, Zaccur, and Ibri.",
+      "ko": "므라리의 자손 야아시야에게서 난 자는 브노와 소함과 삭굴과 이브리요",
+      "source_text_hash": "9657d84210a00719d17e76fa742cebcf331733cf55742d4afcea6d6b6e338ee7",
+      "translation_text_hash": "348bb7e6eb720cc5760776cfd36e26ee2989aed7bddafbe1b15e40c4680285b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 자손 야아시야에게서 난 자는 브노와 소함과 삭굴과 이브리요"
+      ],
+      "raw_text_hashes": [
+        "348bb7e6eb720cc5760776cfd36e26ee2989aed7bddafbe1b15e40c4680285b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:28",
+      "sequence": 11044,
+      "chapter_label": "1CH 24",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 28
+        }
+      ],
+      "en": "Of Mahli: Eleazar, who had no sons.",
+      "ko": "마흘리의 아들 중에는 엘르아살이니 엘르아살은 무자하며",
+      "source_text_hash": "3533bf16c92fbe98c5ff2aae5a1ed1aed07e7cc009e570d4b444897d2cb59d96",
+      "translation_text_hash": "e8d82b1c0804f48194867a31f68cddb8e86a94dc567a25e887e81ae37df05223",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마흘리의 아들 중에는 엘르아살이니 엘르아살은 무자하며"
+      ],
+      "raw_text_hashes": [
+        "e8d82b1c0804f48194867a31f68cddb8e86a94dc567a25e887e81ae37df05223"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:29",
+      "sequence": 11045,
+      "chapter_label": "1CH 24",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 29
+        }
+      ],
+      "en": "Of Kish, the son of Kish: Jerahmeel.",
+      "ko": "기스에게 이르러는 그 아들 여라므엘이요",
+      "source_text_hash": "83ec05001e54ee8d8023b282922009a12cee623467800692ee723c56da81b0a7",
+      "translation_text_hash": "d0bef5615490f2d39fe0560001de4a34d1d666b8f4b9a19bdc5f5c1666068fc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기스에게 이르러는 그 아들 여라므엘이요"
+      ],
+      "raw_text_hashes": [
+        "d0bef5615490f2d39fe0560001de4a34d1d666b8f4b9a19bdc5f5c1666068fc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:30",
+      "sequence": 11046,
+      "chapter_label": "1CH 24",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 30
+        }
+      ],
+      "en": "The sons of Mushi: Mahli, Eder, and Jerimoth. These were the sons of the Levites after their fathers’ houses.",
+      "ko": "무시의 아들은 마흘리와 에델과 여리못이니 이는 다 그 족속대로 기록한 레위 자손이라",
+      "source_text_hash": "8a538ac3a608b560b0ec1cd46e1e0c03945a26e9aa6c03916ecb1372e788778a",
+      "translation_text_hash": "a78d3abd231e799009ac33f7aff7610339b768517509eb63afd8b81b4f7b9184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무시의 아들은 마흘리와 에델과 여리못이니 이는 다 그 족속대로 기록한 레위 자손이라"
+      ],
+      "raw_text_hashes": [
+        "a78d3abd231e799009ac33f7aff7610339b768517509eb63afd8b81b4f7b9184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:24:31",
+      "sequence": 11047,
+      "chapter_label": "1CH 24",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 24,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 24,
+          "verse": 31
+        }
+      ],
+      "en": "These likewise cast lots even as their brothers the sons of Aaron in the presence of David the king, Zadok, Ahimelech, and the heads of the fathers’ households of the priests and of the Levites, the fathers’ households of the chief even as those of his younger brother.",
+      "ko": "이 여러 사람도 다윗왕과 사독과 아히멜렉과 및 제사장과 레위 족장 앞에서 그 형제 아론 자손처럼 제비 뽑혔으니 장자의 종가와 그 아우의 종가가 다름이 없더라",
+      "source_text_hash": "e91cc390f19578776638eebf1b5d95712d184f59c2ad6f96884da8a44f961544",
+      "translation_text_hash": "b900993be770a91ea2228cb2acf04936ae6cd8725f4460997f2dd69cfb671e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 여러 사람도 다윗왕과 사독과 아히멜렉과 및 제사장과 레위 족장 앞에서 그 형제 아론 자손처럼 제비 뽑혔으니 장자의 종가와 그 아우의 종가가 다름이 없더라"
+      ],
+      "raw_text_hashes": [
+        "b900993be770a91ea2228cb2acf04936ae6cd8725f4460997f2dd69cfb671e90"
+      ]
+    }
+  ]
+}

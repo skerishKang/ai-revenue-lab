@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:003",
+  "unit_ordinal": 370,
+  "unit_label": "2CH 3",
+  "book_code": "2CH",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:3:1",
+      "sequence": 11231,
+      "chapter_label": "2CH 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Then Solomon began to build the LORD’s house at Jerusalem on Mount Moriah, where the LORD appeared to David his father, which he prepared in the place that David had appointed, on the threshing floor of Ornan the Jebusite.",
+      "ko": "솔로몬이 예루살렘 모리아산에 여호와의 전 건축하기를 시작하니 그곳은 전에 여호와께서 그 아비 다윗에게 나타나신 곳이요 여부스 사람 오르난의 타작마당에 다윗이 정한 곳이라",
+      "source_text_hash": "71c3c318019aafe67e7976ef8f7d2d54768254b475ffccbf047ec26cc942a507",
+      "translation_text_hash": "6b7d02a7f8d5afd0d09b6acf27db2b794d23896574d8bfdc450c5f1fa2d3c112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 예루살렘 모리아산에 여호와의 전 건축하기를 시작하니 그곳은 전에 여호와께서 그 아비 다윗에게 나타나신 곳이요 여부스 사람 오르난의 타작마당에 다윗이 정한 곳이라"
+      ],
+      "raw_text_hashes": [
+        "6b7d02a7f8d5afd0d09b6acf27db2b794d23896574d8bfdc450c5f1fa2d3c112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:2",
+      "sequence": 11232,
+      "chapter_label": "2CH 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "He began to build in the second day of the second month, in the fourth year of his reign.",
+      "ko": "솔로몬이 왕위에 나아간지 사년 이월 초이일에 건축하기를 시작하였더라",
+      "source_text_hash": "c48297a7b6af7ea123d86e6ee9c77923167ffa973e23ffadff3b0a28c7811cd8",
+      "translation_text_hash": "274db526e732ff3921fd7fdd0af5020a24bff5ca3c9d716c41f763fce8f6605e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 왕위에 나아간지 사년 이월 초이일에 건축하기를 시작하였더라"
+      ],
+      "raw_text_hashes": [
+        "274db526e732ff3921fd7fdd0af5020a24bff5ca3c9d716c41f763fce8f6605e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:3",
+      "sequence": 11233,
+      "chapter_label": "2CH 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Now these are the foundations which Solomon laid for the building of God’s house: the length by cubits after the first measure was sixty cubits, and the width twenty cubits.",
+      "ko": "솔로몬이 하나님의 전을 위하여 놓은 지대는 이러하니 옛적 재는 법대로 장이 육십 규빗이요 광이 이십 규빗이며",
+      "source_text_hash": "10f33558210d0c78b25384d4844d6c12adf06e3327f17aa6d560d71b85147806",
+      "translation_text_hash": "c73caf8eb954df7abf0447475c0f0dfe96db685eb837fd581d3c55ce967c7526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 하나님의 전을 위하여 놓은 지대는 이러하니 옛적 재는 법대로 장이 육십 규빗이요 광이 이십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "c73caf8eb954df7abf0447475c0f0dfe96db685eb837fd581d3c55ce967c7526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:4",
+      "sequence": 11234,
+      "chapter_label": "2CH 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "The porch that was in front, its length, across the width of the house, was twenty cubits, and the height one hundred twenty; and he overlaid it within with pure gold.",
+      "ko": "그 전 앞 낭실의 장이 전의 광과 같이 이십 규빗이요 고가 일백 이십 규빗이니 안에는 정금으로 입혔으며",
+      "source_text_hash": "74481a912352b9de1122dc097c8287a6a174afafa1689478c6dea80de6151cc8",
+      "translation_text_hash": "fb46c1ba067adf909a11e46543495eea971f6335bcd6b148f928e7a59eef4889",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전 앞 낭실의 장이 전의 광과 같이 이십 규빗이요 고가 일백 이십 규빗이니 안에는 정금으로 입혔으며"
+      ],
+      "raw_text_hashes": [
+        "fb46c1ba067adf909a11e46543495eea971f6335bcd6b148f928e7a59eef4889"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:5",
+      "sequence": 11235,
+      "chapter_label": "2CH 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He made the larger room with a ceiling of cypress wood, which he overlaid with fine gold, and ornamented it with palm trees and chains.",
+      "ko": "그 대전 천장은 잣나무로 만들고 또 정금으로 입히고 그 위에 종려나무와 사슬 형상을 새겼고",
+      "source_text_hash": "20605f6c03688b3d28d576395d91fdc31f64b3f2e9bf7aba89694689763ed3a1",
+      "translation_text_hash": "db5f6a9e8e374232db026ec1825f8475f70df4a2d565596a1e905424dc03284a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 대전 천장은 잣나무로 만들고 또 정금으로 입히고 그 위에 종려나무와 사슬 형상을 새겼고"
+      ],
+      "raw_text_hashes": [
+        "db5f6a9e8e374232db026ec1825f8475f70df4a2d565596a1e905424dc03284a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:6",
+      "sequence": 11236,
+      "chapter_label": "2CH 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "He decorated the house with precious stones for beauty. The gold was gold from Parvaim.",
+      "ko": "또 보석으로 전을 꾸며 화려하게 하였으니 그 금은 바르와임 금이며",
+      "source_text_hash": "448d8c08770e4f98c712a7d70f4d49dc393e9a49c6b73094d4ca8066f115078a",
+      "translation_text_hash": "a370adcf2fadd721483cb88591f03ad21de8f99b359988c79f856348418e3da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보석으로 전을 꾸며 화려하게 하였으니 그 금은 바르와임 금이며"
+      ],
+      "raw_text_hashes": [
+        "a370adcf2fadd721483cb88591f03ad21de8f99b359988c79f856348418e3da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:7",
+      "sequence": 11237,
+      "chapter_label": "2CH 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "He also overlaid the house, the beams, the thresholds, its walls, and its doors with gold, and engraved cherubim on the walls.",
+      "ko": "또 금으로 전과 그 들보와 문지방과 벽과 문짝에 입히고 벽에 그룹들을 아로새겼더라",
+      "source_text_hash": "8be85e76b4fca993bb3f84c495f405699003ef100fa2726dad0634a2140062ef",
+      "translation_text_hash": "a1c41ae9120009ccbf97df88597d056accadfd2d6dca94f9ab3de0ff86a52f7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금으로 전과 그 들보와 문지방과 벽과 문짝에 입히고 벽에 그룹들을 아로새겼더라"
+      ],
+      "raw_text_hashes": [
+        "a1c41ae9120009ccbf97df88597d056accadfd2d6dca94f9ab3de0ff86a52f7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:8",
+      "sequence": 11238,
+      "chapter_label": "2CH 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "He made the most holy place. Its length, according to the width of the house, was twenty cubits, and its width twenty cubits; and he overlaid it with fine gold, amounting to six hundred talents.",
+      "ko": "또 지성소를 지었으니 전 넓이대로 장이 이십 규빗이요 광도 이십 규빗이라 정금 육백 달란트로 입혔으니",
+      "source_text_hash": "012d0c683cc11cd4c8fa06aeb6aab345adb97cafd58fe3afb0362cc768317d01",
+      "translation_text_hash": "edad07163087b78f308a6c46a475a775ee1508eb9763c669205b10ccdf2e5a7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 지성소를 지었으니 전 넓이대로 장이 이십 규빗이요 광도 이십 규빗이라 정금 육백 달란트로 입혔으니"
+      ],
+      "raw_text_hashes": [
+        "edad07163087b78f308a6c46a475a775ee1508eb9763c669205b10ccdf2e5a7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:9",
+      "sequence": 11239,
+      "chapter_label": "2CH 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "The weight of the nails was fifty shekels of gold. He overlaid the upper rooms with gold.",
+      "ko": "못 중수가 오십 금 세겔이요 다락들도 금으로 입혔더라",
+      "source_text_hash": "f09897b4097c7e02c7aa1c49e1a3b7a1b8db20b04c77c0ad618b7c9686993751",
+      "translation_text_hash": "6adebdad711ad9bce73415cb2fd0692817f3d7465243cb0bf3932533b32fb735",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "못 중수가 오십 금 세겔이요 다락들도 금으로 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "6adebdad711ad9bce73415cb2fd0692817f3d7465243cb0bf3932533b32fb735"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:10",
+      "sequence": 11240,
+      "chapter_label": "2CH 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "In the most holy place he made two cherubim by carving, and they overlaid them with gold.",
+      "ko": "지성소 안에 두 그룹의 형상을 새겨 만들어 금으로 입혔으니",
+      "source_text_hash": "e74ac9348a66c6e748532623763f009a1a3cb0e60b2bf779438a814035247746",
+      "translation_text_hash": "022aa80ea947621ca36664c26d8351d9903ff550426a2454412828270f197f41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지성소 안에 두 그룹의 형상을 새겨 만들어 금으로 입혔으니"
+      ],
+      "raw_text_hashes": [
+        "022aa80ea947621ca36664c26d8351d9903ff550426a2454412828270f197f41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:11",
+      "sequence": 11241,
+      "chapter_label": "2CH 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The wings of the cherubim were twenty cubits long: the wing of the one was five cubits, reaching to the wall of the house; and the other wing was five cubits, reaching to the wing of the other cherub.",
+      "ko": "두 그룹의 날개 길이가 모두 이십 규빗이라 좌편 그룹의 한 날개는 다섯 규빗이니 전 벽에 닿았고 그 한 날개도 다섯 규빗이니 우편 그룹의 날개에 닿았으며",
+      "source_text_hash": "f7c265629f061403df7404f085f47666b708ccb2a32c2689db97daf0cda7cd42",
+      "translation_text_hash": "e76dd3af2a071e0a9be713f3b747f488dfdf2b16e252e1e90aee5c008e8ccaaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 그룹의 날개 길이가 모두 이십 규빗이라 좌편 그룹의 한 날개는 다섯 규빗이니 전 벽에 닿았고 그 한 날개도 다섯 규빗이니 우편 그룹의 날개에 닿았으며"
+      ],
+      "raw_text_hashes": [
+        "e76dd3af2a071e0a9be713f3b747f488dfdf2b16e252e1e90aee5c008e8ccaaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:12",
+      "sequence": 11242,
+      "chapter_label": "2CH 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "The wing of the other cherub was five cubits, reaching to the wall of the house; and the other wing was five cubits, joining to the wing of the other cherub.",
+      "ko": "우편 그룹의 한 날개도 다섯 규빗이니 전 벽에 닿았고 그 한 날개도 다섯 규빗이니 좌편 그룹의 날개에 닿았으니",
+      "source_text_hash": "b0a7e107336bfeea50f0fa845b6c72bf65575a8f9bf91651509eef4b098145a1",
+      "translation_text_hash": "b229b42b025c9bb32916137eae94bc3c1499ed401e8d154adeb3b9c0631579c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우편 그룹의 한 날개도 다섯 규빗이니 전 벽에 닿았고 그 한 날개도 다섯 규빗이니 좌편 그룹의 날개에 닿았으니"
+      ],
+      "raw_text_hashes": [
+        "b229b42b025c9bb32916137eae94bc3c1499ed401e8d154adeb3b9c0631579c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:13",
+      "sequence": 11243,
+      "chapter_label": "2CH 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "The wings of these cherubim spread themselves out twenty cubits. They stood on their feet, and their faces were toward the house.",
+      "ko": "이 두 그룹의 편 날개가 모두 이십 규빗이라 그 얼굴을 외소로 향하고 서 있으며",
+      "source_text_hash": "9d143d75d5bdea5c8c732523b9c2213a4cf09594e8d54bd500db7c3bf7899fe7",
+      "translation_text_hash": "5398fa0fcdddfaa0bbaaf4999943378eebdc20e1989365d551dde638eacd7444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 그룹의 편 날개가 모두 이십 규빗이라 그 얼굴을 외소로 향하고 서 있으며"
+      ],
+      "raw_text_hashes": [
+        "5398fa0fcdddfaa0bbaaf4999943378eebdc20e1989365d551dde638eacd7444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:14",
+      "sequence": 11244,
+      "chapter_label": "2CH 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "He made the veil of blue, purple, crimson, and fine linen, and ornamented it with cherubim.",
+      "ko": "청색 자색 홍색실과 고운 베로 문장을 짓고 그 위에 그룹의 형상을 수놓았더라",
+      "source_text_hash": "7de781330caf4abaf4483849ac6e74cf52485447b9635d88bb04b77c6097bfe6",
+      "translation_text_hash": "9204e3a7a1c429cc90b7332972e1e2ac20a84d609322eca8481b7f0bd669be84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청색 자색 홍색실과 고운 베로 문장을 짓고 그 위에 그룹의 형상을 수놓았더라"
+      ],
+      "raw_text_hashes": [
+        "9204e3a7a1c429cc90b7332972e1e2ac20a84d609322eca8481b7f0bd669be84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:15",
+      "sequence": 11245,
+      "chapter_label": "2CH 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Also he made before the house two pillars thirty-five cubits high, and the capital that was on the top of each of them was five cubits.",
+      "ko": "전 앞에 기둥 둘을 만들었으니 고가 삼십 오 규빗이요 각 기둥 꼭대기의 머리가 다섯 규빗이라",
+      "source_text_hash": "0d78479692c641c4a18f3073b99d323ce404807f0ca46e3dfb952f091905faf1",
+      "translation_text_hash": "09c61ff6c41b4d378877e5d3047a5aacebe2a7dbb427107c21d752fc56783e31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전 앞에 기둥 둘을 만들었으니 고가 삼십 오 규빗이요 각 기둥 꼭대기의 머리가 다섯 규빗이라"
+      ],
+      "raw_text_hashes": [
+        "09c61ff6c41b4d378877e5d3047a5aacebe2a7dbb427107c21d752fc56783e31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:16",
+      "sequence": 11246,
+      "chapter_label": "2CH 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "He made chains in the inner sanctuary, and put them on the tops of the pillars; and he made one hundred pomegranates, and put them on the chains.",
+      "ko": "성소 같이 사슬을 만들어 그 기둥 머리에 두르고 석류 일백개를 만들어 사슬에 달았으며",
+      "source_text_hash": "22cebaebe1ce3dbd97230a8263076ef3ab60bccbd9420b0c24cf9de0bbdbf0f3",
+      "translation_text_hash": "c8cc28dd0f1f7fbbba48e6cb50705576783cf0f31e60b7f3ddc47330d1df14d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소 같이 사슬을 만들어 그 기둥 머리에 두르고 석류 일백개를 만들어 사슬에 달았으며"
+      ],
+      "raw_text_hashes": [
+        "c8cc28dd0f1f7fbbba48e6cb50705576783cf0f31e60b7f3ddc47330d1df14d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:3:17",
+      "sequence": 11247,
+      "chapter_label": "2CH 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "He set up the pillars before the temple, one on the right hand and the other on the left; and called the name of that on the right hand Jachin, and the name of that on the left Boaz.",
+      "ko": "그 두 기둥을 외소 앞에 세웠으니 좌편에 하나요 우편에 하나라 우편 것은 야긴이라 칭하고 좌편 것은 보아스라 칭하였더라",
+      "source_text_hash": "c27a4b18704105269efd03f185a71815d492809268f28f8e464a87972b05cc18",
+      "translation_text_hash": "8e83ea7c31fdc99d725b7f356992a140c864f17648ddbc607e6fe575f2c28298",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 기둥을 외소 앞에 세웠으니 좌편에 하나요 우편에 하나라 우편 것은 야긴이라 칭하고 좌편 것은 보아스라 칭하였더라"
+      ],
+      "raw_text_hashes": [
+        "8e83ea7c31fdc99d725b7f356992a140c864f17648ddbc607e6fe575f2c28298"
+      ]
+    }
+  ]
+}

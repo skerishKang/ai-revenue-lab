@@ -1,0 +1,1549 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:019",
+  "unit_ordinal": 992,
+  "unit_label": "LUK 19",
+  "book_code": "LUK",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:19:1",
+      "sequence": 25732,
+      "chapter_label": "LUK 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "He entered and was passing through Jericho.",
+      "ko": "예수께서 여리고로 들어 지나가시더라",
+      "source_text_hash": "b0787a84e298b46c1fa512b120bbaa60d0d5a94f2c91eb819f06dbf49b8c4a0e",
+      "translation_text_hash": "ff45e1e1e745bd934ef397332cc05fc8e1d26ec7cb1a3835c480e556d686f142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 여리고로 들어 지나가시더라"
+      ],
+      "raw_text_hashes": [
+        "ff45e1e1e745bd934ef397332cc05fc8e1d26ec7cb1a3835c480e556d686f142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:2",
+      "sequence": 25733,
+      "chapter_label": "LUK 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "There was a man named Zacchaeus. He was a chief tax collector, and he was rich.",
+      "ko": "삭개오라 이름하는 자가 있으니 세리장이요 또한 부자라",
+      "source_text_hash": "8ea7ea847b8484831364e4183d7f7e89ee8457bd0011a18df6bae753548d9f83",
+      "translation_text_hash": "cac332aab007585096e8d9a2d090bba2183f1934644d554f1e2cdd05259005e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삭개오라 이름하는 자가 있으니 세리장이요 또한 부자라"
+      ],
+      "raw_text_hashes": [
+        "cac332aab007585096e8d9a2d090bba2183f1934644d554f1e2cdd05259005e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:3",
+      "sequence": 25734,
+      "chapter_label": "LUK 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "He was trying to see who Jesus was, and couldn’t because of the crowd, because he was short.",
+      "ko": "저가 예수께서 어떠한 사람인가 하여 보고자 하되 키가 작고 사람이 많아 할수 없어",
+      "source_text_hash": "cff5869d6424acdf37795f4ef0955d80a908c21174ffe8816b555aae22a8b14f",
+      "translation_text_hash": "21c58b05c2697beef37dc132b867ac9bc7d6b6a02082507a82d2f49eb0f07e42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 예수께서 어떠한 사람인가 하여 보고자 하되 키가 작고 사람이 많아 할수 없어"
+      ],
+      "raw_text_hashes": [
+        "21c58b05c2697beef37dc132b867ac9bc7d6b6a02082507a82d2f49eb0f07e42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:4",
+      "sequence": 25735,
+      "chapter_label": "LUK 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "He ran on ahead and climbed up into a sycamore tree to see him, for he was going to pass that way.",
+      "ko": "앞으로 달려가 보기 위하여 뽕나무에 올라가니 이는 예수께서 그리로 지나가시게 됨이러라",
+      "source_text_hash": "e4dcf3bd8efec448c80dae043239d84256b8ef4a95c7f6373318b58a984193fb",
+      "translation_text_hash": "3d7415006a4f0458afb2d45e5ab93b9cb137683e606bbf3e2e365315dd84e75d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞으로 달려가 보기 위하여 뽕나무에 올라가니 이는 예수께서 그리로 지나가시게 됨이러라"
+      ],
+      "raw_text_hashes": [
+        "3d7415006a4f0458afb2d45e5ab93b9cb137683e606bbf3e2e365315dd84e75d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:5",
+      "sequence": 25736,
+      "chapter_label": "LUK 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "When Jesus came to the place, he looked up and saw him, and said to him, “Zacchaeus, hurry and come down, for today I must stay at your house.”",
+      "ko": "예수께서 그곳에 이르사 우러러 보시고 이르시되 삭개오야 속히 내려오라 내가 오늘 네 집에 유하여야 하겠다 하시니",
+      "source_text_hash": "fa95a6b021927c8b676922925b7de6076282b9cc6409d0733e9fd376a3aa2137",
+      "translation_text_hash": "e653f74058acf212e2f5eb1acace4b126441efe3437e663aa1151e01d9770a4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그곳에 이르사 우러러 보시고 이르시되 삭개오야 속히 내려오라 내가 오늘 네 집에 유하여야 하겠다 하시니"
+      ],
+      "raw_text_hashes": [
+        "e653f74058acf212e2f5eb1acace4b126441efe3437e663aa1151e01d9770a4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:6",
+      "sequence": 25737,
+      "chapter_label": "LUK 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "He hurried, came down, and received him joyfully.",
+      "ko": "급히 내려와 즐거워하며 영접하거늘",
+      "source_text_hash": "562713da606c8ed17ce55d5872e973267ecf2ee94236c1eba721fde6fd39ad1e",
+      "translation_text_hash": "b979a7ff076863904c56d5450d66b7f5116508845e07f2c5548ec13394138683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "급히 내려와 즐거워하며 영접하거늘"
+      ],
+      "raw_text_hashes": [
+        "b979a7ff076863904c56d5450d66b7f5116508845e07f2c5548ec13394138683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:7",
+      "sequence": 25738,
+      "chapter_label": "LUK 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "When they saw it, they all murmured, saying, “He has gone in to lodge with a man who is a sinner.”",
+      "ko": "뭇사람이 보고 수군거려 가로되 저가 죄인의 집에 유하러 들어갔도다 하더라",
+      "source_text_hash": "eca57b3cc391c9506651f6dacadae738746278576d9e73dcdd54a7fea221d06e",
+      "translation_text_hash": "45e10d4ff97e8aa48e2ec069e8bd6e3fefbd7a5bdafc7f497bbb86f84369ae29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뭇사람이 보고 수군거려 가로되 저가 죄인의 집에 유하러 들어갔도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "45e10d4ff97e8aa48e2ec069e8bd6e3fefbd7a5bdafc7f497bbb86f84369ae29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:8",
+      "sequence": 25739,
+      "chapter_label": "LUK 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "Zacchaeus stood and said to the Lord, “Behold, Lord, half of my goods I give to the poor. If I have wrongfully exacted anything of anyone, I restore four times as much.”",
+      "ko": "삭개오가 서서 주께 여짜오되 주여 보시옵소서 내 소유의 절반을 가난한 자들에게 주겠사오며 만일 뉘 것을 토색한 일이 있으면 사배나 갚겠나이다",
+      "source_text_hash": "ff87a2deaa9291731482113fadc940762130a57ff3d4d9bd75117f930d7cfe0e",
+      "translation_text_hash": "362ded7b35f77248d16a1d46d8a6c9b1949040ae6cf7bb4e5eed326ad80b925e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삭개오가 서서 주께 여짜오되 주여 보시옵소서 내 소유의 절반을 가난한 자들에게 주겠사오며 만일 뉘 것을 토색한 일이 있으면 사배나 갚겠나이다"
+      ],
+      "raw_text_hashes": [
+        "362ded7b35f77248d16a1d46d8a6c9b1949040ae6cf7bb4e5eed326ad80b925e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:9",
+      "sequence": 25740,
+      "chapter_label": "LUK 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "Jesus said to him, “Today, salvation has come to this house, because he also is a son of Abraham.",
+      "ko": "예수께서 이르시되 오늘 구원이 이 집에 이르렀으니 이 사람도 아브라함의 자손임이로다",
+      "source_text_hash": "4194d017ca0c2e9d134946561f191fd60d413867a04a213a8ab0f5323d7faf5c",
+      "translation_text_hash": "dd99a1af8e8b4e2168e4b5f00ab837f253841a3d766ac9a1440e680b4eb89203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 오늘 구원이 이 집에 이르렀으니 이 사람도 아브라함의 자손임이로다"
+      ],
+      "raw_text_hashes": [
+        "dd99a1af8e8b4e2168e4b5f00ab837f253841a3d766ac9a1440e680b4eb89203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:10",
+      "sequence": 25741,
+      "chapter_label": "LUK 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "For the Son of Man came to seek and to save that which was lost.”",
+      "ko": "인자의 온 것은 잃어버린 자를 찾아 구원하려 함이니라",
+      "source_text_hash": "93d088b62028a0e83dd42fe74769345e8a0fb3bfa2e1dab13114826c0e7c8a5c",
+      "translation_text_hash": "a9a0510c1fa236d2542b6526d7f325354abc0e4ef298e29c52d0b9132ee78019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자의 온 것은 잃어버린 자를 찾아 구원하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "a9a0510c1fa236d2542b6526d7f325354abc0e4ef298e29c52d0b9132ee78019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:11",
+      "sequence": 25742,
+      "chapter_label": "LUK 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "As they heard these things, he went on and told a parable, because he was near Jerusalem, and they supposed that God’s Kingdom would be revealed immediately.",
+      "ko": "저희가 이 말씀을 듣고 있을 때에 비유를 더하여 말씀하시니 이는 자기가 예루살렘에 가까이 오셨고 저희는 하나님의 나라가 당장에 나타날 줄로 생각함이러라",
+      "source_text_hash": "a4cdb6c35045e6f6c40e4b4dc7de54e9a6e394780559330d76fef67a2c180e64",
+      "translation_text_hash": "b77e5295c29c71a926089db18ea74fdecd0eb8c09668517c7c3821596556cd7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말씀을 듣고 있을 때에 비유를 더하여 말씀하시니 이는 자기가 예루살렘에 가까이 오셨고 저희는 하나님의 나라가 당장에 나타날 줄로 생각함이러라"
+      ],
+      "raw_text_hashes": [
+        "b77e5295c29c71a926089db18ea74fdecd0eb8c09668517c7c3821596556cd7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:12",
+      "sequence": 25743,
+      "chapter_label": "LUK 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "He said therefore, “A certain nobleman went into a far country to receive for himself a kingdom and to return.",
+      "ko": "가라사대 어떤 귀인이 왕위를 받아가지고 오려고 먼 나라로 갈 때에",
+      "source_text_hash": "a6ac38dd828ff11e73a273e5724ac6ae4d4d3f4a95d3f25d04ff0eadd57216f0",
+      "translation_text_hash": "4e1c55dc8dd0a6beab37ba6cdd0f3f87c34942b3e983ad4ff4c127f78bbf4aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 어떤 귀인이 왕위를 받아가지고 오려고 먼 나라로 갈 때에"
+      ],
+      "raw_text_hashes": [
+        "4e1c55dc8dd0a6beab37ba6cdd0f3f87c34942b3e983ad4ff4c127f78bbf4aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:13",
+      "sequence": 25744,
+      "chapter_label": "LUK 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "He called ten servants of his and gave them ten mina coins, and told them, ‘Conduct business until I come.’",
+      "ko": "그 종 열을 불러 은 열 므나를 주며 이르되 내가 돌아오기까지 장사하라 하니라",
+      "source_text_hash": "7ecfe516e36d22a2d35d3033a20b1e81d101d6c1e395d3121e659b57bc892af7",
+      "translation_text_hash": "41ace8c6fe85e527f9f91fbcf6e5d770ec90e367ed6da44d0cbc89941a9c5ef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종 열을 불러 은 열 므나를 주며 이르되 내가 돌아오기까지 장사하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "41ace8c6fe85e527f9f91fbcf6e5d770ec90e367ed6da44d0cbc89941a9c5ef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:14",
+      "sequence": 25745,
+      "chapter_label": "LUK 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "But his citizens hated him, and sent an envoy after him, saying, ‘We don’t want this man to reign over us.’",
+      "ko": "그런데 그 백성이 저를 미워하여 사자를 뒤로 보내어 가로되 우리는 이 사람이 우리의 왕 됨을 원치 아니하노이다 하였더라",
+      "source_text_hash": "3d26bb60829c81f7ce811294b7ca046707cf680d11b4418a6951a8d116a7f918",
+      "translation_text_hash": "010d88189c0f8b198bbcf184e2bde8c9d2e04afaf15ecfd1a7a196d630169d62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 그 백성이 저를 미워하여 사자를 뒤로 보내어 가로되 우리는 이 사람이 우리의 왕 됨을 원치 아니하노이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "010d88189c0f8b198bbcf184e2bde8c9d2e04afaf15ecfd1a7a196d630169d62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:15",
+      "sequence": 25746,
+      "chapter_label": "LUK 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "“When he had come back again, having received the kingdom, he commanded these servants, to whom he had given the money, to be called to him, that he might know what they had gained by conducting business.",
+      "ko": "귀인이 왕위를 받아 가지고 돌아와서 은 준 종들의 각각 어떻게 장사한 것을 알고자 하여 저희를 부르니",
+      "source_text_hash": "a833f56b54a24dd788869582fe29162a52910946627595c81a940dea2e5e9314",
+      "translation_text_hash": "94f944f96896fa3dedae935a652ab70be902547329d87a588e8ce9bf1e76cf3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀인이 왕위를 받아 가지고 돌아와서 은 준 종들의 각각 어떻게 장사한 것을 알고자 하여 저희를 부르니"
+      ],
+      "raw_text_hashes": [
+        "94f944f96896fa3dedae935a652ab70be902547329d87a588e8ce9bf1e76cf3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:16",
+      "sequence": 25747,
+      "chapter_label": "LUK 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "The first came before him, saying, ‘Lord, your mina has made ten more minas.’",
+      "ko": "그 첫째가 나아와 가로되 주여 주의 한 므나로 열 므나를 남겼나이다",
+      "source_text_hash": "65e9128c04d82d4e54c1884a8489bbd8e6e419eb47ed09ded4668cf65f946239",
+      "translation_text_hash": "54733ca5137962975f1f4b26d085d2565562d5b5ef41e5365797df70cbbbd5b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첫째가 나아와 가로되 주여 주의 한 므나로 열 므나를 남겼나이다"
+      ],
+      "raw_text_hashes": [
+        "54733ca5137962975f1f4b26d085d2565562d5b5ef41e5365797df70cbbbd5b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:17",
+      "sequence": 25748,
+      "chapter_label": "LUK 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "“He said to him, ‘Well done, you good servant! Because you were found faithful with very little, you shall have authority over ten cities.’",
+      "ko": "주인이 이르되 잘하였다 착한 종이여 네가 지극히 작은 것에 충성하였으니 열 고을 권세를 차지하라 하고",
+      "source_text_hash": "54101645e7bc2cb05f4e599497bc30375be19375f409bc28f81a819e351ba332",
+      "translation_text_hash": "5acfc5a6166e4a771d3543d063289e01b30d5a4b67d91408391bb14e3d53b118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 이르되 잘하였다 착한 종이여 네가 지극히 작은 것에 충성하였으니 열 고을 권세를 차지하라 하고"
+      ],
+      "raw_text_hashes": [
+        "5acfc5a6166e4a771d3543d063289e01b30d5a4b67d91408391bb14e3d53b118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:18",
+      "sequence": 25749,
+      "chapter_label": "LUK 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "“The second came, saying, ‘Your mina, Lord, has made five minas.’",
+      "ko": "그 둘째가 와서 가로되 주여 주의 한 므나로 다섯 므나를 만들었나이다",
+      "source_text_hash": "57b4064b583a67019f3de4d143772fe7e781bbe9b9a09acf351f1012eb013be4",
+      "translation_text_hash": "f6742b166acc5636edcba163a52fa1d9fd580af86139ff5cf0ae0a79a0176294",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘째가 와서 가로되 주여 주의 한 므나로 다섯 므나를 만들었나이다"
+      ],
+      "raw_text_hashes": [
+        "f6742b166acc5636edcba163a52fa1d9fd580af86139ff5cf0ae0a79a0176294"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:19",
+      "sequence": 25750,
+      "chapter_label": "LUK 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "“So he said to him, ‘And you are to be over five cities.’",
+      "ko": "주인이 그에게도 이르되 너도 다섯 고을을 차지하라 하고",
+      "source_text_hash": "8c04438005ae7681f57b8e160c98e07767f609504cc2862f2cf9734d643a23b9",
+      "translation_text_hash": "16c085705ee9e079bf22257ac73a0ca20b1965a9b67a52696e3e151a01449bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 그에게도 이르되 너도 다섯 고을을 차지하라 하고"
+      ],
+      "raw_text_hashes": [
+        "16c085705ee9e079bf22257ac73a0ca20b1965a9b67a52696e3e151a01449bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:20",
+      "sequence": 25751,
+      "chapter_label": "LUK 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Another came, saying, ‘Lord, behold, your mina, which I kept laid away in a handkerchief,",
+      "ko": "또 한 사람이 와서 가로되 주여 보소서 주의 한 므나가 여기 있나이다 내가 수건으로 싸두었었나이다",
+      "source_text_hash": "7b723731527dbdc47cd9dda47ea4ed35a25c2af07cc6bfd5653c93e94937a26d",
+      "translation_text_hash": "dc30d142eedead4eeb61ec02f4372ce79a31d095780d6b948ca2109dc5988814",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 한 사람이 와서 가로되 주여 보소서 주의 한 므나가 여기 있나이다 내가 수건으로 싸두었었나이다"
+      ],
+      "raw_text_hashes": [
+        "dc30d142eedead4eeb61ec02f4372ce79a31d095780d6b948ca2109dc5988814"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:21",
+      "sequence": 25752,
+      "chapter_label": "LUK 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "for I feared you, because you are an exacting man. You take up that which you didn’t lay down, and reap that which you didn’t sow.’",
+      "ko": "이는 당신이 엄한 사람인 것을 내가 무서워함이라 당신은 두지 않은 것을 취하고 심지 않은 것을 거두나이다",
+      "source_text_hash": "0ee02e5f2d695c4115848f0c3cb50354d31ebe0c4b12c21411a7dab06bf81981",
+      "translation_text_hash": "a71ee69880095a6e5d5cce978b750e4e145b13635842113b2138cb4ad3829215",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 당신이 엄한 사람인 것을 내가 무서워함이라 당신은 두지 않은 것을 취하고 심지 않은 것을 거두나이다"
+      ],
+      "raw_text_hashes": [
+        "a71ee69880095a6e5d5cce978b750e4e145b13635842113b2138cb4ad3829215"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:22",
+      "sequence": 25753,
+      "chapter_label": "LUK 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "“He said to him, ‘Out of your own mouth I will judge you, you wicked servant! You knew that I am an exacting man, taking up that which I didn’t lay down and reaping that which I didn’t sow.",
+      "ko": "주인이 이르되 악한 종아 내가 네 말로 너를 판단하노니 너는 내가 두지 않은 것을 취하고 심지 않은 것을 거두는 엄한 사람인 줄을 알았느냐",
+      "source_text_hash": "b35e04ce91524e2b438dcc54e43de5c14a42d7f1a6da324145c318af18af5747",
+      "translation_text_hash": "5dfd09f8062665449d2bca65e179a8cd3c434fd060fb8ba037a7842d0babaf8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 이르되 악한 종아 내가 네 말로 너를 판단하노니 너는 내가 두지 않은 것을 취하고 심지 않은 것을 거두는 엄한 사람인 줄을 알았느냐"
+      ],
+      "raw_text_hashes": [
+        "5dfd09f8062665449d2bca65e179a8cd3c434fd060fb8ba037a7842d0babaf8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:23",
+      "sequence": 25754,
+      "chapter_label": "LUK 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "Then why didn’t you deposit my money in the bank, and at my coming, I might have earned interest on it?’",
+      "ko": "그러면 어찌하여 내 은을 은행에 두지 아니하였느냐 그리하였으면 내가 와서 그 변리까지 찾았으리라 하고",
+      "source_text_hash": "c0dd1d4e2b09e562afccc2178bb7021ddf7ebd37ee70c4122133c9158286a06c",
+      "translation_text_hash": "63735f87f79ff445fc070b2c29c0cebaed32fe27b4a5134459b83a8101b2d560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 어찌하여 내 은을 은행에 두지 아니하였느냐 그리하였으면 내가 와서 그 변리까지 찾았으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "63735f87f79ff445fc070b2c29c0cebaed32fe27b4a5134459b83a8101b2d560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:24",
+      "sequence": 25755,
+      "chapter_label": "LUK 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "He said to those who stood by, ‘Take the mina away from him and give it to him who has the ten minas.’",
+      "ko": "곁에 섰는 자들에게 이르되 그 한 므나를 빼앗아 열 므나 있는 자에게 주라 하니",
+      "source_text_hash": "982688a30520d1b4261ddc13b8f4784303bf7ae6dad5e1cab1ca4a314d86bf61",
+      "translation_text_hash": "065fad08848072ca5d3446eccff5b2daef5d9b3da24c01d0779895dd46de82fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곁에 섰는 자들에게 이르되 그 한 므나를 빼앗아 열 므나 있는 자에게 주라 하니"
+      ],
+      "raw_text_hashes": [
+        "065fad08848072ca5d3446eccff5b2daef5d9b3da24c01d0779895dd46de82fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:25",
+      "sequence": 25756,
+      "chapter_label": "LUK 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "“They said to him, ‘Lord, he has ten minas!’",
+      "ko": "저희가 가로되 주여 저에게 이미 열 므나가 있나이다",
+      "source_text_hash": "6f5343ccfbcad28cd90c803a69b3e985dca22f6821f5cff9760806851d7ef832",
+      "translation_text_hash": "939419f5ffd8520113a0c203e319b0c2a453dbe9cb8c6781fd537b7b2fe59ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 주여 저에게 이미 열 므나가 있나이다"
+      ],
+      "raw_text_hashes": [
+        "939419f5ffd8520113a0c203e319b0c2a453dbe9cb8c6781fd537b7b2fe59ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:26",
+      "sequence": 25757,
+      "chapter_label": "LUK 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "‘For I tell you that to everyone who has, will more be given; but from him who doesn’t have, even that which he has will be taken away from him.",
+      "ko": "주인이 가로되 내가 너희에게 말하노니 무릇 있는 자는 받겠고 없는 자는 그 있는 것도 빼앗기리라",
+      "source_text_hash": "ee31c7c6164d6d19d9a1d772cbe106f0b4d5439041d90562a0e7f400a177ac1f",
+      "translation_text_hash": "cdcda3334d1e8c3edc2c6dff7f843605e31324cb53080db8c6a9fc3dd86ee30f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 가로되 내가 너희에게 말하노니 무릇 있는 자는 받겠고 없는 자는 그 있는 것도 빼앗기리라"
+      ],
+      "raw_text_hashes": [
+        "cdcda3334d1e8c3edc2c6dff7f843605e31324cb53080db8c6a9fc3dd86ee30f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:27",
+      "sequence": 25758,
+      "chapter_label": "LUK 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "But bring those enemies of mine who didn’t want me to reign over them here, and kill them before me.’”",
+      "ko": "그리고 나의 왕 됨을 원치 아니하던 저 원수들을 이리로 끌어다가 내 앞에서 죽이라 하였느니라",
+      "source_text_hash": "ed36caa98b65a9a8db20c5bdb9a5ffa3d3ba81792b27f455345c7ddc375e0112",
+      "translation_text_hash": "c2f1d84be516fc1108beb7abf9a8c92acecd7e752d0d3edf532fcf5a9700cb2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리고 나의 왕 됨을 원치 아니하던 저 원수들을 이리로 끌어다가 내 앞에서 죽이라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c2f1d84be516fc1108beb7abf9a8c92acecd7e752d0d3edf532fcf5a9700cb2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:28",
+      "sequence": 25759,
+      "chapter_label": "LUK 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "Having said these things, he went on ahead, going up to Jerusalem.",
+      "ko": "예수께서 이 말씀을 하시고 예루살렘을 향하여 앞서서 가시더라",
+      "source_text_hash": "eb3f91e235a79c92e2ebdc1a6c41644ea2dffed27152acb41a40cb08abf21904",
+      "translation_text_hash": "bf61ef5d12a681c5d53b158d2f6c201b673d7f22568037ce7cee8241a0517304",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하시고 예루살렘을 향하여 앞서서 가시더라"
+      ],
+      "raw_text_hashes": [
+        "bf61ef5d12a681c5d53b158d2f6c201b673d7f22568037ce7cee8241a0517304"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:29",
+      "sequence": 25760,
+      "chapter_label": "LUK 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "When he came near to Bethsphage and Bethany, at the mountain that is called Olivet, he sent two of his disciples,",
+      "ko": "감람원이라는 산의 벳바게와 베다니에 가까이 왔을 때에 제자 중 둘을 보내시며",
+      "source_text_hash": "98be205f00f07ca12530712b5b68c216ff8d7db10389de036524f71eb233c068",
+      "translation_text_hash": "070ad317a2f4f14cb0efffc25ffd130b14ebe2f20aa839cfccdfb04b392cc53e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감람원이라는 산의 벳바게와 베다니에 가까이 왔을 때에 제자 중 둘을 보내시며"
+      ],
+      "raw_text_hashes": [
+        "070ad317a2f4f14cb0efffc25ffd130b14ebe2f20aa839cfccdfb04b392cc53e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:30",
+      "sequence": 25761,
+      "chapter_label": "LUK 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "saying, “Go your way into the village on the other side, in which, as you enter, you will find a colt tied, which no man has ever sat upon. Untie it and bring it.",
+      "ko": "이르시되 너희 맞은편 마을로 가라 그리로 들어가면 아직 아무 사람도 타보지 않은 나귀새끼의 매여 있는 것을 보리니 풀어 끌고 오너라",
+      "source_text_hash": "9deebd17b22dca1de919d0a691d9357d44014e5afd710ccdb58a15bc48b6c5a3",
+      "translation_text_hash": "79fd4ab000eb1ad505f10792dcb13725e479e03e2a303d88a30bc9c1b99d93e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희 맞은편 마을로 가라 그리로 들어가면 아직 아무 사람도 타보지 않은 나귀새끼의 매여 있는 것을 보리니 풀어 끌고 오너라"
+      ],
+      "raw_text_hashes": [
+        "79fd4ab000eb1ad505f10792dcb13725e479e03e2a303d88a30bc9c1b99d93e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:31",
+      "sequence": 25762,
+      "chapter_label": "LUK 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "If anyone asks you, ‘Why are you untying it?’ say to him: ‘The Lord needs it.’”",
+      "ko": "만일 누가 너희에게 어찌하여 푸느냐 묻거든 이렇게 말하되 주가 쓰시겠다 하라 하시매",
+      "source_text_hash": "f1c47bc13021af7606d50eded8ed25e7c71e8777c8dbf7fb23219a424fb4c440",
+      "translation_text_hash": "351d44a8a84f87791a026f3a8cb89c33dbbb1531c73d8f8f8cd744dc8b976726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 너희에게 어찌하여 푸느냐 묻거든 이렇게 말하되 주가 쓰시겠다 하라 하시매"
+      ],
+      "raw_text_hashes": [
+        "351d44a8a84f87791a026f3a8cb89c33dbbb1531c73d8f8f8cd744dc8b976726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:32",
+      "sequence": 25763,
+      "chapter_label": "LUK 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "Those who were sent went away and found things just as he had told them.",
+      "ko": "보내심을 받은 자들이 가서 그 말씀하신대로 만난지라",
+      "source_text_hash": "9cfb1e8c98037005c1ac2a7b820de1d5a4987b37655dec55207fb57b49db3064",
+      "translation_text_hash": "fd2aed48383cbc8409010a91eaf07a34642979b9ea48f700db983f1dc39aa7a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보내심을 받은 자들이 가서 그 말씀하신대로 만난지라"
+      ],
+      "raw_text_hashes": [
+        "fd2aed48383cbc8409010a91eaf07a34642979b9ea48f700db983f1dc39aa7a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:33",
+      "sequence": 25764,
+      "chapter_label": "LUK 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "As they were untying the colt, its owners said to them, “Why are you untying the colt?”",
+      "ko": "나귀새끼를 풀 때에 그 임자들이 이르되 어찌하여 나귀새끼를 푸느냐",
+      "source_text_hash": "69c6d4132f04d8786ebbb5cc3d6a600729718048aaa6b9063384d5b56002c35a",
+      "translation_text_hash": "67e8c298b8d3183d16b4e06d8d09e126a0b569e61ff3322765c3eea2abb8ed9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀새끼를 풀 때에 그 임자들이 이르되 어찌하여 나귀새끼를 푸느냐"
+      ],
+      "raw_text_hashes": [
+        "67e8c298b8d3183d16b4e06d8d09e126a0b569e61ff3322765c3eea2abb8ed9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:34",
+      "sequence": 25765,
+      "chapter_label": "LUK 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "They said, “The Lord needs it.”",
+      "ko": "대답하되 주께서 쓰시겠다 하고",
+      "source_text_hash": "1b72bf575419a40593f01a81e1b7689178067295f2bd8c8b3142421fcd924006",
+      "translation_text_hash": "eb8474aafe9e50da5c17f1c3ffd51bb5c9388c329756de830a0e1b77c4a775ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 주께서 쓰시겠다 하고"
+      ],
+      "raw_text_hashes": [
+        "eb8474aafe9e50da5c17f1c3ffd51bb5c9388c329756de830a0e1b77c4a775ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:35",
+      "sequence": 25766,
+      "chapter_label": "LUK 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "Then they brought it to Jesus. They threw their cloaks on the colt and sat Jesus on them.",
+      "ko": "그것을 예수께로 끌고 와서 자기들의 겉옷을 나귀새끼 위에 걸쳐 놓고 예수를 태우니",
+      "source_text_hash": "dc5d95be026e49b159913ee2897d6bd78d62eda59a40bea10214c5a9667211f6",
+      "translation_text_hash": "24f6b5078911f9dd5c4e94c56a433ca3a6f8fa207d0511d71544a3672a8d3f95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 예수께로 끌고 와서 자기들의 겉옷을 나귀새끼 위에 걸쳐 놓고 예수를 태우니"
+      ],
+      "raw_text_hashes": [
+        "24f6b5078911f9dd5c4e94c56a433ca3a6f8fa207d0511d71544a3672a8d3f95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:36",
+      "sequence": 25767,
+      "chapter_label": "LUK 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "As he went, they spread their cloaks on the road.",
+      "ko": "가실 때에 저희가 자기의 겉옷을 길에 펴더라",
+      "source_text_hash": "d141f1eb0555d3efba8500b2e2e17473d99f07833d45e829f2fb97d6087ba198",
+      "translation_text_hash": "d01528b25c74d03abcbe9735c09534752f7cb830287f06518392389a2ae84d6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가실 때에 저희가 자기의 겉옷을 길에 펴더라"
+      ],
+      "raw_text_hashes": [
+        "d01528b25c74d03abcbe9735c09534752f7cb830287f06518392389a2ae84d6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:37",
+      "sequence": 25768,
+      "chapter_label": "LUK 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "As he was now getting near, at the descent of the Mount of Olives, the whole multitude of the disciples began to rejoice and praise God with a loud voice for all the mighty works which they had seen,",
+      "ko": "이미 감람산에서 내려가는 편까지 가까이 오시매 제자의 온 무리가 자기의 본바 모든 능한 일을 인하여 기뻐하며 큰 소리로 하나님을 찬양하여",
+      "source_text_hash": "3a6040e19f4fafe6e9dc6813fdecc6f81cbe071f7e9be70a101a94b601746d48",
+      "translation_text_hash": "741fa486ef573045ed674bfcd4a0cd50b8c8bb9bc631a95d09d4d124d43a9437",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 감람산에서 내려가는 편까지 가까이 오시매 제자의 온 무리가 자기의 본바 모든 능한 일을 인하여 기뻐하며 큰 소리로 하나님을 찬양하여"
+      ],
+      "raw_text_hashes": [
+        "741fa486ef573045ed674bfcd4a0cd50b8c8bb9bc631a95d09d4d124d43a9437"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:38",
+      "sequence": 25769,
+      "chapter_label": "LUK 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "saying, “Blessed is the King who comes in the name of the Lord! Peace in heaven, and glory in the highest!”",
+      "ko": "가로되 찬송하리로다 주의 이름으로 오시는 왕이여 하늘에는 평화요 가장 높은 곳에는 영광이로다 하니",
+      "source_text_hash": "87872032882a3596d013b9779352216663c308249f48bf7eae4f64f2173bef68",
+      "translation_text_hash": "c4a5f1975f9e47c2a11d075564283fb0c454e2e96da014be454961e406a58832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 찬송하리로다 주의 이름으로 오시는 왕이여 하늘에는 평화요 가장 높은 곳에는 영광이로다 하니"
+      ],
+      "raw_text_hashes": [
+        "c4a5f1975f9e47c2a11d075564283fb0c454e2e96da014be454961e406a58832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:39",
+      "sequence": 25770,
+      "chapter_label": "LUK 19",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 39
+        }
+      ],
+      "en": "Some of the Pharisees from the multitude said to him, “Teacher, rebuke your disciples!”",
+      "ko": "무리 중 어떤 바리새인들이 말하되 선생이여 당신의 제자들을 책망하소서 하거늘",
+      "source_text_hash": "8ccf2b50cd8f28eff34bcd78aa8e0135a9e3de29cd943202b356a4c64729eb75",
+      "translation_text_hash": "fb14fade0f8655985f0d8014d3b3be87e7d468dc52a0280766c3d4a4a2c0af2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 중 어떤 바리새인들이 말하되 선생이여 당신의 제자들을 책망하소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "fb14fade0f8655985f0d8014d3b3be87e7d468dc52a0280766c3d4a4a2c0af2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:40",
+      "sequence": 25771,
+      "chapter_label": "LUK 19",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 40
+        }
+      ],
+      "en": "He answered them, “I tell you that if these were silent, the stones would cry out.”",
+      "ko": "대답하여 가라사대 내가 너희에게 말하노니 만일 이 사람들이 잠잠하면 돌들이 소리지르리라 하시니라",
+      "source_text_hash": "62fa9d132cb6fe18d597cdbd9b55617f718b11b0b733e670413c6fabeddb8a5e",
+      "translation_text_hash": "eeb58fad8c49985f86e65804c932b6265f4b87538d364d530731ae07e819b362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 내가 너희에게 말하노니 만일 이 사람들이 잠잠하면 돌들이 소리지르리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "eeb58fad8c49985f86e65804c932b6265f4b87538d364d530731ae07e819b362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:41",
+      "sequence": 25772,
+      "chapter_label": "LUK 19",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 41
+        }
+      ],
+      "en": "When he came near, he saw the city and wept over it,",
+      "ko": "가까이 오사 성을 보시고 우시며",
+      "source_text_hash": "41f2fdb597a9408ad5150ae7b527d4379a7b7e8787d10277e484c79f3f0e0b0b",
+      "translation_text_hash": "b5cbec81ed90712f98218819f835e53b91d2adaf253b20757eee7e7dc3c0d484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가까이 오사 성을 보시고 우시며"
+      ],
+      "raw_text_hashes": [
+        "b5cbec81ed90712f98218819f835e53b91d2adaf253b20757eee7e7dc3c0d484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:42",
+      "sequence": 25773,
+      "chapter_label": "LUK 19",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 42
+        }
+      ],
+      "en": "saying, “If you, even you, had known today the things which belong to your peace! But now, they are hidden from your eyes.",
+      "ko": "가라사대 너도 오늘날 평화에 관한 일을 알았더면 좋을 뻔하였거니와 지금 네 눈에 숨기웠도다",
+      "source_text_hash": "366a17fc1f44662731d7905cdaa51a0a22b36db48a487129950ccad2e1dc1c70",
+      "translation_text_hash": "461beb81734d49620ac01990460376f5ec5424434f01b21a19aa20f10f72bed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너도 오늘날 평화에 관한 일을 알았더면 좋을 뻔하였거니와 지금 네 눈에 숨기웠도다"
+      ],
+      "raw_text_hashes": [
+        "461beb81734d49620ac01990460376f5ec5424434f01b21a19aa20f10f72bed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:43",
+      "sequence": 25774,
+      "chapter_label": "LUK 19",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 43
+        }
+      ],
+      "en": "For the days will come on you when your enemies will throw up a barricade against you, surround you, hem you in on every side,",
+      "ko": "날이 이를찌라 네 원수들이 토성을 쌓고 너를 둘러 사면으로 가두고",
+      "source_text_hash": "81981f051e1c59dad32b5953fba85567a9c881103a3ea3ed5a78b5ff8a055b7f",
+      "translation_text_hash": "5fc961fd89db3cba6578c06b124424b6a0dcc33d438c2fd7ecf7b5dec5ab3216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 이를찌라 네 원수들이 토성을 쌓고 너를 둘러 사면으로 가두고"
+      ],
+      "raw_text_hashes": [
+        "5fc961fd89db3cba6578c06b124424b6a0dcc33d438c2fd7ecf7b5dec5ab3216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:44",
+      "sequence": 25775,
+      "chapter_label": "LUK 19",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 44
+        }
+      ],
+      "en": "and will dash you and your children within you to the ground. They will not leave in you one stone on another, because you didn’t know the time of your visitation.”",
+      "ko": "또 너와 및 그 가운데 있는 네 자식들을 땅에 메어치며 돌 하나도 돌 위에 남기지 아니하리니 이는 권고 받는 날을 네가 알지 못함을 인함이니라 하시니라",
+      "source_text_hash": "c0725cf723336b01cddebfab72c006e26b031f283c281637150a8c68a18ff7ae",
+      "translation_text_hash": "155196b5a153c8bc0a808631c550838b347fd866b335bd35be61be9d267d4580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너와 및 그 가운데 있는 네 자식들을 땅에 메어치며 돌 하나도 돌 위에 남기지 아니하리니 이는 권고 받는 날을 네가 알지 못함을 인함이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "155196b5a153c8bc0a808631c550838b347fd866b335bd35be61be9d267d4580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:45",
+      "sequence": 25776,
+      "chapter_label": "LUK 19",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 45
+        }
+      ],
+      "en": "He entered into the temple and began to drive out those who bought and sold in it,",
+      "ko": "성전에 들어가사 장사하는 자들을 내어 쫓으시며",
+      "source_text_hash": "ca30f63e4594ee123d02df3feb097aaa4ddc8311014dec6b7982821d91dfd3d8",
+      "translation_text_hash": "684daa59a161b3f34033d6a3a75afd6e7d9cdbcdf0e38b178795741e2049ae80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전에 들어가사 장사하는 자들을 내어 쫓으시며"
+      ],
+      "raw_text_hashes": [
+        "684daa59a161b3f34033d6a3a75afd6e7d9cdbcdf0e38b178795741e2049ae80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:46",
+      "sequence": 25777,
+      "chapter_label": "LUK 19",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 46
+        }
+      ],
+      "en": "saying to them, “It is written, ‘My house is a house of prayer,’ but you have made it a ‘den of robbers’!”",
+      "ko": "저희에게 이르시되 기록된바 내 집은 기도하는 집이 되리라 하였거늘 너희는 강도의 굴혈을 만들었도다 하시니라",
+      "source_text_hash": "8f986272d2aa3f66239dbe8c957fe7d8e5a26df15617bd10ec973c043a523a7c",
+      "translation_text_hash": "0904129be1caa6557621312d2cf188863a42e685da2f3f7d6fcc9015f9623a9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 기록된바 내 집은 기도하는 집이 되리라 하였거늘 너희는 강도의 굴혈을 만들었도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "0904129be1caa6557621312d2cf188863a42e685da2f3f7d6fcc9015f9623a9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:47",
+      "sequence": 25778,
+      "chapter_label": "LUK 19",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 47
+        }
+      ],
+      "en": "He was teaching daily in the temple, but the chief priests, the scribes, and the leading men among the people sought to destroy him.",
+      "ko": "예수께서 날마다 성전에서 가르치시니 대제사장들과 서기관들과 백성의 두목들이 그를 죽이려고 꾀하되",
+      "source_text_hash": "4c963acd6e7eb5d3887043ed4a521957f32a1d240cf6a9bbf21f23958666e447",
+      "translation_text_hash": "ca2bf8b1768d76e67ec2485ff8c57a7a546df6d20aaace6b3be895c918f0b20a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 날마다 성전에서 가르치시니 대제사장들과 서기관들과 백성의 두목들이 그를 죽이려고 꾀하되"
+      ],
+      "raw_text_hashes": [
+        "ca2bf8b1768d76e67ec2485ff8c57a7a546df6d20aaace6b3be895c918f0b20a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:19:48",
+      "sequence": 25779,
+      "chapter_label": "LUK 19",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 19,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 19,
+          "verse": 48
+        }
+      ],
+      "en": "They couldn’t find what they might do, for all the people hung on to every word that he said.",
+      "ko": "백성이 다 그에게 귀를 기울여 들으므로 어찌할 방침을 찾지 못하였더라",
+      "source_text_hash": "d22e4f17ff6dc8e0f6a637bd43fa67f7a5577cde8f6fefa8f3eed85dc0af933f",
+      "translation_text_hash": "ab429a689e491001011de5de6530aaa0a0d2811b8282b2e9989b8a204a80c085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 다 그에게 귀를 기울여 들으므로 어찌할 방침을 찾지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "ab429a689e491001011de5de6530aaa0a0d2811b8282b2e9989b8a204a80c085"
+      ]
+    }
+  ]
+}

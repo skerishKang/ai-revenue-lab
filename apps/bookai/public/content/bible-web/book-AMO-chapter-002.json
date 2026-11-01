@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:002",
+  "unit_ordinal": 881,
+  "unit_label": "AMO 2",
+  "book_code": "AMO",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:2:1",
+      "sequence": 22381,
+      "chapter_label": "AMO 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Moab, yes, for four, I will not turn away its punishment, because he burned the bones of the king of Edom into lime;",
+      "ko": "여호와께서 가라사대 모압의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저가 에돔 왕의 뼈를 불살라 회를 만들었음이라",
+      "source_text_hash": "82bbef73f2e1926e6d77e2f36a5cf2495e38f504b74578d7c6f742a6ab275f1b",
+      "translation_text_hash": "1ef251de322259f7b5e2534c84ff683e077e07bc7c1cdb2e4169a4efcda49918",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 모압의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저가 에돔 왕의 뼈를 불살라 회를 만들었음이라"
+      ],
+      "raw_text_hashes": [
+        "1ef251de322259f7b5e2534c84ff683e077e07bc7c1cdb2e4169a4efcda49918"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:2",
+      "sequence": 22382,
+      "chapter_label": "AMO 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "but I will send a fire on Moab, and it will devour the palaces of Kerioth; and Moab will die with tumult, with shouting, and with the sound of the trumpet;",
+      "ko": "내가 모압에 불을 보내리니 그리욧 궁궐들을 사르리라 모압이 요란함과 외침과 나팔 소리 중에서 죽을 것이라",
+      "source_text_hash": "15802d709039c871df9d02005fbd801c2b3580c5db4f7fb082a4e0907f4f63f4",
+      "translation_text_hash": "334a605c478af9da6af2d011a1c3b72d220543b0f1378baa9b41ad0b02339fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모압에 불을 보내리니 그리욧 궁궐들을 사르리라 모압이 요란함과 외침과 나팔 소리 중에서 죽을 것이라"
+      ],
+      "raw_text_hashes": [
+        "334a605c478af9da6af2d011a1c3b72d220543b0f1378baa9b41ad0b02339fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:3",
+      "sequence": 22383,
+      "chapter_label": "AMO 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "and I will cut off the judge from among them, and will kill all its princes with him,” says the LORD.",
+      "ko": "내가 그 중에서 재판장을 멸하며 방백들을 저와 함께 죽이리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "18f9486ae80961b34ee1f006baf6e17483ef9ae2f8f3eb7f2d263e9302b41496",
+      "translation_text_hash": "c3bb26185b20660af8172cd5580a79fd1ec40e683bf0e743fdbcdceb73961118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 중에서 재판장을 멸하며 방백들을 저와 함께 죽이리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "c3bb26185b20660af8172cd5580a79fd1ec40e683bf0e743fdbcdceb73961118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:4",
+      "sequence": 22384,
+      "chapter_label": "AMO 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Judah, yes, for four, I will not turn away its punishment, because they have rejected the LORD’s law, and have not kept his statutes, and their lies have led them astray, after which their fathers walked;",
+      "ko": "여호와께서 가라사대 유다의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 여호와의 율법을 멸시하며 그 율례를 지키지 아니하고 그 열조의 따라가던 거짓것에 미혹하였음이라",
+      "source_text_hash": "cf22d6e1155fac63ffef617c2b39b42eacbc3e864b43894ce959f1f5d1cb9e88",
+      "translation_text_hash": "ee1e12b9f2b335962018f5fe799e974ebb00c05ee2e41e306b1e547a8568d6e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 유다의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 여호와의 율법을 멸시하며 그 율례를 지키지 아니하고 그 열조의 따라가던 거짓것에 미혹하였음이라"
+      ],
+      "raw_text_hashes": [
+        "ee1e12b9f2b335962018f5fe799e974ebb00c05ee2e41e306b1e547a8568d6e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:5",
+      "sequence": 22385,
+      "chapter_label": "AMO 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "but I will send a fire on Judah, and it will devour the palaces of Jerusalem.”",
+      "ko": "내가 유다에 불을 보내리니 예루살렘의 궁궐들을 사르리라",
+      "source_text_hash": "0e37d70033eccfe80a0570bc93844d6de3f95f627c050d6786a10a826a3f343a",
+      "translation_text_hash": "ad8b2944739c79e760493daf2fd9c1d484b423d67806f1df0a052ee4d6f4cd9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다에 불을 보내리니 예루살렘의 궁궐들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "ad8b2944739c79e760493daf2fd9c1d484b423d67806f1df0a052ee4d6f4cd9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:6",
+      "sequence": 22386,
+      "chapter_label": "AMO 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD says: “For three transgressions of Israel, yes, for four, I will not turn away its punishment, because they have sold the righteous for silver, and the needy for a pair of sandals;",
+      "ko": "여호와께서 가라사대 이스라엘의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 은을 받고 의인을 팔며 신 한 켤레를 받고 궁핍한 자를 팔며",
+      "source_text_hash": "cc2b95a39813f6b8754b38fbd0abbf0dcc35f0f2184a4d88d3f6aa95c1b281c4",
+      "translation_text_hash": "3aeb1002bce723a7497d18593e3360a0ceb9cb95edaa6cb62d71ce4cdd067f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 이스라엘의 서너가지 죄로 인하여 내가 그 벌을 돌이키지 아니하리니 이는 저희가 은을 받고 의인을 팔며 신 한 켤레를 받고 궁핍한 자를 팔며"
+      ],
+      "raw_text_hashes": [
+        "3aeb1002bce723a7497d18593e3360a0ceb9cb95edaa6cb62d71ce4cdd067f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:7",
+      "sequence": 22387,
+      "chapter_label": "AMO 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "They trample the heads of the poor into the dust of the earth and deny justice to the oppressed. A man and his father use the same maiden, to profane my holy name.",
+      "ko": "가난한 자의 머리에 있는 티끌을 탐내며 겸손한 자의 길을 굽게 하며 부자가 한 젊은 여인에게 다녀서 나의 거룩한 이름을 더럽히며",
+      "source_text_hash": "5e46f120d68253dbf07dc6449cd27541430183c4eeb8cf4b0b8b1e9baae1ff27",
+      "translation_text_hash": "d6c90ddac4eab4d0c4356be3531fffd7c5d238b8a195f0a53c0fbd300ed35ad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자의 머리에 있는 티끌을 탐내며 겸손한 자의 길을 굽게 하며 부자가 한 젊은 여인에게 다녀서 나의 거룩한 이름을 더럽히며"
+      ],
+      "raw_text_hashes": [
+        "d6c90ddac4eab4d0c4356be3531fffd7c5d238b8a195f0a53c0fbd300ed35ad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:8",
+      "sequence": 22388,
+      "chapter_label": "AMO 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "They lay themselves down beside every altar on clothes taken in pledge. In the house of their God they drink the wine of those who have been fined.",
+      "ko": "모든 단 옆에서 전당 잡은 옷 위에 누우며 저희 신의 전에서 벌금으로 얻은 포도주를 마심이니라",
+      "source_text_hash": "4c3b0352c851c3ada389d31ef20c1920845e1b4612527a58e1cf88afaa907b79",
+      "translation_text_hash": "c1bbe1e4e254d9b0e90409ad32b0e75d3212672220f843d9fc0226c3bf8d683d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 단 옆에서 전당 잡은 옷 위에 누우며 저희 신의 전에서 벌금으로 얻은 포도주를 마심이니라"
+      ],
+      "raw_text_hashes": [
+        "c1bbe1e4e254d9b0e90409ad32b0e75d3212672220f843d9fc0226c3bf8d683d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:9",
+      "sequence": 22389,
+      "chapter_label": "AMO 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Yet I destroyed the Amorite before them, whose height was like the height of the cedars, and he was strong as the oaks; yet I destroyed his fruit from above, and his roots from beneath.",
+      "ko": "내가 아모리 사람을 저희 앞에서 멸하였나니 그 키는 백향목 높이와 같고 강하기는 상수리나무 같으나 내가 그 위의 열매와 그 아래의 뿌리를 진멸하지 아니하였느냐",
+      "source_text_hash": "bcc31fef5a4ca8c01c92af0efe07e38db7cf93c41757e9198dcaac86704d3f3c",
+      "translation_text_hash": "9d6a90b7713dc2a107291058bfe0ef91d33883e72f54e98891ad3d82541d0e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아모리 사람을 저희 앞에서 멸하였나니 그 키는 백향목 높이와 같고 강하기는 상수리나무 같으나 내가 그 위의 열매와 그 아래의 뿌리를 진멸하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "9d6a90b7713dc2a107291058bfe0ef91d33883e72f54e98891ad3d82541d0e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:10",
+      "sequence": 22390,
+      "chapter_label": "AMO 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Also I brought you up out of the land of Egypt and led you forty years in the wilderness, to possess the land of the Amorite.",
+      "ko": "내가 너희를 애굽 땅에서 이끌어 내어 사십년 동안 광야에서 인도하고 아모리 사람의 땅을 너희로 차지하게 하였고",
+      "source_text_hash": "1563791d738e7e04dd2a6fabef34133dac867eeb64f0f0fdd08a9044cfa32563",
+      "translation_text_hash": "19e828f556a849e549e56508d1754daeacf8e304ca3418b9e14ba99cbb8a0436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 애굽 땅에서 이끌어 내어 사십년 동안 광야에서 인도하고 아모리 사람의 땅을 너희로 차지하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "19e828f556a849e549e56508d1754daeacf8e304ca3418b9e14ba99cbb8a0436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:11",
+      "sequence": 22391,
+      "chapter_label": "AMO 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "I raised up some of your sons for prophets, and some of your young men for Nazirites. Isn’t this true, you children of Israel?” says the LORD.",
+      "ko": "또 너희 아들 중에서 선지자를, 너희 청년 중에서 나시르 사람을 일으켰나니 이스라엘 자손들아 과연 그렇지 아니하냐 이는 여호와의 말씀이니라",
+      "source_text_hash": "0dc330ef4db66792b4853f9a20ac1aaa113da90e9d8f6a635895d5d5093e5ffd",
+      "translation_text_hash": "830fe9bfe7ed7172f85bbb746ee103159413e041337240b68d2fe4b58c49febb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 아들 중에서 선지자를, 너희 청년 중에서 나시르 사람을 일으켰나니 이스라엘 자손들아 과연 그렇지 아니하냐 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "830fe9bfe7ed7172f85bbb746ee103159413e041337240b68d2fe4b58c49febb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:12",
+      "sequence": 22392,
+      "chapter_label": "AMO 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "“But you gave the Nazirites wine to drink, and commanded the prophets, saying, ‘Don’t prophesy!’",
+      "ko": "그러나 너희가 나시르 사람으로 포도주를 마시게 하며 또 선지자에게 명하여 예언하지 말라 하였느니라",
+      "source_text_hash": "9ae7f47e1a56b1119c07dc47ec31362d1ada2aaebb545d4d6df73c85f53d26c5",
+      "translation_text_hash": "b65b78d73708958f804207a4f0efab6dd55fe69b7c5d93d0c0f8521c1917149d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 나시르 사람으로 포도주를 마시게 하며 또 선지자에게 명하여 예언하지 말라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b65b78d73708958f804207a4f0efab6dd55fe69b7c5d93d0c0f8521c1917149d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:13",
+      "sequence": 22393,
+      "chapter_label": "AMO 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, I will crush you in your place, as a cart crushes that is full of grain.",
+      "ko": "곡식 단을 가득히 실은 수레가 흙을 누름 같이 내가 너희 자리에 너희를 누르리니",
+      "source_text_hash": "6c835bf3bb8ecce58c7ea4027b65cb3d4c50d9c085c92a09431eb59757294cf4",
+      "translation_text_hash": "acdc8592297bdea51d6c3259d7c39085d7ac01db53ab8c413a1621efbc866d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡식 단을 가득히 실은 수레가 흙을 누름 같이 내가 너희 자리에 너희를 누르리니"
+      ],
+      "raw_text_hashes": [
+        "acdc8592297bdea51d6c3259d7c39085d7ac01db53ab8c413a1621efbc866d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:14",
+      "sequence": 22394,
+      "chapter_label": "AMO 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Flight will perish from the swift. The strong won’t strengthen his force. The mighty won’t deliver himself.",
+      "ko": "빨리 달음박질하는 자도 도망할 수 없으며 강한 자도 자기 힘을 낼 수 없으며 용사도 피할 수 없으며",
+      "source_text_hash": "fdeeb0fe687455b30654c417373a689bc9abc9bbbd7f60067f143f545355c5e7",
+      "translation_text_hash": "1fffb2d3e472747bee34a4295519f98e5e0b9f7a055d4979bb8f34de63d58b2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빨리 달음박질하는 자도 도망할 수 없으며 강한 자도 자기 힘을 낼 수 없으며 용사도 피할 수 없으며"
+      ],
+      "raw_text_hashes": [
+        "1fffb2d3e472747bee34a4295519f98e5e0b9f7a055d4979bb8f34de63d58b2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:15",
+      "sequence": 22395,
+      "chapter_label": "AMO 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "He who handles the bow won’t stand. He who is swift of foot won’t escape. He who rides the horse won’t deliver himself.",
+      "ko": "활을 가진 자도 설수 없으며 발이 빠른 자도 피할 수 없으며 말 타는 자도 피할 수 없고",
+      "source_text_hash": "ec537a20709204d8a1130742cd3ef9481796728e57c952e5e5dbd3307d3fe9d8",
+      "translation_text_hash": "9ed5dafca35cc4fa1c31cbec023ac3ef7aa07a1292602b96fa211036df1d0a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활을 가진 자도 설수 없으며 발이 빠른 자도 피할 수 없으며 말 타는 자도 피할 수 없고"
+      ],
+      "raw_text_hashes": [
+        "9ed5dafca35cc4fa1c31cbec023ac3ef7aa07a1292602b96fa211036df1d0a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:2:16",
+      "sequence": 22396,
+      "chapter_label": "AMO 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "AMO",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "He who is courageous among the mighty will flee away naked on that day,” says the LORD.",
+      "ko": "용사 중에 굳센 자는 그 날에 벌거벗고야 도망하리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "32e567abbf5195a0dfef1416b40429a32e05d6e0b84f45858ddf534b5301f217",
+      "translation_text_hash": "771eac908f496769b3ae253e78eab429cad76df0e38bf0cc45666426c4b83645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사 중에 굳센 자는 그 날에 벌거벗고야 도망하리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "771eac908f496769b3ae253e78eab429cad76df0e38bf0cc45666426c4b83645"
+      ]
+    }
+  ]
+}

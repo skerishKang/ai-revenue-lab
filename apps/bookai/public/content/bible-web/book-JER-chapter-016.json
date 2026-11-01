@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:016",
+  "unit_ordinal": 761,
+  "unit_label": "JER 16",
+  "book_code": "JER",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:16:1",
+      "sequence": 19338,
+      "chapter_label": "JER 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Then the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하니라 가라사대",
+      "source_text_hash": "f6d95515d1ca6f58e19208de17095f2350084db431e1d848311001bc3487a207",
+      "translation_text_hash": "18e915e6f8224946034ce7ce0ea23931e4330990e57709dfd13c42fd4d3d3af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "18e915e6f8224946034ce7ce0ea23931e4330990e57709dfd13c42fd4d3d3af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:2",
+      "sequence": 19339,
+      "chapter_label": "JER 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "“You shall not take a wife, neither shall you have sons or daughters, in this place.”",
+      "ko": "너는 이 땅에서 아내를 취하지 말며 자녀를 두지 말찌니라",
+      "source_text_hash": "4fabb107a165d375f6e172422d344196378e80fa550937418fdabaef7f8ff83b",
+      "translation_text_hash": "1275142129e4ee6754b75c8b37d29ec874d517c02d81ec7c7412fb2f862da47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 땅에서 아내를 취하지 말며 자녀를 두지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "1275142129e4ee6754b75c8b37d29ec874d517c02d81ec7c7412fb2f862da47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:3",
+      "sequence": 19340,
+      "chapter_label": "JER 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "For the LORD says concerning the sons and concerning the daughters who are born in this place, and concerning their mothers who bore them, and concerning their fathers who became their father in this land:",
+      "ko": "이곳에서 생산한 자녀와 이 땅에서 그들을 해산한 어미와 그들을 낳은 아비에 대하여 나 여호와가 이같이 말하노라",
+      "source_text_hash": "de2e02a69d4f14f2259b16844acdef06e369a75b04fd658ce00437fa46777500",
+      "translation_text_hash": "ac6467117c85b85e75a9c121d37d2977f5ea26075f8e0a7747ae072c887e27f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이곳에서 생산한 자녀와 이 땅에서 그들을 해산한 어미와 그들을 낳은 아비에 대하여 나 여호와가 이같이 말하노라"
+      ],
+      "raw_text_hashes": [
+        "ac6467117c85b85e75a9c121d37d2977f5ea26075f8e0a7747ae072c887e27f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:4",
+      "sequence": 19341,
+      "chapter_label": "JER 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "“They will die grievous deaths. They will not be lamented, neither will they be buried. They will be as dung on the surface of the ground. They will be consumed by the sword and by famine. Their dead bodies will be food for the birds of the sky and for the animals of the earth.”",
+      "ko": "그들은 독한 병으로 죽고 슬퍼함을 입지 못하며 매장함을 얻지 못하여 지면의 분토와 같을 것이며 칼과 기근에 망하고 그 시체는 공중의 새와 땅 짐승의 밥이 되리라",
+      "source_text_hash": "7dced08158397a71d05e70e8709189dafecfe5443a5079dad49ac3896e01f112",
+      "translation_text_hash": "0a30e8547dacff98cfe299b8309f5ecea28729cec95cc3a49df3232fc46fc565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 독한 병으로 죽고 슬퍼함을 입지 못하며 매장함을 얻지 못하여 지면의 분토와 같을 것이며 칼과 기근에 망하고 그 시체는 공중의 새와 땅 짐승의 밥이 되리라"
+      ],
+      "raw_text_hashes": [
+        "0a30e8547dacff98cfe299b8309f5ecea28729cec95cc3a49df3232fc46fc565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:5",
+      "sequence": 19342,
+      "chapter_label": "JER 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "For the LORD says, “Don’t enter into the house of mourning. Don’t go to lament. Don’t bemoan them, for I have taken away my peace from this people,” says the LORD, “even loving kindness and tender mercies.",
+      "ko": "여호와께서 이같이 말씀하시되 상가에 들어가지 말라 가서 통곡하지 말며 그들을 위하여 애곡하지 말라 내가 이 백성에게서 나의 평강을 빼앗으며 인자와 긍휼을 제함이니라 여호와의 말이니라",
+      "source_text_hash": "b6d77cc7935e683ed67f4b24ef8afa502d8f5e48e66fffeff7264cd711c9c099",
+      "translation_text_hash": "4271a2aafc455399f96c99b7d2655f73da513553d10100a3e0252b1a8608dd51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 상가에 들어가지 말라 가서 통곡하지 말며 그들을 위하여 애곡하지 말라 내가 이 백성에게서 나의 평강을 빼앗으며 인자와 긍휼을 제함이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "4271a2aafc455399f96c99b7d2655f73da513553d10100a3e0252b1a8608dd51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:6",
+      "sequence": 19343,
+      "chapter_label": "JER 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Both great and small will die in this land. They will not be buried. Men won’t lament for them, cut themselves, or make themselves bald for them.",
+      "ko": "큰 자든지 작은 자든지 이 땅에서 죽으리니 그들이 매장되지 못할 것이며 그들을 위하여 애곡하는 자도 없겠고 자기 몸을 베거나 대머리 되게 하는 자도 없을 것이며",
+      "source_text_hash": "913633bd926ca7fe7bb4a798b4cf8660d59e3ea34011c5d319447fc2fa5b7715",
+      "translation_text_hash": "90c13edbd791e2f00101708a8b6f8a847f694b3cfd1425a551c06b886ad7cc0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 자든지 작은 자든지 이 땅에서 죽으리니 그들이 매장되지 못할 것이며 그들을 위하여 애곡하는 자도 없겠고 자기 몸을 베거나 대머리 되게 하는 자도 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "90c13edbd791e2f00101708a8b6f8a847f694b3cfd1425a551c06b886ad7cc0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:7",
+      "sequence": 19344,
+      "chapter_label": "JER 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Men won’t break bread for them in mourning, to comfort them for the dead. Men won’t give them the cup of consolation to drink for their father or for their mother.",
+      "ko": "슬플 때에 떡을 떼며 그 죽은 자를 인하여 그들을 위로하는 자가 없을 것이며 그들의 아비나 어미의 상사를 위하여 위로의 잔을 그들에게 마시울 자가 없으리라",
+      "source_text_hash": "b573aeb6e5ac7e368447e548631a4354e86670a27d30dfdc275a6a5968feecae",
+      "translation_text_hash": "08e2b5ef539e0d1d4c08d77e26fe079b73aac25afc9f59b163f8d7fb3ee43608",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬플 때에 떡을 떼며 그 죽은 자를 인하여 그들을 위로하는 자가 없을 것이며 그들의 아비나 어미의 상사를 위하여 위로의 잔을 그들에게 마시울 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "08e2b5ef539e0d1d4c08d77e26fe079b73aac25afc9f59b163f8d7fb3ee43608"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:8",
+      "sequence": 19345,
+      "chapter_label": "JER 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "“You shall not go into the house of feasting to sit with them, to eat and to drink.”",
+      "ko": "너는 잔치집에 들어가서 그들과 함께 앉아 먹거나 마시지 말라",
+      "source_text_hash": "de69194bce78efe3e3739b09e1324b0064c5e37d279ab4314a3c10517134c138",
+      "translation_text_hash": "57dcf94a615d7ed3bcf7346d50fc803d6a31a264d9bb2b1f2a122747ce383ecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 잔치집에 들어가서 그들과 함께 앉아 먹거나 마시지 말라"
+      ],
+      "raw_text_hashes": [
+        "57dcf94a615d7ed3bcf7346d50fc803d6a31a264d9bb2b1f2a122747ce383ecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:9",
+      "sequence": 19346,
+      "chapter_label": "JER 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel says: “Behold, I will cause to cease out of this place, before your eyes and in your days, the voice of mirth and the voice of gladness, the voice of the bridegroom and the voice of the bride.",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 보라 기뻐하는 소리와 즐거워하는 소리와 신랑의 소리와 신부의 소리를 내가 네 목전, 네 시대에 이곳에서 끊어지게 하리라",
+      "source_text_hash": "21132764513dc2eba3256c92645e40cb70571193a1953a6df606c24804cdbe82",
+      "translation_text_hash": "22eb72b83e9dc5e3902d76f0780df83438f68093729b2b27c554f91f4a78dc1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 보라 기뻐하는 소리와 즐거워하는 소리와 신랑의 소리와 신부의 소리를 내가 네 목전, 네 시대에 이곳에서 끊어지게 하리라"
+      ],
+      "raw_text_hashes": [
+        "22eb72b83e9dc5e3902d76f0780df83438f68093729b2b27c554f91f4a78dc1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:10",
+      "sequence": 19347,
+      "chapter_label": "JER 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "It will happen, when you tell this people all these words, and they ask you, ‘Why has the LORD pronounced all this great evil against us?’ or ‘What is our iniquity?’ or ‘What is our sin that we have committed against the LORD our God?’",
+      "ko": "네가 이 모든 말로 백성에게 고할 때에 그들이 네게 묻기를 여호와께서 우리에게 이 모든 큰 재앙을 광포하심은 어찜이며 우리의 죄악은 무엇이며 우리가 우리 하나님 여호와께 범한 죄는 무엇이뇨 하거든",
+      "source_text_hash": "2ce7ca3cf64b9b1e3e133aaa1f72ec81f2f680f0f55eaf060df2d4397b8033e8",
+      "translation_text_hash": "d3addecc9aba9b745168299f9fee1190f796ca87a85cb8ad279abcca1bedf09c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이 모든 말로 백성에게 고할 때에 그들이 네게 묻기를 여호와께서 우리에게 이 모든 큰 재앙을 광포하심은 어찜이며 우리의 죄악은 무엇이며 우리가 우리 하나님 여호와께 범한 죄는 무엇이뇨 하거든"
+      ],
+      "raw_text_hashes": [
+        "d3addecc9aba9b745168299f9fee1190f796ca87a85cb8ad279abcca1bedf09c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:11",
+      "sequence": 19348,
+      "chapter_label": "JER 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "then you shall tell them, ‘Because your fathers have forsaken me,’ says the LORD, ‘and have walked after other gods, have served them, have worshiped them, have forsaken me, and have not kept my law.",
+      "ko": "너는 그들에게 대답하기를 여호와께서 말씀하시되 너희 열조가 나를 버리고 다른 신들을 좇아서 그들을 섬기며 그들에게 절하고 나를 버려 내 법을 지키지 아니하였음이라",
+      "source_text_hash": "17ee60555dc45bf941728b8823f396e5608ab8504a55287de972caeb06c9fd9f",
+      "translation_text_hash": "5776235a34d6791df97702e126b01ffca089f2ee817bfb0358a0184ee0273005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 대답하기를 여호와께서 말씀하시되 너희 열조가 나를 버리고 다른 신들을 좇아서 그들을 섬기며 그들에게 절하고 나를 버려 내 법을 지키지 아니하였음이라"
+      ],
+      "raw_text_hashes": [
+        "5776235a34d6791df97702e126b01ffca089f2ee817bfb0358a0184ee0273005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:12",
+      "sequence": 19349,
+      "chapter_label": "JER 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "You have done evil more than your fathers, for behold, you each walk after the stubbornness of his evil heart, so that you don’t listen to me.",
+      "ko": "너희가 너희 열조보다 더욱 악을 행하였도다 보라 너희가 각기 악한 마음의 강퍅함을 따라 행하고 나를 청종치 아니하였으므로",
+      "source_text_hash": "7c1289713f853db6ce1b8d487eddd247c05284c04bbc66159a6fa30c223eaeea",
+      "translation_text_hash": "fe8272341111a924fae24b057a18bbc938b9403b87a451109c3400773cbab2b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희 열조보다 더욱 악을 행하였도다 보라 너희가 각기 악한 마음의 강퍅함을 따라 행하고 나를 청종치 아니하였으므로"
+      ],
+      "raw_text_hashes": [
+        "fe8272341111a924fae24b057a18bbc938b9403b87a451109c3400773cbab2b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:13",
+      "sequence": 19350,
+      "chapter_label": "JER 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I will cast you out of this land into the land that you have not known, neither you nor your fathers. There you will serve other gods day and night, for I will show you no favor.’",
+      "ko": "내가 너희를 이 땅에서 쫓아내어 너희와 너희 열조의 알지 못하던 땅에 이르게 할 것이라 너희가 거기서 주야로 다른 신들을 섬기리니 이는 내가 너희에게 은혜를 베풀지 아니함이라 하셨다 하라",
+      "source_text_hash": "d2acc6acc86a235949ba2987f0df62015bc20b5f597155fb41a0a9f3fef7a1fe",
+      "translation_text_hash": "514d0959155cfc13712b774a01ab45793ce111b8c537cc73a68ea001e7475482",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 이 땅에서 쫓아내어 너희와 너희 열조의 알지 못하던 땅에 이르게 할 것이라 너희가 거기서 주야로 다른 신들을 섬기리니 이는 내가 너희에게 은혜를 베풀지 아니함이라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "514d0959155cfc13712b774a01ab45793ce111b8c537cc73a68ea001e7475482"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:14",
+      "sequence": 19351,
+      "chapter_label": "JER 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "“Therefore behold, the days come,” says the LORD, “that it will no more be said, ‘As the LORD lives, who brought up the children of Israel out of the land of Egypt;’",
+      "ko": "여호와께서 가라사대 그러나 보라 날이 이르리니 다시는 이스라엘 자손을 애굽 땅에서 인도하여 내신 여호와의 사심으로 맹세하지 아니하고",
+      "source_text_hash": "ea81085db5a2216e2874bbb88536de63186bfe0245c4fa4089e860f9be8047b2",
+      "translation_text_hash": "a85bfc49e30d94f0c5a1de21bd79ba17fa4cc08e2278a62dab99a12c2d27267b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 그러나 보라 날이 이르리니 다시는 이스라엘 자손을 애굽 땅에서 인도하여 내신 여호와의 사심으로 맹세하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "a85bfc49e30d94f0c5a1de21bd79ba17fa4cc08e2278a62dab99a12c2d27267b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:15",
+      "sequence": 19352,
+      "chapter_label": "JER 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "but, ‘As the LORD lives, who brought up the children of Israel from the land of the north, and from all the countries where he had driven them.’ I will bring them again into their land that I gave to their fathers.",
+      "ko": "이스라엘 자손을 북방 땅과 그 모든 쫓겨났던 나라에서 인도하여 내신 여호와의 사심으로 맹세하리라 내가 그들을 그 열조에게 준 그들의 땅으로 인도하여 들이리라",
+      "source_text_hash": "a2595173f7b53c6403e513c054b42e490b368b1c370cb1e1231741001a951f98",
+      "translation_text_hash": "a14dbb1df6a7638425274d25e57595336471ca02f1180875dce072dd9d47e1bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손을 북방 땅과 그 모든 쫓겨났던 나라에서 인도하여 내신 여호와의 사심으로 맹세하리라 내가 그들을 그 열조에게 준 그들의 땅으로 인도하여 들이리라"
+      ],
+      "raw_text_hashes": [
+        "a14dbb1df6a7638425274d25e57595336471ca02f1180875dce072dd9d47e1bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:16",
+      "sequence": 19353,
+      "chapter_label": "JER 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "“Behold, I will send for many fishermen,” says the LORD, “and they will fish them up. Afterward I will send for many hunters, and they will hunt them from every mountain, from every hill, and out of the clefts of the rocks.",
+      "ko": "여호와께서 가라사대 보라 내가 많은 어부를 불러다가 그들을 낚게 하며 그 후에 많은 포수를 불러다가 그들을 모든 산과 모든 작은 산과 암혈에서 사냥하게 하리니",
+      "source_text_hash": "ed06c2f6f4d11a8a1f5957686d83d4b0aaef649153e64b74af9a606e01f4cab0",
+      "translation_text_hash": "f1512ebca379ce684766f26fa4cb0163121116175b7e5bc40f5fd1290f424cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 내가 많은 어부를 불러다가 그들을 낚게 하며 그 후에 많은 포수를 불러다가 그들을 모든 산과 모든 작은 산과 암혈에서 사냥하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "f1512ebca379ce684766f26fa4cb0163121116175b7e5bc40f5fd1290f424cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:17",
+      "sequence": 19354,
+      "chapter_label": "JER 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "For my eyes are on all their ways. They are not hidden from my face. Their iniquity isn’t concealed from my eyes.",
+      "ko": "이는 내 눈이 그들의 행위를 감찰하므로 그들이 내 얼굴 앞에서 숨김을 얻지 못하며 그들의 죄악이 내 목전에서 은폐되지 못함이라",
+      "source_text_hash": "9ced694dc2a5c181133a696b14a2f5b6b3034c913f75a79894df90c9a6fb38af",
+      "translation_text_hash": "bd5a00794d32595133bf7a674a001723e8334f1824eecb24ce07c27d83c8a70c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 눈이 그들의 행위를 감찰하므로 그들이 내 얼굴 앞에서 숨김을 얻지 못하며 그들의 죄악이 내 목전에서 은폐되지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "bd5a00794d32595133bf7a674a001723e8334f1824eecb24ce07c27d83c8a70c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:18",
+      "sequence": 19355,
+      "chapter_label": "JER 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "First I will recompense their iniquity and their sin double, because they have polluted my land with the carcasses of their detestable things, and have filled my inheritance with their abominations.”",
+      "ko": "내가 위선 그들의 악과 죄를 배나 갚을 것은 그들이 그 미운 물건의 시체로 내 땅을 더럽히며 그들의 가증한 것으로 내 산업에 가득하게 하였음이니라",
+      "source_text_hash": "3412a992d810db91c8441d060ec62c689a886a884205aaa9b040dd42c89b9977",
+      "translation_text_hash": "bea695dec5981de962326760564847d8e227e5222648d525154f7429bd556c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 위선 그들의 악과 죄를 배나 갚을 것은 그들이 그 미운 물건의 시체로 내 땅을 더럽히며 그들의 가증한 것으로 내 산업에 가득하게 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "bea695dec5981de962326760564847d8e227e5222648d525154f7429bd556c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:19",
+      "sequence": 19356,
+      "chapter_label": "JER 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "LORD, my strength, my stronghold, and my refuge in the day of affliction, the nations will come to you from the ends of the earth, and will say, “Our fathers have inherited nothing but lies, vanity and things in which there is no profit.",
+      "ko": "여호와 나의 힘, 나의 보장, 환난날의 피난처시여 열방이 땅 끝에서 주께 이르러 말하기를 우리 열조의 계승한 바는 허무하고 망탄하고 무익한 것 뿐이라",
+      "source_text_hash": "9b95211e3492ae8b19f858ddb71e3a0bd4c74faf32b521e87b2d4bec203a9e6f",
+      "translation_text_hash": "a01abe7f8662c328c079e2709dc921ec9c0050e72cbf71b107a15c469752cc69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 나의 힘, 나의 보장, 환난날의 피난처시여 열방이 땅 끝에서 주께 이르러 말하기를 우리 열조의 계승한 바는 허무하고 망탄하고 무익한 것 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "a01abe7f8662c328c079e2709dc921ec9c0050e72cbf71b107a15c469752cc69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:20",
+      "sequence": 19357,
+      "chapter_label": "JER 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Should a man make to himself gods which yet are no gods?”",
+      "ko": "인생이 어찌 신 아닌 것을 자기의 신으로 삼겠나이까 하리이다",
+      "source_text_hash": "f10eff6b2271828662569bfa8402b779f8ef6d6c29e3280e0ee178b94d9e342b",
+      "translation_text_hash": "e45bc964d4a68e478f7453be5d5aebd10fd96735cc6c50755f14533d939a9253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생이 어찌 신 아닌 것을 자기의 신으로 삼겠나이까 하리이다"
+      ],
+      "raw_text_hashes": [
+        "e45bc964d4a68e478f7453be5d5aebd10fd96735cc6c50755f14533d939a9253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:16:21",
+      "sequence": 19358,
+      "chapter_label": "JER 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "“Therefore behold, I will cause them to know, this once I will cause them to know my hand and my might. Then they will know that my name is the LORD.”",
+      "ko": "여호와께서 가라사대 보라 이번에 그들에게 내 손과 내 능을 알려서 그들로 내 이름이 여호와인줄 알게 하리라",
+      "source_text_hash": "06860a9f0a71da57a6bb4600b4b5e8f5729fca38c1c9079829625ef3ac15b23a",
+      "translation_text_hash": "2a50425bcf85c8ceecfe0d9f12af6724251913c96eadac4e79de0a71e1f01db6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 이번에 그들에게 내 손과 내 능을 알려서 그들로 내 이름이 여호와인줄 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "2a50425bcf85c8ceecfe0d9f12af6724251913c96eadac4e79de0a71e1f01db6"
+      ]
+    }
+  ]
+}

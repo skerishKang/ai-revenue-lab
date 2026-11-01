@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:025",
+  "unit_ordinal": 653,
+  "unit_label": "PRO 25",
+  "book_code": "PRO",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:25:1",
+      "sequence": 17115,
+      "chapter_label": "PRO 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "These also are proverbs of Solomon, which the men of Hezekiah king of Judah copied out.",
+      "ko": "이것도 솔로몬의 잠언이요 유다 왕 히스기야의 신하들의 편집한 것이니라",
+      "source_text_hash": "7193ce97f689280bf9d53658f98fc0a41a029d5c70844c14e4f32256e71ea356",
+      "translation_text_hash": "2312665c68da1a0f5d0eae16642cf080f0999e5fca0a3ed9c0b98e239aa0f51c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것도 솔로몬의 잠언이요 유다 왕 히스기야의 신하들의 편집한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "2312665c68da1a0f5d0eae16642cf080f0999e5fca0a3ed9c0b98e239aa0f51c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:2",
+      "sequence": 17116,
+      "chapter_label": "PRO 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "It is the glory of God to conceal a thing, but the glory of kings is to search out a matter.",
+      "ko": "일을 숨기는 것은 하나님의 영화요 일을 살피는 것은 왕의 영화니라",
+      "source_text_hash": "5a0f3e333ead0e1b0bb9f524f00bd9fd9e5a5cf49aa099bc09de7126c86d575f",
+      "translation_text_hash": "894f5984c417c79e4dfd7f0759b118e04d4f249c624ae219de3df89ccd38cd10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일을 숨기는 것은 하나님의 영화요 일을 살피는 것은 왕의 영화니라"
+      ],
+      "raw_text_hashes": [
+        "894f5984c417c79e4dfd7f0759b118e04d4f249c624ae219de3df89ccd38cd10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:3",
+      "sequence": 17117,
+      "chapter_label": "PRO 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "As the heavens for height, and the earth for depth, so the hearts of kings are unsearchable.",
+      "ko": "하늘의 높음과 땅의 깊음 같이 왕의 마음은 헤아릴 수 없느니라",
+      "source_text_hash": "2c4391892c3b86c0704a04d20238972c2aca26d85fe0f57c5ea624718b1845e6",
+      "translation_text_hash": "34b22555bcad937a41a16ef2c88465886c3ff29ee59ee2de7ed04febe9ff4085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 높음과 땅의 깊음 같이 왕의 마음은 헤아릴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "34b22555bcad937a41a16ef2c88465886c3ff29ee59ee2de7ed04febe9ff4085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:4",
+      "sequence": 17118,
+      "chapter_label": "PRO 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "Take away the dross from the silver, and material comes out for the refiner.",
+      "ko": "은에서 찌끼를 제하라 그리하면 장색의 쓸만한 그릇이 나올 것이요",
+      "source_text_hash": "5a4cd1e5bea298596979c979ffc659dd15b2dd83255af7d3ef041a068087c849",
+      "translation_text_hash": "67aacea627be7a3d1bb2b2ce07eefeb5c76d97f406d424c6f6477941ddb8371f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은에서 찌끼를 제하라 그리하면 장색의 쓸만한 그릇이 나올 것이요"
+      ],
+      "raw_text_hashes": [
+        "67aacea627be7a3d1bb2b2ce07eefeb5c76d97f406d424c6f6477941ddb8371f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:5",
+      "sequence": 17119,
+      "chapter_label": "PRO 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Take away the wicked from the king’s presence, and his throne will be established in righteousness.",
+      "ko": "왕 앞에서 악한 자를 제하라 그리하면 그 위가 의로 말미암아 견고히 서리라",
+      "source_text_hash": "c1d04564a1ba93fb5a7cbc9e11cbaae89dd940d84216179897c263deb54f9f1f",
+      "translation_text_hash": "1863464a541003f9081fe1c7847bf258aa67441333ca0ea8559c74b55e05f2a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕 앞에서 악한 자를 제하라 그리하면 그 위가 의로 말미암아 견고히 서리라"
+      ],
+      "raw_text_hashes": [
+        "1863464a541003f9081fe1c7847bf258aa67441333ca0ea8559c74b55e05f2a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:6",
+      "sequence": 17120,
+      "chapter_label": "PRO 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t exalt yourself in the presence of the king, or claim a place among great men;",
+      "ko": "왕 앞에서 스스로 높은체 하지말며 대인의 자리에 서지 말라",
+      "source_text_hash": "8fc48b1f9181627dc72af5a7117b5b4d8a41849b1ba09fb6f2e9d428a96542bd",
+      "translation_text_hash": "a9f2942b0d2ad8513f9b89c4ceae80b07aabd1df04063f38641eee857fb25a21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕 앞에서 스스로 높은체 하지말며 대인의 자리에 서지 말라"
+      ],
+      "raw_text_hashes": [
+        "a9f2942b0d2ad8513f9b89c4ceae80b07aabd1df04063f38641eee857fb25a21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:7",
+      "sequence": 17121,
+      "chapter_label": "PRO 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "for it is better that it be said to you, “Come up here,” than that you should be put lower in the presence of the prince, whom your eyes have seen.",
+      "ko": "이는 사람이 너더러 이리로 올라오라 하는 것이 네 눈에 보이는 귀인 앞에서 저리로 내려가라 하는 것보다 나음이니라",
+      "source_text_hash": "30e1653de10d75c7cc81789843832722b123c673420703087f6add69e651657d",
+      "translation_text_hash": "819eb23c989d870e2199bba9bb53f63f06d72031175ff2a5c0eda511ace3a927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 사람이 너더러 이리로 올라오라 하는 것이 네 눈에 보이는 귀인 앞에서 저리로 내려가라 하는 것보다 나음이니라"
+      ],
+      "raw_text_hashes": [
+        "819eb23c989d870e2199bba9bb53f63f06d72031175ff2a5c0eda511ace3a927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:8",
+      "sequence": 17122,
+      "chapter_label": "PRO 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t be hasty in bringing charges to court. What will you do in the end when your neighbor shames you?",
+      "ko": "너는 급거히 나가서 다투지 말라 마침내 네가 이웃에게 욕을 보게 될 때에 네가 어찌할줄을 알지 못할까 두려우니라",
+      "source_text_hash": "fe28a9af2cf5c7396a8950d7dbc4c729a587635551e5bc17467ce6a94c91e4cb",
+      "translation_text_hash": "50544cd3163e7e8fb57a696d7ff12f7dbd79dfe4ffef5fba2d64e2ba69bda7de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 급거히 나가서 다투지 말라 마침내 네가 이웃에게 욕을 보게 될 때에 네가 어찌할줄을 알지 못할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "50544cd3163e7e8fb57a696d7ff12f7dbd79dfe4ffef5fba2d64e2ba69bda7de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:9",
+      "sequence": 17123,
+      "chapter_label": "PRO 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Debate your case with your neighbor, and don’t betray the confidence of another,",
+      "ko": "너는 이웃과 다투거든 변론만 하고 남의 은밀한 일은 누설하지 말라",
+      "source_text_hash": "53bde10b7bb56e28c4782774e2bd93c635d9fdf1fd274bc2571c8dbf0716d100",
+      "translation_text_hash": "7e9014cdf544511865553d70f7c3fd3844258640d74fd1beac6aa2c1a7d82854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이웃과 다투거든 변론만 하고 남의 은밀한 일은 누설하지 말라"
+      ],
+      "raw_text_hashes": [
+        "7e9014cdf544511865553d70f7c3fd3844258640d74fd1beac6aa2c1a7d82854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:10",
+      "sequence": 17124,
+      "chapter_label": "PRO 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "lest one who hears it put you to shame, and your bad reputation never depart.",
+      "ko": "듣는 자가 너를 꾸짖을 터이요 또 수욕이 네게서 떠나지 아니할까 두려우니라",
+      "source_text_hash": "d8ee056b7f8cd59e6bd8089ca03b22a50b1cb93459102d0ccdab8875013f7d0b",
+      "translation_text_hash": "c64bc805b48d1d17aa81bca23b12e51e62f208cf0cadd5c267d6aac17d0f0ecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 자가 너를 꾸짖을 터이요 또 수욕이 네게서 떠나지 아니할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "c64bc805b48d1d17aa81bca23b12e51e62f208cf0cadd5c267d6aac17d0f0ecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:11",
+      "sequence": 17125,
+      "chapter_label": "PRO 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "A word fitly spoken is like apples of gold in settings of silver.",
+      "ko": "경우에 합당한 말은 아로새긴 은쟁반에 금사과니라",
+      "source_text_hash": "815f2e7f339d82e089b7d00d5d45916e50d4af6372ede613302b1b55afb68330",
+      "translation_text_hash": "489cd364d59b2b86344d043bc1f46d2dec6c550e522cba654ff5f7dbd7cec213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경우에 합당한 말은 아로새긴 은쟁반에 금사과니라"
+      ],
+      "raw_text_hashes": [
+        "489cd364d59b2b86344d043bc1f46d2dec6c550e522cba654ff5f7dbd7cec213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:12",
+      "sequence": 17126,
+      "chapter_label": "PRO 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "As an earring of gold, and an ornament of fine gold, so is a wise reprover to an obedient ear.",
+      "ko": "슬기로운 자의 책망은 청종하는 귀에 금고리와 정금 장식이니라",
+      "source_text_hash": "a7bf32ecd4c275572b1829fb5fd3fb0709ba17a6ee3af6fa2a6c8a65703edf6d",
+      "translation_text_hash": "a1a89be39a1255607686d9dc6489fa1d11ecfff206485847a657a170718c25f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬기로운 자의 책망은 청종하는 귀에 금고리와 정금 장식이니라"
+      ],
+      "raw_text_hashes": [
+        "a1a89be39a1255607686d9dc6489fa1d11ecfff206485847a657a170718c25f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:13",
+      "sequence": 17127,
+      "chapter_label": "PRO 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "As the cold of snow in the time of harvest, so is a faithful messenger to those who send him; for he refreshes the soul of his masters.",
+      "ko": "충성된 사자는 그를 보낸 이에게 마치 추수하는 날에 얼음 냉수 같아서 능히 그 주인의 마음을 시원케 하느니라",
+      "source_text_hash": "7991d01b71bda5477567ccd8233ba2e40aa378279b93680ffc86bd486762551a",
+      "translation_text_hash": "9540b70eab0e3935bf6331284daf2f0344966b9626b8b25162e4024a99965753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "충성된 사자는 그를 보낸 이에게 마치 추수하는 날에 얼음 냉수 같아서 능히 그 주인의 마음을 시원케 하느니라"
+      ],
+      "raw_text_hashes": [
+        "9540b70eab0e3935bf6331284daf2f0344966b9626b8b25162e4024a99965753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:14",
+      "sequence": 17128,
+      "chapter_label": "PRO 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "As clouds and wind without rain, so is he who boasts of gifts deceptively.",
+      "ko": "선물한다고 거짓 자랑하는 자는 비 없는 구름과 바람 같으니라",
+      "source_text_hash": "f1ae56871249701936a6a67ef86c7a83cea40dd7a61e2ed16a73a010d915a2f3",
+      "translation_text_hash": "cacf9ea3d4f9cd0dab3e7fb343a74dfcd9dd99f9c6725ec05cc1806c85f37176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선물한다고 거짓 자랑하는 자는 비 없는 구름과 바람 같으니라"
+      ],
+      "raw_text_hashes": [
+        "cacf9ea3d4f9cd0dab3e7fb343a74dfcd9dd99f9c6725ec05cc1806c85f37176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:15",
+      "sequence": 17129,
+      "chapter_label": "PRO 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "By patience a ruler is persuaded. A soft tongue breaks the bone.",
+      "ko": "오래 참으면 관원이 그 말을 용납하나니 부드러운 혀는 뼈를 꺾느니라",
+      "source_text_hash": "7081be2df37dca1615fb67047f085d13c0a5fb9cb701b7644ac3863e2700d443",
+      "translation_text_hash": "27e568248b980f7bab566bb5e091b4deb031f12031d2bb051e13751ee388bed2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오래 참으면 관원이 그 말을 용납하나니 부드러운 혀는 뼈를 꺾느니라"
+      ],
+      "raw_text_hashes": [
+        "27e568248b980f7bab566bb5e091b4deb031f12031d2bb051e13751ee388bed2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:16",
+      "sequence": 17130,
+      "chapter_label": "PRO 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "Have you found honey? Eat as much as is sufficient for you, lest you eat too much, and vomit it.",
+      "ko": "너는 꿀을 만나거든 족하리만큼 먹으라 과식하므로 토할까 두려우니라",
+      "source_text_hash": "c9453105ce90c3b83fa3a2f05f6baa86fdb629460cd024a0c371bca212717d96",
+      "translation_text_hash": "24df2fac69c8227325264950953cd97a3688dd37e0c172996d943fbf12ea73cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 꿀을 만나거든 족하리만큼 먹으라 과식하므로 토할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "24df2fac69c8227325264950953cd97a3688dd37e0c172996d943fbf12ea73cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:17",
+      "sequence": 17131,
+      "chapter_label": "PRO 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "Let your foot be seldom in your neighbor’s house, lest he be weary of you, and hate you.",
+      "ko": "너는 이웃집에 자주 다니지말라 그가 너를 싫어하며 미워할까 두려우니라",
+      "source_text_hash": "82f2346ac4e79c9e24e77437c0836ad37928336c2560515a4ecf08b3230214ea",
+      "translation_text_hash": "8df9ed4c84eae002280eac1d28462051db5c8ed23f8e34f01ae07743c4cbc664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이웃집에 자주 다니지말라 그가 너를 싫어하며 미워할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "8df9ed4c84eae002280eac1d28462051db5c8ed23f8e34f01ae07743c4cbc664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:18",
+      "sequence": 17132,
+      "chapter_label": "PRO 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "A man who gives false testimony against his neighbor is like a club, a sword, or a sharp arrow.",
+      "ko": "그 이웃을 쳐서 거짓 증거하는 사람은 방망이요 칼이요 뾰족한 살이니라",
+      "source_text_hash": "16577efb30fa70f191748c306c0421be63fef29781a05de08ed91716ae9a0240",
+      "translation_text_hash": "b91f7e329958bf4ba5e6b1571a869a66a5d931285a3beb4cba066eb4cd762219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이웃을 쳐서 거짓 증거하는 사람은 방망이요 칼이요 뾰족한 살이니라"
+      ],
+      "raw_text_hashes": [
+        "b91f7e329958bf4ba5e6b1571a869a66a5d931285a3beb4cba066eb4cd762219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:19",
+      "sequence": 17133,
+      "chapter_label": "PRO 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "Confidence in someone unfaithful in time of trouble is like a bad tooth or a lame foot.",
+      "ko": "환난날에 진실치 못한 자를 의뢰하는 의뢰는 부러진 이와 위골된 발 같으니라",
+      "source_text_hash": "49397e4cc7d5d75fe8919718c5d3492a9f29bec2374391bd19affc71bda74bee",
+      "translation_text_hash": "7264de9e01c0efd13191b8cda8ac6700cb7743f5713208a7f3b1802c64c7418d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난날에 진실치 못한 자를 의뢰하는 의뢰는 부러진 이와 위골된 발 같으니라"
+      ],
+      "raw_text_hashes": [
+        "7264de9e01c0efd13191b8cda8ac6700cb7743f5713208a7f3b1802c64c7418d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:20",
+      "sequence": 17134,
+      "chapter_label": "PRO 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "As one who takes away a garment in cold weather, or vinegar on soda, so is one who sings songs to a heavy heart.",
+      "ko": "마음이 상한 자에게 노래하는 것은 추운 날에 옷을 벗음 같고 쏘다 위에 초를 부음 같으니라",
+      "source_text_hash": "0e1249459e8f2019049bfdd67c3b184ab28d7e67c5c63c6374fa08aa9a993ac1",
+      "translation_text_hash": "207e8d13d34f8e99962c9e7c06c9c99565cf63c91b4c389798ef0d675461a726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 상한 자에게 노래하는 것은 추운 날에 옷을 벗음 같고 쏘다 위에 초를 부음 같으니라"
+      ],
+      "raw_text_hashes": [
+        "207e8d13d34f8e99962c9e7c06c9c99565cf63c91b4c389798ef0d675461a726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:21",
+      "sequence": 17135,
+      "chapter_label": "PRO 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "If your enemy is hungry, give him food to eat. If he is thirsty, give him water to drink;",
+      "ko": "네 원수가 배고파하거든 식물을 먹이고 목말라하거든 물을 마시우라",
+      "source_text_hash": "8626a7bb6bdb28ccab5ba986699c503cbd93c2d09f85bbffc520ebe95cc21b8b",
+      "translation_text_hash": "d5e96d0f228428f6ba5b6be7a2e784b1561900f74358f18647412213cf48bdb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 원수가 배고파하거든 식물을 먹이고 목말라하거든 물을 마시우라"
+      ],
+      "raw_text_hashes": [
+        "d5e96d0f228428f6ba5b6be7a2e784b1561900f74358f18647412213cf48bdb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:22",
+      "sequence": 17136,
+      "chapter_label": "PRO 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "for you will heap coals of fire on his head, and the LORD will reward you.",
+      "ko": "그리하는 것은 핀 숯으로 그의 머리에 놓는 것과 일반이요 여호와께서는 네게 상을 주시리라",
+      "source_text_hash": "224eeb5c24e50020a332dabe0826e135e63ba53123dd02fe2c381b48e429f6bd",
+      "translation_text_hash": "30c142b2a027c10319d87f4529eba89359e5ba1fabd433f28de9c47e6ae1d71c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하는 것은 핀 숯으로 그의 머리에 놓는 것과 일반이요 여호와께서는 네게 상을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "30c142b2a027c10319d87f4529eba89359e5ba1fabd433f28de9c47e6ae1d71c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:23",
+      "sequence": 17137,
+      "chapter_label": "PRO 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "The north wind produces rain; so a backbiting tongue brings an angry face.",
+      "ko": "북풍이 비를 일으킴 같이 참소하는 혀는 사람의 얼굴에 분을 일으키느니라",
+      "source_text_hash": "0f883c0af124bd097dcad2a90bcacda82ad225dd2241e342f57057ac7709ebcf",
+      "translation_text_hash": "d12bc2f2324eae0c3ad1889c79fcdd27cf959fa823d8b3b280581bc061d6ca9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북풍이 비를 일으킴 같이 참소하는 혀는 사람의 얼굴에 분을 일으키느니라"
+      ],
+      "raw_text_hashes": [
+        "d12bc2f2324eae0c3ad1889c79fcdd27cf959fa823d8b3b280581bc061d6ca9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:24",
+      "sequence": 17138,
+      "chapter_label": "PRO 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "It is better to dwell in the corner of the housetop than to share a house with a contentious woman.",
+      "ko": "다투는 여인과 함께 큰 집에서 사는 것보다 움막에서 혼자 사는 것이 나으니라",
+      "source_text_hash": "45bf5b26b9a5a8540f2fc8ece891f3740fcecd75c5d8d6a2ba756e3ad0012efe",
+      "translation_text_hash": "95d3393e5001b3a46ecff96196415695377c8e850a46e5c9aeb168bde8062536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다투는 여인과 함께 큰 집에서 사는 것보다 움막에서 혼자 사는 것이 나으니라"
+      ],
+      "raw_text_hashes": [
+        "95d3393e5001b3a46ecff96196415695377c8e850a46e5c9aeb168bde8062536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:25",
+      "sequence": 17139,
+      "chapter_label": "PRO 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "Like cold water to a thirsty soul, so is good news from a far country.",
+      "ko": "먼 땅에서 오는 좋은 기별은 목마른 사람에게 냉수 같으니라",
+      "source_text_hash": "7f22c09a7489f07acdf3ba681a558840d696cdd8b8db03317fd1b7db550ed33a",
+      "translation_text_hash": "5020cb7fe30e17f404d725b19ccb867590e13957beaaf027ef0aa579f5a2b02a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼 땅에서 오는 좋은 기별은 목마른 사람에게 냉수 같으니라"
+      ],
+      "raw_text_hashes": [
+        "5020cb7fe30e17f404d725b19ccb867590e13957beaaf027ef0aa579f5a2b02a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:26",
+      "sequence": 17140,
+      "chapter_label": "PRO 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "Like a muddied spring and a polluted well, so is a righteous man who gives way before the wicked.",
+      "ko": "의인이 악인 앞에 굴복하는 것은 우물의 흐리어짐과 샘의 더러워짐 같으니라",
+      "source_text_hash": "faa6749533a8974aa73051b6b207ce34fbced05eb7f7dfede37217fa824f6eb3",
+      "translation_text_hash": "5218f4f0f2495de01a6e14c02d19177aa70f481a0b0a3397dcd88ebc1aafcb2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 악인 앞에 굴복하는 것은 우물의 흐리어짐과 샘의 더러워짐 같으니라"
+      ],
+      "raw_text_hashes": [
+        "5218f4f0f2495de01a6e14c02d19177aa70f481a0b0a3397dcd88ebc1aafcb2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:27",
+      "sequence": 17141,
+      "chapter_label": "PRO 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "It is not good to eat much honey, nor is it honorable to seek one’s own honor.",
+      "ko": "꿀을 많이 먹는 것이 좋지 못하고 자기의 영예를 구하는 것이 헛되니라",
+      "source_text_hash": "ec9f73207b8946a6724570abe34538f30180a5a4f86354b6b0a21fc90fbcb619",
+      "translation_text_hash": "be06c3d420fb9b419763454a1603ce2125a2b88d81ff529dfe0df9e6ecbb75b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꿀을 많이 먹는 것이 좋지 못하고 자기의 영예를 구하는 것이 헛되니라"
+      ],
+      "raw_text_hashes": [
+        "be06c3d420fb9b419763454a1603ce2125a2b88d81ff529dfe0df9e6ecbb75b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:25:28",
+      "sequence": 17142,
+      "chapter_label": "PRO 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "Like a city that is broken down and without walls is a man whose spirit is without restraint.",
+      "ko": "자기의 마음을 제어하지 아니하는 자는 성읍이 무너지고 성벽이 없는 것 같으니라",
+      "source_text_hash": "1259eb5c3ac72dc28a82025cd12c3b9043e34103f65a3a6d81926169fc9499f8",
+      "translation_text_hash": "091002c029f5c1923e5d093db16ff0cb0dc1b9d791049471d0b25cb8daff6ab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 마음을 제어하지 아니하는 자는 성읍이 무너지고 성벽이 없는 것 같으니라"
+      ],
+      "raw_text_hashes": [
+        "091002c029f5c1923e5d093db16ff0cb0dc1b9d791049471d0b25cb8daff6ab6"
+      ]
+    }
+  ]
+}

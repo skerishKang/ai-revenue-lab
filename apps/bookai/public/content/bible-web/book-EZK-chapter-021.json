@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:021",
+  "unit_ordinal": 823,
+  "unit_label": "EZK 21",
+  "book_code": "EZK",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:21:1",
+      "sequence": 20946,
+      "chapter_label": "EZK 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:2",
+      "sequence": 20947,
+      "chapter_label": "EZK 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, set your face toward Jerusalem, and preach toward the sanctuaries, and prophesy against the land of Israel.",
+      "ko": "인자야 너는 얼굴을 예루살렘으로 향하며 성소를 향하여 소리내어 이스라엘 땅을 쳐서 예언하라",
+      "source_text_hash": "6f707a5a440583a278db8addf472567c3fe26088c3c2adc09d37593cc1748606",
+      "translation_text_hash": "c96cf14f8ee6e54ea85976fda7a0b34fcec08450eed0c877207653b6f191a2c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 얼굴을 예루살렘으로 향하며 성소를 향하여 소리내어 이스라엘 땅을 쳐서 예언하라"
+      ],
+      "raw_text_hashes": [
+        "c96cf14f8ee6e54ea85976fda7a0b34fcec08450eed0c877207653b6f191a2c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:3",
+      "sequence": 20948,
+      "chapter_label": "EZK 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Tell the land of Israel, ‘The LORD says: “Behold, I am against you, and will draw my sword out of its sheath, and will cut off from you the righteous and the wicked.",
+      "ko": "이스라엘 땅에게 이르기를 여호와의 말씀에 내가 너를 대적하여 내 칼을 집에서 빼어 의인과 악인을 네게서 끊을찌라",
+      "source_text_hash": "b9f867c8b8082314d5de678eae04c57925bc0f1ca1aee81863060a10e1466772",
+      "translation_text_hash": "7667ed18ab6ac969e299bc21d4748143b90e405750fb50af95ccda3d18963ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 땅에게 이르기를 여호와의 말씀에 내가 너를 대적하여 내 칼을 집에서 빼어 의인과 악인을 네게서 끊을찌라"
+      ],
+      "raw_text_hashes": [
+        "7667ed18ab6ac969e299bc21d4748143b90e405750fb50af95ccda3d18963ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:4",
+      "sequence": 20949,
+      "chapter_label": "EZK 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Seeing then that I will cut off from you the righteous and the wicked, therefore my sword will go out of its sheath against all flesh from the south to the north.",
+      "ko": "내가 의인과 악인을 네게서 끊을터이므로 내 칼을 집에서 빼어 무릇 혈기 있는 자를 남에서 북까지 치리니",
+      "source_text_hash": "5d71c60e78d82c5aaada3c5b88f377607f7e7e8767a20ce9820041dcc2de10a3",
+      "translation_text_hash": "10343300a98145022015546fe6357923a30a173e23add41b0760e434ebe8d279",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 의인과 악인을 네게서 끊을터이므로 내 칼을 집에서 빼어 무릇 혈기 있는 자를 남에서 북까지 치리니"
+      ],
+      "raw_text_hashes": [
+        "10343300a98145022015546fe6357923a30a173e23add41b0760e434ebe8d279"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:5",
+      "sequence": 20950,
+      "chapter_label": "EZK 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "All flesh will know that I, the LORD, have drawn my sword out of its sheath. It will not return any more.”’",
+      "ko": "무릇 혈기 있는 자는 나 여호와가 내 칼을 집에서 빼어낸 줄을 알찌라 칼이 다시 꽂혀지지 아니하리라 하셨다 하라",
+      "source_text_hash": "5d89c419c382144ef3972b5df0799eafbb5f65543bec9b4de7b5d16542301ee3",
+      "translation_text_hash": "60caf0440691e22a7e4247c785b364186659dfe7f581fc776203023402352e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 혈기 있는 자는 나 여호와가 내 칼을 집에서 빼어낸 줄을 알찌라 칼이 다시 꽂혀지지 아니하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "60caf0440691e22a7e4247c785b364186659dfe7f581fc776203023402352e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:6",
+      "sequence": 20951,
+      "chapter_label": "EZK 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "“Therefore sigh, you son of man. You shall sigh before their eyes with a broken heart and with bitterness.",
+      "ko": "인자야 너는 탄식하되 허리가 끊어지는듯이 그들의 목전에서 슬피 탄식하라",
+      "source_text_hash": "d19e4ee689469a732b2c656da52faae7757690a86ff37417f6653c962d47376a",
+      "translation_text_hash": "ebd1d1c33442cbf2984bdc8ac03c9e04ae7b2701576f9b9144b98628915ab81f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 탄식하되 허리가 끊어지는듯이 그들의 목전에서 슬피 탄식하라"
+      ],
+      "raw_text_hashes": [
+        "ebd1d1c33442cbf2984bdc8ac03c9e04ae7b2701576f9b9144b98628915ab81f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:7",
+      "sequence": 20952,
+      "chapter_label": "EZK 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "It shall be, when they ask you, ‘Why do you sigh?’ that you shall say, ‘Because of the news, for it comes! Every heart will melt, all hands will be feeble, every spirit will faint, and all knees will be weak as water. Behold, it comes, and it shall be done, says the Lord GOD.’”",
+      "ko": "그들이 네게 묻기를 네가 어찌하여 탄식하느냐 하거든 대답하기를 소문을 인함이라 재앙이 오나니 각 마음이 녹으며 모든 손이 약하여지며 각 영이 쇠하며 모든 무릎이 물과 같이 약하리라 보라 재앙이 오나니 정녕 이루리라 나 주 여호와의 말이니라 하라",
+      "source_text_hash": "5b8c97757a424ac33333c6d629862525cc2e7bce5961d799655ad250633a8969",
+      "translation_text_hash": "57f23c17d41f05ecfd82dfd2844cfa05b817c0e577ce9a99c98995fa8108fe0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네게 묻기를 네가 어찌하여 탄식하느냐 하거든 대답하기를 소문을 인함이라 재앙이 오나니 각 마음이 녹으며 모든 손이 약하여지며 각 영이 쇠하며 모든 무릎이 물과 같이 약하리라 보라 재앙이 오나니 정녕 이루리라 나 주 여호와의 말이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "57f23c17d41f05ecfd82dfd2844cfa05b817c0e577ce9a99c98995fa8108fe0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:8",
+      "sequence": 20953,
+      "chapter_label": "EZK 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:9",
+      "sequence": 20954,
+      "chapter_label": "EZK 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "“Son of man, prophesy, and say, ‘The LORD says: “A sword! A sword! It is sharpened, and also polished.",
+      "ko": "인자야 너는 예언하여 이르기를 여호와의 말씀에 칼이여 칼이여 날카롭고도 마광되었도다",
+      "source_text_hash": "51d60ca14cc031e69b43676262f9688bd8b1ef4684041346d3bf23a9ff481392",
+      "translation_text_hash": "46008d76c4f897c0b8b3acb5f901b6eee707c8a2504c8832d3ea605e36202fec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 예언하여 이르기를 여호와의 말씀에 칼이여 칼이여 날카롭고도 마광되었도다"
+      ],
+      "raw_text_hashes": [
+        "46008d76c4f897c0b8b3acb5f901b6eee707c8a2504c8832d3ea605e36202fec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:10",
+      "sequence": 20955,
+      "chapter_label": "EZK 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "It is sharpened that it may make a slaughter. It is polished that it may be as lightning. Should we then make mirth? The rod of my son condemns every tree.",
+      "ko": "그 칼이 날카로움은 살륙을 위함이요 마광됨은 번개 같이 되기 위함이니 우리가 즐거워하겠느냐 내 아들의 홀이 모든 나무를 업신여기는도다",
+      "source_text_hash": "0e8bb7b3089f33520d20f229dd8eff02a5ff71c01840a53db85c53add4eadde7",
+      "translation_text_hash": "834a764722b9221d32bdb7b71c3d257028ddf7272864e71477c2d3200bca79c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 칼이 날카로움은 살륙을 위함이요 마광됨은 번개 같이 되기 위함이니 우리가 즐거워하겠느냐 내 아들의 홀이 모든 나무를 업신여기는도다"
+      ],
+      "raw_text_hashes": [
+        "834a764722b9221d32bdb7b71c3d257028ddf7272864e71477c2d3200bca79c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:11",
+      "sequence": 20956,
+      "chapter_label": "EZK 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "It is given to be polished, that it may be handled. The sword is sharpened. Yes, it is polished to give it into the hand of the killer.”’",
+      "ko": "그 칼이 손에 잡아 쓸만하도록 마광되되 살륙하는 자의 손에 붙이기 위하여 날카롭고도 마광되었도다 하셨다 하라",
+      "source_text_hash": "4eadd0c71805599ae74548c2fdc83fbae11694f54df1c077dcd05402b47d2e38",
+      "translation_text_hash": "b2174624170cff352b02327be35c01ccb62c1c284e3e7523c745e93692d2a7d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 칼이 손에 잡아 쓸만하도록 마광되되 살륙하는 자의 손에 붙이기 위하여 날카롭고도 마광되었도다 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "b2174624170cff352b02327be35c01ccb62c1c284e3e7523c745e93692d2a7d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:12",
+      "sequence": 20957,
+      "chapter_label": "EZK 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "Cry and wail, son of man; for it is on my people. It is on all the princes of Israel. They are delivered over to the sword with my people. Therefore beat your thigh.",
+      "ko": "인자야 너는 부르짖어 슬피 울찌어다 이것이 내 백성에게 임하며 이스라엘 모든 방백에게 임함이로다 그들과 내 백성이 함께 칼에 붙인바 되었으니 너는 네 넓적다리를 칠찌어다",
+      "source_text_hash": "c1e5b595e916b58430a9b1e7ccd633ca86c1b8665d9c505c3b871fafe3a7f695",
+      "translation_text_hash": "0a116b6c33b3c6ccf11baf0e1c079f055dec361adbab59a378668cec698791b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 부르짖어 슬피 울찌어다 이것이 내 백성에게 임하며 이스라엘 모든 방백에게 임함이로다 그들과 내 백성이 함께 칼에 붙인바 되었으니 너는 네 넓적다리를 칠찌어다"
+      ],
+      "raw_text_hashes": [
+        "0a116b6c33b3c6ccf11baf0e1c079f055dec361adbab59a378668cec698791b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:13",
+      "sequence": 20958,
+      "chapter_label": "EZK 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "“For there is a trial. What if even the rod that condemns will be no more?” says the Lord GOD.",
+      "ko": "이것이 시험이라 만일 업신여기는 홀이 없어지면 어찌할꼬 나 주 여호와의 말이니라",
+      "source_text_hash": "5e4eebf7d8990fa4dbf651c30d0c9ded41a62e1b4e7b0f796debc660ce625d6e",
+      "translation_text_hash": "b254f0809b22d7a1f29c339e09be18d6e01b46a71ffd8745278945658ce24f1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 시험이라 만일 업신여기는 홀이 없어지면 어찌할꼬 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "b254f0809b22d7a1f29c339e09be18d6e01b46a71ffd8745278945658ce24f1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:14",
+      "sequence": 20959,
+      "chapter_label": "EZK 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "“You therefore, son of man, prophesy, and strike your hands together. Let the sword be doubled the third time, the sword of the fatally wounded. It is the sword of the great one who is fatally wounded, which enters into their rooms.",
+      "ko": "그러므로 인자야 너는 예언하며 손뼉을 쳐서 칼로 세번 거듭 씌우게 하라 이 칼은 중상케 하는 칼이라 밀실에 들어가서 대인을 중상케 하는 칼이로다",
+      "source_text_hash": "dcb26dc19eb29f5849294098f537280e704119888d8d309a8674c3e84692b565",
+      "translation_text_hash": "5a5beeb26537866344644e52485553a1fd689e77621ae32efaa8c492e6ed7298",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 인자야 너는 예언하며 손뼉을 쳐서 칼로 세번 거듭 씌우게 하라 이 칼은 중상케 하는 칼이라 밀실에 들어가서 대인을 중상케 하는 칼이로다"
+      ],
+      "raw_text_hashes": [
+        "5a5beeb26537866344644e52485553a1fd689e77621ae32efaa8c492e6ed7298"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:15",
+      "sequence": 20960,
+      "chapter_label": "EZK 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "I have set the threatening sword against all their gates, that their heart may melt, and their stumblings be multiplied. Ah! It is made as lightning. It is pointed for slaughter.",
+      "ko": "내가 그들로 낙담하여 많이 엎드러지게 하려고 그 모든 성문을 향하여 번쩍 번쩍하는 칼을 베풀었도다 오호라 그 칼이 번개 같고 살륙을 위하여 날카로왔도다",
+      "source_text_hash": "63cb05ef5b50a63a084b4e670601e79c6317838b18773358977181add4ae815c",
+      "translation_text_hash": "007a458a635962a01572cfd324dfc32ec5bbdde44afd27b9210555f9bac02783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들로 낙담하여 많이 엎드러지게 하려고 그 모든 성문을 향하여 번쩍 번쩍하는 칼을 베풀었도다 오호라 그 칼이 번개 같고 살륙을 위하여 날카로왔도다"
+      ],
+      "raw_text_hashes": [
+        "007a458a635962a01572cfd324dfc32ec5bbdde44afd27b9210555f9bac02783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:16",
+      "sequence": 20961,
+      "chapter_label": "EZK 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "Gather yourselves together. Go to the right. Set yourselves in array. Go to the left, wherever your face is set.",
+      "ko": "칼아 모이라 우향하라 항오를 차리라 좌향하라 향한대로 가라",
+      "source_text_hash": "664bb094dd22af088b8e5fafb548f00dace8bd02e6eee25330a671b68a8c4d90",
+      "translation_text_hash": "8d228fbd1642eb0c1dbfbba825ff7e51100ca7098fb74f56f89b4fe0c8b58e03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼아 모이라 우향하라 항오를 차리라 좌향하라 향한대로 가라"
+      ],
+      "raw_text_hashes": [
+        "8d228fbd1642eb0c1dbfbba825ff7e51100ca7098fb74f56f89b4fe0c8b58e03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:17",
+      "sequence": 20962,
+      "chapter_label": "EZK 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "I will also strike my hands together, and I will cause my wrath to rest. I, the LORD, have spoken it.”",
+      "ko": "나도 내 손뼉을 치며 내 분을 다 하리로다 나 여호와의 말이니라",
+      "source_text_hash": "ee46e47a6dfd90b29c035dce86a79ef978b3cdf4c38f24bc47490b35b60c93f9",
+      "translation_text_hash": "5ace2fb43843466ac4a97f865cc19a9dcd80759a7c80a6db5faf0967d91ed7a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 내 손뼉을 치며 내 분을 다 하리로다 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "5ace2fb43843466ac4a97f865cc19a9dcd80759a7c80a6db5faf0967d91ed7a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:18",
+      "sequence": 20963,
+      "chapter_label": "EZK 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD’s word came to me again, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "75e00c1ef64aec17e19233e5c7e19ad541bb14634f6810aff1329c92f9d2c6f9",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:19",
+      "sequence": 20964,
+      "chapter_label": "EZK 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "“Also, you son of man, appoint two ways, that the sword of the king of Babylon may come. They both will come out of one land, and mark out a place. Mark it out at the head of the way to the city.",
+      "ko": "인자야 너는 바벨론 왕의 칼이 올 두 길을 한 땅에서 나오도록 그리되 곧 성으로 들어가는 길 머리에다가 길이 나뉘는 지시표를 하여",
+      "source_text_hash": "94c5ca35be8a3bd35ffc2623428fed7a8abc90cc389124c80b4dc8a6fa7d6a39",
+      "translation_text_hash": "d1b0b8cacdc6afdb9ac24b6b55dc7b5f834bfdfb7891fe30066ace21fc9c6846",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 바벨론 왕의 칼이 올 두 길을 한 땅에서 나오도록 그리되 곧 성으로 들어가는 길 머리에다가 길이 나뉘는 지시표를 하여"
+      ],
+      "raw_text_hashes": [
+        "d1b0b8cacdc6afdb9ac24b6b55dc7b5f834bfdfb7891fe30066ace21fc9c6846"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:20",
+      "sequence": 20965,
+      "chapter_label": "EZK 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "You shall appoint a way for the sword to come to Rabbah of the children of Ammon, and to Judah in Jerusalem the fortified.",
+      "ko": "칼이 암몬 족속의 랍바에 이르는 길과 유다 견고한 성 예루살렘에 이르는 길을 그리라",
+      "source_text_hash": "716b7966297fc269e8c681464976b924e45c195ddcbd26a0fb8cb378ea75ef38",
+      "translation_text_hash": "8235273faea8290c7df7bc887dd2bd4e67a80b0892bfbc7fa07784ed27a6645e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼이 암몬 족속의 랍바에 이르는 길과 유다 견고한 성 예루살렘에 이르는 길을 그리라"
+      ],
+      "raw_text_hashes": [
+        "8235273faea8290c7df7bc887dd2bd4e67a80b0892bfbc7fa07784ed27a6645e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:21",
+      "sequence": 20966,
+      "chapter_label": "EZK 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "For the king of Babylon stood at the parting of the way, at the head of the two ways, to use divination. He shook the arrows back and forth. He consulted the teraphim. He looked in the liver.",
+      "ko": "바벨론 왕이 갈랫길 곧 두 길 머리에 서서 점을 치되 살들을 흔들어 우상에게 묻고 희생의 간을 살펴서",
+      "source_text_hash": "155ad3975d40afe42ec24a14063a7a957ee17b536eba46eac906e117ac0ab6d5",
+      "translation_text_hash": "59c6ba62276fba9e105655beb2b31204744b3fc323114e59f4172d66f4493f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 갈랫길 곧 두 길 머리에 서서 점을 치되 살들을 흔들어 우상에게 묻고 희생의 간을 살펴서"
+      ],
+      "raw_text_hashes": [
+        "59c6ba62276fba9e105655beb2b31204744b3fc323114e59f4172d66f4493f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:22",
+      "sequence": 20967,
+      "chapter_label": "EZK 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "In his right hand was the lot for Jerusalem, to set battering rams, to open the mouth in the slaughter, to lift up the voice with shouting, to set battering rams against the gates, to cast up mounds, and to build forts.",
+      "ko": "오른손에 예루살렘으로 갈 점괘를 얻었으므로 공성퇴를 베풀며 입을 벌리고 살륙하며 소리를 높여 외치며 성문을 향하여 공성퇴를 베풀고 토성을 쌓고 운제를 세우게 되었나니",
+      "source_text_hash": "2ad2e2f0c730b180bdce1f3ebfdbd41ceda94d6a8639e3d322d20179c24b8293",
+      "translation_text_hash": "2af2b1cfd7eb089ba614421c69dbc7a9e04ab40d19373199eef6408b57ae5528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오른손에 예루살렘으로 갈 점괘를 얻었으므로 공성퇴를 베풀며 입을 벌리고 살륙하며 소리를 높여 외치며 성문을 향하여 공성퇴를 베풀고 토성을 쌓고 운제를 세우게 되었나니"
+      ],
+      "raw_text_hashes": [
+        "2af2b1cfd7eb089ba614421c69dbc7a9e04ab40d19373199eef6408b57ae5528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:23",
+      "sequence": 20968,
+      "chapter_label": "EZK 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "It will be to them as a false divination in their sight, who have sworn oaths to them; but he brings iniquity to memory, that they may be taken.",
+      "ko": "전에 그들에게 맹약한 자들은 그것을 헛점으로 여길 것이나 바벨론 왕은 그 죄악을 기억하고 그 무리를 잡으리라",
+      "source_text_hash": "7abd6e1301ff4660aa9213cf4d56a6d2c8f9511eec5d94a7e1629d9c4a4b61c6",
+      "translation_text_hash": "f8001ee922824e6b23413b0fe972dc0a373b63b246f5a7845eab63fd2853fec3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 그들에게 맹약한 자들은 그것을 헛점으로 여길 것이나 바벨론 왕은 그 죄악을 기억하고 그 무리를 잡으리라"
+      ],
+      "raw_text_hashes": [
+        "f8001ee922824e6b23413b0fe972dc0a373b63b246f5a7845eab63fd2853fec3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:24",
+      "sequence": 20969,
+      "chapter_label": "EZK 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘Because you have caused your iniquity to be remembered, in that your transgressions are uncovered, so that in all your doings your sins appear; because you have come to memory, you will be taken with the hand.",
+      "ko": "그러므로 나 주 여호와가 말하노라 너희의 악이 기억을 일으키며 너희의 건과가 드러나며 너희 모든 행위의 죄가 나타났도다 너희가 기억한바 되었은즉 그 손에 잡히리라",
+      "source_text_hash": "380e5d1e3116a81211134ae1eef986aa4e157f7c633a9aa267c97412c9177f99",
+      "translation_text_hash": "456c316819462407f3ee285bfa1aafcdfab1745bbd419da1fe21098cae321bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 너희의 악이 기억을 일으키며 너희의 건과가 드러나며 너희 모든 행위의 죄가 나타났도다 너희가 기억한바 되었은즉 그 손에 잡히리라"
+      ],
+      "raw_text_hashes": [
+        "456c316819462407f3ee285bfa1aafcdfab1745bbd419da1fe21098cae321bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:25",
+      "sequence": 20970,
+      "chapter_label": "EZK 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "“‘You, deadly wounded wicked one, the prince of Israel, whose day has come, in the time of the iniquity of the end,",
+      "ko": "너 극악하여 중상을 당할 이스라엘 왕아 네 날이 이르렀나니 곧 죄악의 끝 때니라",
+      "source_text_hash": "698a588828e558c42ab8873c05918078bf255cbffa182503c79f955b2111bacc",
+      "translation_text_hash": "a0f3192e7094f578a2cb13a9eabc0187817115f3d12d3b7d89508570b17d3301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 극악하여 중상을 당할 이스라엘 왕아 네 날이 이르렀나니 곧 죄악의 끝 때니라"
+      ],
+      "raw_text_hashes": [
+        "a0f3192e7094f578a2cb13a9eabc0187817115f3d12d3b7d89508570b17d3301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:26",
+      "sequence": 20971,
+      "chapter_label": "EZK 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "the Lord GOD says: “Remove the turban, and take off the crown. This will not be as it was. Exalt that which is low, and humble that which is high.",
+      "ko": "나 주 여호와가 말하노라 관을 제하며 면류관을 벗길찌라 그대로 두지 못하리니 낮은 자를 높이고 높은 자를 낮출 것이니라",
+      "source_text_hash": "e3a0a405638eb8165026bcf463e3d4cd9da058783970d4230cf4d811a5921e07",
+      "translation_text_hash": "3281a5854cd12ce84701ae6ba0f3c4f15a6494486bfd7687ac7815d7a3e2dff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 관을 제하며 면류관을 벗길찌라 그대로 두지 못하리니 낮은 자를 높이고 높은 자를 낮출 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3281a5854cd12ce84701ae6ba0f3c4f15a6494486bfd7687ac7815d7a3e2dff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:27",
+      "sequence": 20972,
+      "chapter_label": "EZK 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "I will overturn, overturn, overturn it. This also will be no more, until he comes whose right it is; and I will give it.”’",
+      "ko": "내가 엎드러뜨리고 엎드러뜨리고 엎드러뜨리려니와 이것도 다시 있지 못하리라 마땅히 얻을 자가 이르면 그에게 주리라",
+      "source_text_hash": "5de74539ea65903859235d9a62756e814cdbca6181aa60a2eddab33bc581d6f8",
+      "translation_text_hash": "ffac39bc93a2287a951571f7a055df5489b83a643bb17e296f12527104021ee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 엎드러뜨리고 엎드러뜨리고 엎드러뜨리려니와 이것도 다시 있지 못하리라 마땅히 얻을 자가 이르면 그에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "ffac39bc93a2287a951571f7a055df5489b83a643bb17e296f12527104021ee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:28",
+      "sequence": 20973,
+      "chapter_label": "EZK 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "“You, son of man, prophesy and say, ‘The Lord GOD says this concerning the children of Ammon, and concerning their reproach: “A sword! A sword is drawn! It is polished for the slaughter, to cause it to devour, that it may be as lightning;",
+      "ko": "인자야 주 여호와께서 암몬 족속과 그 능욕에 대하여 말씀하셨다고 너는 예언하라 너는 이르기를 칼이 뽑히도다 칼이 뽑히도다 살륙하며 멸절하며 번개 같이 되기 위하여 마광되었도다",
+      "source_text_hash": "f29dcf80d31e45ec5ae8b764ccb5febdbdf69d460e41e05140e94069bc018d0a",
+      "translation_text_hash": "afbac5f09feeffcf30efb500b68a1d31d9a0b8f9ec906fc1b3e02637b21b64e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 주 여호와께서 암몬 족속과 그 능욕에 대하여 말씀하셨다고 너는 예언하라 너는 이르기를 칼이 뽑히도다 칼이 뽑히도다 살륙하며 멸절하며 번개 같이 되기 위하여 마광되었도다"
+      ],
+      "raw_text_hashes": [
+        "afbac5f09feeffcf30efb500b68a1d31d9a0b8f9ec906fc1b3e02637b21b64e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:29",
+      "sequence": 20974,
+      "chapter_label": "EZK 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "while they see for you false visions, while they divine lies to you, to lay you on the necks of the wicked who are deadly wounded, whose day has come in the time of the iniquity of the end.",
+      "ko": "네게 대하여 허무한 것을 보며 네게 대하여 거짓 복술을 하는 자가 너를 중상을 당한 악인의 목 위에 두리니 이는 그의 날 곧 죄악의 끝 때가 이름이로다",
+      "source_text_hash": "cfbf31c6663e67db359227a7e02cc339677e418d748cd376d503f1305fb036f7",
+      "translation_text_hash": "26d717b5b94ab1d08bd42321cb51bc8034ba4986390c5ed597a2c0978bab7af5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 대하여 허무한 것을 보며 네게 대하여 거짓 복술을 하는 자가 너를 중상을 당한 악인의 목 위에 두리니 이는 그의 날 곧 죄악의 끝 때가 이름이로다"
+      ],
+      "raw_text_hashes": [
+        "26d717b5b94ab1d08bd42321cb51bc8034ba4986390c5ed597a2c0978bab7af5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:30",
+      "sequence": 20975,
+      "chapter_label": "EZK 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "Cause it to return into its sheath. In the place where you were created, in the land of your birth, I will judge you.",
+      "ko": "그러나 칼을 그 집에 꽂을찌어다 네가 지음을 받은 곳에서, 너의 생장한 땅에서 내가 너를 국문하리로다",
+      "source_text_hash": "fb8792271f398697f919327535188c6d1f521d4a45543eefe9cf3ecb080f2593",
+      "translation_text_hash": "d88377090ed469d233664a602e32345ce81ad8f2f35244bebb79618a773453a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 칼을 그 집에 꽂을찌어다 네가 지음을 받은 곳에서, 너의 생장한 땅에서 내가 너를 국문하리로다"
+      ],
+      "raw_text_hashes": [
+        "d88377090ed469d233664a602e32345ce81ad8f2f35244bebb79618a773453a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:31",
+      "sequence": 20976,
+      "chapter_label": "EZK 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "I will pour out my indignation on you. I will blow on you with the fire of my wrath. I will deliver you into the hand of brutish men, skillful to destroy.",
+      "ko": "내가 내 분노를 네게 쏟으며 내 진노의 불을 네게 불고 너를 짐승 같은 자 곧 멸하기에 익숙한 자의 손에 붙이리로다",
+      "source_text_hash": "a1a8739b896776fbc9cafecf8f2326c9f08eb4b88646abff429fa66bfc114707",
+      "translation_text_hash": "60a550d16534602c79ce1afeb32ccd68af58c98423ae06b83b71047005ab3283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 분노를 네게 쏟으며 내 진노의 불을 네게 불고 너를 짐승 같은 자 곧 멸하기에 익숙한 자의 손에 붙이리로다"
+      ],
+      "raw_text_hashes": [
+        "60a550d16534602c79ce1afeb32ccd68af58c98423ae06b83b71047005ab3283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:21:32",
+      "sequence": 20977,
+      "chapter_label": "EZK 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "You will be for fuel to the fire. Your blood will be in the middle of the land. You will be remembered no more; for I, the LORD, have spoken it.”’”",
+      "ko": "네가 불에 섶과 같이 될 것이며 네 피가 나라 가운데 있을 것이며 네가 다시 기억되지 못할 것이니 나 여호와가 말하였음이니라 하라",
+      "source_text_hash": "bac41026be4c2ef0c86997c0314c3eb77fbfe2288e4ef7cd1fcf21b62a40ae0e",
+      "translation_text_hash": "3454a78ddf4242717e993244973c99fab6b1a0df8ac6de0e617032ee7d224cd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 불에 섶과 같이 될 것이며 네 피가 나라 가운데 있을 것이며 네가 다시 기억되지 못할 것이니 나 여호와가 말하였음이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "3454a78ddf4242717e993244973c99fab6b1a0df8ac6de0e617032ee7d224cd9"
+      ]
+    }
+  ]
+}

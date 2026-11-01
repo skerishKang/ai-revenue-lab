@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:003",
+  "unit_ordinal": 93,
+  "unit_label": "LEV 3",
+  "book_code": "LEV",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:3:1",
+      "sequence": 2780,
+      "chapter_label": "LEV 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "“‘If his offering is a sacrifice of peace offerings, if he offers it from the herd, whether male or female, he shall offer it without defect before the LORD.",
+      "ko": "사람이 만일 화목제의 희생을 예물로 드리되 소로 드리려거든 수컷이나 암컷이나 흠 없는 것으로 여호와 앞에 드릴찌니",
+      "source_text_hash": "22ef2a46c22e8df78ddcbc5a52ff7f41c49ad04c3b3321b6c377ec733922f703",
+      "translation_text_hash": "2af412a9a76b5640af67673b7ce33ca7d2ba859b38caeae5d07a20b465360eb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 화목제의 희생을 예물로 드리되 소로 드리려거든 수컷이나 암컷이나 흠 없는 것으로 여호와 앞에 드릴찌니"
+      ],
+      "raw_text_hashes": [
+        "2af412a9a76b5640af67673b7ce33ca7d2ba859b38caeae5d07a20b465360eb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:2",
+      "sequence": 2781,
+      "chapter_label": "LEV 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "He shall lay his hand on the head of his offering, and kill it at the door of the Tent of Meeting. Aaron’s sons, the priests, shall sprinkle the blood around on the altar.",
+      "ko": "그 예물의 머리에 안수하고 회막 문에서 잡을 것이요 아론의 자손 제사장들은 그 피를 제단 사면에 뿌릴 것이며",
+      "source_text_hash": "8db39ad320d1bd91d88d00d42361a39d7d0cb332dd241c187c35f729c747cdaf",
+      "translation_text_hash": "882a693ed87e9b22876f84cc390280fb596f23bfb9370f5b317fdb99d02eaa28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물의 머리에 안수하고 회막 문에서 잡을 것이요 아론의 자손 제사장들은 그 피를 제단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "882a693ed87e9b22876f84cc390280fb596f23bfb9370f5b317fdb99d02eaa28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:3",
+      "sequence": 2782,
+      "chapter_label": "LEV 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "He shall offer of the sacrifice of peace offerings an offering made by fire to the LORD. The fat that covers the innards, and all the fat that is on the innards,",
+      "ko": "그는 또 그 화목제의 희생 중에서 여호와께 화제를 드릴찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과",
+      "source_text_hash": "bbadb018b4b2c7a3f38f58038951d8002e246bfe5c60b5158535ba888c0a29f7",
+      "translation_text_hash": "131feee01719adefe5b838c0ab9730f3225355be3054152155ff3d5573c904e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 또 그 화목제의 희생 중에서 여호와께 화제를 드릴찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과"
+      ],
+      "raw_text_hashes": [
+        "131feee01719adefe5b838c0ab9730f3225355be3054152155ff3d5573c904e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:4",
+      "sequence": 2783,
+      "chapter_label": "LEV 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "and the two kidneys, and the fat that is on them, which is by the loins, and the cover on the liver, with the kidneys, he shall take away.",
+      "ko": "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요",
+      "source_text_hash": "0c912e89af68c2baf686956a1941a100325178a8b415b3852603bce0cf832eaf",
+      "translation_text_hash": "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:5",
+      "sequence": 2784,
+      "chapter_label": "LEV 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Aaron’s sons shall burn it on the altar on the burnt offering, which is on the wood that is on the fire: it is an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "아론의 자손은 그것을 단 윗 불 위에 있는 나무 위 번제물 위에 사를찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "b8f51220a9f85fa86f280c1efbbde29455a01f97f0c4ba73e0af78851c942809",
+      "translation_text_hash": "697e742f679b9f1d2c7eb665cc69d9a873975f83f4c6a92707504d14f0cf2017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손은 그것을 단 윗 불 위에 있는 나무 위 번제물 위에 사를찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "697e742f679b9f1d2c7eb665cc69d9a873975f83f4c6a92707504d14f0cf2017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:6",
+      "sequence": 2785,
+      "chapter_label": "LEV 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "“‘If his offering for a sacrifice of peace offerings to the LORD is from the flock, either male or female, he shall offer it without defect.",
+      "ko": "만일 여호와께 예물로 드리는 화목제의 희생이 양이면 수컷이나 암컷이나 흠 없는 것으로 드릴찌며",
+      "source_text_hash": "9708442de35f76f2e80789d24220c34db9525ae868facb4d3b8acfadf8022ff2",
+      "translation_text_hash": "bb9cb7fafd56b14701c7748789d6e482668dd5453736bb093ec3e03a06260e0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여호와께 예물로 드리는 화목제의 희생이 양이면 수컷이나 암컷이나 흠 없는 것으로 드릴찌며"
+      ],
+      "raw_text_hashes": [
+        "bb9cb7fafd56b14701c7748789d6e482668dd5453736bb093ec3e03a06260e0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:7",
+      "sequence": 2786,
+      "chapter_label": "LEV 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "If he offers a lamb for his offering, then he shall offer it before the LORD;",
+      "ko": "만일 예물로 드리는 것이 어린 양이면 그것을 여호와 앞으로 끌어다가",
+      "source_text_hash": "adade6d7224599e6469c1afcfc7f2d240f02fb0b6218b41352a50b6d2227ce98",
+      "translation_text_hash": "8a32e15be67350801b36773ce2d81dbab484f71c17c25ef33aa9aea997d3ce81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 예물로 드리는 것이 어린 양이면 그것을 여호와 앞으로 끌어다가"
+      ],
+      "raw_text_hashes": [
+        "8a32e15be67350801b36773ce2d81dbab484f71c17c25ef33aa9aea997d3ce81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:8",
+      "sequence": 2787,
+      "chapter_label": "LEV 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "and he shall lay his hand on the head of his offering, and kill it before the Tent of Meeting. Aaron’s sons shall sprinkle its blood around on the altar.",
+      "ko": "그 예물의 머리에 안수하고 회막 앞에서 잡을 것이요 아론의 자손은 그 피를 단 사면에 뿌릴 것이며",
+      "source_text_hash": "d520d5587fce63948ca6f3ac09c1fcae136354fb8e021631055208b9864efa2a",
+      "translation_text_hash": "f9ba2631c08076b1ebbb3d3825c86ce2f29f194e32ba3768974b11980f202435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물의 머리에 안수하고 회막 앞에서 잡을 것이요 아론의 자손은 그 피를 단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "f9ba2631c08076b1ebbb3d3825c86ce2f29f194e32ba3768974b11980f202435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:9",
+      "sequence": 2788,
+      "chapter_label": "LEV 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "He shall offer from the sacrifice of peace offerings an offering made by fire to the LORD; its fat, the entire tail fat, he shall take away close to the backbone; and the fat that covers the entrails, and all the fat that is on the entrails,",
+      "ko": "그는 그 화목제의 희생 중에서 여호와께 화제를 드릴찌니 그 기름 곧 미려골에서 벤바 기름진 꼬리와 내장에 덮인 기름과 내장에 붙은 모든 기름과",
+      "source_text_hash": "4bb3003256a36cbba79f40dc533f5532e5cfcfc81f7a9c600781c7f4f8de86d5",
+      "translation_text_hash": "306a9eddc2b67e755c2855e54597e75e69ea3ab84f9d62df763181fe8327648c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 화목제의 희생 중에서 여호와께 화제를 드릴찌니 그 기름 곧 미려골에서 벤바 기름진 꼬리와 내장에 덮인 기름과 내장에 붙은 모든 기름과"
+      ],
+      "raw_text_hashes": [
+        "306a9eddc2b67e755c2855e54597e75e69ea3ab84f9d62df763181fe8327648c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:10",
+      "sequence": 2789,
+      "chapter_label": "LEV 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "and the two kidneys, and the fat that is on them, which is by the loins, and the cover on the liver, with the kidneys, he shall take away.",
+      "ko": "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요",
+      "source_text_hash": "0c912e89af68c2baf686956a1941a100325178a8b415b3852603bce0cf832eaf",
+      "translation_text_hash": "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:11",
+      "sequence": 2790,
+      "chapter_label": "LEV 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The priest shall burn it on the altar: it is the food of the offering made by fire to the LORD.",
+      "ko": "제사장은 그것을 단 위에 불사를찌니 이는 화제로 여호와께 드리는 식물이니라",
+      "source_text_hash": "639b9daab939aa3e250a3cd2db4077e96340ddb9ae764c1f1edd4248e77086c5",
+      "translation_text_hash": "683aa72f248b07277c2606fcb03af069454e619c41c9989da9caf5bbed926381",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것을 단 위에 불사를찌니 이는 화제로 여호와께 드리는 식물이니라"
+      ],
+      "raw_text_hashes": [
+        "683aa72f248b07277c2606fcb03af069454e619c41c9989da9caf5bbed926381"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:12",
+      "sequence": 2791,
+      "chapter_label": "LEV 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "“‘If his offering is a goat, then he shall offer it before the LORD.",
+      "ko": "만일 예물이 염소면 그것을 여호와 앞으로 끌어다가",
+      "source_text_hash": "f2c189e0e0e7c2909153df0ed6211b82b0a70f15d028f26eef2ea9b2e86de680",
+      "translation_text_hash": "283ed11de9d377b53a68287e4f5b756f09f1a43a8c405581bcc8e9a90b6391e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 예물이 염소면 그것을 여호와 앞으로 끌어다가"
+      ],
+      "raw_text_hashes": [
+        "283ed11de9d377b53a68287e4f5b756f09f1a43a8c405581bcc8e9a90b6391e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:13",
+      "sequence": 2792,
+      "chapter_label": "LEV 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "He shall lay his hand on its head, and kill it before the Tent of Meeting; and the sons of Aaron shall sprinkle its blood around on the altar.",
+      "ko": "그 머리에 안수하고 회막 앞에서 잡을 것이요 아론의 자손은 그 피를 단 사면에 뿌릴 것이며",
+      "source_text_hash": "020765cc68a58678ad85fbe8e0f862605c5def9677cd9ba6c9ba15edbf1f66c2",
+      "translation_text_hash": "746baa0e26b74d4dda2bd43905ffbaba0ed7cab6504c41f551c0980241d0c881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리에 안수하고 회막 앞에서 잡을 것이요 아론의 자손은 그 피를 단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "746baa0e26b74d4dda2bd43905ffbaba0ed7cab6504c41f551c0980241d0c881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:14",
+      "sequence": 2793,
+      "chapter_label": "LEV 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "He shall offer from it as his offering, an offering made by fire to the LORD; the fat that covers the innards, and all the fat that is on the innards,",
+      "ko": "그는 그 중에서 예물을 취하여 여호와께 화제를 드릴찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과",
+      "source_text_hash": "ed76f7c0c2b1bc269660d47ea1c506f0442c86f5a77bf6cf1f05ea4cef22584d",
+      "translation_text_hash": "b90800dc6eea07aac32bed9f54454c38b554eb5b396f116ecd1dbd9838d68e68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 중에서 예물을 취하여 여호와께 화제를 드릴찌니 곧 내장에 덮인 기름과 내장에 붙은 모든 기름과"
+      ],
+      "raw_text_hashes": [
+        "b90800dc6eea07aac32bed9f54454c38b554eb5b396f116ecd1dbd9838d68e68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:15",
+      "sequence": 2794,
+      "chapter_label": "LEV 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "and the two kidneys, and the fat that is on them, which is by the loins, and the cover on the liver, with the kidneys, he shall take away.",
+      "ko": "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요",
+      "source_text_hash": "0c912e89af68c2baf686956a1941a100325178a8b415b3852603bce0cf832eaf",
+      "translation_text_hash": "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9b58248400883eda8e3b9a265965aa37ef5e16c85eefc10c48cc13973daa7d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:16",
+      "sequence": 2795,
+      "chapter_label": "LEV 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "The priest shall burn them on the altar: it is the food of the offering made by fire, for a pleasant aroma; all the fat is the LORD’s.",
+      "ko": "제사장은 그것을 단 위에 불사를찌니 이는 화제로 드리는 식물이요 향기로운 냄새라 모든 기름은 여호와의 것이니라",
+      "source_text_hash": "0c9e3e5d87768797c6408418ec5dbb085281fb5145d449f67cef97d7313975a2",
+      "translation_text_hash": "447613b3c016b299b965f6cd78fd2dcc414b798c45c706810d756ddd79b38fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것을 단 위에 불사를찌니 이는 화제로 드리는 식물이요 향기로운 냄새라 모든 기름은 여호와의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "447613b3c016b299b965f6cd78fd2dcc414b798c45c706810d756ddd79b38fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:3:17",
+      "sequence": 2796,
+      "chapter_label": "LEV 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "“‘It shall be a perpetual statute throughout your generations in all your dwellings, that you shall eat neither fat nor blood.’”",
+      "ko": "너희는 기름과 피를 먹지 말라 이는 너희 모든 처소에서 대대로 영원한 규례니라",
+      "source_text_hash": "d0f8bcf7156aa067ca1941e7d464611c03b2b864ae507478c2b3c56577cc167e",
+      "translation_text_hash": "befb0aab1654aef1428554dbb177547230c0f6e2348633f2dbde13987956be37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 기름과 피를 먹지 말라 이는 너희 모든 처소에서 대대로 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "befb0aab1654aef1428554dbb177547230c0f6e2348633f2dbde13987956be37"
+      ]
+    }
+  ]
+}

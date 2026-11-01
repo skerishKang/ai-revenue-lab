@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:005",
+  "unit_ordinal": 750,
+  "unit_label": "JER 5",
+  "book_code": "JER",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:5:1",
+      "sequence": 19060,
+      "chapter_label": "JER 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "“Run back and forth through the streets of Jerusalem, and see now, and know, and seek in its wide places, if you can find a man, if there is anyone who does justly, who seeks truth, then I will pardon her.",
+      "ko": "너희는 예루살렘 거리로 빨리 왕래하며 그 넓은 거리에서 찾아보고 알라 너희가 만일 공의를 행하며 진리를 구하는 자를 한 사람이라도 찾으면 내가 이 성을 사하리라",
+      "source_text_hash": "d58610ce5b65757264e36d30f58c9e4e7f6bbc474dc6f9b38657d44d5b882ea0",
+      "translation_text_hash": "5ea9ff3d42ed04fe5901734573865148aed7ad2e86f312a8a4ebf31549b96bc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 예루살렘 거리로 빨리 왕래하며 그 넓은 거리에서 찾아보고 알라 너희가 만일 공의를 행하며 진리를 구하는 자를 한 사람이라도 찾으면 내가 이 성을 사하리라"
+      ],
+      "raw_text_hashes": [
+        "5ea9ff3d42ed04fe5901734573865148aed7ad2e86f312a8a4ebf31549b96bc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:2",
+      "sequence": 19061,
+      "chapter_label": "JER 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Though they say, ‘As the LORD lives,’ surely they swear falsely.”",
+      "ko": "그들이 여호와의 사심으로 맹세할찌라도 실상은 거짓 맹세니라",
+      "source_text_hash": "77ddf51545e5a3fcac163b4b35affcdd23896be5ff0e5ebcab06b01522cc2267",
+      "translation_text_hash": "3b300f756f51b026d1b1a89db444fb4c416c8655b025f877a731099fe30f9225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와의 사심으로 맹세할찌라도 실상은 거짓 맹세니라"
+      ],
+      "raw_text_hashes": [
+        "3b300f756f51b026d1b1a89db444fb4c416c8655b025f877a731099fe30f9225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:3",
+      "sequence": 19062,
+      "chapter_label": "JER 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "O LORD, don’t your eyes look on truth? You have stricken them, but they were not grieved. You have consumed them, but they have refused to receive correction. They have made their faces harder than a rock. They have refused to return.",
+      "ko": "여호와여 주의 눈이 성실을 돌아보지 아니하시나이까 주께서 그들을 치셨을찌라도 그들이 아픈줄을 알지 못하며 그들을 거의 멸하셨을찌라도 그들이 징계를 받지 아니하고 그 얼굴을 반석보다 굳게 하여 돌아오기를 싫어하므로",
+      "source_text_hash": "bc905a3b9a4ad7f8b4ee0838d1b1364121dc6fcedb0ab0fdc370743777ce4da4",
+      "translation_text_hash": "1c979344c9ae229ccca51114d1f615350fb009e9bbb5a0ae0eedfa7679ee9b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 눈이 성실을 돌아보지 아니하시나이까 주께서 그들을 치셨을찌라도 그들이 아픈줄을 알지 못하며 그들을 거의 멸하셨을찌라도 그들이 징계를 받지 아니하고 그 얼굴을 반석보다 굳게 하여 돌아오기를 싫어하므로"
+      ],
+      "raw_text_hashes": [
+        "1c979344c9ae229ccca51114d1f615350fb009e9bbb5a0ae0eedfa7679ee9b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:4",
+      "sequence": 19063,
+      "chapter_label": "JER 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Then I said, “Surely these are poor. They are foolish; for they don’t know the LORD’s way, nor the law of their God.",
+      "ko": "내가 말하기를 이 무리는 비천하고 우준한 것 뿐이라 여호와의 길, 자기 하나님의 법을 알지 못하니",
+      "source_text_hash": "a8f97ce9aadf527442b15dd2e302abdb1dcf9361a223209227163313de190ac6",
+      "translation_text_hash": "a38646873facc9955575f487487fbc9923e209d0d38a54df2eaf616ffa4a26f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 이 무리는 비천하고 우준한 것 뿐이라 여호와의 길, 자기 하나님의 법을 알지 못하니"
+      ],
+      "raw_text_hashes": [
+        "a38646873facc9955575f487487fbc9923e209d0d38a54df2eaf616ffa4a26f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:5",
+      "sequence": 19064,
+      "chapter_label": "JER 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "I will go to the great men and will speak to them, for they know the way of the LORD, and the law of their God.” But these with one accord have broken the yoke, and burst the bonds.",
+      "ko": "내가 귀인들에게 가서 그들에게 말하리라 그들은 여호와의 길, 자기 하나님의 법을 안다 하였더니 그들도 일제히 그 멍에를 꺾고 결박을 끊은지라",
+      "source_text_hash": "a667ea5f7fe2600f868b95a693f18c3960a93a259f1f30107f6049d90ed6e6b8",
+      "translation_text_hash": "9e034e2c0684d0820a276dcd51173d50890964cb4b1e77a6024bde67273af1d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 귀인들에게 가서 그들에게 말하리라 그들은 여호와의 길, 자기 하나님의 법을 안다 하였더니 그들도 일제히 그 멍에를 꺾고 결박을 끊은지라"
+      ],
+      "raw_text_hashes": [
+        "9e034e2c0684d0820a276dcd51173d50890964cb4b1e77a6024bde67273af1d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:6",
+      "sequence": 19065,
+      "chapter_label": "JER 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore a lion out of the forest will kill them. A wolf of the evenings will destroy them. A leopard will watch against their cities. Everyone who goes out there will be torn in pieces, because their transgressions are many and their backsliding has increased.",
+      "ko": "그러므로 수풀에서 나오는 사자가 그들을 죽이며 사막의 이리가 그들을 멸하며 표범이 성읍들을 엿보온즉 그리로 나오는 자마다 찢기오리니 이는 그들의 허물이 많고 패역이 심함이니이다",
+      "source_text_hash": "0cb7063de2b53ac2d1957d0af4cf6daaaa0ef249419973fa67f13c72e1352821",
+      "translation_text_hash": "730d89e617efb3513e2f5f02b2dfd3372c7b9e429513edfe7b04f287905f7a6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 수풀에서 나오는 사자가 그들을 죽이며 사막의 이리가 그들을 멸하며 표범이 성읍들을 엿보온즉 그리로 나오는 자마다 찢기오리니 이는 그들의 허물이 많고 패역이 심함이니이다"
+      ],
+      "raw_text_hashes": [
+        "730d89e617efb3513e2f5f02b2dfd3372c7b9e429513edfe7b04f287905f7a6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:7",
+      "sequence": 19066,
+      "chapter_label": "JER 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "“How can I pardon you? Your children have forsaken me, and sworn by what are no gods. When I had fed them to the full, they committed adultery, and assembled themselves in troops at the prostitutes’ houses.",
+      "ko": "내가 어찌 너를 사하겠느냐 네 자녀가 나를 버리고 신이 아닌 것들로 맹세하였으며 내가 그들을 배불리 먹인즉 그들이 행음하며 창기의 집에 허다히 모이며",
+      "source_text_hash": "d1d7f61c6fb23d79a01751e9c584802d8e39feb8678bb6017b9955a464060af6",
+      "translation_text_hash": "2b95a519b31683cbafc45dc9356955ac6d9c23c8cf71cf9083ceacc9ec86c933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌 너를 사하겠느냐 네 자녀가 나를 버리고 신이 아닌 것들로 맹세하였으며 내가 그들을 배불리 먹인즉 그들이 행음하며 창기의 집에 허다히 모이며"
+      ],
+      "raw_text_hashes": [
+        "2b95a519b31683cbafc45dc9356955ac6d9c23c8cf71cf9083ceacc9ec86c933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:8",
+      "sequence": 19067,
+      "chapter_label": "JER 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "They were as fed horses roaming at large. Everyone neighed after his neighbor’s wife.",
+      "ko": "그들은 살찌고 두루 다니는 수 말 같이 각기 이웃의 아내를 따라 부르짖는도다",
+      "source_text_hash": "6c639550034d5b4abac1f5b9c054fa0a650a0d0a7af4a98237cfbc89e8f3aa83",
+      "translation_text_hash": "f6537627555cd3c2fb73e48cb9f38cf97962f36beb9cec2b0bafb0577dbdc092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 살찌고 두루 다니는 수 말 같이 각기 이웃의 아내를 따라 부르짖는도다"
+      ],
+      "raw_text_hashes": [
+        "f6537627555cd3c2fb73e48cb9f38cf97962f36beb9cec2b0bafb0577dbdc092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:9",
+      "sequence": 19068,
+      "chapter_label": "JER 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Shouldn’t I punish them for these things?” says the LORD. “Shouldn’t my soul be avenged on such a nation as this?",
+      "ko": "나 여호와가 이르노라 내가 어찌 이 일들을 인하여 벌하지 아니하겠으며 내 마음이 이런 나라에 보수하지 않겠느냐",
+      "source_text_hash": "0ef060a1ec802b8b418d7cc5852705787e1ae03110608839e03294647f9d0601",
+      "translation_text_hash": "6d96e168760529724039a875eea92edd3a827f9ad3d0747944ffc17355ef07d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이르노라 내가 어찌 이 일들을 인하여 벌하지 아니하겠으며 내 마음이 이런 나라에 보수하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "6d96e168760529724039a875eea92edd3a827f9ad3d0747944ffc17355ef07d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:10",
+      "sequence": 19069,
+      "chapter_label": "JER 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "“Go up on her walls, and destroy, but don’t make a full end. Take away her branches, for they are not the LORD’s.",
+      "ko": "너희는 그 성벽에 올라가 훼파하되 다 훼파하지 말고 그 가지만 꺾어버리라 여호와의 것이 아님이니라",
+      "source_text_hash": "e952e6a4ea1c94551953d744e7449edd618d21175115d0ac1f12c490dc741c32",
+      "translation_text_hash": "310f78b22d83386467170dc4496891f327cb3a8d0ddd1fc1c5c1dadb028f92b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그 성벽에 올라가 훼파하되 다 훼파하지 말고 그 가지만 꺾어버리라 여호와의 것이 아님이니라"
+      ],
+      "raw_text_hashes": [
+        "310f78b22d83386467170dc4496891f327cb3a8d0ddd1fc1c5c1dadb028f92b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:11",
+      "sequence": 19070,
+      "chapter_label": "JER 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "For the house of Israel and the house of Judah have dealt very treacherously against me,” says the LORD.",
+      "ko": "나 여호와가 말하노라 이스라엘 족속과 유다 족속이 내게 심히 패역하였느니라",
+      "source_text_hash": "e94080c8d8cccaf8b9bc8d7b30fdff47b2beec5e0eb08d4bf2de171c6430cb91",
+      "translation_text_hash": "22f32833ebc2c2fb8ce5b4e2b16dc6a0f8f5a1febf617f1995da3c7caedd9f20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 이스라엘 족속과 유다 족속이 내게 심히 패역하였느니라"
+      ],
+      "raw_text_hashes": [
+        "22f32833ebc2c2fb8ce5b4e2b16dc6a0f8f5a1febf617f1995da3c7caedd9f20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:12",
+      "sequence": 19071,
+      "chapter_label": "JER 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "They have denied the LORD, and said, “It is not he. Evil won’t come on us. We won’t see sword or famine.",
+      "ko": "그들이 여호와를 인정치 아니하며 말하기를 여호와는 계신 것이 아닌즉 재앙이 우리에게 임하지 않을 것이요 우리가 칼과 기근을 보지 아니할 것이며",
+      "source_text_hash": "9ffedf7ab506b7fbeb8949462d4effce53d22082c3976a9f01306f3f63ced0f8",
+      "translation_text_hash": "b00af80a70cb5b45caedf863000eef64ae384eb48a78566ea79156188505964e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와를 인정치 아니하며 말하기를 여호와는 계신 것이 아닌즉 재앙이 우리에게 임하지 않을 것이요 우리가 칼과 기근을 보지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "b00af80a70cb5b45caedf863000eef64ae384eb48a78566ea79156188505964e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:13",
+      "sequence": 19072,
+      "chapter_label": "JER 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "The prophets will become wind, and the word is not in them. Thus it will be done to them.”",
+      "ko": "선지자들은 바람이라 말씀이 그들의 속에 있지 아니한즉 그같이 그들이 당하리라 하느니라",
+      "source_text_hash": "b3caf742505d5e4bfdec61ed6fe1eaf4f7e078431e399980541039ade7ed291a",
+      "translation_text_hash": "88f5b65ff46e09cddefda0cbc0ee71ac3df67fa4fceb092b13120f7e82949111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들은 바람이라 말씀이 그들의 속에 있지 아니한즉 그같이 그들이 당하리라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "88f5b65ff46e09cddefda0cbc0ee71ac3df67fa4fceb092b13120f7e82949111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:14",
+      "sequence": 19073,
+      "chapter_label": "JER 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore the LORD, the God of Armies says, “Because you speak this word, behold, I will make my words in your mouth fire, and this people wood, and it will devour them.",
+      "ko": "그러므로 만군의 하나님 여호와가 이같이 말하노라 그들이 이 말을 하였은즉 볼찌어다 내가 네 입에 있는 나의 말로 불이 되게 하고 이 백성으로 나무가 되게 하리니 그 불이 그들을 사르리라",
+      "source_text_hash": "1f8a01656a355386c1eec3f3443fcbbb2c34a7ba772fb0aa889ae36e1d40ce99",
+      "translation_text_hash": "bb8cb76d25148b77cf10505027d1a898289d30fa45d35db4fb6982a22633ad5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만군의 하나님 여호와가 이같이 말하노라 그들이 이 말을 하였은즉 볼찌어다 내가 네 입에 있는 나의 말로 불이 되게 하고 이 백성으로 나무가 되게 하리니 그 불이 그들을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "bb8cb76d25148b77cf10505027d1a898289d30fa45d35db4fb6982a22633ad5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:15",
+      "sequence": 19074,
+      "chapter_label": "JER 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, I will bring a nation on you from far away, house of Israel,” says the LORD. “It is a mighty nation. It is an ancient nation, a nation whose language you don’t know and don’t understand what they say.",
+      "ko": "나 여호와가 말하노라 이스라엘 족속아 보라 내가 한 나라를 원방에서 너희에게로 오게 하리니 곧 강하고 오랜 나라이라 그 방언을 네가 알지 못하며 그 말을 네가 깨닫지 못하느니라",
+      "source_text_hash": "86a88b4b2ade206d810bae5828b0ac44d1422c570097a8b1315dd7eb68a4bf78",
+      "translation_text_hash": "e1c635e5484bf1b7e310c31acfa92415a44a17c295e64e37230ab0b4b99f0526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 이스라엘 족속아 보라 내가 한 나라를 원방에서 너희에게로 오게 하리니 곧 강하고 오랜 나라이라 그 방언을 네가 알지 못하며 그 말을 네가 깨닫지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "e1c635e5484bf1b7e310c31acfa92415a44a17c295e64e37230ab0b4b99f0526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:16",
+      "sequence": 19075,
+      "chapter_label": "JER 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Their quiver is an open tomb. They are all mighty men.",
+      "ko": "그 전통은 열린 묘실이요 그 사람들은 다 용사라",
+      "source_text_hash": "cbff6261ae81f523d318ff71cad84e981fca43c37a1678b3506a23faeb0edfb6",
+      "translation_text_hash": "b52650be7786126d31c0641d0f9a2e9c987ace68d55d5a57669a7a6f1fdeaa6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전통은 열린 묘실이요 그 사람들은 다 용사라"
+      ],
+      "raw_text_hashes": [
+        "b52650be7786126d31c0641d0f9a2e9c987ace68d55d5a57669a7a6f1fdeaa6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:17",
+      "sequence": 19076,
+      "chapter_label": "JER 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "They will eat up your harvest and your bread, which your sons and your daughters should eat. They will eat up your flocks and your herds. They will eat up your vines and your fig trees. They will beat down your fortified cities in which you trust with the sword.",
+      "ko": "그들이 네 자녀들의 먹을 추수 곡물과 양식을 먹으며 네 양떼와 소떼를 먹으며 네 포도나무와 무화과나무 열매를 먹으며 네가 의뢰하는 견고한 성들을 칼로 파멸하리라",
+      "source_text_hash": "e1f89ecb64cf71586a7133128faf14938ee1663df02fa2890fb2713d303c92ac",
+      "translation_text_hash": "0bcd5fe3cd3656e3ae27430377a389f450f8a3de32b3d6334726180456ef86f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네 자녀들의 먹을 추수 곡물과 양식을 먹으며 네 양떼와 소떼를 먹으며 네 포도나무와 무화과나무 열매를 먹으며 네가 의뢰하는 견고한 성들을 칼로 파멸하리라"
+      ],
+      "raw_text_hashes": [
+        "0bcd5fe3cd3656e3ae27430377a389f450f8a3de32b3d6334726180456ef86f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:18",
+      "sequence": 19077,
+      "chapter_label": "JER 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "“But even in those days,” says the LORD, “I will not make a full end of you.",
+      "ko": "나 여호와가 말하노라 그 때에도 내가 너희를 진멸치는 아니하리라",
+      "source_text_hash": "ae36f41c67d20a536b18517b21fc435d1e649f546ab971d19a024cf4f71ca67a",
+      "translation_text_hash": "0f50e7d1200a98ae0d2557c35f75bfa9ec976c827cfafed63ab4388dc9e3d959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그 때에도 내가 너희를 진멸치는 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "0f50e7d1200a98ae0d2557c35f75bfa9ec976c827cfafed63ab4388dc9e3d959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:19",
+      "sequence": 19078,
+      "chapter_label": "JER 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "It will happen when you say, ‘Why has the LORD our God done all these things to us?’ Then you shall say to them, ‘Just as you have forsaken me and served foreign gods in your land, so you will serve strangers in a land that is not yours.’",
+      "ko": "그들이 만일 이르기를 우리 하나님 여호와께서 어찌하여 이 모든 일을 우리에게 행하셨느뇨 하거든 너는 그들에게 이르기를 너희가 여호와를 버리고 너희 땅에서 이방 신들을 섬겼은즉 이와 같이 너희 것이 아닌 땅에서 이방인들을 섬기리라 하라",
+      "source_text_hash": "c85d7941686e0d43093ff67ee35bcebebc8531e136c268a86ea3bc2cac3443f4",
+      "translation_text_hash": "cf4c32a1ea6b592af375dfbd1f4d44ade2a60682a3418ebebde2b8592f723ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 이르기를 우리 하나님 여호와께서 어찌하여 이 모든 일을 우리에게 행하셨느뇨 하거든 너는 그들에게 이르기를 너희가 여호와를 버리고 너희 땅에서 이방 신들을 섬겼은즉 이와 같이 너희 것이 아닌 땅에서 이방인들을 섬기리라 하라"
+      ],
+      "raw_text_hashes": [
+        "cf4c32a1ea6b592af375dfbd1f4d44ade2a60682a3418ebebde2b8592f723ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:20",
+      "sequence": 19079,
+      "chapter_label": "JER 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "“Declare this in the house of Jacob, and publish it in Judah, saying,",
+      "ko": "너는 이를 야곱 집에 선포하며 유다에 공포하여 이르기를",
+      "source_text_hash": "9c741059cde388e7da7c1dcbd27e676ebb582cbb0f723fa0da86eb3da9ca2abc",
+      "translation_text_hash": "151a73e200a4f0ef0be25ed1f97af772be29b4e96c2aabad1ccbeebcb4d42e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이를 야곱 집에 선포하며 유다에 공포하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "151a73e200a4f0ef0be25ed1f97af772be29b4e96c2aabad1ccbeebcb4d42e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:21",
+      "sequence": 19080,
+      "chapter_label": "JER 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "‘Hear this now, foolish people without understanding, who have eyes, and don’t see, who have ears, and don’t hear:",
+      "ko": "우준하여 지각이 없으며 눈이 있어도 보지 못하며 귀가 있어도 듣지 못하는 백성이여 이를 들을찌어다",
+      "source_text_hash": "d9e195816ff646747652b489b46f34da9f312ffeee9b7a479b6eb96f4168a774",
+      "translation_text_hash": "36ba20b55590a90b6efd87a2385aeaa19c7ff9c3d1b40c00f5a0caf14fdb6058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우준하여 지각이 없으며 눈이 있어도 보지 못하며 귀가 있어도 듣지 못하는 백성이여 이를 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "36ba20b55590a90b6efd87a2385aeaa19c7ff9c3d1b40c00f5a0caf14fdb6058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:22",
+      "sequence": 19081,
+      "chapter_label": "JER 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Don’t you fear me?’ says the LORD; ‘Won’t you tremble at my presence, who have placed the sand for the bound of the sea by a perpetual decree, that it can’t pass it? Though its waves toss themselves, yet they can’t prevail. Though they roar, they still can’t pass over it.’",
+      "ko": "여호와께서 말씀하시되 너희가 나를 두려워 아니하느냐 내 앞에서 떨지 아니하겠느냐 내가 모래를 두어 바다의 계한을 삼되 그것으로 영원한 계한을 삼고 지나치지 못하게 하였으므로 파도가 흉용하나 그것을 이기지 못하며 뛰노나 그것을 넘지 못하느니라",
+      "source_text_hash": "817e70947b64dab2c19fbb3d3ba1140097366a80e6ddcd179868f4e80a3d8509",
+      "translation_text_hash": "545877e97d5231e1020fe5e7e8f25ea69096ef793aaddf6026158211fc8a2a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 너희가 나를 두려워 아니하느냐 내 앞에서 떨지 아니하겠느냐 내가 모래를 두어 바다의 계한을 삼되 그것으로 영원한 계한을 삼고 지나치지 못하게 하였으므로 파도가 흉용하나 그것을 이기지 못하며 뛰노나 그것을 넘지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "545877e97d5231e1020fe5e7e8f25ea69096ef793aaddf6026158211fc8a2a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:23",
+      "sequence": 19082,
+      "chapter_label": "JER 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "“But this people has a revolting and a rebellious heart. They have revolted and gone.",
+      "ko": "그러나 너희 백성은 배반하며 패역하는 마음이 있어서 이미 배반하고 갔으며",
+      "source_text_hash": "6bf18446310e7350cad2b6eaef79b87b1e4a7df9beb3d58790e0b883bc913967",
+      "translation_text_hash": "98b67f5b9cae4bb18bd551ad310a7c9f668198685ff91880c26915039182746a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 백성은 배반하며 패역하는 마음이 있어서 이미 배반하고 갔으며"
+      ],
+      "raw_text_hashes": [
+        "98b67f5b9cae4bb18bd551ad310a7c9f668198685ff91880c26915039182746a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:24",
+      "sequence": 19083,
+      "chapter_label": "JER 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "They don’t say in their heart, ‘Let’s now fear the LORD our God, who gives rain, both the former and the latter, in its season, who preserves to us the appointed weeks of the harvest.’",
+      "ko": "또 너희 마음으로 우리에게 이른 비와 늦은 비를 때를 따라 주시며 우리를 위하여 추수 기한을 정하시는 우리 하나님 여호와를 경외하자 말하지도 아니하니",
+      "source_text_hash": "446a6096ea1c61332edf05c7815d5f8967633c435d51cc2129184cbd0c4266c0",
+      "translation_text_hash": "923dc87895047a6662b5f7ce804224d95bd24291214acad36c067a2d350b8041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 마음으로 우리에게 이른 비와 늦은 비를 때를 따라 주시며 우리를 위하여 추수 기한을 정하시는 우리 하나님 여호와를 경외하자 말하지도 아니하니"
+      ],
+      "raw_text_hashes": [
+        "923dc87895047a6662b5f7ce804224d95bd24291214acad36c067a2d350b8041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:25",
+      "sequence": 19084,
+      "chapter_label": "JER 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "“Your iniquities have turned away these things, and your sins have withheld good from you.",
+      "ko": "너희 허물이 이러한 일들을 물리쳤고 너희 죄가 너희에게 오는 좋은 것을 막았느니라",
+      "source_text_hash": "51aa3ee153d07eac2e4352b2e36b668487fb05fc0f2f7d126afdaeb4c1b16c93",
+      "translation_text_hash": "541ddc2e254be35c3911a4a78548c8180e954835f603a896e654415a3702d419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 허물이 이러한 일들을 물리쳤고 너희 죄가 너희에게 오는 좋은 것을 막았느니라"
+      ],
+      "raw_text_hashes": [
+        "541ddc2e254be35c3911a4a78548c8180e954835f603a896e654415a3702d419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:26",
+      "sequence": 19085,
+      "chapter_label": "JER 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "For wicked men are found among my people. They watch, as fowlers lie in wait. They set a trap. They catch men.",
+      "ko": "내 백성 너희 중에 악인이 있어서 새 사냥군의 매복함 같이 지키며 덫을 놓아 사람을 잡으며",
+      "source_text_hash": "4d9f97003580e16ea16083e862e8ef73d9cfa702b14ea0e2146fa233fa10e1fe",
+      "translation_text_hash": "90d44bc0ede30474665740419a7b76095894e9ba491b05c33836be568845ec17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성 너희 중에 악인이 있어서 새 사냥군의 매복함 같이 지키며 덫을 놓아 사람을 잡으며"
+      ],
+      "raw_text_hashes": [
+        "90d44bc0ede30474665740419a7b76095894e9ba491b05c33836be568845ec17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:27",
+      "sequence": 19086,
+      "chapter_label": "JER 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "As a cage is full of birds, so are their houses full of deceit. Therefore they have become great, and grew rich.",
+      "ko": "조롱에 새들이 가득함 같이 너희 집들에 속임이 가득하도다 그러므로 너희가 창대하고 거부가 되어",
+      "source_text_hash": "72bd931fa77bcfb0c482f9f2fc112cc6d3511bbe7ab6ef78093b2defa0a5a300",
+      "translation_text_hash": "bae4425990c319754122a8b87742a139ee64cf45abdfafbfd42ce620990ff98b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조롱에 새들이 가득함 같이 너희 집들에 속임이 가득하도다 그러므로 너희가 창대하고 거부가 되어"
+      ],
+      "raw_text_hashes": [
+        "bae4425990c319754122a8b87742a139ee64cf45abdfafbfd42ce620990ff98b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:28",
+      "sequence": 19087,
+      "chapter_label": "JER 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "They have grown fat. They shine; yes, they excel in deeds of wickedness. They don’t plead the cause, the cause of the fatherless, that they may prosper; and they don’t defend the rights of the needy.",
+      "ko": "살찌고 윤택하며 또 행위가 심히 악하여 자기 이익을 얻으려고 송사 곧 고아의 송사를 공정히 하지 아니하며 빈민의 송사를 공평히 판결치 아니하니",
+      "source_text_hash": "edac7e20fcccd8bbf2a93b3a93875a08cd67c96ea1e35a0e0a38dea5d28ec02a",
+      "translation_text_hash": "e4b3917ef03c67ad5d561596bb3e233687b4dea55dc522470d7b9031b2fca44b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살찌고 윤택하며 또 행위가 심히 악하여 자기 이익을 얻으려고 송사 곧 고아의 송사를 공정히 하지 아니하며 빈민의 송사를 공평히 판결치 아니하니"
+      ],
+      "raw_text_hashes": [
+        "e4b3917ef03c67ad5d561596bb3e233687b4dea55dc522470d7b9031b2fca44b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:29",
+      "sequence": 19088,
+      "chapter_label": "JER 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "“Shouldn’t I punish for these things?” says the LORD. “Shouldn’t my soul be avenged on such a nation as this?",
+      "ko": "내가 이 일들을 인하여 벌하지 아니하겠으며 내 마음이 이같은 나라에 보수하지 않겠느냐 여호와의 말이니라",
+      "source_text_hash": "d421f33c9d2dba2faf33a4fa6db96daca9ed12e7e913a700516ec89d0eb971e3",
+      "translation_text_hash": "aa70122697ae0095cd3e1366d5ae28fcfd33769b1b116bcc98bc559dd77cefe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 일들을 인하여 벌하지 아니하겠으며 내 마음이 이같은 나라에 보수하지 않겠느냐 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "aa70122697ae0095cd3e1366d5ae28fcfd33769b1b116bcc98bc559dd77cefe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:30",
+      "sequence": 19089,
+      "chapter_label": "JER 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "“An astonishing and horrible thing has happened in the land.",
+      "ko": "이 땅에 기괴하고 놀라운 일이 있도다",
+      "source_text_hash": "3f72b1a15cb803276cd1c3e34f637188e75175e496b7d48bce43c9bbdb7154cb",
+      "translation_text_hash": "05237b285e17dbe566729df4c6d0fb7b76583ba656c16576ce431fc09fe6f20a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅에 기괴하고 놀라운 일이 있도다"
+      ],
+      "raw_text_hashes": [
+        "05237b285e17dbe566729df4c6d0fb7b76583ba656c16576ce431fc09fe6f20a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:5:31",
+      "sequence": 19090,
+      "chapter_label": "JER 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "The prophets prophesy falsely, and the priests rule by their own authority; and my people love to have it so. What will you do in the end of it?",
+      "ko": "선지자들은 거짓을 예언하며 제사장들은 자기 권력으로 다스리며 내 백성은 그것을 좋게 여기니 그 결국에는 너희가 어찌 하려느냐",
+      "source_text_hash": "cd307e81f908765b079cc4762d9020c9d37982049be98a8ba5f0201fdbaca636",
+      "translation_text_hash": "636a03aa97e90ed659bb872906476eb79828cfaa4bb23b2ba58f520e4cb21f6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들은 거짓을 예언하며 제사장들은 자기 권력으로 다스리며 내 백성은 그것을 좋게 여기니 그 결국에는 너희가 어찌 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "636a03aa97e90ed659bb872906476eb79828cfaa4bb23b2ba58f520e4cb21f6f"
+      ]
+    }
+  ]
+}

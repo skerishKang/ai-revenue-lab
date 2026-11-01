@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:014",
+  "unit_ordinal": 352,
+  "unit_label": "1CH 14",
+  "book_code": "1CH",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:14:1",
+      "sequence": 10776,
+      "chapter_label": "1CH 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Hiram king of Tyre sent messengers to David with cedar trees, masons, and carpenters, to build him a house.",
+      "ko": "두로 왕 히람이 다윗에게 사자들과 백향목과 석수와 목수를 보내어 그 궁궐을 건축하게 하였더라",
+      "source_text_hash": "28b584f795b529c73327db2cdacd1e1ae66dfe48b9d75b2e3bf11f6482713f50",
+      "translation_text_hash": "100fb1aebcae1c76b1828845b23761b9cf887f548cf0d329ff3749e5772a8ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로 왕 히람이 다윗에게 사자들과 백향목과 석수와 목수를 보내어 그 궁궐을 건축하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "100fb1aebcae1c76b1828845b23761b9cf887f548cf0d329ff3749e5772a8ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:2",
+      "sequence": 10777,
+      "chapter_label": "1CH 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "David perceived that the LORD had established him king over Israel, for his kingdom was highly exalted, for his people Israel’s sake.",
+      "ko": "다윗이 여호와께서 자기로 이스라엘 왕을 삼으신줄을 깨달았으니 이는 그 백성 이스라엘을 위하여 나라를 진흥하게 하셨음이더라",
+      "source_text_hash": "2daf47aaa586292216a92a828ed3f2e7e05a4f37d966e3c5bdb6971e89fe1986",
+      "translation_text_hash": "3ca878f14757c9cece5b5910ee0ce255fd6a9328423e052042591ea3e9c99446",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께서 자기로 이스라엘 왕을 삼으신줄을 깨달았으니 이는 그 백성 이스라엘을 위하여 나라를 진흥하게 하셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "3ca878f14757c9cece5b5910ee0ce255fd6a9328423e052042591ea3e9c99446"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:3",
+      "sequence": 10778,
+      "chapter_label": "1CH 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "David took more wives in Jerusalem, and David became the father of more sons and daughters.",
+      "ko": "다윗이 예루살렘에서 또 아내들을 취하여 또 자녀를 낳았으니",
+      "source_text_hash": "3a41b873c6f5fef9d1016eaf70ec4332f1051596068b054f8669ee842587977d",
+      "translation_text_hash": "3bb3feb9db007ccaab41cbb35756e59281290131f577a6fa52da11877c1c7bc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 예루살렘에서 또 아내들을 취하여 또 자녀를 낳았으니"
+      ],
+      "raw_text_hashes": [
+        "3bb3feb9db007ccaab41cbb35756e59281290131f577a6fa52da11877c1c7bc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:4",
+      "sequence": 10779,
+      "chapter_label": "1CH 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "These are the names of the children whom he had in Jerusalem: Shammua, Shobab, Nathan, Solomon,",
+      "ko": "예루살렘에서 낳은 아들들의 이름은 삼무아와 소밥과 나단과 솔로몬과",
+      "source_text_hash": "7785b4653de726afe6f2e502374c00227b598e34796352a14b91b753922e2027",
+      "translation_text_hash": "83d5924e26b0ce0538f8fd7beae89db3bc79838a8552f3cf6b7d3e9696374939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 낳은 아들들의 이름은 삼무아와 소밥과 나단과 솔로몬과"
+      ],
+      "raw_text_hashes": [
+        "83d5924e26b0ce0538f8fd7beae89db3bc79838a8552f3cf6b7d3e9696374939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:5",
+      "sequence": 10780,
+      "chapter_label": "1CH 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "Ibhar, Elishua, Elpelet,",
+      "ko": "입할과 엘리수아와 엘벨렛과",
+      "source_text_hash": "6b4f5797eb81b7902e3670375748941d2cb97fd935b9706d19be467327ce90af",
+      "translation_text_hash": "5e7b63059604b070d6df774a66ee4b4df64db93d7b0eed6a333788844867a211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입할과 엘리수아와 엘벨렛과"
+      ],
+      "raw_text_hashes": [
+        "5e7b63059604b070d6df774a66ee4b4df64db93d7b0eed6a333788844867a211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:6",
+      "sequence": 10781,
+      "chapter_label": "1CH 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Nogah, Nepheg, Japhia,",
+      "ko": "노가와 네벡과 야비아와",
+      "source_text_hash": "e9ac398dcecfe4387768cc34ab8967720990c850ac896eeabb04b24b9f397560",
+      "translation_text_hash": "b76611c36387fb4e944e7ae5c49c27227bbb152086fc906857a07d8ffac48c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노가와 네벡과 야비아와"
+      ],
+      "raw_text_hashes": [
+        "b76611c36387fb4e944e7ae5c49c27227bbb152086fc906857a07d8ffac48c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:7",
+      "sequence": 10782,
+      "chapter_label": "1CH 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Elishama, Beeliada, and Eliphelet.",
+      "ko": "엘리사마와 브엘랴다와 엘리벨렛이었더라",
+      "source_text_hash": "ae0f44d7c90a549aeb88e1e262012ac95b5b848da6c7f7958024fd65fd6834de",
+      "translation_text_hash": "2f8f1c623f6c616044fa3e41e97dbf84a7153962f38a7bc203443e87405039ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사마와 브엘랴다와 엘리벨렛이었더라"
+      ],
+      "raw_text_hashes": [
+        "2f8f1c623f6c616044fa3e41e97dbf84a7153962f38a7bc203443e87405039ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:8",
+      "sequence": 10783,
+      "chapter_label": "1CH 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "When the Philistines heard that David was anointed king over all Israel, all the Philistines went up to seek David; and David heard of it, and went out against them.",
+      "ko": "다윗이 기름 부음을 받아 온 이스라엘의 왕이 되었다 함을 블레셋 사람이 듣고 다윗을 찾으러 다 올라오매 다윗이 듣고 방비하러 나갔으나",
+      "source_text_hash": "a2b18bb74e39456c381577b79d192d2537d184bcf49d897b5a0aa2a7f45fd898",
+      "translation_text_hash": "555d1a9bc642c1b16909bfb9a1c56169a0b27cecc4a996079982ae87133581d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 기름 부음을 받아 온 이스라엘의 왕이 되었다 함을 블레셋 사람이 듣고 다윗을 찾으러 다 올라오매 다윗이 듣고 방비하러 나갔으나"
+      ],
+      "raw_text_hashes": [
+        "555d1a9bc642c1b16909bfb9a1c56169a0b27cecc4a996079982ae87133581d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:9",
+      "sequence": 10784,
+      "chapter_label": "1CH 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Now the Philistines had come and made a raid in the valley of Rephaim.",
+      "ko": "블레셋 사람이 이미 이르러 르바임 골짜기를 침범하였는지라",
+      "source_text_hash": "670246ce074fc55cd580f85fe2da8fb1120e5b1a77b89c6611fca4f534baf054",
+      "translation_text_hash": "fc4642de953083d7ec3812c3d8f66490e55c9edd324ae249d2a585c8fd56121c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 이미 이르러 르바임 골짜기를 침범하였는지라"
+      ],
+      "raw_text_hashes": [
+        "fc4642de953083d7ec3812c3d8f66490e55c9edd324ae249d2a585c8fd56121c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:10",
+      "sequence": 10785,
+      "chapter_label": "1CH 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "David inquired of God, saying, “Shall I go up against the Philistines? Will you deliver them into my hand?” The LORD said to him, “Go up; for I will deliver them into your hand.”",
+      "ko": "다윗이 하나님께 물어 가로되 내가 블레셋 사람을 치러 올라가리이까 주께서 저희를 내 손에 붙이시겠나이까 여호와께서 이르시되 올라가라 내가 저희를 네 손에 붙이리라 하신지라",
+      "source_text_hash": "12d92bc7f39828004f9c3d96996972dc437bc1e7a8b193db421bc86d325b126b",
+      "translation_text_hash": "d4e2d50dca4d468c191f5dbad8ebad109c224f603535878fa58885c5a9eba48c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 하나님께 물어 가로되 내가 블레셋 사람을 치러 올라가리이까 주께서 저희를 내 손에 붙이시겠나이까 여호와께서 이르시되 올라가라 내가 저희를 네 손에 붙이리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "d4e2d50dca4d468c191f5dbad8ebad109c224f603535878fa58885c5a9eba48c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:11",
+      "sequence": 10786,
+      "chapter_label": "1CH 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "So they came up to Baal Perazim, and David defeated them there. David said, God has broken my enemies by my hand, like waters breaking out. Therefore they called the name of that place Baal Perazim.",
+      "ko": "이에 무리가 바알브라심으로 올라 갔더니 다윗이 거기서 저희를 치고 가로되 하나님이 물을 흩음 같이 내 손으로 내 대적을 흩으셨다 함으로 그곳 이름을 바알브라심이라 칭하니라",
+      "source_text_hash": "b2834379e1a5544f5f71996668d654fc3b8a3f239b962035e352e4efde0adde0",
+      "translation_text_hash": "2c0612b96c18651a8e7c2e01cecd6c31492f618842bfc4a14995a8a5263391ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 무리가 바알브라심으로 올라 갔더니 다윗이 거기서 저희를 치고 가로되 하나님이 물을 흩음 같이 내 손으로 내 대적을 흩으셨다 함으로 그곳 이름을 바알브라심이라 칭하니라"
+      ],
+      "raw_text_hashes": [
+        "2c0612b96c18651a8e7c2e01cecd6c31492f618842bfc4a14995a8a5263391ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:12",
+      "sequence": 10787,
+      "chapter_label": "1CH 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "They left their gods there; and David gave a command, and they were burned with fire.",
+      "ko": "블레셋 사람이 그 우상을 그곳에 버렸으므로 다윗이 명하여 불에 사르니라",
+      "source_text_hash": "cda8d10476bdda137fd70965740406f27f82c5623e756231216445564f3f30ff",
+      "translation_text_hash": "402d3347d841c061e76ab3904d9841c6b7a7c0fc844d059054350f75ded365f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 그 우상을 그곳에 버렸으므로 다윗이 명하여 불에 사르니라"
+      ],
+      "raw_text_hashes": [
+        "402d3347d841c061e76ab3904d9841c6b7a7c0fc844d059054350f75ded365f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:13",
+      "sequence": 10788,
+      "chapter_label": "1CH 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "The Philistines made another raid in the valley.",
+      "ko": "블레셋 사람이 다시 골짜기를 침범한지라",
+      "source_text_hash": "bb8c2a0d4ae1d2ffa8fb1be84f260915b9aa5584c8b36132f8e58e2fb907945d",
+      "translation_text_hash": "d6d32ef33aa03987a80367b012500b67910e387ac16ee0ae4a52704090d44540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 다시 골짜기를 침범한지라"
+      ],
+      "raw_text_hashes": [
+        "d6d32ef33aa03987a80367b012500b67910e387ac16ee0ae4a52704090d44540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:14",
+      "sequence": 10789,
+      "chapter_label": "1CH 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "David inquired again of God; and God said to him, “You shall not go up after them. Turn away from them, and come on them opposite the mulberry trees.",
+      "ko": "다윗이 또 하나님께 묻자온대 하나님이 이르시되 마주 올라가지 말고 저희 뒤로 돌아 뽕나무 수풀 맞은편에서 저희를 엄습하되",
+      "source_text_hash": "a0966e8b643db88656745b70514f8e387f852469d77e816fd0299333df56571a",
+      "translation_text_hash": "470deaa6bb306ae40f2ae857f77f93d45cfc2106a85f37b761d0d893d9598954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 또 하나님께 묻자온대 하나님이 이르시되 마주 올라가지 말고 저희 뒤로 돌아 뽕나무 수풀 맞은편에서 저희를 엄습하되"
+      ],
+      "raw_text_hashes": [
+        "470deaa6bb306ae40f2ae857f77f93d45cfc2106a85f37b761d0d893d9598954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:15",
+      "sequence": 10790,
+      "chapter_label": "1CH 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "When you hear the sound of marching in the tops of the mulberry trees, then go out to battle; for God has gone out before you to strike the army of the Philistines.”",
+      "ko": "뽕나무 꼭대기에서 걸음 걷는 소리가 들리거든 곧 나가서 싸우라 하나님이 네 앞서 나아가서 블레셋 사람의 군대를 치리라 하신지라",
+      "source_text_hash": "5e1da2a81a4b4afb1af10c06c5ab7aefff8834044cd1501878f484d51c29114b",
+      "translation_text_hash": "ac80ca2705e6703d6c66ebdd9a5bcba544237507a96bf6ae1c281307caf07c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뽕나무 꼭대기에서 걸음 걷는 소리가 들리거든 곧 나가서 싸우라 하나님이 네 앞서 나아가서 블레셋 사람의 군대를 치리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "ac80ca2705e6703d6c66ebdd9a5bcba544237507a96bf6ae1c281307caf07c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:16",
+      "sequence": 10791,
+      "chapter_label": "1CH 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "David did as God commanded him; and they attacked the army of the Philistines from Gibeon even to Gezer.",
+      "ko": "이에 다윗이 하나님의 명대로 행하여 블레셋 사람의 군대를 쳐서 기브온에서부터 게셀까지 이르렀더니",
+      "source_text_hash": "4e15dd5123441e36d17174365ef440698e7c5d8ac7d553fb2630cae84ab76a54",
+      "translation_text_hash": "4012bae7135e5dd0b476d37745a9c71693bcb4b89cbfc4847328fccc1e78a6e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 하나님의 명대로 행하여 블레셋 사람의 군대를 쳐서 기브온에서부터 게셀까지 이르렀더니"
+      ],
+      "raw_text_hashes": [
+        "4012bae7135e5dd0b476d37745a9c71693bcb4b89cbfc4847328fccc1e78a6e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:14:17",
+      "sequence": 10792,
+      "chapter_label": "1CH 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "The fame of David went out into all lands; and the LORD brought the fear of him on all nations.",
+      "ko": "다윗의 명성이 열국에 퍼졌고 여호와께서 열국으로 저를 두려워하게 하셨더라",
+      "source_text_hash": "01bc7bd09624be427ccfbe167226b2638db5a1888516c766248e9f2f1409ca8e",
+      "translation_text_hash": "8a1098ad83026786935f472048413eac6b567b7ebd35054758a951335a64ab64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 명성이 열국에 퍼졌고 여호와께서 열국으로 저를 두려워하게 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "8a1098ad83026786935f472048413eac6b567b7ebd35054758a951335a64ab64"
+      ]
+    }
+  ]
+}

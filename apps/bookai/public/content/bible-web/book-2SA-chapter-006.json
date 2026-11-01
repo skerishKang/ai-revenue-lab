@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:006",
+  "unit_ordinal": 273,
+  "unit_label": "2SA 6",
+  "book_code": "2SA",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:6:1",
+      "sequence": 8159,
+      "chapter_label": "2SA 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "David again gathered together all the chosen men of Israel, thirty thousand.",
+      "ko": "다윗이 이스라엘에서 뺀 무리 삼만을 다시 모으고",
+      "source_text_hash": "f08acda9ace37592efb29812bf318226e614de7eea5447ce20c43180b748fcee",
+      "translation_text_hash": "f377c341105274709c5ec2580b669619c8924c06bf12a2592a42efdec7e8f398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이스라엘에서 뺀 무리 삼만을 다시 모으고"
+      ],
+      "raw_text_hashes": [
+        "f377c341105274709c5ec2580b669619c8924c06bf12a2592a42efdec7e8f398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:2",
+      "sequence": 8160,
+      "chapter_label": "2SA 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "David arose and went with all the people who were with him from Baale Judah, to bring up from there God’s ark, which is called by the Name, even the name of the LORD of Armies who sits above the cherubim.",
+      "ko": "일어나서 그 함께 있는 모든 사람으로 더불어 바알레유다로 가서 거기서 하나님의 궤를 메어 오려하니 그 궤는 그룹들 사이에 좌정하신 만군의 여호와의 이름으로 이름하는 것이라",
+      "source_text_hash": "76be80d324f3cee28e670de7209dbe172f7ad329268340314131b52ba4225fbb",
+      "translation_text_hash": "a6febad778af73c7f9363d07324c8a94459c0cf9a2f2d68e7b3c4693e0ea9010",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나서 그 함께 있는 모든 사람으로 더불어 바알레유다로 가서 거기서 하나님의 궤를 메어 오려하니 그 궤는 그룹들 사이에 좌정하신 만군의 여호와의 이름으로 이름하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "a6febad778af73c7f9363d07324c8a94459c0cf9a2f2d68e7b3c4693e0ea9010"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:3",
+      "sequence": 8161,
+      "chapter_label": "2SA 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "They set God’s ark on a new cart, and brought it out of Abinadab’s house that was on the hill; and Uzzah and Ahio, the sons of Abinadab, drove the new cart.",
+      "ko": "저희가 하나님의 궤를 새 수레에 싣고 산에 있는 아비나답의 집에서 나오는데 아비나답의 아들 웃사와 아효가 그 새 수레를 모니라",
+      "source_text_hash": "88041b24f479e55aed34f242c583e53062363bd9ec02e21ad0cf43234ba61166",
+      "translation_text_hash": "baf3c3b83d154763376f52a53da364e0f0b06b9fcde89be9e32ddb36d8c5d39b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 하나님의 궤를 새 수레에 싣고 산에 있는 아비나답의 집에서 나오는데 아비나답의 아들 웃사와 아효가 그 새 수레를 모니라"
+      ],
+      "raw_text_hashes": [
+        "baf3c3b83d154763376f52a53da364e0f0b06b9fcde89be9e32ddb36d8c5d39b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:4",
+      "sequence": 8162,
+      "chapter_label": "2SA 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "They brought it out of Abinadab’s house which was in the hill, with God’s ark; and Ahio went before the ark.",
+      "ko": "저희가 산에 있는 아비나답의 집에서 하나님의 궤를 싣고 나올 때에 아효는 궤 앞에서 행하고",
+      "source_text_hash": "2be22a943d89d7e0c98353ef0603d8fda4c91573d99084c86fba2fc44fb5626d",
+      "translation_text_hash": "9dcfbaf6409235be4b507688f1a4eb182ff0566925db8c151e7d40da1297958e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 산에 있는 아비나답의 집에서 하나님의 궤를 싣고 나올 때에 아효는 궤 앞에서 행하고"
+      ],
+      "raw_text_hashes": [
+        "9dcfbaf6409235be4b507688f1a4eb182ff0566925db8c151e7d40da1297958e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:5",
+      "sequence": 8163,
+      "chapter_label": "2SA 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "David and all the house of Israel played before the LORD with all kinds of instruments made of cypress wood, with harps, with stringed instruments, with tambourines, with castanets, and with cymbals.",
+      "ko": "다윗과 이스라엘 온 족속이 잣나무로 만든 여러가지 악기와 수금과 비파와 소고와 양금과 제금으로 여호와 앞에서 주악하더라",
+      "source_text_hash": "9279c80c4e5992666eb3fa8fa8e16ae206c572b05b1dd9c8964b8beab750be4a",
+      "translation_text_hash": "78483b7f4701ce37be97bf9081722029f5d397041c5c2a6e7df2075eef4f9fdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 이스라엘 온 족속이 잣나무로 만든 여러가지 악기와 수금과 비파와 소고와 양금과 제금으로 여호와 앞에서 주악하더라"
+      ],
+      "raw_text_hashes": [
+        "78483b7f4701ce37be97bf9081722029f5d397041c5c2a6e7df2075eef4f9fdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:6",
+      "sequence": 8164,
+      "chapter_label": "2SA 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "When they came to the threshing floor of Nacon, Uzzah reached for God’s ark and took hold of it, for the cattle stumbled.",
+      "ko": "저희가 나곤의 타작 마당에 이르러서는 소들이 뛰므로 웃사가 손을 들어 하나님의 궤를 붙들었더니",
+      "source_text_hash": "d1614c8a22db0f4e2f4f9df5899476748d87d54c835c83da68ce0b84ec71ac7e",
+      "translation_text_hash": "945aa3d47d2f747037bff40690ce34e581aabe56815e44bf1d2175952a582714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나곤의 타작 마당에 이르러서는 소들이 뛰므로 웃사가 손을 들어 하나님의 궤를 붙들었더니"
+      ],
+      "raw_text_hashes": [
+        "945aa3d47d2f747037bff40690ce34e581aabe56815e44bf1d2175952a582714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:7",
+      "sequence": 8165,
+      "chapter_label": "2SA 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s anger burned against Uzzah, and God struck him there for his error; and he died there by God’s ark.",
+      "ko": "여호와 하나님이 웃사의 잘못함을 인하여 진노하사 저를 그곳에서 치시니 저가 거기 하나님의 궤 곁에서 죽으니라",
+      "source_text_hash": "02596a389c5e291d80a7ba0d51edb2fb9ae62858d1cbb24efd5845cafc61ab94",
+      "translation_text_hash": "f7be4a74d01cd90cd85d0b6e0df93ee97c2b78803b16d437e379a4b598d8b131",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 웃사의 잘못함을 인하여 진노하사 저를 그곳에서 치시니 저가 거기 하나님의 궤 곁에서 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "f7be4a74d01cd90cd85d0b6e0df93ee97c2b78803b16d437e379a4b598d8b131"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:8",
+      "sequence": 8166,
+      "chapter_label": "2SA 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "David was displeased because the LORD had broken out against Uzzah; and he called that place Perez Uzzah to this day.",
+      "ko": "여호와께서 웃사를 충돌하시므로 다윗이 분하여 그곳을 베레스웃사라 칭하니 그 이름이 오늘까지 이르니라",
+      "source_text_hash": "4daa32be6ada6b13b6dd1d9c3dd88f0e777407d2d4b30a043ecf89c18a4704b2",
+      "translation_text_hash": "530e2d397b7988157e8c1c3d6e8b625c3cebbdf57eaf653879ef7406e79bc13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 웃사를 충돌하시므로 다윗이 분하여 그곳을 베레스웃사라 칭하니 그 이름이 오늘까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "530e2d397b7988157e8c1c3d6e8b625c3cebbdf57eaf653879ef7406e79bc13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:9",
+      "sequence": 8167,
+      "chapter_label": "2SA 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "David was afraid of the LORD that day; and he said, “How could the LORD’s ark come to me?”",
+      "ko": "다윗이 그 날에 여호와를 두려워하여 가로되 여호와의 궤가 어찌 내게로 오리요 하고",
+      "source_text_hash": "4d381305a4420cb65d514f6a6acacf118c9a6b918052113f385244df8dc0c850",
+      "translation_text_hash": "add5f14614f372867f326d7fc12e628e08cdc0a4acd3f5f1ffee40818e2f22dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 날에 여호와를 두려워하여 가로되 여호와의 궤가 어찌 내게로 오리요 하고"
+      ],
+      "raw_text_hashes": [
+        "add5f14614f372867f326d7fc12e628e08cdc0a4acd3f5f1ffee40818e2f22dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:10",
+      "sequence": 8168,
+      "chapter_label": "2SA 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "So David would not move the LORD’s ark to be with him in David’s city; but David carried it aside into Obed-Edom the Gittite’s house.",
+      "ko": "여호와의 궤를 옮겨 다윗성 자기에게로 메어 가기를 즐겨하지 아니하고 치우쳐 가드 사람 오벧에돔의 집으로 메어 간지라",
+      "source_text_hash": "8e1d38c6338c6a14c42ac6a64e81e691b186c3c7460f61eed3f8aea5db37d7d6",
+      "translation_text_hash": "2874064181b55f831bbffc4ea85ff297d22d7ebca3eeda0eb2bdab483bd6c981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤를 옮겨 다윗성 자기에게로 메어 가기를 즐겨하지 아니하고 치우쳐 가드 사람 오벧에돔의 집으로 메어 간지라"
+      ],
+      "raw_text_hashes": [
+        "2874064181b55f831bbffc4ea85ff297d22d7ebca3eeda0eb2bdab483bd6c981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:11",
+      "sequence": 8169,
+      "chapter_label": "2SA 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD’s ark remained in Obed-Edom the Gittite’s house three months; and the LORD blessed Obed-Edom and all his house.",
+      "ko": "여호와의 궤가 가드 사람 오벧에돔의 집에 석달을 있었는데 여호와께서 오벧에돔과 그 온 집에 복을 주시니라",
+      "source_text_hash": "dd03918c937a699fdc79b584c99b91104f8110a192614a5d726a13a642ab52e7",
+      "translation_text_hash": "76a877d18b5a28f841ef7809bd775334278afa995b7e68d4ff421e281f7f38d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤가 가드 사람 오벧에돔의 집에 석달을 있었는데 여호와께서 오벧에돔과 그 온 집에 복을 주시니라"
+      ],
+      "raw_text_hashes": [
+        "76a877d18b5a28f841ef7809bd775334278afa995b7e68d4ff421e281f7f38d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:12",
+      "sequence": 8170,
+      "chapter_label": "2SA 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "King David was told, “The LORD has blessed the house of Obed-Edom, and all that belongs to him, because of God’s ark.” So David went and brought up God’s ark from the house of Obed-Edom into David’s city with joy.",
+      "ko": "혹이 다윗왕에게 고하여 가로되 여호와께서 하나님의 궤를 인하여 오벧에돔의 집과 그 모든 소유에 복을 주셨다 한지라 다윗이 가서 하나님의 궤를 기쁨으로 메고 오벧에돔의 집에서 다윗성으로 올라갈쌔",
+      "source_text_hash": "a398653ab5b8e83b1299c534e5b2e0176dcc3f9ec66075df7ff669963dd54bdc",
+      "translation_text_hash": "85cab1421cec51b007ee36900c75d8e02db658cae2b028e90e8d5873f4da3479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗왕에게 고하여 가로되 여호와께서 하나님의 궤를 인하여 오벧에돔의 집과 그 모든 소유에 복을 주셨다 한지라 다윗이 가서 하나님의 궤를 기쁨으로 메고 오벧에돔의 집에서 다윗성으로 올라갈쌔"
+      ],
+      "raw_text_hashes": [
+        "85cab1421cec51b007ee36900c75d8e02db658cae2b028e90e8d5873f4da3479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:13",
+      "sequence": 8171,
+      "chapter_label": "2SA 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "When those who bore the LORD’s ark had gone six paces, he sacrificed an ox and a fattened calf.",
+      "ko": "여호와의 궤를 멘 사람들이 여섯 걸음을 행하매 다윗이 소와 살진 것으로 제사를 드리고",
+      "source_text_hash": "97ee508bf6de6f625d44df3a788216c8b3fafb21d6288ac0600d8da349b65314",
+      "translation_text_hash": "d73fa8f8568a581fb1403dd1849790b9b274774cad7adbb11991396dfea18fe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤를 멘 사람들이 여섯 걸음을 행하매 다윗이 소와 살진 것으로 제사를 드리고"
+      ],
+      "raw_text_hashes": [
+        "d73fa8f8568a581fb1403dd1849790b9b274774cad7adbb11991396dfea18fe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:14",
+      "sequence": 8172,
+      "chapter_label": "2SA 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "David danced before the LORD with all his might; and David was clothed in a linen ephod.",
+      "ko": "여호와 앞에서 힘을 다하여 춤을 추는데 때에 베 에봇을 입었더라",
+      "source_text_hash": "81d62d5fe421d0a69d339d9b3c76f3864a115c25b61bb901cefe2b93aedf6d41",
+      "translation_text_hash": "3c23c1826e1a843e2b54a06d15ca61d6acf1aa7fa75151fd663d0bd5971ca397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에서 힘을 다하여 춤을 추는데 때에 베 에봇을 입었더라"
+      ],
+      "raw_text_hashes": [
+        "3c23c1826e1a843e2b54a06d15ca61d6acf1aa7fa75151fd663d0bd5971ca397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:15",
+      "sequence": 8173,
+      "chapter_label": "2SA 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "So David and all the house of Israel brought up the LORD’s ark with shouting and with the sound of the trumpet.",
+      "ko": "다윗과 온 이스라엘 족속이 즐거이 부르며 나팔을 불고 여호와의 궤를 메어 오니라",
+      "source_text_hash": "b67b8c5aff07c226f4de72f2bd22d4cff6aa1f97314d214e374a8a12d12b23e6",
+      "translation_text_hash": "cdadb115eb1ae905beb4c67c47b69f174e48366ecc20d600950003d5ee8c817d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 온 이스라엘 족속이 즐거이 부르며 나팔을 불고 여호와의 궤를 메어 오니라"
+      ],
+      "raw_text_hashes": [
+        "cdadb115eb1ae905beb4c67c47b69f174e48366ecc20d600950003d5ee8c817d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:16",
+      "sequence": 8174,
+      "chapter_label": "2SA 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "As the LORD’s ark came into David’s city, Michal the daughter of Saul looked out through the window and saw King David leaping and dancing before the LORD; and she despised him in her heart.",
+      "ko": "여호와의 궤가 다윗성으로 들어올 때에 사울의 딸 미갈이 창으로 내다보다가 다윗왕이 여호와 앞에서 뛰놀며 춤추는 것을 보고 심중에 저를 업신여기니라",
+      "source_text_hash": "a0da71f972c31bf95850ece1e0e89b4ae05a6d5f98bb8e5f24b4075a02deb513",
+      "translation_text_hash": "2e145db1c59f429f80f1f21545eeef1299ac4a3285b3f6d285eaf52e7de0a35e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤가 다윗성으로 들어올 때에 사울의 딸 미갈이 창으로 내다보다가 다윗왕이 여호와 앞에서 뛰놀며 춤추는 것을 보고 심중에 저를 업신여기니라"
+      ],
+      "raw_text_hashes": [
+        "2e145db1c59f429f80f1f21545eeef1299ac4a3285b3f6d285eaf52e7de0a35e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:17",
+      "sequence": 8175,
+      "chapter_label": "2SA 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "They brought in the LORD’s ark, and set it in its place in the middle of the tent that David had pitched for it; and David offered burnt offerings and peace offerings before the LORD.",
+      "ko": "여호와의 궤를 메고 들어가서 다윗이 위하여 친 장막 가운데 그 예비한 자리에 두매 다윗이 번제와 화목제를 여호와 앞에 드리니라",
+      "source_text_hash": "6f97da9b41140dc60bce81872c5ff27dff4f95d4aa95f898226ea893416f3212",
+      "translation_text_hash": "30778a63d33b45a8d415e7dbf1f84cd3c0f3d88c3e1d5a7db76f7117920349ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤를 메고 들어가서 다윗이 위하여 친 장막 가운데 그 예비한 자리에 두매 다윗이 번제와 화목제를 여호와 앞에 드리니라"
+      ],
+      "raw_text_hashes": [
+        "30778a63d33b45a8d415e7dbf1f84cd3c0f3d88c3e1d5a7db76f7117920349ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:18",
+      "sequence": 8176,
+      "chapter_label": "2SA 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "When David had finished offering the burnt offering and the peace offerings, he blessed the people in the name of the LORD of Armies.",
+      "ko": "다윗이 번제와 화목제 드리기를 마치고 만군의 여호와의 이름으로 백성에게 축복하고",
+      "source_text_hash": "02b5435109bf7748cd202d0ccde69047f024bca3886ea38672f257de5740fb7e",
+      "translation_text_hash": "fd8ffaf54f8507cc6d85d1305be65f2ea411845feb02cb7bb92c3a421ac69b8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 번제와 화목제 드리기를 마치고 만군의 여호와의 이름으로 백성에게 축복하고"
+      ],
+      "raw_text_hashes": [
+        "fd8ffaf54f8507cc6d85d1305be65f2ea411845feb02cb7bb92c3a421ac69b8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:19",
+      "sequence": 8177,
+      "chapter_label": "2SA 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "He gave to all the people, even among the whole multitude of Israel, both to men and women, to everyone a portion of bread, dates, and raisins. So all the people departed, each to his own house.",
+      "ko": "모든 백성 곧 온 이스라엘 무리의 무론 남녀하고 떡 한개와 고기 한 조각과 건포도떡 한덩이씩 나눠주매 모든 백성이 각기 집으로 돌아가니라",
+      "source_text_hash": "b7ee1b0533fb2c9787003da98c05aec9da7cb810e3f737996d7d903c2d42c4db",
+      "translation_text_hash": "e040b547ff4cd7aafde8eed103d327ea5f0f43ac5b61398b2d9149a20afb98a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성 곧 온 이스라엘 무리의 무론 남녀하고 떡 한개와 고기 한 조각과 건포도떡 한덩이씩 나눠주매 모든 백성이 각기 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "e040b547ff4cd7aafde8eed103d327ea5f0f43ac5b61398b2d9149a20afb98a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:20",
+      "sequence": 8178,
+      "chapter_label": "2SA 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Then David returned to bless his household. Michal the daughter of Saul came out to meet David, and said, “How glorious the king of Israel was today, who uncovered himself today in the eyes of his servants’ maids, as one of the vain fellows shamelessly uncovers himself!”",
+      "ko": "다윗이 자기의 가족에게 축복하러 돌아오매 사울의 딸 미갈이 나와서 다윗을 맞으며 가로되 이스라엘 왕이 오늘날 어떻게 영화로우신지 방탕한 자가 염치 없이 자기의 몸을 드러내는 것처럼 오늘날 그 신복의 계집종의 눈 앞에서 몸을 드러내셨도다",
+      "source_text_hash": "11bb736bf3b1f0368b4ad75a48f5a8af8c9a9838b477ad19a01e9e508fbc82e2",
+      "translation_text_hash": "b3674cc6d91f037770f10fc8d4311355ba256fec5519206cddea2a1bee556357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 자기의 가족에게 축복하러 돌아오매 사울의 딸 미갈이 나와서 다윗을 맞으며 가로되 이스라엘 왕이 오늘날 어떻게 영화로우신지 방탕한 자가 염치 없이 자기의 몸을 드러내는 것처럼 오늘날 그 신복의 계집종의 눈 앞에서 몸을 드러내셨도다"
+      ],
+      "raw_text_hashes": [
+        "b3674cc6d91f037770f10fc8d4311355ba256fec5519206cddea2a1bee556357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:21",
+      "sequence": 8179,
+      "chapter_label": "2SA 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "David said to Michal, “It was before the LORD, who chose me above your father, and above all his house, to appoint me prince over the people of the LORD, over Israel. Therefore I will celebrate before the LORD.",
+      "ko": "다윗이 미갈에게 이르되 이는 여호와 앞에서 한 것이니라 저가 네 아비와 그 온 집을 버리시고 나를 택하사 나로 여호와의 백성 이스라엘의 주권자를 삼으셨으니 내가 여호와 앞에서 뛰놀리라",
+      "source_text_hash": "1e064a38289c3b89d1503aa3006470e88c4f7fe4f8fa65ce66c91df21e14c60b",
+      "translation_text_hash": "465692d54bdfdeb721bb4a024ee476b07fc57a3d1cef9f50c5240db1a01693ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 미갈에게 이르되 이는 여호와 앞에서 한 것이니라 저가 네 아비와 그 온 집을 버리시고 나를 택하사 나로 여호와의 백성 이스라엘의 주권자를 삼으셨으니 내가 여호와 앞에서 뛰놀리라"
+      ],
+      "raw_text_hashes": [
+        "465692d54bdfdeb721bb4a024ee476b07fc57a3d1cef9f50c5240db1a01693ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:22",
+      "sequence": 8180,
+      "chapter_label": "2SA 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "I will be yet more undignified than this, and will be worthless in my own sight. But the maids of whom you have spoken will honor me.”",
+      "ko": "내가 이보다 더 낮아져서 스스로 천하게 보일찌라도 네가 말한바 계집종에게는 내가 높임을 받으리라 한지라",
+      "source_text_hash": "73e9dbbb302136eb70c3bccc92299ae40816e59c2688f68880b656a35db2ccd5",
+      "translation_text_hash": "e3c06792e7d6600904528e1c3752c3871286e7e6c53c66fd1276d51639a97e3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이보다 더 낮아져서 스스로 천하게 보일찌라도 네가 말한바 계집종에게는 내가 높임을 받으리라 한지라"
+      ],
+      "raw_text_hashes": [
+        "e3c06792e7d6600904528e1c3752c3871286e7e6c53c66fd1276d51639a97e3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:6:23",
+      "sequence": 8181,
+      "chapter_label": "2SA 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Michal the daughter of Saul had no child to the day of her death.",
+      "ko": "그러므로 사울의 딸 미갈이 죽는 날까지 자식이 없으니라",
+      "source_text_hash": "2039dd33fe1797c391bfdc607efef6bfaecb7a287491b9650c30541a825208c4",
+      "translation_text_hash": "e2d004f366f2c8f5aceeab6e3f272de1018251744deb5e6420259d1ced948c9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 사울의 딸 미갈이 죽는 날까지 자식이 없으니라"
+      ],
+      "raw_text_hashes": [
+        "e2d004f366f2c8f5aceeab6e3f272de1018251744deb5e6420259d1ced948c9d"
+      ]
+    }
+  ]
+}

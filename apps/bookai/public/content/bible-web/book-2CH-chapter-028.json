@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:028",
+  "unit_ordinal": 395,
+  "unit_label": "2CH 28",
+  "book_code": "2CH",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:28:1",
+      "sequence": 11766,
+      "chapter_label": "2CH 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "Ahaz was twenty years old when he began to reign, and he reigned sixteen years in Jerusalem. He didn’t do that which was right in the LORD’s eyes, like David his father,",
+      "ko": "아하스가 위에 나아갈 때에 나이 이십세라 예루살렘에서 십 륙년을 치리하였으나 그 조상 다윗과 같지 아니하여 여호와 보시기에 정직히 행치 아니하고",
+      "source_text_hash": "d7232e980c85fa500fbb3970c315706ff458177c134314ee1bc0b4d238dfe476",
+      "translation_text_hash": "dd099568c83b63ff0b5d1833849e5ea8951753fd71503902e2b6c45dfa1426bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 위에 나아갈 때에 나이 이십세라 예루살렘에서 십 륙년을 치리하였으나 그 조상 다윗과 같지 아니하여 여호와 보시기에 정직히 행치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "dd099568c83b63ff0b5d1833849e5ea8951753fd71503902e2b6c45dfa1426bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:2",
+      "sequence": 11767,
+      "chapter_label": "2CH 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "but he walked in the ways of the kings of Israel, and also made molten images for the Baals.",
+      "ko": "이스라엘 열왕의 길로 행하여 바알들의 우상을 부어만들고",
+      "source_text_hash": "0b6d3f0223769437e0ee63e24a2b4cddedb7a322b046eb3461d7c7773f1fb0b8",
+      "translation_text_hash": "2cb754b953e4c3b98d43daac61c7206186751024fc8636dc6c8a3c2f6e87711f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 열왕의 길로 행하여 바알들의 우상을 부어만들고"
+      ],
+      "raw_text_hashes": [
+        "2cb754b953e4c3b98d43daac61c7206186751024fc8636dc6c8a3c2f6e87711f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:3",
+      "sequence": 11768,
+      "chapter_label": "2CH 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "Moreover he burned incense in the valley of the son of Hinnom, and burned his children in the fire, according to the abominations of the nations whom the LORD cast out before the children of Israel.",
+      "ko": "또 힌놈의 아들 골짜기에서 분향하고 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아 그 자녀를 불사르고",
+      "source_text_hash": "923001f43c2e91e3628cfe1f9fcd2cfb5a1654f18613ca0e53e4a2f1df54bd61",
+      "translation_text_hash": "cdd556881b0d61c0a10b55b8ed3e063edb12efd12ec6d55ac4b62eaff8a3a337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 힌놈의 아들 골짜기에서 분향하고 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아 그 자녀를 불사르고"
+      ],
+      "raw_text_hashes": [
+        "cdd556881b0d61c0a10b55b8ed3e063edb12efd12ec6d55ac4b62eaff8a3a337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:4",
+      "sequence": 11769,
+      "chapter_label": "2CH 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "He sacrificed and burned incense in the high places, and on the hills, and under every green tree.",
+      "ko": "또 산당과 작은 산위와 모든 푸른 나무 아래에서 제사를 드리며 분향한지라",
+      "source_text_hash": "3492ad5cd3fc065fe1e670327dbb5035a78d5cb531fa823a613d73b7cc651e0c",
+      "translation_text_hash": "93213d27aa70d62a3c0a2afe126ed772567126961217355ece5b426d9894bacb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 산당과 작은 산위와 모든 푸른 나무 아래에서 제사를 드리며 분향한지라"
+      ],
+      "raw_text_hashes": [
+        "93213d27aa70d62a3c0a2afe126ed772567126961217355ece5b426d9894bacb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:5",
+      "sequence": 11770,
+      "chapter_label": "2CH 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore the LORD his God delivered him into the hand of the king of Syria. They struck him, and carried away from him a great multitude of captives, and brought them to Damascus. He was also delivered into the hand of the king of Israel, who struck him with a great slaughter.",
+      "ko": "그러므로 그 하나님 여호와께서 아람 왕의 손에 붙이시매 저희가 쳐서 심히 많은 무리를 사로잡아 가지고 다메섹으로 갔으며 또 이스라엘 왕의 손에 붙이시매 저가 쳐서 크게 살륙하였으니",
+      "source_text_hash": "3fe09b814ad31907104a16e329eeb504b1bbcd31ef5ce2d893c65f522b94b7f1",
+      "translation_text_hash": "54e9e5b01b25688c73d9e5be3d51e2f3acad67f799d105270759b73a62c61b6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 하나님 여호와께서 아람 왕의 손에 붙이시매 저희가 쳐서 심히 많은 무리를 사로잡아 가지고 다메섹으로 갔으며 또 이스라엘 왕의 손에 붙이시매 저가 쳐서 크게 살륙하였으니"
+      ],
+      "raw_text_hashes": [
+        "54e9e5b01b25688c73d9e5be3d51e2f3acad67f799d105270759b73a62c61b6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:6",
+      "sequence": 11771,
+      "chapter_label": "2CH 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "For Pekah the son of Remaliah killed in Judah one hundred twenty thousand in one day, all of them valiant men, because they had forsaken the LORD, the God of their fathers.",
+      "ko": "이는 그 열조의 하나님 여호와를 버렸음이라 르말랴의 아들 베가가 유다에서 하루 동안에 용사 십 이만명을 죽였으며",
+      "source_text_hash": "e33bf0da1cdc87c1f5ce7b02ced7b668c21faf282caf3164743375aa0ba45b3d",
+      "translation_text_hash": "39803698e25f4c24f167b7cdf5e4c459ebfebd709253daa242d24c7edf27794a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 열조의 하나님 여호와를 버렸음이라 르말랴의 아들 베가가 유다에서 하루 동안에 용사 십 이만명을 죽였으며"
+      ],
+      "raw_text_hashes": [
+        "39803698e25f4c24f167b7cdf5e4c459ebfebd709253daa242d24c7edf27794a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:7",
+      "sequence": 11772,
+      "chapter_label": "2CH 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Zichri, a mighty man of Ephraim, killed Maaseiah the king’s son, Azrikam the ruler of the house, and Elkanah who was next to the king.",
+      "ko": "에브라임의 용사 시그리는 왕의 아들 마아세야와 궁내대신 아스리감과 총리대신 엘가나를 죽였더라",
+      "source_text_hash": "175944a6181817ccf5635351f1a660ce241a00ac76c37767247360b583015e6a",
+      "translation_text_hash": "f75fac8dff98fdcfa88dae4a08dbab6649e8a72a527ac80e9682e12edfd41469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 용사 시그리는 왕의 아들 마아세야와 궁내대신 아스리감과 총리대신 엘가나를 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "f75fac8dff98fdcfa88dae4a08dbab6649e8a72a527ac80e9682e12edfd41469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:8",
+      "sequence": 11773,
+      "chapter_label": "2CH 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Israel carried away captive of their brothers two hundred thousand women, sons, and daughters, and also took away much plunder from them, and brought the plunder to Samaria.",
+      "ko": "이스라엘 자손이 그 형제 중에서 그 아내와 자녀 합하여 이십만명을 사로잡고 그 재물을 많이 노략하여 사마리아로 가져가니",
+      "source_text_hash": "81565c156047166993995dd43f98b8141dac196735f70021109a7b6e141407c6",
+      "translation_text_hash": "480712b2e0d8712fb6d2444a77092434377f987a85cb2b5ff7804e24c5e29e45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그 형제 중에서 그 아내와 자녀 합하여 이십만명을 사로잡고 그 재물을 많이 노략하여 사마리아로 가져가니"
+      ],
+      "raw_text_hashes": [
+        "480712b2e0d8712fb6d2444a77092434377f987a85cb2b5ff7804e24c5e29e45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:9",
+      "sequence": 11774,
+      "chapter_label": "2CH 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "But a prophet of the LORD was there, whose name was Oded; and he went out to meet the army that came to Samaria, and said to them, “Behold, because the LORD, the God of your fathers, was angry with Judah, he has delivered them into your hand, and you have slain them in a rage which has reached up to heaven.",
+      "ko": "그 곳에 여호와의 선지자가 있는데 이름은 오뎃이라 저가 사마리아로 돌아오는 군대를 영접하고 저희에게 이르되 너희 열조의 하나님 여호와께서 유다를 진노하신고로 너희 손에 붙이셨거늘 너희 노기가 충천하여 살륙하고",
+      "source_text_hash": "556a2a032ecc44ebb70db3ddb71ef03f1fad331f98d9a5b2aaead09ef37933dc",
+      "translation_text_hash": "06d382ec00cc011b6142333bdf97cb1f4fb7cc0b18c7ca6fc73f881dce1db4ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곳에 여호와의 선지자가 있는데 이름은 오뎃이라 저가 사마리아로 돌아오는 군대를 영접하고 저희에게 이르되 너희 열조의 하나님 여호와께서 유다를 진노하신고로 너희 손에 붙이셨거늘 너희 노기가 충천하여 살륙하고"
+      ],
+      "raw_text_hashes": [
+        "06d382ec00cc011b6142333bdf97cb1f4fb7cc0b18c7ca6fc73f881dce1db4ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:10",
+      "sequence": 11775,
+      "chapter_label": "2CH 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Now you intend to degrade the children of Judah and Jerusalem as male and female slaves for yourselves. Aren’t there even with you trespasses of your own against the LORD your God?",
+      "ko": "이제 너희가 또 유다와 예루살렘 백성들을 압제하여 노예를 삼고자 생각하는도다 너희는 너희 하나님 여호와께 범죄함이 없느냐",
+      "source_text_hash": "88680c3fb268e758489ad31c84081fcae11a657dc39adee4c6bfebf8953fddd1",
+      "translation_text_hash": "44ba97314571a70650542fbbc8ac75a9fcdd86a3646ca87db38a3cf668b6a5c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희가 또 유다와 예루살렘 백성들을 압제하여 노예를 삼고자 생각하는도다 너희는 너희 하나님 여호와께 범죄함이 없느냐"
+      ],
+      "raw_text_hashes": [
+        "44ba97314571a70650542fbbc8ac75a9fcdd86a3646ca87db38a3cf668b6a5c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:11",
+      "sequence": 11776,
+      "chapter_label": "2CH 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Now hear me therefore, and send back the captives that you have taken captive from your brothers, for the fierce wrath of the LORD is on you.”",
+      "ko": "그런즉 너희는 내 말을 듣고 너희가 형제 중에서 사로잡아 온 포로를 놓아 돌아가게 하라 여호와의 진노가 너희에게 임박하였느니라 한지라",
+      "source_text_hash": "36a3a5b120e1c9e4d93faaa048b7b8e45725c08f8bec906149c30114cd5f8f58",
+      "translation_text_hash": "1faedceddec2ffca81962796492f505f4f9229abe496dea21a8df05e529d66aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 내 말을 듣고 너희가 형제 중에서 사로잡아 온 포로를 놓아 돌아가게 하라 여호와의 진노가 너희에게 임박하였느니라 한지라"
+      ],
+      "raw_text_hashes": [
+        "1faedceddec2ffca81962796492f505f4f9229abe496dea21a8df05e529d66aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:12",
+      "sequence": 11777,
+      "chapter_label": "2CH 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "Then some of the heads of the children of Ephraim, Azariah the son of Johanan, Berechiah the son of Meshillemoth, Jehizkiah the son of Shallum, and Amasa the son of Hadlai, stood up against those who came from the war,",
+      "ko": "에브라임 자손의 두목 몇사람 요하난의 아들 아사랴와 무실레못의 아들 베레갸와 살룸의 아들 여히스기야와 하들래의 아들 아마사가 일어나서 전장에서 돌아오는 자를 막으며",
+      "source_text_hash": "283310366f62c5a76c9d0caba0bc23dbf6eb27c5d03f83ed39457bbaea0c19b9",
+      "translation_text_hash": "f1c3ed72e5bc3f6757da5ae9932da605c13aa936b733bc547ec1426222f6bdeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손의 두목 몇사람 요하난의 아들 아사랴와 무실레못의 아들 베레갸와 살룸의 아들 여히스기야와 하들래의 아들 아마사가 일어나서 전장에서 돌아오는 자를 막으며"
+      ],
+      "raw_text_hashes": [
+        "f1c3ed72e5bc3f6757da5ae9932da605c13aa936b733bc547ec1426222f6bdeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:13",
+      "sequence": 11778,
+      "chapter_label": "2CH 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "and said to them, “You must not bring in the captives here, for you intend that which will bring on us a trespass against the LORD, to add to our sins and to our guilt; for our guilt is great, and there is fierce wrath against Israel.”",
+      "ko": "저희에게 이르되 너희는 이 포로를 이리로 끌어 들이지 못하리라 너희의 경영하는 일이 우리로 여호와께 허물이 있게 함이니 우리의 죄와 허물을 더하게 함이로다 우리의 허물이 이미 커서 진노하심이 이스라엘에게 임박하였느니라 하매",
+      "source_text_hash": "7a59ac5fb0aa105f91ecead796714c053ee8fd47d35278044ebb5d3830fb224d",
+      "translation_text_hash": "88d85c05d78eb817d0567e9cc850b70a58e9c662648e31cd51f8f080ed9023c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르되 너희는 이 포로를 이리로 끌어 들이지 못하리라 너희의 경영하는 일이 우리로 여호와께 허물이 있게 함이니 우리의 죄와 허물을 더하게 함이로다 우리의 허물이 이미 커서 진노하심이 이스라엘에게 임박하였느니라 하매"
+      ],
+      "raw_text_hashes": [
+        "88d85c05d78eb817d0567e9cc850b70a58e9c662648e31cd51f8f080ed9023c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:14",
+      "sequence": 11779,
+      "chapter_label": "2CH 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "So the armed men left the captives and the plunder before the princes and all the assembly.",
+      "ko": "이에 병기를 가진 사람이 포로와 노략한 물건을 방백들과 온 회중 앞에 둔지라",
+      "source_text_hash": "7e2e85e255bd12f214f199a9bd281f6f971bf2842ed74fd604059254c8528bf4",
+      "translation_text_hash": "be005e5f54eaa829d39da07b5a572ae12ff74d4e54a85c382c5ce9d8e14529a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 병기를 가진 사람이 포로와 노략한 물건을 방백들과 온 회중 앞에 둔지라"
+      ],
+      "raw_text_hashes": [
+        "be005e5f54eaa829d39da07b5a572ae12ff74d4e54a85c382c5ce9d8e14529a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:15",
+      "sequence": 11780,
+      "chapter_label": "2CH 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "The men who have been mentioned by name rose up and took the captives, and with the plunder clothed all who were naked among them, dressed them, gave them sandals, gave them something to eat and to drink, anointed them, carried all the feeble of them on donkeys, and brought them to Jericho, the city of palm trees, to their brothers. Then they returned to Samaria.",
+      "ko": "이 위에 이름이 기록된 자들이 일어나서 포로를 맞고 노략하여 온 중에서 옷을 취하여 벗은 자에게 입히며 신을 신기며 먹이고 마시우며 기름을 바르고 그 약한 자는 나귀에 태워 데리고 종려나무 성 여리고에 이르러 그 형제에게 돌린 후에 사마리아로 돌아갔더라",
+      "source_text_hash": "e845fdbdf188abdaed83a55bd145d08ed4ae52727212dfd875e1701f04f379c4",
+      "translation_text_hash": "74167437905c7919e7a29c39dc3e42490fba7ba307d2c655de9823f69ec70cd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 위에 이름이 기록된 자들이 일어나서 포로를 맞고 노략하여 온 중에서 옷을 취하여 벗은 자에게 입히며 신을 신기며 먹이고 마시우며 기름을 바르고 그 약한 자는 나귀에 태워 데리고 종려나무 성 여리고에 이르러 그 형제에게 돌린 후에 사마리아로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "74167437905c7919e7a29c39dc3e42490fba7ba307d2c655de9823f69ec70cd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:16",
+      "sequence": 11781,
+      "chapter_label": "2CH 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "At that time King Ahaz sent to the kings of Assyria to help him.",
+      "ko": "그 때에 아하스왕이 앗수르 왕에게 보내어 도와주기를 구하였으니",
+      "source_text_hash": "fa3d8f69d4ea9e9d385a9f9d2eb24ff2e231b987f07581aea07e631eea474280",
+      "translation_text_hash": "8b84a636388ab43b681d1e20d07af008a9ecefdf6709296395f7aadaeeed21c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 아하스왕이 앗수르 왕에게 보내어 도와주기를 구하였으니"
+      ],
+      "raw_text_hashes": [
+        "8b84a636388ab43b681d1e20d07af008a9ecefdf6709296395f7aadaeeed21c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:17",
+      "sequence": 11782,
+      "chapter_label": "2CH 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "For again the Edomites had come and struck Judah, and carried away captives.",
+      "ko": "이는 에돔 사람이 다시 와서 유다를 치고 그 백성을 사로잡았음이며",
+      "source_text_hash": "568c3b7bc71f4c0a94376a3b4e121a7691372269d6eda9afc814898391819b13",
+      "translation_text_hash": "e717c477eb3664667d3026ae9e9ca43567f546271edcf6d51c815be5d877c47a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 에돔 사람이 다시 와서 유다를 치고 그 백성을 사로잡았음이며"
+      ],
+      "raw_text_hashes": [
+        "e717c477eb3664667d3026ae9e9ca43567f546271edcf6d51c815be5d877c47a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:18",
+      "sequence": 11783,
+      "chapter_label": "2CH 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "The Philistines also had invaded the cities of the lowland and of the South of Judah, and had taken Beth Shemesh, Aijalon, Gederoth, Soco with its villages, Timnah with its villages, and also Gimzo and its villages; and they lived there.",
+      "ko": "블레셋 사람도 유다의 평지와 남방 성읍들을 침노하여 벧세메스와 아얄론과 그데롯과 소고와 그 동네와 딤나와 그 동네와 김소와 그 동네를 취하고 거기 거하였으니",
+      "source_text_hash": "8d9f42e3b4c348fab05b56d9982baa5fbd7d5b24bbf620c1e684e6c1fd94da1c",
+      "translation_text_hash": "44e6382c4730a3dc570645b9307deafbcc49f2ba35716a39fae9f9299b6cc6d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람도 유다의 평지와 남방 성읍들을 침노하여 벧세메스와 아얄론과 그데롯과 소고와 그 동네와 딤나와 그 동네와 김소와 그 동네를 취하고 거기 거하였으니"
+      ],
+      "raw_text_hashes": [
+        "44e6382c4730a3dc570645b9307deafbcc49f2ba35716a39fae9f9299b6cc6d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:19",
+      "sequence": 11784,
+      "chapter_label": "2CH 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "For the LORD brought Judah low because of Ahaz king of Israel, because he acted without restraint in Judah and trespassed severely against the LORD.",
+      "ko": "이는 이스라엘 왕 아하스가 유다에서 망령되이 행하여 여호와께 크게 범죄하였으므로 여호와께서 유다를 낮추심이라",
+      "source_text_hash": "b69a96ec735bbff3422276cf154799e845a97a4dc8298d396f79262f3d9da8da",
+      "translation_text_hash": "85645da72e5fc5af714d679056355e3c0a679bf6b45a1120779f006a71d980b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘 왕 아하스가 유다에서 망령되이 행하여 여호와께 크게 범죄하였으므로 여호와께서 유다를 낮추심이라"
+      ],
+      "raw_text_hashes": [
+        "85645da72e5fc5af714d679056355e3c0a679bf6b45a1120779f006a71d980b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:20",
+      "sequence": 11785,
+      "chapter_label": "2CH 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "Tilgath-pilneser king of Assyria came to him and gave him trouble, but didn’t strengthen him.",
+      "ko": "앗수르 왕 디글랏 빌레셀이 이르렀으나 돕지 아니하고 도리어 군박하였더라",
+      "source_text_hash": "ebc062e89d2134729693f82e0788d3ba5f3634dfa07a22b7d12080571e993278",
+      "translation_text_hash": "4f7224f4231f580d42c6554b27908ef78fb9be3bf14c4195d7f212fe549b9366",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕 디글랏 빌레셀이 이르렀으나 돕지 아니하고 도리어 군박하였더라"
+      ],
+      "raw_text_hashes": [
+        "4f7224f4231f580d42c6554b27908ef78fb9be3bf14c4195d7f212fe549b9366"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:21",
+      "sequence": 11786,
+      "chapter_label": "2CH 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "For Ahaz took away a portion out of the LORD’s house, and out of the house of the king and of the princes, and gave it to the king of Assyria; but it didn’t help him.",
+      "ko": "아하스가 여호와의 전과 왕궁과 방백들의 집에서 재물을 취하여 앗수르 왕에게 주었으나 유익이 없었더라",
+      "source_text_hash": "89c5599c17ceab4db13ddcbef7c741b6e7139067fdd17366a8919073e310789e",
+      "translation_text_hash": "e2adee7ccd4ba610eb062ab360176ff4857570b2e59c21abbb38f2753c5aaa87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 여호와의 전과 왕궁과 방백들의 집에서 재물을 취하여 앗수르 왕에게 주었으나 유익이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "e2adee7ccd4ba610eb062ab360176ff4857570b2e59c21abbb38f2753c5aaa87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:22",
+      "sequence": 11787,
+      "chapter_label": "2CH 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "In the time of his distress, he trespassed yet more against the LORD, this same King Ahaz.",
+      "ko": "이 아하스왕이 곤고할 때에 더욱 여호와께 범죄하여",
+      "source_text_hash": "365759f35db3665ed6f62613671c97853a4fda6a3b29024106ad8d5d21ad566e",
+      "translation_text_hash": "482eb37b8add6f3b91accdd8fb892e9a29b91bfb7c7993687c5beb25a272a965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 아하스왕이 곤고할 때에 더욱 여호와께 범죄하여"
+      ],
+      "raw_text_hashes": [
+        "482eb37b8add6f3b91accdd8fb892e9a29b91bfb7c7993687c5beb25a272a965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:23",
+      "sequence": 11788,
+      "chapter_label": "2CH 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "For he sacrificed to the gods of Damascus which had defeated him. He said, “Because the gods of the kings of Syria helped them, I will sacrifice to them, that they may help me.” But they were the ruin of him and of all Israel.",
+      "ko": "자기를 친 다메섹 신들에게 제사하여 가로되 아람 열왕의 신들이 저희를 도왔으니 나도 그 신에게 제사하여 나를 돕게 하리라 하였으나 그 신이 아하스와 온 이스라엘을 망케 하였더라",
+      "source_text_hash": "9955730adcb9a801afb710e361c1b6a7d3fd27fa5797e4587fef2926116bdc09",
+      "translation_text_hash": "3e7b1ba555777448c1bffc314c480353c701a5a2b99cb0794ff19a764d1a7f01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 친 다메섹 신들에게 제사하여 가로되 아람 열왕의 신들이 저희를 도왔으니 나도 그 신에게 제사하여 나를 돕게 하리라 하였으나 그 신이 아하스와 온 이스라엘을 망케 하였더라"
+      ],
+      "raw_text_hashes": [
+        "3e7b1ba555777448c1bffc314c480353c701a5a2b99cb0794ff19a764d1a7f01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:24",
+      "sequence": 11789,
+      "chapter_label": "2CH 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "Ahaz gathered together the vessels of God’s house, cut the vessels of God’s house in pieces, and shut up the doors of the LORD’s house; and he made himself altars in every corner of Jerusalem.",
+      "ko": "아하스가 하나님의 전의 기구들을 모아 훼파하고 또 여호와의 전문들을 닫고 예루살렘 구석마다 단을 쌓고",
+      "source_text_hash": "6507c0aa9a07b81ab355ac2e93d34d9ebd04ed2a80bf13f7e66c0e305b2c11ed",
+      "translation_text_hash": "146cb4a083b80de6cbee84f73ef57475ab4c8ba2c5bb73a726bcaacade158a8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 하나님의 전의 기구들을 모아 훼파하고 또 여호와의 전문들을 닫고 예루살렘 구석마다 단을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "146cb4a083b80de6cbee84f73ef57475ab4c8ba2c5bb73a726bcaacade158a8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:25",
+      "sequence": 11790,
+      "chapter_label": "2CH 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "In every city of Judah he made high places to burn incense to other gods, and provoked the LORD, the God of his fathers, to anger.",
+      "ko": "유다 각 성읍에 산당을 세워 다른 신에게 분향하여 그 열조의 하나님 여호와의 노를 격발케 하였더라",
+      "source_text_hash": "b50d3db41494efbb4a4e8b85c65b3abfc7a42eec33580b77ab5a989f0c06461a",
+      "translation_text_hash": "55d8c24a5560753f886372cb9914202c48a1fdb0470378f513bf053352144aaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 각 성읍에 산당을 세워 다른 신에게 분향하여 그 열조의 하나님 여호와의 노를 격발케 하였더라"
+      ],
+      "raw_text_hashes": [
+        "55d8c24a5560753f886372cb9914202c48a1fdb0470378f513bf053352144aaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:26",
+      "sequence": 11791,
+      "chapter_label": "2CH 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "Now the rest of his acts, and all his ways, first and last, behold, they are written in the book of the kings of Judah and Israel.",
+      "ko": "아하스의 이 외의 시종 사적과 모든 행위는 유다와 이스라엘 열왕기에 기록되니라",
+      "source_text_hash": "59522869af7cb98c6bb871c605e6a660401e0c7a2242993078d85bec410447eb",
+      "translation_text_hash": "5e98096828cfc9f274a8dca89388ff4170405f405dab17ff6038a55b867ce962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스의 이 외의 시종 사적과 모든 행위는 유다와 이스라엘 열왕기에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "5e98096828cfc9f274a8dca89388ff4170405f405dab17ff6038a55b867ce962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:28:27",
+      "sequence": 11792,
+      "chapter_label": "2CH 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "Ahaz slept with his fathers, and they buried him in the city, even in Jerusalem, because they didn’t bring him into the tombs of the kings of Israel; and Hezekiah his son reigned in his place.",
+      "ko": "아하스가 그 열조와 함께 자매 이스라엘 열왕의 묘실에 들이지 아니하고 예루살렘성에 장사하였더라 그 아들 히스기야가 대신하여 왕이 되니라",
+      "source_text_hash": "204d569b5bddfc20d2c5bfe430151d2975e093633e9829e9c8a5b9f6c40934b2",
+      "translation_text_hash": "ff3c5e99260789923c2091ce67554ebb2c56e525836c9d01f09363f17767f63b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 그 열조와 함께 자매 이스라엘 열왕의 묘실에 들이지 아니하고 예루살렘성에 장사하였더라 그 아들 히스기야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "ff3c5e99260789923c2091ce67554ebb2c56e525836c9d01f09363f17767f63b"
+      ]
+    }
+  ]
+}

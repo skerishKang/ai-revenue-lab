@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:002",
+  "unit_ordinal": 119,
+  "unit_label": "NUM 2",
+  "book_code": "NUM",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:2:1",
+      "sequence": 3660,
+      "chapter_label": "NUM 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:2",
+      "sequence": 3661,
+      "chapter_label": "NUM 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "“The children of Israel shall encamp every man by his own standard, with the banners of their fathers’ houses. They shall encamp around the Tent of Meeting at a distance from it.",
+      "ko": "이스라엘 자손은 각각 그 기와 그 종족의 기호 곁에 진을 치되 회막을 사면으로 대하여 치라",
+      "source_text_hash": "b4618a51d78e0cdd6946f2585e5f9663f6640e0e4949ac6a761acc8a339e3fed",
+      "translation_text_hash": "68857c5ed557ec3b62d3c1ecf24847daebc1a783eb79ad3c506fe433b257ac28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손은 각각 그 기와 그 종족의 기호 곁에 진을 치되 회막을 사면으로 대하여 치라"
+      ],
+      "raw_text_hashes": [
+        "68857c5ed557ec3b62d3c1ecf24847daebc1a783eb79ad3c506fe433b257ac28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:3",
+      "sequence": 3662,
+      "chapter_label": "NUM 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "“Those who encamp on the east side toward the sunrise shall be of the standard of the camp of Judah, according to their divisions. The prince of the children of Judah shall be Nahshon the son of Amminadab.",
+      "ko": "동방 해 돋는 편에 진 칠 자는 그 군대대로 유다의 진 기에 속한 자라 유다 자손의 족장은 암미나답의 아들 나손이요",
+      "source_text_hash": "efd3887f7755ae66408098b3203ce0051b35005f592a1f3d082b0d29123fb659",
+      "translation_text_hash": "be2b298aa32533e8548ddf1ee256e3df0f9c1254181ecdc239b61daa152a8b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동방 해 돋는 편에 진 칠 자는 그 군대대로 유다의 진 기에 속한 자라 유다 자손의 족장은 암미나답의 아들 나손이요"
+      ],
+      "raw_text_hashes": [
+        "be2b298aa32533e8548ddf1ee256e3df0f9c1254181ecdc239b61daa152a8b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:4",
+      "sequence": 3663,
+      "chapter_label": "NUM 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "His division, and those who were counted of them, were seventy-four thousand six hundred.",
+      "ko": "그 군대는 계수함을 입은 자 칠만 사천 육백명이며",
+      "source_text_hash": "b0de694a8b661fc815a44e06ac05d295815087d0432a7934811f317963467e4f",
+      "translation_text_hash": "b085ad2f15ffe82b43ff1ae2665b78d677082fab56ac29b39a4b082f11a7421c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 칠만 사천 육백명이며"
+      ],
+      "raw_text_hashes": [
+        "b085ad2f15ffe82b43ff1ae2665b78d677082fab56ac29b39a4b082f11a7421c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:5",
+      "sequence": 3664,
+      "chapter_label": "NUM 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "“Those who encamp next to him shall be the tribe of Issachar. The prince of the children of Issachar shall be Nethanel the son of Zuar.",
+      "ko": "그 곁에 진 칠 자는 잇사갈 지파라 잇사갈 자손의 족장은 수알의 아들 느다넬이요",
+      "source_text_hash": "1bc69560f7d4955c175994dc153f2bd36c3b0ba5fef17a9634ba2830a77ca5c3",
+      "translation_text_hash": "f2e96ce0bd7071c1768714a9898c17599f818c141792ba4c37a5421a603ed86c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곁에 진 칠 자는 잇사갈 지파라 잇사갈 자손의 족장은 수알의 아들 느다넬이요"
+      ],
+      "raw_text_hashes": [
+        "f2e96ce0bd7071c1768714a9898c17599f818c141792ba4c37a5421a603ed86c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:6",
+      "sequence": 3665,
+      "chapter_label": "NUM 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "His division, and those who were counted of it, were fifty-four thousand four hundred.",
+      "ko": "그 군대는 계수함을 입은 자 오만 사천 사백명이며",
+      "source_text_hash": "c4d38c0465c6dba63052a7717ae4dd12f39f6308cb91420e6699cc8c4dc9d022",
+      "translation_text_hash": "e87b5793e1af5cbe90ff458bfa758649ab43f1665557832c99515bb5f24af673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 오만 사천 사백명이며"
+      ],
+      "raw_text_hashes": [
+        "e87b5793e1af5cbe90ff458bfa758649ab43f1665557832c99515bb5f24af673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:7",
+      "sequence": 3666,
+      "chapter_label": "NUM 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "“The tribe of Zebulun: the prince of the children of Zebulun shall be Eliab the son of Helon.",
+      "ko": "또 스불론 지파라 스불론 자손의 족장은 헬론의 아들 엘리압이요",
+      "source_text_hash": "ececad85fcfb6b88fd526d268ccea2de3c3be62d1c96c69f82e24802008a8ebc",
+      "translation_text_hash": "9ce82880ca57a8f1bb03cf441da8e138c357e393bfcd3b3c20077c7fd7eb4917",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 스불론 지파라 스불론 자손의 족장은 헬론의 아들 엘리압이요"
+      ],
+      "raw_text_hashes": [
+        "9ce82880ca57a8f1bb03cf441da8e138c357e393bfcd3b3c20077c7fd7eb4917"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:8",
+      "sequence": 3667,
+      "chapter_label": "NUM 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "His division, and those who were counted of it, were fifty-seven thousand four hundred.",
+      "ko": "그 군대는 계수함을 입은 자 오만 칠천 사백명이니",
+      "source_text_hash": "dbe87567459a0dd05228bef366419110f47ccb2166169f07b018aaa57096a862",
+      "translation_text_hash": "9fe4aea6d06be4a38dcadd5e7cdaa0a69512221b10a810f5c3327f19379a95ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 오만 칠천 사백명이니"
+      ],
+      "raw_text_hashes": [
+        "9fe4aea6d06be4a38dcadd5e7cdaa0a69512221b10a810f5c3327f19379a95ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:9",
+      "sequence": 3668,
+      "chapter_label": "NUM 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "“All who were counted of the camp of Judah were one hundred eighty-six thousand four hundred, according to their divisions. They shall set out first.",
+      "ko": "유다 진에 속한 군대의 계수함을 입은 군대의 총계가 십팔만 육천 사백명이라 그들은 제 일대로 진행할찌니라",
+      "source_text_hash": "3132c5226c77f22051a602d833520660921c5fa4d8a8810201f8a66d7a380a22",
+      "translation_text_hash": "c21bb69b85d99de68a2225c18046565f3b7f50a25b5d97ae8d377ba2410a9c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 진에 속한 군대의 계수함을 입은 군대의 총계가 십팔만 육천 사백명이라 그들은 제 일대로 진행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c21bb69b85d99de68a2225c18046565f3b7f50a25b5d97ae8d377ba2410a9c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:10",
+      "sequence": 3669,
+      "chapter_label": "NUM 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "“On the south side shall be the standard of the camp of Reuben according to their divisions. The prince of the children of Reuben shall be Elizur the son of Shedeur.",
+      "ko": "남편에는 르우벤 군대의 진 기가 있을 것이라 르우벤 자손의 족장은 스데울의 아들 엘리술이요",
+      "source_text_hash": "82fd63de5dd9068962ac0ceeaed17d1d366aaf067cc78887db95b2b67b5e6efe",
+      "translation_text_hash": "70143665eaaa2be692182300d283acdd9c208becc7a6e6e9393412859fb3c7fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편에는 르우벤 군대의 진 기가 있을 것이라 르우벤 자손의 족장은 스데울의 아들 엘리술이요"
+      ],
+      "raw_text_hashes": [
+        "70143665eaaa2be692182300d283acdd9c208becc7a6e6e9393412859fb3c7fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:11",
+      "sequence": 3670,
+      "chapter_label": "NUM 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "His division, and those who were counted of it, were forty-six thousand five hundred.",
+      "ko": "그 군대는 계수함을 입은 자 사만 육천 오백명이며",
+      "source_text_hash": "03b2151b2cab91141eb3cc05c5e6a12e6ac412408f013c5275fc7470158954e8",
+      "translation_text_hash": "4455ce03a06ae5a685dbb62a1d2ea9b26fa44b7c3cb87a2cafe9e7513d3006ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 사만 육천 오백명이며"
+      ],
+      "raw_text_hashes": [
+        "4455ce03a06ae5a685dbb62a1d2ea9b26fa44b7c3cb87a2cafe9e7513d3006ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:12",
+      "sequence": 3671,
+      "chapter_label": "NUM 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "“Those who encamp next to him shall be the tribe of Simeon. The prince of the children of Simeon shall be Shelumiel the son of Zurishaddai.",
+      "ko": "그 곁에 진 칠 자는 시므온 지파라 시므온 자손의 족장은 수리삿대의 아들 슬루미엘이요",
+      "source_text_hash": "0cb6eecbf794cbb5054139a7e683f53a34c1196b5d1307bd36a7f25fd0a65f1a",
+      "translation_text_hash": "200699b6565c365674267e01c3a18eef0319e0837c60ae2a328d6743ecdee9c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곁에 진 칠 자는 시므온 지파라 시므온 자손의 족장은 수리삿대의 아들 슬루미엘이요"
+      ],
+      "raw_text_hashes": [
+        "200699b6565c365674267e01c3a18eef0319e0837c60ae2a328d6743ecdee9c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:13",
+      "sequence": 3672,
+      "chapter_label": "NUM 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "His division, and those who were counted of them, were fifty-nine thousand three hundred.",
+      "ko": "그 군대는 계수함을 입은 자 오만 구천 삼백명이며",
+      "source_text_hash": "b5b5ec60c3c8044c176b460198ae5b775bcc09c43e8d0bc49819d518a7bdc5f3",
+      "translation_text_hash": "70f2f11a8757645b3f437a8001376f31827d24e429a55696a40f6e7cced3bac3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 오만 구천 삼백명이며"
+      ],
+      "raw_text_hashes": [
+        "70f2f11a8757645b3f437a8001376f31827d24e429a55696a40f6e7cced3bac3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:14",
+      "sequence": 3673,
+      "chapter_label": "NUM 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "“The tribe of Gad: the prince of the children of Gad shall be Eliasaph the son of Reuel.",
+      "ko": "또 갓 지파라 갓 자손의 족장은 르우엘의 아들 엘리아삽이요",
+      "source_text_hash": "4e1cdbc932e0cda704f7c4a8264a9c2862c1443bc625996f361b6a8ac8d1c1c6",
+      "translation_text_hash": "3e884a481db4d9de139cc23f7558724640cda9bdd5c5603517fffd38595381c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 갓 지파라 갓 자손의 족장은 르우엘의 아들 엘리아삽이요"
+      ],
+      "raw_text_hashes": [
+        "3e884a481db4d9de139cc23f7558724640cda9bdd5c5603517fffd38595381c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:15",
+      "sequence": 3674,
+      "chapter_label": "NUM 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "His division, and those who were counted of them, were forty-five thousand six hundred fifty.",
+      "ko": "그 군대는 계수함을 입은 자 사만 오천 육백 오십명이니",
+      "source_text_hash": "3a3026f5397acd75e82e1e0095bc38e2e7000d8aaf1f2693f612e2f6592cf54b",
+      "translation_text_hash": "7c42c3c8d89e7833f2bcb4bd4c3e225bb947fe9eaf53ce5fe3e50287f85335cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 사만 오천 육백 오십명이니"
+      ],
+      "raw_text_hashes": [
+        "7c42c3c8d89e7833f2bcb4bd4c3e225bb947fe9eaf53ce5fe3e50287f85335cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:16",
+      "sequence": 3675,
+      "chapter_label": "NUM 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "“All who were counted of the camp of Reuben were one hundred fifty-one thousand four hundred fifty, according to their armies. They shall set out second.",
+      "ko": "르우벤 진에 속한 계수함을 입은 군대의 총계가 십오만 일천 사백 오십명이라 그들은 제 이대로 진행할찌니라",
+      "source_text_hash": "b56fd87cc4ccfbb5d535812bbd1991fd8decf8e2d95c9fc55e7fbc4a649993ba",
+      "translation_text_hash": "94d8544930edb3b2e978569635baf88a85e24fdd2f5f1a465fb797abf033c0e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 진에 속한 계수함을 입은 군대의 총계가 십오만 일천 사백 오십명이라 그들은 제 이대로 진행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "94d8544930edb3b2e978569635baf88a85e24fdd2f5f1a465fb797abf033c0e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:17",
+      "sequence": 3676,
+      "chapter_label": "NUM 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "“Then the Tent of Meeting shall set out, with the camp of the Levites in the middle of the camps. As they encamp, so shall they set out, every man in his place, by their standards.",
+      "ko": "그 다음에 회막이 레위인의 진과 함께 모든 진의 중앙에 있어 진행하되 그들의 진 친 순서대로 각 사람은 그 위치에서 그 기를 따라 앞으로 행할찌니라",
+      "source_text_hash": "b1798b4ec34123de9ade65ef4c549ea019e385db5e519299e82788f6888b632d",
+      "translation_text_hash": "6675cc74c477161151b0a56efdb291412c32490384d17692159cd46c4d250716",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음에 회막이 레위인의 진과 함께 모든 진의 중앙에 있어 진행하되 그들의 진 친 순서대로 각 사람은 그 위치에서 그 기를 따라 앞으로 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6675cc74c477161151b0a56efdb291412c32490384d17692159cd46c4d250716"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:18",
+      "sequence": 3677,
+      "chapter_label": "NUM 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "“On the west side shall be the standard of the camp of Ephraim according to their divisions. The prince of the children of Ephraim shall be Elishama the son of Ammihud.",
+      "ko": "서편에는 에브라임의 군대의 진 기가 있을 것이라 에브라임 자손의 족장은 암미훗의 아들 엘리사마요",
+      "source_text_hash": "b5efa969e2ca4e2560c47907bd9c7294bfe6f15bfb92320725ebbbb3c7899888",
+      "translation_text_hash": "ec92053daf10a720a2263f4e9861c765a7d523fee6d9dbdf0ce24601a6f885fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편에는 에브라임의 군대의 진 기가 있을 것이라 에브라임 자손의 족장은 암미훗의 아들 엘리사마요"
+      ],
+      "raw_text_hashes": [
+        "ec92053daf10a720a2263f4e9861c765a7d523fee6d9dbdf0ce24601a6f885fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:19",
+      "sequence": 3678,
+      "chapter_label": "NUM 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "His division, and those who were counted of them, were forty thousand five hundred.",
+      "ko": "그 군대는 계수함을 입은 자 사만 오백명이며",
+      "source_text_hash": "df29f781aeadcbca2e5c2e105a2b6869322568563cb3ad26e41f40a9adf91f70",
+      "translation_text_hash": "b53b58c68296fb53e2ea9818d324a53545bba7247f7257e555d36211b04d1c0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 사만 오백명이며"
+      ],
+      "raw_text_hashes": [
+        "b53b58c68296fb53e2ea9818d324a53545bba7247f7257e555d36211b04d1c0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:20",
+      "sequence": 3679,
+      "chapter_label": "NUM 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "“Next to him shall be the tribe of Manasseh. The prince of the children of Manasseh shall be Gamaliel the son of Pedahzur.",
+      "ko": "그 곁에는 므낫세 지파가 있을 것이라 므낫세 자손의 족장은 브다술의 아들 가말리엘이요",
+      "source_text_hash": "1ef1298e73ec7a61a941da0c89ec92e5936e4963360b351230a51b5e29a7e68c",
+      "translation_text_hash": "7264074957364e45ed2f37047fe34b0eba69db4f5accb46494c7141b247433b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곁에는 므낫세 지파가 있을 것이라 므낫세 자손의 족장은 브다술의 아들 가말리엘이요"
+      ],
+      "raw_text_hashes": [
+        "7264074957364e45ed2f37047fe34b0eba69db4f5accb46494c7141b247433b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:21",
+      "sequence": 3680,
+      "chapter_label": "NUM 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "His division, and those who were counted of them, were thirty-two thousand two hundred.",
+      "ko": "그 군대는 계수함을 입은 자 삼만 이천 이백명이며",
+      "source_text_hash": "18b41344bd87f25d636e633961b6a95661d19e924c85a3000147d6602365af6d",
+      "translation_text_hash": "de5f15a8204d7896f57308175910ad23c903ab863de3c24c566667f2596ed7f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 삼만 이천 이백명이며"
+      ],
+      "raw_text_hashes": [
+        "de5f15a8204d7896f57308175910ad23c903ab863de3c24c566667f2596ed7f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:22",
+      "sequence": 3681,
+      "chapter_label": "NUM 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "“The tribe of Benjamin: the prince of the children of Benjamin shall be Abidan the son of Gideoni.",
+      "ko": "또 베냐민 지파라 베냐민 자손의 족장은 기드오니의 아들 아비단이요",
+      "source_text_hash": "8138bde931c8f67ca5a1107a2140d9d5c231e1e1fa90c89846a94c3df09afe12",
+      "translation_text_hash": "0fca84671b84abbecfacc0e1b2a2e0ad89a8483ed3a2cbbcec1ee234ea80edc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베냐민 지파라 베냐민 자손의 족장은 기드오니의 아들 아비단이요"
+      ],
+      "raw_text_hashes": [
+        "0fca84671b84abbecfacc0e1b2a2e0ad89a8483ed3a2cbbcec1ee234ea80edc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:23",
+      "sequence": 3682,
+      "chapter_label": "NUM 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "His army, and those who were counted of them, were thirty-five thousand four hundred.",
+      "ko": "그 군대는 계수함을 입은 자 삼만 오천 사백명이니",
+      "source_text_hash": "df2836718423647478e12b13d55f294b5a2a4cd8738795f75977a5dc9b2cc654",
+      "translation_text_hash": "392581abb9793570902efde5c9e8e2d89560650d250158a82b454bea0b4e47cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 삼만 오천 사백명이니"
+      ],
+      "raw_text_hashes": [
+        "392581abb9793570902efde5c9e8e2d89560650d250158a82b454bea0b4e47cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:24",
+      "sequence": 3683,
+      "chapter_label": "NUM 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "“All who were counted of the camp of Ephraim were one hundred eight thousand one hundred, according to their divisions. They shall set out third.",
+      "ko": "에브라임 진에 속한 계수함을 입은 군대의 총계가 십만 팔천 일백명이라 그들은 제 삼대로 진행할찌니라",
+      "source_text_hash": "d8218ab535bbead0840f6415c76800af012e5903bcc78a03f7b261f1578df5f1",
+      "translation_text_hash": "91d96a0239da0d7b7b43f382c9eabbea879cfa21bab47a2fb5ad1366a1bd9416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 진에 속한 계수함을 입은 군대의 총계가 십만 팔천 일백명이라 그들은 제 삼대로 진행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "91d96a0239da0d7b7b43f382c9eabbea879cfa21bab47a2fb5ad1366a1bd9416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:25",
+      "sequence": 3684,
+      "chapter_label": "NUM 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "“On the north side shall be the standard of the camp of Dan according to their divisions. The prince of the children of Dan shall be Ahiezer the son of Ammishaddai.",
+      "ko": "북편에는 단 군대의 진 기가 있을 것이라 단 자손의 족장은 암미삿대의 아들 아히에셀이요",
+      "source_text_hash": "be9e640eb93dc95db256928499ba5990b67531bfe80fe0f31e91a4cf49537fbd",
+      "translation_text_hash": "374af07d7f7b786d7f26bde420c47dc21892b354f96ba96ff5e1e640fff669b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북편에는 단 군대의 진 기가 있을 것이라 단 자손의 족장은 암미삿대의 아들 아히에셀이요"
+      ],
+      "raw_text_hashes": [
+        "374af07d7f7b786d7f26bde420c47dc21892b354f96ba96ff5e1e640fff669b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:26",
+      "sequence": 3685,
+      "chapter_label": "NUM 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "His division, and those who were counted of them, were sixty-two thousand seven hundred.",
+      "ko": "그 군대는 계수함을 입은 자 육만 이천 칠백명이며",
+      "source_text_hash": "d02cefb273dc867457bd4741b3efdf305cea2df2052b1ccd56e19a27d084fb59",
+      "translation_text_hash": "2058343bb9d4700cc7180af2e37964f49f24de278b6ef9a0bb7e49e6f1a61d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 육만 이천 칠백명이며"
+      ],
+      "raw_text_hashes": [
+        "2058343bb9d4700cc7180af2e37964f49f24de278b6ef9a0bb7e49e6f1a61d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:27",
+      "sequence": 3686,
+      "chapter_label": "NUM 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "“Those who encamp next to him shall be the tribe of Asher. The prince of the children of Asher shall be Pagiel the son of Ochran.",
+      "ko": "그 곁에 진 칠 자는 아셀 지파라 아셀 자손의 족장은 오그란의 아들 바기엘이요",
+      "source_text_hash": "49aee5bf19a17771c8fdd6f86e9afc8a0ea3a5bda540d0032618f64e1cc319a3",
+      "translation_text_hash": "cd573979918718205f65a4571fd99e602f97a1642bb324f7072313c3d434962e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곁에 진 칠 자는 아셀 지파라 아셀 자손의 족장은 오그란의 아들 바기엘이요"
+      ],
+      "raw_text_hashes": [
+        "cd573979918718205f65a4571fd99e602f97a1642bb324f7072313c3d434962e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:28",
+      "sequence": 3687,
+      "chapter_label": "NUM 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "His division, and those who were counted of them, were forty-one thousand five hundred.",
+      "ko": "그 군대는 계수함을 입은 자 사만 일천 오백명이며",
+      "source_text_hash": "f972638b0e91f613d0b1fe79e2721dd994de13ceae9b7324b39450cde6ad47a3",
+      "translation_text_hash": "a4bd296d488ef8cf9fb333fb0cb96d3c0a8d7e0d6e8f429f275de451ee9a1553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 사만 일천 오백명이며"
+      ],
+      "raw_text_hashes": [
+        "a4bd296d488ef8cf9fb333fb0cb96d3c0a8d7e0d6e8f429f275de451ee9a1553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:29",
+      "sequence": 3688,
+      "chapter_label": "NUM 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "“The tribe of Naphtali: the prince of the children of Naphtali shall be Ahira the son of Enan.",
+      "ko": "또 납달리 지파라 납달리 자손의 족장은 에난의 아들 아히라요",
+      "source_text_hash": "082fec1b1c7fe7ceae0873c7237d86fb68f96e755d40b9d58eed19dd741fa5f4",
+      "translation_text_hash": "afd0abecbe22adf6c975140638076afc5896b571c17059d44509c5612d0b35d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 납달리 지파라 납달리 자손의 족장은 에난의 아들 아히라요"
+      ],
+      "raw_text_hashes": [
+        "afd0abecbe22adf6c975140638076afc5896b571c17059d44509c5612d0b35d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:30",
+      "sequence": 3689,
+      "chapter_label": "NUM 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "His division, and those who were counted of them, were fifty-three thousand four hundred.",
+      "ko": "그 군대는 계수함을 입은 자 오만 삼천 사백명이니",
+      "source_text_hash": "e781b21040b5a9072790d3ee2304c3c47bebce8e0b28e90245405348eee1e592",
+      "translation_text_hash": "f3fb40e2fe432d58f21836a51fa3926a1e41f0ef856d9d713cfc4eda0f212cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대는 계수함을 입은 자 오만 삼천 사백명이니"
+      ],
+      "raw_text_hashes": [
+        "f3fb40e2fe432d58f21836a51fa3926a1e41f0ef856d9d713cfc4eda0f212cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:31",
+      "sequence": 3690,
+      "chapter_label": "NUM 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "“All who were counted of the camp of Dan were one hundred fifty-seven thousand six hundred. They shall set out last by their standards.”",
+      "ko": "단의 진에 속한 계수함을 입은 군대의 총계가 십오만 칠천 육백명이라 그들은 기를 따라 후대로 진행할찌니라 하시니라",
+      "source_text_hash": "71ef238b3526b4abcb6ab4e7f2504b840871b2b9cba6809edeeb0ca399a6fec8",
+      "translation_text_hash": "9758eeb468249ee0b9069bb566734108d4b52fc2a59b1a4fd354539f59a8993d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단의 진에 속한 계수함을 입은 군대의 총계가 십오만 칠천 육백명이라 그들은 기를 따라 후대로 진행할찌니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9758eeb468249ee0b9069bb566734108d4b52fc2a59b1a4fd354539f59a8993d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:32",
+      "sequence": 3691,
+      "chapter_label": "NUM 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "These are those who were counted of the children of Israel by their fathers’ houses. All who were counted of the camps according to their armies were six hundred three thousand five hundred fifty.",
+      "ko": "이상은 이스라엘 자손이 그 종족을 따라 계수함을 입은 자니 모든 진의 군대 곧 계수함을 입은 자의 총계가 육십만 삼천 오백 오십명이었으며",
+      "source_text_hash": "1fb71fd7c557a743be3ca4e4cc7b4a252f639d94e09bdd3be2290ea3e4b63f5b",
+      "translation_text_hash": "1f910ab1ca886d1f762c9b20bd1d3dce07664826d7123230e1141c4098e36cc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 이스라엘 자손이 그 종족을 따라 계수함을 입은 자니 모든 진의 군대 곧 계수함을 입은 자의 총계가 육십만 삼천 오백 오십명이었으며"
+      ],
+      "raw_text_hashes": [
+        "1f910ab1ca886d1f762c9b20bd1d3dce07664826d7123230e1141c4098e36cc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:33",
+      "sequence": 3692,
+      "chapter_label": "NUM 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "But the Levites were not counted among the children of Israel, as the LORD commanded Moses.",
+      "ko": "레위인은 이스라엘 자손과 함께 계수되지 아니하였으니 여호와께서 모세에게 명하심과 같았느니라",
+      "source_text_hash": "34f0b87bd8f9e0362d9adc3084a567f85e7543813358e6278cefa4c926f1a529",
+      "translation_text_hash": "11a07ce0b66f401fda4bbd2e7cecb5a68ae98d20ddcf157f8bb35d85fc2db7ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 이스라엘 자손과 함께 계수되지 아니하였으니 여호와께서 모세에게 명하심과 같았느니라"
+      ],
+      "raw_text_hashes": [
+        "11a07ce0b66f401fda4bbd2e7cecb5a68ae98d20ddcf157f8bb35d85fc2db7ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:2:34",
+      "sequence": 3693,
+      "chapter_label": "NUM 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "Thus the children of Israel did. According to all that the LORD commanded Moses, so they encamped by their standards, and so they set out, everyone by their families, according to their fathers’ houses.",
+      "ko": "이스라엘 자손이 여호와께서 모세에게 명하신대로 다 준행하여 각기 가족과 종족을 따르며 그 기를 따라 진 치기도 하며 진행하기도 하였더라",
+      "source_text_hash": "1f110b5ed952c1931f2db1afb2676fe1b13194ba894bce207612335a337d624c",
+      "translation_text_hash": "7c4d5f6c24d93db340c3a5919444045b07a9854363c6b406e4014ae367da321d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께서 모세에게 명하신대로 다 준행하여 각기 가족과 종족을 따르며 그 기를 따라 진 치기도 하며 진행하기도 하였더라"
+      ],
+      "raw_text_hashes": [
+        "7c4d5f6c24d93db340c3a5919444045b07a9854363c6b406e4014ae367da321d"
+      ]
+    }
+  ]
+}

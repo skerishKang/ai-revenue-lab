@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:015",
+  "unit_ordinal": 353,
+  "unit_label": "1CH 15",
+  "book_code": "1CH",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:15:1",
+      "sequence": 10793,
+      "chapter_label": "1CH 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "David made himself houses in David’s city; and he prepared a place for God’s ark, and pitched a tent for it.",
+      "ko": "다윗이 다윗성에서 자기를 위하여 궁궐을 세우고 또 하나님의 궤를 위하여 처소를 예비하고 위하여 장막을 치고",
+      "source_text_hash": "4572f4a631debfd2797c0e129fe7288c92c955d09302cc5930697b0ea50a8b2c",
+      "translation_text_hash": "a9dfcdf5806a9e86189c266663dadd2228410fc334a08242b8573cdcd2e5b036",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 다윗성에서 자기를 위하여 궁궐을 세우고 또 하나님의 궤를 위하여 처소를 예비하고 위하여 장막을 치고"
+      ],
+      "raw_text_hashes": [
+        "a9dfcdf5806a9e86189c266663dadd2228410fc334a08242b8573cdcd2e5b036"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:2",
+      "sequence": 10794,
+      "chapter_label": "1CH 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Then David said, “No one ought to carry God’s ark but the Levites. For the LORD has chosen them to carry God’s ark, and to minister to him forever.”",
+      "ko": "가로되 레위 사람 외에는 하나님의 궤를 멜 수 없나니 이는 여호와께서 저희를 택하사 하나님의 궤를 메고 영원히 저를 섬기게 하셨음이니라 하고",
+      "source_text_hash": "f0dbb5615ecdaec24d645a38042d6c63f93a71a8e8e44a6d3ff69af3313a050b",
+      "translation_text_hash": "2557c2327021e6ed7af5dee63653e2ad7493e29f32ad5e2d231beb29affb7053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 레위 사람 외에는 하나님의 궤를 멜 수 없나니 이는 여호와께서 저희를 택하사 하나님의 궤를 메고 영원히 저를 섬기게 하셨음이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "2557c2327021e6ed7af5dee63653e2ad7493e29f32ad5e2d231beb29affb7053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:3",
+      "sequence": 10795,
+      "chapter_label": "1CH 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "David assembled all Israel at Jerusalem, to bring up the LORD’s ark to its place, which he had prepared for it.",
+      "ko": "이스라엘 온 무리를 예루살렘으로 모으고 여호와의 궤를 그 예비한 곳으로 메어 올리고자 하여",
+      "source_text_hash": "e650465a2a380b1a744d4144771e1a77c9bc6d23a522e166b4c760d062df8196",
+      "translation_text_hash": "76f45f060af51b45a64d28a0ffe552c60ee50fc7b0b4b6f92e042f339e09c3f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 온 무리를 예루살렘으로 모으고 여호와의 궤를 그 예비한 곳으로 메어 올리고자 하여"
+      ],
+      "raw_text_hashes": [
+        "76f45f060af51b45a64d28a0ffe552c60ee50fc7b0b4b6f92e042f339e09c3f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:4",
+      "sequence": 10796,
+      "chapter_label": "1CH 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "David gathered together the sons of Aaron and the Levites:",
+      "ko": "아론 자손과 레위 사람을 모으니",
+      "source_text_hash": "c80c1d14abf9af1e51b794aab7efb76e494bf6ba03dc37000370d83fdecfe01a",
+      "translation_text_hash": "e300feaeaa1ba395a242eaa51bc578e99efbed6c9210b118717827046c247c6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론 자손과 레위 사람을 모으니"
+      ],
+      "raw_text_hashes": [
+        "e300feaeaa1ba395a242eaa51bc578e99efbed6c9210b118717827046c247c6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:5",
+      "sequence": 10797,
+      "chapter_label": "1CH 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "of the sons of Kohath, Uriel the chief, and his brothers one hundred twenty;",
+      "ko": "그핫 자손 중에 족장 우리엘과 그 형제 일백 이십인이요",
+      "source_text_hash": "8015af635ef34fa08fd6a2f7c4f829144acd7284b289ae1c38d04ee0ba67eadd",
+      "translation_text_hash": "22f133928f04ea1b5d38fa617e0fe0462c9d2d8c7b2ed32417b1fb02d23ddf92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 자손 중에 족장 우리엘과 그 형제 일백 이십인이요"
+      ],
+      "raw_text_hashes": [
+        "22f133928f04ea1b5d38fa617e0fe0462c9d2d8c7b2ed32417b1fb02d23ddf92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:6",
+      "sequence": 10798,
+      "chapter_label": "1CH 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "of the sons of Merari, Asaiah the chief, and his brothers two hundred twenty;",
+      "ko": "므라리 자손 중에 족장 아사야와 그 형제 이백 이십인이요",
+      "source_text_hash": "4a0aad8b24c3fa63087f9bb9ecb54d66fbc34ba00c1354fe9becb9d5d1a27080",
+      "translation_text_hash": "d0a7d79b68022698046f975532fc84d1a7556d19024771b476d93acc966ccac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손 중에 족장 아사야와 그 형제 이백 이십인이요"
+      ],
+      "raw_text_hashes": [
+        "d0a7d79b68022698046f975532fc84d1a7556d19024771b476d93acc966ccac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:7",
+      "sequence": 10799,
+      "chapter_label": "1CH 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "of the sons of Gershom, Joel the chief, and his brothers one hundred thirty;",
+      "ko": "게르솜 자손 중에 족장 요엘과 그 형제 일백 삼십인이요",
+      "source_text_hash": "9c0a1c2df4792c3713c6438205def0c1e60a9041594fbbfe22bb6ffac8fd6ef7",
+      "translation_text_hash": "51bd03f48c6faf27e48e60e70d1302d6649022e8af3acffe3429739bdf745f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르솜 자손 중에 족장 요엘과 그 형제 일백 삼십인이요"
+      ],
+      "raw_text_hashes": [
+        "51bd03f48c6faf27e48e60e70d1302d6649022e8af3acffe3429739bdf745f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:8",
+      "sequence": 10800,
+      "chapter_label": "1CH 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "of the sons of Elizaphan, Shemaiah the chief, and his brothers two hundred;",
+      "ko": "엘리사반 자손 중에 족장 스마야와 그 형제 이백인이요",
+      "source_text_hash": "3e71a9dec3edea71eebfe01fd529d1ab916925a869a2ea7a00b5c2ed7cdbbf85",
+      "translation_text_hash": "cbaf0946a281abb75ac65583840f2f1db7b0a24b3bcce537afd77e8afd4d9f22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사반 자손 중에 족장 스마야와 그 형제 이백인이요"
+      ],
+      "raw_text_hashes": [
+        "cbaf0946a281abb75ac65583840f2f1db7b0a24b3bcce537afd77e8afd4d9f22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:9",
+      "sequence": 10801,
+      "chapter_label": "1CH 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "of the sons of Hebron, Eliel the chief, and his brothers eighty;",
+      "ko": "헤브론 자손 중에 족장 엘리엘과 그 형제 팔십인이요",
+      "source_text_hash": "09640891be7bb6d3ee51e986610e3b4dcffc09f74a0d0d750313eca512583f83",
+      "translation_text_hash": "685022f25332fbb365a28108198a0ac10fb8ba3d47f098035477aad7c3987b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론 자손 중에 족장 엘리엘과 그 형제 팔십인이요"
+      ],
+      "raw_text_hashes": [
+        "685022f25332fbb365a28108198a0ac10fb8ba3d47f098035477aad7c3987b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:10",
+      "sequence": 10802,
+      "chapter_label": "1CH 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "of the sons of Uzziel, Amminadab the chief, and his brothers one hundred twelve.",
+      "ko": "웃시엘 자손 중에 족장 암미나답과 그 형제 일백 십 이인이라",
+      "source_text_hash": "3f530431ab2a90ef93b19718c06b70507fb7f692f914642e788a8f3222cec90b",
+      "translation_text_hash": "91f6a2df7c2ba6dcc6089eab7dfa701406bb4cd3dde219662d7a634c2c23d6f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시엘 자손 중에 족장 암미나답과 그 형제 일백 십 이인이라"
+      ],
+      "raw_text_hashes": [
+        "91f6a2df7c2ba6dcc6089eab7dfa701406bb4cd3dde219662d7a634c2c23d6f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:11",
+      "sequence": 10803,
+      "chapter_label": "1CH 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "David called for Zadok and Abiathar the priests, and for the Levites: for Uriel, Asaiah, Joel, Shemaiah, Eliel, and Amminadab,",
+      "ko": "다윗이 제사장 사독과 아비아달을 부르고 또 레위 사람 우리엘과 아사야와 요엘과 스마야와 엘리엘과 암미나답을 불러",
+      "source_text_hash": "be4da6c97fe96f09efb8bf5948651ac3f1661803bde4a843a8414ab32d499db0",
+      "translation_text_hash": "94f15d1a0c4e8a9f7181c928e8f1c572bb8e59080e2bd06c76910d3972e99a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 제사장 사독과 아비아달을 부르고 또 레위 사람 우리엘과 아사야와 요엘과 스마야와 엘리엘과 암미나답을 불러"
+      ],
+      "raw_text_hashes": [
+        "94f15d1a0c4e8a9f7181c928e8f1c572bb8e59080e2bd06c76910d3972e99a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:12",
+      "sequence": 10804,
+      "chapter_label": "1CH 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "and said to them, “You are the heads of the fathers’ households of the Levites. Sanctify yourselves, both you and your brothers, that you may bring the ark of the LORD, the God of Israel, up to the place that I have prepared for it.",
+      "ko": "저희에게 이르되 너희는 레위 사람의 족장이니 너희와 너희 형제는 몸을 성결케 하고 내가 예비한 곳으로 이스라엘 하나님 여호와의 궤를 메어 올리라",
+      "source_text_hash": "8f33fae8ebbc4fd8693f9e18e45b277f7a5761d3bce39da9ac0bacac467fc135",
+      "translation_text_hash": "d786805ad96b53e0c56eb51ed168a718aa38711b41b87791c927d50c4fcbba4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르되 너희는 레위 사람의 족장이니 너희와 너희 형제는 몸을 성결케 하고 내가 예비한 곳으로 이스라엘 하나님 여호와의 궤를 메어 올리라"
+      ],
+      "raw_text_hashes": [
+        "d786805ad96b53e0c56eb51ed168a718aa38711b41b87791c927d50c4fcbba4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:13",
+      "sequence": 10805,
+      "chapter_label": "1CH 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "For because you didn’t carry it at first, the LORD our God broke out in anger against us, because we didn’t seek him according to the ordinance.”",
+      "ko": "전에는 너희가 메지 아니하였으므로 우리 하나님 여호와께서 우리를 충돌하셨나니 이는 우리가 규례대로 저에게 구하지 아니하였음이니라",
+      "source_text_hash": "c3071cc0dd9a692e835104ad9d8e6d14e672eb21b862c4c285644dd40a70a3e9",
+      "translation_text_hash": "b9b7b9c3428649b338914e919b125d8143866061d48919aa7e02f8585fb665a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 너희가 메지 아니하였으므로 우리 하나님 여호와께서 우리를 충돌하셨나니 이는 우리가 규례대로 저에게 구하지 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "b9b7b9c3428649b338914e919b125d8143866061d48919aa7e02f8585fb665a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:14",
+      "sequence": 10806,
+      "chapter_label": "1CH 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "So the priests and the Levites sanctified themselves to bring up the ark of the LORD, the God of Israel.",
+      "ko": "이에 제사장들과 레위 사람들이 이스라엘 하나님 여호와의 궤를 메고 올라가려 하여 몸을 성결케하고",
+      "source_text_hash": "f9122471a126643c996a70f4ccdaa9112af4c46a7d1052876efb8eec49ebfbba",
+      "translation_text_hash": "eb12edfe329e6a9ce86f4daaa97739d1e0c2468165e0f40325d828203bb6a550",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제사장들과 레위 사람들이 이스라엘 하나님 여호와의 궤를 메고 올라가려 하여 몸을 성결케하고"
+      ],
+      "raw_text_hashes": [
+        "eb12edfe329e6a9ce86f4daaa97739d1e0c2468165e0f40325d828203bb6a550"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:15",
+      "sequence": 10807,
+      "chapter_label": "1CH 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "The children of the Levites bore God’s ark on their shoulders with its poles, as Moses commanded according to the LORD’s word.",
+      "ko": "모세가 여호와의 말씀을 따라 명한대로 레위 자손이 채로 하나님의 궤를 꿰어 어깨에 메니라",
+      "source_text_hash": "e6165c30022afcd429d0a65d6d803922dc4c96275c8ca1aabb6077ff9178d80c",
+      "translation_text_hash": "152cf009957309e0e58ace826b25853cec7063f2ad9d68e5f778769ce6e667cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 말씀을 따라 명한대로 레위 자손이 채로 하나님의 궤를 꿰어 어깨에 메니라"
+      ],
+      "raw_text_hashes": [
+        "152cf009957309e0e58ace826b25853cec7063f2ad9d68e5f778769ce6e667cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:16",
+      "sequence": 10808,
+      "chapter_label": "1CH 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "David spoke to the chief of the Levites to appoint their brothers as singers with instruments of music, stringed instruments, harps, and cymbals, sounding aloud and lifting up their voices with joy.",
+      "ko": "다윗이 레위 사람의 어른들에게 명하여 그 형제 노래하는 자를 세우고 비파와 수금과 제금 등의 악기를 울려서 즐거운 소리를 크게 내라 하매",
+      "source_text_hash": "c3a4e9f2e0efb7b6fdd1dae91d0fa9d1bdebe7e4ca042cfcd98271ba5e3040ba",
+      "translation_text_hash": "02c9ffd2954f7cfdc3710936664fbe1979ac2f6af15d1626815db2688853bd08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 레위 사람의 어른들에게 명하여 그 형제 노래하는 자를 세우고 비파와 수금과 제금 등의 악기를 울려서 즐거운 소리를 크게 내라 하매"
+      ],
+      "raw_text_hashes": [
+        "02c9ffd2954f7cfdc3710936664fbe1979ac2f6af15d1626815db2688853bd08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:17",
+      "sequence": 10809,
+      "chapter_label": "1CH 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "So the Levites appointed Heman the son of Joel; and of his brothers, Asaph the son of Berechiah; and of the sons of Merari their brothers, Ethan the son of Kushaiah;",
+      "ko": "레위 사람이 요엘의 아들 헤만과 그 형제 중 베레야의 아들 아삽과 그 동종 므라리 자손 중에 구사야의 아들 에단을 세우고",
+      "source_text_hash": "8d0350a1a3af1332fca8d1a2e247604fc883464141161142b37db0ba4d90eac0",
+      "translation_text_hash": "a291856eeacba125d9fa96a3fd50dfc08af710bc5f20175ed0d0dbd17bb47699",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람이 요엘의 아들 헤만과 그 형제 중 베레야의 아들 아삽과 그 동종 므라리 자손 중에 구사야의 아들 에단을 세우고"
+      ],
+      "raw_text_hashes": [
+        "a291856eeacba125d9fa96a3fd50dfc08af710bc5f20175ed0d0dbd17bb47699"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:18",
+      "sequence": 10810,
+      "chapter_label": "1CH 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "and with them their brothers of the second rank: Zechariah, Ben, Jaaziel, Shemiramoth, Jehiel, Unni, Eliab, Benaiah, Maaseiah, Mattithiah, Eliphelehu, Mikneiah, Obed-Edom, and Jeiel, the doorkeepers.",
+      "ko": "그 다음으로 형제 스가랴와 벤과 야아시엘과 스미라못과 여히엘과 운니와 엘리압과 브나야와 마아세야와 맛디디야와 엘리블레후와 믹네야와 문지기 오벧에돔과 여이엘을 세우니",
+      "source_text_hash": "12e604930ef9683049998fac39a1a2325d820db5664a364df5437b0f76c2e45f",
+      "translation_text_hash": "b068343837faaf41d29355b3c5e54a23547ed2a7046ed345f207faaf730647b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음으로 형제 스가랴와 벤과 야아시엘과 스미라못과 여히엘과 운니와 엘리압과 브나야와 마아세야와 맛디디야와 엘리블레후와 믹네야와 문지기 오벧에돔과 여이엘을 세우니"
+      ],
+      "raw_text_hashes": [
+        "b068343837faaf41d29355b3c5e54a23547ed2a7046ed345f207faaf730647b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:19",
+      "sequence": 10811,
+      "chapter_label": "1CH 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "So the singers, Heman, Asaph, and Ethan, were given cymbals of bronze to sound aloud;",
+      "ko": "노래하는 자 헤만과 아삽과 에단은 놋제금을 크게 치는 자요",
+      "source_text_hash": "ceb1532d0c3301ca163ed8b842a376720a57e60229be6fb39dc6ee90478a6900",
+      "translation_text_hash": "a8a6350dd13b1d416f53fd51ecf74a9c4ab786b4e742bc79a15181d88a2daf57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자 헤만과 아삽과 에단은 놋제금을 크게 치는 자요"
+      ],
+      "raw_text_hashes": [
+        "a8a6350dd13b1d416f53fd51ecf74a9c4ab786b4e742bc79a15181d88a2daf57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:20",
+      "sequence": 10812,
+      "chapter_label": "1CH 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "and Zechariah, Aziel, Shemiramoth, Jehiel, Unni, Eliab, Maaseiah, and Benaiah, with stringed instruments set to Alamoth;",
+      "ko": "스가랴와 아시엘과 스미라못과 여히엘과 운니와 엘리압과 마아세야와 브나야는 비파를 타서 여청에 맞추는 자요",
+      "source_text_hash": "63d53a0f57b88981ed3ae7c319ff287a12cc906d33eb41aae45bf28eb9c6274e",
+      "translation_text_hash": "db9e51e116174cce11872da458642b7e4c217c2e3bdc51b767e79dca315a9011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스가랴와 아시엘과 스미라못과 여히엘과 운니와 엘리압과 마아세야와 브나야는 비파를 타서 여청에 맞추는 자요"
+      ],
+      "raw_text_hashes": [
+        "db9e51e116174cce11872da458642b7e4c217c2e3bdc51b767e79dca315a9011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:21",
+      "sequence": 10813,
+      "chapter_label": "1CH 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "and Mattithiah, Eliphelehu, Mikneiah, Obed-Edom, Jeiel, and Azaziah, with harps tuned to the eight-stringed lyre, to lead.",
+      "ko": "맛디디야와 엘리블레후와 믹네야와 오벧에돔과 여이엘과 아사시야는 수금을 타서 여덟째 음에 맞추어 인도하는 자요",
+      "source_text_hash": "6b9ad5ed7cf7d80121cf42024769fc6327ddcc68968e2134f4ac3a5a121c4d93",
+      "translation_text_hash": "b03dee089732a92c65a17e897457e93e99d1dfc501704063506a779559137ec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맛디디야와 엘리블레후와 믹네야와 오벧에돔과 여이엘과 아사시야는 수금을 타서 여덟째 음에 맞추어 인도하는 자요"
+      ],
+      "raw_text_hashes": [
+        "b03dee089732a92c65a17e897457e93e99d1dfc501704063506a779559137ec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:22",
+      "sequence": 10814,
+      "chapter_label": "1CH 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Chenaniah, chief of the Levites, was over the singing. He taught the singers, because he was skillful.",
+      "ko": "레위 사람의 족장 그나냐는 노래에 익숙하므로 노래를 주장하여 사람에게 가르치는 자요",
+      "source_text_hash": "90261442102a7fc714d47e5a30a09cd77ad8dde37e17700815ca5b2402aad060",
+      "translation_text_hash": "9bca180bad6b8dfd79abd74afa0c64eab7dffac894cb52dfbad74933a3e425ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람의 족장 그나냐는 노래에 익숙하므로 노래를 주장하여 사람에게 가르치는 자요"
+      ],
+      "raw_text_hashes": [
+        "9bca180bad6b8dfd79abd74afa0c64eab7dffac894cb52dfbad74933a3e425ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:23",
+      "sequence": 10815,
+      "chapter_label": "1CH 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "Berechiah and Elkanah were doorkeepers for the ark.",
+      "ko": "베레갸와 엘가나는 궤 앞에서 문을 지키는 자요",
+      "source_text_hash": "a531fa1e2aef15101eeb9af5ba75fab1d62e2559510f62b0f5aa3733634312a5",
+      "translation_text_hash": "a585ab1ec4429a3cd1ad388aa3af58ed36c486f5361a58605af92163a03ecdc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베레갸와 엘가나는 궤 앞에서 문을 지키는 자요"
+      ],
+      "raw_text_hashes": [
+        "a585ab1ec4429a3cd1ad388aa3af58ed36c486f5361a58605af92163a03ecdc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:24",
+      "sequence": 10816,
+      "chapter_label": "1CH 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Shebaniah, Joshaphat, Nethanel, Amasai, Zechariah, Benaiah, and Eliezer, the priests, blew the trumpets before God’s ark; and Obed-Edom and Jehiah were doorkeepers for the ark.",
+      "ko": "제사장 스바냐와 요사밧과 느다넬과 아미새와 스가랴와 브나야와 엘리에셀은 하나님의 궤 앞에서 나팔을 부는 자요 오벧에돔과 여히야는 궤 앞에서 문을 지키는 자더라",
+      "source_text_hash": "2ae1f9fa232720c8612c072ffd9fdae51be992c2d31eaacae94ab8067f6623c5",
+      "translation_text_hash": "b4240194c8fca9c00b2c534821e12c5182897665fdcacb6a7b1236f4beee6234",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 스바냐와 요사밧과 느다넬과 아미새와 스가랴와 브나야와 엘리에셀은 하나님의 궤 앞에서 나팔을 부는 자요 오벧에돔과 여히야는 궤 앞에서 문을 지키는 자더라"
+      ],
+      "raw_text_hashes": [
+        "b4240194c8fca9c00b2c534821e12c5182897665fdcacb6a7b1236f4beee6234"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:25",
+      "sequence": 10817,
+      "chapter_label": "1CH 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "So David, the elders of Israel, and the captains over thousands went to bring the ark of the LORD’s covenant up out of the house of Obed-Edom with joy.",
+      "ko": "이에 다윗과 이스라엘 장로들과 천부장들이 가서 여호와의 언약궤를 즐거이 메고 오벧에돔의 집에서 올라왔는데",
+      "source_text_hash": "f3767c02d0a238fd06b0df981daa42f128c75148cc3cc3f7a4e2ab7cb9364b55",
+      "translation_text_hash": "e719699f2ad720c71a44fc2d33cd91517fccb4586cd8a7a1bddcad4964a8fedf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗과 이스라엘 장로들과 천부장들이 가서 여호와의 언약궤를 즐거이 메고 오벧에돔의 집에서 올라왔는데"
+      ],
+      "raw_text_hashes": [
+        "e719699f2ad720c71a44fc2d33cd91517fccb4586cd8a7a1bddcad4964a8fedf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:26",
+      "sequence": 10818,
+      "chapter_label": "1CH 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "When God helped the Levites who bore the ark of the LORD’s covenant, they sacrificed seven bulls and seven rams.",
+      "ko": "하나님이 여호와의 언약궤를 멘 레위 사람을 도우셨으므로 무리가 수송아지 일곱과 수양 일곱으로 제사를 드렸더라",
+      "source_text_hash": "9d98818e01bf06ee362697171c924d9ea8fc016e88bbcd5e7ee1cfe8acab19ed",
+      "translation_text_hash": "ab18f59db3c1df13faa7ef118e711132bba89cc2c8bc9c19acc284830a337da1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 여호와의 언약궤를 멘 레위 사람을 도우셨으므로 무리가 수송아지 일곱과 수양 일곱으로 제사를 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "ab18f59db3c1df13faa7ef118e711132bba89cc2c8bc9c19acc284830a337da1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:27",
+      "sequence": 10819,
+      "chapter_label": "1CH 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "David was clothed with a robe of fine linen, as were all the Levites who bore the ark, the singers, and Chenaniah the choir master with the singers; and David had an ephod of linen on him.",
+      "ko": "다윗과 궤를 멘 레위 사람과 노래하는 자와 그 두목 그나냐와 모든 노래하는 자도 다 세마포 겉옷을 입었으며 다윗은 또 베 에봇을 입었고",
+      "source_text_hash": "7ee388e62c7705315c8f9adf72b3487f5d908a03c024133fd67e462cc299771a",
+      "translation_text_hash": "10eb27446cd01981f333182e9da216e3dec5d51a748a677f38b798c7ee1b601b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 궤를 멘 레위 사람과 노래하는 자와 그 두목 그나냐와 모든 노래하는 자도 다 세마포 겉옷을 입었으며 다윗은 또 베 에봇을 입었고"
+      ],
+      "raw_text_hashes": [
+        "10eb27446cd01981f333182e9da216e3dec5d51a748a677f38b798c7ee1b601b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:28",
+      "sequence": 10820,
+      "chapter_label": "1CH 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Thus all Israel brought the ark of the LORD’s covenant up with shouting, with sound of the cornet, with trumpets, and with cymbals, sounding aloud with stringed instruments and harps.",
+      "ko": "이스라엘 무리는 크게 부르며 각과 나팔을 불며 제금을 치며 비파와 수금을 힘있게 타며 여호와의 언약궤를 메어 올렸더라",
+      "source_text_hash": "643816b4b20b113594a8209c9b9fcd706b9093ea40e60a4c092a79aecc87c9fd",
+      "translation_text_hash": "2a5914f1b77d94fccfbc2d520e08fe4d7a2dfab0175e2d34238f4d6ad2d447df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 무리는 크게 부르며 각과 나팔을 불며 제금을 치며 비파와 수금을 힘있게 타며 여호와의 언약궤를 메어 올렸더라"
+      ],
+      "raw_text_hashes": [
+        "2a5914f1b77d94fccfbc2d520e08fe4d7a2dfab0175e2d34238f4d6ad2d447df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:15:29",
+      "sequence": 10821,
+      "chapter_label": "1CH 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "As the ark of the LORD’s covenant came to David’s city, Michal the daughter of Saul looked out at the window, and saw king David dancing and playing; and she despised him in her heart.",
+      "ko": "여호와의 언약궤가 다윗성으로 들어 올 때에 사울의 딸 미갈이 창으로 내어다보다가 다윗왕의 춤추며 뛰노는 것을 보고 심중에 업신여겼더라",
+      "source_text_hash": "eed78d084186f7ec080d8c656e3af4666644393d116e4991ae71685a0173f6e3",
+      "translation_text_hash": "f2e283a929be1d0557f941088e79199a7d37c0325f2834594623d417a1fb9342",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤가 다윗성으로 들어 올 때에 사울의 딸 미갈이 창으로 내어다보다가 다윗왕의 춤추며 뛰노는 것을 보고 심중에 업신여겼더라"
+      ],
+      "raw_text_hashes": [
+        "f2e283a929be1d0557f941088e79199a7d37c0325f2834594623d417a1fb9342"
+      ]
+    }
+  ]
+}

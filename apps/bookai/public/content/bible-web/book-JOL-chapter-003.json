@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOL:chapter:003",
+  "unit_ordinal": 879,
+  "unit_label": "JOL 3",
+  "book_code": "JOL",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOL:3:1",
+      "sequence": 22345,
+      "chapter_label": "JOL 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "“For, behold, in those days, and in that time, when I restore the fortunes of Judah and Jerusalem,",
+      "ko": "그 날 곧 내가 유다와 예루살렘의 사로잡힌 자를 돌아오게 할 그 때에",
+      "source_text_hash": "1007b01d0d2b3073d34accdeae5bf1a92a64850fb41bccb7a7a9ba4a5a7c52a5",
+      "translation_text_hash": "79ebed29b61e4f8596434f2a68eb6703ab5c22554c53c8cef2feb60528fa46da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날 곧 내가 유다와 예루살렘의 사로잡힌 자를 돌아오게 할 그 때에"
+      ],
+      "raw_text_hashes": [
+        "79ebed29b61e4f8596434f2a68eb6703ab5c22554c53c8cef2feb60528fa46da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:2",
+      "sequence": 22346,
+      "chapter_label": "JOL 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "I will gather all nations, and will bring them down into the valley of Jehoshaphat; and I will execute judgment on them there for my people, and for my heritage, Israel, whom they have scattered among the nations. They have divided my land,",
+      "ko": "내가 만국을 모아 데리고 여호사밧 골짜기에 내려가서 내 백성 곧 내 기업된 이스라엘을 위하여 거기서 그들을 국문하리니 이는 그들이 이스라엘을 열국 중에 흩고 나의 땅을 나누었음이며",
+      "source_text_hash": "af6a8a4142079ff84b884dcfa45063b032897bc89bceaabcb8ea70fb299200f1",
+      "translation_text_hash": "e3370e31067e21d8bf541f3ee5404f6d8cb998aaf5ff8d05feae25a7c29a7b2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만국을 모아 데리고 여호사밧 골짜기에 내려가서 내 백성 곧 내 기업된 이스라엘을 위하여 거기서 그들을 국문하리니 이는 그들이 이스라엘을 열국 중에 흩고 나의 땅을 나누었음이며"
+      ],
+      "raw_text_hashes": [
+        "e3370e31067e21d8bf541f3ee5404f6d8cb998aaf5ff8d05feae25a7c29a7b2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:3",
+      "sequence": 22347,
+      "chapter_label": "JOL 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "and have cast lots for my people, and have given a boy for a prostitute, and sold a girl for wine, that they may drink.",
+      "ko": "또 제비 뽑아 내 백성을 취하고 동남으로 기생을 바꾸며 동녀로 술을 바꾸어 마셨음이니라",
+      "source_text_hash": "5285d07eb5ed291817cd026523201555dc4ab2cb7d1809e64b966a2894fef885",
+      "translation_text_hash": "90ea2863817ed973a0fce92883efeeb0c781f065c79dd4a481f805eabd1fa553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제비 뽑아 내 백성을 취하고 동남으로 기생을 바꾸며 동녀로 술을 바꾸어 마셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "90ea2863817ed973a0fce92883efeeb0c781f065c79dd4a481f805eabd1fa553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:4",
+      "sequence": 22348,
+      "chapter_label": "JOL 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "“Yes, and what are you to me, Tyre and Sidon, and all the regions of Philistia? Will you repay me? And if you repay me, I will swiftly and speedily return your repayment on your own head.",
+      "ko": "두로와 시돈과 블레셋 사방아 너희가 나와 무슨 상관이 있느냐 너희가 내게 보복하겠느냐 만일 내게 보복하면 너희의 보복하는 것을 내가 속속히 너희 머리에 돌리리니",
+      "source_text_hash": "2b627b4ba3835fe1a84a1223c1d08e07a1ebbe2446546fc02797a276fabf96ba",
+      "translation_text_hash": "a25e839809e56a64adfaf1ab8aa6f0ea9a5a947eedc5349b742f903607a7dc18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로와 시돈과 블레셋 사방아 너희가 나와 무슨 상관이 있느냐 너희가 내게 보복하겠느냐 만일 내게 보복하면 너희의 보복하는 것을 내가 속속히 너희 머리에 돌리리니"
+      ],
+      "raw_text_hashes": [
+        "a25e839809e56a64adfaf1ab8aa6f0ea9a5a947eedc5349b742f903607a7dc18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:5",
+      "sequence": 22349,
+      "chapter_label": "JOL 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Because you have taken my silver and my gold, and have carried my finest treasures into your temples,",
+      "ko": "곧 너희가 내 은과 금을 취하고 나의 진기한 보물을 너희 신궁으로 가져갔으며",
+      "source_text_hash": "9dab486f710f0488066703b17b7b4e29885ba00edfc1ca0f517c696114f3ca17",
+      "translation_text_hash": "9b04b5caee0a5e70fd4d7b461936ed2de7a49e6824afef8a403242dc6028bfc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 너희가 내 은과 금을 취하고 나의 진기한 보물을 너희 신궁으로 가져갔으며"
+      ],
+      "raw_text_hashes": [
+        "9b04b5caee0a5e70fd4d7b461936ed2de7a49e6824afef8a403242dc6028bfc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:6",
+      "sequence": 22350,
+      "chapter_label": "JOL 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "and have sold the children of Judah and the children of Jerusalem to the sons of the Greeks, that you may remove them far from their border.",
+      "ko": "또 유다 자손과 예루살렘 자손들을 헬라 족속에게 팔아서 본 지경에서 멀리 떠나게 하였음이니라",
+      "source_text_hash": "905c8a6e6cb0483e6e74f88e1952213dd7aa775bd009f1f147fb37e03cebb777",
+      "translation_text_hash": "53f9ed9288bd3d685125207a5ff1ac48dec9c7128c762185e2105c3e85eb2d90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유다 자손과 예루살렘 자손들을 헬라 족속에게 팔아서 본 지경에서 멀리 떠나게 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "53f9ed9288bd3d685125207a5ff1ac48dec9c7128c762185e2105c3e85eb2d90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:7",
+      "sequence": 22351,
+      "chapter_label": "JOL 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, I will stir them up out of the place where you have sold them, and will return your repayment on your own head;",
+      "ko": "보라 내가 그들을 너희가 팔아 이르게 한 곳에서 일으켜 나오게 하고 너희의 행한 것을 너희 머리에 돌려서",
+      "source_text_hash": "325569e945a4dc767fcecb8b45472d9d4231f2996b7edf12b4e9f7354239b655",
+      "translation_text_hash": "b5cb0224470abf443da7c44d16c9df07f594e7432523a0470b20516b1be974bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 그들을 너희가 팔아 이르게 한 곳에서 일으켜 나오게 하고 너희의 행한 것을 너희 머리에 돌려서"
+      ],
+      "raw_text_hashes": [
+        "b5cb0224470abf443da7c44d16c9df07f594e7432523a0470b20516b1be974bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:8",
+      "sequence": 22352,
+      "chapter_label": "JOL 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "and I will sell your sons and your daughters into the hands of the children of Judah, and they will sell them to the men of Sheba, to a faraway nation, for the LORD has spoken it.”",
+      "ko": "너희 자녀를 유다 자손의 손에 팔리니 그들은 다시 먼 나라 스바 사람에게 팔리라 나 여호와가 말하였느니라",
+      "source_text_hash": "73dcb63368df5b2fe061eabce7714784a40000612fe099016b0ea3f74415c23d",
+      "translation_text_hash": "091393afe80eb3692aba3e7a7a324128f62ab578949c155bc1f7f878f472354f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 자녀를 유다 자손의 손에 팔리니 그들은 다시 먼 나라 스바 사람에게 팔리라 나 여호와가 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "091393afe80eb3692aba3e7a7a324128f62ab578949c155bc1f7f878f472354f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:9",
+      "sequence": 22353,
+      "chapter_label": "JOL 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Proclaim this among the nations: “Prepare for war! Stir up the mighty men. Let all the warriors draw near. Let them come up.",
+      "ko": "너희는 열국에 이렇게 광포할찌어다 너희는 전쟁을 준비하고 용사를 격려하고 무사로 다 가까이 나아와서 올라오게 할찌어다",
+      "source_text_hash": "9564482288b21010f7b0eb3b296364fc217805b600cad26ef8910af3d07f7313",
+      "translation_text_hash": "c561a665f4c339af19d12661c0696c73fc61acfacb0604cf933097f1615c45db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 열국에 이렇게 광포할찌어다 너희는 전쟁을 준비하고 용사를 격려하고 무사로 다 가까이 나아와서 올라오게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "c561a665f4c339af19d12661c0696c73fc61acfacb0604cf933097f1615c45db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:10",
+      "sequence": 22354,
+      "chapter_label": "JOL 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Beat your plowshares into swords, and your pruning hooks into spears. Let the weak say, ‘I am strong.’",
+      "ko": "너희는 보습을 쳐서 칼을 만들찌어다 낫을 쳐서 창을 만들찌어다 약한 자도 이르기를 나는 강하다 할찌어다",
+      "source_text_hash": "389fe409580474b5110988c921f4ddc0c8f693a7fc03b58c3c0bff89650b28ed",
+      "translation_text_hash": "3467124bc4ad73d98532b7f801204773b90f9a76ac9dd321f026039738d3cef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 보습을 쳐서 칼을 만들찌어다 낫을 쳐서 창을 만들찌어다 약한 자도 이르기를 나는 강하다 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "3467124bc4ad73d98532b7f801204773b90f9a76ac9dd321f026039738d3cef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:11",
+      "sequence": 22355,
+      "chapter_label": "JOL 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Hurry and come, all you surrounding nations, and gather yourselves together.” Cause your mighty ones to come down there, LORD.",
+      "ko": "사면의 열국아 너희는 속히 와서 모일찌어다 여호와여 주의 용사들로 그리로 내려오게 하옵소서",
+      "source_text_hash": "435cf1ccf5324a1852e34aa6324886c5cc799aab4b343269ad9fab059c49d39b",
+      "translation_text_hash": "25e8769bdb29f51350ebd201ce2cb44ddaaa03451bcbd0ac2db1463e639da43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사면의 열국아 너희는 속히 와서 모일찌어다 여호와여 주의 용사들로 그리로 내려오게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "25e8769bdb29f51350ebd201ce2cb44ddaaa03451bcbd0ac2db1463e639da43c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:12",
+      "sequence": 22356,
+      "chapter_label": "JOL 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "“Let the nations arouse themselves, and come up to the valley of Jehoshaphat; for there I will sit to judge all the surrounding nations.",
+      "ko": "열국은 동하여 여호사밧 골짜기로 올라올찌어다 내가 거기 앉아서 사면의 열국을 다 심판하리로다",
+      "source_text_hash": "e4a9054b664ac7a02ba4d7cc9138aa051346e7eaeb582d0908a6dcecd9a14b73",
+      "translation_text_hash": "69ab45e97f3b280dc8f877befcea3b638291196d149373eefe940a7f37aa00a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국은 동하여 여호사밧 골짜기로 올라올찌어다 내가 거기 앉아서 사면의 열국을 다 심판하리로다"
+      ],
+      "raw_text_hashes": [
+        "69ab45e97f3b280dc8f877befcea3b638291196d149373eefe940a7f37aa00a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:13",
+      "sequence": 22357,
+      "chapter_label": "JOL 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Put in the sickle; for the harvest is ripe. Come, tread, for the wine press is full, the vats overflow, for their wickedness is great.”",
+      "ko": "너희는 낫을 쓰라 곡식이 익었도다 와서 밟을찌어다 포도주 틀이 가득히 차고 포도주 독이 넘치니 그들의 악이 큼이로다",
+      "source_text_hash": "8757fa712f63a38e7fecdb0ff9ece1f479a27fa6e4cf2d5cb155013b7668f258",
+      "translation_text_hash": "d79670c7e7ff207c7c350cf8beac4550a659c1b41a7387036ec44ce2cfdd3c16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 낫을 쓰라 곡식이 익었도다 와서 밟을찌어다 포도주 틀이 가득히 차고 포도주 독이 넘치니 그들의 악이 큼이로다"
+      ],
+      "raw_text_hashes": [
+        "d79670c7e7ff207c7c350cf8beac4550a659c1b41a7387036ec44ce2cfdd3c16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:14",
+      "sequence": 22358,
+      "chapter_label": "JOL 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Multitudes, multitudes in the valley of decision! For the day of the LORD is near in the valley of decision.",
+      "ko": "사람이 많음이여, 판결 골짜기에 사람이 많음이여, 판결 골짜기에 여호와의 날이 가까움이로다",
+      "source_text_hash": "f514ffcb3d3d139b5642d42f0bd6aa9978ae5830f09a021fd2dfe9bfdb8701bf",
+      "translation_text_hash": "1c6b1ade4b45723b4b88d809380fafe02fe59742bf8bcb9555dc575aa6e52a0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 많음이여, 판결 골짜기에 사람이 많음이여, 판결 골짜기에 여호와의 날이 가까움이로다"
+      ],
+      "raw_text_hashes": [
+        "1c6b1ade4b45723b4b88d809380fafe02fe59742bf8bcb9555dc575aa6e52a0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:15",
+      "sequence": 22359,
+      "chapter_label": "JOL 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "The sun and the moon are darkened, and the stars withdraw their shining.",
+      "ko": "해와 달이 캄캄하며 별들이 그 빛을 거두도다",
+      "source_text_hash": "212d758c1f1e143df9a09765a7a37e126f352736abea1f2138169f9909608802",
+      "translation_text_hash": "46ccd9a8f4a9c0eae1910ede07df5c0cba7e79ac9b7aa6b3aef528bc8d34b832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해와 달이 캄캄하며 별들이 그 빛을 거두도다"
+      ],
+      "raw_text_hashes": [
+        "46ccd9a8f4a9c0eae1910ede07df5c0cba7e79ac9b7aa6b3aef528bc8d34b832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:16",
+      "sequence": 22360,
+      "chapter_label": "JOL 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD will roar from Zion, and thunder from Jerusalem; and the heavens and the earth will shake; but the LORD will be a refuge to his people, and a stronghold to the children of Israel.",
+      "ko": "나 여호와가 시온에서 부르짖고 예루살렘에서 목소리를 발하리니 하늘과 땅이 진동되리로다 그러나 나 여호와는 내 백성의 피난처, 이스라엘 자손의 산성이 되리로다",
+      "source_text_hash": "0ec7f129e8fa8b5ea1da50d7f8db9557633470dbb4b36d43c2728ee59ec12daa",
+      "translation_text_hash": "4af35f73f5ae715ac05c61790ff1076ddf7a6673525b9004461d0852b6967d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 시온에서 부르짖고 예루살렘에서 목소리를 발하리니 하늘과 땅이 진동되리로다 그러나 나 여호와는 내 백성의 피난처, 이스라엘 자손의 산성이 되리로다"
+      ],
+      "raw_text_hashes": [
+        "4af35f73f5ae715ac05c61790ff1076ddf7a6673525b9004461d0852b6967d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:17",
+      "sequence": 22361,
+      "chapter_label": "JOL 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "“So you will know that I am the LORD, your God, dwelling in Zion, my holy mountain. Then Jerusalem will be holy, and no strangers will pass through her any more.",
+      "ko": "그런즉 너희가 나는 내 성산 시온에 거하는 너희 하나님 여호와인줄 알 것이라 예루살렘이 거룩하리니 다시는 이방 사람이 그 가운데로 통행하지 못하리로다",
+      "source_text_hash": "8280e5c1257037c171e8d385ffa1b695d502abf8e5d5159736c845ba8e02ca34",
+      "translation_text_hash": "ddd3859b4534bdd1a4ce36a5106058ee66b14bdae96992e565b5496f1787aeb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 나는 내 성산 시온에 거하는 너희 하나님 여호와인줄 알 것이라 예루살렘이 거룩하리니 다시는 이방 사람이 그 가운데로 통행하지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "ddd3859b4534bdd1a4ce36a5106058ee66b14bdae96992e565b5496f1787aeb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:18",
+      "sequence": 22362,
+      "chapter_label": "JOL 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "It will happen in that day, that the mountains will drop down sweet wine, the hills will flow with milk, all the brooks of Judah will flow with waters; and a fountain will flow out from the LORD’s house, and will water the valley of Shittim.",
+      "ko": "그 날에 산들이 단 포도주를 떨어뜨릴 것이며 작은 산들이 젖을 흘릴 것이며 유다 모든 시내가 물을 흘릴 것이며 여호와의 전에서 샘이 흘러 나와서 싯딤 골짜기에 대리라",
+      "source_text_hash": "1c732f340acfa2f12f5e3ac1e180c6720ffddfc39d1b9b09fbd428d209c6a124",
+      "translation_text_hash": "f4372aa6283eb89026e483d7749848950a1486418ccaf222d8abe04f2fd6eadd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 산들이 단 포도주를 떨어뜨릴 것이며 작은 산들이 젖을 흘릴 것이며 유다 모든 시내가 물을 흘릴 것이며 여호와의 전에서 샘이 흘러 나와서 싯딤 골짜기에 대리라"
+      ],
+      "raw_text_hashes": [
+        "f4372aa6283eb89026e483d7749848950a1486418ccaf222d8abe04f2fd6eadd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:19",
+      "sequence": 22363,
+      "chapter_label": "JOL 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Egypt will be a desolation and Edom will be a desolate wilderness, for the violence done to the children of Judah, because they have shed innocent blood in their land.",
+      "ko": "그러나 애굽은 황무지가 되겠고 에돔은 황무한 들이 되리니 이는 그들이 유다 자손에게 강포를 행하여 무죄한 피를 그 땅에서 흘렸음이니라",
+      "source_text_hash": "5fe484351d0a0896fa64ef8440bd950ccc25433754d4199d839fc4d7640e0a10",
+      "translation_text_hash": "961706dd0277d2121865454744da822676ec72bea8c22a64e459b367bbb7cdf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 애굽은 황무지가 되겠고 에돔은 황무한 들이 되리니 이는 그들이 유다 자손에게 강포를 행하여 무죄한 피를 그 땅에서 흘렸음이니라"
+      ],
+      "raw_text_hashes": [
+        "961706dd0277d2121865454744da822676ec72bea8c22a64e459b367bbb7cdf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:20",
+      "sequence": 22364,
+      "chapter_label": "JOL 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "But Judah will be inhabited forever, and Jerusalem from generation to generation.",
+      "ko": "유다는 영원히 있겠고 예루살렘은 대대로 있으리라",
+      "source_text_hash": "aaa88c9783cf971e4cd42ef10e454d5c409ddc07b0c8804ebd315ed37ca8f98d",
+      "translation_text_hash": "1e4b728ffb5faa343d3480d2bc6b604b4d87e231e25e85c2183e03ae43cbb607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 영원히 있겠고 예루살렘은 대대로 있으리라"
+      ],
+      "raw_text_hashes": [
+        "1e4b728ffb5faa343d3480d2bc6b604b4d87e231e25e85c2183e03ae43cbb607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:3:21",
+      "sequence": 22365,
+      "chapter_label": "JOL 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOL",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "I will cleanse their blood that I have not cleansed, for the LORD dwells in Zion.”",
+      "ko": "내가 전에는 그들의 피흘림 당한 것을 갚아주지 아니하였거니와 이제는 갚아주리니 이는 나 여호와가 시온에 거함이니라",
+      "source_text_hash": "1fc218d7e0bfc59c5af99fba3d62188ad7bf8ff48b9cde2057a322a09a11a5b3",
+      "translation_text_hash": "7916b462ecba0c89ec62daaf63813fa39e8dfb26d5e387297f9db1db130801e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에는 그들의 피흘림 당한 것을 갚아주지 아니하였거니와 이제는 갚아주리니 이는 나 여호와가 시온에 거함이니라"
+      ],
+      "raw_text_hashes": [
+        "7916b462ecba0c89ec62daaf63813fa39e8dfb26d5e387297f9db1db130801e3"
+      ]
+    }
+  ]
+}

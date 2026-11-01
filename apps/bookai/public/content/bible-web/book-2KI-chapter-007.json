@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:007",
+  "unit_ordinal": 320,
+  "unit_label": "2KI 7",
+  "book_code": "2KI",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:7:1",
+      "sequence": 9709,
+      "chapter_label": "2KI 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Elisha said, “Hear the LORD’s word. The LORD says, ‘Tomorrow about this time a seah of fine flour will be sold for a shekel, and two seahs of barley for a shekel, in the gate of Samaria.’”",
+      "ko": "엘리사가 가로되 여호와의 말씀을 들을찌어다 여호와께서 가라사대 내일 이맘때에 사마리아 성문에서 고운 가루 한 스아에 한 세겔을 하고 보리 두 스아에 한 세겔을 하리라 하셨느니라",
+      "source_text_hash": "010bf42eeb044c1a84be9a663fb3e4ec35faf31528fedaed153c99ddf3a37a8e",
+      "translation_text_hash": "218a66cd5ce92f7766b391d2bb7c1a3ecb8403a88fda3a7b97d487926a6030e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 여호와의 말씀을 들을찌어다 여호와께서 가라사대 내일 이맘때에 사마리아 성문에서 고운 가루 한 스아에 한 세겔을 하고 보리 두 스아에 한 세겔을 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "218a66cd5ce92f7766b391d2bb7c1a3ecb8403a88fda3a7b97d487926a6030e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:2",
+      "sequence": 9710,
+      "chapter_label": "2KI 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Then the captain on whose hand the king leaned answered the man of God, and said, “Behold, if the LORD made windows in heaven, could this thing be?” He said, “Behold, you will see it with your eyes, but will not eat of it.”",
+      "ko": "그 때에 한 장관 곧 왕이 그 손에 의지하는 자가 하나님의 사람에게 대답하여 가로되 여호와께서 하늘에 창을 내신들 어찌 이런 일이 있으리요 엘리사가 가로되 네가 네 눈으로 보리라 그러나 그것을 먹지는 못하리라 하니라",
+      "source_text_hash": "3a41a3458ad1a63b3b3ed4d0b168cd7dcbd472866484cec513b7ed47857da19f",
+      "translation_text_hash": "9b68fb99760fcf8a1c742e9501dd95629bd1888c59af8befbc8c72d3be4a05c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 한 장관 곧 왕이 그 손에 의지하는 자가 하나님의 사람에게 대답하여 가로되 여호와께서 하늘에 창을 내신들 어찌 이런 일이 있으리요 엘리사가 가로되 네가 네 눈으로 보리라 그러나 그것을 먹지는 못하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9b68fb99760fcf8a1c742e9501dd95629bd1888c59af8befbc8c72d3be4a05c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:3",
+      "sequence": 9711,
+      "chapter_label": "2KI 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Now there were four leprous men at the entrance of the gate. They said to one another, “Why do we sit here until we die?",
+      "ko": "성문 어귀에 문둥이 네 사람이 있더니 서로 말하되 우리가 어찌하여 여기 앉아서 죽기를 기다리랴",
+      "source_text_hash": "c6475893c2ea921e875e241e71cdf098af763be7cc9964ce77ab84d5b56e3205",
+      "translation_text_hash": "bfea33916d2b296864b7b0c2c9f41f28e7b81bd6796cd2ce5013582c5f5cfb97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문 어귀에 문둥이 네 사람이 있더니 서로 말하되 우리가 어찌하여 여기 앉아서 죽기를 기다리랴"
+      ],
+      "raw_text_hashes": [
+        "bfea33916d2b296864b7b0c2c9f41f28e7b81bd6796cd2ce5013582c5f5cfb97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:4",
+      "sequence": 9712,
+      "chapter_label": "2KI 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "If we say, ‘We will enter into the city,’ then the famine is in the city, and we will die there. If we sit still here, we also die. Now therefore come, and let’s surrender to the army of the Syrians. If they save us alive, we will live; and if they kill us, we will only die.”",
+      "ko": "우리가 성에 들어가자고 할찌라도 성중은 주리니 우리가 거기서 죽을 것이요 여기 앉아 있어도 죽을찌라 그런즉 우리가 가서 아람 군대에게 항복하자 저희가 우리를 살려두면 살려니와 우리를 죽이면 죽을 따름이라 하고",
+      "source_text_hash": "bf7de51d19e7f5467dd5c0701adb9133b5a9046164a65b1d1c7c5e629041fdf8",
+      "translation_text_hash": "4fa9c4619f7b12e2fa5ee6edc2ea15973f7873fc0276560d8184d27e5a7d47c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 성에 들어가자고 할찌라도 성중은 주리니 우리가 거기서 죽을 것이요 여기 앉아 있어도 죽을찌라 그런즉 우리가 가서 아람 군대에게 항복하자 저희가 우리를 살려두면 살려니와 우리를 죽이면 죽을 따름이라 하고"
+      ],
+      "raw_text_hashes": [
+        "4fa9c4619f7b12e2fa5ee6edc2ea15973f7873fc0276560d8184d27e5a7d47c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:5",
+      "sequence": 9713,
+      "chapter_label": "2KI 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "They rose up in the twilight to go to the camp of the Syrians. When they had come to the outermost part of the camp of the Syrians, behold, no man was there.",
+      "ko": "아람 진으로 가려 하여 황혼에 일어나서 아람 진 가에 이르러 본즉 그곳에 한 사람도 없으니",
+      "source_text_hash": "5b9fb2f0c5a322352f0afc052711b9fe749fff2682f4412fe1b3a71156d5d9f6",
+      "translation_text_hash": "b5eaca57d12230c3baaa7a23682d75bf1386311004faacdb886d03224bbba490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 진으로 가려 하여 황혼에 일어나서 아람 진 가에 이르러 본즉 그곳에 한 사람도 없으니"
+      ],
+      "raw_text_hashes": [
+        "b5eaca57d12230c3baaa7a23682d75bf1386311004faacdb886d03224bbba490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:6",
+      "sequence": 9714,
+      "chapter_label": "2KI 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For the Lord had made the army of the Syrians to hear the sound of chariots and the sound of horses, even the noise of a great army; and they said to one another, “Behold, the king of Israel has hired against us the kings of the Hittites and the kings of the Egyptians to attack us.”",
+      "ko": "이는 주께서 아람 군대로 병거 소리와 말소리와 큰 군대의 소리를 듣게 하셨으므로 아람 사람이 서로 말하기를 이스라엘 왕이 우리를 치려하여 헷 사람의 왕들과 애굽 왕들에게 값을 주고 저희로 우리에게 오게 하였다 하고",
+      "source_text_hash": "9d7250760501bbc0a450933357e97f60c0684d1ab44bc1d0f5b6e885ba4366ab",
+      "translation_text_hash": "1ecc9c0b7a51332daf115d396569e2d915d15df18d1b4f5afde5e0580c21dbac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주께서 아람 군대로 병거 소리와 말소리와 큰 군대의 소리를 듣게 하셨으므로 아람 사람이 서로 말하기를 이스라엘 왕이 우리를 치려하여 헷 사람의 왕들과 애굽 왕들에게 값을 주고 저희로 우리에게 오게 하였다 하고"
+      ],
+      "raw_text_hashes": [
+        "1ecc9c0b7a51332daf115d396569e2d915d15df18d1b4f5afde5e0580c21dbac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:7",
+      "sequence": 9715,
+      "chapter_label": "2KI 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore they arose and fled in the twilight, and left their tents, their horses, and their donkeys, even the camp as it was, and fled for their life.",
+      "ko": "황혼에 일어나서 도망하되 그 장막과 말과 나귀를 버리고 진을 그대로 두고 목숨을 위하여 도망하였음이라",
+      "source_text_hash": "11d3fb5ed0105a25af24f80f4cb5b283890fc97b3bd29c881c359100b6cd42cb",
+      "translation_text_hash": "c24631ea9a90c1152729bdc2cd5fc07c83cd21b640a35d20b063a4882597b07f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "황혼에 일어나서 도망하되 그 장막과 말과 나귀를 버리고 진을 그대로 두고 목숨을 위하여 도망하였음이라"
+      ],
+      "raw_text_hashes": [
+        "c24631ea9a90c1152729bdc2cd5fc07c83cd21b640a35d20b063a4882597b07f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:8",
+      "sequence": 9716,
+      "chapter_label": "2KI 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "When these lepers came to the outermost part of the camp, they went into one tent, and ate and drank, then carried away silver, gold, and clothing and went and hid it. Then they came back, and entered into another tent and carried things from there also, and went and hid them.",
+      "ko": "그 문둥이들이 진 가에 이르자 한장막에 들어가서 먹고 마시고 거기서 은과 금과 의복을 가지고 가서 감추고 다시 와서 다른 장막에 들어가서 거기서도 가지고 가서 감추니라",
+      "source_text_hash": "aefd2439f6f75e649ac63db9fdb0a9b756d015a8918bc64cbcde272b3400deea",
+      "translation_text_hash": "8fae18bf4440eb523d797f56800babd070393a90322c6c20bed795ffc6ff7dbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 문둥이들이 진 가에 이르자 한장막에 들어가서 먹고 마시고 거기서 은과 금과 의복을 가지고 가서 감추고 다시 와서 다른 장막에 들어가서 거기서도 가지고 가서 감추니라"
+      ],
+      "raw_text_hashes": [
+        "8fae18bf4440eb523d797f56800babd070393a90322c6c20bed795ffc6ff7dbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:9",
+      "sequence": 9717,
+      "chapter_label": "2KI 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Then they said to one another, “We aren’t doing right. Today is a day of good news, and we keep silent. If we wait until the morning light, punishment will overtake us. Now therefore come, let’s go and tell the king’s household.”",
+      "ko": "문둥이가 서로 말하되 우리의 소위가 선치 못하도다 오늘날은 아름다운 소식이 있는 날이어늘 우리가 잠잠하고 있도다 만일 밝은 아침까지 기다리면 벌이 우리에게 미칠찌니 이제 떠나 왕궁에 가서 고하자 하고",
+      "source_text_hash": "a77555f19a2d509ffaeabc9ad0a25f027eabf745c11ea6a72a0a45abc7e74139",
+      "translation_text_hash": "e4d56532e4dbc95675794e798cd58144a6bc5f87a6e42aeeb84c532d206f7c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문둥이가 서로 말하되 우리의 소위가 선치 못하도다 오늘날은 아름다운 소식이 있는 날이어늘 우리가 잠잠하고 있도다 만일 밝은 아침까지 기다리면 벌이 우리에게 미칠찌니 이제 떠나 왕궁에 가서 고하자 하고"
+      ],
+      "raw_text_hashes": [
+        "e4d56532e4dbc95675794e798cd58144a6bc5f87a6e42aeeb84c532d206f7c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:10",
+      "sequence": 9718,
+      "chapter_label": "2KI 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "So they came and called to the city gatekeepers; and they told them, “We came to the camp of the Syrians, and, behold, there was no man there, not even a man’s voice, but the horses tied, and the donkeys tied, and the tents as they were.”",
+      "ko": "드디어 가서 성 문지기를 불러 고하여 가로되 우리가 아람 진에 이르러 보니 거기 한 사람도 없고 사람의 소리도 없고 오직 말과 나귀만 매여 있고 장막들이 그대로 있더이다",
+      "source_text_hash": "7b9c0e42dfb72190ac3bedda3e9b4eeb49caa568fc56e9d651004cb7de6b3cb8",
+      "translation_text_hash": "91ed33962a39fe071ca70409b90be2a790f88adca433b7c02374929885d62c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드디어 가서 성 문지기를 불러 고하여 가로되 우리가 아람 진에 이르러 보니 거기 한 사람도 없고 사람의 소리도 없고 오직 말과 나귀만 매여 있고 장막들이 그대로 있더이다"
+      ],
+      "raw_text_hashes": [
+        "91ed33962a39fe071ca70409b90be2a790f88adca433b7c02374929885d62c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:11",
+      "sequence": 9719,
+      "chapter_label": "2KI 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Then the gatekeepers called out and told it to the king’s household within.",
+      "ko": "저가 문지기들을 부르매 저희가 왕궁에 있는 자에게 고하니",
+      "source_text_hash": "603934a78e003ad2c39b85d5c1c17ec6f6c94dea19537e87cbf82b22cdede23f",
+      "translation_text_hash": "be5641d68c0193f3c8b8c3138f0fbd0e83bfaf21f452e3d004ccfbdad0d70bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 문지기들을 부르매 저희가 왕궁에 있는 자에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "be5641d68c0193f3c8b8c3138f0fbd0e83bfaf21f452e3d004ccfbdad0d70bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:12",
+      "sequence": 9720,
+      "chapter_label": "2KI 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "The king arose in the night, and said to his servants, “I will now show you what the Syrians have done to us. They know that we are hungry. Therefore they have gone out of the camp to hide themselves in the field, saying, ‘When they come out of the city, we shall take them alive, and get into the city.’”",
+      "ko": "왕이 밤에 일어나 그 신복들에게 이르되 아람 사람이 우리에게 행한 것을 내가 너희에게 알게 하노니 저희가 우리의 주린 것을 아는고로 그 진을 떠나서 들에 매복하고 스스로 이르기를 저희들이 성에서 나오거든 우리가 사로잡고 성에 들어가겠다 한 것이니라",
+      "source_text_hash": "1cfe1b854bd4323d47ea7a5b64ce60fc1b09e15922ecaecb7235ac5f403ab313",
+      "translation_text_hash": "28cc566481cd9b2163d77739faabfc57c609c341e2ff586c4e8bf4965f06faf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 밤에 일어나 그 신복들에게 이르되 아람 사람이 우리에게 행한 것을 내가 너희에게 알게 하노니 저희가 우리의 주린 것을 아는고로 그 진을 떠나서 들에 매복하고 스스로 이르기를 저희들이 성에서 나오거든 우리가 사로잡고 성에 들어가겠다 한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "28cc566481cd9b2163d77739faabfc57c609c341e2ff586c4e8bf4965f06faf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:13",
+      "sequence": 9721,
+      "chapter_label": "2KI 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "One of his servants answered, “Please let some people take five of the horses that remain, which are left in the city. Behold, they are like all the multitude of Israel who are left in it. Behold, they are like all the multitude of Israel who are consumed. Let’s send and see.”",
+      "ko": "그 신복중 하나가 대답하여 가로되 청컨대 아직 성중에 남아 있는 말 다섯 필을 취하고 사람을 보내어 정탐하게 하소서 이 말들이 성중에 남아 있는 이스라엘 온 무리 곧 멸망한 이스라엘 온 무리와 같으니이다 하고",
+      "source_text_hash": "7d8acf54f9fd23a3b31f623bb76f902b58eae3871002b52bcf1b669185d7101d",
+      "translation_text_hash": "8a31aaa286910586b96cd5883c713aa1128c6f2b9026ab996da93a41bddda637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복중 하나가 대답하여 가로되 청컨대 아직 성중에 남아 있는 말 다섯 필을 취하고 사람을 보내어 정탐하게 하소서 이 말들이 성중에 남아 있는 이스라엘 온 무리 곧 멸망한 이스라엘 온 무리와 같으니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "8a31aaa286910586b96cd5883c713aa1128c6f2b9026ab996da93a41bddda637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:14",
+      "sequence": 9722,
+      "chapter_label": "2KI 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore they took two chariots with horses; and the king sent them out to the Syrian army, saying, “Go and see.”",
+      "ko": "저희가 병거 둘과 그 말을 취한지라 왕이 아람 군대 뒤로 보내며 가서 정탐하라 하였더니",
+      "source_text_hash": "15202b6af65b05953b29d0654baac1d80361b3c4fbee928b0f59dfb72aa5c2cb",
+      "translation_text_hash": "a7b2f011828bbd54a1ee77e1ef0e95927d0036fd38b1411d91dcc0358ff6481f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 병거 둘과 그 말을 취한지라 왕이 아람 군대 뒤로 보내며 가서 정탐하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "a7b2f011828bbd54a1ee77e1ef0e95927d0036fd38b1411d91dcc0358ff6481f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:15",
+      "sequence": 9723,
+      "chapter_label": "2KI 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "They went after them to the Jordan; and behold, all the path was full of garments and equipment which the Syrians had cast away in their haste. The messengers returned and told the king.",
+      "ko": "저희가 그 뒤를 따라 요단에 이른즉 아람 사람이 급히 도망하느라고 버린 의복과 군물이 길에 가득하였더라 사자가 돌아와서 왕에게 고하매",
+      "source_text_hash": "3bff0b50a8e79dada5d8a58cd9285d13d0a8cdfe133a9f719798bc3be0d0fe05",
+      "translation_text_hash": "1012d105f57956989deb94449570d3f9a38493d38f0234e35aefe88bd5420d32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 뒤를 따라 요단에 이른즉 아람 사람이 급히 도망하느라고 버린 의복과 군물이 길에 가득하였더라 사자가 돌아와서 왕에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "1012d105f57956989deb94449570d3f9a38493d38f0234e35aefe88bd5420d32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:16",
+      "sequence": 9724,
+      "chapter_label": "2KI 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "The people went out and plundered the camp of the Syrians. So a seah of fine flour was sold for a shekel, and two measures of barley for a shekel, according to the LORD’s word.",
+      "ko": "백성들이 나가서 아람 사람의 진을 노략한지라 이에 고운 가루 한 스아에 한 세겔이 되고 보리 두 스아에 한 세겔이 되니 여호와의 말씀과 같이 되었고",
+      "source_text_hash": "3cd470b7c6307fa5e2b9eae740d0aaf8a054241e1f90f7683ddf749042beba24",
+      "translation_text_hash": "647a19b0463284c6214ef5e4c0c706c6e12d18e01905f8abb6203771552fd323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들이 나가서 아람 사람의 진을 노략한지라 이에 고운 가루 한 스아에 한 세겔이 되고 보리 두 스아에 한 세겔이 되니 여호와의 말씀과 같이 되었고"
+      ],
+      "raw_text_hashes": [
+        "647a19b0463284c6214ef5e4c0c706c6e12d18e01905f8abb6203771552fd323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:17",
+      "sequence": 9725,
+      "chapter_label": "2KI 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "The king had appointed the captain on whose hand he leaned to be in charge of the gate; and the people trampled over him in the gate, and he died as the man of God had said, who spoke when the king came down to him.",
+      "ko": "왕이 그 손에 의지하였던 그 장관을 세워 성문을 지키게 하였더니 백성이 성문에서 저를 밟으매 하나님의 사람의 말대로 죽었으니 곧 왕이 내려왔을 때에 그의 한 말대로라",
+      "source_text_hash": "86054f2642a17d06ec384d499d1c8cd4c1699ef646031f20a91205518ce087ed",
+      "translation_text_hash": "99344174120fdec966b31a58ba6cc1993fe49fea3446515a9d2b4dec6b7408f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 손에 의지하였던 그 장관을 세워 성문을 지키게 하였더니 백성이 성문에서 저를 밟으매 하나님의 사람의 말대로 죽었으니 곧 왕이 내려왔을 때에 그의 한 말대로라"
+      ],
+      "raw_text_hashes": [
+        "99344174120fdec966b31a58ba6cc1993fe49fea3446515a9d2b4dec6b7408f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:18",
+      "sequence": 9726,
+      "chapter_label": "2KI 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "It happened as the man of God had spoken to the king, saying, “Two seahs of barley for a shekel, and a seah of fine flour for a shekel, shall be tomorrow about this time in the gate of Samaria;”",
+      "ko": "일찌기 하나님의 사람이 왕에게 고하여 이르기를 내일 이맘때에 사마리아 성문에서 보리 두 스아에 한 세겔을 하고 고운 가루 한 스아에 한 세겔을 하리라 한즉",
+      "source_text_hash": "f7b39d4b67cf9feefb177458aa8343b42720379c2c450fa709a8bd4391af9b1e",
+      "translation_text_hash": "a0465eaccc3d08ce11810cc239f4535f3a87ba12fcacc3ed81ac0a184ad79e2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일찌기 하나님의 사람이 왕에게 고하여 이르기를 내일 이맘때에 사마리아 성문에서 보리 두 스아에 한 세겔을 하고 고운 가루 한 스아에 한 세겔을 하리라 한즉"
+      ],
+      "raw_text_hashes": [
+        "a0465eaccc3d08ce11810cc239f4535f3a87ba12fcacc3ed81ac0a184ad79e2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:19",
+      "sequence": 9727,
+      "chapter_label": "2KI 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "and that captain answered the man of God, and said, “Now, behold, if the LORD made windows in heaven, might such a thing be?” and he said, “Behold, you will see it with your eyes, but will not eat of it.”",
+      "ko": "그 때에 이 장관이 하나님의 사람에게 대답하여 가로되 여호와께서 하늘에 창을 내신들 어찌 이 일이 있으랴 하매 대답하기를 네가 네 눈으로 보리라 그러나 그것을 먹지는 못하리라 하였더니",
+      "source_text_hash": "077e1a28ec7d08a03ce3d05e00e72dbe6641183ff190e784737a0f6ced514f4f",
+      "translation_text_hash": "66838657e9249ac866291f65c1542845eefa53a09dbef4c9f2621fd392fd152a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이 장관이 하나님의 사람에게 대답하여 가로되 여호와께서 하늘에 창을 내신들 어찌 이 일이 있으랴 하매 대답하기를 네가 네 눈으로 보리라 그러나 그것을 먹지는 못하리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "66838657e9249ac866291f65c1542845eefa53a09dbef4c9f2621fd392fd152a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:7:20",
+      "sequence": 9728,
+      "chapter_label": "2KI 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "It happened like that to him, for the people trampled over him in the gate, and he died.",
+      "ko": "그 장관에게 그대로 이루었으되 곧 백성이 성문에서 저를 밟으매 죽었더라",
+      "source_text_hash": "3c99baf39a41496fd619f22cd4f60a7e6e7d2ef2757d1dcedbc236aeaad3be03",
+      "translation_text_hash": "56354e64e0d1e4466712f27fa51f1840e2addadb69eb1d5f97f818843839f551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장관에게 그대로 이루었으되 곧 백성이 성문에서 저를 밟으매 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "56354e64e0d1e4466712f27fa51f1840e2addadb69eb1d5f97f818843839f551"
+      ]
+    }
+  ]
+}

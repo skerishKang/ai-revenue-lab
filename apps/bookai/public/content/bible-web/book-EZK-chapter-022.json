@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:022",
+  "unit_ordinal": 824,
+  "unit_label": "EZK 22",
+  "book_code": "EZK",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:22:1",
+      "sequence": 20978,
+      "chapter_label": "EZK 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:2",
+      "sequence": 20979,
+      "chapter_label": "EZK 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "“You, son of man, will you judge? Will you judge the bloody city? Then cause her to know all her abominations.",
+      "ko": "인자야 네가 국문하려느냐 이 피 흘린 성읍을 국문하려느냐 그리하려거든 자기의 모든 가증한 일을 그들로 알게 하라",
+      "source_text_hash": "3c2cf7d07b768b6a7d22a0e6b54588e5a9199d329daa8d4042b852d6c58aa499",
+      "translation_text_hash": "6d8fabd05947ef8108c311f558063c52d3b3036ba28c55793cc3db019145ed2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 네가 국문하려느냐 이 피 흘린 성읍을 국문하려느냐 그리하려거든 자기의 모든 가증한 일을 그들로 알게 하라"
+      ],
+      "raw_text_hashes": [
+        "6d8fabd05947ef8108c311f558063c52d3b3036ba28c55793cc3db019145ed2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:3",
+      "sequence": 20980,
+      "chapter_label": "EZK 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "You shall say, ‘The Lord GOD says: “A city that sheds blood within herself, that her time may come, and that makes idols against herself to defile her!",
+      "ko": "너는 이르기를 주 여호와의 말씀에 자기 가운데 피를 흘려 벌 받을 때로 이르게 하며 우상을 만들어 스스로 더럽히는 성아",
+      "source_text_hash": "1464339fe10215d99932fed0637e78ce3acb6e705d0af3058661364979fe4308",
+      "translation_text_hash": "0af5269b844c55f6b4220e0584de1c8db38101f72a5ca986774357b551b91fe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이르기를 주 여호와의 말씀에 자기 가운데 피를 흘려 벌 받을 때로 이르게 하며 우상을 만들어 스스로 더럽히는 성아"
+      ],
+      "raw_text_hashes": [
+        "0af5269b844c55f6b4220e0584de1c8db38101f72a5ca986774357b551b91fe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:4",
+      "sequence": 20981,
+      "chapter_label": "EZK 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "You have become guilty in your blood that you have shed, and are defiled in your idols which you have made! You have caused your days to draw near, and have come to the end of your years. Therefore I have made you a reproach to the nations, and a mocking to all the countries.",
+      "ko": "네가 흘린 피로 인하여 죄가 있고 네가 만든 우상으로 인하여 스스로 더럽혔으니 네 날이 가까왔고 네 년한이 찼도다 그러므로 내가 너로 이방의 능욕을 받으며 만국의 조롱거리가 되게 하였노라",
+      "source_text_hash": "356f0e7bdbc95478737d8272f171812fc4ce5f2a02669d7df650390d040d48d9",
+      "translation_text_hash": "effa37d707626eb8c167b28d70080e9107c5f4e55a9af634e69097872c713620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 흘린 피로 인하여 죄가 있고 네가 만든 우상으로 인하여 스스로 더럽혔으니 네 날이 가까왔고 네 년한이 찼도다 그러므로 내가 너로 이방의 능욕을 받으며 만국의 조롱거리가 되게 하였노라"
+      ],
+      "raw_text_hashes": [
+        "effa37d707626eb8c167b28d70080e9107c5f4e55a9af634e69097872c713620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:5",
+      "sequence": 20982,
+      "chapter_label": "EZK 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "Those who are near and those who are far from you will mock you, you infamous one, full of tumult.",
+      "ko": "너 이름이 더럽고 어지러움이 많은 자여 가까운 자나 먼 자나 다 너를 조롱하리라",
+      "source_text_hash": "7f08cf06b9455c545c20c82c30b5891d8dca6ee5c96a832583317b857e4160d4",
+      "translation_text_hash": "2a0b72c17c80952f219e7b7f7c641f055d29611276b1e13e57fd071a2ed70bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 이름이 더럽고 어지러움이 많은 자여 가까운 자나 먼 자나 다 너를 조롱하리라"
+      ],
+      "raw_text_hashes": [
+        "2a0b72c17c80952f219e7b7f7c641f055d29611276b1e13e57fd071a2ed70bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:6",
+      "sequence": 20983,
+      "chapter_label": "EZK 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "“‘“Behold, the princes of Israel, everyone according to his power, have been in you to shed blood.",
+      "ko": "이스라엘 모든 방백은 각기 권세대로 피를 흘리려고 네 가운데 있었도다",
+      "source_text_hash": "28b9f2e5414a7eccfbfc80e9afa8e8dc6a59a5ec0b72b872de4ef5a6cdaed7e4",
+      "translation_text_hash": "dcfd8decf82395c5ac2cddae781625811e10feac7ef528666fa14bb369a283b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 방백은 각기 권세대로 피를 흘리려고 네 가운데 있었도다"
+      ],
+      "raw_text_hashes": [
+        "dcfd8decf82395c5ac2cddae781625811e10feac7ef528666fa14bb369a283b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:7",
+      "sequence": 20984,
+      "chapter_label": "EZK 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "In you have they treated father and mother with contempt. Among you they have oppressed the foreigner. In you they have wronged the fatherless and the widow.",
+      "ko": "그들이 네 가운데서 부모를 업신여겼으며 네 가운데서 나그네를 학대하였으며 네 가운데서 고아와 과부를 해하였도다",
+      "source_text_hash": "b725ce690c16cd588f99306ba53316c19223f29b624bc758ba6b886087b3c311",
+      "translation_text_hash": "1f5a321a26d910e763bff83e2742c043147ae60c5f1559515598fa7f6e0f4683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네 가운데서 부모를 업신여겼으며 네 가운데서 나그네를 학대하였으며 네 가운데서 고아와 과부를 해하였도다"
+      ],
+      "raw_text_hashes": [
+        "1f5a321a26d910e763bff83e2742c043147ae60c5f1559515598fa7f6e0f4683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:8",
+      "sequence": 20985,
+      "chapter_label": "EZK 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "You have despised my holy things, and have profaned my Sabbaths.",
+      "ko": "너는 나의 성물들을 업신여겼으며 나의 안식일을 더럽혔으며",
+      "source_text_hash": "4619d2f14c8a313884c7de5b316002830592f02e3859953e328a6584dc02c0b7",
+      "translation_text_hash": "d014b3a0c331c7eeb97a6285714d923402175b5a1ea326739903bdf981025538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나의 성물들을 업신여겼으며 나의 안식일을 더럽혔으며"
+      ],
+      "raw_text_hashes": [
+        "d014b3a0c331c7eeb97a6285714d923402175b5a1ea326739903bdf981025538"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:9",
+      "sequence": 20986,
+      "chapter_label": "EZK 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Slanderous men have been in you to shed blood. In you they have eaten on the mountains. They have committed lewdness among you.",
+      "ko": "네 가운데 피를 흘리려고 이간을 붙이는 자도 있었으며 네 가운데 산 위에서 제물을 먹는 자도 있었으며 네 가운데 음란하는 자도 있었으며",
+      "source_text_hash": "de63fbbdd8c829cb694a49ae348e59c939de55d68dd3644fae93771088fcd722",
+      "translation_text_hash": "5d14d30608192067c731ec4231b86ae6435b0585dd535e8d2e7e01b6f2dcce29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 가운데 피를 흘리려고 이간을 붙이는 자도 있었으며 네 가운데 산 위에서 제물을 먹는 자도 있었으며 네 가운데 음란하는 자도 있었으며"
+      ],
+      "raw_text_hashes": [
+        "5d14d30608192067c731ec4231b86ae6435b0585dd535e8d2e7e01b6f2dcce29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:10",
+      "sequence": 20987,
+      "chapter_label": "EZK 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "In you have they uncovered their fathers’ nakedness. In you have they humbled her who was unclean in her impurity.",
+      "ko": "네 가운데 자기 아비의 하체를 드러내는 자도 있었으며 네 가운데 월경하는 부정한 여인에게 구합하는 자도 있었으며",
+      "source_text_hash": "4d87fdbd10cbdba5a3b9106516b64a772338bb4dc021c8f3e2f8c3ca57604d5f",
+      "translation_text_hash": "510202e6c866b380705b051beab50a0f723a88259f1bc336f5b5cf2e647c3952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 가운데 자기 아비의 하체를 드러내는 자도 있었으며 네 가운데 월경하는 부정한 여인에게 구합하는 자도 있었으며"
+      ],
+      "raw_text_hashes": [
+        "510202e6c866b380705b051beab50a0f723a88259f1bc336f5b5cf2e647c3952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:11",
+      "sequence": 20988,
+      "chapter_label": "EZK 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "One has committed abomination with his neighbor’s wife, and another has lewdly defiled his daughter-in-law. Another in you has humbled his sister, his father’s daughter.",
+      "ko": "혹은 그 이웃의 아내와 가증한 일을 행하였으며 혹은 그 며느리를 더럽혀 음행하였으며 네 가운데 혹은 그 자매 곧 아비의 딸과 구합하였으며",
+      "source_text_hash": "e5116e8af196baad6cd24a42120ad2a30c36f2b05d51ca4d175a4c73779aef7d",
+      "translation_text_hash": "620053d24f42b9a6fc6738dd7349303a555cf1911b9f7cf075a61491b6296eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 그 이웃의 아내와 가증한 일을 행하였으며 혹은 그 며느리를 더럽혀 음행하였으며 네 가운데 혹은 그 자매 곧 아비의 딸과 구합하였으며"
+      ],
+      "raw_text_hashes": [
+        "620053d24f42b9a6fc6738dd7349303a555cf1911b9f7cf075a61491b6296eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:12",
+      "sequence": 20989,
+      "chapter_label": "EZK 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "In you have they taken bribes to shed blood. You have taken interest and increase, and you have greedily gained of your neighbors by oppression, and have forgotten me,” says the Lord GOD.",
+      "ko": "네 가운데 피를 흘리려고 뇌물을 받는 자도 있었으며 네가 변전과 이식을 취하였으며 이를 탐하여 이웃에게 토색하였으며 나를 잊어버렸도다 나 주 여호와의 말이니라",
+      "source_text_hash": "79198fdb2241f71944ef04c27118745105c533a8451d4c12c0d3d3cc8807b9d3",
+      "translation_text_hash": "062493995eecbee07cdccf02bd16529a0fbdd7e751678115521f59fd483c9744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 가운데 피를 흘리려고 뇌물을 받는 자도 있었으며 네가 변전과 이식을 취하였으며 이를 탐하여 이웃에게 토색하였으며 나를 잊어버렸도다 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "062493995eecbee07cdccf02bd16529a0fbdd7e751678115521f59fd483c9744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:13",
+      "sequence": 20990,
+      "chapter_label": "EZK 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "“‘“Behold, therefore I have struck my hand at your dishonest gain which you have made, and at the blood which has been shed within you.",
+      "ko": "너의 불의를 행하여 이를 얻은 일과 네 가운데 피 흘린 일을 인하여 내가 손뼉을 쳤나니",
+      "source_text_hash": "4a43ff784374fcc8fb2d49ddde152c0815d2e46495151eaddd487bc9f960e703",
+      "translation_text_hash": "a2474cde465747aadcca4c6ed8b72baf080bd03e2f6e555dbbe4355c7ae4b1de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 불의를 행하여 이를 얻은 일과 네 가운데 피 흘린 일을 인하여 내가 손뼉을 쳤나니"
+      ],
+      "raw_text_hashes": [
+        "a2474cde465747aadcca4c6ed8b72baf080bd03e2f6e555dbbe4355c7ae4b1de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:14",
+      "sequence": 20991,
+      "chapter_label": "EZK 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "Can your heart endure, or can your hands be strong, in the days that I will deal with you? I, the LORD, have spoken it, and will do it.",
+      "ko": "내가 네게 보응하는 날에 네 마음이 견디겠느냐 네 손이 힘이 있겠느냐 나 여호와가 말하였으니 이룰찌라",
+      "source_text_hash": "c896ec8abefd1d0d3c65064ae4df5c6a93b605eede70f4c33f114274081b8676",
+      "translation_text_hash": "913239d91035cc1f31b9f812cf302be6cc644d8f3d6973920b775c6a8a14612b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 보응하는 날에 네 마음이 견디겠느냐 네 손이 힘이 있겠느냐 나 여호와가 말하였으니 이룰찌라"
+      ],
+      "raw_text_hashes": [
+        "913239d91035cc1f31b9f812cf302be6cc644d8f3d6973920b775c6a8a14612b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:15",
+      "sequence": 20992,
+      "chapter_label": "EZK 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "I will scatter you among the nations, and disperse you through the countries. I will purge your filthiness out of you.",
+      "ko": "내가 너를 열국 중에 흩으며 각 나라에 헤치고 너의 더러운 것을 네 가운데서 멸하리라",
+      "source_text_hash": "50a3f175445b46aa1787d29e8ea2be7bf1067f242ec204f9e9d1d6524c4c490d",
+      "translation_text_hash": "644590b520bba52986e1f9e7e72c01f2f5b0fa49c5b0c48611c4e97599aed541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 열국 중에 흩으며 각 나라에 헤치고 너의 더러운 것을 네 가운데서 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "644590b520bba52986e1f9e7e72c01f2f5b0fa49c5b0c48611c4e97599aed541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:16",
+      "sequence": 20993,
+      "chapter_label": "EZK 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "You will be profaned in yourself in the sight of the nations. Then you will know that I am the LORD.”’”",
+      "ko": "네가 자기 까닭으로 열국의 목전에서 수치를 당하리니 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "6a8a22213ba9fbc828e0dd142dc29a231db5d63ed96941432f7de4ea2f71be60",
+      "translation_text_hash": "c599c3cdd94d8630cbb5016c8a04455526c76b3e0ce0f09f302dd78240036d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 자기 까닭으로 열국의 목전에서 수치를 당하리니 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "c599c3cdd94d8630cbb5016c8a04455526c76b3e0ce0f09f302dd78240036d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:17",
+      "sequence": 20994,
+      "chapter_label": "EZK 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:18",
+      "sequence": 20995,
+      "chapter_label": "EZK 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "“Son of man, the house of Israel has become dross to me. All of them are bronze, tin, iron, and lead in the middle of the furnace. They are the dross of silver.",
+      "ko": "인자야 이스라엘 족속이 내게 찌끼가 되었나니 곧 풀무 가운데 있는 놋이나 상납이나 철이나 납이며 은의 찌끼로다",
+      "source_text_hash": "03ba16dfc9a7588483c24b5b7322a8f5d4a735bf98d4172b90ac316e45fd39df",
+      "translation_text_hash": "72b40b8134ef07bb01b20d730ca8a61a5c1eff421994a07b1c1316a26ebcaa2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 족속이 내게 찌끼가 되었나니 곧 풀무 가운데 있는 놋이나 상납이나 철이나 납이며 은의 찌끼로다"
+      ],
+      "raw_text_hashes": [
+        "72b40b8134ef07bb01b20d730ca8a61a5c1eff421994a07b1c1316a26ebcaa2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:19",
+      "sequence": 20996,
+      "chapter_label": "EZK 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore the Lord GOD says: ‘Because you have all become dross, therefore, behold, I will gather you into the middle of Jerusalem.",
+      "ko": "그러므로 나 주 여호와가 말하노라 너희가 다 찌끼가 되었은즉 내가 너희를 예루살렘 가운데로 모으고",
+      "source_text_hash": "17d46ac5bd5e86b4407b39cd8f55836a94a97ec50c2eb9fe6461b5a5e91cce4a",
+      "translation_text_hash": "822e54a227dc1b90d2cd92e7d048bf2d282121f9e1180658e72fe9135ee31e71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 너희가 다 찌끼가 되었은즉 내가 너희를 예루살렘 가운데로 모으고"
+      ],
+      "raw_text_hashes": [
+        "822e54a227dc1b90d2cd92e7d048bf2d282121f9e1180658e72fe9135ee31e71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:20",
+      "sequence": 20997,
+      "chapter_label": "EZK 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "As they gather silver, bronze, iron, lead, and tin into the middle of the furnace, to blow the fire on it, to melt it, so I will gather you in my anger and in my wrath, and I will lay you there and melt you.",
+      "ko": "사람이 은이나 놋이나 철이나 납이나 상납이나 모아서 풀무 속에 넣고 불을 불어 녹이는 것 같이 내가 노와 분으로 너희를 모아 거기 두고 녹일찌라",
+      "source_text_hash": "80c795b1b7b7f6b1097c26225d42a23adf898d2002ef9fecb60a963e4690f652",
+      "translation_text_hash": "09aa865577cd2e79dfaae3b5d9947618fa2064e2ffad72fc2478f5f4d65a15d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 은이나 놋이나 철이나 납이나 상납이나 모아서 풀무 속에 넣고 불을 불어 녹이는 것 같이 내가 노와 분으로 너희를 모아 거기 두고 녹일찌라"
+      ],
+      "raw_text_hashes": [
+        "09aa865577cd2e79dfaae3b5d9947618fa2064e2ffad72fc2478f5f4d65a15d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:21",
+      "sequence": 20998,
+      "chapter_label": "EZK 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Yes, I will gather you, and blow on you with the fire of my wrath, and you will be melted in the middle of it.",
+      "ko": "내가 너희를 모으고 내 분노의 불을 너희에게 분즉 너희가 그 가운데서 녹되",
+      "source_text_hash": "143357c91f8f781d38d03c240af9414c75b6448083751e7623b8a9f1c7c07131",
+      "translation_text_hash": "bbed38d8a1897e059b47b9e7cb9ec4febad682b6f59e072b9a78d3843c90d820",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 모으고 내 분노의 불을 너희에게 분즉 너희가 그 가운데서 녹되"
+      ],
+      "raw_text_hashes": [
+        "bbed38d8a1897e059b47b9e7cb9ec4febad682b6f59e072b9a78d3843c90d820"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:22",
+      "sequence": 20999,
+      "chapter_label": "EZK 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "As silver is melted in the middle of the furnace, so you will be melted in the middle of it; and you will know that I, the LORD, have poured out my wrath on you.’”",
+      "ko": "은이 풀무 가운데서 녹는 것 같이 너희가 그 가운데서 녹으리니 나 여호와가 분노를 너희 위에 쏟은 줄을 너희가 알리라",
+      "source_text_hash": "ff4428eca496512d1fa1b2877f1e051265d868fc7e4f7efa223c395774534662",
+      "translation_text_hash": "e78ea27a9a51cf221af4f333cf8253175faab0f5f11f2a727693dc547d3687b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은이 풀무 가운데서 녹는 것 같이 너희가 그 가운데서 녹으리니 나 여호와가 분노를 너희 위에 쏟은 줄을 너희가 알리라"
+      ],
+      "raw_text_hashes": [
+        "e78ea27a9a51cf221af4f333cf8253175faab0f5f11f2a727693dc547d3687b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:23",
+      "sequence": 21000,
+      "chapter_label": "EZK 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:24",
+      "sequence": 21001,
+      "chapter_label": "EZK 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "“Son of man, tell her, ‘You are a land that is not cleansed nor rained on in the day of indignation.’",
+      "ko": "인자야 너는 그에게 이르기를 너는 정결함을 얻지 못한 땅이요 진노의 날에 비를 얻지 못한 땅이로다 하라",
+      "source_text_hash": "99a165bb75ab244e0d0702bb59ec5ad992931b437d51764147f167afbe28eaa6",
+      "translation_text_hash": "e825db03a42fa82257f6b3579d7ac6393023f26d5e008fe3af5db72a12ecd8b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 그에게 이르기를 너는 정결함을 얻지 못한 땅이요 진노의 날에 비를 얻지 못한 땅이로다 하라"
+      ],
+      "raw_text_hashes": [
+        "e825db03a42fa82257f6b3579d7ac6393023f26d5e008fe3af5db72a12ecd8b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:25",
+      "sequence": 21002,
+      "chapter_label": "EZK 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "There is a conspiracy of her prophets within it, like a roaring lion ravening the prey. They have devoured souls. They take treasure and precious things. They have made many widows within it.",
+      "ko": "그 가운데서 선지자들의 배역함이 우는 사자가 식물을 움킴 같았도다 그들이 사람의 영혼을 삼켰으며 전재와 보물을 탈취하며 과부로 그 가운데 많게 하였으며",
+      "source_text_hash": "80dfcefa656d2832e293bb0e295bd5f1abf74fca6d9de3b33f44a25994e8c086",
+      "translation_text_hash": "3dc289e7b6edb787fbb937be2c1a689937ef82edd60f1f0d8890be41ec959ed1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데서 선지자들의 배역함이 우는 사자가 식물을 움킴 같았도다 그들이 사람의 영혼을 삼켰으며 전재와 보물을 탈취하며 과부로 그 가운데 많게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "3dc289e7b6edb787fbb937be2c1a689937ef82edd60f1f0d8890be41ec959ed1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:26",
+      "sequence": 21003,
+      "chapter_label": "EZK 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "Her priests have done violence to my law and have profaned my holy things. They have made no distinction between the holy and the common, neither have they caused men to discern between the unclean and the clean, and have hidden their eyes from my Sabbaths. So I am profaned among them.",
+      "ko": "그 제사장들은 내 율법을 범하였으며 나의 성물을 더럽혔으며 거룩함과 속된 것을 분변치 아니하였으며 부정함과 정한 것을 사람으로 분변하게 하지 아니하였으며 그 눈을 가리워 나의 안식일을 보지 아니하였으므로 내가 그 가운데서 더럽힘을 받았느니라",
+      "source_text_hash": "c6b1a3264d9d1aeb90d66913ef3e2a8107f1e9eb8fc5bcaec6dc9da5247d3781",
+      "translation_text_hash": "4d78e02eb08a21344d1a678393803c2ae947f6501546b5466acb4fce5ccaabf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제사장들은 내 율법을 범하였으며 나의 성물을 더럽혔으며 거룩함과 속된 것을 분변치 아니하였으며 부정함과 정한 것을 사람으로 분변하게 하지 아니하였으며 그 눈을 가리워 나의 안식일을 보지 아니하였으므로 내가 그 가운데서 더럽힘을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "4d78e02eb08a21344d1a678393803c2ae947f6501546b5466acb4fce5ccaabf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:27",
+      "sequence": 21004,
+      "chapter_label": "EZK 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "Her princes within it are like wolves ravening the prey, to shed blood and to destroy souls, that they may get dishonest gain.",
+      "ko": "그 가운데 그 방백들은 식물을 삼키는 이리 같아서 불의의 이를 취하려고 피를 흘려 영혼을 멸하거늘",
+      "source_text_hash": "6429b2b6962db988f8090cb306ec95234e4d35ad4da2a938102f2e00a8b3696f",
+      "translation_text_hash": "ff2e436fc2553e5e3a3046381d982a7a0262c80287ba51e3372edcd2b53681eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 그 방백들은 식물을 삼키는 이리 같아서 불의의 이를 취하려고 피를 흘려 영혼을 멸하거늘"
+      ],
+      "raw_text_hashes": [
+        "ff2e436fc2553e5e3a3046381d982a7a0262c80287ba51e3372edcd2b53681eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:28",
+      "sequence": 21005,
+      "chapter_label": "EZK 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "Her prophets have plastered for them with whitewash, seeing false visions, and divining lies to them, saying, ‘The Lord GOD says,’ when the LORD has not spoken.",
+      "ko": "그 선지자들이 그들을 위하여 회를 칠하고 스스로 허탄한 이상을 보며 거짓 복술을 행하며 여호와가 말하지 아니하였어도 주 여호와의 말씀이라 하였으며",
+      "source_text_hash": "ef530d1af796ee23af6bcacbe57d9b63c1b5986f9aac389983c1b2b1e149b5e1",
+      "translation_text_hash": "9a5d7de6c83802d7c40aff8a5fb36835cbdde10ea0a12a7e8ca4310457a790a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자들이 그들을 위하여 회를 칠하고 스스로 허탄한 이상을 보며 거짓 복술을 행하며 여호와가 말하지 아니하였어도 주 여호와의 말씀이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "9a5d7de6c83802d7c40aff8a5fb36835cbdde10ea0a12a7e8ca4310457a790a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:29",
+      "sequence": 21006,
+      "chapter_label": "EZK 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "The people of the land have used oppression and exercised robbery. Yes, they have troubled the poor and needy, and have oppressed the foreigner wrongfully.",
+      "ko": "이 땅 백성은 강포하며 늑탈하여 가난하고 궁핍한 자를 압제하였으며 우거한 자를 불법하게 학대하였으므로",
+      "source_text_hash": "0fb0c42f0793cadecd800ffb424d2bbe1d0b0e36a59a5c471dc65059f7073c9e",
+      "translation_text_hash": "fb578654f0cfb91d1de870cb7b8c6cafe165d7f582de16f25d2f0dbcb13825bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 백성은 강포하며 늑탈하여 가난하고 궁핍한 자를 압제하였으며 우거한 자를 불법하게 학대하였으므로"
+      ],
+      "raw_text_hashes": [
+        "fb578654f0cfb91d1de870cb7b8c6cafe165d7f582de16f25d2f0dbcb13825bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:30",
+      "sequence": 21007,
+      "chapter_label": "EZK 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "“I sought for a man among them who would build up the wall and stand in the gap before me for the land, that I would not destroy it; but I found no one.",
+      "ko": "이 땅을 위하여 성을 쌓으며 성 무너진 데를 막아서서 나로 멸하지 못하게 할 사람을 내가 그 가운데서 찾다가 얻지 못한고로",
+      "source_text_hash": "b0281add854b8c308aca3d632692f38a4d7c20e68ae9a08e25a4bda54747ef46",
+      "translation_text_hash": "3fadeeac1103e5d2ff2ebef4018ccb33208e7316e3964d0740c1bc148d228fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅을 위하여 성을 쌓으며 성 무너진 데를 막아서서 나로 멸하지 못하게 할 사람을 내가 그 가운데서 찾다가 얻지 못한고로"
+      ],
+      "raw_text_hashes": [
+        "3fadeeac1103e5d2ff2ebef4018ccb33208e7316e3964d0740c1bc148d228fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:22:31",
+      "sequence": 21008,
+      "chapter_label": "EZK 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore I have poured out my indignation on them. I have consumed them with the fire of my wrath. I have brought their own way on their heads,” says the Lord GOD.",
+      "ko": "내가 내 분으로 그 위에 쏟으며 내 진노의 불로 멸하여 그 행위대로 그 머리에 보응하였느니라 나 주 여호와의 말이니라",
+      "source_text_hash": "a3a2a541f43dc9f49ba5c6cb55e7bdb80feeb860ff8a1f29bd0c4c39558a6096",
+      "translation_text_hash": "2adccdbe691dbb88951c312205c2a6d3ed97da0497d0036be0dc26c72509d3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 분으로 그 위에 쏟으며 내 진노의 불로 멸하여 그 행위대로 그 머리에 보응하였느니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2adccdbe691dbb88951c312205c2a6d3ed97da0497d0036be0dc26c72509d3f7"
+      ]
+    }
+  ]
+}

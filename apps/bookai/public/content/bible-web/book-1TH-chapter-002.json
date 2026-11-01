@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TH:chapter:002",
+  "unit_ordinal": 1113,
+  "unit_label": "1TH 2",
+  "book_code": "1TH",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TH:2:1",
+      "sequence": 29568,
+      "chapter_label": "1TH 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "For you yourselves know, brothers, our visit to you wasn’t in vain,",
+      "ko": "형제들아 우리가 너희 가운데 들어감이 헛되지 않은 줄을 너희가 친히 아나니",
+      "source_text_hash": "21a767d574537168539bd275e007984acaad22119c720ff4ef2a682fb7d43066",
+      "translation_text_hash": "e33d5de96e67f376f7f9f0d76317863e83d04c0df57c4ef7bea2199684d937d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 너희 가운데 들어감이 헛되지 않은 줄을 너희가 친히 아나니"
+      ],
+      "raw_text_hashes": [
+        "e33d5de96e67f376f7f9f0d76317863e83d04c0df57c4ef7bea2199684d937d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:2",
+      "sequence": 29569,
+      "chapter_label": "1TH 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "but having suffered before and been shamefully treated, as you know, at Philippi, we grew bold in our God to tell you the Good News of God in much conflict.",
+      "ko": "너희 아는 바와 같이 우리가 먼저 빌립보에서 고난과 능욕을 당하였으나 우리 하나님을 힘입어 많은 싸움 중에 하나님의 복음을 너희에게 말하였노라",
+      "source_text_hash": "1cabd36ac18543dbc2d6be380d9d9e3ae1b87c2fe39436aa34cc725c9aaea74a",
+      "translation_text_hash": "2afa3fa6eca383bab9b9facfd8e959ef4e3c8cb9446c943bd7ad7648024661d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 아는 바와 같이 우리가 먼저 빌립보에서 고난과 능욕을 당하였으나 우리 하나님을 힘입어 많은 싸움 중에 하나님의 복음을 너희에게 말하였노라"
+      ],
+      "raw_text_hashes": [
+        "2afa3fa6eca383bab9b9facfd8e959ef4e3c8cb9446c943bd7ad7648024661d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:3",
+      "sequence": 29570,
+      "chapter_label": "1TH 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "For our exhortation is not of error, nor of uncleanness, nor in deception.",
+      "ko": "우리의 권면은 간사에서나 부정에서 난 것도 아니요 궤계에 있는 것도 아니라",
+      "source_text_hash": "f433630f236a95a7a51fed18558800da87e478f2b736cbdb6fa895619265b75a",
+      "translation_text_hash": "ef7a0ebfa28557eabed2296e58be3a2ca9cd51a532e14dee54f9b04f4e8cc39b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 권면은 간사에서나 부정에서 난 것도 아니요 궤계에 있는 것도 아니라"
+      ],
+      "raw_text_hashes": [
+        "ef7a0ebfa28557eabed2296e58be3a2ca9cd51a532e14dee54f9b04f4e8cc39b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:4",
+      "sequence": 29571,
+      "chapter_label": "1TH 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "But even as we have been approved by God to be entrusted with the Good News, so we speak—not as pleasing men, but God, who tests our hearts.",
+      "ko": "오직 하나님의 옳게 여기심을 입어 복음 전할 부탁을 받았으니 우리가 이와 같이 말함은 사람을 기쁘게 하려 함이 아니요 오직 우리 마음을 감찰하시는 하나님을 기쁘시게 하려 함이라",
+      "source_text_hash": "98a8e90882091374e2a9d310d46b987688050901f143d84b00613e875b371e24",
+      "translation_text_hash": "5cd4792e6fcba53673cbf3c91654cf287c6e19d41e6f9dab120ddfefe0542bca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 하나님의 옳게 여기심을 입어 복음 전할 부탁을 받았으니 우리가 이와 같이 말함은 사람을 기쁘게 하려 함이 아니요 오직 우리 마음을 감찰하시는 하나님을 기쁘시게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "5cd4792e6fcba53673cbf3c91654cf287c6e19d41e6f9dab120ddfefe0542bca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:5",
+      "sequence": 29572,
+      "chapter_label": "1TH 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For neither were we at any time found using words of flattery, as you know, nor a cloak of covetousness (God is witness),",
+      "ko": "너희도 알거니와 우리가 아무 때에도 아첨의 말이나 탐심의 탈을 쓰지 아니한 것을 하나님이 증거하시느니라",
+      "source_text_hash": "faaaab001388f7bbb91cad0f995fa617203cb84b46da3cf5c4debe5639434dff",
+      "translation_text_hash": "dc8b39b4d941b5c8da912dc7834507d970e393e4e85db7aff6a15c9182b1ad8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 알거니와 우리가 아무 때에도 아첨의 말이나 탐심의 탈을 쓰지 아니한 것을 하나님이 증거하시느니라"
+      ],
+      "raw_text_hashes": [
+        "dc8b39b4d941b5c8da912dc7834507d970e393e4e85db7aff6a15c9182b1ad8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:6",
+      "sequence": 29573,
+      "chapter_label": "1TH 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "nor seeking glory from men (neither from you nor from others), when we might have claimed authority as apostles of Christ.",
+      "ko": "우리가 그리스도의 사도로 능히 존중할 터이나 그러나 너희에게든지 다른 이에게든지 사람에게는 영광을 구치 아니하고",
+      "source_text_hash": "6de2a681d7396e919c84542080a2f598190bb5b8276099b5f27bd1db0f0b8572",
+      "translation_text_hash": "d59c0be686d6ed0f0992a6c15026c35dd7b7a8ac6683cf65669a9352d20af3e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그리스도의 사도로 능히 존중할 터이나 그러나 너희에게든지 다른 이에게든지 사람에게는 영광을 구치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "d59c0be686d6ed0f0992a6c15026c35dd7b7a8ac6683cf65669a9352d20af3e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:7",
+      "sequence": 29574,
+      "chapter_label": "1TH 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "But we were gentle among you, like a nursing mother cherishes her own children.",
+      "ko": "오직 우리가 너희 가운데서 유순한 자 되어 유모가 자기 자녀를 기름과 같이 하였으니",
+      "source_text_hash": "170b61dec2a99c8c4e3a82a617422ee4fae21326d16e82d8d5ef15b0bd7e9ccc",
+      "translation_text_hash": "cbf9c99ce636e93144f8585bd6f171216b13303d0bdccc8202d951830902f062",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 우리가 너희 가운데서 유순한 자 되어 유모가 자기 자녀를 기름과 같이 하였으니"
+      ],
+      "raw_text_hashes": [
+        "cbf9c99ce636e93144f8585bd6f171216b13303d0bdccc8202d951830902f062"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:8",
+      "sequence": 29575,
+      "chapter_label": "1TH 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Even so, affectionately longing for you, we were well pleased to impart to you not the Good News of God only, but also our own souls, because you had become very dear to us.",
+      "ko": "우리가 이같이 너희를 사모하여 하나님의 복음으로만 아니라 우리 목숨까지 너희에게 주기를 즐겨함은 너희가 우리의 사랑하는 자 됨이니라",
+      "source_text_hash": "15949b73cbb4e9330ead0cade9b6750f39dc7064aa8eb2275fb77ca8aa4b5ddd",
+      "translation_text_hash": "d0c529a1594f73ccaca487c7cc3af08cd5615ab6be420b789b27df8ba77e80d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이같이 너희를 사모하여 하나님의 복음으로만 아니라 우리 목숨까지 너희에게 주기를 즐겨함은 너희가 우리의 사랑하는 자 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "d0c529a1594f73ccaca487c7cc3af08cd5615ab6be420b789b27df8ba77e80d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:9",
+      "sequence": 29576,
+      "chapter_label": "1TH 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "For you remember, brothers, our labor and travail; for working night and day, that we might not burden any of you, we preached to you the Good News of God.",
+      "ko": "형제들아 우리의 수고와 애쓴 것을 너희가 기억하리니 너희 아무에게도 누를 끼치지 아니하려고 밤과 낮으로 일하면서 너희에게 하나님의 복음을 전파하였노라",
+      "source_text_hash": "50527c7933f11ece9edbeaa1c89d76df64955e7a069377c40b452aee581dede2",
+      "translation_text_hash": "e63769f9b4d45a5e38efd0422bf50dbde82f31776e6599195fabd958c9dd333b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리의 수고와 애쓴 것을 너희가 기억하리니 너희 아무에게도 누를 끼치지 아니하려고 밤과 낮으로 일하면서 너희에게 하나님의 복음을 전파하였노라"
+      ],
+      "raw_text_hashes": [
+        "e63769f9b4d45a5e38efd0422bf50dbde82f31776e6599195fabd958c9dd333b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:10",
+      "sequence": 29577,
+      "chapter_label": "1TH 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "You are witnesses with God how holy, righteously, and blamelessly we behaved ourselves toward you who believe.",
+      "ko": "우리가 너희 믿는 자들을 향하여 어떻게 거룩하고 옳고 흠없이 행한 것에 대하여 너희가 증인이요 하나님도 그러하시도다",
+      "source_text_hash": "b1aba4e777c6b2bd2cd2f5639992a5a0608c7f7bfcd37e705f0afc03e78ebad1",
+      "translation_text_hash": "b1b5c3c9ed6edc77c39079edae834b50527287f5c168556fc681ccad2f2b84ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희 믿는 자들을 향하여 어떻게 거룩하고 옳고 흠없이 행한 것에 대하여 너희가 증인이요 하나님도 그러하시도다"
+      ],
+      "raw_text_hashes": [
+        "b1b5c3c9ed6edc77c39079edae834b50527287f5c168556fc681ccad2f2b84ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:11",
+      "sequence": 29578,
+      "chapter_label": "1TH 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "As you know, we exhorted, comforted, and implored every one of you, as a father does his own children,",
+      "ko": "너희도 아는 바와 같이 우리가 너희 각 사람에게 아비가 자기 자녀에게 하듯 권면하고 위로하고 경계하노니",
+      "source_text_hash": "af9c21e2e26b7a9178dbf7ad525bdc9ceb7e523a19b72f1552cec9656693d438",
+      "translation_text_hash": "20b8f1c00f0ffb603ee1f126c1e7d5fe4f63fee0442a4044e5f1603adadfe876",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 아는 바와 같이 우리가 너희 각 사람에게 아비가 자기 자녀에게 하듯 권면하고 위로하고 경계하노니"
+      ],
+      "raw_text_hashes": [
+        "20b8f1c00f0ffb603ee1f126c1e7d5fe4f63fee0442a4044e5f1603adadfe876"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:12",
+      "sequence": 29579,
+      "chapter_label": "1TH 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "to the end that you should walk worthily of God, who calls you into his own Kingdom and glory.",
+      "ko": "이는 너희를 부르사 자기 나라와 영광에 이르게 하시는 하나님께 합당히 행하게 하려 함이니라",
+      "source_text_hash": "87fee8570c861d01cde1e392839866ebf4dfbb356854c9508ceba632d38a04c1",
+      "translation_text_hash": "eae7aaec68d02969616fd9721737959eb2840e3cc4c0e134415fd23aba505199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희를 부르사 자기 나라와 영광에 이르게 하시는 하나님께 합당히 행하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "eae7aaec68d02969616fd9721737959eb2840e3cc4c0e134415fd23aba505199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:13",
+      "sequence": 29580,
+      "chapter_label": "1TH 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "For this cause we also thank God without ceasing that when you received from us the word of the message of God, you accepted it not as the word of men, but as it is in truth, God’s word, which also works in you who believe.",
+      "ko": "이러므로 우리가 하나님께 쉬지 않고 감사함은 너희가 우리에게 들은바 하나님의 말씀을 받을 때에 사람의 말로 아니하고 하나님의 말씀으로 받음이니 진실로 그러하다 이 말씀이 또한 너희 믿는 자 속에서 역사하느니라",
+      "source_text_hash": "78c4593da3ea34a3143a06872970d4b0735106abbfada5930873863daab75ba4",
+      "translation_text_hash": "98eddc2c1f7c1a60389ef9bacff10da743e6abfd54a2c0825992a72862f87016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 하나님께 쉬지 않고 감사함은 너희가 우리에게 들은바 하나님의 말씀을 받을 때에 사람의 말로 아니하고 하나님의 말씀으로 받음이니 진실로 그러하다 이 말씀이 또한 너희 믿는 자 속에서 역사하느니라"
+      ],
+      "raw_text_hashes": [
+        "98eddc2c1f7c1a60389ef9bacff10da743e6abfd54a2c0825992a72862f87016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:14",
+      "sequence": 29581,
+      "chapter_label": "1TH 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "For you, brothers, became imitators of the assemblies of God which are in Judea in Christ Jesus; for you also suffered the same things from your own countrymen, even as they did from the Jews",
+      "ko": "형제들아 너희가 그리스도 예수 안에서 유대에 있는 하나님의 교회들을 본받은 자 되었으니 저희가 유대인들에게 고난을 받음과 같이 너희도 너희 나라 사람들에게 동일한 것을 받았느니라",
+      "source_text_hash": "b5f6f06e947c51fa4196d62f6972331107038d88752141492e5a4d5bf1ff39d9",
+      "translation_text_hash": "01f7832c7c2002db83caf0f373e3378f7578ec88997fb6f64c3be22a9e9229a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 그리스도 예수 안에서 유대에 있는 하나님의 교회들을 본받은 자 되었으니 저희가 유대인들에게 고난을 받음과 같이 너희도 너희 나라 사람들에게 동일한 것을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "01f7832c7c2002db83caf0f373e3378f7578ec88997fb6f64c3be22a9e9229a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:15",
+      "sequence": 29582,
+      "chapter_label": "1TH 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "who killed both the Lord Jesus and their own prophets, and drove us out, and don’t please God, and are contrary to all men,",
+      "ko": "유대인은 주 예수와 선지자들을 죽이고 우리를 쫓아내고 하나님을 기쁘시게 아니하고 모든 사람에게 대적이 되어",
+      "source_text_hash": "04622356d96c5a53da1b1565a70d9b8cb729a9593b54bf8cf00753892609485d",
+      "translation_text_hash": "e4704438db23ab61a4b0546227f7f81a12c48e5c6b3da54c940ce58140f4dba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인은 주 예수와 선지자들을 죽이고 우리를 쫓아내고 하나님을 기쁘시게 아니하고 모든 사람에게 대적이 되어"
+      ],
+      "raw_text_hashes": [
+        "e4704438db23ab61a4b0546227f7f81a12c48e5c6b3da54c940ce58140f4dba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:16",
+      "sequence": 29583,
+      "chapter_label": "1TH 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "forbidding us to speak to the Gentiles that they may be saved, to fill up their sins always. But wrath has come on them to the uttermost.",
+      "ko": "우리가 이방인에게 말하여 구원 얻게 함을 저희가 금하여 자기 죄를 항상 채우매 노하심이 끝까지 저희에게 임하였느니라",
+      "source_text_hash": "f1fd878176c73fe0073e1b4817f526aa382003bca4d382fd2f803c4c8c11c89b",
+      "translation_text_hash": "2b8e983c573b4787dabd8d7e1591c64ba7169898750fa6424c93cd48f5cf3637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이방인에게 말하여 구원 얻게 함을 저희가 금하여 자기 죄를 항상 채우매 노하심이 끝까지 저희에게 임하였느니라"
+      ],
+      "raw_text_hashes": [
+        "2b8e983c573b4787dabd8d7e1591c64ba7169898750fa6424c93cd48f5cf3637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:17",
+      "sequence": 29584,
+      "chapter_label": "1TH 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "But we, brothers, being bereaved of you for a short season in presence, not in heart, tried even harder to see your face with great desire,",
+      "ko": "형제들아 우리가 잠시 너희를 떠난 것은 얼굴이요 마음은 아니니 너희 얼굴 보기를 열정으로 더욱 힘썼노라",
+      "source_text_hash": "65274b1c9b9768f35aa3c5f2ddb527f80a8489ca6b522749501f88fc7db5536a",
+      "translation_text_hash": "4e5757ddbfbdb5d20363b569c88893be3a474b1e7faa5d13649d6096af890517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 잠시 너희를 떠난 것은 얼굴이요 마음은 아니니 너희 얼굴 보기를 열정으로 더욱 힘썼노라"
+      ],
+      "raw_text_hashes": [
+        "4e5757ddbfbdb5d20363b569c88893be3a474b1e7faa5d13649d6096af890517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:18",
+      "sequence": 29585,
+      "chapter_label": "1TH 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "because we wanted to come to you—indeed, I, Paul, once and again—but Satan hindered us.",
+      "ko": "그러므로 나 바울은 한번 두번 너희에게 가고자 하였으나 사단이 우리를 막았도다",
+      "source_text_hash": "6dd595a14d50bd3663c41ade9b2729e6c5fb99704165daa7c6833ee42e64036a",
+      "translation_text_hash": "bd92f74f622ae2367238a013833a2de58d5c278480ab578a6d6fb7d08a6efd64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 바울은 한번 두번 너희에게 가고자 하였으나 사단이 우리를 막았도다"
+      ],
+      "raw_text_hashes": [
+        "bd92f74f622ae2367238a013833a2de58d5c278480ab578a6d6fb7d08a6efd64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:19",
+      "sequence": 29586,
+      "chapter_label": "1TH 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "For what is our hope, or joy, or crown of rejoicing? Isn’t it even you, before our Lord Jesus at his coming?",
+      "ko": "우리의 소망이나 기쁨이나 자랑의 면류관이 무엇이냐 그의 강림하실 때 우리 주 예수 앞에 너희가 아니냐",
+      "source_text_hash": "957052e654a1215ee6a600a7d0ddb3406c78c1b5da645b9678387a50920569d5",
+      "translation_text_hash": "beee9f2809a79199119dda6c83d9fe1af988320b9def35d79edbb69c7f787a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 소망이나 기쁨이나 자랑의 면류관이 무엇이냐 그의 강림하실 때 우리 주 예수 앞에 너희가 아니냐"
+      ],
+      "raw_text_hashes": [
+        "beee9f2809a79199119dda6c83d9fe1af988320b9def35d79edbb69c7f787a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:2:20",
+      "sequence": 29587,
+      "chapter_label": "1TH 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "1TH",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "For you are our glory and our joy.",
+      "ko": "너희는 우리의 영광이요 기쁨이니라",
+      "source_text_hash": "8210f60d7d73a62857b47096d87606ca20215b7bc65a43d7328574e1cccad4be",
+      "translation_text_hash": "c4ad08747ce99ab3dd07cc354c23344ff06156a0e4685322bb8d244ddede268e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 우리의 영광이요 기쁨이니라"
+      ],
+      "raw_text_hashes": [
+        "c4ad08747ce99ab3dd07cc354c23344ff06156a0e4685322bb8d244ddede268e"
+      ]
+    }
+  ]
+}

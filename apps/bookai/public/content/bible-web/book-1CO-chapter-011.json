@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:011",
+  "unit_ordinal": 1073,
+  "unit_label": "1CO 11",
+  "book_code": "1CO",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:11:1",
+      "sequence": 28598,
+      "chapter_label": "1CO 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Be imitators of me, even as I also am of Christ.",
+      "ko": "내가 그리스도를 본받는 자 된 것 같이 너희는 나를 본받는 자 되라",
+      "source_text_hash": "41ddde18d1691d18fab671557494906da03749ed1da4dfd4f27a0549d964fdd1",
+      "translation_text_hash": "0bc75e59a76442ed7d1560529fcd7cc9e46d27be68a08aba531e1631d7f57388",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도를 본받는 자 된 것 같이 너희는 나를 본받는 자 되라"
+      ],
+      "raw_text_hashes": [
+        "0bc75e59a76442ed7d1560529fcd7cc9e46d27be68a08aba531e1631d7f57388"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:2",
+      "sequence": 28599,
+      "chapter_label": "1CO 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Now I praise you, brothers, that you remember me in all things, and hold firm the traditions, even as I delivered them to you.",
+      "ko": "너희가 모든 일에 나를 기억하고 또 내가 너희에게 전하여 준대로 그 유전을 너희가 지키므로 너희를 칭찬하노라",
+      "source_text_hash": "6ad695713a48322c80374d9a20f891c0b0fc4806301b07c6894dc6215d17c875",
+      "translation_text_hash": "aa56ddef4f82111501efa60325abd7be87026d98e86a00e92bf0eea4eac9622c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 모든 일에 나를 기억하고 또 내가 너희에게 전하여 준대로 그 유전을 너희가 지키므로 너희를 칭찬하노라"
+      ],
+      "raw_text_hashes": [
+        "aa56ddef4f82111501efa60325abd7be87026d98e86a00e92bf0eea4eac9622c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:3",
+      "sequence": 28600,
+      "chapter_label": "1CO 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "But I would have you know that the head of every man is Christ, and the head of the woman is man, and the head of Christ is God.",
+      "ko": "그러나 나는 너희가 알기를 원하노니 각 남자의 머리는 그리스도요 여자의 머리는 남자요 그리스도의 머리는 하나님이시라",
+      "source_text_hash": "8ea0d778a04f39efe421162a2c64a4a2c013321c0f95969b69407930fdd5e9ae",
+      "translation_text_hash": "a58122e5459006f80c6a5059f13549299d5140065688d1f3de78e7d397877ade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나는 너희가 알기를 원하노니 각 남자의 머리는 그리스도요 여자의 머리는 남자요 그리스도의 머리는 하나님이시라"
+      ],
+      "raw_text_hashes": [
+        "a58122e5459006f80c6a5059f13549299d5140065688d1f3de78e7d397877ade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:4",
+      "sequence": 28601,
+      "chapter_label": "1CO 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Every man praying or prophesying, having his head covered, dishonors his head.",
+      "ko": "무릇 남자로서 머리에 무엇을 쓰고 기도나 예언을 하는 자는 그 머리를 욕되게 하는 것이요",
+      "source_text_hash": "49e29d8ab9618c59451635f8a2a0920fbd2937ec7cc98e38491c4dfa32c6dba1",
+      "translation_text_hash": "80817d5c3761aa31f966cf2a91b17b47d0ec1e008ab50c49b59a3dcf97f64398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 남자로서 머리에 무엇을 쓰고 기도나 예언을 하는 자는 그 머리를 욕되게 하는 것이요"
+      ],
+      "raw_text_hashes": [
+        "80817d5c3761aa31f966cf2a91b17b47d0ec1e008ab50c49b59a3dcf97f64398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:5",
+      "sequence": 28602,
+      "chapter_label": "1CO 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "But every woman praying or prophesying with her head uncovered dishonors her head. For it is one and the same thing as if she were shaved.",
+      "ko": "무릇 여자로서 머리에 쓴 것을 벗고 기도나 예언을 하는 자는 그 머리를 욕되게 하는 것이니 이는 머리 민것과 다름이 없음이니라",
+      "source_text_hash": "0faf8db92de3b3f1569ec8a4f3a81d63554ee3dd7382b524143b59691cbab3d5",
+      "translation_text_hash": "bab31f598c1b441512ff4f1118fca8721735ae1c78048ddfefab805a48f285e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 여자로서 머리에 쓴 것을 벗고 기도나 예언을 하는 자는 그 머리를 욕되게 하는 것이니 이는 머리 민것과 다름이 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "bab31f598c1b441512ff4f1118fca8721735ae1c78048ddfefab805a48f285e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:6",
+      "sequence": 28603,
+      "chapter_label": "1CO 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "For if a woman is not covered, let her hair also be cut off. But if it is shameful for a woman to have her hair cut off or be shaved, let her be covered.",
+      "ko": "만일 여자가 머리에 쓰지 않거든 깎을 것이요 만일 깎거나 미는 것이 여자에게 부끄러움이 되거든 쓸찌니라",
+      "source_text_hash": "24869baee3a297dd289ac3d9b0ea76ffecd2d9d3c57f5076f7c4178c7640e58d",
+      "translation_text_hash": "d6c86bd2849347df81a8a0485582eb7202612091917997125a13eb1c81730957",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여자가 머리에 쓰지 않거든 깎을 것이요 만일 깎거나 미는 것이 여자에게 부끄러움이 되거든 쓸찌니라"
+      ],
+      "raw_text_hashes": [
+        "d6c86bd2849347df81a8a0485582eb7202612091917997125a13eb1c81730957"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:7",
+      "sequence": 28604,
+      "chapter_label": "1CO 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "For a man indeed ought not to have his head covered, because he is the image and glory of God, but the woman is the glory of the man.",
+      "ko": "남자는 하나님의 형상과 영광이니 그 머리에 마땅히 쓰지 않거니와 여자는 남자의 영광이니라",
+      "source_text_hash": "f14ed6676c0059305b1e4f6cf9b242132079c85e057e6b55792d08d5f51dbd57",
+      "translation_text_hash": "a26ad9ba1d29f59deaba725073ca3ade33bbfa28b42f1747d0365de3fb5adbd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자는 하나님의 형상과 영광이니 그 머리에 마땅히 쓰지 않거니와 여자는 남자의 영광이니라"
+      ],
+      "raw_text_hashes": [
+        "a26ad9ba1d29f59deaba725073ca3ade33bbfa28b42f1747d0365de3fb5adbd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:8",
+      "sequence": 28605,
+      "chapter_label": "1CO 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "For man is not from woman, but woman from man;",
+      "ko": "남자가 여자에게서 난 것이 아니요 여자가 남자에게서 났으며",
+      "source_text_hash": "cc0afced8edb4627e71bac13c4caa42b88cef436f26940137e6892df69f31d86",
+      "translation_text_hash": "9b73ce67e5e1e5352195158662f9d54cf55406029a792d3a3d5873d2af8745e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자가 여자에게서 난 것이 아니요 여자가 남자에게서 났으며"
+      ],
+      "raw_text_hashes": [
+        "9b73ce67e5e1e5352195158662f9d54cf55406029a792d3a3d5873d2af8745e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:9",
+      "sequence": 28606,
+      "chapter_label": "1CO 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "for man wasn’t created for the woman, but woman for the man.",
+      "ko": "또 남자가 여자를 위하여 지음을 받지 아니하고 여자가 남자를 위하여 지음을 받은 것이니",
+      "source_text_hash": "ce802ab9045cad2eb9af8f52835105684664a66852d29255f155e7f88ae1ed47",
+      "translation_text_hash": "95c3e405c759b1261ba2a907e04d17c38114badfc1fb648249d46a27647b8089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 남자가 여자를 위하여 지음을 받지 아니하고 여자가 남자를 위하여 지음을 받은 것이니"
+      ],
+      "raw_text_hashes": [
+        "95c3e405c759b1261ba2a907e04d17c38114badfc1fb648249d46a27647b8089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:10",
+      "sequence": 28607,
+      "chapter_label": "1CO 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "For this cause the woman ought to have authority over her own head, because of the angels.",
+      "ko": "이러므로 여자는 천사들을 인하여 권세 아래 있는 표를 그 머리 위에 둘찌니라",
+      "source_text_hash": "fb729142a8ccf3e3a348da0622047069cf43a449d71e8459cf93ab062dad9902",
+      "translation_text_hash": "b92553753f8b8d649cfb29d0465e76e0993cedd5651d4b9700dbaaf13fa8086c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여자는 천사들을 인하여 권세 아래 있는 표를 그 머리 위에 둘찌니라"
+      ],
+      "raw_text_hashes": [
+        "b92553753f8b8d649cfb29d0465e76e0993cedd5651d4b9700dbaaf13fa8086c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:11",
+      "sequence": 28608,
+      "chapter_label": "1CO 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Nevertheless, neither is the woman independent of the man, nor the man independent of the woman, in the Lord.",
+      "ko": "그러나 주 안에는 남자 없이 여자만 있지 않고 여자 없이 남자만 있지 아니하니라",
+      "source_text_hash": "a1e7c8784a59d288066d1a3c8b6bc1601d02bd48abc228ec1ce70fe1a952f8d1",
+      "translation_text_hash": "1129648a2521daa535501bdd658d6a06dd16e23fc0971bf67babbd86ba133458",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 주 안에는 남자 없이 여자만 있지 않고 여자 없이 남자만 있지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "1129648a2521daa535501bdd658d6a06dd16e23fc0971bf67babbd86ba133458"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:12",
+      "sequence": 28609,
+      "chapter_label": "1CO 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "For as woman came from man, so a man also comes through a woman; but all things are from God.",
+      "ko": "여자가 남자에게서 난것 같이 남자도 여자로 말미암아 났으나 모든것이 하나님에게서 났느니라",
+      "source_text_hash": "0a25674a29df3281de6322d42d3020ad7de5f932963ee4ed95f6c429a8428389",
+      "translation_text_hash": "deef24bd468138a5858b339ad3caa0efd021b352b326030c5db0bf87a69993b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 남자에게서 난것 같이 남자도 여자로 말미암아 났으나 모든것이 하나님에게서 났느니라"
+      ],
+      "raw_text_hashes": [
+        "deef24bd468138a5858b339ad3caa0efd021b352b326030c5db0bf87a69993b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:13",
+      "sequence": 28610,
+      "chapter_label": "1CO 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Judge for yourselves. Is it appropriate that a woman pray to God unveiled?",
+      "ko": "너희는 스스로 판단하라 여자가 쓰지 않고 하나님께 기도하는 것이 마땅하냐",
+      "source_text_hash": "892a04f575224996ad48d3d39406a72f599d692bea1991073a427b90324ec790",
+      "translation_text_hash": "27e52fc2f1f517192c034a1de8019473973a4892238cdd9bedbaae218518b128",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 판단하라 여자가 쓰지 않고 하나님께 기도하는 것이 마땅하냐"
+      ],
+      "raw_text_hashes": [
+        "27e52fc2f1f517192c034a1de8019473973a4892238cdd9bedbaae218518b128"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:14",
+      "sequence": 28611,
+      "chapter_label": "1CO 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "Doesn’t even nature itself teach you that if a man has long hair, it is a dishonor to him?",
+      "ko": "만일 남자가 긴 머리가 있으면 자기에게 욕되는 것을 본성이 너희에게 가르치지 아니하느냐",
+      "source_text_hash": "243f699111b62444f522af0ddeda712fe52f2cea82f58b5083474eb307cae0fe",
+      "translation_text_hash": "f70b76b283806b1770d0bac5322c02b62085d0e9b2debf4140e2bd2e04e235a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 남자가 긴 머리가 있으면 자기에게 욕되는 것을 본성이 너희에게 가르치지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "f70b76b283806b1770d0bac5322c02b62085d0e9b2debf4140e2bd2e04e235a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:15",
+      "sequence": 28612,
+      "chapter_label": "1CO 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "But if a woman has long hair, it is a glory to her, for her hair is given to her for a covering.",
+      "ko": "만일 여자가 긴 머리가 있으면 자기에게 영광이 되나니 긴 머리는 쓰는것을 대신하여 주신 연고니라",
+      "source_text_hash": "30db9b96d3502fe9216017b5ede8c10c3b4d89b33fe047d7931cc661afbf57f1",
+      "translation_text_hash": "c912f238ff8eb74324b184621d99277e00361e6571c47aef1aea2f243ee3f071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여자가 긴 머리가 있으면 자기에게 영광이 되나니 긴 머리는 쓰는것을 대신하여 주신 연고니라"
+      ],
+      "raw_text_hashes": [
+        "c912f238ff8eb74324b184621d99277e00361e6571c47aef1aea2f243ee3f071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:16",
+      "sequence": 28613,
+      "chapter_label": "1CO 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "But if any man seems to be contentious, we have no such custom, neither do God’s assemblies.",
+      "ko": "변론하려는 태도를 가진 자가 있을찌라도 우리에게나 하나님의 모든 교회에는 이런 규례가 없느니라",
+      "source_text_hash": "dd53a81d337dcb4e2739cdf2361f4ea4c9d6c7c3e1e0ae7b16c063dad06f1b7f",
+      "translation_text_hash": "201e7c0680ac9688c7c23114804564c4e5eeb3ac09bddf882bf8c7de5bc37d02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "변론하려는 태도를 가진 자가 있을찌라도 우리에게나 하나님의 모든 교회에는 이런 규례가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "201e7c0680ac9688c7c23114804564c4e5eeb3ac09bddf882bf8c7de5bc37d02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:17",
+      "sequence": 28614,
+      "chapter_label": "1CO 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "But in giving you this command I don’t praise you, because you come together not for the better but for the worse.",
+      "ko": "내가 명하는 이 일에 너희를 칭찬하지 아니하나니 이는 저희의 모임이 유익이 못되고 도리어 해로움이라",
+      "source_text_hash": "8c846cc0684cc13f1ff19b47cecc7e5ab76263ea21f308c13ba592f79ed49a23",
+      "translation_text_hash": "7763b22822f09c76f79684d1297de041cbcdd16bfc85882f6ed236b18b5022ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 명하는 이 일에 너희를 칭찬하지 아니하나니 이는 저희의 모임이 유익이 못되고 도리어 해로움이라"
+      ],
+      "raw_text_hashes": [
+        "7763b22822f09c76f79684d1297de041cbcdd16bfc85882f6ed236b18b5022ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:18",
+      "sequence": 28615,
+      "chapter_label": "1CO 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "For first of all, when you come together in the assembly, I hear that divisions exist among you, and I partly believe it.",
+      "ko": "첫째는 너희가 교회에 모일 때에 너희 중에 분쟁이 있다 함을 듣고 대강 믿노니",
+      "source_text_hash": "19c1a12a7235276729daf5a48513a8427d1550a91890714c5c8b09a24ce72421",
+      "translation_text_hash": "b9a6dd1ca44c8c67a7408176898c3b1c8a407e83a03153c40a396ba76cca9423",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째는 너희가 교회에 모일 때에 너희 중에 분쟁이 있다 함을 듣고 대강 믿노니"
+      ],
+      "raw_text_hashes": [
+        "b9a6dd1ca44c8c67a7408176898c3b1c8a407e83a03153c40a396ba76cca9423"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:19",
+      "sequence": 28616,
+      "chapter_label": "1CO 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "For there also must be factions among you, that those who are approved may be revealed among you.",
+      "ko": "너희 중에 편당이 있어야 너희 중에 옳다 인정함을 받은 자들이 나타나게 되리라",
+      "source_text_hash": "66664efa8e425e30bf70da4623d668cf92a663c4375ba60610b8e6d5d94f81bd",
+      "translation_text_hash": "ed3564278aad1b70ec1b978942b2cc1d3717147819be8248935f4b1051421638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 편당이 있어야 너희 중에 옳다 인정함을 받은 자들이 나타나게 되리라"
+      ],
+      "raw_text_hashes": [
+        "ed3564278aad1b70ec1b978942b2cc1d3717147819be8248935f4b1051421638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:20",
+      "sequence": 28617,
+      "chapter_label": "1CO 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "When therefore you assemble yourselves together, it is not the Lord’s supper that you eat.",
+      "ko": "그런즉 너희가 함께 모여서 주의 만찬을 먹을 수 없으니",
+      "source_text_hash": "230625306a8a641a29aa1d869dc50669909638b46e117aa7b01996ae956fc520",
+      "translation_text_hash": "46f5ff5772a057fbd5ebe8cfcdcebd80222fd0a928fb01ccfc37a103cc87b7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 함께 모여서 주의 만찬을 먹을 수 없으니"
+      ],
+      "raw_text_hashes": [
+        "46f5ff5772a057fbd5ebe8cfcdcebd80222fd0a928fb01ccfc37a103cc87b7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:21",
+      "sequence": 28618,
+      "chapter_label": "1CO 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "For in your eating each one takes his own supper first. One is hungry, and another is drunken.",
+      "ko": "이는 먹을 때에 각각 자기의 만찬을 먼저 갖다 먹으므로 어떤이는 시장하고 어떤이는 취함이라",
+      "source_text_hash": "3cc9af9ca3265947afa4b9a15d71cafc3705da91d5fd09fa2dc4f029581dd2ff",
+      "translation_text_hash": "f147ce24612c93d5ab053c9f30c79e32eb986cbabcf8405a9117354cbbfb18fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 먹을 때에 각각 자기의 만찬을 먼저 갖다 먹으므로 어떤이는 시장하고 어떤이는 취함이라"
+      ],
+      "raw_text_hashes": [
+        "f147ce24612c93d5ab053c9f30c79e32eb986cbabcf8405a9117354cbbfb18fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:22",
+      "sequence": 28619,
+      "chapter_label": "1CO 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "What, don’t you have houses to eat and to drink in? Or do you despise God’s assembly and put them to shame who don’t have enough? What shall I tell you? Shall I praise you? In this I don’t praise you.",
+      "ko": "너희가 먹고 마실 집이 없느냐 너희가 하나님의 교회를 업신여기고 빈궁한 자들을 부끄럽게 하느냐 내가 너희에게 무슨 말을 하랴 너희를 칭찬하랴 이것으로 칭찬하지 않노라",
+      "source_text_hash": "660fbba8b8a53e323d5a13c1aa99acc0b747c955fc0af15c8cde01da74041af9",
+      "translation_text_hash": "5d61c2d1a17768a354887af260af501d828ab99fd531ff1919887b04d8bd6156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 먹고 마실 집이 없느냐 너희가 하나님의 교회를 업신여기고 빈궁한 자들을 부끄럽게 하느냐 내가 너희에게 무슨 말을 하랴 너희를 칭찬하랴 이것으로 칭찬하지 않노라"
+      ],
+      "raw_text_hashes": [
+        "5d61c2d1a17768a354887af260af501d828ab99fd531ff1919887b04d8bd6156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:23",
+      "sequence": 28620,
+      "chapter_label": "1CO 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "For I received from the Lord that which also I delivered to you, that the Lord Jesus on the night in which he was betrayed took bread.",
+      "ko": "내가 너희에게 전한 것은 주께 받은 것이니 곧 주 예수께서 잡히시던 밤에 떡을 가지사",
+      "source_text_hash": "e598f5cbcc085d9a854d000b55e5054497da0e8a0caad7577607daafe8b44d95",
+      "translation_text_hash": "4feb62a1c87e4050d5d1fc011636ae52d22fe417d364175d83ffb4e302f48d42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 전한 것은 주께 받은 것이니 곧 주 예수께서 잡히시던 밤에 떡을 가지사"
+      ],
+      "raw_text_hashes": [
+        "4feb62a1c87e4050d5d1fc011636ae52d22fe417d364175d83ffb4e302f48d42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:24",
+      "sequence": 28621,
+      "chapter_label": "1CO 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "When he had given thanks, he broke it and said, “Take, eat. This is my body, which is broken for you. Do this in memory of me.”",
+      "ko": "축사하시고 떼어 가라사대 이것은 너희를 위하는 내 몸이니 이것을 행하여 나를 기념하라 하시고",
+      "source_text_hash": "a33edb0e840536fe1a072b64f0789022f0790de92a7ed674bd26239e756cb46a",
+      "translation_text_hash": "6ac3a8403bb15e37535439882391d7bdeb36b1b1bab321bfe2692e085fd8129b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "축사하시고 떼어 가라사대 이것은 너희를 위하는 내 몸이니 이것을 행하여 나를 기념하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "6ac3a8403bb15e37535439882391d7bdeb36b1b1bab321bfe2692e085fd8129b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:25",
+      "sequence": 28622,
+      "chapter_label": "1CO 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "In the same way he also took the cup after supper, saying, “This cup is the new covenant in my blood. Do this, as often as you drink, in memory of me.”",
+      "ko": "식후에 또한 이와 같이 잔을 가지시고 가라사대 이 잔은 내 피로 세운 새 언약이니 이것을 행하여 마실 때마다 나를 기념하라 하셨으니",
+      "source_text_hash": "99c484ab38c79edb960fd957072565d358125a93c87a7e5f73b58edc73dc6487",
+      "translation_text_hash": "3d0b2764d66fc148659df384d07b9fe3d492121a1865232d2f5694dcfb386576",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식후에 또한 이와 같이 잔을 가지시고 가라사대 이 잔은 내 피로 세운 새 언약이니 이것을 행하여 마실 때마다 나를 기념하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "3d0b2764d66fc148659df384d07b9fe3d492121a1865232d2f5694dcfb386576"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:26",
+      "sequence": 28623,
+      "chapter_label": "1CO 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "For as often as you eat this bread and drink this cup, you proclaim the Lord’s death until he comes.",
+      "ko": "너희가 이 떡을 먹으며 이 잔을 마실 때마다 주의 죽으심을 오실 때까지 전하는 것이니라",
+      "source_text_hash": "999eca4ae9300e2f4ad48b729551cdf101b153c7d49df4e3943182ac782e6eec",
+      "translation_text_hash": "aad7ffdd6d76f340f05573ec60214be4bf954ab1f7e92e1cf94ad6dd6466ae40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 떡을 먹으며 이 잔을 마실 때마다 주의 죽으심을 오실 때까지 전하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "aad7ffdd6d76f340f05573ec60214be4bf954ab1f7e92e1cf94ad6dd6466ae40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:27",
+      "sequence": 28624,
+      "chapter_label": "1CO 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore whoever eats this bread or drinks the Lord’s cup in a way unworthy of the Lord will be guilty of the body and the blood of the Lord.",
+      "ko": "그러므로 누구든지 주의 떡이나 잔을 합당치 않게 먹고 마시는 자는 주의 몸과 피를 범하는 죄가 있느니라",
+      "source_text_hash": "681b26ad20a5ed139c7b3a9c24645d1313dd8e6fc6bc185633b01b1552269bf5",
+      "translation_text_hash": "042dc83970dec852ab7b8c853f665552f6925112ce0a16176923b30fc233b055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 주의 떡이나 잔을 합당치 않게 먹고 마시는 자는 주의 몸과 피를 범하는 죄가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "042dc83970dec852ab7b8c853f665552f6925112ce0a16176923b30fc233b055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:28",
+      "sequence": 28625,
+      "chapter_label": "1CO 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "But let a man examine himself, and so let him eat of the bread and drink of the cup.",
+      "ko": "사람이 자기를 살피고 그 후에야 이 떡을 먹고 이 잔을 마실찌니",
+      "source_text_hash": "7fae2df4c9946dea80fe9e1df9f6057c9eb4640e27d4cada60fcbfc9e7c8ba5d",
+      "translation_text_hash": "4226bc854c2e14efc78a83440ca534b5434214b3c733392e198434f48c2b59ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 자기를 살피고 그 후에야 이 떡을 먹고 이 잔을 마실찌니"
+      ],
+      "raw_text_hashes": [
+        "4226bc854c2e14efc78a83440ca534b5434214b3c733392e198434f48c2b59ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:29",
+      "sequence": 28626,
+      "chapter_label": "1CO 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "For he who eats and drinks in an unworthy way eats and drinks judgment to himself if he doesn’t discern the Lord’s body.",
+      "ko": "주의 몸을 분변치 못하고 먹고 마시는 자는 자기의 죄를 먹고 마시는 것이니라",
+      "source_text_hash": "0f94d721239e7244f9c7ab6ca679d2f02577d55ce15f685ab2d9dc130138916b",
+      "translation_text_hash": "dd250d9fe7b802bad45b08d4bb81e3ff23d00bcedb4ddec19535398d29c8ae81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 몸을 분변치 못하고 먹고 마시는 자는 자기의 죄를 먹고 마시는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "dd250d9fe7b802bad45b08d4bb81e3ff23d00bcedb4ddec19535398d29c8ae81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:30",
+      "sequence": 28627,
+      "chapter_label": "1CO 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "For this cause many among you are weak and sickly, and not a few sleep.",
+      "ko": "이러므로 너희 중에 약한 자와 병든 자가 많고 잠자는 자도 적지 아니하니",
+      "source_text_hash": "9aff77237a1efa3e4ccc2389731ebe0ef09377a0f21c3ad688324f63e94830eb",
+      "translation_text_hash": "1bd13edaf0cc026082d2deacd5ad81b00dfc15a61795ea8aa63bbaaaeb301af1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희 중에 약한 자와 병든 자가 많고 잠자는 자도 적지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "1bd13edaf0cc026082d2deacd5ad81b00dfc15a61795ea8aa63bbaaaeb301af1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:31",
+      "sequence": 28628,
+      "chapter_label": "1CO 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "For if we discerned ourselves, we wouldn’t be judged.",
+      "ko": "우리가 우리를 살폈으면 판단을 받지 아니하려니와",
+      "source_text_hash": "b8b120da7173b21957b14baab528ed068e3b3906e45ecdbcbc9a8b577be71420",
+      "translation_text_hash": "ed65f7c77f57b8131a73a5bd62cbab46e208a560e143bcec2be6d9460ed8fa5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리를 살폈으면 판단을 받지 아니하려니와"
+      ],
+      "raw_text_hashes": [
+        "ed65f7c77f57b8131a73a5bd62cbab46e208a560e143bcec2be6d9460ed8fa5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:32",
+      "sequence": 28629,
+      "chapter_label": "1CO 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "But when we are judged, we are disciplined by the Lord, that we may not be condemned with the world.",
+      "ko": "우리가 판단을 받는 것은 주께 징계를 받는 것이니 이는 우리로 세상과 함께 죄 정함을 받지 않게 하려 하심이라",
+      "source_text_hash": "05a485110dbc212d9d755a686730e8006b31c64f9c09e08b80275bc0d16769d1",
+      "translation_text_hash": "13b16a385533a174a5fbeaa497911491ff5ac830a2e5b30a8051cd2b43ebfd76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 판단을 받는 것은 주께 징계를 받는 것이니 이는 우리로 세상과 함께 죄 정함을 받지 않게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "13b16a385533a174a5fbeaa497911491ff5ac830a2e5b30a8051cd2b43ebfd76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:33",
+      "sequence": 28630,
+      "chapter_label": "1CO 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "Therefore, my brothers, when you come together to eat, wait for one another.",
+      "ko": "그런즉 내 형제들아 먹으러 모일 때에 서로 기다리라",
+      "source_text_hash": "9bb1b28c63a33e2f89f54b822712542a32bca3eab7098139c0546abe3757fe8f",
+      "translation_text_hash": "361fc3c38c7154ff687265a2598c4cbb395a142fb8456981040ab771394f2db8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내 형제들아 먹으러 모일 때에 서로 기다리라"
+      ],
+      "raw_text_hashes": [
+        "361fc3c38c7154ff687265a2598c4cbb395a142fb8456981040ab771394f2db8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:11:34",
+      "sequence": 28631,
+      "chapter_label": "1CO 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CO",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "But if anyone is hungry, let him eat at home, lest your coming together be for judgment. The rest I will set in order whenever I come.",
+      "ko": "만일 누구든지 시장하거든 집에서 먹을찌니 이는 너희의 판단 받는 모임이 되지 않게 하려함이라 그 남은 것은 내가 언제든지 갈 때에 귀정하리라",
+      "source_text_hash": "d5db169f48e25a0390217924b109c0bbd3c2be9c0b9e9d625dc51bb65056447f",
+      "translation_text_hash": "10a0f3d77f24bea5fab62e21656bd02f9d6992d383e189731f4887dc4020aaee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 시장하거든 집에서 먹을찌니 이는 너희의 판단 받는 모임이 되지 않게 하려함이라 그 남은 것은 내가 언제든지 갈 때에 귀정하리라"
+      ],
+      "raw_text_hashes": [
+        "10a0f3d77f24bea5fab62e21656bd02f9d6992d383e189731f4887dc4020aaee"
+      ]
+    }
+  ]
+}

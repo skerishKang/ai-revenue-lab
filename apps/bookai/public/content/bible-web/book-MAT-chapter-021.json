@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:021",
+  "unit_ordinal": 950,
+  "unit_label": "MAT 21",
+  "book_code": "MAT",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:21:1",
+      "sequence": 23828,
+      "chapter_label": "MAT 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "When they came near to Jerusalem and came to Bethsphage, to the Mount of Olives, then Jesus sent two disciples,",
+      "ko": "저희가 예루살렘에 가까이 와서 감람산 벳바게에 이르렀을 때에 예수께서 두 제자를 보내시며",
+      "source_text_hash": "ca58c7f6b4a10e19f92817ab384311590b9907fdc499b13c693049dda3e9073d",
+      "translation_text_hash": "9d69132d084551fb824d10d36072e628e3317708a052148e24f3ec60a627931d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예루살렘에 가까이 와서 감람산 벳바게에 이르렀을 때에 예수께서 두 제자를 보내시며"
+      ],
+      "raw_text_hashes": [
+        "9d69132d084551fb824d10d36072e628e3317708a052148e24f3ec60a627931d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:2",
+      "sequence": 23829,
+      "chapter_label": "MAT 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "saying to them, “Go into the village that is opposite you, and immediately you will find a donkey tied, and a colt with her. Untie them and bring them to me.",
+      "ko": "이르시되 너희 맞은편 마을로 가라 곧 매인 나귀와 나귀 새끼가 함께 있는 것을 보리니 풀어 내게로 끌고 오너라",
+      "source_text_hash": "557b0355deb07972918c63c962d0e59f0c81b3cd254be7b570f01a3413702f7d",
+      "translation_text_hash": "a360c7006d39ad5f9b9b95fb005c7d87b85ca857dee2f8b5d1ad74fb7ca66b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희 맞은편 마을로 가라 곧 매인 나귀와 나귀 새끼가 함께 있는 것을 보리니 풀어 내게로 끌고 오너라"
+      ],
+      "raw_text_hashes": [
+        "a360c7006d39ad5f9b9b95fb005c7d87b85ca857dee2f8b5d1ad74fb7ca66b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:3",
+      "sequence": 23830,
+      "chapter_label": "MAT 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "If anyone says anything to you, you shall say, ‘The Lord needs them,’ and immediately he will send them.”",
+      "ko": "만일 누가 무슨 말을 하거든 주가 쓰시겠다 하라 그리하면 즉시 보내리라 하시니",
+      "source_text_hash": "7f8b19f345d9b64bcd0043529f47a19979e8a6b7ad0c4559965495069d4d7275",
+      "translation_text_hash": "50254ed6a54de76a600b575106aa6eb19313f2c297b6940892f5c40af509078f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 무슨 말을 하거든 주가 쓰시겠다 하라 그리하면 즉시 보내리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "50254ed6a54de76a600b575106aa6eb19313f2c297b6940892f5c40af509078f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:4",
+      "sequence": 23831,
+      "chapter_label": "MAT 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "All this was done that it might be fulfilled which was spoken through the prophet, saying,",
+      "ko": "이는 선지자로 하신 말씀을 이루려 하심이라 일렀으되",
+      "source_text_hash": "afbefe61f01b5ee81e0b6e54a6975f8c93900e8b7ad750ea1cf72e7eb1e229bd",
+      "translation_text_hash": "c6272991064a6a102ab3cc1b0bdf6f4894ee4a587b4d4ef723371ffee1676563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자로 하신 말씀을 이루려 하심이라 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "c6272991064a6a102ab3cc1b0bdf6f4894ee4a587b4d4ef723371ffee1676563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:5",
+      "sequence": 23832,
+      "chapter_label": "MAT 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "“Tell the daughter of Zion, behold, your King comes to you, humble, and riding on a donkey, on a colt, the foal of a donkey.”",
+      "ko": "시온 딸에게 이르기를 네 왕이 네게 임하나니 그는 겸손하여 나귀, 곧 멍에 메는 짐승의 새끼를 탔도다 하라 하였느니라",
+      "source_text_hash": "b9c67d2bf9ba2808d784172038a708b52610b8e08f537eb73221ed4041e60c9c",
+      "translation_text_hash": "3118e387e8af4668f33327d17677907516207416977c6bf8df262270087e16e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온 딸에게 이르기를 네 왕이 네게 임하나니 그는 겸손하여 나귀, 곧 멍에 메는 짐승의 새끼를 탔도다 하라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3118e387e8af4668f33327d17677907516207416977c6bf8df262270087e16e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:6",
+      "sequence": 23833,
+      "chapter_label": "MAT 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "The disciples went and did just as Jesus commanded them,",
+      "ko": "제자들이 가서 예수의 명하신대로 하여",
+      "source_text_hash": "387ea181580926b71ec478eedbe501664c2b196b9e88b6a3c37d3bd17dcbda9a",
+      "translation_text_hash": "4dc8b4a1d8fe8fe8e0139685ad544f35c2ff702ca4ba1cacbc6592dafa940e20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가서 예수의 명하신대로 하여"
+      ],
+      "raw_text_hashes": [
+        "4dc8b4a1d8fe8fe8e0139685ad544f35c2ff702ca4ba1cacbc6592dafa940e20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:7",
+      "sequence": 23834,
+      "chapter_label": "MAT 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "and brought the donkey and the colt and laid their clothes on them; and he sat on them.",
+      "ko": "나귀와 나귀 새끼를 끌고 와서 자기들의 겉옷을 그 위에 얹으매 예수께서 그 위에 타시니",
+      "source_text_hash": "713d610263d02a2903819d770cf904cb639a51385e1eba62f48d23ee62b4c88f",
+      "translation_text_hash": "9ccccb0e680e648c0f48396ec36a7213fd63c643d1f805e53bc0287973a3f10a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀와 나귀 새끼를 끌고 와서 자기들의 겉옷을 그 위에 얹으매 예수께서 그 위에 타시니"
+      ],
+      "raw_text_hashes": [
+        "9ccccb0e680e648c0f48396ec36a7213fd63c643d1f805e53bc0287973a3f10a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:8",
+      "sequence": 23835,
+      "chapter_label": "MAT 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "A very great multitude spread their clothes on the road. Others cut branches from the trees and spread them on the road.",
+      "ko": "무리의 대부분은 그 겉옷을 길에 펴며 다른이는 나무 가지를 베어 길에 펴고",
+      "source_text_hash": "3ccdc0ced2b548902ac0c23f32e5daf9831280b7a35edf6b0b17f17fa3361224",
+      "translation_text_hash": "dcec00b19b86d61d4396f93200605d141a94715a6c25f9a56252b58aa227dc8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리의 대부분은 그 겉옷을 길에 펴며 다른이는 나무 가지를 베어 길에 펴고"
+      ],
+      "raw_text_hashes": [
+        "dcec00b19b86d61d4396f93200605d141a94715a6c25f9a56252b58aa227dc8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:9",
+      "sequence": 23836,
+      "chapter_label": "MAT 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "The multitudes who went in front of him, and those who followed, kept shouting, “Hosanna to the son of David! Blessed is he who comes in the name of the Lord! Hosanna in the highest!”",
+      "ko": "앞에서 가고 뒤에서 따르는 무리가 소리질러 가로되 호산나 다윗의 자손이여 찬송하리로다 주의 이름으로 오시는이여 가장 높은 곳에서 호산나 하더라",
+      "source_text_hash": "4b5321649ade07f2ba42c01423736734da4783ac5340b7380e36d1dd10cc5914",
+      "translation_text_hash": "cf9952dbc50bfa4baaafcf0cefabb2de253b284556b5c87efcb550bf19e26643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞에서 가고 뒤에서 따르는 무리가 소리질러 가로되 호산나 다윗의 자손이여 찬송하리로다 주의 이름으로 오시는이여 가장 높은 곳에서 호산나 하더라"
+      ],
+      "raw_text_hashes": [
+        "cf9952dbc50bfa4baaafcf0cefabb2de253b284556b5c87efcb550bf19e26643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:10",
+      "sequence": 23837,
+      "chapter_label": "MAT 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "When he had come into Jerusalem, all the city was stirred up, saying, “Who is this?”",
+      "ko": "예수께서 예루살렘에 들어가시니 온 성이 소동하여 가로되 이는 누구뇨 하거늘",
+      "source_text_hash": "777ac1c8741cb2b588edf65ef31ef26f4f9be94eebde5f9f61d2af6c9bf432c3",
+      "translation_text_hash": "7fda09448d9a00adacf71dbe40d4818636dafdc08e73c04f9020ce955025a56c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 예루살렘에 들어가시니 온 성이 소동하여 가로되 이는 누구뇨 하거늘"
+      ],
+      "raw_text_hashes": [
+        "7fda09448d9a00adacf71dbe40d4818636dafdc08e73c04f9020ce955025a56c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:11",
+      "sequence": 23838,
+      "chapter_label": "MAT 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "The multitudes said, “This is the prophet, Jesus, from Nazareth of Galilee.”",
+      "ko": "무리가 가로되 갈릴리 나사렛에서 나온 선지자 예수라 하니라",
+      "source_text_hash": "76645213f35c3490bbd4858d92e5ad877d3947cee7d4464fb655bd49ab1c07e8",
+      "translation_text_hash": "e0741e9eda5555d84e5597bb3e9fe11e308b8e27cb1eeaf5960c0cd3c7994008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 가로되 갈릴리 나사렛에서 나온 선지자 예수라 하니라"
+      ],
+      "raw_text_hashes": [
+        "e0741e9eda5555d84e5597bb3e9fe11e308b8e27cb1eeaf5960c0cd3c7994008"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:12",
+      "sequence": 23839,
+      "chapter_label": "MAT 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "Jesus entered into the temple of God and drove out all of those who sold and bought in the temple, and overthrew the money changers’ tables and the seats of those who sold the doves.",
+      "ko": "예수께서 성전에 들어가사 성전 안에서 매매하는 모든 자를 내어쫓으시며 돈 바꾸는 자들의 상과 비둘기 파는 자들의 의자를 둘러 엎으시고",
+      "source_text_hash": "82aa138d7ac0c30fdb1fb308cfce29acad73636aee1d071ced827a61f66351c1",
+      "translation_text_hash": "0403b2ba28b9d4a5b02f533aa909fd097a8f5a0c5a3cd583edadfe7b0f41e981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에 들어가사 성전 안에서 매매하는 모든 자를 내어쫓으시며 돈 바꾸는 자들의 상과 비둘기 파는 자들의 의자를 둘러 엎으시고"
+      ],
+      "raw_text_hashes": [
+        "0403b2ba28b9d4a5b02f533aa909fd097a8f5a0c5a3cd583edadfe7b0f41e981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:13",
+      "sequence": 23840,
+      "chapter_label": "MAT 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "He said to them, “It is written, ‘My house shall be called a house of prayer,’but you have made it a den of robbers!”",
+      "ko": "저희에게 이르시되 기록된바 내 집은 기도하는 집이라 일컬음을 받으리라 하였거늘 너희는 강도의 굴혈을 만드는도다 하시니라",
+      "source_text_hash": "317e6cce007a65e24b30ec53abbcb27d8b7597f9360a8917d93dd8e9651143c0",
+      "translation_text_hash": "11cd7229c48c53b8938201c166d30bf855cff1fc12fcb835e4bd02506fe5bed9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 기록된바 내 집은 기도하는 집이라 일컬음을 받으리라 하였거늘 너희는 강도의 굴혈을 만드는도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "11cd7229c48c53b8938201c166d30bf855cff1fc12fcb835e4bd02506fe5bed9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:14",
+      "sequence": 23841,
+      "chapter_label": "MAT 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "The lame and the blind came to him in the temple, and he healed them.",
+      "ko": "소경과 저는 자들이 성전에서 예수께 나아오매 고쳐주시니",
+      "source_text_hash": "0d678c510998616978d40b523be8a2e36ab120a599c080dc3af6f2e1136474cc",
+      "translation_text_hash": "1b16d0f9f46330b0e718a45eabc11cbe45365754b350c5834c56518bea47cb12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경과 저는 자들이 성전에서 예수께 나아오매 고쳐주시니"
+      ],
+      "raw_text_hashes": [
+        "1b16d0f9f46330b0e718a45eabc11cbe45365754b350c5834c56518bea47cb12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:15",
+      "sequence": 23842,
+      "chapter_label": "MAT 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "But when the chief priests and the scribes saw the wonderful things that he did, and the children who were crying in the temple and saying, “Hosanna to the son of David!” they were indignant,",
+      "ko": "대제사장들과 서기관들이 예수의 하시는 이상한 일과 또 성전에서 소리질러 호산나 다윗의 자손이여 하는 아이들을 보고 분하여",
+      "source_text_hash": "c59624bb5d4a0858cae617eb3adf72624814f2bfed3a57c5f54d8493f50587df",
+      "translation_text_hash": "146d12ad449f4070bd69413c660dbc165af03ca0f10ff7edfb87e6fe6578886f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 서기관들이 예수의 하시는 이상한 일과 또 성전에서 소리질러 호산나 다윗의 자손이여 하는 아이들을 보고 분하여"
+      ],
+      "raw_text_hashes": [
+        "146d12ad449f4070bd69413c660dbc165af03ca0f10ff7edfb87e6fe6578886f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:16",
+      "sequence": 23843,
+      "chapter_label": "MAT 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "and said to him, “Do you hear what these are saying?” Jesus said to them, “Yes. Did you never read, ‘Out of the mouth of children and nursing babies, you have perfected praise’?”",
+      "ko": "예수께 말하되 저희의 하는 말을 듣느뇨 예수께서 가라사대 그렇다 어린 아기와 젖먹이들의 입에서 나오는 찬미를 온전케 하셨나이다 함을 너희가 읽어 본 일이 없느냐 하시고",
+      "source_text_hash": "e9a11ff3d07f1a8747525fdeda5f684c52d80aae5f0eea242714d8ffdc1c370d",
+      "translation_text_hash": "653a9e65613ac8b9e6547728cb8fb53ea331ebc49125147219aef81c0327d0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 말하되 저희의 하는 말을 듣느뇨 예수께서 가라사대 그렇다 어린 아기와 젖먹이들의 입에서 나오는 찬미를 온전케 하셨나이다 함을 너희가 읽어 본 일이 없느냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "653a9e65613ac8b9e6547728cb8fb53ea331ebc49125147219aef81c0327d0e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:17",
+      "sequence": 23844,
+      "chapter_label": "MAT 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "He left them and went out of the city to Bethany, and camped there.",
+      "ko": "그들을 떠나 성밖으로 베다니에 가서 거기서 유하시니라",
+      "source_text_hash": "1f32f86e884417fab754acb86b2856b32641dccd00b3606d75fd9a4e1fa29c03",
+      "translation_text_hash": "b19f5611302a465e4f76a66ff183709659270865139f0867a4a95dc77255ef85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 떠나 성밖으로 베다니에 가서 거기서 유하시니라"
+      ],
+      "raw_text_hashes": [
+        "b19f5611302a465e4f76a66ff183709659270865139f0867a4a95dc77255ef85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:18",
+      "sequence": 23845,
+      "chapter_label": "MAT 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Now in the morning, as he returned to the city, he was hungry.",
+      "ko": "이른 아침에 성으로 들어오실 때에 시장하신지라",
+      "source_text_hash": "c15ef4868a4c7b1964982b8228a9cf6e1c313325e865c282b942725b637e2057",
+      "translation_text_hash": "d0622eb0ac3a317a1eafeae4db8300aaf24fbc7421c3c6a06ec23df468154619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이른 아침에 성으로 들어오실 때에 시장하신지라"
+      ],
+      "raw_text_hashes": [
+        "d0622eb0ac3a317a1eafeae4db8300aaf24fbc7421c3c6a06ec23df468154619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:19",
+      "sequence": 23846,
+      "chapter_label": "MAT 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "Seeing a fig tree by the road, he came to it and found nothing on it but leaves. He said to it, “Let there be no fruit from you forever!” Immediately the fig tree withered away.",
+      "ko": "길 가에서 한 무화과나무를 보시고 그리로 가사 잎사귀 밖에 아무 것도 얻지 못하시고 나무에게 이르시되 이제부터 영원토록 네게 열매가 맺지 못하리라 하시니 무화과나무가 곧 마른지라",
+      "source_text_hash": "6db3d1f66db7c06c40981353618fc138e07f48b7bf6a4b04a9a2877608b89c5e",
+      "translation_text_hash": "6c0fcce1644c507ec59cbe8b8682ba542e3211c6873882b47789f42e7dd2af06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가에서 한 무화과나무를 보시고 그리로 가사 잎사귀 밖에 아무 것도 얻지 못하시고 나무에게 이르시되 이제부터 영원토록 네게 열매가 맺지 못하리라 하시니 무화과나무가 곧 마른지라"
+      ],
+      "raw_text_hashes": [
+        "6c0fcce1644c507ec59cbe8b8682ba542e3211c6873882b47789f42e7dd2af06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:20",
+      "sequence": 23847,
+      "chapter_label": "MAT 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "When the disciples saw it, they marveled, saying, “How did the fig tree immediately wither away?”",
+      "ko": "제자들이 보고 이상히 여겨 가로되 무화과나무가 어찌하여 곧 말랐나이까",
+      "source_text_hash": "6623b81860d51d00e091fdc9cac962ec65dc729b87041224481d15261e79116b",
+      "translation_text_hash": "03a08cc41a172fa2939a8576ae991bb2351e1ed80662bee67b2c5c99ce786e5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 보고 이상히 여겨 가로되 무화과나무가 어찌하여 곧 말랐나이까"
+      ],
+      "raw_text_hashes": [
+        "03a08cc41a172fa2939a8576ae991bb2351e1ed80662bee67b2c5c99ce786e5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:21",
+      "sequence": 23848,
+      "chapter_label": "MAT 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus answered them, “Most certainly I tell you, if you have faith and don’t doubt, you will not only do what was done to the fig tree, but even if you told this mountain, ‘Be taken up and cast into the sea,’ it would be done.",
+      "ko": "예수께서 대답하여 가라사대 내가 진실로 너희에게 이르노니 만일 너희가 믿음이 있고 의심치 아니하면 이 무화과나무에게 된 이런 일만 할뿐 아니라 이 산더러 들려 바다에 던지우라 하여도 될것이요",
+      "source_text_hash": "8fcaaa32216fe056ab19f5a29816a907613869920a7808602384cb4f386bc616",
+      "translation_text_hash": "7477ff06ab4182066e96de8767af4ccb82e6efe492e136f37b14e55f2ca9c5fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내가 진실로 너희에게 이르노니 만일 너희가 믿음이 있고 의심치 아니하면 이 무화과나무에게 된 이런 일만 할뿐 아니라 이 산더러 들려 바다에 던지우라 하여도 될것이요"
+      ],
+      "raw_text_hashes": [
+        "7477ff06ab4182066e96de8767af4ccb82e6efe492e136f37b14e55f2ca9c5fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:22",
+      "sequence": 23849,
+      "chapter_label": "MAT 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "All things, whatever you ask in prayer, believing, you will receive.”",
+      "ko": "너희가 기도할 때에 무엇이든지 믿고 구하는 것은 다 받으리라 하시니라",
+      "source_text_hash": "536457bc29bd2cbaeb39806abe46c110fc6092937ebe841e05462d3a151bf876",
+      "translation_text_hash": "e3695f576147d5f1794e4ab564a3ec3a3eb0ed28c63c7352f168a75e49d1a54d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 기도할 때에 무엇이든지 믿고 구하는 것은 다 받으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e3695f576147d5f1794e4ab564a3ec3a3eb0ed28c63c7352f168a75e49d1a54d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:23",
+      "sequence": 23850,
+      "chapter_label": "MAT 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "When he had come into the temple, the chief priests and the elders of the people came to him as he was teaching, and said, “By what authority do you do these things? Who gave you this authority?”",
+      "ko": "예수께서 성전에 들어가 가르치실쌔 대제사장들과 백성의 장로들이 나아와 가로되 네가 무슨 권세로 이런 일을 하느뇨 또 누가 이 권세를 주었느뇨",
+      "source_text_hash": "3373755abe5a4aece0479b877475540c54b75c2090e3123002b9383307b74de7",
+      "translation_text_hash": "34aab3856ce040681f38d66458e43599c5282c1ed1b20b78543286a09ebd1195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에 들어가 가르치실쌔 대제사장들과 백성의 장로들이 나아와 가로되 네가 무슨 권세로 이런 일을 하느뇨 또 누가 이 권세를 주었느뇨"
+      ],
+      "raw_text_hashes": [
+        "34aab3856ce040681f38d66458e43599c5282c1ed1b20b78543286a09ebd1195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:24",
+      "sequence": 23851,
+      "chapter_label": "MAT 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "Jesus answered them, “I also will ask you one question, which if you tell me, I likewise will tell you by what authority I do these things.",
+      "ko": "예수께서 대답하시되 나도 한 말을 너희에게 물으리니 너희가 대답하면 나도 무슨 권세로 이런 일을 하는지 이르리라",
+      "source_text_hash": "fe84a3d2a88816236de0cce4338b864c4fed5e2fd1a8490847f90f1194ef0e0f",
+      "translation_text_hash": "2d07cac3a2ab06e5650285125b64ee27e4d9374864c2f2d4566defe1fa2c7a70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 나도 한 말을 너희에게 물으리니 너희가 대답하면 나도 무슨 권세로 이런 일을 하는지 이르리라"
+      ],
+      "raw_text_hashes": [
+        "2d07cac3a2ab06e5650285125b64ee27e4d9374864c2f2d4566defe1fa2c7a70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:25",
+      "sequence": 23852,
+      "chapter_label": "MAT 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "The baptism of John, where was it from? From heaven or from men?” They reasoned with themselves, saying, “If we say, ‘From heaven,’ he will ask us, ‘Why then did you not believe him?’",
+      "ko": "요한의 세례가 어디로서 왔느냐 하늘로서냐 사람에게로서냐 저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할것이요",
+      "source_text_hash": "7f9438cd5c016bfae56cdeb08aede60a351f550375dc48128d8c95ad56fbb1a8",
+      "translation_text_hash": "1894f77aebdb3e2b718c5b2940c7c484450ba0291ef72d258559c5d03d1c0dee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 세례가 어디로서 왔느냐 하늘로서냐 사람에게로서냐 저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할것이요"
+      ],
+      "raw_text_hashes": [
+        "1894f77aebdb3e2b718c5b2940c7c484450ba0291ef72d258559c5d03d1c0dee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:26",
+      "sequence": 23853,
+      "chapter_label": "MAT 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "But if we say, ‘From men,’ we fear the multitude, for all hold John as a prophet.”",
+      "ko": "만일 사람에게로서라 하면 모든 사람이 요한을 선지자로 여기니 백성이 무섭다 하여",
+      "source_text_hash": "4074ef1416945b918fca79c30641591d4b39054e992f086aacd7c9879e69b11d",
+      "translation_text_hash": "29f730e7391cb5b141ca7054913f72e48eff1f191932489749e567e16d35c711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 사람에게로서라 하면 모든 사람이 요한을 선지자로 여기니 백성이 무섭다 하여"
+      ],
+      "raw_text_hashes": [
+        "29f730e7391cb5b141ca7054913f72e48eff1f191932489749e567e16d35c711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:27",
+      "sequence": 23854,
+      "chapter_label": "MAT 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "They answered Jesus, and said, “We don’t know.” He also said to them, “Neither will I tell you by what authority I do these things.",
+      "ko": "예수께 대답하여 가로되 우리가 알지 못하노라 하니 예수께서 가라사대 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라",
+      "source_text_hash": "f01dbea7383bc10035d209f2d7ad8187f5ef92c81b7ef32d742d2ef58e409be0",
+      "translation_text_hash": "453f6d6b60c0fe2f11967f1ad020e2c87da02a00e800f89b0ce54f677354c4c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 대답하여 가로되 우리가 알지 못하노라 하니 예수께서 가라사대 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "453f6d6b60c0fe2f11967f1ad020e2c87da02a00e800f89b0ce54f677354c4c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:28",
+      "sequence": 23855,
+      "chapter_label": "MAT 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "But what do you think? A man had two sons, and he came to the first, and said, ‘Son, go work today in my vineyard.’",
+      "ko": "그러나 너희 생각에는 어떠하뇨 한 사람이 두 아들이 있는데 맏아들에게 가서 이르되 얘 오늘 포도원에 가서 일하라 하니",
+      "source_text_hash": "4e8281d7143c4336c1498f0e4b85422b978e686e48c989d25f4fb5a87f8e2222",
+      "translation_text_hash": "e7d59e0c6d4db5e0fb9331024768d9227086f7e2e8312528f3efd920351772ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 생각에는 어떠하뇨 한 사람이 두 아들이 있는데 맏아들에게 가서 이르되 얘 오늘 포도원에 가서 일하라 하니"
+      ],
+      "raw_text_hashes": [
+        "e7d59e0c6d4db5e0fb9331024768d9227086f7e2e8312528f3efd920351772ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:29",
+      "sequence": 23856,
+      "chapter_label": "MAT 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "He answered, ‘I will not,’ but afterward he changed his mind, and went.",
+      "ko": "대답하여 가로되 아버지여 가겠소이다 하더니 가지 아니하고",
+      "source_text_hash": "4266c744f56efc1c85b387db60958fa3b6d641ba1550d6ecdb7968c8ef9107da",
+      "translation_text_hash": "c9065748e203ac6e6f1d59f7cd75d12a7b4896ea492f5f504e84c5bf6d622c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 아버지여 가겠소이다 하더니 가지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "c9065748e203ac6e6f1d59f7cd75d12a7b4896ea492f5f504e84c5bf6d622c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:30",
+      "sequence": 23857,
+      "chapter_label": "MAT 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "He came to the second, and said the same thing. He answered, ‘I’m going, sir,’ but he didn’t go.",
+      "ko": "둘째 아들에게 가서 또 이같이 말하니 대답하여 가로되 싫소이다 하더니 그 후에 뉘우치고 갔으니",
+      "source_text_hash": "411e5546b01f3fa29064c521f14f38f2ea181d914b959ed3f6ca0ebfb33b6cec",
+      "translation_text_hash": "1d33267224e71e8f83bbd48fbf3765d754ab730e98e6885fe9d30abcbcb4691d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 아들에게 가서 또 이같이 말하니 대답하여 가로되 싫소이다 하더니 그 후에 뉘우치고 갔으니"
+      ],
+      "raw_text_hashes": [
+        "1d33267224e71e8f83bbd48fbf3765d754ab730e98e6885fe9d30abcbcb4691d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:31",
+      "sequence": 23858,
+      "chapter_label": "MAT 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Which of the two did the will of his father?”They said to him, “The first.” Jesus said to them, “Most certainly I tell you that the tax collectors and the prostitutes are entering into God’s Kingdom before you.",
+      "ko": "그 둘 중에 누가 아비의 뜻대로 하였느뇨 가로되 둘째 아들이니이다 예수께서 저희에게 이르시되 내가 진실로 너희에게 이르노니 세리들과 창기들이 너희보다 먼저 하나님의 나라에 들어가리라",
+      "source_text_hash": "d5756b87999a0f7fecba80d01897ab1fd39b0181767ee332be176d4890d86e0e",
+      "translation_text_hash": "b730b791676a771af0f99284347f69da2409cdf506c63be39d403bd1e09c9339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘 중에 누가 아비의 뜻대로 하였느뇨 가로되 둘째 아들이니이다 예수께서 저희에게 이르시되 내가 진실로 너희에게 이르노니 세리들과 창기들이 너희보다 먼저 하나님의 나라에 들어가리라"
+      ],
+      "raw_text_hashes": [
+        "b730b791676a771af0f99284347f69da2409cdf506c63be39d403bd1e09c9339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:32",
+      "sequence": 23859,
+      "chapter_label": "MAT 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "For John came to you in the way of righteousness, and you didn’t believe him; but the tax collectors and the prostitutes believed him. When you saw it, you didn’t even repent afterward, that you might believe him.",
+      "ko": "요한이 의의 도로 너희에게 왔거늘 너희는 저를 믿지 아니하였으되 세리와 창기는 믿었으며 너희는 이것을 보고도 종시 뉘우쳐 믿지 아니하였도다",
+      "source_text_hash": "9c9461e815e36896b541e2b5335e7e6583e4ca6c2158cb0450519212a4d34acf",
+      "translation_text_hash": "253242ca5a1c35ed93d98aa11898321c0553314558f6159fcccccd971143e254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 의의 도로 너희에게 왔거늘 너희는 저를 믿지 아니하였으되 세리와 창기는 믿었으며 너희는 이것을 보고도 종시 뉘우쳐 믿지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "253242ca5a1c35ed93d98aa11898321c0553314558f6159fcccccd971143e254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:33",
+      "sequence": 23860,
+      "chapter_label": "MAT 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "“Hear another parable. There was a man who was a master of a household who planted a vineyard, set a hedge about it, dug a wine press in it, built a tower, leased it out to farmers, and went into another country.",
+      "ko": "다시 한 비유를 들으라 한 집 주인이 포도원을 만들고 산울로 두르고 거기 즙 짜는 구유를 파고 망대를 짓고 농부들에게 세로 주고 타국에 갔더니",
+      "source_text_hash": "3319cd3422f5bd3048bda7045ad9cf942ada969582deaf00e80a8c7306451071",
+      "translation_text_hash": "b5875d0de05d5d2ea0b7ab25260767c133f70b037434c629816c10ad6ce2d250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 한 비유를 들으라 한 집 주인이 포도원을 만들고 산울로 두르고 거기 즙 짜는 구유를 파고 망대를 짓고 농부들에게 세로 주고 타국에 갔더니"
+      ],
+      "raw_text_hashes": [
+        "b5875d0de05d5d2ea0b7ab25260767c133f70b037434c629816c10ad6ce2d250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:34",
+      "sequence": 23861,
+      "chapter_label": "MAT 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "When the season for the fruit came near, he sent his servants to the farmers to receive his fruit.",
+      "ko": "실과 때가 가까우매 그 실과를 받으려고 자기 종들을 농부들에게 보내니",
+      "source_text_hash": "c9a791dc09770a98b96990dca9b306b35844cff7fb01cf1ccad5f55e2cfd6795",
+      "translation_text_hash": "4c71924a5d099ef3489da8c2c28635cb0c637a9f6225937a6611eb65d0cbd08b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실과 때가 가까우매 그 실과를 받으려고 자기 종들을 농부들에게 보내니"
+      ],
+      "raw_text_hashes": [
+        "4c71924a5d099ef3489da8c2c28635cb0c637a9f6225937a6611eb65d0cbd08b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:35",
+      "sequence": 23862,
+      "chapter_label": "MAT 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "The farmers took his servants, beat one, killed another, and stoned another.",
+      "ko": "농부들이 종들을 잡아 하나는 심히 때리고 하나는 죽이고 하나는 돌로 쳤거늘",
+      "source_text_hash": "b43188e7ca2accc8ac8c6400ffb61f347177e047cc448ec9bc435b6f4a3f8aed",
+      "translation_text_hash": "d2e580b03b351afb5faf7ee55b7270839ff22bb7dbbbd283afe0d2250927baa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "농부들이 종들을 잡아 하나는 심히 때리고 하나는 죽이고 하나는 돌로 쳤거늘"
+      ],
+      "raw_text_hashes": [
+        "d2e580b03b351afb5faf7ee55b7270839ff22bb7dbbbd283afe0d2250927baa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:36",
+      "sequence": 23863,
+      "chapter_label": "MAT 21",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 36
+        }
+      ],
+      "en": "Again, he sent other servants more than the first; and they treated them the same way.",
+      "ko": "다시 다른 종들을 처음보다 많이 보내니 저희에게도 그렇게 하였는지라",
+      "source_text_hash": "f7b89bf7bfabe3d114eccac3b4b6066f18af18aecf104050e6a75a9e086fca85",
+      "translation_text_hash": "74eec3f761dfe65e219df63951e0dc4e981d5cb019e5952f3012da341437d9c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 다른 종들을 처음보다 많이 보내니 저희에게도 그렇게 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "74eec3f761dfe65e219df63951e0dc4e981d5cb019e5952f3012da341437d9c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:37",
+      "sequence": 23864,
+      "chapter_label": "MAT 21",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 37
+        }
+      ],
+      "en": "But afterward he sent to them his son, saying, ‘They will respect my son.’",
+      "ko": "후에 자기 아들을 보내며 가로되 저희가 내 아들은 공경하리라 하였더니",
+      "source_text_hash": "e2911fe65d7ca142941b6f8f988857dfb935eb64cb085a72818408feb01a95f6",
+      "translation_text_hash": "c4f43afe643af99d15e75bf2254f407c24b805b430d5edcbc8b7f3d2e2642dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 자기 아들을 보내며 가로되 저희가 내 아들은 공경하리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "c4f43afe643af99d15e75bf2254f407c24b805b430d5edcbc8b7f3d2e2642dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:38",
+      "sequence": 23865,
+      "chapter_label": "MAT 21",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 38
+        }
+      ],
+      "en": "But the farmers, when they saw the son, said among themselves, ‘This is the heir. Come, let’s kill him and seize his inheritance.’",
+      "ko": "농부들이 그 아들을 보고 서로 말하되 이는 상속자니 자 죽이고 그의 유업을 차지하자 하고",
+      "source_text_hash": "18833555f15feeffcc8e31a890da920136af65327867ad6ac26d54380d5a30d3",
+      "translation_text_hash": "47e8cb9421c063520aa456689e11b4d26211b3dcc72370afb2c7dc0070df61f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "농부들이 그 아들을 보고 서로 말하되 이는 상속자니 자 죽이고 그의 유업을 차지하자 하고"
+      ],
+      "raw_text_hashes": [
+        "47e8cb9421c063520aa456689e11b4d26211b3dcc72370afb2c7dc0070df61f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:39",
+      "sequence": 23866,
+      "chapter_label": "MAT 21",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 39
+        }
+      ],
+      "en": "So they took him and threw him out of the vineyard, then killed him.",
+      "ko": "이에 잡아 포도원 밖에 내어좇아 죽였느니라",
+      "source_text_hash": "b2860bf1392cf2447535df1c833bf90ec0908df09f0dc3797651544926fd5813",
+      "translation_text_hash": "e1b02f1f78ed728f71fec4d51f4265e2a3771272240145b840dd600151fe4184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 잡아 포도원 밖에 내어좇아 죽였느니라"
+      ],
+      "raw_text_hashes": [
+        "e1b02f1f78ed728f71fec4d51f4265e2a3771272240145b840dd600151fe4184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:40",
+      "sequence": 23867,
+      "chapter_label": "MAT 21",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 40
+        }
+      ],
+      "en": "When therefore the lord of the vineyard comes, what will he do to those farmers?”",
+      "ko": "그러면 포도원 주인이 올 때에 이 농부들을 어떻게 하겠느뇨",
+      "source_text_hash": "4fc549a60886b59a9d852b69017ee4d6f4361fa9ee5b863e1748907cbf056200",
+      "translation_text_hash": "13a2ab8551b0ce2cf974c084a24d5d9e6de35cfcae4d49507794d44d49f220b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 포도원 주인이 올 때에 이 농부들을 어떻게 하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "13a2ab8551b0ce2cf974c084a24d5d9e6de35cfcae4d49507794d44d49f220b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:41",
+      "sequence": 23868,
+      "chapter_label": "MAT 21",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 41
+        }
+      ],
+      "en": "They told him, “He will miserably destroy those miserable men, and will lease out the vineyard to other farmers who will give him the fruit in its season.”",
+      "ko": "저희가 말하되 이 악한 자들을 진멸하고 포도원은 제때에 실과를 바칠만한 다른 농부들에게 세로 줄찌니이다",
+      "source_text_hash": "a61ebf1dfcc3297eee77941ddf2fe43f13e637f4d6afdb66606e46374ebc8e37",
+      "translation_text_hash": "f5c9411aa55618bb71a037109d6dc6acd5a6189663e30ffae937be80d9901268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하되 이 악한 자들을 진멸하고 포도원은 제때에 실과를 바칠만한 다른 농부들에게 세로 줄찌니이다"
+      ],
+      "raw_text_hashes": [
+        "f5c9411aa55618bb71a037109d6dc6acd5a6189663e30ffae937be80d9901268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:42",
+      "sequence": 23869,
+      "chapter_label": "MAT 21",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 42
+        }
+      ],
+      "en": "Jesus said to them, “Did you never read in the Scriptures, ‘The stone which the builders rejected was made the head of the corner. This was from the Lord. It is marvelous in our eyes’?",
+      "ko": "예수께서 가라사대 너희가 성경에 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었나니 이것은 주로 말미암아 된것이요 우리 눈에 기이하도다 함을 읽어 본 일이 없느냐",
+      "source_text_hash": "a172e12016d858205ea0cf92aec2707ea859b2569af91e068dbe40a18b0e6252",
+      "translation_text_hash": "54cff76827e962f1107358f468bc3afb052012926bc87269e68c368e3370efef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희가 성경에 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었나니 이것은 주로 말미암아 된것이요 우리 눈에 기이하도다 함을 읽어 본 일이 없느냐"
+      ],
+      "raw_text_hashes": [
+        "54cff76827e962f1107358f468bc3afb052012926bc87269e68c368e3370efef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:43",
+      "sequence": 23870,
+      "chapter_label": "MAT 21",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 43
+        }
+      ],
+      "en": "“Therefore I tell you, God’s Kingdom will be taken away from you and will be given to a nation producing its fruit.",
+      "ko": "그러므로 내가 너희에게 이르노니 하나님의 나라를 너희는 빼앗기고 그 나라의 열매 맺는 백성이 받으리라",
+      "source_text_hash": "da7b2cd958578c2b87f51bdbc6ae90ff88770c3b5e59c83dec476be6d3f5bf71",
+      "translation_text_hash": "d89ce3055c7cf068d787382bc6b9d05ac01d3cd9af2f40b88c300abe7215026a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 이르노니 하나님의 나라를 너희는 빼앗기고 그 나라의 열매 맺는 백성이 받으리라"
+      ],
+      "raw_text_hashes": [
+        "d89ce3055c7cf068d787382bc6b9d05ac01d3cd9af2f40b88c300abe7215026a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:44",
+      "sequence": 23871,
+      "chapter_label": "MAT 21",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 44
+        }
+      ],
+      "en": "He who falls on this stone will be broken to pieces, but on whomever it will fall, it will scatter him as dust.”",
+      "ko": "이 돌 위에 떨어지는 자는 깨어지겠고 이 돌이 사람 위에 떨어지면 저를 가루로 만들어 흩으리라 하시니",
+      "source_text_hash": "80f5797e13da5f3820864cc6d75801b6276508b02c2aae0cd10a17bc85967db7",
+      "translation_text_hash": "6467efadcf9db2fabded8ffaa1d14804ec643957173d2d21cb85f33ceb5e01f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 돌 위에 떨어지는 자는 깨어지겠고 이 돌이 사람 위에 떨어지면 저를 가루로 만들어 흩으리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "6467efadcf9db2fabded8ffaa1d14804ec643957173d2d21cb85f33ceb5e01f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:45",
+      "sequence": 23872,
+      "chapter_label": "MAT 21",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 45
+        }
+      ],
+      "en": "When the chief priests and the Pharisees heard his parables, they perceived that he spoke about them.",
+      "ko": "대제사장들과 바리새인들이 예수의 비유를 듣고 자기들을 가리켜 말씀하심인줄 알고",
+      "source_text_hash": "2fe690d3d148bd33a92bd47229fd59082d39a5a12b3fbb5b921ac1d56b86950e",
+      "translation_text_hash": "a27d81431d676c88addeb2db8cf9798bddf6d0ae87153cdd86122ebd713fbbee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 바리새인들이 예수의 비유를 듣고 자기들을 가리켜 말씀하심인줄 알고"
+      ],
+      "raw_text_hashes": [
+        "a27d81431d676c88addeb2db8cf9798bddf6d0ae87153cdd86122ebd713fbbee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:21:46",
+      "sequence": 23873,
+      "chapter_label": "MAT 21",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 21,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 21,
+          "verse": 46
+        }
+      ],
+      "en": "When they sought to seize him, they feared the multitudes, because they considered him to be a prophet.",
+      "ko": "잡고자 하나 무리를 무서워하니 이는 저희가 예수를 선지자로 앎이었더라",
+      "source_text_hash": "16e401ddb003e1c7385b897bad894e3662a13add73a353158b379f005e8a8195",
+      "translation_text_hash": "312ac183187a752e79f22a46113126a5c821925cd5a63865dae35e09297ac37e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잡고자 하나 무리를 무서워하니 이는 저희가 예수를 선지자로 앎이었더라"
+      ],
+      "raw_text_hashes": [
+        "312ac183187a752e79f22a46113126a5c821925cd5a63865dae35e09297ac37e"
+      ]
+    }
+  ]
+}

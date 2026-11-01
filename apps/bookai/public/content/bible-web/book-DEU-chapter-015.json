@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:015",
+  "unit_ordinal": 168,
+  "unit_label": "DEU 15",
+  "book_code": "DEU",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:15:1",
+      "sequence": 5321,
+      "chapter_label": "DEU 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "At the end of every seven years, you shall cancel debts.",
+      "ko": "매 칠년 끝에 면제하라",
+      "source_text_hash": "43cd92e10075a2ec1065e48fd4ca691809d6bd63606430242cb65ba1eccf56e6",
+      "translation_text_hash": "c6764e0dc109b043c963e10d36e4c07a5b016af2fc3b57fc92833f114c5950e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 칠년 끝에 면제하라"
+      ],
+      "raw_text_hashes": [
+        "c6764e0dc109b043c963e10d36e4c07a5b016af2fc3b57fc92833f114c5950e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:2",
+      "sequence": 5322,
+      "chapter_label": "DEU 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "This is the way it shall be done: every creditor shall release that which he has lent to his neighbor. He shall not require payment from his neighbor and his brother, because the LORD’s release has been proclaimed.",
+      "ko": "면제의 규례는 이러하니라 무릇 그 이웃에게 꾸어준 채주는 그것을 면제하고 그 이웃에게나 그 형제에게 독촉하지 말지니 이 해는 여호와의 면제년이라 칭함이니라",
+      "source_text_hash": "cf07e7a3e5fe21cedb12cedef22786e3004f009fedb98a75f75e423d10d45286",
+      "translation_text_hash": "ac38c37281d6f0f43a336c0cee029150117452f6aa0b300f26804dad7eb3785e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "면제의 규례는 이러하니라 무릇 그 이웃에게 꾸어준 채주는 그것을 면제하고 그 이웃에게나 그 형제에게 독촉하지 말지니 이 해는 여호와의 면제년이라 칭함이니라"
+      ],
+      "raw_text_hashes": [
+        "ac38c37281d6f0f43a336c0cee029150117452f6aa0b300f26804dad7eb3785e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:3",
+      "sequence": 5323,
+      "chapter_label": "DEU 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Of a foreigner you may require it; but whatever of yours is with your brother, your hand shall release.",
+      "ko": "이방인에게는 네가 독촉하려니와 네 형제에게 꾸인 것은 네 손에서 면제하라",
+      "source_text_hash": "24a52658cd573fddb28a59e62ceea5ecc9eca2ef443adbfa54a0dbe93ef7633a",
+      "translation_text_hash": "41138c31c1119679e6445d1c90161f822ff50fd32ba043b7603a6e7948c7aed8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인에게는 네가 독촉하려니와 네 형제에게 꾸인 것은 네 손에서 면제하라"
+      ],
+      "raw_text_hashes": [
+        "41138c31c1119679e6445d1c90161f822ff50fd32ba043b7603a6e7948c7aed8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:4",
+      "sequence": 5324,
+      "chapter_label": "DEU 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "However there will be no poor with you (for the LORD will surely bless you in the land which the LORD your God gives you for an inheritance to possess)",
+      "ko": "네가 만일 네 하나님 여호와의 말씀만 듣고 내가 오늘날 네게 명하는 그 명령을 다 지켜 행하면 네 하나님 여호와께서 네게 유업으로 주신 땅에서 네가 정녕 복을 받으리니 너희 중에 가난한 자가 없으리라",
+      "source_text_hash": "6c1f2d2dbf2672096de82fa10bb2210a084d17d19959ec6bbf8a7468a38cde3c",
+      "translation_text_hash": "634673236ec410b607bf671f7451545afb57eac76f69397e881c58518c1e0667",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 하나님 여호와의 말씀만 듣고 내가 오늘날 네게 명하는 그 명령을 다 지켜 행하면 네 하나님 여호와께서 네게 유업으로 주신 땅에서 네가 정녕 복을 받으리니 너희 중에 가난한 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "634673236ec410b607bf671f7451545afb57eac76f69397e881c58518c1e0667"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:5",
+      "sequence": 5325,
+      "chapter_label": "DEU 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "if only you diligently listen to the LORD your God’s voice, to observe to do all this commandment which I command you today.",
+      "ko": "(4절에 포함되어 있음)",
+      "source_text_hash": "dca3106e9bfeb2b28b94f6ac53ce8b8eef4d9c039fa7929bc130e36a88708e9c",
+      "translation_text_hash": "3f2d24b494aa1f4596777f5917406608bab1db869a8f06d86e52d0570ed93359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(4절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "3f2d24b494aa1f4596777f5917406608bab1db869a8f06d86e52d0570ed93359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:6",
+      "sequence": 5326,
+      "chapter_label": "DEU 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "For the LORD your God will bless you, as he promised you. You will lend to many nations, but you will not borrow. You will rule over many nations, but they will not rule over you.",
+      "ko": "네 하나님 여호와께서 네게 허락하신 대로 네게 복을 주시리니 네가 여러 나라에 꾸어 줄지라도 너는 꾸지 아니하겠고 네가 여러 나라를 치리할지라도 너는 치리함을 받지 아니하리라",
+      "source_text_hash": "07fa72d7202b90a176c9ce4ddcf913e68e23e3342326a0ae05602055825e5156",
+      "translation_text_hash": "8ca79dcb12ab06e0216adf60b82c880e8353bde0bf4b9a2606d9078fefdaeab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 허락하신 대로 네게 복을 주시리니 네가 여러 나라에 꾸어 줄지라도 너는 꾸지 아니하겠고 네가 여러 나라를 치리할지라도 너는 치리함을 받지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "8ca79dcb12ab06e0216adf60b82c880e8353bde0bf4b9a2606d9078fefdaeab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:7",
+      "sequence": 5327,
+      "chapter_label": "DEU 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "If a poor man, one of your brothers, is with you within any of your gates in your land which the LORD your God gives you, you shall not harden your heart, nor shut your hand from your poor brother;",
+      "ko": "네 하나님 여호와께서 네게 주신 땅 어느 성읍에서든지 가난한 형제가 너와 함께 거하거든 그 가난한 형제에게 네 마음을 강퍅히 하지 말며 네 손을 움켜 쥐지 말고",
+      "source_text_hash": "e40953e0d9cafd19572b80083518a426befc4cdb2ca783da645ea49058d7e50e",
+      "translation_text_hash": "b62384f791d7ee8e91f7a47db5d3227680ef4872c79d50fe3caa5bd434146206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주신 땅 어느 성읍에서든지 가난한 형제가 너와 함께 거하거든 그 가난한 형제에게 네 마음을 강퍅히 하지 말며 네 손을 움켜 쥐지 말고"
+      ],
+      "raw_text_hashes": [
+        "b62384f791d7ee8e91f7a47db5d3227680ef4872c79d50fe3caa5bd434146206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:8",
+      "sequence": 5328,
+      "chapter_label": "DEU 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "but you shall surely open your hand to him, and shall surely lend him sufficient for his need, which he lacks.",
+      "ko": "반드시 네 손을 그에게 펴서 그 요구하는대로 쓸 것을 넉넉히 꾸어주라",
+      "source_text_hash": "f4373effd05ecf99d58d0fe41939685942012e5fc9984fbd89e8595706680fbb",
+      "translation_text_hash": "6ab56c97ed35015596f87a9bbd598b9955233913e7323f0a82d7ee6f4ea26fd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "반드시 네 손을 그에게 펴서 그 요구하는대로 쓸 것을 넉넉히 꾸어주라"
+      ],
+      "raw_text_hashes": [
+        "6ab56c97ed35015596f87a9bbd598b9955233913e7323f0a82d7ee6f4ea26fd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:9",
+      "sequence": 5329,
+      "chapter_label": "DEU 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "Beware that there not be a wicked thought in your heart, saying, “The seventh year, the year of release, is at hand,” and your eye be evil against your poor brother and you give him nothing; and he cry to the LORD against you, and it be sin to you.",
+      "ko": "삼가 너는 마음에 악념을 품지 말라 곧 이르기를 제 칠년 면제년이 가까왔다 하고 네 궁핍한 형제에게 악한 눈을 들고 아무것도 주지 아니하면 그가 너를 여호와께 호소하리니 네가 죄를 얻을 것이라",
+      "source_text_hash": "bff46c47af4cf4c0b4cee0c4cebbcfd5254d81f3217461a1ed71cb9d3c045bbb",
+      "translation_text_hash": "e51c6a14d81037a44ca2790c6c5cda39605f556e17c6ebd4c987f5461d43e116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼가 너는 마음에 악념을 품지 말라 곧 이르기를 제 칠년 면제년이 가까왔다 하고 네 궁핍한 형제에게 악한 눈을 들고 아무것도 주지 아니하면 그가 너를 여호와께 호소하리니 네가 죄를 얻을 것이라"
+      ],
+      "raw_text_hashes": [
+        "e51c6a14d81037a44ca2790c6c5cda39605f556e17c6ebd4c987f5461d43e116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:10",
+      "sequence": 5330,
+      "chapter_label": "DEU 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "You shall surely give, and your heart shall not be grieved when you give to him, because it is for this thing the LORD your God will bless you in all your work and in all that you put your hand to.",
+      "ko": "너는 반드시 그에게 구제할 것이요, 구제할 때에는 아끼는 마음을 품지 말 것이니라 이로 인하여 네 하나님 여호와께서 네 범사와 네 손으로 하는바에 네게 복을 주시리라",
+      "source_text_hash": "5248ec05feb70950d7601ec1b8ba15f3553c929cdc78effad7930210e2881e90",
+      "translation_text_hash": "4a0c9db1536d679e5d84698f189ef7c281ce8d4e2da22a0389a529b2300e5767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 반드시 그에게 구제할 것이요, 구제할 때에는 아끼는 마음을 품지 말 것이니라 이로 인하여 네 하나님 여호와께서 네 범사와 네 손으로 하는바에 네게 복을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "4a0c9db1536d679e5d84698f189ef7c281ce8d4e2da22a0389a529b2300e5767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:11",
+      "sequence": 5331,
+      "chapter_label": "DEU 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "For the poor will never cease out of the land. Therefore I command you to surely open your hand to your brother, to your needy, and to your poor, in your land.",
+      "ko": "땅에는 언제든지 가난한 자가 그치지 아니하겠으므로 내가 네게 명하여 이르노니 너는 반드시 네 경내 네 형제의 곤란한 자와 궁핍한 자에게 네 손을 펼지니라",
+      "source_text_hash": "363c7180c52382a69e77e0d2ace40c595958adbeb60709170268c376b2b30c6f",
+      "translation_text_hash": "7ca4debdf9e2691b5d806bc2b87aeefb57cfa5a3cebf63edf622aa821667214f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에는 언제든지 가난한 자가 그치지 아니하겠으므로 내가 네게 명하여 이르노니 너는 반드시 네 경내 네 형제의 곤란한 자와 궁핍한 자에게 네 손을 펼지니라"
+      ],
+      "raw_text_hashes": [
+        "7ca4debdf9e2691b5d806bc2b87aeefb57cfa5a3cebf63edf622aa821667214f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:12",
+      "sequence": 5332,
+      "chapter_label": "DEU 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "If your brother, a Hebrew man, or a Hebrew woman, is sold to you and serves you six years, then in the seventh year you shall let him go free from you.",
+      "ko": "네 동족 히브리 남자나 히브리 여자가 네게 팔렸다 하자 만일 육년을 너를 섬겼거든 제 칠년에 너는 그를 놓아 자유하게 할 것이요",
+      "source_text_hash": "3f509521b61c1028c726fbb199a218016b47866f48c6fbb9c07195b3e56c8718",
+      "translation_text_hash": "89d5f7d951376ca42dfec990688461f600ca08c96f8656de565e5dad3fce0774",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 동족 히브리 남자나 히브리 여자가 네게 팔렸다 하자 만일 육년을 너를 섬겼거든 제 칠년에 너는 그를 놓아 자유하게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "89d5f7d951376ca42dfec990688461f600ca08c96f8656de565e5dad3fce0774"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:13",
+      "sequence": 5333,
+      "chapter_label": "DEU 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "When you let him go free from you, you shall not let him go empty.",
+      "ko": "그를 놓아 자유하게 할 때에는 공수로 가게 하지 말고",
+      "source_text_hash": "fbabfd45e17af7cb2361a4a269b5000bcc752c116c96ab161a2e97ae272f3076",
+      "translation_text_hash": "9bf1dbbf51565cb17ecb2974e1cb37ea08135b1b0566b4279f6ffa519884e965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 놓아 자유하게 할 때에는 공수로 가게 하지 말고"
+      ],
+      "raw_text_hashes": [
+        "9bf1dbbf51565cb17ecb2974e1cb37ea08135b1b0566b4279f6ffa519884e965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:14",
+      "sequence": 5334,
+      "chapter_label": "DEU 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "You shall furnish him liberally out of your flock, out of your threshing floor, and out of your wine press. As the LORD your God has blessed you, you shall give to him.",
+      "ko": "네 양 무리 중에서와 타작 마당에서와 포도주 틀에서 그에게 후히 줄지니 곧 네 하나님 여호와께서 네게 복을 주신대로 그에게 줄지니라",
+      "source_text_hash": "be83e255f248e64c5155d445c0ae112f24cb8659853ae014dc1f05fa79f537ab",
+      "translation_text_hash": "94c879e88de2a8c78b782176c17080b24e581c7fa0a79423d14504f8c72d0d63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 양 무리 중에서와 타작 마당에서와 포도주 틀에서 그에게 후히 줄지니 곧 네 하나님 여호와께서 네게 복을 주신대로 그에게 줄지니라"
+      ],
+      "raw_text_hashes": [
+        "94c879e88de2a8c78b782176c17080b24e581c7fa0a79423d14504f8c72d0d63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:15",
+      "sequence": 5335,
+      "chapter_label": "DEU 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "You shall remember that you were a slave in the land of Egypt, and the LORD your God redeemed you. Therefore I command you this thing today.",
+      "ko": "너는 애굽 땅에서 종 되었던 것과 네 하나님 여호와께서 너를 속하셨음을 기억하라 그를 인하여 내가 오늘날 이같이 네게 명하노라",
+      "source_text_hash": "cd516ce8f25ac3a96ea0c268d9c174b7b965a5fccbe887f49221de772c06b4a5",
+      "translation_text_hash": "e2d44cdcf58c5fdb8c65cd239610387f858dc6b5fd82c156060bcac66565f9ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 애굽 땅에서 종 되었던 것과 네 하나님 여호와께서 너를 속하셨음을 기억하라 그를 인하여 내가 오늘날 이같이 네게 명하노라"
+      ],
+      "raw_text_hashes": [
+        "e2d44cdcf58c5fdb8c65cd239610387f858dc6b5fd82c156060bcac66565f9ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:16",
+      "sequence": 5336,
+      "chapter_label": "DEU 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "It shall be, if he tells you, “I will not go out from you,” because he loves you and your house, because he is well with you,",
+      "ko": "종이 만일 너와 네 집을 사랑하므로 너와 동거하기를 좋게 여겨 네게 향하여 내가 주인을 떠나지 아니하겠노라 하거든",
+      "source_text_hash": "03668f8593a50ec317e45208e9293af4e0b6c6ebe1389c3cc8f4c62a5666435d",
+      "translation_text_hash": "860b520c3ffe156f254ae3e3487b4faedbb8261340f10dbe386e79d0b6328ba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 만일 너와 네 집을 사랑하므로 너와 동거하기를 좋게 여겨 네게 향하여 내가 주인을 떠나지 아니하겠노라 하거든"
+      ],
+      "raw_text_hashes": [
+        "860b520c3ffe156f254ae3e3487b4faedbb8261340f10dbe386e79d0b6328ba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:17",
+      "sequence": 5337,
+      "chapter_label": "DEU 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "then you shall take an awl, and thrust it through his ear to the door, and he shall be your servant forever. Also to your female servant you shall do likewise.",
+      "ko": "송곳을 취하여 그의 귀를 문에 대고 뚫으라 그리하면 그가 영영히 네 종이 되리라 네 여종에게도 일례로 할찌니라",
+      "source_text_hash": "6f52196c86d718dbd8f0fc91664b6549ea18514bbeff2f239fecfa9d4c2bf714",
+      "translation_text_hash": "c65b71e8723cb666bd5ef1ff3f447739154fe458ad5c099461a5be795741fe34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "송곳을 취하여 그의 귀를 문에 대고 뚫으라 그리하면 그가 영영히 네 종이 되리라 네 여종에게도 일례로 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c65b71e8723cb666bd5ef1ff3f447739154fe458ad5c099461a5be795741fe34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:18",
+      "sequence": 5338,
+      "chapter_label": "DEU 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "It shall not seem hard to you when you let him go free from you, for he has been double the value of a hired hand as he served you six years. The LORD your God will bless you in all that you do.",
+      "ko": "그가 육년 동안에 품군의 삯의 배나 받을만큼 너를 섬겼은즉 너는 그를 놓아 자유하게 하기를 어렵게 여기지 말라 그리하면 네 하나님 여호와께서 너의 범사에 네게 복을 주시리라",
+      "source_text_hash": "4f00ff68c2514e512d4e2736daf6a4037bc75151980e3724d6273a70d84a3560",
+      "translation_text_hash": "601301a1b927751d4cbc968885235203913228cd8224960a27b35984111c7c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 육년 동안에 품군의 삯의 배나 받을만큼 너를 섬겼은즉 너는 그를 놓아 자유하게 하기를 어렵게 여기지 말라 그리하면 네 하나님 여호와께서 너의 범사에 네게 복을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "601301a1b927751d4cbc968885235203913228cd8224960a27b35984111c7c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:19",
+      "sequence": 5339,
+      "chapter_label": "DEU 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "You shall dedicate all the firstborn males that are born of your herd and of your flock to the LORD your God. You shall do no work with the firstborn of your herd, nor shear the firstborn of your flock.",
+      "ko": "너의 우양의 처음 난 수컷은 구별하여 네 하나님 여호와께 드릴 것이니 네 소의 첫 새끼는 부리지 말고 네 양의 첫 새끼의 털은 깎지 말고",
+      "source_text_hash": "21c8b2e1f0b74e4bfa9717dc8e0076afa582a230deb30d0c153a63ed8a48b71e",
+      "translation_text_hash": "d1b8762a9c616827de10500f5590c46cc49214e59448b1952b1343fe2861d0b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 우양의 처음 난 수컷은 구별하여 네 하나님 여호와께 드릴 것이니 네 소의 첫 새끼는 부리지 말고 네 양의 첫 새끼의 털은 깎지 말고"
+      ],
+      "raw_text_hashes": [
+        "d1b8762a9c616827de10500f5590c46cc49214e59448b1952b1343fe2861d0b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:20",
+      "sequence": 5340,
+      "chapter_label": "DEU 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "You shall eat it before the LORD your God year by year in the place which the LORD shall choose, you and your household.",
+      "ko": "너와 네 가족이 매년에 여호와의 택하신 곳 네 하나님 여호와 앞에서 먹을찌니라",
+      "source_text_hash": "75f85ba7ad46ba5c40280f9c30a660f48db335f6f22490132e1d430e1a039cbf",
+      "translation_text_hash": "05157a985719672b22508327287f5fede28fc89ab4e2bdcc078b1b5fc2028e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 가족이 매년에 여호와의 택하신 곳 네 하나님 여호와 앞에서 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "05157a985719672b22508327287f5fede28fc89ab4e2bdcc078b1b5fc2028e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:21",
+      "sequence": 5341,
+      "chapter_label": "DEU 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "If it has any defect—is lame or blind, or has any defect whatever, you shall not sacrifice it to the LORD your God.",
+      "ko": "그러나 그 짐승이 흠이 있어서 절거나 눈이 멀었거나 무슨 흠이 있든지 네 하나님 여호와께 잡아 드리지 못할찌니",
+      "source_text_hash": "d93920dffa0bc79312452003aafd3d75c6aa70792946e544e57d6d671a6eed53",
+      "translation_text_hash": "953c1a182154cca48cc343edc1432ca092ab1e34e1c25c840a72cbce885cf671",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 짐승이 흠이 있어서 절거나 눈이 멀었거나 무슨 흠이 있든지 네 하나님 여호와께 잡아 드리지 못할찌니"
+      ],
+      "raw_text_hashes": [
+        "953c1a182154cca48cc343edc1432ca092ab1e34e1c25c840a72cbce885cf671"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:22",
+      "sequence": 5342,
+      "chapter_label": "DEU 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "You shall eat it within your gates. The unclean and the clean shall eat it alike, as the gazelle and as the deer.",
+      "ko": "네 성중에서 먹되 부정한 자나 정한 자가 다 같이 먹기를 노루와 사슴을 먹음 같이 할 것이요",
+      "source_text_hash": "801d59f3327c496938f5662e74f6d48d3891065139bd01fe9d89a574524c7e50",
+      "translation_text_hash": "e612c57ecc3948c3bf6af3c3a2a88d0101f2d9c5cffbb3f6b6efeb9aac8186f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 성중에서 먹되 부정한 자나 정한 자가 다 같이 먹기를 노루와 사슴을 먹음 같이 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "e612c57ecc3948c3bf6af3c3a2a88d0101f2d9c5cffbb3f6b6efeb9aac8186f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:15:23",
+      "sequence": 5343,
+      "chapter_label": "DEU 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "Only you shall not eat its blood. You shall pour it out on the ground like water.",
+      "ko": "오직 피는 먹지 말고 물 같이 땅에 쏟을찌니라",
+      "source_text_hash": "41e9448dec4e93dc09293ac2bee08053f5c192de82f758e4040e3faae4e317af",
+      "translation_text_hash": "8382613011c397de7261986b55cdb6b739593b301b3cb7a6e6aaeca8523d90f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 피는 먹지 말고 물 같이 땅에 쏟을찌니라"
+      ],
+      "raw_text_hashes": [
+        "8382613011c397de7261986b55cdb6b739593b301b3cb7a6e6aaeca8523d90f1"
+      ]
+    }
+  ]
+}

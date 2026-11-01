@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:008",
+  "unit_ordinal": 965,
+  "unit_label": "MRK 8",
+  "book_code": "MRK",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:8:1",
+      "sequence": 24502,
+      "chapter_label": "MRK 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "In those days, when there was a very great multitude, and they had nothing to eat, Jesus called his disciples to himself and said to them,",
+      "ko": "그 즈음에 또 큰 무리가 있어 먹을 것이 없는지라 예수께서 제자들을 불러 이르시되",
+      "source_text_hash": "f3c741b698e117dcd6bea667fdddcf918f60f467563214d5d81a697938296ba1",
+      "translation_text_hash": "473302a40318b5246194e77ba2341933034ba8a6d3b52fbf62927a909539ba94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 즈음에 또 큰 무리가 있어 먹을 것이 없는지라 예수께서 제자들을 불러 이르시되"
+      ],
+      "raw_text_hashes": [
+        "473302a40318b5246194e77ba2341933034ba8a6d3b52fbf62927a909539ba94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:2",
+      "sequence": 24503,
+      "chapter_label": "MRK 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "“I have compassion on the multitude, because they have stayed with me now three days and have nothing to eat.",
+      "ko": "내가 무리를 불쌍히 여기노라 저희가 나와 함께 있은지 이미 사흘이매 먹을 것이 없도다",
+      "source_text_hash": "09b25ca2af682bddd0d2c6eda25a8d38fe65a288e0629f415dd8a35e1833dfed",
+      "translation_text_hash": "35b735b9b4e53510bc8f75448c96d6d2c4645bff910a665c1759669b9e8d6a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무리를 불쌍히 여기노라 저희가 나와 함께 있은지 이미 사흘이매 먹을 것이 없도다"
+      ],
+      "raw_text_hashes": [
+        "35b735b9b4e53510bc8f75448c96d6d2c4645bff910a665c1759669b9e8d6a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:3",
+      "sequence": 24504,
+      "chapter_label": "MRK 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "If I send them away fasting to their home, they will faint on the way, for some of them have come a long way.”",
+      "ko": "만일 내가 저희를 굶겨 집으로 보내면 길에서 기진하리라 그 중에는 멀리서 온 사람도 있느니라",
+      "source_text_hash": "140e3efa69bb26d364ac81ce86a3469050f5a2ae24de1050e15ac14cc38fc88d",
+      "translation_text_hash": "c9dfe36121847714bbe55534ea589ffbfee8bc79094023c03418970138dcbf8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 저희를 굶겨 집으로 보내면 길에서 기진하리라 그 중에는 멀리서 온 사람도 있느니라"
+      ],
+      "raw_text_hashes": [
+        "c9dfe36121847714bbe55534ea589ffbfee8bc79094023c03418970138dcbf8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:4",
+      "sequence": 24505,
+      "chapter_label": "MRK 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "His disciples answered him, “From where could one satisfy these people with bread here in a deserted place?”",
+      "ko": "제자들이 대답하되 이 광야에서 어디서 떡을 얻어 이 사람들로 배부르게 할 수 있으리이까",
+      "source_text_hash": "48db5f030418d40ca66fbaaa01220d97c5c038f3655c2052274b389a2c9eb936",
+      "translation_text_hash": "addc453102fde97e53ffad63f8f29bcd1be4257c17c651322401e0617019f830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 대답하되 이 광야에서 어디서 떡을 얻어 이 사람들로 배부르게 할 수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "addc453102fde97e53ffad63f8f29bcd1be4257c17c651322401e0617019f830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:5",
+      "sequence": 24506,
+      "chapter_label": "MRK 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "He asked them, “How many loaves do you have?”They said, “Seven.”",
+      "ko": "예수께서 물으시되 너희에게 떡 몇 개나 있느냐 가로되 일곱이로소이다 하거늘",
+      "source_text_hash": "82e9f31067eb3b9b383fb26004dffc86d75ce6abbc486f22a560bf6910bcd4b6",
+      "translation_text_hash": "1010ee777441cbafeed1e99db9d814cdc6d3b1422efd254b0f4415dfcc298b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 물으시되 너희에게 떡 몇 개나 있느냐 가로되 일곱이로소이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "1010ee777441cbafeed1e99db9d814cdc6d3b1422efd254b0f4415dfcc298b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:6",
+      "sequence": 24507,
+      "chapter_label": "MRK 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "He commanded the multitude to sit down on the ground, and he took the seven loaves. Having given thanks, he broke them and gave them to his disciples to serve, and they served the multitude.",
+      "ko": "예수께서 무리를 명하사 땅에 앉게 하시고 떡 일곱 개를 가지사 축사하시고 떼어 제자들에게 주어 그 앞에 놓게 하시니 제자들이 무리 앞에 놓더라",
+      "source_text_hash": "37d29f174ad45c5a5dcca44d29721f12995f39d830de28f8c0be2a614eb74e0e",
+      "translation_text_hash": "56ec7c3e46e5de54c5a78a2ff3d1e694b0396656265d857fb544c73731eaa29a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리를 명하사 땅에 앉게 하시고 떡 일곱 개를 가지사 축사하시고 떼어 제자들에게 주어 그 앞에 놓게 하시니 제자들이 무리 앞에 놓더라"
+      ],
+      "raw_text_hashes": [
+        "56ec7c3e46e5de54c5a78a2ff3d1e694b0396656265d857fb544c73731eaa29a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:7",
+      "sequence": 24508,
+      "chapter_label": "MRK 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "They also had a few small fish. Having blessed them, he said to serve these also.",
+      "ko": "또 작은 생선 두어 마리가 있는지라 이에 축복하시고 명하사 이것도 그 앞에 놓게 하시니",
+      "source_text_hash": "dcf001eca8267d3e4b814a6f2582234b98a9c0237c16bfa8c3cd836509c95522",
+      "translation_text_hash": "c729c02bac0d68d7a28020c99ec70fe8e1e1dc1af91b0d60d7a47290f8b32def",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 작은 생선 두어 마리가 있는지라 이에 축복하시고 명하사 이것도 그 앞에 놓게 하시니"
+      ],
+      "raw_text_hashes": [
+        "c729c02bac0d68d7a28020c99ec70fe8e1e1dc1af91b0d60d7a47290f8b32def"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:8",
+      "sequence": 24509,
+      "chapter_label": "MRK 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "They ate and were filled. They took up seven baskets of broken pieces that were left over.",
+      "ko": "배불리 먹고 남은 조각 일곱 광주리를 거두었으며",
+      "source_text_hash": "dd59c7a1b5e85848b18de338778476da3d217e397f7d5c1affaf3509747c9e59",
+      "translation_text_hash": "ab10cdd39854332d762cd2e0b07c8151435be1c8670807c571cd69af19aba352",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배불리 먹고 남은 조각 일곱 광주리를 거두었으며"
+      ],
+      "raw_text_hashes": [
+        "ab10cdd39854332d762cd2e0b07c8151435be1c8670807c571cd69af19aba352"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:9",
+      "sequence": 24510,
+      "chapter_label": "MRK 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Those who had eaten were about four thousand. Then he sent them away.",
+      "ko": "사람은 약 사천 명이었더라 예수께서 저희를 흩어 보내시고",
+      "source_text_hash": "aeac6865dea356d40d96d3d41989c1c16f80e3be488b39a5e00f725c1997e973",
+      "translation_text_hash": "ced94817e83b8ceacea6f964c01cd88ce6088c16aceac77b0fc0baf61ba5717e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 약 사천 명이었더라 예수께서 저희를 흩어 보내시고"
+      ],
+      "raw_text_hashes": [
+        "ced94817e83b8ceacea6f964c01cd88ce6088c16aceac77b0fc0baf61ba5717e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:10",
+      "sequence": 24511,
+      "chapter_label": "MRK 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Immediately he entered into the boat with his disciples and came into the region of Dalmanutha.",
+      "ko": "곧 제자들과 함께 배에 오르사 달마누다 지방으로 가시니라",
+      "source_text_hash": "3e3b419df5680e3c33932b6926b503e843ca3a12dad4cada89f9ab09967861f1",
+      "translation_text_hash": "5b8ed7b9a7376b8c16fa012d52405e103b295b773db139143f19a175e0ce62ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 제자들과 함께 배에 오르사 달마누다 지방으로 가시니라"
+      ],
+      "raw_text_hashes": [
+        "5b8ed7b9a7376b8c16fa012d52405e103b295b773db139143f19a175e0ce62ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:11",
+      "sequence": 24512,
+      "chapter_label": "MRK 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "The Pharisees came out and began to question him, seeking from him a sign from heaven and testing him.",
+      "ko": "바리새인들이 나와서 예수께 힐난하며 그를 시험하여 하늘로서 오는 표적을 구하거늘",
+      "source_text_hash": "e9cd94adf7c2379b96e426d4ae7d97dfee2a9c953c2a80b83b409ec9723bfc51",
+      "translation_text_hash": "77aed0a7a5c19380370de1ba0c6cae4e609fcdc6b06423417ad4313fa2d0278e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 나와서 예수께 힐난하며 그를 시험하여 하늘로서 오는 표적을 구하거늘"
+      ],
+      "raw_text_hashes": [
+        "77aed0a7a5c19380370de1ba0c6cae4e609fcdc6b06423417ad4313fa2d0278e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:12",
+      "sequence": 24513,
+      "chapter_label": "MRK 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "He sighed deeply in his spirit and said, “Why does this generationseek a sign? Most certainly I tell you, no sign will be given to this generation.”",
+      "ko": "예수께서 마음 속에 깊이 탄식하시며 가라사대 어찌하여 이 세대가 표적을 구하느냐 내가 진실로 너희에게 이르노니 이 세대에게 표적을 주시지 아니하리라 하시고",
+      "source_text_hash": "5809d89fd4af92b74432a6cae96756717c415078d1ef657940427f275905f16a",
+      "translation_text_hash": "2cae463e9704c7cb3b61380707aad5f39d97baef5be7d090d9e92006cc64d7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 마음 속에 깊이 탄식하시며 가라사대 어찌하여 이 세대가 표적을 구하느냐 내가 진실로 너희에게 이르노니 이 세대에게 표적을 주시지 아니하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "2cae463e9704c7cb3b61380707aad5f39d97baef5be7d090d9e92006cc64d7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:13",
+      "sequence": 24514,
+      "chapter_label": "MRK 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "He left them, and again entering into the boat, departed to the other side.",
+      "ko": "저희를 떠나 다시 배에 올라 건너편으로 가시니라",
+      "source_text_hash": "a661df85f7828a9eca719c5003cb91dd1baae9fb81c5ae074378051cee827c9d",
+      "translation_text_hash": "2dddbeee164dd007f180fca250dc2b56076162796073aed44021a50921fb25ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 떠나 다시 배에 올라 건너편으로 가시니라"
+      ],
+      "raw_text_hashes": [
+        "2dddbeee164dd007f180fca250dc2b56076162796073aed44021a50921fb25ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:14",
+      "sequence": 24515,
+      "chapter_label": "MRK 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "They forgot to take bread; and they didn’t have more than one loaf in the boat with them.",
+      "ko": "제자들이 떡 가져오기를 잊었으매 배에 떡 한 개 밖에 저희에게 없더라",
+      "source_text_hash": "8aeb162b6c8761d4320b1b765da659b5c44af81b33a94e1789600bbe9c9904e8",
+      "translation_text_hash": "e462341a795b5f250bca819c74b6f52211fe26c9435607d39dc2ae8ba34b4148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 떡 가져오기를 잊었으매 배에 떡 한 개 밖에 저희에게 없더라"
+      ],
+      "raw_text_hashes": [
+        "e462341a795b5f250bca819c74b6f52211fe26c9435607d39dc2ae8ba34b4148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:15",
+      "sequence": 24516,
+      "chapter_label": "MRK 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He warned them, saying, “Take heed: beware of the yeast of the Pharisees and the yeast of Herod.”",
+      "ko": "예수께서 경계하여 가라사대 삼가 바리새인들의 누룩과 헤롯의 누룩을 주의하라 하신대",
+      "source_text_hash": "2fdd4574eb47cf46ad19e8afddb19049544ea40567bac9d9ea66b7e0b46db052",
+      "translation_text_hash": "b9f71f43ae63e0bcdca9ffc26471755303302bd1154e9117f1317f6b811233be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 경계하여 가라사대 삼가 바리새인들의 누룩과 헤롯의 누룩을 주의하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "b9f71f43ae63e0bcdca9ffc26471755303302bd1154e9117f1317f6b811233be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:16",
+      "sequence": 24517,
+      "chapter_label": "MRK 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "They reasoned with one another, saying, “It’s because we have no bread.”",
+      "ko": "제자들이 서로 의논하기를 이는 우리에게 떡이 없음이로다 하거늘",
+      "source_text_hash": "fb8788800316fa17a887415ced35627337995afb6bd80cdcbc5a5ffc82f26e49",
+      "translation_text_hash": "284c85ed0536c449a33f1b85d9757bd8956835086341a93538ab961e87de1081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 서로 의논하기를 이는 우리에게 떡이 없음이로다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "284c85ed0536c449a33f1b85d9757bd8956835086341a93538ab961e87de1081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:17",
+      "sequence": 24518,
+      "chapter_label": "MRK 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus, perceiving it, said to them, “Why do you reason that it’s because you have no bread? Don’t you perceive yet or understand? Is your heart still hardened?",
+      "ko": "예수께서 아시고 이르시되 너희가 어찌 떡이 없음으로 의논하느냐 아직도 알지 못하며 깨닫지 못하느냐 너희 마음이 둔하냐",
+      "source_text_hash": "40a3443d864d7a2d697a6b1cce42636c840107e43d5a5796443e53ae5c6a1498",
+      "translation_text_hash": "759501e60a750003301bff98a029c0885a19f67ba629833038ad360bf1d9c450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 아시고 이르시되 너희가 어찌 떡이 없음으로 의논하느냐 아직도 알지 못하며 깨닫지 못하느냐 너희 마음이 둔하냐"
+      ],
+      "raw_text_hashes": [
+        "759501e60a750003301bff98a029c0885a19f67ba629833038ad360bf1d9c450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:18",
+      "sequence": 24519,
+      "chapter_label": "MRK 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Having eyes, don’t you see? Having ears, don’t you hear? Don’t you remember?",
+      "ko": "너희가 눈이 있어도 보지 못하며 귀가 있어도 듣지 못하느냐 또 기억지 못하느냐",
+      "source_text_hash": "d7943148a926323cbd4d800ffacf745329391970d26e248527db143a9401117d",
+      "translation_text_hash": "686282d103de317e3e53a622f77d8444190190e040ee77755d185d988c86297e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 눈이 있어도 보지 못하며 귀가 있어도 듣지 못하느냐 또 기억지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "686282d103de317e3e53a622f77d8444190190e040ee77755d185d988c86297e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:19",
+      "sequence": 24520,
+      "chapter_label": "MRK 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "When I broke the five loaves among the five thousand, how many baskets full of broken pieces did you take up?”They told him, “Twelve.”",
+      "ko": "내가 떡 다섯 개를 오천명에게 떼어 줄 때에 조각 몇 바구니를 거두었더냐 가로되 열 둘이니이다",
+      "source_text_hash": "c03361f3c6808197fe8a7574de11aecdb1ab6f0b0ac3dc4d11335b1afab9021f",
+      "translation_text_hash": "5ba9eaead49e2f9f6b43f23a1619beae0aaba72cf4c18b4b11ab09be920135b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 떡 다섯 개를 오천명에게 떼어 줄 때에 조각 몇 바구니를 거두었더냐 가로되 열 둘이니이다"
+      ],
+      "raw_text_hashes": [
+        "5ba9eaead49e2f9f6b43f23a1619beae0aaba72cf4c18b4b11ab09be920135b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:20",
+      "sequence": 24521,
+      "chapter_label": "MRK 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "“When the seven loaves fed the four thousand, how many baskets full of broken pieces did you take up?”They told him, “Seven.”",
+      "ko": "또 일곱 개를 사천 명에게 떼어 줄 때에 조각 몇 광주리를 거두었더냐 가로되 일곱이니이다",
+      "source_text_hash": "77fc58ce1dac15108832b0610f4124d2a7b8534f2c685cb47977c919c0c82a32",
+      "translation_text_hash": "5764f1b402742146255650cebb9be2f695ef0a5cc70897fda825a7c9ef394e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 일곱 개를 사천 명에게 떼어 줄 때에 조각 몇 광주리를 거두었더냐 가로되 일곱이니이다"
+      ],
+      "raw_text_hashes": [
+        "5764f1b402742146255650cebb9be2f695ef0a5cc70897fda825a7c9ef394e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:21",
+      "sequence": 24522,
+      "chapter_label": "MRK 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "He asked them, “Don’t you understand yet?”",
+      "ko": "가라사대 아직도 깨닫지 못하느냐 하시니라",
+      "source_text_hash": "8b306c9e46bebc11ccf2267dfd17bbf9308eeed4fa02d3856ce3b593731d089c",
+      "translation_text_hash": "0d0cae9bc3baa41de4b74657ab1e8960a9d4ef65b2c163c8d1c9012eff3dfadd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 아직도 깨닫지 못하느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "0d0cae9bc3baa41de4b74657ab1e8960a9d4ef65b2c163c8d1c9012eff3dfadd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:22",
+      "sequence": 24523,
+      "chapter_label": "MRK 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "He came to Bethsaida. They brought a blind man to him and begged him to touch him.",
+      "ko": "벳새다에 이르매 사람들이 소경 하나를 데리고 예수께 나아와 손 대시기를 구하거늘",
+      "source_text_hash": "991d01e9c2693342063312d33cf215c91582d954f6b53662a712dc1162a71cab",
+      "translation_text_hash": "7ba1911f909c41abb7dce07b12b1159d7a8dbc6975d0f27dcfe52f797cc64b83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벳새다에 이르매 사람들이 소경 하나를 데리고 예수께 나아와 손 대시기를 구하거늘"
+      ],
+      "raw_text_hashes": [
+        "7ba1911f909c41abb7dce07b12b1159d7a8dbc6975d0f27dcfe52f797cc64b83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:23",
+      "sequence": 24524,
+      "chapter_label": "MRK 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "He took hold of the blind man by the hand, and brought him out of the village. When he had spat on his eyes, and laid his hands on him, he asked him if he saw anything.",
+      "ko": "예수께서 소경의 손을 붙드시고 마을 밖으로 데리고 나가사 눈에 침을 뱉으시며 그에게 안수하시고 무엇이 보이느냐 물으시니",
+      "source_text_hash": "8b5b7df05bfbb3c5e1a4ec122526ccbd627c6385cb1b4908b085f171bc99dfa1",
+      "translation_text_hash": "975b4a13c759a27af70fc396157079b7b83f2e2aea29ad993d8099a7769fe307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 소경의 손을 붙드시고 마을 밖으로 데리고 나가사 눈에 침을 뱉으시며 그에게 안수하시고 무엇이 보이느냐 물으시니"
+      ],
+      "raw_text_hashes": [
+        "975b4a13c759a27af70fc396157079b7b83f2e2aea29ad993d8099a7769fe307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:24",
+      "sequence": 24525,
+      "chapter_label": "MRK 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "He looked up, and said, “I see men, but I see them like walking trees.”",
+      "ko": "우러러보며 가로되 사람들이 보이나이다 나무 같은 것들의 걸어 가는 것을 보나이다 하거늘",
+      "source_text_hash": "5fe19c335c1e018b01b2cdd94b72452ccfca10cb72d8df8ae082d90aa0340a63",
+      "translation_text_hash": "0b96bf782b1e8c5c08571eab644798eac4b38ce423f61778d4b6e6b060cb63c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우러러보며 가로되 사람들이 보이나이다 나무 같은 것들의 걸어 가는 것을 보나이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "0b96bf782b1e8c5c08571eab644798eac4b38ce423f61778d4b6e6b060cb63c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:25",
+      "sequence": 24526,
+      "chapter_label": "MRK 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Then again he laid his hands on his eyes. He looked intently, and was restored, and saw everyone clearly.",
+      "ko": "이에 그 눈에 다시 안수하시매 저가 주목하여 보더니 나아서 만물을 밝히 보는지라",
+      "source_text_hash": "5c70df765c343d945fbe087efadec280b5976f441e6994ab5a223fc0fea0bd61",
+      "translation_text_hash": "e1da37eec6e5220054638f4c161233836b04477f275759994ac9397bf7265f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 눈에 다시 안수하시매 저가 주목하여 보더니 나아서 만물을 밝히 보는지라"
+      ],
+      "raw_text_hashes": [
+        "e1da37eec6e5220054638f4c161233836b04477f275759994ac9397bf7265f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:26",
+      "sequence": 24527,
+      "chapter_label": "MRK 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "He sent him away to his house, saying, “Don’t enter into the village, nor tell anyone in the village.”",
+      "ko": "예수께서 그 사람을 집으로 보내시며 가라사대 마을에도 들어가지 말라 하시니라",
+      "source_text_hash": "ee667c87e1266199b1f8acb5d4c3ad18981a91582e89b5617cf5c20bab26eced",
+      "translation_text_hash": "60bb652ec49289f22f8e1f252b857f5c18327f103c310ae67ca51ea4662d8959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 사람을 집으로 보내시며 가라사대 마을에도 들어가지 말라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "60bb652ec49289f22f8e1f252b857f5c18327f103c310ae67ca51ea4662d8959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:27",
+      "sequence": 24528,
+      "chapter_label": "MRK 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "Jesus went out, with his disciples, into the villages of Caesarea Philippi. On the way he asked his disciples, “Who do men say that I am?”",
+      "ko": "예수와 제자들이 가이사랴 빌립보 여러 마을로 나가실쌔 노중에서 제자들에게 물어 가라사대 사람들이 나를 누구라고 하느냐",
+      "source_text_hash": "04662f00ce94fd34fcf9f6fe89a39775612e1755c495f451886942b7e0dc439b",
+      "translation_text_hash": "39dbf9bd973011e66997f04fe2fc24c0912a690417e48488862ef51ea6edefa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수와 제자들이 가이사랴 빌립보 여러 마을로 나가실쌔 노중에서 제자들에게 물어 가라사대 사람들이 나를 누구라고 하느냐"
+      ],
+      "raw_text_hashes": [
+        "39dbf9bd973011e66997f04fe2fc24c0912a690417e48488862ef51ea6edefa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:28",
+      "sequence": 24529,
+      "chapter_label": "MRK 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "They told him, “John the Baptizer, and others say Elijah, but others, one of the prophets.”",
+      "ko": "여짜와 가로되 세례 요한이라 하고 더러는 엘리야, 더러는 선지자 중의 하나라 하나이다",
+      "source_text_hash": "5af69a9511394ac5117ca7fa22cc5c4c00058f778266e40c56a5a9b9c0b458ba",
+      "translation_text_hash": "9a8cc7c80b4eeabe6fe4290e9ccf81548cc453dd8ea5f94a02b9fd79092573f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜와 가로되 세례 요한이라 하고 더러는 엘리야, 더러는 선지자 중의 하나라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "9a8cc7c80b4eeabe6fe4290e9ccf81548cc453dd8ea5f94a02b9fd79092573f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:29",
+      "sequence": 24530,
+      "chapter_label": "MRK 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "He said to them, “But who do you say that I am?”Peter answered, “You are the Christ.”",
+      "ko": "또 물으시되 너희는 나를 누구라 하느냐 베드로가 대답하여 가로되 주는 그리스도시니이다 하매",
+      "source_text_hash": "d73dfc9ea0a03ce5b2872dfeee6d3189e2dbab5cdbe781e74344174c029d417b",
+      "translation_text_hash": "8062ff5be0968592fe4f5103aa7cc33b10273bb1e0c9a115ff72d288712c169e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 물으시되 너희는 나를 누구라 하느냐 베드로가 대답하여 가로되 주는 그리스도시니이다 하매"
+      ],
+      "raw_text_hashes": [
+        "8062ff5be0968592fe4f5103aa7cc33b10273bb1e0c9a115ff72d288712c169e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:30",
+      "sequence": 24531,
+      "chapter_label": "MRK 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "He commanded them that they should tell no one about him.",
+      "ko": "이에 자기의 일을 아무에게도 말하지 말라 경계하시고",
+      "source_text_hash": "b72eb5928e260606b5614558bae615fe4d7939337dc07f825ed1e9c2794beffa",
+      "translation_text_hash": "f8eca0a9beb6f84ce99593e9631a92558c92e739f634d7b11ca2b2a9384cdf87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 자기의 일을 아무에게도 말하지 말라 경계하시고"
+      ],
+      "raw_text_hashes": [
+        "f8eca0a9beb6f84ce99593e9631a92558c92e739f634d7b11ca2b2a9384cdf87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:31",
+      "sequence": 24532,
+      "chapter_label": "MRK 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "He began to teach them that the Son of Man must suffer many things, and be rejected by the elders, the chief priests, and the scribes, and be killed, and after three days rise again.",
+      "ko": "인자가 많은 고난을 받고 장로들과 대제사장들과 서기관들에게 버린바 되어 죽임을 당하고 사흘만에 살아나야 할것을 비로소 저희에게 가르치시되",
+      "source_text_hash": "5524b47b8ae867b207db477f0955eaf04b9a1a8fd3f382676e203f1615b302bb",
+      "translation_text_hash": "5d6aaad6a9bd7cabb42668aa88ede3aa46f81ed8ec1196dcc792504eebe6f55f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 많은 고난을 받고 장로들과 대제사장들과 서기관들에게 버린바 되어 죽임을 당하고 사흘만에 살아나야 할것을 비로소 저희에게 가르치시되"
+      ],
+      "raw_text_hashes": [
+        "5d6aaad6a9bd7cabb42668aa88ede3aa46f81ed8ec1196dcc792504eebe6f55f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:32",
+      "sequence": 24533,
+      "chapter_label": "MRK 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "He spoke to them openly. Peter took him and began to rebuke him.",
+      "ko": "드러내놓고 이 말씀을 하시니 베드로가 예수를 붙들고 간하매",
+      "source_text_hash": "e0e53029d4353e55eb82a44420462548da9c8003b7d05a22571add745ba3b1c1",
+      "translation_text_hash": "62ab096e4c865505ede40ddceccde689a7881124636ac2c38f853f345ce846d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드러내놓고 이 말씀을 하시니 베드로가 예수를 붙들고 간하매"
+      ],
+      "raw_text_hashes": [
+        "62ab096e4c865505ede40ddceccde689a7881124636ac2c38f853f345ce846d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:33",
+      "sequence": 24534,
+      "chapter_label": "MRK 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "But he, turning around and seeing his disciples, rebuked Peter, and said, “Get behind me, Satan! For you have in mind not the things of God, but the things of men.”",
+      "ko": "예수께서 돌이키사 제자들을 보시며 베드로를 꾸짖어 가라사대 사단아 내 뒤로 물러가라 네가 하나님의 일을 생각지 아니하고 도리어 사람의 일을 생각하는도다 하시고",
+      "source_text_hash": "82633e8fe073df343bb9ae73cdda84dff15e3904dc137889267bca8e777da8f9",
+      "translation_text_hash": "a410d723bb08e63f6a21416694382f9cc4fbc7a680fa7d572eb29036a3cd7308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌이키사 제자들을 보시며 베드로를 꾸짖어 가라사대 사단아 내 뒤로 물러가라 네가 하나님의 일을 생각지 아니하고 도리어 사람의 일을 생각하는도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "a410d723bb08e63f6a21416694382f9cc4fbc7a680fa7d572eb29036a3cd7308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:34",
+      "sequence": 24535,
+      "chapter_label": "MRK 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "He called the multitude to himself with his disciples and said to them, “Whoever wants to come after me, let him deny himself, and take up his cross, and follow me.",
+      "ko": "무리와 제자들을 불러 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 자기 십자가를 지고 나를 좇을 것이니라",
+      "source_text_hash": "b1ffcdf1a2784a45689d48aeb54a7d1bf405164820f1eb6e1db5bd60266277fb",
+      "translation_text_hash": "1d210205192970730f780391481daf4156e2e5abee93c28794072c6776918a6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리와 제자들을 불러 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 자기 십자가를 지고 나를 좇을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "1d210205192970730f780391481daf4156e2e5abee93c28794072c6776918a6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:35",
+      "sequence": 24536,
+      "chapter_label": "MRK 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "For whoever wants to save his life will lose it; and whoever will lose his life for my sake and the sake of the Good News will save it.",
+      "ko": "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나와 복음을 위하여 제 목숨을 잃으면 구원하리라",
+      "source_text_hash": "050f7df59ef13b81b8c5c7a389265108e5fe70e260646fca75e1b465aadc8273",
+      "translation_text_hash": "9c7e7b9215e2eefecc9780b24609be4b1434e5e39a324f8a187ed43d7f4da517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나와 복음을 위하여 제 목숨을 잃으면 구원하리라"
+      ],
+      "raw_text_hashes": [
+        "9c7e7b9215e2eefecc9780b24609be4b1434e5e39a324f8a187ed43d7f4da517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:36",
+      "sequence": 24537,
+      "chapter_label": "MRK 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "For what does it profit a man to gain the whole world and forfeit his life?",
+      "ko": "사람이 만일 온 천하를 얻고도 제 목숨을 잃으면 무엇이 유익하리요",
+      "source_text_hash": "b62883237217f901a09709f8845d0d45ad1d2aee855172e26cd8996bfdf3dbec",
+      "translation_text_hash": "485830e7b8d35fab5f9d0410f2845de591a53df3bb47c5cd5cc1a9e3f2dc7cc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 온 천하를 얻고도 제 목숨을 잃으면 무엇이 유익하리요"
+      ],
+      "raw_text_hashes": [
+        "485830e7b8d35fab5f9d0410f2845de591a53df3bb47c5cd5cc1a9e3f2dc7cc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:37",
+      "sequence": 24538,
+      "chapter_label": "MRK 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "For what will a man give in exchange for his life?",
+      "ko": "사람이 무엇을 주고 제 목숨을 바꾸겠느냐",
+      "source_text_hash": "d372c7f2da163d5c2ce1951b7b023605579e569aad629343e7371b2254d23437",
+      "translation_text_hash": "2e1e2d8f12e66103562aef5a857933391e07318018f1f910ef89d68085ca88dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 무엇을 주고 제 목숨을 바꾸겠느냐"
+      ],
+      "raw_text_hashes": [
+        "2e1e2d8f12e66103562aef5a857933391e07318018f1f910ef89d68085ca88dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:8:38",
+      "sequence": 24539,
+      "chapter_label": "MRK 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "For whoever will be ashamed of me and of my words in this adulterous and sinful generation, the Son of Man also will be ashamed of him when he comes in his Father’s glory with the holy angels.”",
+      "ko": "누구든지 이 음란하고 죄 많은 세대에서 나와 내 말을 부끄러워하면 인자도 아버지의 영광으로 거룩한 천사들과 함께 올 때에 그 사람을 부끄러워하리라",
+      "source_text_hash": "0784ca5a29d073215e73daf47a957baa94dc502a8a07a25522f872c58124d60b",
+      "translation_text_hash": "d8626ba12a994744f4e4cf5a6bf073d8f868a0b140963f918f4786fb31ba596b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 이 음란하고 죄 많은 세대에서 나와 내 말을 부끄러워하면 인자도 아버지의 영광으로 거룩한 천사들과 함께 올 때에 그 사람을 부끄러워하리라"
+      ],
+      "raw_text_hashes": [
+        "d8626ba12a994744f4e4cf5a6bf073d8f868a0b140963f918f4786fb31ba596b"
+      ]
+    }
+  ]
+}

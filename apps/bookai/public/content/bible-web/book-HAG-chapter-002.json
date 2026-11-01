@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HAG:chapter:002",
+  "unit_ordinal": 911,
+  "unit_label": "HAG 2",
+  "book_code": "HAG",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HAG:2:1",
+      "sequence": 22857,
+      "chapter_label": "HAG 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "In the seventh month, in the twenty-first day of the month, the LORD’s word came by Haggai the prophet, saying,",
+      "ko": "칠월 곧 그 달 이십 일일에 여호와의 말씀이 선지자 학개에게 임하니라 가라사대",
+      "source_text_hash": "7713adc9daa00660bce9ae11e65627ecebadff7a47198976705f0c632dac02c4",
+      "translation_text_hash": "b3bec2c965806f8fc7fab1ace792da96e2973667aee35cb48f9989232ecfba2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 곧 그 달 이십 일일에 여호와의 말씀이 선지자 학개에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "b3bec2c965806f8fc7fab1ace792da96e2973667aee35cb48f9989232ecfba2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:2",
+      "sequence": 22858,
+      "chapter_label": "HAG 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+      "ko": "너는 스알디엘의 아들 유다 총독 스룹바벨과 여호사닥의 아들 대제사장 여호수아와 남은 백성에게 고하여 이르라",
+      "source_text_hash": "aeaf8cc3676191089fe5e183dc2caaa24be3e57e4bbcda1ef3be628ec4b588da",
+      "translation_text_hash": "e572bf599ad0cf8e8312f655df2da3361d26e96a2fab78e745f2ee4a493e6311",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 스알디엘의 아들 유다 총독 스룹바벨과 여호사닥의 아들 대제사장 여호수아와 남은 백성에게 고하여 이르라"
+      ],
+      "raw_text_hashes": [
+        "e572bf599ad0cf8e8312f655df2da3361d26e96a2fab78e745f2ee4a493e6311"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:3",
+      "sequence": 22859,
+      "chapter_label": "HAG 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "‘Who is left among you who saw this house in its former glory? How do you see it now? Isn’t it in your eyes as nothing?",
+      "ko": "너희 중에 남아 있는 자 곧 이 전의 이전 영광을 본 자가 누구냐 이제 이것이 너희에게 어떻게 보이느냐 이것이 너희 눈에 보잘것이 없지 아니하냐",
+      "source_text_hash": "17e3461feeb72daf5d40c7f3f40fc61ba85a2424bf321c68ccc25f7ae4fbbea6",
+      "translation_text_hash": "e42712ba3e836547cb35cc7ea6608115d263d802f53febb2418224cac8c0872c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 남아 있는 자 곧 이 전의 이전 영광을 본 자가 누구냐 이제 이것이 너희에게 어떻게 보이느냐 이것이 너희 눈에 보잘것이 없지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "e42712ba3e836547cb35cc7ea6608115d263d802f53febb2418224cac8c0872c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:4",
+      "sequence": 22860,
+      "chapter_label": "HAG 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Yet now be strong, Zerubbabel,’ says the LORD. ‘Be strong, Joshua son of Jehozadak, the high priest. Be strong, all you people of the land,’ says the LORD, ‘and work, for I am with you,’ says the LORD of Armies.",
+      "ko": "그러나 나 여호와가 이르노라 스룹바벨아 스스로 굳세게 할찌어다 여호사닥의 아들 대제사장 여호수아야 스스로 굳세게 할찌어다 나 여호와의 말이니라 이 땅 모든 백성아 스스로 굳세게 하여 일할찌어다 내가 너희와 함께 하노라 만군의 여호와의 말이니라",
+      "source_text_hash": "8988f0fa3bf87109f678f11dc3583cbc856ce65b864798196ec2134e55116afc",
+      "translation_text_hash": "5d1eae31d7d6aab6bdbd7afdc50d29982cf1ff9d0cae8f2ceda65bff5e559ece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나 여호와가 이르노라 스룹바벨아 스스로 굳세게 할찌어다 여호사닥의 아들 대제사장 여호수아야 스스로 굳세게 할찌어다 나 여호와의 말이니라 이 땅 모든 백성아 스스로 굳세게 하여 일할찌어다 내가 너희와 함께 하노라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "5d1eae31d7d6aab6bdbd7afdc50d29982cf1ff9d0cae8f2ceda65bff5e559ece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:5",
+      "sequence": 22861,
+      "chapter_label": "HAG 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "This is the word that I covenanted with you when you came out of Egypt, and my Spirit lived among you. ‘Don’t be afraid.’",
+      "ko": "너희가 애굽에서 나올 때에 내가 너희와 언약한 말과 나의 신이 오히려 너희 중에 머물러 있나니 너희는 두려워하지 말찌어다",
+      "source_text_hash": "f5ff5da937dea886787b0906caeb9804a24da076216a9644619af5c37383da04",
+      "translation_text_hash": "4ca0f3b522b21ec2d859223347c11b6343116851f97825d968ce09d16cf9be9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 애굽에서 나올 때에 내가 너희와 언약한 말과 나의 신이 오히려 너희 중에 머물러 있나니 너희는 두려워하지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "4ca0f3b522b21ec2d859223347c11b6343116851f97825d968ce09d16cf9be9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:6",
+      "sequence": 22862,
+      "chapter_label": "HAG 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "For this is what the LORD of Armies says: ‘Yet once more, it is a little while, and I will shake the heavens, the earth, the sea, and the dry land;",
+      "ko": "나 만군의 여호와가 말하노라 조금 있으면 내가 하늘과 땅과 바다와 육지를 진동시킬 것이요",
+      "source_text_hash": "a9bcae99f4999dc9959743f1ea5d048b8e459a59d41c426986ea4a4bbd625eb0",
+      "translation_text_hash": "0a20bbef653e4c9a84a46358ae964e37c987219f217b571bc67c85a4fbc1be91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노라 조금 있으면 내가 하늘과 땅과 바다와 육지를 진동시킬 것이요"
+      ],
+      "raw_text_hashes": [
+        "0a20bbef653e4c9a84a46358ae964e37c987219f217b571bc67c85a4fbc1be91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:7",
+      "sequence": 22863,
+      "chapter_label": "HAG 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "and I will shake all nations. The treasure of all nations will come, and I will fill this house with glory, says the LORD of Armies.",
+      "ko": "또한 만국을 진동시킬 것이며 만국의 보배가 이르리니 내가 영광으로 이 전에 충만케 하리라 만군의 여호와의 말이니라",
+      "source_text_hash": "1858f2e3fda6ef64f427e089816e3c49104b7ddbafa41b69da2f6657692b5fa5",
+      "translation_text_hash": "2d36f8725637021db71ebe95190706728888914a91a97d859f6941858a130b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 만국을 진동시킬 것이며 만국의 보배가 이르리니 내가 영광으로 이 전에 충만케 하리라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2d36f8725637021db71ebe95190706728888914a91a97d859f6941858a130b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:8",
+      "sequence": 22864,
+      "chapter_label": "HAG 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The silver is mine, and the gold is mine,’ says the LORD of Armies.",
+      "ko": "은도 내 것이요 금도 내 것이니라 만군의 여호와의 말이니라",
+      "source_text_hash": "81834f77749bec2182cc2d150ed1e813bf0da5842edc49eedc64a5180832d2f0",
+      "translation_text_hash": "ede089c49f5eb8cc7fd934a8e410cf0ebd1fb0df419bac9aa77c1ba526516dd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은도 내 것이요 금도 내 것이니라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "ede089c49f5eb8cc7fd934a8e410cf0ebd1fb0df419bac9aa77c1ba526516dd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:9",
+      "sequence": 22865,
+      "chapter_label": "HAG 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "‘The latter glory of this house will be greater than the former,’ says the LORD of Armies; ‘and in this place I will give peace,’ says the LORD of Armies.”",
+      "ko": "이 전의 나중 영광이 이전 영광보다 크리라 만군의 여호와의 말이니라 내가 이곳에 평강을 주리라 만군의 여호와의 말이니라",
+      "source_text_hash": "5b9882e42afcdc2b2e774ab6bc2d9e1992a3bf59a6be31c8afc1d50e91451036",
+      "translation_text_hash": "4fcdf6ea65f47e88d103444e4dcd436353ee0efa167e552455b6906115dc598e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전의 나중 영광이 이전 영광보다 크리라 만군의 여호와의 말이니라 내가 이곳에 평강을 주리라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "4fcdf6ea65f47e88d103444e4dcd436353ee0efa167e552455b6906115dc598e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:10",
+      "sequence": 22866,
+      "chapter_label": "HAG 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "In the twenty-fourth day of the ninth month, in the second year of Darius, the LORD’s word came by Haggai the prophet, saying,",
+      "ko": "다리오왕 이년 구월 이십 사일에 여호와의 말씀이 선지자 학개에게 임하니라 가라사대",
+      "source_text_hash": "b43c6bc0387df19053dd487ff9b03941ec84723b26deade7d4006cb491d35aaf",
+      "translation_text_hash": "d4c4b628090af9468e41d48a16ca13e7317c8fb8651bf0a53dedc9a3793f109d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오왕 이년 구월 이십 사일에 여호와의 말씀이 선지자 학개에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d4c4b628090af9468e41d48a16ca13e7317c8fb8651bf0a53dedc9a3793f109d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:11",
+      "sequence": 22867,
+      "chapter_label": "HAG 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "“The LORD of Armies says: Ask now the priests concerning the law, saying,",
+      "ko": "나 만군의 여호와가 말하노니 너는 제사장에게 율법에 대하여 물어 이르기를",
+      "source_text_hash": "416fa6cad883d829e172104819ec086d50f195230b4e129e3ff4275948bdaefd",
+      "translation_text_hash": "16abdb5dd6e5415faed68966ae1bdb802325ed0ea8d456cbc360456c5d4dad8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노니 너는 제사장에게 율법에 대하여 물어 이르기를"
+      ],
+      "raw_text_hashes": [
+        "16abdb5dd6e5415faed68966ae1bdb802325ed0ea8d456cbc360456c5d4dad8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:12",
+      "sequence": 22868,
+      "chapter_label": "HAG 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "‘If someone carries holy meat in the fold of his garment, and with his fold touches bread, stew, wine, oil, or any food, will it become holy?’” The priests answered, “No.”",
+      "ko": "사람이 옷자락에 거룩한 고기를 쌌는데 그 옷자락이 만일 떡에나 국에나 포도주에나 기름에나 다른 식물에 닿았으면 그것이 성물이 되겠느냐 하라 학개가 물으매 제사장들이 대답하여 가로되 아니니라",
+      "source_text_hash": "131f83069db0fad619d30abbc1d69ce1a5879a3ae630d9e4054f358cfaa4c5d2",
+      "translation_text_hash": "8d5c6cbf46ab4287faca67869575508374d109789c565dc52d82d62270dfd6a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 옷자락에 거룩한 고기를 쌌는데 그 옷자락이 만일 떡에나 국에나 포도주에나 기름에나 다른 식물에 닿았으면 그것이 성물이 되겠느냐 하라 학개가 물으매 제사장들이 대답하여 가로되 아니니라"
+      ],
+      "raw_text_hashes": [
+        "8d5c6cbf46ab4287faca67869575508374d109789c565dc52d82d62270dfd6a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:13",
+      "sequence": 22869,
+      "chapter_label": "HAG 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Then Haggai said, “If one who is unclean by reason of a dead body touches any of these, will it be unclean?” The priests answered, “It will be unclean.”",
+      "ko": "학개가 가로되 시체를 만져서 부정하여진 자가 만일 그것들 중에 하나를 만지면 그것이 부정하겠느냐 제사장들이 대답하여 가로되 부정하겠느니라",
+      "source_text_hash": "02f8d952851d2213722da2e218f6ffb8c8d4d07061a59808ef3beed3f84c26ad",
+      "translation_text_hash": "6f2e1625ac62d4ad231ed0c90d39c6022b7c3230455842349a2e58f873eeccfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학개가 가로되 시체를 만져서 부정하여진 자가 만일 그것들 중에 하나를 만지면 그것이 부정하겠느냐 제사장들이 대답하여 가로되 부정하겠느니라"
+      ],
+      "raw_text_hashes": [
+        "6f2e1625ac62d4ad231ed0c90d39c6022b7c3230455842349a2e58f873eeccfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:14",
+      "sequence": 22870,
+      "chapter_label": "HAG 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Then Haggai answered, “‘So is this people, and so is this nation before me,’ says the LORD; ‘and so is every work of their hands. That which they offer there is unclean.",
+      "ko": "이에 학개가 대답하여 가로되 여호와의 말씀에 내 앞에서 이 백성이 그러하고 이 나라가 그러하고 그 손의 모든 일도 그러하고 그들이 거기서 드리는 것도 부정하니라",
+      "source_text_hash": "777da4e2b720e42c59451f242f56c201b509e45a3a022164e0bb544bb0d8edbb",
+      "translation_text_hash": "6d14a72e6231ddc8c9fa7364a8a40509ff5bc65d8a33720e5651d3e1d1c4a618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 학개가 대답하여 가로되 여호와의 말씀에 내 앞에서 이 백성이 그러하고 이 나라가 그러하고 그 손의 모든 일도 그러하고 그들이 거기서 드리는 것도 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "6d14a72e6231ddc8c9fa7364a8a40509ff5bc65d8a33720e5651d3e1d1c4a618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:15",
+      "sequence": 22871,
+      "chapter_label": "HAG 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Now, please consider from this day and backward, before a stone was laid on a stone in the LORD’s temple.",
+      "ko": "이제 청컨대 너희는 오늘부터 이전 곧 여호와의 전에 돌이 돌 위에 첩놓이지 않았던 때를 추억하라",
+      "source_text_hash": "8aa8ed8f74121e6dcaad883f863d5b0378a382d86ed5b328f68fbc532b5bdbff",
+      "translation_text_hash": "6f515f570c12f1ac583d88f4cd8aeb7d78ebf076bc0de9a53d575434defafb5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 청컨대 너희는 오늘부터 이전 곧 여호와의 전에 돌이 돌 위에 첩놓이지 않았던 때를 추억하라"
+      ],
+      "raw_text_hashes": [
+        "6f515f570c12f1ac583d88f4cd8aeb7d78ebf076bc0de9a53d575434defafb5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:16",
+      "sequence": 22872,
+      "chapter_label": "HAG 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Through all that time, when one came to a heap of twenty measures, there were only ten. When one came to the wine vat to draw out fifty, there were only twenty.",
+      "ko": "그 때에는 이십석 곡식더미에 이른즉 십석 뿐이었고 포도즙 틀에 오십 그릇을 길으려 이른즉 이십 그릇 뿐이었었느니라",
+      "source_text_hash": "e8334c86d774e70958704b79ab19a06931a59cf75c335d275f51927df6e2e098",
+      "translation_text_hash": "1c76cbd2043c5bda96782878ee57d07735d803bd1776bb2c830dacbea433d53a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 이십석 곡식더미에 이른즉 십석 뿐이었고 포도즙 틀에 오십 그릇을 길으려 이른즉 이십 그릇 뿐이었었느니라"
+      ],
+      "raw_text_hashes": [
+        "1c76cbd2043c5bda96782878ee57d07735d803bd1776bb2c830dacbea433d53a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:17",
+      "sequence": 22873,
+      "chapter_label": "HAG 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "I struck you with blight, mildew, and hail in all the work of your hands; yet you didn’t turn to me,’ says the LORD.",
+      "ko": "나 만군의 여호와가 말하노라 내가 너희 손으로 지은 모든 일에 폭풍과 곰팡과 우박으로 쳤으나 너희가 내게로 돌이키지 아니하였었느니라",
+      "source_text_hash": "5855439f2c4d9f5f9a3e2a573790d25b8aedbe93cdadf3e6a3a4da2b087fdfa2",
+      "translation_text_hash": "8bc847b1702782b84cd7b0a66e51fca5f7c667876cf0752c426bdd624790b772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노라 내가 너희 손으로 지은 모든 일에 폭풍과 곰팡과 우박으로 쳤으나 너희가 내게로 돌이키지 아니하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "8bc847b1702782b84cd7b0a66e51fca5f7c667876cf0752c426bdd624790b772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:18",
+      "sequence": 22874,
+      "chapter_label": "HAG 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "‘Consider, please, from this day and backward, from the twenty-fourth day of the ninth month, since the day that the foundation of the LORD’s temple was laid, consider it.",
+      "ko": "너희는 오늘부터 이전을 추억하여 보라 구월 이십 사일 곧 여호와의 전 지대를 쌓던 날부터 추억하여 보라",
+      "source_text_hash": "9063a4fb06f47d560f3f55881baff6d12866f991a04c9a06abcd9477215d1b9c",
+      "translation_text_hash": "f64a186fba8fc8c00338eb0feef35a13d6559c50a69af2ecd9c5752cf11edf25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 오늘부터 이전을 추억하여 보라 구월 이십 사일 곧 여호와의 전 지대를 쌓던 날부터 추억하여 보라"
+      ],
+      "raw_text_hashes": [
+        "f64a186fba8fc8c00338eb0feef35a13d6559c50a69af2ecd9c5752cf11edf25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:19",
+      "sequence": 22875,
+      "chapter_label": "HAG 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Is the seed yet in the barn? Yes, the vine, the fig tree, the pomegranate, and the olive tree haven’t produced. From today I will bless you.’”",
+      "ko": "곡식 종자가 오히려 창고에 있느냐 포도나무, 무화과나무, 석류나무, 감람나무에 열매가 맺지 못하였었느니라 그러나 오늘부터는 내가 너희에게 복을 주리라",
+      "source_text_hash": "566e0b94fcfa0500f3733fd902aee92e3d825758f7d156dd09bf5a052e937854",
+      "translation_text_hash": "8061aab023d1aa6900c87670317aaea2ac0cd611e8a151b82ebbf4e512b63337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡식 종자가 오히려 창고에 있느냐 포도나무, 무화과나무, 석류나무, 감람나무에 열매가 맺지 못하였었느니라 그러나 오늘부터는 내가 너희에게 복을 주리라"
+      ],
+      "raw_text_hashes": [
+        "8061aab023d1aa6900c87670317aaea2ac0cd611e8a151b82ebbf4e512b63337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:20",
+      "sequence": 22876,
+      "chapter_label": "HAG 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD’s word came the second time to Haggai in the twenty-fourth day of the month, saying,",
+      "ko": "그 달 이십 사일에 여호와의 말씀이 다시 학개에게 임하니라 가라사대",
+      "source_text_hash": "dd98b533c0d7aec7be8d9f5c0eb6698673586942cfa82ef490983075061705b0",
+      "translation_text_hash": "f3f351408fefbacc6df28d171acea3f66a6a3cf019b449467661a57f3b1bde7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 달 이십 사일에 여호와의 말씀이 다시 학개에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "f3f351408fefbacc6df28d171acea3f66a6a3cf019b449467661a57f3b1bde7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:21",
+      "sequence": 22877,
+      "chapter_label": "HAG 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "“Speak to Zerubbabel, governor of Judah, saying, ‘I will shake the heavens and the earth.",
+      "ko": "너는 유다 총독 스룹바벨에게 고하여 이르라 내가 하늘과 땅을 진동시킬 것이요",
+      "source_text_hash": "f16c38a962d997e081987a3b11f12c15999c5cf6cc4ae89420cb6232f2a80292",
+      "translation_text_hash": "fa5092d52ff2315ae5b99c8e848afa3f0dd3565abe4e6cd1eb2061811762d962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 유다 총독 스룹바벨에게 고하여 이르라 내가 하늘과 땅을 진동시킬 것이요"
+      ],
+      "raw_text_hashes": [
+        "fa5092d52ff2315ae5b99c8e848afa3f0dd3565abe4e6cd1eb2061811762d962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:22",
+      "sequence": 22878,
+      "chapter_label": "HAG 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "I will overthrow the throne of kingdoms. I will destroy the strength of the kingdoms of the nations. I will overthrow the chariots and those who ride in them. The horses and their riders will come down, everyone by the sword of his brother.",
+      "ko": "열국의 보좌를 엎을 것이요 열방의 세력을 멸할 것이요 그 병거들과 그 탄 자를 엎드러뜨리리니 말과 그 탄 자가 각각 그 동무의 칼에 엎드러지리라",
+      "source_text_hash": "5529e9f33575ce5f0ef5a5553526d6d3eda0fc99f612f5dc2b598b173a5024b9",
+      "translation_text_hash": "767978403fdcd487f7d983b941c3d474ec16d0182cc1e40f2d85796cdd50bb2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 보좌를 엎을 것이요 열방의 세력을 멸할 것이요 그 병거들과 그 탄 자를 엎드러뜨리리니 말과 그 탄 자가 각각 그 동무의 칼에 엎드러지리라"
+      ],
+      "raw_text_hashes": [
+        "767978403fdcd487f7d983b941c3d474ec16d0182cc1e40f2d85796cdd50bb2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HAG:2:23",
+      "sequence": 22879,
+      "chapter_label": "HAG 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "HAG",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HAG",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "In that day, says the LORD of Armies, I will take you, Zerubbabel my servant, the son of Shealtiel,’ says the LORD, ‘and will make you like a signet ring, for I have chosen you,’ says the LORD of Armies.”",
+      "ko": "나 만군의 여호와가 말하노라 스알디엘의 아들 내 종 스룹바벨아 나 여호와가 말하노라 그 날에 내가 너를 취하고 너로 인을 삼으리니 이는 내가 너를 택하였음이니라 만군의 여호와의 말이니라",
+      "source_text_hash": "4b9a71db17f1155bffa36d2e0828cbd24896367fa6aa837a49f0b095fafdfab4",
+      "translation_text_hash": "742bf90e404d1ab6b375d8e26ccb2f7a5d0f894470c5fed1c54b2b4409578321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노라 스알디엘의 아들 내 종 스룹바벨아 나 여호와가 말하노라 그 날에 내가 너를 취하고 너로 인을 삼으리니 이는 내가 너를 택하였음이니라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "742bf90e404d1ab6b375d8e26ccb2f7a5d0f894470c5fed1c54b2b4409578321"
+      ]
+    }
+  ]
+}

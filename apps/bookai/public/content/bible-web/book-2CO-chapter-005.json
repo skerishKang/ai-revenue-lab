@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:005",
+  "unit_ordinal": 1083,
+  "unit_label": "2CO 5",
+  "book_code": "2CO",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:5:1",
+      "sequence": 28875,
+      "chapter_label": "2CO 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "For we know that if the earthly house of our tent is dissolved, we have a building from God, a house not made with hands, eternal, in the heavens.",
+      "ko": "만일 땅에 있는 우리의 장막 집이 무너지면 하나님께서 지으신 집 곧 손으로 지은 것이 아니요 하늘에 있는 영원한 집이 우리에게 있는 줄 아나니",
+      "source_text_hash": "a9941828dec62f39fb81be8d9e8a4efa03cbd5adf9c1abb9a84f1b615058c66d",
+      "translation_text_hash": "8983135ad3a89927175c0be87f98a2feea63ccef096d4aea56f2c758804a7dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 땅에 있는 우리의 장막 집이 무너지면 하나님께서 지으신 집 곧 손으로 지은 것이 아니요 하늘에 있는 영원한 집이 우리에게 있는 줄 아나니"
+      ],
+      "raw_text_hashes": [
+        "8983135ad3a89927175c0be87f98a2feea63ccef096d4aea56f2c758804a7dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:2",
+      "sequence": 28876,
+      "chapter_label": "2CO 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "For most certainly in this we groan, longing to be clothed with our habitation which is from heaven,",
+      "ko": "과연 우리가 여기 있어 탄식하며 하늘로부터 오는 우리 처소로 덧입기를 간절히 사모하노니",
+      "source_text_hash": "5bae8dae169a35583ba3720d247aa84c1ee0f17550f471362d5254b658e2a66d",
+      "translation_text_hash": "afccd0c229481634e9b1c21ab335782f7672a8591e18423b6642ec019bfb9085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 우리가 여기 있어 탄식하며 하늘로부터 오는 우리 처소로 덧입기를 간절히 사모하노니"
+      ],
+      "raw_text_hashes": [
+        "afccd0c229481634e9b1c21ab335782f7672a8591e18423b6642ec019bfb9085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:3",
+      "sequence": 28877,
+      "chapter_label": "2CO 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "if indeed being clothed, we will not be found naked.",
+      "ko": "이렇게 입음은 벗은 자들로 발견되지 않으려 함이라",
+      "source_text_hash": "9cb5c5fadfa990c6fe4cc270337c5c6b3c9dcab05e38a1f47334170500fcb226",
+      "translation_text_hash": "e81550bb30ebe2ceed7baae828687e1e6f375b3c317306519c9b214b8959ca5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 입음은 벗은 자들로 발견되지 않으려 함이라"
+      ],
+      "raw_text_hashes": [
+        "e81550bb30ebe2ceed7baae828687e1e6f375b3c317306519c9b214b8959ca5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:4",
+      "sequence": 28878,
+      "chapter_label": "2CO 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "For indeed we who are in this tent do groan, being burdened, not that we desire to be unclothed, but that we desire to be clothed, that what is mortal may be swallowed up by life.",
+      "ko": "이 장막에 있는 우리가 짐 진것 같이 탄식하는 것은 벗고자 함이 아니요 오직 덧입고자 함이니 죽을 것이 생명에게 삼킨바 되게 하려 함이라",
+      "source_text_hash": "cdee2d93097c9d22a9ba838ad8a3b76e0fe0768c130c64b1a9baadb286bb6896",
+      "translation_text_hash": "02a7e8857fb7ed3adf23d1ce954d60b3633f12674e4752e6b0d6ed4628aa4565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 장막에 있는 우리가 짐 진것 같이 탄식하는 것은 벗고자 함이 아니요 오직 덧입고자 함이니 죽을 것이 생명에게 삼킨바 되게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "02a7e8857fb7ed3adf23d1ce954d60b3633f12674e4752e6b0d6ed4628aa4565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:5",
+      "sequence": 28879,
+      "chapter_label": "2CO 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Now he who made us for this very thing is God, who also gave to us the down payment of the Spirit.",
+      "ko": "곧 이것을 우리에게 이루게 하시고 보증으로 성령을 우리에게 주신 이는 하나님이시니라",
+      "source_text_hash": "18e7d8a4af396b0977da6140c45cd3413cc73180e87097768c3dd21cfc1d57aa",
+      "translation_text_hash": "f032d4aa16d97a87025c932d33ceab1da50239115452e10d35ad4fa893e76049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이것을 우리에게 이루게 하시고 보증으로 성령을 우리에게 주신 이는 하나님이시니라"
+      ],
+      "raw_text_hashes": [
+        "f032d4aa16d97a87025c932d33ceab1da50239115452e10d35ad4fa893e76049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:6",
+      "sequence": 28880,
+      "chapter_label": "2CO 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore we are always confident and know that while we are at home in the body, we are absent from the Lord;",
+      "ko": "이러므로 우리가 항상 담대하여 몸에 거할 때에는 주와 따로 거하는 줄을 아노니",
+      "source_text_hash": "9e91dc2d8ad81cc56dbf6750368e310ca33cf2a2a7b2abcb9dca331bcf1fded9",
+      "translation_text_hash": "4bdef7ab826016de2c6dbf4c557e455d78d09c30eb92a86ddedd7d7d5e8a1aca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 항상 담대하여 몸에 거할 때에는 주와 따로 거하는 줄을 아노니"
+      ],
+      "raw_text_hashes": [
+        "4bdef7ab826016de2c6dbf4c557e455d78d09c30eb92a86ddedd7d7d5e8a1aca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:7",
+      "sequence": 28881,
+      "chapter_label": "2CO 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "for we walk by faith, not by sight.",
+      "ko": "이는 우리가 믿음으로 행하고 보는 것으로 하지 아니함이로라",
+      "source_text_hash": "d024c9186cc7de310c21b4c1bf8407db6d2f7c65a3c77ad734ac83720e75d513",
+      "translation_text_hash": "965461d25a02c698dbbbb0c81fa0ceba2a736e16d6ffb4703617e567d9386b7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 믿음으로 행하고 보는 것으로 하지 아니함이로라"
+      ],
+      "raw_text_hashes": [
+        "965461d25a02c698dbbbb0c81fa0ceba2a736e16d6ffb4703617e567d9386b7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:8",
+      "sequence": 28882,
+      "chapter_label": "2CO 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "We are courageous, I say, and are willing rather to be absent from the body and to be at home with the Lord.",
+      "ko": "우리가 담대하여 원하는 바는 차라리 몸을 떠나 주와 함께 거하는 그것이라",
+      "source_text_hash": "d0c77fb1b2a3d11569a0fe8e34be37ab877c5f048e89582d0dca36fdf1114f8e",
+      "translation_text_hash": "a9e1f4e51cba80963551840dc715dc116eafd426ba45a302d2c77a95c06a63ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 담대하여 원하는 바는 차라리 몸을 떠나 주와 함께 거하는 그것이라"
+      ],
+      "raw_text_hashes": [
+        "a9e1f4e51cba80963551840dc715dc116eafd426ba45a302d2c77a95c06a63ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:9",
+      "sequence": 28883,
+      "chapter_label": "2CO 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore also we make it our aim, whether at home or absent, to be well pleasing to him.",
+      "ko": "그런즉 우리는 거하든지 떠나든지 주를 기쁘시게 하는 자 되기를 힘쓰노라",
+      "source_text_hash": "fda5b692374341bf7c0354c50d3771c12429bac6edf8a61ebf07f70824f27640",
+      "translation_text_hash": "823ff28b15c318ebad62620f50bcc995af422177bfd70ad8d4832fcfea5bf286",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리는 거하든지 떠나든지 주를 기쁘시게 하는 자 되기를 힘쓰노라"
+      ],
+      "raw_text_hashes": [
+        "823ff28b15c318ebad62620f50bcc995af422177bfd70ad8d4832fcfea5bf286"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:10",
+      "sequence": 28884,
+      "chapter_label": "2CO 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "For we must all be revealed before the judgment seat of Christ that each one may receive the things in the body according to what he has done, whether good or bad.",
+      "ko": "이는 우리가 다 반드시 그리스도의 심판대 앞에 드러나 각각 선악간에 그 몸으로 행한 것을 따라 받으려 함이라",
+      "source_text_hash": "fe9ea1cc6e50e080d6fad4bd1b34e49e0cbf7da2cc09a9ce043c661a6c733262",
+      "translation_text_hash": "dc0d1d01dff0a80d313b2c7e29833ab50cb91408c9536333f6626596cb5be401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 다 반드시 그리스도의 심판대 앞에 드러나 각각 선악간에 그 몸으로 행한 것을 따라 받으려 함이라"
+      ],
+      "raw_text_hashes": [
+        "dc0d1d01dff0a80d313b2c7e29833ab50cb91408c9536333f6626596cb5be401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:11",
+      "sequence": 28885,
+      "chapter_label": "2CO 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Knowing therefore the fear of the Lord, we persuade men, but we are revealed to God, and I hope that we are revealed also in your consciences.",
+      "ko": "우리가 주의 두려우심을 알므로 사람을 권하노니 우리가 하나님 앞에 알리워졌고 또 너희의 양심에도 알리워졌기를 바라노라",
+      "source_text_hash": "a4cae5804ae1c72cc08c9f37e6b5451c527b2a941ac81f3e0254eb30eb89cdb2",
+      "translation_text_hash": "c3f0c6062057e801c29159f12f8bd168533206406bdc6e18d37ce1a308324bb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 주의 두려우심을 알므로 사람을 권하노니 우리가 하나님 앞에 알리워졌고 또 너희의 양심에도 알리워졌기를 바라노라"
+      ],
+      "raw_text_hashes": [
+        "c3f0c6062057e801c29159f12f8bd168533206406bdc6e18d37ce1a308324bb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:12",
+      "sequence": 28886,
+      "chapter_label": "2CO 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "For we are not commending ourselves to you again, but speak as giving you occasion of boasting on our behalf, that you may have something to answer those who boast in appearance and not in heart.",
+      "ko": "우리가 다시 너희에게 자천하는 것이 아니요 오직 우리를 인하여 자랑할 기회를 너희에게 주어 마음으로 하지 않고 외모로 자랑하는 자들을 대하게 하려 하는 것이라",
+      "source_text_hash": "40744bd42161795c8b3e9b72056812052ba07ddee6db21a32483e628ca03073e",
+      "translation_text_hash": "19a463cf6a683167dbe9d0ef2ce9dceae7bb441ae794601b44984ad33b0c7508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다시 너희에게 자천하는 것이 아니요 오직 우리를 인하여 자랑할 기회를 너희에게 주어 마음으로 하지 않고 외모로 자랑하는 자들을 대하게 하려 하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "19a463cf6a683167dbe9d0ef2ce9dceae7bb441ae794601b44984ad33b0c7508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:13",
+      "sequence": 28887,
+      "chapter_label": "2CO 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "For if we are beside ourselves, it is for God. Or if we are of sober mind, it is for you.",
+      "ko": "우리가 만일 미쳤어도 하나님을 위한 것이요 만일 정신이 온전하여도 너희를 위한 것이니",
+      "source_text_hash": "bb037addbd640aee931d34c473154bc94d2a531c3034556989d98679397ce6cf",
+      "translation_text_hash": "9356eb0ea547da82c7946e0a7b0cb0d3694f7980c3c1507f0c8d8c351115cd09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 만일 미쳤어도 하나님을 위한 것이요 만일 정신이 온전하여도 너희를 위한 것이니"
+      ],
+      "raw_text_hashes": [
+        "9356eb0ea547da82c7946e0a7b0cb0d3694f7980c3c1507f0c8d8c351115cd09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:14",
+      "sequence": 28888,
+      "chapter_label": "2CO 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "For the love of Christ compels us; because we judge thus: that one died for all, therefore all died.",
+      "ko": "그리스도의 사랑이 우리를 강권하시는도다 우리가 생각건대 한 사람이 모든 사람을 대신하여 죽었은즉 모든 사람이 죽은 것이라",
+      "source_text_hash": "0509afb7684639e4f4e3a38cf6b1bd1eb97f4e3471958a49106a3d811b1c0db1",
+      "translation_text_hash": "71903a50383a50c321b4a337c70562b4d5d4d376259a0a62344410aa64b6919b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도의 사랑이 우리를 강권하시는도다 우리가 생각건대 한 사람이 모든 사람을 대신하여 죽었은즉 모든 사람이 죽은 것이라"
+      ],
+      "raw_text_hashes": [
+        "71903a50383a50c321b4a337c70562b4d5d4d376259a0a62344410aa64b6919b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:15",
+      "sequence": 28889,
+      "chapter_label": "2CO 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "He died for all, that those who live should no longer live to themselves, but to him who for their sakes died and rose again.",
+      "ko": "저가 모든 사람을 대신하여 죽으심은 산 자들로 하여금 다시는 저희 자신을 위하여 살지 않고 오직 저희를 대신하여 죽었다가 다시 사신 자를 위하여 살게 하려 함이니라",
+      "source_text_hash": "14aeb39f0ea7c9983f162f7ae51d1f2e679d60d3be7c67ee668e5fae01b2e4e9",
+      "translation_text_hash": "fe75cea0b592f761eea52eb7e31cca95a3270daddafb2e4dc2c0dbc9831ee66e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 모든 사람을 대신하여 죽으심은 산 자들로 하여금 다시는 저희 자신을 위하여 살지 않고 오직 저희를 대신하여 죽었다가 다시 사신 자를 위하여 살게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "fe75cea0b592f761eea52eb7e31cca95a3270daddafb2e4dc2c0dbc9831ee66e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:16",
+      "sequence": 28890,
+      "chapter_label": "2CO 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore we know no one according to the flesh from now on. Even though we have known Christ according to the flesh, yet now we know him so no more.",
+      "ko": "그러므로 우리가 이제부터는 아무 사람도 육체대로 알지 아니하노라 비록 우리가 그리스도도 육체대로 알았으나 이제부터는 이같이 알지 아니하노라",
+      "source_text_hash": "6e9fcf2e174517da840a02493bffe4416e31e4278c5ded9a4927a01de5efac0f",
+      "translation_text_hash": "56b54c87292ba5902ad703520afc4fe7907c0f7ce209c05ed783342fd2b8739c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 이제부터는 아무 사람도 육체대로 알지 아니하노라 비록 우리가 그리스도도 육체대로 알았으나 이제부터는 이같이 알지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "56b54c87292ba5902ad703520afc4fe7907c0f7ce209c05ed783342fd2b8739c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:17",
+      "sequence": 28891,
+      "chapter_label": "2CO 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore if anyone is in Christ, he is a new creation. The old things have passed away. Behold, all things have become new.",
+      "ko": "그런즉 누구든지 그리스도 안에 있으면 새로운 피조물이라 이전 것은 지나갔으니 보라 새것이 되었도다",
+      "source_text_hash": "40bec9be3d0a6055f250a79f584ec6538009de94c7800e2dab0442585365018b",
+      "translation_text_hash": "4d1d14e5cabdc0937da7f8a4225986f93b2a6b030b24d0d15214d99d31a2d399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 누구든지 그리스도 안에 있으면 새로운 피조물이라 이전 것은 지나갔으니 보라 새것이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "4d1d14e5cabdc0937da7f8a4225986f93b2a6b030b24d0d15214d99d31a2d399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:18",
+      "sequence": 28892,
+      "chapter_label": "2CO 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "But all things are of God, who reconciled us to himself through Jesus Christ, and gave to us the ministry of reconciliation;",
+      "ko": "모든 것이 하나님께로 났나니 저가 그리스도로 말미암아 우리를 자기와 화목하게 하시고 또 우리에게 화목하게 하는 직책을 주셨으니",
+      "source_text_hash": "20854ac380595c21177839f0cb0d406c27a0db690325927cfd4e9d290304ae25",
+      "translation_text_hash": "ea72ffd8b6e07cb676af3c8446608bc74fa29ea55bba1a7ed367b2710c3e265b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것이 하나님께로 났나니 저가 그리스도로 말미암아 우리를 자기와 화목하게 하시고 또 우리에게 화목하게 하는 직책을 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "ea72ffd8b6e07cb676af3c8446608bc74fa29ea55bba1a7ed367b2710c3e265b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:19",
+      "sequence": 28893,
+      "chapter_label": "2CO 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "namely, that God was in Christ reconciling the world to himself, not reckoning to them their trespasses, and having committed to us the word of reconciliation.",
+      "ko": "이는 하나님께서 그리스도 안에 계시사 세상을 자기와 화목하게 하시며 저희의 죄를 저희에게 돌리지 아니하시고 화목하게 하는 말씀을 우리에게 부탁하셨느니라",
+      "source_text_hash": "1f7972db14015eab5e1121f4601c0cba477d0080bed23e2ef704dee3f04e7173",
+      "translation_text_hash": "367ac8092a401a137a8ed7f169127d1b6c2e7165aac4ebd75b44bb1c288e80dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님께서 그리스도 안에 계시사 세상을 자기와 화목하게 하시며 저희의 죄를 저희에게 돌리지 아니하시고 화목하게 하는 말씀을 우리에게 부탁하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "367ac8092a401a137a8ed7f169127d1b6c2e7165aac4ebd75b44bb1c288e80dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:20",
+      "sequence": 28894,
+      "chapter_label": "2CO 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "We are therefore ambassadors on behalf of Christ, as though God were entreating by us: we beg you on behalf of Christ, be reconciled to God.",
+      "ko": "이러므로 우리가 그리스도를 대신하여 사신이 되어 하나님이 우리로 너희를 권면하시는 것 같이 그리스도를 대신하여 간구하노니 너희는 하나님과 화목하라",
+      "source_text_hash": "846bda69e4822cba6802328d964231543b6bb6c44ec876b353991126d487ec90",
+      "translation_text_hash": "bfa36e3a10475be2ec686e5751c44637ab8e6adbfedba3aaee1681342a76157f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 그리스도를 대신하여 사신이 되어 하나님이 우리로 너희를 권면하시는 것 같이 그리스도를 대신하여 간구하노니 너희는 하나님과 화목하라"
+      ],
+      "raw_text_hashes": [
+        "bfa36e3a10475be2ec686e5751c44637ab8e6adbfedba3aaee1681342a76157f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:5:21",
+      "sequence": 28895,
+      "chapter_label": "2CO 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CO",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "For him who knew no sin he made to be sin on our behalf, so that in him we might become the righteousness of God.",
+      "ko": "하나님이 죄를 알지도 못하신 자로 우리를 대신하여 죄를 삼으신 것은 우리로 하여금 저의 안에서 하나님의 의가 되게 하려 하심이니라",
+      "source_text_hash": "6da3bdcf2f3dde686de7703c83892b5d34fbbdf99532205e210c480224f05c8a",
+      "translation_text_hash": "8fe5128db10f4497053ebb9dfa914f57025aa0109cd80328d51c9f24853e3d1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 죄를 알지도 못하신 자로 우리를 대신하여 죄를 삼으신 것은 우리로 하여금 저의 안에서 하나님의 의가 되게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "8fe5128db10f4497053ebb9dfa914f57025aa0109cd80328d51c9f24853e3d1e"
+      ]
+    }
+  ]
+}

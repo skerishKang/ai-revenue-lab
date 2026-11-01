@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:006",
+  "unit_ordinal": 56,
+  "unit_label": "EXO 6",
+  "book_code": "EXO",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:6:1",
+      "sequence": 1657,
+      "chapter_label": "EXO 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “Now you shall see what I will do to Pharaoh, for by a strong hand he shall let them go, and by a strong hand he shall drive them out of his land.”",
+      "ko": "여호와께서 모세에게 이르시되 이제 내가 바로에게 하는 일을 네가 보리라 강한 손을 더하므로 바로가 그들을 보내리라 강한 손을 더하므로 바로가 그들을 그 땅에서 쫓아 내리라",
+      "source_text_hash": "c158f25149e34d00c1b338db1be8bce8b02e206bb4b96a24b6c4ea46d1dec885",
+      "translation_text_hash": "00f31cd115f71e4d53903222d63a3eedab3e91ba79ed973b733428e280bc6c40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 이제 내가 바로에게 하는 일을 네가 보리라 강한 손을 더하므로 바로가 그들을 보내리라 강한 손을 더하므로 바로가 그들을 그 땅에서 쫓아 내리라"
+      ],
+      "raw_text_hashes": [
+        "00f31cd115f71e4d53903222d63a3eedab3e91ba79ed973b733428e280bc6c40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:2",
+      "sequence": 1658,
+      "chapter_label": "EXO 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "God spoke to Moses, and said to him, “I am the LORD.",
+      "ko": "하나님이 모세에게 말씀하여 가라사대 나는 여호와로라",
+      "source_text_hash": "7bba127a21b46d5cfbff29fc01bac2f1e4403263bc5cbc39bca8f603c316801d",
+      "translation_text_hash": "b0aa6adc1fa0786c4dd6d3780105d6db11d3ec5eae6f56950ce58bf08d941700",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 모세에게 말씀하여 가라사대 나는 여호와로라"
+      ],
+      "raw_text_hashes": [
+        "b0aa6adc1fa0786c4dd6d3780105d6db11d3ec5eae6f56950ce58bf08d941700"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:3",
+      "sequence": 1659,
+      "chapter_label": "EXO 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "I appeared to Abraham, to Isaac, and to Jacob, as God Almighty; but by my name the LORD I was not known to them.",
+      "ko": "내가 아브라함과 이삭과 야곱에게 전능의 하나님으로 나타났으나 나의 이름을 여호와로는 그들에게 알리지 아니하였고",
+      "source_text_hash": "898a364353477ed25a4924d9c39bec59967443f7e5a9a07a02fb7b32d0aa5297",
+      "translation_text_hash": "33008333ac388b14cf3215f01cb0fff1592effc63894f84f538c9fc32be198ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아브라함과 이삭과 야곱에게 전능의 하나님으로 나타났으나 나의 이름을 여호와로는 그들에게 알리지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "33008333ac388b14cf3215f01cb0fff1592effc63894f84f538c9fc32be198ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:4",
+      "sequence": 1660,
+      "chapter_label": "EXO 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "I have also established my covenant with them, to give them the land of Canaan, the land of their travels, in which they lived as aliens.",
+      "ko": "가나안 땅 곧 그들의 우거하는 땅을 주기로 그들과 언약하였더니",
+      "source_text_hash": "0d6ae6fa43d1cbccc191d254767012b2121467554792f8546d0b344cd94f2102",
+      "translation_text_hash": "e42024af5c486c36c0aefc36ce32e20ecb5dcd4c171996e536d9e2d3ce832fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 땅 곧 그들의 우거하는 땅을 주기로 그들과 언약하였더니"
+      ],
+      "raw_text_hashes": [
+        "e42024af5c486c36c0aefc36ce32e20ecb5dcd4c171996e536d9e2d3ce832fbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:5",
+      "sequence": 1661,
+      "chapter_label": "EXO 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Moreover I have heard the groaning of the children of Israel, whom the Egyptians keep in bondage, and I have remembered my covenant.",
+      "ko": "이제 애굽 사람이 종을 삼은 이스라엘 자손의 신음을 듣고 나의 언약을 기억하노라",
+      "source_text_hash": "b22f58a2d29506de246fdde9581caeee638805f434c4b1aa70faa7d1e2f3a3d3",
+      "translation_text_hash": "89a3e02e49780ebfa9970f0c72dcf70cb5babb98e3c343f24677b42efc268ad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 애굽 사람이 종을 삼은 이스라엘 자손의 신음을 듣고 나의 언약을 기억하노라"
+      ],
+      "raw_text_hashes": [
+        "89a3e02e49780ebfa9970f0c72dcf70cb5babb98e3c343f24677b42efc268ad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:6",
+      "sequence": 1662,
+      "chapter_label": "EXO 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore tell the children of Israel, ‘I am the LORD, and I will bring you out from under the burdens of the Egyptians, and I will rid you out of their bondage, and I will redeem you with an outstretched arm, and with great judgments.",
+      "ko": "그러므로 이스라엘 자손에게 말하기를 나는 여호와라 내가 애굽 사람의 무거운 짐 밑에서 너희를 빼어 내며 그 고역에서 너희를 건지며 편 팔과 큰 재앙으로 너희를 구속하여",
+      "source_text_hash": "dfb4f7b0377eaaa250bee75bc63e548449a3ded6b6d26a527a9f6107d53d4b95",
+      "translation_text_hash": "f61f1f7e5c82e58a2a95ad8ec42afb18299373b36bb659bad7993856508c6403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 자손에게 말하기를 나는 여호와라 내가 애굽 사람의 무거운 짐 밑에서 너희를 빼어 내며 그 고역에서 너희를 건지며 편 팔과 큰 재앙으로 너희를 구속하여"
+      ],
+      "raw_text_hashes": [
+        "f61f1f7e5c82e58a2a95ad8ec42afb18299373b36bb659bad7993856508c6403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:7",
+      "sequence": 1663,
+      "chapter_label": "EXO 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "I will take you to myself for a people. I will be your God; and you shall know that I am the LORD your God, who brings you out from under the burdens of the Egyptians.",
+      "ko": "너희로 내 백성을 삼고 나는 너희 하나님이 되리니 나는 애굽 사람의 무거운 짐 밑에서 너희를 빼어낸 너희 하나님 여호와인줄 너희가 알찌라",
+      "source_text_hash": "a56f11568ad631c5f3fe10e570f356beadf4aa17033d6d2c824a7aa903ce62d3",
+      "translation_text_hash": "041a1e9ec526cda767e86ff1cee32955267988cd0fc140e97603c71bc9025135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 내 백성을 삼고 나는 너희 하나님이 되리니 나는 애굽 사람의 무거운 짐 밑에서 너희를 빼어낸 너희 하나님 여호와인줄 너희가 알찌라"
+      ],
+      "raw_text_hashes": [
+        "041a1e9ec526cda767e86ff1cee32955267988cd0fc140e97603c71bc9025135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:8",
+      "sequence": 1664,
+      "chapter_label": "EXO 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "I will bring you into the land which I swore to give to Abraham, to Isaac, and to Jacob; and I will give it to you for a heritage: I am the LORD.’”",
+      "ko": "내가 아브라함과 이삭과 야곱에게 주기로 맹세한 땅으로 너희를 인도하고 그 땅을 너희에게 주어 기업을 삼게 하리라 나는 여호와로라 하셨다 하라",
+      "source_text_hash": "d051c57bd67fe89210e8cb0646e7cdeccf96be34bbd6dcc16e253e273e05587b",
+      "translation_text_hash": "9675a2b742934f9d2674083cd76da2cbbf27bfac702075196c9066d3404d89cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아브라함과 이삭과 야곱에게 주기로 맹세한 땅으로 너희를 인도하고 그 땅을 너희에게 주어 기업을 삼게 하리라 나는 여호와로라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "9675a2b742934f9d2674083cd76da2cbbf27bfac702075196c9066d3404d89cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:9",
+      "sequence": 1665,
+      "chapter_label": "EXO 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Moses spoke so to the children of Israel, but they didn’t listen to Moses for anguish of spirit, and for cruel bondage.",
+      "ko": "모세가 이와 같이 이스라엘 자손에게 전하나 그들이 마음의 상함과 역사의 혹독함을 인하여 모세를 듣지 아니하였더라",
+      "source_text_hash": "52f19bf2febb31b2ec303cb0641d57a6c434d7614373d7ce1962f471c4743aa9",
+      "translation_text_hash": "9f9a288533421db77f49a56a6663b097fb6783b9ac39799357bb084ab6dfc0ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이와 같이 이스라엘 자손에게 전하나 그들이 마음의 상함과 역사의 혹독함을 인하여 모세를 듣지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "9f9a288533421db77f49a56a6663b097fb6783b9ac39799357bb084ab6dfc0ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:10",
+      "sequence": 1666,
+      "chapter_label": "EXO 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:11",
+      "sequence": 1667,
+      "chapter_label": "EXO 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "“Go in, speak to Pharaoh king of Egypt, that he let the children of Israel go out of his land.”",
+      "ko": "들어가서 애굽 왕 바로에게 말하여 이스라엘 자손을 그 땅에서 내어 보내게 하라",
+      "source_text_hash": "5f75cde8ced8a9cc0cac5f63bbe14b2149b76e0779469942396b89d672ac9483",
+      "translation_text_hash": "bc1225ed4f289d9ef6c25239cea18ead98176fa868181a9b3576db9bf24b353f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가서 애굽 왕 바로에게 말하여 이스라엘 자손을 그 땅에서 내어 보내게 하라"
+      ],
+      "raw_text_hashes": [
+        "bc1225ed4f289d9ef6c25239cea18ead98176fa868181a9b3576db9bf24b353f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:12",
+      "sequence": 1668,
+      "chapter_label": "EXO 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Moses spoke before the LORD, saying, “Behold, the children of Israel haven’t listened to me. How then shall Pharaoh listen to me, when I have uncircumcised lips?”",
+      "ko": "모세가 여호와 앞에 고하여 가로되 이스라엘 자손도 나를 듣지 아니하였거든 바로가 어찌 들으리이까 나는 입이 둔한 자니이다",
+      "source_text_hash": "54578de41f944d3bc0c6fbdcb5ba57d5c06c599517a8a45073b1277563958579",
+      "translation_text_hash": "c7174387cfa8113daca36fef966addcf5895d98394611221ed1d6c8fe5b7ec3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와 앞에 고하여 가로되 이스라엘 자손도 나를 듣지 아니하였거든 바로가 어찌 들으리이까 나는 입이 둔한 자니이다"
+      ],
+      "raw_text_hashes": [
+        "c7174387cfa8113daca36fef966addcf5895d98394611221ed1d6c8fe5b7ec3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:13",
+      "sequence": 1669,
+      "chapter_label": "EXO 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, and gave them a command to the children of Israel, and to Pharaoh king of Egypt, to bring the children of Israel out of the land of Egypt.",
+      "ko": "여호와께서 모세와 아론에게 말씀하사 그들로 이스라엘 자손과 애굽 왕 바로에게 명을 전하고 이스라엘 자손을 애굽 땅에서 인도하여 내게 하시니라",
+      "source_text_hash": "dcde336b14e2f029b7d13080943e98c06e2ca25d129210ee2d9c72854bf51fbc",
+      "translation_text_hash": "ee6f9304fdde2e08393128765b047499fd3e9b14d021dfccab7f18937cf4410c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 말씀하사 그들로 이스라엘 자손과 애굽 왕 바로에게 명을 전하고 이스라엘 자손을 애굽 땅에서 인도하여 내게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ee6f9304fdde2e08393128765b047499fd3e9b14d021dfccab7f18937cf4410c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:14",
+      "sequence": 1670,
+      "chapter_label": "EXO 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "These are the heads of their fathers’ houses. The sons of Reuben the firstborn of Israel: Hanoch, and Pallu, Hezron, and Carmi; these are the families of Reuben.",
+      "ko": "그 조상을 따라 집의 어른은 이러하니라 이스라엘의 장자 르우벤의 아들 하녹과 발루와 헤스론과 갈미니 이들은 르우벤의 족장이요",
+      "source_text_hash": "dea505ce9982ec12a6c3f79b4cbcbee05858a0eae6506811f3adb5872fac82f6",
+      "translation_text_hash": "78b750736011f09a861e2c702ea17fddb9975dbcffdd522f5e3fe44adfee9029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 조상을 따라 집의 어른은 이러하니라 이스라엘의 장자 르우벤의 아들 하녹과 발루와 헤스론과 갈미니 이들은 르우벤의 족장이요"
+      ],
+      "raw_text_hashes": [
+        "78b750736011f09a861e2c702ea17fddb9975dbcffdd522f5e3fe44adfee9029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:15",
+      "sequence": 1671,
+      "chapter_label": "EXO 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "The sons of Simeon: Jemuel, and Jamin, and Ohad, and Jachin, and Zohar, and Shaul the son of a Canaanite woman; these are the families of Simeon.",
+      "ko": "시므온의 아들 여무엘과 야민과 오핫과 야긴과 소할과 가나안 여인의 소생 사울이니 이들은 시므온의 족장이요",
+      "source_text_hash": "570aed749cf708d6d3c2530e6f8c87bcb9268d83bfa3b749096419167d803053",
+      "translation_text_hash": "5d922edc2bc4a3ab91d4edb537e5f1baf9a3512f5e5abf389f90a4b12f408e63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온의 아들 여무엘과 야민과 오핫과 야긴과 소할과 가나안 여인의 소생 사울이니 이들은 시므온의 족장이요"
+      ],
+      "raw_text_hashes": [
+        "5d922edc2bc4a3ab91d4edb537e5f1baf9a3512f5e5abf389f90a4b12f408e63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:16",
+      "sequence": 1672,
+      "chapter_label": "EXO 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "These are the names of the sons of Levi according to their generations: Gershon, and Kohath, and Merari; and the years of the life of Levi were one hundred thirty-seven years.",
+      "ko": "레위의 아들들의 이름은 그 연치대로 이러하니 게르손과 고핫과 므라리요 레위의 수는 일백 삼십 칠세이었으며",
+      "source_text_hash": "978a5ad707b7b5bdd8e175578b05ac93e457097c861f623b1a226a4ba884dd5e",
+      "translation_text_hash": "e7ecfe2f8f7ee84f1f0ccaee1388bc48dad08c493692942bb8ac3412e62293c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들들의 이름은 그 연치대로 이러하니 게르손과 고핫과 므라리요 레위의 수는 일백 삼십 칠세이었으며"
+      ],
+      "raw_text_hashes": [
+        "e7ecfe2f8f7ee84f1f0ccaee1388bc48dad08c493692942bb8ac3412e62293c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:17",
+      "sequence": 1673,
+      "chapter_label": "EXO 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "The sons of Gershon: Libni and Shimei, according to their families.",
+      "ko": "게르손의 아들들은 그 가족대로 립니와 시므이요",
+      "source_text_hash": "3d1d7a72206facbe20f990fc567d85a6b0bf71fc8b5e855db5aa9ca8150ebae4",
+      "translation_text_hash": "0fa07d0df7b2dc8852b4b5914f54cda4f49001208c57a06e1783ee8c67180f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손의 아들들은 그 가족대로 립니와 시므이요"
+      ],
+      "raw_text_hashes": [
+        "0fa07d0df7b2dc8852b4b5914f54cda4f49001208c57a06e1783ee8c67180f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:18",
+      "sequence": 1674,
+      "chapter_label": "EXO 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "The sons of Kohath: Amram, and Izhar, and Hebron, and Uzziel; and the years of the life of Kohath were one hundred thirty-three years.",
+      "ko": "고핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요 고핫의 수는 일백 삼십 삼세이었으며",
+      "source_text_hash": "aedd9008d7e69f34b979fddd2e95d7f93259fa4b1be23b5ed86e51d923d04a7e",
+      "translation_text_hash": "e1cc2708f2659817863e6f5249e2e632c23acddc85d24d577dcfdcf3a31790ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요 고핫의 수는 일백 삼십 삼세이었으며"
+      ],
+      "raw_text_hashes": [
+        "e1cc2708f2659817863e6f5249e2e632c23acddc85d24d577dcfdcf3a31790ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:19",
+      "sequence": 1675,
+      "chapter_label": "EXO 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Merari: Mahli and Mushi. These are the families of the Levites according to their generations.",
+      "ko": "므라리의 아들은 마흘리와 무시니 이들은 그 연치대로 레위의 족장이요",
+      "source_text_hash": "37a83324bfabb07c6343ab1b39bb363ab575a340991f9c4a40192f5a56281674",
+      "translation_text_hash": "2c74e61cbfc917814fdb80552158183c8ebf2c6d29044bb94b4efb49bbc916d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 아들은 마흘리와 무시니 이들은 그 연치대로 레위의 족장이요"
+      ],
+      "raw_text_hashes": [
+        "2c74e61cbfc917814fdb80552158183c8ebf2c6d29044bb94b4efb49bbc916d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:20",
+      "sequence": 1676,
+      "chapter_label": "EXO 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Amram took Jochebed his father’s sister to himself as wife; and she bore him Aaron and Moses. The years of the life of Amram were one hundred thirty-seven years.",
+      "ko": "아므람이 그 아비의 누이 요게벳을 아내로 취하였고 그가 아론과 모세를 낳았으며 아므람의 수는 일백 삼십 칠세이었으며",
+      "source_text_hash": "d89580b313e1e82c21e34b48319b8e031241a856853748b5ec9e3a9f3cd0e7cc",
+      "translation_text_hash": "1de34d986f8d040badc94787d3b983f21ad817f2f1f9b98519678168915de55f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아므람이 그 아비의 누이 요게벳을 아내로 취하였고 그가 아론과 모세를 낳았으며 아므람의 수는 일백 삼십 칠세이었으며"
+      ],
+      "raw_text_hashes": [
+        "1de34d986f8d040badc94787d3b983f21ad817f2f1f9b98519678168915de55f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:21",
+      "sequence": 1677,
+      "chapter_label": "EXO 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Izhar: Korah, and Nepheg, and Zichri.",
+      "ko": "이스할의 아들은 고라와 네벡과 시그리요",
+      "source_text_hash": "734b12acee33e39d57510a2f307b9672cf575c3d637eebcc9af6f8c25afbbe20",
+      "translation_text_hash": "7e8600b80ccd4dd3885b38bd2201075f302d5a9d8426c212a456ca1b5d9f4093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스할의 아들은 고라와 네벡과 시그리요"
+      ],
+      "raw_text_hashes": [
+        "7e8600b80ccd4dd3885b38bd2201075f302d5a9d8426c212a456ca1b5d9f4093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:22",
+      "sequence": 1678,
+      "chapter_label": "EXO 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "The sons of Uzziel: Mishael, Elzaphan, and Sithri.",
+      "ko": "웃시엘의 아들은 미사엘과 엘사반과 시드리요",
+      "source_text_hash": "c731577de004caf15c1d565b9c17db54d30308ad66b1c885996d56617628c274",
+      "translation_text_hash": "7b0be7d0a3a50193f87d0d313ce6ef3babcaeaf82a23f7de61ab6b082a3a09a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시엘의 아들은 미사엘과 엘사반과 시드리요"
+      ],
+      "raw_text_hashes": [
+        "7b0be7d0a3a50193f87d0d313ce6ef3babcaeaf82a23f7de61ab6b082a3a09a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:23",
+      "sequence": 1679,
+      "chapter_label": "EXO 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Aaron took Elisheba, the daughter of Amminadab, the sister of Nahshon, as his wife; and she bore him Nadab and Abihu, Eleazar and Ithamar.",
+      "ko": "아론이 암미나답의 딸 나손의 누이 엘리세바를 아내로 취하였고 그가 나답과 아비후와 엘르아살과 이다말을 낳았으며",
+      "source_text_hash": "36028f9b7780ddac03f029906faa80b0027f6e0a75d4efd7d7d23e2c6ea4d26f",
+      "translation_text_hash": "6d9d587bc72a982d57e0504a15992f89b3b70b15deb35879ae83e5c9f2946837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 암미나답의 딸 나손의 누이 엘리세바를 아내로 취하였고 그가 나답과 아비후와 엘르아살과 이다말을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "6d9d587bc72a982d57e0504a15992f89b3b70b15deb35879ae83e5c9f2946837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:24",
+      "sequence": 1680,
+      "chapter_label": "EXO 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "The sons of Korah: Assir, Elkanah, and Abiasaph; these are the families of the Korahites.",
+      "ko": "고라의 아들은 앗실과 엘가나와 아비아삽이니 이들은 고라 사람의 족장이요",
+      "source_text_hash": "3d442bef46cfcce85a388be3884d26ea218627b2139334474fddc35795dd2524",
+      "translation_text_hash": "569900bee48e5278700b5e9c882d6a51f7cba0df58438700e9f1c633c3d748fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라의 아들은 앗실과 엘가나와 아비아삽이니 이들은 고라 사람의 족장이요"
+      ],
+      "raw_text_hashes": [
+        "569900bee48e5278700b5e9c882d6a51f7cba0df58438700e9f1c633c3d748fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:25",
+      "sequence": 1681,
+      "chapter_label": "EXO 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "Eleazar Aaron’s son took one of the daughters of Putiel as his wife; and she bore him Phinehas. These are the heads of the fathers’ houses of the Levites according to their families.",
+      "ko": "아론의 아들 엘르아살이 부디엘의 딸 중에서 아내를 취하였고 그가 비느하스를 낳았으니 이들은 레위 사람의 조상을 따라 가족의 어른들이라",
+      "source_text_hash": "dae9d5afeb5ffb160e17651e61bc3baae4d6f13f15bc9ff1be4e860b696aa5d7",
+      "translation_text_hash": "1cc798589db9152cf69f7a3418cfa9378357a04c5b780db5a75474652db19f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들 엘르아살이 부디엘의 딸 중에서 아내를 취하였고 그가 비느하스를 낳았으니 이들은 레위 사람의 조상을 따라 가족의 어른들이라"
+      ],
+      "raw_text_hashes": [
+        "1cc798589db9152cf69f7a3418cfa9378357a04c5b780db5a75474652db19f37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:26",
+      "sequence": 1682,
+      "chapter_label": "EXO 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "These are that Aaron and Moses to whom the LORD said, “Bring out the children of Israel from the land of Egypt according to their armies.”",
+      "ko": "이스라엘 자손을 그 군대대로 애굽 땅에서 인도하라 하신 여호와의 명을 받은 자는 이 아론과 모세요",
+      "source_text_hash": "bbfe26273818fd32515f6356a28afedb54e0b25dbcbb9053d600ff2658e7bc26",
+      "translation_text_hash": "f843c237c2160f761a6eff7c20ecb5a15e421a1a9e3e84b62c8312575f336b9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손을 그 군대대로 애굽 땅에서 인도하라 하신 여호와의 명을 받은 자는 이 아론과 모세요"
+      ],
+      "raw_text_hashes": [
+        "f843c237c2160f761a6eff7c20ecb5a15e421a1a9e3e84b62c8312575f336b9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:27",
+      "sequence": 1683,
+      "chapter_label": "EXO 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "These are those who spoke to Pharaoh king of Egypt, to bring out the children of Israel from Egypt. These are that Moses and Aaron.",
+      "ko": "애굽왕 바로에게 이스라엘 자손을 애굽에서 내어 보내라 말한 자도 이 모세와 아론이었더라",
+      "source_text_hash": "3d26a2b2ced42dfd3c686babf21a4b6501747f4ec76d3d001d04da5571da6e48",
+      "translation_text_hash": "80abad1c937d6ab92f88b73fe870be0099f370490b1f810ef6f56f219aa802b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽왕 바로에게 이스라엘 자손을 애굽에서 내어 보내라 말한 자도 이 모세와 아론이었더라"
+      ],
+      "raw_text_hashes": [
+        "80abad1c937d6ab92f88b73fe870be0099f370490b1f810ef6f56f219aa802b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:28",
+      "sequence": 1684,
+      "chapter_label": "EXO 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "On the day when the LORD spoke to Moses in the land of Egypt,",
+      "ko": "여호와께서 애굽 땅에서 모세에게 말씀하시던 날에",
+      "source_text_hash": "b63fee4c7a15b170168d4054de533702d599ade8962eec8337a055e53e98490b",
+      "translation_text_hash": "0fd66f1f558fdfca53d071607969aeccac5e434949132f83f7e566298cdad593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 땅에서 모세에게 말씀하시던 날에"
+      ],
+      "raw_text_hashes": [
+        "0fd66f1f558fdfca53d071607969aeccac5e434949132f83f7e566298cdad593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:29",
+      "sequence": 1685,
+      "chapter_label": "EXO 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "The LORD said to Moses, “I am the LORD. Tell Pharaoh king of Egypt all that I tell you.”",
+      "ko": "여호와께서 모세에게 일러 가라사대 나는 여호와라 내가 네게 이르는 바를 너는 애굽왕 바로에게 다 고하라",
+      "source_text_hash": "4398381f4c74d6a608a82f630728e700ca68ee1e26c6d811b32735f075246f60",
+      "translation_text_hash": "149fc6f8eb4b410d1ac4aaba814252f5cb76d1a0673b0a800b8dca8b3ceb3e19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대 나는 여호와라 내가 네게 이르는 바를 너는 애굽왕 바로에게 다 고하라"
+      ],
+      "raw_text_hashes": [
+        "149fc6f8eb4b410d1ac4aaba814252f5cb76d1a0673b0a800b8dca8b3ceb3e19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:6:30",
+      "sequence": 1686,
+      "chapter_label": "EXO 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "Moses said before the LORD, “Behold, I am of uncircumcised lips, and how shall Pharaoh listen to me?”",
+      "ko": "모세가 여호와 앞에서 고하되 나는 입이 둔한 자이오니 바로가 어찌 나를 들으리이까",
+      "source_text_hash": "79784e8727accf92289ef0195b7bd3fa4b05f50ea7bf0e140f0b43d79d3f82db",
+      "translation_text_hash": "9115650cfac2ab8b7346bd39950303bb1625329c070e87845671504097ecf803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와 앞에서 고하되 나는 입이 둔한 자이오니 바로가 어찌 나를 들으리이까"
+      ],
+      "raw_text_hashes": [
+        "9115650cfac2ab8b7346bd39950303bb1625329c070e87845671504097ecf803"
+      ]
+    }
+  ]
+}

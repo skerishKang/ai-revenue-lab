@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TI:chapter:003",
+  "unit_ordinal": 1128,
+  "unit_label": "2TI 3",
+  "book_code": "2TI",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TI:3:1",
+      "sequence": 29851,
+      "chapter_label": "2TI 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "But know this: that in the last days, grievous times will come.",
+      "ko": "네가 이것을 알라 말세에 고통하는 때가 이르리니",
+      "source_text_hash": "0e3953f71e525cd30009747089455b47cd774a45f07306328e515750707b95ad",
+      "translation_text_hash": "35fa02303f005d8673f1404a976379434dd5a09e0c71f18e524e951cb734dab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이것을 알라 말세에 고통하는 때가 이르리니"
+      ],
+      "raw_text_hashes": [
+        "35fa02303f005d8673f1404a976379434dd5a09e0c71f18e524e951cb734dab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:2",
+      "sequence": 29852,
+      "chapter_label": "2TI 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "For men will be lovers of self, lovers of money, boastful, arrogant, blasphemers, disobedient to parents, unthankful, unholy,",
+      "ko": "사람들은 자기를 사랑하며 돈을 사랑하며 자긍하며 교만하며 훼방하며 부모를 거역하며 감사치 아니하며 거룩하지 아니하며",
+      "source_text_hash": "949199efce645dc772bca6bc69ec0af52b2be9a8abe2b91d0f2179fb60416bdf",
+      "translation_text_hash": "927127b5409b518652aed4c72eb2b56aef9468451767b5b550b536fdba88cf6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들은 자기를 사랑하며 돈을 사랑하며 자긍하며 교만하며 훼방하며 부모를 거역하며 감사치 아니하며 거룩하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "927127b5409b518652aed4c72eb2b56aef9468451767b5b550b536fdba88cf6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:3",
+      "sequence": 29853,
+      "chapter_label": "2TI 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "without natural affection, unforgiving, slanderers, without self-control, fierce, not lovers of good,",
+      "ko": "무정하며 원통함을 풀지 아니하며 참소하며 절제하지 못하며 사나우며 선한 것을 좋아 아니하며",
+      "source_text_hash": "167231b2fbc54058a5b746791dd681875921fc2e2a58ab472037d982a483afb8",
+      "translation_text_hash": "4ee77ae1169726bfeb37ba29cdb2e5d6e5238ebfce8baec97b8ae767f4aeb27f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무정하며 원통함을 풀지 아니하며 참소하며 절제하지 못하며 사나우며 선한 것을 좋아 아니하며"
+      ],
+      "raw_text_hashes": [
+        "4ee77ae1169726bfeb37ba29cdb2e5d6e5238ebfce8baec97b8ae767f4aeb27f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:4",
+      "sequence": 29854,
+      "chapter_label": "2TI 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "traitors, headstrong, conceited, lovers of pleasure rather than lovers of God,",
+      "ko": "배반하여 팔며 조급하며 자고하며 쾌락을 사랑하기를 하나님 사랑하는 것보다 더하며",
+      "source_text_hash": "b644f273d4ab699b2ccbd863b7f61941f4a50d2485046ce3a4815d7e99d59039",
+      "translation_text_hash": "60c24d7a58388a89015976353690f41b2ee0349c09c871d2ce0d842a3e4c61e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배반하여 팔며 조급하며 자고하며 쾌락을 사랑하기를 하나님 사랑하는 것보다 더하며"
+      ],
+      "raw_text_hashes": [
+        "60c24d7a58388a89015976353690f41b2ee0349c09c871d2ce0d842a3e4c61e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:5",
+      "sequence": 29855,
+      "chapter_label": "2TI 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "holding a form of godliness but having denied its power. Turn away from these, also.",
+      "ko": "경건의 모양은 있으나 경건의 능력은 부인하는 자니 이같은 자들에게서 네가 돌아서라",
+      "source_text_hash": "274bffad24ac22e9f6de8d6a32e4b9ee797a9c25d7d398e53dbfdcfd01dffc30",
+      "translation_text_hash": "69803d5f1ee5b264f5c250a4c72b0244edf6734fac46249e9a14573802b6f4ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경건의 모양은 있으나 경건의 능력은 부인하는 자니 이같은 자들에게서 네가 돌아서라"
+      ],
+      "raw_text_hashes": [
+        "69803d5f1ee5b264f5c250a4c72b0244edf6734fac46249e9a14573802b6f4ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:6",
+      "sequence": 29856,
+      "chapter_label": "2TI 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "For some of these are people who creep into houses and take captive gullible women loaded down with sins, led away by various lusts,",
+      "ko": "저희 중에 남의 집에 가만히 들어가 어리석은 여자를 유인하는 자들이 있으니 그 여자는 죄를 중히 지고 여러가지 욕심에 끌린바 되어",
+      "source_text_hash": "051dbd800c16d17f89fcf122a3f4488492b98796ab0ca22d1cdfe45f7f4caee0",
+      "translation_text_hash": "0918ba6ac386199730abcba06ef9394371e332539f0367705e80b431fb48f20b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 중에 남의 집에 가만히 들어가 어리석은 여자를 유인하는 자들이 있으니 그 여자는 죄를 중히 지고 여러가지 욕심에 끌린바 되어"
+      ],
+      "raw_text_hashes": [
+        "0918ba6ac386199730abcba06ef9394371e332539f0367705e80b431fb48f20b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:7",
+      "sequence": 29857,
+      "chapter_label": "2TI 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "always learning and never able to come to the knowledge of the truth.",
+      "ko": "항상 배우나 마침내 진리의 지식에 이를 수 없느니라",
+      "source_text_hash": "f879dca899eea2898a5aef79cc3dfd8d06da4f5682d748db8b7890854705bc00",
+      "translation_text_hash": "9d67ee3f02fea848642e95fc8cb61cd3d489f6b342db10933c78191cefbfa37e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 배우나 마침내 진리의 지식에 이를 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "9d67ee3f02fea848642e95fc8cb61cd3d489f6b342db10933c78191cefbfa37e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:8",
+      "sequence": 29858,
+      "chapter_label": "2TI 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Even as Jannes and Jambres opposed Moses, so these also oppose the truth, men corrupted in mind, who concerning the faith are rejected.",
+      "ko": "얀네와 얌브레가 모세를 대적한 것 같이 저희도 진리를 대적하니 이 사람들은 그 마음이 부패한 자요 믿음에 관하여는 버리운 자들이라",
+      "source_text_hash": "d8c696a8b1e9fdfa78bf9e488c6576bb8135c9860b293ddfca42fa407958408c",
+      "translation_text_hash": "c7f6718467cc18be7fda832d6398b519f652f736470ee693b4eb32436fc24dd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얀네와 얌브레가 모세를 대적한 것 같이 저희도 진리를 대적하니 이 사람들은 그 마음이 부패한 자요 믿음에 관하여는 버리운 자들이라"
+      ],
+      "raw_text_hashes": [
+        "c7f6718467cc18be7fda832d6398b519f652f736470ee693b4eb32436fc24dd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:9",
+      "sequence": 29859,
+      "chapter_label": "2TI 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "But they will proceed no further. For their folly will be evident to all men, as theirs also came to be.",
+      "ko": "그러나 저희가 더 나가지 못할 것은 저 두 사람의 된 것과 같이 저희 어리석음이 드러날 것임이니라",
+      "source_text_hash": "70a4d8d6794b88d7383534c0768ce16b8205d583e3fe31b4d50187654a935eba",
+      "translation_text_hash": "de922cae9787ded384bea2ce20e42e0a4ef831bf83a2607859d942f8c2d7e1f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희가 더 나가지 못할 것은 저 두 사람의 된 것과 같이 저희 어리석음이 드러날 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "de922cae9787ded384bea2ce20e42e0a4ef831bf83a2607859d942f8c2d7e1f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:10",
+      "sequence": 29860,
+      "chapter_label": "2TI 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "But you followed my teaching, conduct, purpose, faith, patience, love, steadfastness,",
+      "ko": "나의 교훈과 행실과 의향과 믿음과 오래 참음과 사랑과 인내와",
+      "source_text_hash": "648b7e7749361c8e1fe937657f3c9c7795c86e74f7b66ad30ba3c5772d5eaeb3",
+      "translation_text_hash": "b2dbd096ed842fdad925d14c355472bd485b73a29893f496f8e7ff3c9044a12a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 교훈과 행실과 의향과 믿음과 오래 참음과 사랑과 인내와"
+      ],
+      "raw_text_hashes": [
+        "b2dbd096ed842fdad925d14c355472bd485b73a29893f496f8e7ff3c9044a12a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:11",
+      "sequence": 29861,
+      "chapter_label": "2TI 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "persecutions, and sufferings—those things that happened to me at Antioch, Iconium, and Lystra. I endured those persecutions. The Lord delivered me out of them all.",
+      "ko": "핍박과 고난과 또한 안디옥과 이고니온과 루스드라에서 당한일과 어떠한 핍박 받은 것을 네가 과연 보고 알았거니와 주께서 이 모든 것 가운데서 나를 건지셨느니라",
+      "source_text_hash": "bce79d676a6d86dbed9420c3899bf6e22352690d496cdf72e298bc8fc5c71513",
+      "translation_text_hash": "4cd8f9d8319bd79389d118a4dc2349880222e8988da9be56b02aa0af30b8205e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "핍박과 고난과 또한 안디옥과 이고니온과 루스드라에서 당한일과 어떠한 핍박 받은 것을 네가 과연 보고 알았거니와 주께서 이 모든 것 가운데서 나를 건지셨느니라"
+      ],
+      "raw_text_hashes": [
+        "4cd8f9d8319bd79389d118a4dc2349880222e8988da9be56b02aa0af30b8205e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:12",
+      "sequence": 29862,
+      "chapter_label": "2TI 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Yes, and all who desire to live godly in Christ Jesus will suffer persecution.",
+      "ko": "무릇 그리스도 예수 안에서 경건하게 살고자 하는 자는 핍박을 받으리라",
+      "source_text_hash": "a42801e8659f54f1fb2f58615d97a64f9a0808fd1c8f4d86f877017b100e27f5",
+      "translation_text_hash": "3f939e9e793e3c84f97e420860e59b342fff0ebb6f14e1dbf1e9b673e19fc8c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그리스도 예수 안에서 경건하게 살고자 하는 자는 핍박을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "3f939e9e793e3c84f97e420860e59b342fff0ebb6f14e1dbf1e9b673e19fc8c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:13",
+      "sequence": 29863,
+      "chapter_label": "2TI 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "But evil men and impostors will grow worse and worse, deceiving and being deceived.",
+      "ko": "악한 사람들과 속이는 자들은 더욱 악하여져서 속이기도 하고 속기도 하나니",
+      "source_text_hash": "ad86c606c0dfccc72c5573669ccf8216d9050c973e83e3079fb9aa7f751df074",
+      "translation_text_hash": "ed4a299fc2c6744a1ff3ed660e0c57fda4e927cd6e226a3976e5e5cd613c2d3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 사람들과 속이는 자들은 더욱 악하여져서 속이기도 하고 속기도 하나니"
+      ],
+      "raw_text_hashes": [
+        "ed4a299fc2c6744a1ff3ed660e0c57fda4e927cd6e226a3976e5e5cd613c2d3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:14",
+      "sequence": 29864,
+      "chapter_label": "2TI 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But you remain in the things which you have learned and have been assured of, knowing from whom you have learned them.",
+      "ko": "그러나 너는 배우고 확신한 일에 거하라 네가 뉘게서 배운 것을 알며",
+      "source_text_hash": "b8c1118bb4e4de0da30086441d0a3e76b2b982c21c7b799b44b23c34738db6d8",
+      "translation_text_hash": "cb77d6428619f772cb4aa8592b0c1a0afb479ad47f9cb6701741bcfc81c0afba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 배우고 확신한 일에 거하라 네가 뉘게서 배운 것을 알며"
+      ],
+      "raw_text_hashes": [
+        "cb77d6428619f772cb4aa8592b0c1a0afb479ad47f9cb6701741bcfc81c0afba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:15",
+      "sequence": 29865,
+      "chapter_label": "2TI 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "From infancy, you have known the holy Scriptures which are able to make you wise for salvation through faith which is in Christ Jesus.",
+      "ko": "또 네가 어려서부터 성경을 알았나니 성경은 능히 너로 하여금 그리스도 예수 안에 있는 믿음으로 말미암아 구원에 이르는 지혜가 있게 하느니라",
+      "source_text_hash": "6fe71eec4e025fa5323f90462e2509ba2613cd9f492865bcf21c391ad87fb790",
+      "translation_text_hash": "6127ac64c52bcd9cfe2ccd09f4e4c782c1529dae0f9a2265a17a03e6ff62cc2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 어려서부터 성경을 알았나니 성경은 능히 너로 하여금 그리스도 예수 안에 있는 믿음으로 말미암아 구원에 이르는 지혜가 있게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "6127ac64c52bcd9cfe2ccd09f4e4c782c1529dae0f9a2265a17a03e6ff62cc2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:16",
+      "sequence": 29866,
+      "chapter_label": "2TI 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Every Scripture is God-breathed and profitable for teaching, for reproof, for correction, and for instruction in righteousness,",
+      "ko": "모든 성경은 하나님의 감동으로 된 것으로 교훈과 책망과 바르게 함과 의로 교육하기에 유익하니",
+      "source_text_hash": "0922526dab611650a5b21e5e91c52e33f2418bb3ac99b9fb949e0dcaaf2509df",
+      "translation_text_hash": "9f6c0e282cdc1e9989784c167a6335789b8d5e53a9129244c7180d92f517c254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 성경은 하나님의 감동으로 된 것으로 교훈과 책망과 바르게 함과 의로 교육하기에 유익하니"
+      ],
+      "raw_text_hashes": [
+        "9f6c0e282cdc1e9989784c167a6335789b8d5e53a9129244c7180d92f517c254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:3:17",
+      "sequence": 29867,
+      "chapter_label": "2TI 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "2TI",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "that each person who belongs to God may be complete, thoroughly equipped for every good work.",
+      "ko": "이는 하나님의 사람으로 온전케 하며 모든 선한 일을 행하기에 온전케 하려 함이니라",
+      "source_text_hash": "a863407f30321ec76b49926354de41e2a867c455288db8425a288e23987681b0",
+      "translation_text_hash": "d4930c47dbee02b22b60b0bc51b99e57b78725dcb6fafc2094d47114c7d7ccf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님의 사람으로 온전케 하며 모든 선한 일을 행하기에 온전케 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "d4930c47dbee02b22b60b0bc51b99e57b78725dcb6fafc2094d47114c7d7ccf5"
+      ]
+    }
+  ]
+}

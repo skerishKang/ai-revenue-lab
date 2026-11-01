@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:022",
+  "unit_ordinal": 175,
+  "unit_label": "DEU 22",
+  "book_code": "DEU",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:22:1",
+      "sequence": 5472,
+      "chapter_label": "DEU 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "You shall not see your brother’s ox or his sheep go astray and hide yourself from them. You shall surely bring them again to your brother.",
+      "ko": "네 형제의 우양의 길 잃은 것을 보거든 못본체 하지 말고 너는 반드시 끌어다가 네 형제에게 돌릴 것이요",
+      "source_text_hash": "31e8a93ca27b4320c2ef5c8abfd0c2b8384278133f733f980d188fe2aa492573",
+      "translation_text_hash": "5214953c02bbddc32b81c9a2d30a89246eb66d763941fd930320107272c4b35c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형제의 우양의 길 잃은 것을 보거든 못본체 하지 말고 너는 반드시 끌어다가 네 형제에게 돌릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "5214953c02bbddc32b81c9a2d30a89246eb66d763941fd930320107272c4b35c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:2",
+      "sequence": 5473,
+      "chapter_label": "DEU 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "If your brother isn’t near to you, or if you don’t know him, then you shall bring it home to your house, and it shall be with you until your brother comes looking for it, and you shall restore it to him.",
+      "ko": "네 형제가 네게서 멀거나 네가 혹 그를 알지 못하거든 그 짐승을 네 집으로 끌고 와서 네 형제가 찾기까지 네게 두었다가 그에게 돌릴찌니",
+      "source_text_hash": "c5b177f714dbd6c9959bb636ef2b81c75cfe9198d0ec8e654bbd5f8f6c650c8c",
+      "translation_text_hash": "37a583ebd0d648d408e28a6f766fa2f09972867852b05ffb9456aadad31a7fe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형제가 네게서 멀거나 네가 혹 그를 알지 못하거든 그 짐승을 네 집으로 끌고 와서 네 형제가 찾기까지 네게 두었다가 그에게 돌릴찌니"
+      ],
+      "raw_text_hashes": [
+        "37a583ebd0d648d408e28a6f766fa2f09972867852b05ffb9456aadad31a7fe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:3",
+      "sequence": 5474,
+      "chapter_label": "DEU 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "So you shall do with his donkey. So you shall do with his garment. So you shall do with every lost thing of your brother’s, which he has lost and you have found. You may not hide yourself.",
+      "ko": "나귀라도 그리하고 의복이라도 그리하고 무릇 형제의 잃은 아무 것이든지 네가 얻거든 다 그리하고 못본체 하지 말 것이며",
+      "source_text_hash": "100d8e1dd609c71c5f800056d7948554fd2291b1ce7907fd7fe0cec5ffefd5db",
+      "translation_text_hash": "c4b5dbc21525aec0942c2a687c1c3a97498a0951d133df7b23134e9f5df2239d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀라도 그리하고 의복이라도 그리하고 무릇 형제의 잃은 아무 것이든지 네가 얻거든 다 그리하고 못본체 하지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "c4b5dbc21525aec0942c2a687c1c3a97498a0951d133df7b23134e9f5df2239d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:4",
+      "sequence": 5475,
+      "chapter_label": "DEU 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "You shall not see your brother’s donkey or his ox fallen down by the way, and hide yourself from them. You shall surely help him to lift them up again.",
+      "ko": "네 형제의 나귀나 소가 길에 넘어진 것을 보거든 못본체 하지 말고 너는 반드시 형제를 도와서 그것을 일으킬찌니라",
+      "source_text_hash": "bd03f5d6d41e972230fa6b522150816e5d6e102b5ebf1c4db60efd6b8f7685af",
+      "translation_text_hash": "8a43430c4882522d9b9a84bbf22578f3e6cd4cbaedfb3cd1b7dd3328962201a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형제의 나귀나 소가 길에 넘어진 것을 보거든 못본체 하지 말고 너는 반드시 형제를 도와서 그것을 일으킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "8a43430c4882522d9b9a84bbf22578f3e6cd4cbaedfb3cd1b7dd3328962201a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:5",
+      "sequence": 5476,
+      "chapter_label": "DEU 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "A woman shall not wear men’s clothing, neither shall a man put on women’s clothing; for whoever does these things is an abomination to the LORD your God.",
+      "ko": "여자는 남자의 의복을 입지 말 것이요 남자는 여자의 의복을 입지 말 것이라 이같이 하는 자는 네 하나님 여호와께 가증한 자니라",
+      "source_text_hash": "b0ac11f7dba0cb5ae92a06cb3275e69a8105a77e1594d78bec8ac164c796595c",
+      "translation_text_hash": "e3adeaf39ae4b5b27faabec941476e3da54e4079178f32c147f1a81e93cc913f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자는 남자의 의복을 입지 말 것이요 남자는 여자의 의복을 입지 말 것이라 이같이 하는 자는 네 하나님 여호와께 가증한 자니라"
+      ],
+      "raw_text_hashes": [
+        "e3adeaf39ae4b5b27faabec941476e3da54e4079178f32c147f1a81e93cc913f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:6",
+      "sequence": 5477,
+      "chapter_label": "DEU 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "If you come across a bird’s nest on the way, in any tree or on the ground, with young ones or eggs, and the hen sitting on the young, or on the eggs, you shall not take the hen with the young.",
+      "ko": "노중에서 나무에나 땅에 있는 새의 보금자리에 새 새끼나 알이 있고 어미새가 그 새끼나 알을 품은 것을 만나거든 그 어미새와 새끼를 아울러 취하지 말고",
+      "source_text_hash": "83eb8d72d650d1b7375385eabbda43eea0f0c74095ef33275f3a8df10e243174",
+      "translation_text_hash": "15274f34914b1d2ba13d089d13d2d7d26c53f1432e85a581c76e392bc56bd670",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노중에서 나무에나 땅에 있는 새의 보금자리에 새 새끼나 알이 있고 어미새가 그 새끼나 알을 품은 것을 만나거든 그 어미새와 새끼를 아울러 취하지 말고"
+      ],
+      "raw_text_hashes": [
+        "15274f34914b1d2ba13d089d13d2d7d26c53f1432e85a581c76e392bc56bd670"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:7",
+      "sequence": 5478,
+      "chapter_label": "DEU 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "You shall surely let the hen go, but the young you may take for yourself, that it may be well with you, and that you may prolong your days.",
+      "ko": "어미는 반드시 놓아 줄 것이요 새끼는 취하여도 가하니 그리하면 네가 복을 누리고 장수하리라",
+      "source_text_hash": "ad8d0d9f1a60365958dec6a7020ff6d15b25dc6fc94554a36103254ac96d24f3",
+      "translation_text_hash": "29db4ffdf25ce881e5fd56d37c81d9cc7bc5dbaeccbb0b4f30b67008d5e65d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어미는 반드시 놓아 줄 것이요 새끼는 취하여도 가하니 그리하면 네가 복을 누리고 장수하리라"
+      ],
+      "raw_text_hashes": [
+        "29db4ffdf25ce881e5fd56d37c81d9cc7bc5dbaeccbb0b4f30b67008d5e65d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:8",
+      "sequence": 5479,
+      "chapter_label": "DEU 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "When you build a new house, then you shall make a railing around your roof, so that you don’t bring blood on your house if anyone falls from there.",
+      "ko": "네가 새 집을 건축할 때에 지붕에 난간을 만들어 사람으로 떨어지지 않게 하라 그 피 흐른 죄가 네 집에 돌아갈까 하노라",
+      "source_text_hash": "97e35192af3e70cd291f6c3a162d8b7b6091d16ccda6e7a03c96f11edd8c171d",
+      "translation_text_hash": "f2db99dae40d3741582f7ba070f0b9b93118e30ed0eec5385b5bafdda0513264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 새 집을 건축할 때에 지붕에 난간을 만들어 사람으로 떨어지지 않게 하라 그 피 흐른 죄가 네 집에 돌아갈까 하노라"
+      ],
+      "raw_text_hashes": [
+        "f2db99dae40d3741582f7ba070f0b9b93118e30ed0eec5385b5bafdda0513264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:9",
+      "sequence": 5480,
+      "chapter_label": "DEU 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "You shall not sow your vineyard with two kinds of seed, lest all the fruit be defiled, the seed which you have sown, and the increase of the vineyard.",
+      "ko": "네 포도원에 두 종자를 섞어 뿌리지 말라 그리하면 네가 뿌린 씨의 열매와 포도원의 소산이 다 빼앗김이 될까 하노라",
+      "source_text_hash": "3c7fb0b740b4158533ef542ba901a082fc6de9d2f22dd68934ba82cfd81b35ae",
+      "translation_text_hash": "fcfa377c74e43702b59371f6bedf056638eb4942368cbd3c30ecaadedbba0a90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 포도원에 두 종자를 섞어 뿌리지 말라 그리하면 네가 뿌린 씨의 열매와 포도원의 소산이 다 빼앗김이 될까 하노라"
+      ],
+      "raw_text_hashes": [
+        "fcfa377c74e43702b59371f6bedf056638eb4942368cbd3c30ecaadedbba0a90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:10",
+      "sequence": 5481,
+      "chapter_label": "DEU 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "You shall not plow with an ox and a donkey together.",
+      "ko": "너는 소와 나귀를 겨리하여 갈지 말며",
+      "source_text_hash": "182c9180e0ba2491dbfe3525e32c745caa1cb637dc28145b6a4b916dc960cd3e",
+      "translation_text_hash": "52d663eaf58196c6a0847ad611bd3495df45f31ddb06b7148177e53d7b9f1b43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 소와 나귀를 겨리하여 갈지 말며"
+      ],
+      "raw_text_hashes": [
+        "52d663eaf58196c6a0847ad611bd3495df45f31ddb06b7148177e53d7b9f1b43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:11",
+      "sequence": 5482,
+      "chapter_label": "DEU 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "You shall not wear clothes of wool and linen woven together.",
+      "ko": "양털과 베실로 섞어 짠 것을 입지 말지니라",
+      "source_text_hash": "180abda345b4420e8170435e5f3f8b8f96fbd9eff9a4466673869b439e5792c5",
+      "translation_text_hash": "efbb3dd0eb707f3a87fabb693cc9a69d3f21ddb0d315109baae0c1490a6a125f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양털과 베실로 섞어 짠 것을 입지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "efbb3dd0eb707f3a87fabb693cc9a69d3f21ddb0d315109baae0c1490a6a125f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:12",
+      "sequence": 5483,
+      "chapter_label": "DEU 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "You shall make yourselves fringes on the four corners of your cloak with which you cover yourself.",
+      "ko": "입는 겉옷 네 귀에 술을 만들지니라",
+      "source_text_hash": "83bcb077843eb5892865427cee1e9f67c0d573ce794057eb785b7f1cf2e887b3",
+      "translation_text_hash": "0d54edc41a3921d8d596f8bf5c88aecbbc73136829c46d3b0af7841de7b252d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입는 겉옷 네 귀에 술을 만들지니라"
+      ],
+      "raw_text_hashes": [
+        "0d54edc41a3921d8d596f8bf5c88aecbbc73136829c46d3b0af7841de7b252d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:13",
+      "sequence": 5484,
+      "chapter_label": "DEU 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "If any man takes a wife, and goes in to her, hates her,",
+      "ko": "누구든지 아내를 취하여 그와 동침한 후에 그를 미워하여",
+      "source_text_hash": "8a6383a3ccf6c48f4403482e9ee4e7b238a04a6774517d17f5eb6fc4b4f6400a",
+      "translation_text_hash": "184110756e1d35ccf8f44cf5aeffef6ed920f1c8abcb1a301cab2827ab185242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 아내를 취하여 그와 동침한 후에 그를 미워하여"
+      ],
+      "raw_text_hashes": [
+        "184110756e1d35ccf8f44cf5aeffef6ed920f1c8abcb1a301cab2827ab185242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:14",
+      "sequence": 5485,
+      "chapter_label": "DEU 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "accuses her of shameful things, gives her a bad name, and says, “I took this woman, and when I came near to her, I didn’t find in her the tokens of virginity;”",
+      "ko": "비방거리를 만들어 그에게 누명을 씌워 가로되 내가 이 여자를 취하였더니 그와 동침할 때에 그의 처녀인 표적을 보지 못하였노라 하면",
+      "source_text_hash": "547a30cfc5089ac6069f466d093f221ba39672d1b25d5f97f92bc18c65738143",
+      "translation_text_hash": "1a1e5b6902e920370501b861ce9487f190326dbaedaea1dfb07283a371d63bd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비방거리를 만들어 그에게 누명을 씌워 가로되 내가 이 여자를 취하였더니 그와 동침할 때에 그의 처녀인 표적을 보지 못하였노라 하면"
+      ],
+      "raw_text_hashes": [
+        "1a1e5b6902e920370501b861ce9487f190326dbaedaea1dfb07283a371d63bd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:15",
+      "sequence": 5486,
+      "chapter_label": "DEU 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "then the young lady’s father and mother shall take and bring the tokens of the young lady’s virginity to the elders of the city in the gate.",
+      "ko": "그 처녀의 부모가 처녀의 처녀인 표를 얻어가지고 그 성읍문 장로들에게로 가서",
+      "source_text_hash": "8d6f2b597591e1fe8c86192fdd5651b7dfcc8c3c03715c64349d34c6457e64b1",
+      "translation_text_hash": "b71eecd5f0356ae86018d5afa7e2d4ffb4a3a047491563bcf5f3c4b5a25e0e39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 처녀의 부모가 처녀의 처녀인 표를 얻어가지고 그 성읍문 장로들에게로 가서"
+      ],
+      "raw_text_hashes": [
+        "b71eecd5f0356ae86018d5afa7e2d4ffb4a3a047491563bcf5f3c4b5a25e0e39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:16",
+      "sequence": 5487,
+      "chapter_label": "DEU 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "The young lady’s father shall tell the elders, “I gave my daughter to this man as his wife, and he hates her.",
+      "ko": "처녀의 아비가 장로들에게 말하기를 내 딸을 이 사람에게 아내로 주었더니 그가 미워하여",
+      "source_text_hash": "990d1383767e739e9897b682067a9230a8880b645abe2e1cc19ba57655e54023",
+      "translation_text_hash": "b7dc07b005aec21505dc01e70345d70d4ec27ec0dd35da4e14d664ae66b6ab20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀의 아비가 장로들에게 말하기를 내 딸을 이 사람에게 아내로 주었더니 그가 미워하여"
+      ],
+      "raw_text_hashes": [
+        "b7dc07b005aec21505dc01e70345d70d4ec27ec0dd35da4e14d664ae66b6ab20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:17",
+      "sequence": 5488,
+      "chapter_label": "DEU 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "Behold, he has accused her of shameful things, saying, ‘I didn’t find in your daughter the tokens of virginity;’ and yet these are the tokens of my daughter’s virginity.” They shall spread the cloth before the elders of the city.",
+      "ko": "비방거리를 만들어 말하기를 내가 네 딸의 처녀인 표적을 보지 못하였노라 하나 보라 내 딸의 처녀인 표적이 이것이라 하고 그 부모가 그 자리옷을 그 성읍 장로들 앞에 펼 것이요",
+      "source_text_hash": "19fdf17242265c66ded84ee73a2250801f9d6fb9283f5ea0fc49453d5154b8a4",
+      "translation_text_hash": "df46e8ad387aa1ec1653dd78bb0bf799d0223d680d68c10df1da47e53748a985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비방거리를 만들어 말하기를 내가 네 딸의 처녀인 표적을 보지 못하였노라 하나 보라 내 딸의 처녀인 표적이 이것이라 하고 그 부모가 그 자리옷을 그 성읍 장로들 앞에 펼 것이요"
+      ],
+      "raw_text_hashes": [
+        "df46e8ad387aa1ec1653dd78bb0bf799d0223d680d68c10df1da47e53748a985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:18",
+      "sequence": 5489,
+      "chapter_label": "DEU 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "The elders of that city shall take the man and chastise him.",
+      "ko": "그 성읍 장로들은 그 사람을 잡아 때리고",
+      "source_text_hash": "5b8b233d049fb2d762bf7f932c96ad73c007d176296e4523c1d15116293c0931",
+      "translation_text_hash": "120adad9805127067deb0ec698db557042249e1584e22ffe609a97ad50483a17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 장로들은 그 사람을 잡아 때리고"
+      ],
+      "raw_text_hashes": [
+        "120adad9805127067deb0ec698db557042249e1584e22ffe609a97ad50483a17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:19",
+      "sequence": 5490,
+      "chapter_label": "DEU 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "They shall fine him one hundred shekels of silver, and give them to the father of the young lady, because he has given a bad name to a virgin of Israel. She shall be his wife. He may not put her away all his days.",
+      "ko": "이스라엘 처녀에게 누명 씌움을 인하여 그에게서 은 일백 세겔을 벌금으로 받아 여자의 아비에게 주고 그 여자로 그 남자의 평생에 버리지 못할 아내가 되게 하려니와",
+      "source_text_hash": "c61677170468f5bcd91b7e990df5c11e1e4146520164434c072572f498afc242",
+      "translation_text_hash": "1b87741b08a5c5de74745e513b8f54a2330d9d134b4d7936b7dc10965ccef3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 처녀에게 누명 씌움을 인하여 그에게서 은 일백 세겔을 벌금으로 받아 여자의 아비에게 주고 그 여자로 그 남자의 평생에 버리지 못할 아내가 되게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "1b87741b08a5c5de74745e513b8f54a2330d9d134b4d7936b7dc10965ccef3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:20",
+      "sequence": 5491,
+      "chapter_label": "DEU 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "But if this thing is true, that the tokens of virginity were not found in the young lady,",
+      "ko": "그 일이 참되어 그 처녀에게 처녀인 표적이 없거든",
+      "source_text_hash": "c4ff04ae03aa795d5e6296e704669b5214675396306c50f1de1ca7999f20c01c",
+      "translation_text_hash": "b62b131444860551bb94e12f6516bd3eeb42f7b61b0179ece565e0f87e5cccf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 일이 참되어 그 처녀에게 처녀인 표적이 없거든"
+      ],
+      "raw_text_hashes": [
+        "b62b131444860551bb94e12f6516bd3eeb42f7b61b0179ece565e0f87e5cccf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:21",
+      "sequence": 5492,
+      "chapter_label": "DEU 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "then they shall bring out the young lady to the door of her father’s house, and the men of her city shall stone her to death with stones, because she has done folly in Israel, to play the prostitute in her father’s house. So you shall remove the evil from among you.",
+      "ko": "처녀를 그 아비집 문에서 끌어내고 그 성읍 사람들이 그를 돌로 쳐 죽일지니 이는 그가 그 아비 집에서 창기의 행동을 하여 이스라엘 중에서 악을 행하였음이라 너는 이와 같이 하여 너의 중에 악을 제할지니라",
+      "source_text_hash": "3d1d80a5d267798edb217bdb99965bd386d4de43af2930119baa5df956ff8823",
+      "translation_text_hash": "b5046da03522036bb9c90984e4c55c597a3d70e83d8a426c5b755a961f8b0a9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀를 그 아비집 문에서 끌어내고 그 성읍 사람들이 그를 돌로 쳐 죽일지니 이는 그가 그 아비 집에서 창기의 행동을 하여 이스라엘 중에서 악을 행하였음이라 너는 이와 같이 하여 너의 중에 악을 제할지니라"
+      ],
+      "raw_text_hashes": [
+        "b5046da03522036bb9c90984e4c55c597a3d70e83d8a426c5b755a961f8b0a9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:22",
+      "sequence": 5493,
+      "chapter_label": "DEU 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "If a man is found lying with a woman married to a husband, then they shall both die, the man who lay with the woman and the woman. So you shall remove the evil from Israel.",
+      "ko": "남자가 유부녀와 통간함을 보거든 그 통간한 남자와 그 여자를 둘 다 죽여 이스라엘 중에 악을 제할지니라",
+      "source_text_hash": "886e0a953b1becc186ee3415a7e7c453dd54b5da5dc4c50978c7b8b1534d4c13",
+      "translation_text_hash": "5a63878c86b1c2cb1b821c1b73f66012c68938c2bfb5863fd29df76c3dd75b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자가 유부녀와 통간함을 보거든 그 통간한 남자와 그 여자를 둘 다 죽여 이스라엘 중에 악을 제할지니라"
+      ],
+      "raw_text_hashes": [
+        "5a63878c86b1c2cb1b821c1b73f66012c68938c2bfb5863fd29df76c3dd75b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:23",
+      "sequence": 5494,
+      "chapter_label": "DEU 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "If there is a young lady who is a virgin pledged to be married to a husband, and a man finds her in the city, and lies with her,",
+      "ko": "처녀인 여자가 남자와 약혼한 후에 어떤 남자가 그를 성읍중에서 만나 통간하면",
+      "source_text_hash": "23ede8565d44e6901ea3afe5483bf3cf4135155d0ba6a44578caae90a271c021",
+      "translation_text_hash": "4c351bdf31f90f0d412649391a329baa271225ceaa618e505ff907aa0db1ee7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀인 여자가 남자와 약혼한 후에 어떤 남자가 그를 성읍중에서 만나 통간하면"
+      ],
+      "raw_text_hashes": [
+        "4c351bdf31f90f0d412649391a329baa271225ceaa618e505ff907aa0db1ee7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:24",
+      "sequence": 5495,
+      "chapter_label": "DEU 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "then you shall bring them both out to the gate of that city, and you shall stone them to death with stones; the lady, because she didn’t cry, being in the city; and the man, because he has humbled his neighbor’s wife. So you shall remove the evil from among you.",
+      "ko": "너희는 그들을 둘 다 성읍문으로 끌어내고 그들을 돌로 쳐 죽일 것이니 그 처녀는 성읍 중에 있어서도 소리지르지 아니하였음이요 그 남자는 그 이웃의 아내를 욕보였음이라 너는 이같이 하여 너의 중에 악을 제할지니라",
+      "source_text_hash": "6548025d8c45dfc6910b16f9a7cd98d88f9edb16393d0bd7a09d63e79bcbc96c",
+      "translation_text_hash": "c6a36ad9a74d7634b0cf69214ad83d016fb7fc144869b8eb5ebbdb1596e6cd3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그들을 둘 다 성읍문으로 끌어내고 그들을 돌로 쳐 죽일 것이니 그 처녀는 성읍 중에 있어서도 소리지르지 아니하였음이요 그 남자는 그 이웃의 아내를 욕보였음이라 너는 이같이 하여 너의 중에 악을 제할지니라"
+      ],
+      "raw_text_hashes": [
+        "c6a36ad9a74d7634b0cf69214ad83d016fb7fc144869b8eb5ebbdb1596e6cd3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:25",
+      "sequence": 5496,
+      "chapter_label": "DEU 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "But if the man finds the lady who is pledged to be married in the field, and the man forces her and lies with her, then only the man who lay with her shall die;",
+      "ko": "만일 남자가 어떤 약혼한 처녀를 들에서 만나서 강간하였거든 그 강간한 남자만 죽일 것이요",
+      "source_text_hash": "a00451e641aefefeaf1d2d30d2dcc44e499c917c22235e0c2e8176b7f3db39d3",
+      "translation_text_hash": "58c2dcabf40d3c490c529b5513d3d7199306d6d073cb3fe10b730e8ddb43432d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 남자가 어떤 약혼한 처녀를 들에서 만나서 강간하였거든 그 강간한 남자만 죽일 것이요"
+      ],
+      "raw_text_hashes": [
+        "58c2dcabf40d3c490c529b5513d3d7199306d6d073cb3fe10b730e8ddb43432d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:26",
+      "sequence": 5497,
+      "chapter_label": "DEU 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "but to the lady you shall do nothing. There is in the lady no sin worthy of death; for as when a man rises against his neighbor and kills him, even so is this matter;",
+      "ko": "처녀에게는 아무 것도 행치 말것은 처녀에게는 죽일 죄가 없음이라 이 일은 사람이 일어나 그 이웃을 쳐 죽인 것과 일반이라",
+      "source_text_hash": "4f8fc00f9995f142d7a6e69132da90c36daed61330bddb5c56366cdf538a8066",
+      "translation_text_hash": "94e8f64f8680c511da5d02bf43036e56da8375967913b78d7c0587e9010fa161",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀에게는 아무 것도 행치 말것은 처녀에게는 죽일 죄가 없음이라 이 일은 사람이 일어나 그 이웃을 쳐 죽인 것과 일반이라"
+      ],
+      "raw_text_hashes": [
+        "94e8f64f8680c511da5d02bf43036e56da8375967913b78d7c0587e9010fa161"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:27",
+      "sequence": 5498,
+      "chapter_label": "DEU 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "for he found her in the field, the pledged to be married lady cried, and there was no one to save her.",
+      "ko": "남자가 처녀를 들에서 만난 까닭에 그 약혼한 처녀가 소리질러도 구원할 자가 없었음이니라",
+      "source_text_hash": "b420150069ce2b3710088648005842eebe32be40f61b8a42c23078e8a5254f16",
+      "translation_text_hash": "8b6dc19590393835ded2e4ae8548de1a3ee327e5d9331211f6ef91b187ed5431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자가 처녀를 들에서 만난 까닭에 그 약혼한 처녀가 소리질러도 구원할 자가 없었음이니라"
+      ],
+      "raw_text_hashes": [
+        "8b6dc19590393835ded2e4ae8548de1a3ee327e5d9331211f6ef91b187ed5431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:28",
+      "sequence": 5499,
+      "chapter_label": "DEU 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "If a man finds a lady who is a virgin, who is not pledged to be married, grabs her and lies with her, and they are found,",
+      "ko": "만일 남자가 어떤 약혼하지 아니한 처녀를 만나 그를 붙들고 통간하는 중 그 두 사람이 발견되거든",
+      "source_text_hash": "66ae9bd442b07cc109024f35ef6f09e0da51db35ee2309c950210a6703c45646",
+      "translation_text_hash": "39e24ba243c811471281d19344150344619ecb69378779d75ac1e673f12f5ebf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 남자가 어떤 약혼하지 아니한 처녀를 만나 그를 붙들고 통간하는 중 그 두 사람이 발견되거든"
+      ],
+      "raw_text_hashes": [
+        "39e24ba243c811471281d19344150344619ecb69378779d75ac1e673f12f5ebf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:29",
+      "sequence": 5500,
+      "chapter_label": "DEU 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "then the man who lay with her shall give to the lady’s father fifty shekels of silver. She shall be his wife, because he has humbled her. He may not put her away all his days.",
+      "ko": "그 통간한 남자는 그 처녀의 아비에게 은 오십 세겔을 주고 그 처녀로 아내를 삼을 것이라 그가 그 처녀를 욕보였은즉 평생에 그를 버리지 못하리라",
+      "source_text_hash": "9f47ace27e59adb172abe2888b62d3b22843b1ae975f49760636bf0cc742471a",
+      "translation_text_hash": "aa4313058a3fd9f95ad663ff69495509b7c4cb2515154531c9751e74db8f8957",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 통간한 남자는 그 처녀의 아비에게 은 오십 세겔을 주고 그 처녀로 아내를 삼을 것이라 그가 그 처녀를 욕보였은즉 평생에 그를 버리지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "aa4313058a3fd9f95ad663ff69495509b7c4cb2515154531c9751e74db8f8957"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:22:30",
+      "sequence": 5501,
+      "chapter_label": "DEU 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "A man shall not take his father’s wife, and shall not uncover his father’s skirt.",
+      "ko": "사람이 그 아비의 후실을 취하여 아비의 하체를 드러내지 말찌니라",
+      "source_text_hash": "1fd4b51e9a4233f4f6472e0e7882786e9f149e6da731c642595ffe8044336832",
+      "translation_text_hash": "10d32f7f4302728466285f14f1f4f2b4966701049a6b5da68bf963334672df1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 아비의 후실을 취하여 아비의 하체를 드러내지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "10d32f7f4302728466285f14f1f4f2b4966701049a6b5da68bf963334672df1f"
+      ]
+    }
+  ]
+}

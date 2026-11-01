@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:013",
+  "unit_ordinal": 970,
+  "unit_label": "MRK 13",
+  "book_code": "MRK",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:13:1",
+      "sequence": 24719,
+      "chapter_label": "MRK 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "As he went out of the temple, one of his disciples said to him, “Teacher, see what kind of stones and what kind of buildings!”",
+      "ko": "예수께서 성전에서 나가실 때에 제자 중 하나가 가로되 선생님이여 보소서 이 돌들이 어떠하며 이 건물들이 어떠하니이까",
+      "source_text_hash": "dd73b8d2debec0719bd22ea555abb71b2726652b51781d68e3147ef8bab42b0b",
+      "translation_text_hash": "9e9c636c3153f2d7db15127f802180f75d0c557c437383c2c6a355062aca25ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에서 나가실 때에 제자 중 하나가 가로되 선생님이여 보소서 이 돌들이 어떠하며 이 건물들이 어떠하니이까"
+      ],
+      "raw_text_hashes": [
+        "9e9c636c3153f2d7db15127f802180f75d0c557c437383c2c6a355062aca25ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:2",
+      "sequence": 24720,
+      "chapter_label": "MRK 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Jesus said to him, “Do you see these great buildings? There will not be left here one stone on another, which will not be thrown down.”",
+      "ko": "예수께서 이르시되 네가 이 큰 건물들을 보느냐 돌 하나도 돌 위에 남지 않고 다 무너뜨려지리라 하시니라",
+      "source_text_hash": "c11b89dde361a70b5485b5aa7070638ef3a33438ea450b72b62cc84751138e88",
+      "translation_text_hash": "d6bc033b0511d6e7013c1dee007ca082835ab4524e06a4c269e397e3afdac960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 네가 이 큰 건물들을 보느냐 돌 하나도 돌 위에 남지 않고 다 무너뜨려지리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d6bc033b0511d6e7013c1dee007ca082835ab4524e06a4c269e397e3afdac960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:3",
+      "sequence": 24721,
+      "chapter_label": "MRK 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "As he sat on the Mount of Olives opposite the temple, Peter, James, John, and Andrew asked him privately,",
+      "ko": "예수께서 감람산에서 성전을 마주 대하여 앉으셨을 때에 베드로와 야고보와 요한과 안드레가 종용히 묻자오되",
+      "source_text_hash": "c74c6b6b6513a821135252f684ec68282f1e3263b840298d3df9f021e5fbe1dd",
+      "translation_text_hash": "4039fe8b6db0e279f9e3c9045d05432c6b3a97064ecc6c22a6e2b95eef45f0a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 감람산에서 성전을 마주 대하여 앉으셨을 때에 베드로와 야고보와 요한과 안드레가 종용히 묻자오되"
+      ],
+      "raw_text_hashes": [
+        "4039fe8b6db0e279f9e3c9045d05432c6b3a97064ecc6c22a6e2b95eef45f0a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:4",
+      "sequence": 24722,
+      "chapter_label": "MRK 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "“Tell us, when will these things be? What is the sign that these things are all about to be fulfilled?”",
+      "ko": "우리에게 이르소서 어느 때에 이런 일이 있겠사오며 이 모든 일이 이루려 할 때에 무슨 징조가 있사오리이까",
+      "source_text_hash": "09648d80ffc6b76764bb0ca8c5f654a7d64e73f55d8dc9663e0d12b612e85d32",
+      "translation_text_hash": "4276f4f57d3ba45ca1302b57acec46785eaeca71afdf1f07b30b4142b5a09a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 이르소서 어느 때에 이런 일이 있겠사오며 이 모든 일이 이루려 할 때에 무슨 징조가 있사오리이까"
+      ],
+      "raw_text_hashes": [
+        "4276f4f57d3ba45ca1302b57acec46785eaeca71afdf1f07b30b4142b5a09a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:5",
+      "sequence": 24723,
+      "chapter_label": "MRK 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus, answering, began to tell them, “Be careful that no one leads you astray.",
+      "ko": "예수께서 이르시되 너희가 사람의 미혹을 받지 않도록 주의하라",
+      "source_text_hash": "2c76ef09aac0b9a838664948857e4bbdfcf6223e0cae148011b41ae8c60e61a9",
+      "translation_text_hash": "7690d285b74bf795117a85afb811e45326f1491c69a25020fa9ab8f08f533016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희가 사람의 미혹을 받지 않도록 주의하라"
+      ],
+      "raw_text_hashes": [
+        "7690d285b74bf795117a85afb811e45326f1491c69a25020fa9ab8f08f533016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:6",
+      "sequence": 24724,
+      "chapter_label": "MRK 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "For many will come in my name, saying, ‘I am he!’and will lead many astray.",
+      "ko": "많은 사람이 내 이름으로 와서 이르되 내가 그로라 하여 많은 사람을 미혹케 하리라",
+      "source_text_hash": "f9bd2cadcd14784d9fde53eedfbaca2c078feed8aabbde30e5288ae2a493920d",
+      "translation_text_hash": "66557d6c6d49547a032a555dbbf95119fc4024d6dedeae06d4fed6bade92e011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 내 이름으로 와서 이르되 내가 그로라 하여 많은 사람을 미혹케 하리라"
+      ],
+      "raw_text_hashes": [
+        "66557d6c6d49547a032a555dbbf95119fc4024d6dedeae06d4fed6bade92e011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:7",
+      "sequence": 24725,
+      "chapter_label": "MRK 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "“When you hear of wars and rumors of wars, don’t be troubled. For those must happen, but the end is not yet.",
+      "ko": "난리와 난리 소문을 들을 때에 두려워 말라 이런 일이 있어야 하되 끝은 아직 아니니라",
+      "source_text_hash": "6e68d3450d881e66c21229ac9f41b7a82d195fbf24d65c3ad4ab7add0da43e75",
+      "translation_text_hash": "2cb89d13cffb0ddfec12b08964bd54ce4e91366db1b2f435264b3c3f30384d3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "난리와 난리 소문을 들을 때에 두려워 말라 이런 일이 있어야 하되 끝은 아직 아니니라"
+      ],
+      "raw_text_hashes": [
+        "2cb89d13cffb0ddfec12b08964bd54ce4e91366db1b2f435264b3c3f30384d3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:8",
+      "sequence": 24726,
+      "chapter_label": "MRK 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "For nation will rise against nation, and kingdom against kingdom. There will be earthquakes in various places. There will be famines and troubles. These things are the beginning of birth pains.",
+      "ko": "민족이 민족을, 나라가 나라를 대적하여 일어나겠고 처처에 지진이 있으며 기근이 있으리니 이는 재난의 시작이니라",
+      "source_text_hash": "8c67b67c96ca7d5a1cb05dc2d41684b2a8d942a573028ceceafd5a8fe2922a52",
+      "translation_text_hash": "e7c9ff7a3e2379c0d5dfa5db1080665ebb6b3ac8d53dd3de6962b3c73d0ba5aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민족이 민족을, 나라가 나라를 대적하여 일어나겠고 처처에 지진이 있으며 기근이 있으리니 이는 재난의 시작이니라"
+      ],
+      "raw_text_hashes": [
+        "e7c9ff7a3e2379c0d5dfa5db1080665ebb6b3ac8d53dd3de6962b3c73d0ba5aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:9",
+      "sequence": 24727,
+      "chapter_label": "MRK 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "“But watch yourselves, for they will deliver you up to councils. You will be beaten in synagogues. You will stand before rulers and kings for my sake, for a testimony to them.",
+      "ko": "너희는 스스로 조심하라 사람들이 너희를 공회에 넘겨주겠고 너희를 회당에서 매질하겠으며 나를 인하여 너희가 관장들과 임금들 앞에 서리니 이는 저희에게 증거되려함이라",
+      "source_text_hash": "c37f0d68ee364e801abc373ad53e4b3033f649c1e4021c16823aca491b03f4e8",
+      "translation_text_hash": "851e949f60d5c0c08d8d0b6fe79dae87237c04c60bd123c636b45c5281eb8c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 조심하라 사람들이 너희를 공회에 넘겨주겠고 너희를 회당에서 매질하겠으며 나를 인하여 너희가 관장들과 임금들 앞에 서리니 이는 저희에게 증거되려함이라"
+      ],
+      "raw_text_hashes": [
+        "851e949f60d5c0c08d8d0b6fe79dae87237c04c60bd123c636b45c5281eb8c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:10",
+      "sequence": 24728,
+      "chapter_label": "MRK 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "The Good News must first be preached to all the nations.",
+      "ko": "또 복음이 먼저 만국에 전파되어야 할것이니라",
+      "source_text_hash": "3c30c495df0c46356529b018429bf641f66526fa608058ca1e34c98c9a51c72a",
+      "translation_text_hash": "086721d28da7815acd4694d8c5eeeec339c96f2da54feae915376280f686dac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 복음이 먼저 만국에 전파되어야 할것이니라"
+      ],
+      "raw_text_hashes": [
+        "086721d28da7815acd4694d8c5eeeec339c96f2da54feae915376280f686dac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:11",
+      "sequence": 24729,
+      "chapter_label": "MRK 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "When they lead you away and deliver you up, don’t be anxious beforehand or premeditate what you will say, but say whatever will be given you in that hour. For it is not you who speak, but the Holy Spirit.",
+      "ko": "사람들이 너희를 끌어다가 넘겨줄 때에 무슨 말을 할까 미리 염려치 말고 무엇이든지 그 시에 너희에게 주시는 그 말을 하라 말하는 이는 너희가 아니요 성령이시니라",
+      "source_text_hash": "c349d99311e54474a84829387dfd497ee5ea18a1f290cf2c19136d642746bf8c",
+      "translation_text_hash": "97c12548452a259df5e60abb3d06b3eae9a5e6d9f26cf3e1e92dba4c78166590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 너희를 끌어다가 넘겨줄 때에 무슨 말을 할까 미리 염려치 말고 무엇이든지 그 시에 너희에게 주시는 그 말을 하라 말하는 이는 너희가 아니요 성령이시니라"
+      ],
+      "raw_text_hashes": [
+        "97c12548452a259df5e60abb3d06b3eae9a5e6d9f26cf3e1e92dba4c78166590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:12",
+      "sequence": 24730,
+      "chapter_label": "MRK 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "“Brother will deliver up brother to death, and the father his child. Children will rise up against parents and cause them to be put to death.",
+      "ko": "형제가 형제를, 아비가 자식을 죽는데 내어주며 자식들이 부모를 대적하여 죽게 하리라",
+      "source_text_hash": "ca272e70d2acbb00872aea2c6dcd18c95a4c018df6027605308640427aa11db0",
+      "translation_text_hash": "e2a269ceb55fc6a8bafc974840d71ac9c0d98a0cdad5c4db062fbf82d87c7bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제가 형제를, 아비가 자식을 죽는데 내어주며 자식들이 부모를 대적하여 죽게 하리라"
+      ],
+      "raw_text_hashes": [
+        "e2a269ceb55fc6a8bafc974840d71ac9c0d98a0cdad5c4db062fbf82d87c7bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:13",
+      "sequence": 24731,
+      "chapter_label": "MRK 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "You will be hated by all men for my name’s sake, but he who endures to the end will be saved.",
+      "ko": "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나 나중까지 견디는 자는 구원을 얻으리라",
+      "source_text_hash": "4f3ea14516451152fa40bdcfe738bfc0bb80a7223015269caf870438eb075fab",
+      "translation_text_hash": "bfe88ee00fc0fce2380c4eca3794c9ccee5ebf4d28572aa709e6608daf106059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나 나중까지 견디는 자는 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "bfe88ee00fc0fce2380c4eca3794c9ccee5ebf4d28572aa709e6608daf106059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:14",
+      "sequence": 24732,
+      "chapter_label": "MRK 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "“But when you see the abomination of desolation,spoken of by Daniel the prophet, standing where it ought not”(let the reader understand), “then let those who are in Judea flee to the mountains,",
+      "ko": "멸망의 가증한 것이 서지 못할 곳에 선것을 보거든 (읽는 자는 깨달을찐저) 그 때에 유대에 있는 자들은 산으로 도망할찌어다",
+      "source_text_hash": "8678ac0fe15022020c9b876b6bdfeb7c5893a408fcd52cf040f406a21c99560c",
+      "translation_text_hash": "afa3e93bd59197b4aa5949206a0f656c3002cfb7705341a45ba15655d580beb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멸망의 가증한 것이 서지 못할 곳에 선것을 보거든 (읽는 자는 깨달을찐저) 그 때에 유대에 있는 자들은 산으로 도망할찌어다"
+      ],
+      "raw_text_hashes": [
+        "afa3e93bd59197b4aa5949206a0f656c3002cfb7705341a45ba15655d580beb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:15",
+      "sequence": 24733,
+      "chapter_label": "MRK 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "and let him who is on the housetop not go down, nor enter in, to take anything out of his house.",
+      "ko": "지붕 위에 있는 자는 내려가지도 말고 집에 있는 무엇을 가지러 들어가지도 말며",
+      "source_text_hash": "a6f8d513f1ee1fdda98c36c2dd3046dfe95e15354b191959644b2fc03333d015",
+      "translation_text_hash": "64e73fd5c08c236e5a44e7ba69a3d18d3b4b75882150f496390c0a8da69be1c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지붕 위에 있는 자는 내려가지도 말고 집에 있는 무엇을 가지러 들어가지도 말며"
+      ],
+      "raw_text_hashes": [
+        "64e73fd5c08c236e5a44e7ba69a3d18d3b4b75882150f496390c0a8da69be1c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:16",
+      "sequence": 24734,
+      "chapter_label": "MRK 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Let him who is in the field not return back to take his cloak.",
+      "ko": "밭에 있는 자는 겉옷을 가지러 뒤로 돌이키지 말찌어다",
+      "source_text_hash": "bfcfcd2fc4274bf937e5e0edfbdf392069eae134c26a6278920703a1bf57a573",
+      "translation_text_hash": "b6d6cf558b32098fc34cad9302fdf27d3f4f9dcd9af8ddc9d9ed0b50d5314f8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭에 있는 자는 겉옷을 가지러 뒤로 돌이키지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "b6d6cf558b32098fc34cad9302fdf27d3f4f9dcd9af8ddc9d9ed0b50d5314f8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:17",
+      "sequence": 24735,
+      "chapter_label": "MRK 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "But woe to those who are with child and to those who nurse babies in those days!",
+      "ko": "그날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리로다",
+      "source_text_hash": "726e2706cfb7687199e81a39bf2a72a115e9f592fe1d74f9220283e33e892140",
+      "translation_text_hash": "86c1337680bde6745d1c956786bb54f3b923514e47abd29dd8ae38b908afeabd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "86c1337680bde6745d1c956786bb54f3b923514e47abd29dd8ae38b908afeabd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:18",
+      "sequence": 24736,
+      "chapter_label": "MRK 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Pray that your flight won’t be in the winter.",
+      "ko": "이 일이 겨울에 나지 않도록 기도하라",
+      "source_text_hash": "3538a240ff5f3dc35131ae6cc93eb6ff4de4d16d85451e73b5914a0020dace5f",
+      "translation_text_hash": "3bd16449f3dfc73228e5f8d96e1e504ffac776537bd544bc361a5455d028f86d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 겨울에 나지 않도록 기도하라"
+      ],
+      "raw_text_hashes": [
+        "3bd16449f3dfc73228e5f8d96e1e504ffac776537bd544bc361a5455d028f86d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:19",
+      "sequence": 24737,
+      "chapter_label": "MRK 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "For in those days there will be oppression, such as there has not been the like from the beginning of the creation which God created until now, and never will be.",
+      "ko": "이는 그날들은 환난의 날이 되겠음이라 하나님의 창조하신 창초부터 지금까지 이런 환난이 없었고 후에도 없으리라",
+      "source_text_hash": "815deffc499cfc278c7e25bd3d97a015f6555fa045e6089eccd377323cfe6f2e",
+      "translation_text_hash": "104b47e20ff6093fe9c24fa75b80552d0887aed4f215e3d061fa2fd58a686708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그날들은 환난의 날이 되겠음이라 하나님의 창조하신 창초부터 지금까지 이런 환난이 없었고 후에도 없으리라"
+      ],
+      "raw_text_hashes": [
+        "104b47e20ff6093fe9c24fa75b80552d0887aed4f215e3d061fa2fd58a686708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:20",
+      "sequence": 24738,
+      "chapter_label": "MRK 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Unless the Lord had shortened the days, no flesh would have been saved; but for the sake of the chosen ones, whom he picked out, he shortened the days.",
+      "ko": "만일 주께서 그날들을 감하지 아니하셨더면 모든 육체가 구원을 얻지 못할 것이어늘 자기의 택하신 백성을 위하여 그날들을 감하셨느니라",
+      "source_text_hash": "3372efa2a0580ef8f7b6341b6cf1b1f45d39728e746a8bf1bad31cafb98dc77a",
+      "translation_text_hash": "66e942e8bc47023c88bf046e5e346bd5e1c42f628d4d8614076417837e845864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 주께서 그날들을 감하지 아니하셨더면 모든 육체가 구원을 얻지 못할 것이어늘 자기의 택하신 백성을 위하여 그날들을 감하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "66e942e8bc47023c88bf046e5e346bd5e1c42f628d4d8614076417837e845864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:21",
+      "sequence": 24739,
+      "chapter_label": "MRK 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "Then if anyone tells you, ‘Look, here is the Christ!’ or, ‘Look, there!’ don’t believe it.",
+      "ko": "그 때에 사람이 너희에게 말하되 보라 그리스도가 여기 있다 보라 저기 있다 하여도 믿지 말라",
+      "source_text_hash": "31e1c9be59e5d1534f1bd68026f8b1d2a86dc470a21a75078b76d13f0fc3b488",
+      "translation_text_hash": "c344cdac3cc10c1dc4f4d50263a6adecc0b5ddb7df3a5030fa01849b93bffd78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람이 너희에게 말하되 보라 그리스도가 여기 있다 보라 저기 있다 하여도 믿지 말라"
+      ],
+      "raw_text_hashes": [
+        "c344cdac3cc10c1dc4f4d50263a6adecc0b5ddb7df3a5030fa01849b93bffd78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:22",
+      "sequence": 24740,
+      "chapter_label": "MRK 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "For false christs and false prophets will arise and will show signs and wonders, that they may lead astray, if possible, even the chosen ones.",
+      "ko": "거짓 그리스도들과 거짓 선지자들이 일어나서 이적과 기사를 행하여 할 수만 있으면 택하신 백성을 미혹케 하려 하리라",
+      "source_text_hash": "a5564210addb3b9583b0b7d57031ebc4def4a5aa31ff99de3163817c9b8fe85c",
+      "translation_text_hash": "06fe94f39e8250e6c3994534985505393522e2f918880c3966957e807acbe9a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 그리스도들과 거짓 선지자들이 일어나서 이적과 기사를 행하여 할 수만 있으면 택하신 백성을 미혹케 하려 하리라"
+      ],
+      "raw_text_hashes": [
+        "06fe94f39e8250e6c3994534985505393522e2f918880c3966957e807acbe9a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:23",
+      "sequence": 24741,
+      "chapter_label": "MRK 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "But you watch.“Behold, I have told you all things beforehand.",
+      "ko": "너희는 삼가라 내가 모든 일을 너희에게 미리 말하였노라",
+      "source_text_hash": "bc4a11ebf3c04ac145e0ed18deab9ddea600d51972861cef68419197d7de99ac",
+      "translation_text_hash": "a98846bc2ed5c2d0e66ca035533ee7059e1e67abd2dc8ef94acd94185171f48d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 삼가라 내가 모든 일을 너희에게 미리 말하였노라"
+      ],
+      "raw_text_hashes": [
+        "a98846bc2ed5c2d0e66ca035533ee7059e1e67abd2dc8ef94acd94185171f48d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:24",
+      "sequence": 24742,
+      "chapter_label": "MRK 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "But in those days, after that oppression, the sun will be darkened, the moon will not give its light,",
+      "ko": "그 때에 그 환난 후 해가 어두워지며 달이 빛을 내지 아니하며",
+      "source_text_hash": "c7fd06d3eab208a1f82d625b19f3316182bf1bbdcbbdf91294e3ccc525458e84",
+      "translation_text_hash": "30fed5288b42604ea1ff5eb564cfa191b21591a3ada6147f8e7b9613db93fb6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 그 환난 후 해가 어두워지며 달이 빛을 내지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "30fed5288b42604ea1ff5eb564cfa191b21591a3ada6147f8e7b9613db93fb6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:25",
+      "sequence": 24743,
+      "chapter_label": "MRK 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "the stars will be falling from the sky, and the powers that are in the heavens will be shaken.",
+      "ko": "별들이 하늘에서 떨어지며 하늘에 있는 권능들이 흔들리리라",
+      "source_text_hash": "58626a4c2e024bcdcb43eec192f2454c12f7af8a2de12c58e4b443522f0da124",
+      "translation_text_hash": "338e3ebb830ef2556ad400501dfccd324ee6ca3ea3ea159f6d8014036ead2af0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "별들이 하늘에서 떨어지며 하늘에 있는 권능들이 흔들리리라"
+      ],
+      "raw_text_hashes": [
+        "338e3ebb830ef2556ad400501dfccd324ee6ca3ea3ea159f6d8014036ead2af0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:26",
+      "sequence": 24744,
+      "chapter_label": "MRK 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "Then they will see the Son of Man coming in clouds with great power and glory.",
+      "ko": "그 때에 인자가 구름을 타고 큰 권능과 영광으로 오는 것을 사람들이 보리라",
+      "source_text_hash": "92a4ecf51b5971f7a3ff11a53dcd7da3d1bf5cf499be50dc800ac2ae8bd2f26c",
+      "translation_text_hash": "09b7c87cfc94981441f82df8bd0cbcce2f0bb67740903fc71bb32e6544560409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 인자가 구름을 타고 큰 권능과 영광으로 오는 것을 사람들이 보리라"
+      ],
+      "raw_text_hashes": [
+        "09b7c87cfc94981441f82df8bd0cbcce2f0bb67740903fc71bb32e6544560409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:27",
+      "sequence": 24745,
+      "chapter_label": "MRK 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "Then he will send out his angels, and will gather together his chosen ones from the four winds, from the ends of the earth to the ends of the sky.",
+      "ko": "또 그 때에 저가 천사들을 보내어 자기 택하신 자들을 땅 끝으로부터 하늘 끝까지 사방에서 모으리라",
+      "source_text_hash": "aab935525afb1f525a769273a2ff36cc9dc5512330372b5fc00cf6374ae780ad",
+      "translation_text_hash": "7e9246d0d4f3c59092ce355edb37e62d5904856c177e7f58d384eeb8604d1037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 때에 저가 천사들을 보내어 자기 택하신 자들을 땅 끝으로부터 하늘 끝까지 사방에서 모으리라"
+      ],
+      "raw_text_hashes": [
+        "7e9246d0d4f3c59092ce355edb37e62d5904856c177e7f58d384eeb8604d1037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:28",
+      "sequence": 24746,
+      "chapter_label": "MRK 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "“Now from the fig tree, learn this parable. When the branch has now become tender and produces its leaves, you know that the summer is near;",
+      "ko": "무화과나무의 비유를 배우라 그 가지가 연하여지고 잎사귀를 내면 여름이 가까운 줄을 아나니",
+      "source_text_hash": "83703707672d5fcdf293a5b55b0d68c1724700438c333cf011bab6c421532ea7",
+      "translation_text_hash": "80134b5f2cd7445e9e794f1e02fc4c09b14aefbbb2e8c879e59a843253405ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무화과나무의 비유를 배우라 그 가지가 연하여지고 잎사귀를 내면 여름이 가까운 줄을 아나니"
+      ],
+      "raw_text_hashes": [
+        "80134b5f2cd7445e9e794f1e02fc4c09b14aefbbb2e8c879e59a843253405ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:29",
+      "sequence": 24747,
+      "chapter_label": "MRK 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "even so you also, when you see these things coming to pass, know that it is near, at the doors.",
+      "ko": "이와 같이 너희가 이런 일이 나는 것을 보거든 인자가 가까이 곧 문 앞에 이른 줄을 알라",
+      "source_text_hash": "93ead79c946e3e4d9988bf02dcb7ed4e0b142f82b1797b4824dd0d767cf5a038",
+      "translation_text_hash": "907624b6761d3aa4128e79463fdde43fe7aad185f798d9ce05a47f46799551d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희가 이런 일이 나는 것을 보거든 인자가 가까이 곧 문 앞에 이른 줄을 알라"
+      ],
+      "raw_text_hashes": [
+        "907624b6761d3aa4128e79463fdde43fe7aad185f798d9ce05a47f46799551d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:30",
+      "sequence": 24748,
+      "chapter_label": "MRK 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Most certainly I say to you, this generationwill not pass away until all these things happen.",
+      "ko": "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 이 일이 다 이루리라",
+      "source_text_hash": "4357cc83e08ed51e956d4868cebc861dde0b02ff27588ac43966f4b1416ce204",
+      "translation_text_hash": "1f2513f7a6964690a6c3894d0f81bdcdddce3f8ff318e93d5eaf7dc2c208d68f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 이 일이 다 이루리라"
+      ],
+      "raw_text_hashes": [
+        "1f2513f7a6964690a6c3894d0f81bdcdddce3f8ff318e93d5eaf7dc2c208d68f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:31",
+      "sequence": 24749,
+      "chapter_label": "MRK 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "Heaven and earth will pass away, but my words will not pass away.",
+      "ko": "천지는 없어지겠으나 내 말은 없어지지 아니하리라",
+      "source_text_hash": "fe13b24407f9557d38f3911b82f393c4c44542baa28833b956d4a6d3c6cc539d",
+      "translation_text_hash": "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지는 없어지겠으나 내 말은 없어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:32",
+      "sequence": 24750,
+      "chapter_label": "MRK 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "“But of that day or that hour no one knows—not even the angels in heaven, nor the Son, but only the Father.",
+      "ko": "그러나 그 날과 그 때는 아무도 모르나니 하늘에 있는 천사들도, 아들도 모르고 아버지만 아시느니라",
+      "source_text_hash": "7a111d9e4bc2851c5ae79549edb2e4bb72f698b99a2fdb8e73f00ec880f719a3",
+      "translation_text_hash": "8fed56dc216da4561c2213b82102166359c54bb8432a58c9c0cd8902e3b52ee1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 날과 그 때는 아무도 모르나니 하늘에 있는 천사들도, 아들도 모르고 아버지만 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "8fed56dc216da4561c2213b82102166359c54bb8432a58c9c0cd8902e3b52ee1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:33",
+      "sequence": 24751,
+      "chapter_label": "MRK 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "Watch, keep alert, and pray; for you don’t know when the time is.",
+      "ko": "주의하라 깨어 있으라 그 때가 언제인지 알지 못함이니라",
+      "source_text_hash": "9df1e7a0670cfe114f605ea6e1fb1965e26d9ab0ae68bde97236d500422621c3",
+      "translation_text_hash": "a5ab15c5f4e3ef3a7cfc86c4f5105957346df2756e7c90aa28e492ac60f2644a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의하라 깨어 있으라 그 때가 언제인지 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "a5ab15c5f4e3ef3a7cfc86c4f5105957346df2756e7c90aa28e492ac60f2644a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:34",
+      "sequence": 24752,
+      "chapter_label": "MRK 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "“It is like a man traveling to another country, having left his house and given authority to his servants, and to each one his work, and also commanded the doorkeeper to keep watch.",
+      "ko": "가령 사람이 집을 떠나 타국으로 갈 때에 그 종들에게 권한을 주어 각각 사무를 맡기며 문지기에게 깨어 있으라 명함과 같으니",
+      "source_text_hash": "6c654ba9292f2a0feec3c5193d002f8a4728e637740577fb0f76146bffe874e9",
+      "translation_text_hash": "0dfdaca932e6bd774a4cf04307e8155e253b1f15cb445388d5a7d10186f9e639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 사람이 집을 떠나 타국으로 갈 때에 그 종들에게 권한을 주어 각각 사무를 맡기며 문지기에게 깨어 있으라 명함과 같으니"
+      ],
+      "raw_text_hashes": [
+        "0dfdaca932e6bd774a4cf04307e8155e253b1f15cb445388d5a7d10186f9e639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:35",
+      "sequence": 24753,
+      "chapter_label": "MRK 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "Watch therefore, for you don’t know when the lord of the house is coming—whether at evening, or at midnight, or when the rooster crows, or in the morning;",
+      "ko": "그러므로 깨어 있으라 집 주인이 언제 올는지 혹 저물 때엘는지, 밤중엘는지, 닭 울 때엘는지, 새벽엘는지 너희가 알지 못함이라",
+      "source_text_hash": "c6e5909a952da7e7b8cb051ae6002d27b9dcc1fe15816ac9dd92ba7144267d15",
+      "translation_text_hash": "03820dd9c40aae47a6b3ee3e3f2beba14dd6e3df22b44c22a891a51b4aef4daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 깨어 있으라 집 주인이 언제 올는지 혹 저물 때엘는지, 밤중엘는지, 닭 울 때엘는지, 새벽엘는지 너희가 알지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "03820dd9c40aae47a6b3ee3e3f2beba14dd6e3df22b44c22a891a51b4aef4daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:36",
+      "sequence": 24754,
+      "chapter_label": "MRK 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "lest, coming suddenly, he might find you sleeping.",
+      "ko": "그가 홀연히 와서 너희의 자는 것을 보지 않도록 하라",
+      "source_text_hash": "c07ff998460a8cb150f1a0baded5516b4172248f2f8fcffad50f9768707746ec",
+      "translation_text_hash": "493d00d6a34a03027b9e442eadff3c64c87b58cb13229e00adf1d3e310a8b1ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 홀연히 와서 너희의 자는 것을 보지 않도록 하라"
+      ],
+      "raw_text_hashes": [
+        "493d00d6a34a03027b9e442eadff3c64c87b58cb13229e00adf1d3e310a8b1ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:13:37",
+      "sequence": 24755,
+      "chapter_label": "MRK 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "What I tell you, I tell all: Watch!”",
+      "ko": "깨어 있으라 내가 너희에게 하는 이 말이 모든 사람에게 하는 말이니라 하시니라",
+      "source_text_hash": "1a7a969714f978ac0c2d16a56c50231d84198f1eba544c176fc7385516d64399",
+      "translation_text_hash": "9721eac991c7f30fc81c4f20206c5c4583234ae6ebe80965b4a3a4b9f4d80583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨어 있으라 내가 너희에게 하는 이 말이 모든 사람에게 하는 말이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9721eac991c7f30fc81c4f20206c5c4583234ae6ebe80965b4a3a4b9f4d80583"
+      ]
+    }
+  ]
+}

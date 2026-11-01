@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JAS:chapter:004",
+  "unit_ordinal": 1150,
+  "unit_label": "JAS 4",
+  "book_code": "JAS",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JAS:4:1",
+      "sequence": 30335,
+      "chapter_label": "JAS 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Where do wars and fightings among you come from? Don’t they come from your pleasures that war in your members?",
+      "ko": "너희 중에 싸움이 어디로, 다툼이 어디로 좇아 나느뇨 너희 지체 중에서 싸우는 정욕으로 좇아 난 것이 아니냐",
+      "source_text_hash": "cc412b996312a0920625abeeb2c805e2eca456ef01286f411b3c4712eeca3a0e",
+      "translation_text_hash": "09d0789bbb3f9ead5f035f0508d04e3242af9bfd1c4da162c47ff1ff9a45d6c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 싸움이 어디로, 다툼이 어디로 좇아 나느뇨 너희 지체 중에서 싸우는 정욕으로 좇아 난 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "09d0789bbb3f9ead5f035f0508d04e3242af9bfd1c4da162c47ff1ff9a45d6c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:2",
+      "sequence": 30336,
+      "chapter_label": "JAS 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "You lust, and don’t have. You murder and covet, and can’t obtain. You fight and make war. You don’t have, because you don’t ask.",
+      "ko": "너희가 욕심을 내어도 얻지 못하고 살인하며 시기하여도 능히 취하지 못하나니 너희가 다투고 싸우는도다 너희가 얻지 못함은 구하지 아니함이요",
+      "source_text_hash": "8cdb39e928997f7bfc673aff38943e34210c44a85921a65d52773d039c97bcf4",
+      "translation_text_hash": "bb22f28384b0c4d006cbf7edc60658023372c79114c8791af6febd6a636d4168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 욕심을 내어도 얻지 못하고 살인하며 시기하여도 능히 취하지 못하나니 너희가 다투고 싸우는도다 너희가 얻지 못함은 구하지 아니함이요"
+      ],
+      "raw_text_hashes": [
+        "bb22f28384b0c4d006cbf7edc60658023372c79114c8791af6febd6a636d4168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:3",
+      "sequence": 30337,
+      "chapter_label": "JAS 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "You ask, and don’t receive, because you ask with wrong motives, so that you may spend it on your pleasures.",
+      "ko": "구하여도 받지 못함은 정욕으로 쓰려고 잘못 구함이니라",
+      "source_text_hash": "8fd9c785d948c59e43f6bd098869c237a8b28f6fd5a7847734f4b2c3801efa85",
+      "translation_text_hash": "b4dd919f19e9dda31c115a82ffe3875bae6828a0ab06a3bc5356db04ad805e82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하여도 받지 못함은 정욕으로 쓰려고 잘못 구함이니라"
+      ],
+      "raw_text_hashes": [
+        "b4dd919f19e9dda31c115a82ffe3875bae6828a0ab06a3bc5356db04ad805e82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:4",
+      "sequence": 30338,
+      "chapter_label": "JAS 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "You adulterers and adulteresses, don’t you know that friendship with the world is hostility toward God? Whoever therefore wants to be a friend of the world makes himself an enemy of God.",
+      "ko": "간음하는 여자들이여 세상과 벗된 것이 하나님의 원수임을 알지 못하느뇨 그런즉 누구든지 세상과 벗이 되고자 하는 자는 스스로 하나님과 원수되게 하는 것이니라",
+      "source_text_hash": "e08e125f56855f099a4653347aa0cd4eb947c285ad27b4eaf5210fb4b30787f8",
+      "translation_text_hash": "96dd2e4521f9bb1eb3abf731e5e6ea598802c533ccb9978869b9da2ba8b01803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하는 여자들이여 세상과 벗된 것이 하나님의 원수임을 알지 못하느뇨 그런즉 누구든지 세상과 벗이 되고자 하는 자는 스스로 하나님과 원수되게 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "96dd2e4521f9bb1eb3abf731e5e6ea598802c533ccb9978869b9da2ba8b01803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:5",
+      "sequence": 30339,
+      "chapter_label": "JAS 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Or do you think that the Scripture says in vain, “The Spirit who lives in us yearns jealously”?",
+      "ko": "너희가 하나님이 우리 속에 거하게 하신 성령이 시기하기까지 사모한다 하신 말씀을 헛된 줄로 생각하느뇨",
+      "source_text_hash": "3fbd0010a10e141fa203f38b7e415a73630a0fea62f1fd95a22a6ecd28ca1408",
+      "translation_text_hash": "6c73f15809ed20f75446227bee79e55fd731f08001df5658404c1e87f2250fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하나님이 우리 속에 거하게 하신 성령이 시기하기까지 사모한다 하신 말씀을 헛된 줄로 생각하느뇨"
+      ],
+      "raw_text_hashes": [
+        "6c73f15809ed20f75446227bee79e55fd731f08001df5658404c1e87f2250fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:6",
+      "sequence": 30340,
+      "chapter_label": "JAS 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "But he gives more grace. Therefore it says, “God resists the proud, but gives grace to the humble.”",
+      "ko": "그러나 더욱 큰 은혜를 주시나니 그러므로 일렀으되 하나님이 교만한 자를 물리치시고 겸손한 자에게 은혜를 주신다 하였느니라",
+      "source_text_hash": "99e46345b796656c70e9eed2d34c7ac13fa6398e52f86de823fee48986113371",
+      "translation_text_hash": "7af89a9209901f7bc426be8df2f560cb65da075db52e8f57221cc9df82cd7fde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 더욱 큰 은혜를 주시나니 그러므로 일렀으되 하나님이 교만한 자를 물리치시고 겸손한 자에게 은혜를 주신다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7af89a9209901f7bc426be8df2f560cb65da075db52e8f57221cc9df82cd7fde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:7",
+      "sequence": 30341,
+      "chapter_label": "JAS 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Be subject therefore to God. Resist the devil, and he will flee from you.",
+      "ko": "그런즉 너희는 하나님께 순복할찌어다 마귀를 대적하라 그리하면 너희를 피하리라",
+      "source_text_hash": "04fc8626fdff009847cc69d260520525d1624266c1450d2b25ceb63d1f6b86d6",
+      "translation_text_hash": "5bfdb81ee4866043648bc5a45daf62a6d8834310b5acf31b8bc493712b68e09b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 하나님께 순복할찌어다 마귀를 대적하라 그리하면 너희를 피하리라"
+      ],
+      "raw_text_hashes": [
+        "5bfdb81ee4866043648bc5a45daf62a6d8834310b5acf31b8bc493712b68e09b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:8",
+      "sequence": 30342,
+      "chapter_label": "JAS 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Draw near to God, and he will draw near to you. Cleanse your hands, you sinners. Purify your hearts, you double-minded.",
+      "ko": "하나님을 가까이 하라 그리하면 너희를 가까이 하시리라 죄인들아 손을 깨끗이 하라 두 마음을 품은 자들아 마음을 성결케 하라",
+      "source_text_hash": "002d1fe38a094bffc172e1358f56f27a69d835a1968bec6a17755ad8c4e0e822",
+      "translation_text_hash": "b50b9408e75bb2edf3b85c3726c0cf7d26fc44e1dc2bff85c584efe7c0f7b6ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 가까이 하라 그리하면 너희를 가까이 하시리라 죄인들아 손을 깨끗이 하라 두 마음을 품은 자들아 마음을 성결케 하라"
+      ],
+      "raw_text_hashes": [
+        "b50b9408e75bb2edf3b85c3726c0cf7d26fc44e1dc2bff85c584efe7c0f7b6ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:9",
+      "sequence": 30343,
+      "chapter_label": "JAS 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Lament, mourn, and weep. Let your laughter be turned to mourning and your joy to gloom.",
+      "ko": "슬퍼하며 애통하며 울찌어다 너희 웃음을 애통으로, 너희 즐거움을 근심으로 바꿀찌어다",
+      "source_text_hash": "d7aee166176b7374e83290013abcaea98b0e7e3beb5350e47b24863fffefd9b1",
+      "translation_text_hash": "943c6204f1504271f29fd3aa315a97391a27018439f055951175719d32229bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬퍼하며 애통하며 울찌어다 너희 웃음을 애통으로, 너희 즐거움을 근심으로 바꿀찌어다"
+      ],
+      "raw_text_hashes": [
+        "943c6204f1504271f29fd3aa315a97391a27018439f055951175719d32229bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:10",
+      "sequence": 30344,
+      "chapter_label": "JAS 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Humble yourselves in the sight of the Lord, and he will exalt you.",
+      "ko": "주 앞에서 낮추라 그리하면 주께서 너희를 높이시리라",
+      "source_text_hash": "20b417a98baef4e4e7320bb8423e40a8a823912613e02c713bb1ca35ccddb0ac",
+      "translation_text_hash": "75b2cd6caa5f3fe91abaf8ff870fb1c3d3a56e1fd5a612f56058989e7cd12180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 앞에서 낮추라 그리하면 주께서 너희를 높이시리라"
+      ],
+      "raw_text_hashes": [
+        "75b2cd6caa5f3fe91abaf8ff870fb1c3d3a56e1fd5a612f56058989e7cd12180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:11",
+      "sequence": 30345,
+      "chapter_label": "JAS 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t speak against one another, brothers. He who speaks against a brother and judges his brother, speaks against the law and judges the law. But if you judge the law, you are not a doer of the law but a judge.",
+      "ko": "형제들아 피차에 비방하지 말라 형제를 비방하는 자나 형제를 판단하는 자는 곧 율법을 비방하고 율법을 판단하는 것이라 네가 만일 율법을 판단하면 율법의 준행자가 아니요 재판자로다",
+      "source_text_hash": "be8c56104f717e2c0b24827565a2b64fc0094af34fafbf3b602aeedf713c2f81",
+      "translation_text_hash": "692a82c4f133d18d535aa8b086c2cb1bc5c273bdf6cce5bddda5693880e399df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 피차에 비방하지 말라 형제를 비방하는 자나 형제를 판단하는 자는 곧 율법을 비방하고 율법을 판단하는 것이라 네가 만일 율법을 판단하면 율법의 준행자가 아니요 재판자로다"
+      ],
+      "raw_text_hashes": [
+        "692a82c4f133d18d535aa8b086c2cb1bc5c273bdf6cce5bddda5693880e399df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:12",
+      "sequence": 30346,
+      "chapter_label": "JAS 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Only one is the lawgiver, who is able to save and to destroy. But who are you to judge another?",
+      "ko": "입법자와 재판자는 오직 하나이시니 능히 구원하기도 하시며 멸하기도 하시느니라 너는 누구관대 이웃을 판단하느냐",
+      "source_text_hash": "db89a629cfe88b3ec9bf04af0a542cdd8279d9f0150689effc3ea39b4eb90c32",
+      "translation_text_hash": "002d7e43d88e8ab28f175643abd69a87cec78a5d5535aa8abcec0ff1fc363cee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입법자와 재판자는 오직 하나이시니 능히 구원하기도 하시며 멸하기도 하시느니라 너는 누구관대 이웃을 판단하느냐"
+      ],
+      "raw_text_hashes": [
+        "002d7e43d88e8ab28f175643abd69a87cec78a5d5535aa8abcec0ff1fc363cee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:13",
+      "sequence": 30347,
+      "chapter_label": "JAS 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Come now, you who say, “Today or tomorrow let’s go into this city and spend a year there, trade, and make a profit.”",
+      "ko": "들으라 너희 중에 말하기를 오늘이나 내일이나 우리가 아무 도시에 가서 거기서 일년을 유하며 장사하여 이를 보리라 하는 자들아",
+      "source_text_hash": "0f60679e0157d53b3b30a6ea2cc8afe1e1daed77aa5a43bce5ea811b21f51281",
+      "translation_text_hash": "4dcdc1dd44aea8dbfb2c610b55bba69bfee2af7d216d1abf7f961dd54a9e995a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들으라 너희 중에 말하기를 오늘이나 내일이나 우리가 아무 도시에 가서 거기서 일년을 유하며 장사하여 이를 보리라 하는 자들아"
+      ],
+      "raw_text_hashes": [
+        "4dcdc1dd44aea8dbfb2c610b55bba69bfee2af7d216d1abf7f961dd54a9e995a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:14",
+      "sequence": 30348,
+      "chapter_label": "JAS 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Yet you don’t know what your life will be like tomorrow. For what is your life? For you are a vapor that appears for a little time and then vanishes away.",
+      "ko": "내일 일을 너희가 알지 못하는도다 너희 생명이 무엇이뇨 너희는 잠간 보이다가 없어지는 안개니라",
+      "source_text_hash": "dd9a994bee5031e8d9126b5cfa3fe3480edcb323c821820b47175096718908f6",
+      "translation_text_hash": "5318eeb80b658b3eecb62d267c82860a4322a3b069b5ce392cf7cb4c6cd9c1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 일을 너희가 알지 못하는도다 너희 생명이 무엇이뇨 너희는 잠간 보이다가 없어지는 안개니라"
+      ],
+      "raw_text_hashes": [
+        "5318eeb80b658b3eecb62d267c82860a4322a3b069b5ce392cf7cb4c6cd9c1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:15",
+      "sequence": 30349,
+      "chapter_label": "JAS 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "For you ought to say, “If the Lord wills, we will both live, and do this or that.”",
+      "ko": "너희가 도리어 말하기를 주의 뜻이면 우리가 살기도 하고 이것 저것을 하리라 할것이거늘",
+      "source_text_hash": "a9297d2ae54cf6bc6d477431b0326f866847b03447280693b0fa10f1ff5fbf2e",
+      "translation_text_hash": "5a353dcfe9f17a37376fd6d3f0d8ac52f9f1901cd0b7d373244faa6bcaa29417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 도리어 말하기를 주의 뜻이면 우리가 살기도 하고 이것 저것을 하리라 할것이거늘"
+      ],
+      "raw_text_hashes": [
+        "5a353dcfe9f17a37376fd6d3f0d8ac52f9f1901cd0b7d373244faa6bcaa29417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:16",
+      "sequence": 30350,
+      "chapter_label": "JAS 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "But now you glory in your boasting. All such boasting is evil.",
+      "ko": "이제 너희가 허탄한 자랑을 자랑하니 이러한 자랑은 다 악한 것이라",
+      "source_text_hash": "aed9efa441ed915e48c324a775ec4849a7021eb959f3ba001ba62812154160dd",
+      "translation_text_hash": "4a46718125393dcb45bc9d2166301e8cf3a9d4fc6f18cdba23d624a57f3a3318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희가 허탄한 자랑을 자랑하니 이러한 자랑은 다 악한 것이라"
+      ],
+      "raw_text_hashes": [
+        "4a46718125393dcb45bc9d2166301e8cf3a9d4fc6f18cdba23d624a57f3a3318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:4:17",
+      "sequence": 30351,
+      "chapter_label": "JAS 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JAS",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "To him therefore who knows to do good and doesn’t do it, to him it is sin.",
+      "ko": "이러므로 사람이 선을 행할줄 알고도 행치 아니하면 죄니라",
+      "source_text_hash": "4d3d8f2a06410ce02aa8a680586c89dfed964e57391d08e5c9dbd8c45258bbe3",
+      "translation_text_hash": "865bd8a70add0ae61db280ab5b2f852c637e7c5e1f8bf8b7aad208b0e28ffbbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 사람이 선을 행할줄 알고도 행치 아니하면 죄니라"
+      ],
+      "raw_text_hashes": [
+        "865bd8a70add0ae61db280ab5b2f852c637e7c5e1f8bf8b7aad208b0e28ffbbb"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:045",
+  "unit_ordinal": 45,
+  "unit_label": "GEN 45",
+  "book_code": "GEN",
+  "chapter_number": 45,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:45:1",
+      "sequence": 1360,
+      "chapter_label": "GEN 45",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 1
+        }
+      ],
+      "en": "Then Joseph couldn’t control himself before all those who stood before him, and he called out, “Cause everyone to go out from me!” No one else stood with him, while Joseph made himself known to his brothers.",
+      "ko": "요셉이 시종하는 자들 앞에서 그 정을 억제하지 못하여 소리질러 모든 사람을 자기에게서 물러가라 하고 그 형제에게 자기를 알리니 때에 그와 함께한 자가 없었더라",
+      "source_text_hash": "f01c50f4aa371bff2693754f2c5f155a1a28501e042640720199789600164539",
+      "translation_text_hash": "f3a3529502d157d43ad8d3bdcc8b0d6486baf0f88199ea2ea2d88805e5755dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 시종하는 자들 앞에서 그 정을 억제하지 못하여 소리질러 모든 사람을 자기에게서 물러가라 하고 그 형제에게 자기를 알리니 때에 그와 함께한 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "f3a3529502d157d43ad8d3bdcc8b0d6486baf0f88199ea2ea2d88805e5755dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:2",
+      "sequence": 1361,
+      "chapter_label": "GEN 45",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 2
+        }
+      ],
+      "en": "He wept aloud. The Egyptians heard, and the house of Pharaoh heard.",
+      "ko": "요셉이 방성대곡하니 애굽 사람에게 들리며 바로의 궁중에 들리더라",
+      "source_text_hash": "98512032d6c6ad9feda8cd85d87c6e8256e6501114dd09e54389ccfc0990bf6a",
+      "translation_text_hash": "07089cfdb518d2be0d75cd8f464313b3b9f744c04d600ab7bd8c2ce8ffeeb826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 방성대곡하니 애굽 사람에게 들리며 바로의 궁중에 들리더라"
+      ],
+      "raw_text_hashes": [
+        "07089cfdb518d2be0d75cd8f464313b3b9f744c04d600ab7bd8c2ce8ffeeb826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:3",
+      "sequence": 1362,
+      "chapter_label": "GEN 45",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 3
+        }
+      ],
+      "en": "Joseph said to his brothers, “I am Joseph! Does my father still live?” His brothers couldn’t answer him; for they were terrified at his presence.",
+      "ko": "요셉이 그 형들에게 이르되 나는 요셉이라 내 아버지께서 아직 살아 계시니이까 형들이 그 앞에서 놀라서 능히 대답하지 못하는지라",
+      "source_text_hash": "6e02b7355af6696fd0f63ddbe839e7ea369d2898bac01edc63f963253a521806",
+      "translation_text_hash": "511fc44b15c23b80330e9427d7fe52bd5e5a73099f04a0cc734917ed0397ca52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 형들에게 이르되 나는 요셉이라 내 아버지께서 아직 살아 계시니이까 형들이 그 앞에서 놀라서 능히 대답하지 못하는지라"
+      ],
+      "raw_text_hashes": [
+        "511fc44b15c23b80330e9427d7fe52bd5e5a73099f04a0cc734917ed0397ca52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:4",
+      "sequence": 1363,
+      "chapter_label": "GEN 45",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 4
+        }
+      ],
+      "en": "Joseph said to his brothers, “Come near to me, please.” They came near. He said, “I am Joseph, your brother, whom you sold into Egypt.",
+      "ko": "요셉이 형들에게 이르되 내게로 가까이 오소서 그들이 가까이 가니 가로되 나는 당신들의 아우 요셉이니 당신들이 애굽에 판 자라",
+      "source_text_hash": "bc99051b3f8327220c0d5c73d4e51962e27bdcb4764b0769af15aec801c66f8d",
+      "translation_text_hash": "1e12237d57515f2b4c2b62fe49f6eba567a24e102081a64111ad6bb72fdd1b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 형들에게 이르되 내게로 가까이 오소서 그들이 가까이 가니 가로되 나는 당신들의 아우 요셉이니 당신들이 애굽에 판 자라"
+      ],
+      "raw_text_hashes": [
+        "1e12237d57515f2b4c2b62fe49f6eba567a24e102081a64111ad6bb72fdd1b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:5",
+      "sequence": 1364,
+      "chapter_label": "GEN 45",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 5
+        }
+      ],
+      "en": "Now don’t be grieved, nor angry with yourselves, that you sold me here, for God sent me before you to preserve life.",
+      "ko": "당신들이 나를 이곳에 팔았으므로 근심하지 마소서 한탄하지 마소서 하나님이 생명을 구원하시려고 나를 당신들 앞서 보내셨나이다",
+      "source_text_hash": "047b91a2bfe53f77db5f2ce6c1446d11164d07ad892d5d490e4590c9f365d0ee",
+      "translation_text_hash": "b1b394ced20a17f74fd06b6a5aa3f1f8f945eec37bdce7abb78ee1d2f71ad7a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들이 나를 이곳에 팔았으므로 근심하지 마소서 한탄하지 마소서 하나님이 생명을 구원하시려고 나를 당신들 앞서 보내셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b1b394ced20a17f74fd06b6a5aa3f1f8f945eec37bdce7abb78ee1d2f71ad7a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:6",
+      "sequence": 1365,
+      "chapter_label": "GEN 45",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 6
+        }
+      ],
+      "en": "For these two years the famine has been in the land, and there are yet five years, in which there will be no plowing and no harvest.",
+      "ko": "이 땅에 이년 동안 흉년이 들었으나 아직 오년은 기경도 못하고 추수도 못할찌라",
+      "source_text_hash": "d7d43d053a421d196473215f34593bd1ea872fc0026105fef8986047b3da6884",
+      "translation_text_hash": "3b7e3ff0ebea8d9b0a4285fc90f171f3c942d093352a86eec7ef8bc6f7ce837e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅에 이년 동안 흉년이 들었으나 아직 오년은 기경도 못하고 추수도 못할찌라"
+      ],
+      "raw_text_hashes": [
+        "3b7e3ff0ebea8d9b0a4285fc90f171f3c942d093352a86eec7ef8bc6f7ce837e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:7",
+      "sequence": 1366,
+      "chapter_label": "GEN 45",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 7
+        }
+      ],
+      "en": "God sent me before you to preserve for you a remnant on the earth, and to save you alive by a great deliverance.",
+      "ko": "하나님이 큰 구원으로 당신들의 생명을 보존하고 당신들의 후손을 세상에 두시려고 나를 당신들 앞서 보내셨나니",
+      "source_text_hash": "8e98c1fee38f5648faa3aa849659e150bfb4423175112f5b8cbf3f8bef5ed73f",
+      "translation_text_hash": "d8318e96caab7ca64ee15ba6d46f3e0f44996c202228803e2d381aafae8b7012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 큰 구원으로 당신들의 생명을 보존하고 당신들의 후손을 세상에 두시려고 나를 당신들 앞서 보내셨나니"
+      ],
+      "raw_text_hashes": [
+        "d8318e96caab7ca64ee15ba6d46f3e0f44996c202228803e2d381aafae8b7012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:8",
+      "sequence": 1367,
+      "chapter_label": "GEN 45",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 8
+        }
+      ],
+      "en": "So now it wasn’t you who sent me here, but God, and he has made me a father to Pharaoh, lord of all his house, and ruler over all the land of Egypt.",
+      "ko": "그런즉 나를 이리로 보낸 자는 당신들이 아니요 하나님이시라 하나님이 나로 바로의 아비를 삼으시며 그 온 집의 주를 삼으시며 애굽 온 땅의 치리자를 삼으셨나이다",
+      "source_text_hash": "b376efee8f2b7af077d24f37f1c77193abb3f082bc35650cae624bdc08086249",
+      "translation_text_hash": "5c7bf25a438ba717523612a8230e67132a20561578ad0ac19d88c576b8f08b7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 나를 이리로 보낸 자는 당신들이 아니요 하나님이시라 하나님이 나로 바로의 아비를 삼으시며 그 온 집의 주를 삼으시며 애굽 온 땅의 치리자를 삼으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "5c7bf25a438ba717523612a8230e67132a20561578ad0ac19d88c576b8f08b7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:9",
+      "sequence": 1368,
+      "chapter_label": "GEN 45",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 9
+        }
+      ],
+      "en": "Hurry, and go up to my father, and tell him, ‘This is what your son Joseph says, “God has made me lord of all Egypt. Come down to me. Don’t wait.",
+      "ko": "당신들은 속히 아버지께로 올라가서 고하기를 아버지의 아들 요셉의 말에 하나님이 나를 애굽 전국의 주로 세우셨으니 내게로 지체말고 내려오사",
+      "source_text_hash": "717fb0765b15477aa063055324a371c99becb421ad2a78b98a810b763e2a15d5",
+      "translation_text_hash": "dc62e672cc91b0c6e5ab2c6f95c7ea04e09a3cf756193f2a960c220c6311f936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 속히 아버지께로 올라가서 고하기를 아버지의 아들 요셉의 말에 하나님이 나를 애굽 전국의 주로 세우셨으니 내게로 지체말고 내려오사"
+      ],
+      "raw_text_hashes": [
+        "dc62e672cc91b0c6e5ab2c6f95c7ea04e09a3cf756193f2a960c220c6311f936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:10",
+      "sequence": 1369,
+      "chapter_label": "GEN 45",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 10
+        }
+      ],
+      "en": "You shall dwell in the land of Goshen, and you will be near to me, you, your children, your children’s children, your flocks, your herds, and all that you have.",
+      "ko": "아버지의 아들들과 아버지의 손자들과 아버지의 양과 소와 모든 소유가 고센 땅에 있어서 나와 가깝게 하소서",
+      "source_text_hash": "43f244cda8eea8732fccff9f30ea0a6a55b849a0afba771f458886ac0745d1a8",
+      "translation_text_hash": "8a19851f178da1238951e3d0cd3d14344faac612411e4b8506ef8f8b06cd7fcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지의 아들들과 아버지의 손자들과 아버지의 양과 소와 모든 소유가 고센 땅에 있어서 나와 가깝게 하소서"
+      ],
+      "raw_text_hashes": [
+        "8a19851f178da1238951e3d0cd3d14344faac612411e4b8506ef8f8b06cd7fcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:11",
+      "sequence": 1370,
+      "chapter_label": "GEN 45",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 11
+        }
+      ],
+      "en": "There I will provide for you; for there are yet five years of famine; lest you come to poverty, you, and your household, and all that you have.”’",
+      "ko": "흉년이 아직 다섯해가 있으니 내가 거기서 아버지를 봉양하리이다 아버지와 아버지의 가속과 아버지의 모든 소속이 결핍할까 하나이다 하더라 하소서",
+      "source_text_hash": "53ed1ef4b9c8f3b71d093b1b9d6c1c70396141800db3965e9d1d7656bfa6631a",
+      "translation_text_hash": "36826d35e7269db62c30c4ba64cc8e5189f054c828e8825169a5a48351d8f3ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흉년이 아직 다섯해가 있으니 내가 거기서 아버지를 봉양하리이다 아버지와 아버지의 가속과 아버지의 모든 소속이 결핍할까 하나이다 하더라 하소서"
+      ],
+      "raw_text_hashes": [
+        "36826d35e7269db62c30c4ba64cc8e5189f054c828e8825169a5a48351d8f3ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:12",
+      "sequence": 1371,
+      "chapter_label": "GEN 45",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, your eyes see, and the eyes of my brother Benjamin, that it is my mouth that speaks to you.",
+      "ko": "당신들의 눈과 내 아우 베냐민의 눈이 보는바 당신들에게 이 말을 하는 것은 내 입이라",
+      "source_text_hash": "18070eb8577bfeb645f41b270addc80c36f7c21603033c12628a918c0af57aad",
+      "translation_text_hash": "5a332d443559d70aa3b72144d9482abf1e2605097b0231c267decad4793b7e9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들의 눈과 내 아우 베냐민의 눈이 보는바 당신들에게 이 말을 하는 것은 내 입이라"
+      ],
+      "raw_text_hashes": [
+        "5a332d443559d70aa3b72144d9482abf1e2605097b0231c267decad4793b7e9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:13",
+      "sequence": 1372,
+      "chapter_label": "GEN 45",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 13
+        }
+      ],
+      "en": "You shall tell my father of all my glory in Egypt, and of all that you have seen. You shall hurry and bring my father down here.”",
+      "ko": "당신들은 나의 애굽에서의 영화와 당신들의 본 모든 것을 다 내 아버지께 고하고 속히 모시고 내려오소서 하며",
+      "source_text_hash": "086adf2fd60c0662a6a9eedbaab47a00721e354282439dcb0297838fafa6591d",
+      "translation_text_hash": "fd887ec787786c2c9f05ce864d3bd7ad3fff75cd675b63ee770e170ff29daadc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 나의 애굽에서의 영화와 당신들의 본 모든 것을 다 내 아버지께 고하고 속히 모시고 내려오소서 하며"
+      ],
+      "raw_text_hashes": [
+        "fd887ec787786c2c9f05ce864d3bd7ad3fff75cd675b63ee770e170ff29daadc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:14",
+      "sequence": 1373,
+      "chapter_label": "GEN 45",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 14
+        }
+      ],
+      "en": "He fell on his brother Benjamin’s neck and wept, and Benjamin wept on his neck.",
+      "ko": "자기 아우 베냐민의 목을 안고 우니 베냐민도 요셉의 목을 안고 우니라",
+      "source_text_hash": "5a1c5910489047c898d5cd5c2aaa0a1e04f7bd62608fdb41a139f695129690bb",
+      "translation_text_hash": "b7aa0757104c8accc6724cd94b3e922c5a424c8c4ae1ce77ebce97aea7442ac3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 아우 베냐민의 목을 안고 우니 베냐민도 요셉의 목을 안고 우니라"
+      ],
+      "raw_text_hashes": [
+        "b7aa0757104c8accc6724cd94b3e922c5a424c8c4ae1ce77ebce97aea7442ac3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:15",
+      "sequence": 1374,
+      "chapter_label": "GEN 45",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 15
+        }
+      ],
+      "en": "He kissed all his brothers, and wept on them. After that his brothers talked with him.",
+      "ko": "요셉이 또 형들과 입맞추며 안고 우니 형들이 그제야 요셉과 말하니라",
+      "source_text_hash": "654de0c6f309ba721e77e97c7630f891efb023f817a67dcc640f23d9dd3d947b",
+      "translation_text_hash": "605c59dba801e263196208b49062073eac71dc24ffc3099648374234d854bb0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 또 형들과 입맞추며 안고 우니 형들이 그제야 요셉과 말하니라"
+      ],
+      "raw_text_hashes": [
+        "605c59dba801e263196208b49062073eac71dc24ffc3099648374234d854bb0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:16",
+      "sequence": 1375,
+      "chapter_label": "GEN 45",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 16
+        }
+      ],
+      "en": "The report of it was heard in Pharaoh’s house, saying, “Joseph’s brothers have come.” It pleased Pharaoh well, and his servants.",
+      "ko": "요셉의 형들이 왔다는 소문이 바로의 궁에 들리매 바로와 그 신복이 기뻐하고",
+      "source_text_hash": "22209139ef5a1f87d1d0cbac8b8df842480ecea775958332bb9885f9a377f1ea",
+      "translation_text_hash": "aea0107bb6682a2b07513be5f00fa75b67e7dac7296f69a7328f908893c9fbcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 형들이 왔다는 소문이 바로의 궁에 들리매 바로와 그 신복이 기뻐하고"
+      ],
+      "raw_text_hashes": [
+        "aea0107bb6682a2b07513be5f00fa75b67e7dac7296f69a7328f908893c9fbcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:17",
+      "sequence": 1376,
+      "chapter_label": "GEN 45",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 17
+        }
+      ],
+      "en": "Pharaoh said to Joseph, “Tell your brothers, ‘Do this: Load your animals, and go, travel to the land of Canaan.",
+      "ko": "바로는 요셉에게 이르되 네 형들에게 명하기를 너희는 이렇게 하여 너희 양식을 싣고 가서 가나안 땅에 이르거든",
+      "source_text_hash": "8862a3ba1a74e52f87a65d46d122182346d6608f743f7fcfa6e14deb1e8bfa08",
+      "translation_text_hash": "09c1aaf23136957b3278ee28befeef0dc87b83fc30d09ab4f524a944cf39b4ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로는 요셉에게 이르되 네 형들에게 명하기를 너희는 이렇게 하여 너희 양식을 싣고 가서 가나안 땅에 이르거든"
+      ],
+      "raw_text_hashes": [
+        "09c1aaf23136957b3278ee28befeef0dc87b83fc30d09ab4f524a944cf39b4ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:18",
+      "sequence": 1377,
+      "chapter_label": "GEN 45",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 18
+        }
+      ],
+      "en": "Take your father and your households, and come to me, and I will give you the good of the land of Egypt, and you will eat the fat of the land.’",
+      "ko": "너희 아비와 너희 가속을 이끌고 내게로 오라 내가 너희에게 애굽 땅 아름다운 것을 주리니 너희가 나라의 기름진 것을 먹으리라",
+      "source_text_hash": "a9160671feefee748f9aa97396289b48161211ea97d77d12749bc4d69d930832",
+      "translation_text_hash": "d16cac520da53ffd33f9f934307b1b47f24f679e3c8a79a7b6bf06ca40b56f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 아비와 너희 가속을 이끌고 내게로 오라 내가 너희에게 애굽 땅 아름다운 것을 주리니 너희가 나라의 기름진 것을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "d16cac520da53ffd33f9f934307b1b47f24f679e3c8a79a7b6bf06ca40b56f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:19",
+      "sequence": 1378,
+      "chapter_label": "GEN 45",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 19
+        }
+      ],
+      "en": "Now you are commanded to do this: Take wagons out of the land of Egypt for your little ones, and for your wives, and bring your father, and come.",
+      "ko": "이제 명을 받았으니 이렇게 하라 너희는 애굽 땅에서 수레를 가져다가 너희 자녀와 아내를 태우고 너희 아비를 데려오라",
+      "source_text_hash": "a12f6c58f7d32f352a12c89e146d3805f24962cddd2828e3702f8f8c2d6b2747",
+      "translation_text_hash": "611b7202f2c5d8745846087ab6764f7c39c6f3fec0cd26dad19120ce8b05185d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 명을 받았으니 이렇게 하라 너희는 애굽 땅에서 수레를 가져다가 너희 자녀와 아내를 태우고 너희 아비를 데려오라"
+      ],
+      "raw_text_hashes": [
+        "611b7202f2c5d8745846087ab6764f7c39c6f3fec0cd26dad19120ce8b05185d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:20",
+      "sequence": 1379,
+      "chapter_label": "GEN 45",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 20
+        }
+      ],
+      "en": "Also, don’t concern yourselves about your belongings, for the good of all the land of Egypt is yours.”",
+      "ko": "또 너희의 기구를 아끼지 말라 온 애굽 땅의 좋은 것이 너희 것임이니라 하라",
+      "source_text_hash": "a676eb1f95a5d6ea495079b8d72f5d1bfc5462349ad8a1628d2e8b090b6da966",
+      "translation_text_hash": "fd4f8724cd4c327714742d8193b1fc10a896423a1cd2fead18fe236a4e52662a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희의 기구를 아끼지 말라 온 애굽 땅의 좋은 것이 너희 것임이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "fd4f8724cd4c327714742d8193b1fc10a896423a1cd2fead18fe236a4e52662a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:21",
+      "sequence": 1380,
+      "chapter_label": "GEN 45",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Israel did so. Joseph gave them wagons, according to the commandment of Pharaoh, and gave them provision for the way.",
+      "ko": "이스라엘의 아들들이 그대로 할쌔 요셉이 바로의 명대로 그들에게 수레를 주고 길 양식을 주며",
+      "source_text_hash": "a131dfd66dbc766b2c656afa4db4e26f117ebdb8b4004ee68878af15cecf7d93",
+      "translation_text_hash": "25b8c072fad1c3146b7b549846827eec4e8aebcafbd7af4649fb66c5c92170b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 아들들이 그대로 할쌔 요셉이 바로의 명대로 그들에게 수레를 주고 길 양식을 주며"
+      ],
+      "raw_text_hashes": [
+        "25b8c072fad1c3146b7b549846827eec4e8aebcafbd7af4649fb66c5c92170b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:22",
+      "sequence": 1381,
+      "chapter_label": "GEN 45",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 22
+        }
+      ],
+      "en": "He gave each one of them changes of clothing, but to Benjamin he gave three hundred pieces of silver and five changes of clothing.",
+      "ko": "또 그들에게 다 각기 옷 한벌씩 주되 베냐민에게는 은 삼백과 옷 다섯벌을 주고",
+      "source_text_hash": "cf9febac75018a65a8faa3734879112444d0fa1881ce2af8e522440203e9c446",
+      "translation_text_hash": "c71b3df7b1b247d5c7f395c44cf5477ae3cc0f0e56339ed5b469560092849556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들에게 다 각기 옷 한벌씩 주되 베냐민에게는 은 삼백과 옷 다섯벌을 주고"
+      ],
+      "raw_text_hashes": [
+        "c71b3df7b1b247d5c7f395c44cf5477ae3cc0f0e56339ed5b469560092849556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:23",
+      "sequence": 1382,
+      "chapter_label": "GEN 45",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 23
+        }
+      ],
+      "en": "He sent the following to his father: ten donkeys loaded with the good things of Egypt, and ten female donkeys loaded with grain and bread and provision for his father by the way.",
+      "ko": "그가 또 이와 같이 그 아비에게 보내되 수나귀 열 필에 애굽의 아름다운 물품을 실리고 암나귀 열 필에는 아비에게 길에서 공궤할 곡식과 떡과 양식을 실리고",
+      "source_text_hash": "6f31b58dc46d638392f1bd352bb908757ce5d8fd833cff8e123021d03cd70d78",
+      "translation_text_hash": "0c3557fbec342784a6b9fee42de954f93307e39f365add87e310c3ebcfe1f1f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 이와 같이 그 아비에게 보내되 수나귀 열 필에 애굽의 아름다운 물품을 실리고 암나귀 열 필에는 아비에게 길에서 공궤할 곡식과 떡과 양식을 실리고"
+      ],
+      "raw_text_hashes": [
+        "0c3557fbec342784a6b9fee42de954f93307e39f365add87e310c3ebcfe1f1f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:24",
+      "sequence": 1383,
+      "chapter_label": "GEN 45",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 24
+        }
+      ],
+      "en": "So he sent his brothers away, and they departed. He said to them, “See that you don’t quarrel on the way.”",
+      "ko": "이에 형들을 돌려 보내며 그들에게 이르되 당신들은 노중에서 다투지 말라 하였더라",
+      "source_text_hash": "36b1aa9c0dd0709385a811af091a9ae1e38f7cb709ab359cdf0740f47eb9420b",
+      "translation_text_hash": "3859472ad8244bbccaeca6a626c3ee529845a0ee2d549bad8c3844f30d4c967c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 형들을 돌려 보내며 그들에게 이르되 당신들은 노중에서 다투지 말라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "3859472ad8244bbccaeca6a626c3ee529845a0ee2d549bad8c3844f30d4c967c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:25",
+      "sequence": 1384,
+      "chapter_label": "GEN 45",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 25
+        }
+      ],
+      "en": "They went up out of Egypt, and came into the land of Canaan, to Jacob their father.",
+      "ko": "그들이 애굽에서 올라와 가나안 땅으로 들어가서 아비 야곱에게 이르러",
+      "source_text_hash": "03c0e17db5b4115b1cd3c16f828413b284bd28bb62ac2c8f218d4ec7a491bde8",
+      "translation_text_hash": "48a4ca829130bb533c67732d2f7b7d323c66203212a424bf9380bf1a849e2979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 애굽에서 올라와 가나안 땅으로 들어가서 아비 야곱에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "48a4ca829130bb533c67732d2f7b7d323c66203212a424bf9380bf1a849e2979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:26",
+      "sequence": 1385,
+      "chapter_label": "GEN 45",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 26
+        }
+      ],
+      "en": "They told him, saying, “Joseph is still alive, and he is ruler over all the land of Egypt.” His heart fainted, for he didn’t believe them.",
+      "ko": "고하여 가로되 요셉이 지금까지 살아 있어 애굽 땅 총리가 되었더이다 야곱이 그들을 믿지 아니하므로 기색하더니",
+      "source_text_hash": "9f727cd8d67c00fef79b114f87b9e99aac0d39c52633ae95a93593b7be0eef86",
+      "translation_text_hash": "349b0c59f104dfd127accf0ff19d54bac0f5977c4389acd5966d070a50ce0c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고하여 가로되 요셉이 지금까지 살아 있어 애굽 땅 총리가 되었더이다 야곱이 그들을 믿지 아니하므로 기색하더니"
+      ],
+      "raw_text_hashes": [
+        "349b0c59f104dfd127accf0ff19d54bac0f5977c4389acd5966d070a50ce0c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:27",
+      "sequence": 1386,
+      "chapter_label": "GEN 45",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 27
+        }
+      ],
+      "en": "They told him all the words of Joseph, which he had said to them. When he saw the wagons which Joseph had sent to carry him, the spirit of Jacob, their father, revived.",
+      "ko": "그들이 또 요셉이 자기들에게 부탁한 모든 말로 그 아비에게 고하매 그 아비 야곱이 요셉의 자기를 태우려고 보낸 수레를 보고야 기운이 소생한지라",
+      "source_text_hash": "4efb5790d28dfcde37ccadc06c9350d9c979e82e4806abd39bec110096134496",
+      "translation_text_hash": "69ae900490c0a7f09c550b753fdd886868cc882a1166b4ee58fde072a9309e69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 또 요셉이 자기들에게 부탁한 모든 말로 그 아비에게 고하매 그 아비 야곱이 요셉의 자기를 태우려고 보낸 수레를 보고야 기운이 소생한지라"
+      ],
+      "raw_text_hashes": [
+        "69ae900490c0a7f09c550b753fdd886868cc882a1166b4ee58fde072a9309e69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:45:28",
+      "sequence": 1387,
+      "chapter_label": "GEN 45",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 45,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 45,
+          "verse": 28
+        }
+      ],
+      "en": "Israel said, “It is enough. Joseph my son is still alive. I will go and see him before I die.”",
+      "ko": "이스라엘이 가로되 족하도다 내 아들 요셉이 지금까지 살았으니 내가 죽기 전에 가서 그를 보리라",
+      "source_text_hash": "75ab9f5672b5364ec0cdc0fdcd783bb4103550795c76a5faf08188812ce6d82b",
+      "translation_text_hash": "32eaf19e487d11b13af7d622d7c486f34a9494c97bbff454377eed7827f4c00a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 가로되 족하도다 내 아들 요셉이 지금까지 살았으니 내가 죽기 전에 가서 그를 보리라"
+      ],
+      "raw_text_hashes": [
+        "32eaf19e487d11b13af7d622d7c486f34a9494c97bbff454377eed7827f4c00a"
+      ]
+    }
+  ]
+}

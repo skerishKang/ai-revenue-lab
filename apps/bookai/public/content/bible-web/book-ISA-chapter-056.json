@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:056",
+  "unit_ordinal": 735,
+  "unit_label": "ISA 56",
+  "book_code": "ISA",
+  "chapter_number": 56,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:56:1",
+      "sequence": 18755,
+      "chapter_label": "ISA 56",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD says: “Maintain justice and do what is right, for my salvation is near and my righteousness will soon be revealed.",
+      "ko": "여호와께서 이같이 말씀하시되 너희는 공평을 지키며 의를 행하라 나의 구원이 가까이 왔고 나의 의가 쉬 나타날 것임이라 하셨은즉",
+      "source_text_hash": "0e013f6a144e4abddecf312370fe69d6d483959d1c2b50d85a1bac9d0ba5741b",
+      "translation_text_hash": "1b2a3ccc849d237e61f0ea28a849b13a598b153eab16c68302ad57b673ab96fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 너희는 공평을 지키며 의를 행하라 나의 구원이 가까이 왔고 나의 의가 쉬 나타날 것임이라 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "1b2a3ccc849d237e61f0ea28a849b13a598b153eab16c68302ad57b673ab96fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:2",
+      "sequence": 18756,
+      "chapter_label": "ISA 56",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 2
+        }
+      ],
+      "en": "Blessed is the man who does this, and the son of man who holds it fast; who keeps the Sabbath without profaning it and keeps his hand from doing any evil.”",
+      "ko": "안식일을 지켜 더럽히지 아니하며 그 손을 금하여 모든 악을 행치 아니하여야 하나니 이같이 행하는 사람, 이같이 굳이 잡는 인생은 복이 있느니라",
+      "source_text_hash": "5cc7c02c922ced105bd126ec2fd0415ef51ff8768c8d048d97af1e38abaf16ee",
+      "translation_text_hash": "d31440b71fa4220d5ad6824b4837a1018f642d0f8b3f575c6791601ddec0efab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일을 지켜 더럽히지 아니하며 그 손을 금하여 모든 악을 행치 아니하여야 하나니 이같이 행하는 사람, 이같이 굳이 잡는 인생은 복이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "d31440b71fa4220d5ad6824b4837a1018f642d0f8b3f575c6791601ddec0efab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:3",
+      "sequence": 18757,
+      "chapter_label": "ISA 56",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 3
+        }
+      ],
+      "en": "Let no foreigner who has joined himself to the LORD speak, saying, “The LORD will surely separate me from his people.” Do not let the eunuch say, “Behold, I am a dry tree.”",
+      "ko": "여호와께 연합한 이방인은 여호와께서 나를 그 백성 중에서 반드시 갈라내시리라 말하지 말며 고자도 나는 마른 나무라 말하지 말라",
+      "source_text_hash": "67b4fd1a0a95df626d22e036edd221be847b3d3f1de79c6e2299ebb66b33d2fe",
+      "translation_text_hash": "0c508596827669f2a497c73d7179f1de756a2462a9b57dfd874d3c1b5e96819f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 연합한 이방인은 여호와께서 나를 그 백성 중에서 반드시 갈라내시리라 말하지 말며 고자도 나는 마른 나무라 말하지 말라"
+      ],
+      "raw_text_hashes": [
+        "0c508596827669f2a497c73d7179f1de756a2462a9b57dfd874d3c1b5e96819f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:4",
+      "sequence": 18758,
+      "chapter_label": "ISA 56",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD says, “To the eunuchs who keep my Sabbaths, choose the things that please me, and hold fast to my covenant,",
+      "ko": "여호와께서 이같이 말씀하시기를 나의 안식일을 지키며 나를 기뻐하는 일을 선택하며 나의 언약을 굳게 잡는 고자들에게는",
+      "source_text_hash": "e671d702044c230c2f5e8605928032a4ef71dc833dbad13d4105400ddba881da",
+      "translation_text_hash": "910babc414683e0daf786797646f09e149dc927e3081999a89e57e2a9e998de8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시기를 나의 안식일을 지키며 나를 기뻐하는 일을 선택하며 나의 언약을 굳게 잡는 고자들에게는"
+      ],
+      "raw_text_hashes": [
+        "910babc414683e0daf786797646f09e149dc927e3081999a89e57e2a9e998de8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:5",
+      "sequence": 18759,
+      "chapter_label": "ISA 56",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 5
+        }
+      ],
+      "en": "I will give them in my house and within my walls a memorial and a name better than of sons and of daughters. I will give them an everlasting name that will not be cut off.",
+      "ko": "내가 내 집에서, 내 성안에서 자녀보다 나은 기념물과 이름을 주며 영영한 이름을 주어 끊치지 않게 할 것이며",
+      "source_text_hash": "d58ae91aa4bf35326c91c67a3cdc6ebb7237384d8d93f480b670a9a5b4189d0d",
+      "translation_text_hash": "0cf968644202b4c4adb605d79f39f7c9e8ec69e02aeefb97ff229ad7a0891fb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 집에서, 내 성안에서 자녀보다 나은 기념물과 이름을 주며 영영한 이름을 주어 끊치지 않게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "0cf968644202b4c4adb605d79f39f7c9e8ec69e02aeefb97ff229ad7a0891fb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:6",
+      "sequence": 18760,
+      "chapter_label": "ISA 56",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 6
+        }
+      ],
+      "en": "Also the foreigners who join themselves to the LORD to serve him, and to love the LORD’s name, to be his servants, everyone who keeps the Sabbath from profaning it, and holds fast my covenant,",
+      "ko": "또 나 여호와에게 연합하여 섬기며 나 여호와의 이름을 사랑하며 나의 종이 되며 안식일을 지켜 더럽히지 아니하며 나의 언약을 굳게 지키는 이방인마다",
+      "source_text_hash": "e2d9283c39f5345c19626be67bcb58e66d80162b48ea45985851a02b0e8a8953",
+      "translation_text_hash": "81629128a604cd0b9bd522651737b8e499e4abe0a635f3d34b890d4da9ef0569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나 여호와에게 연합하여 섬기며 나 여호와의 이름을 사랑하며 나의 종이 되며 안식일을 지켜 더럽히지 아니하며 나의 언약을 굳게 지키는 이방인마다"
+      ],
+      "raw_text_hashes": [
+        "81629128a604cd0b9bd522651737b8e499e4abe0a635f3d34b890d4da9ef0569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:7",
+      "sequence": 18761,
+      "chapter_label": "ISA 56",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 7
+        }
+      ],
+      "en": "I will bring these to my holy mountain, and make them joyful in my house of prayer. Their burnt offerings and their sacrifices will be accepted on my altar; for my house will be called a house of prayer for all peoples.”",
+      "ko": "내가 그를 나의 성산으로 인도하여 기도하는 내 집에서 그들을 기쁘게 할 것이며 그들의 번제와 희생은 나의 단에서 기꺼이 받게 되리니 이는 내 집은 만민의 기도하는 집이라 일컬음이 될 것임이라",
+      "source_text_hash": "d20f62d8f33ea96f97bba25581caf73ea4ae6e40b5f91782edcbe66581f7cda8",
+      "translation_text_hash": "5133b7422518b2436e42a9312ac1e08f6bc7506ae5a7ca338ce4a7f37318908e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그를 나의 성산으로 인도하여 기도하는 내 집에서 그들을 기쁘게 할 것이며 그들의 번제와 희생은 나의 단에서 기꺼이 받게 되리니 이는 내 집은 만민의 기도하는 집이라 일컬음이 될 것임이라"
+      ],
+      "raw_text_hashes": [
+        "5133b7422518b2436e42a9312ac1e08f6bc7506ae5a7ca338ce4a7f37318908e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:8",
+      "sequence": 18762,
+      "chapter_label": "ISA 56",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 8
+        }
+      ],
+      "en": "The Lord GOD, who gathers the outcasts of Israel, says, “I will yet gather others to him, in addition to his own who are gathered.”",
+      "ko": "이스라엘의 쫓겨난 자를 모으는 주 여호와가 말하노니 내가 이미 모은 본 백성 외에 또 모아 그에게 속하게 하리라 하셨느니라",
+      "source_text_hash": "bdb7f580a3b6da05c96c73fefb296f96b0d5847a0755a64e8393e63391d01898",
+      "translation_text_hash": "f145095816c73b6b3a5bf7ab0b2d71f6471624ccd67c688f6572291b63c4bba6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 쫓겨난 자를 모으는 주 여호와가 말하노니 내가 이미 모은 본 백성 외에 또 모아 그에게 속하게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f145095816c73b6b3a5bf7ab0b2d71f6471624ccd67c688f6572291b63c4bba6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:9",
+      "sequence": 18763,
+      "chapter_label": "ISA 56",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 9
+        }
+      ],
+      "en": "All you animals of the field, come to devour, all you animals in the forest.",
+      "ko": "들의 짐승들아 삼림 중의 짐승들아 다 와서 삼키라",
+      "source_text_hash": "b4bfb319331036a914aec336aefc40ac0ac5791bb2b1c6eddb2aaf9b72c89de4",
+      "translation_text_hash": "537e32d055676be115cd0071de0519b016b240329fa137cd9ea35b8fd6b8f68c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들의 짐승들아 삼림 중의 짐승들아 다 와서 삼키라"
+      ],
+      "raw_text_hashes": [
+        "537e32d055676be115cd0071de0519b016b240329fa137cd9ea35b8fd6b8f68c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:10",
+      "sequence": 18764,
+      "chapter_label": "ISA 56",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 10
+        }
+      ],
+      "en": "His watchmen are blind. They are all without knowledge. They are all mute dogs. They can’t bark— dreaming, lying down, loving to slumber.",
+      "ko": "그 파숫군들은 소경이요 다 무지하며 벙어리개라 능히 짖지 못하며 다 꿈꾸는 자요 누운 자요 잠자기를 좋아하는 자니",
+      "source_text_hash": "096a8e4683bc5d4ae11bf2a8b11f86d5d5098de577a905b692b11e3953270811",
+      "translation_text_hash": "dff9ec8972af66092b021a49a2707f45f0779c51d2537ecb134d9bab6cb8db3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 파숫군들은 소경이요 다 무지하며 벙어리개라 능히 짖지 못하며 다 꿈꾸는 자요 누운 자요 잠자기를 좋아하는 자니"
+      ],
+      "raw_text_hashes": [
+        "dff9ec8972af66092b021a49a2707f45f0779c51d2537ecb134d9bab6cb8db3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:11",
+      "sequence": 18765,
+      "chapter_label": "ISA 56",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, the dogs are greedy. They can never have enough. They are shepherds who can’t understand. They have all turned to their own way, each one to his gain, from every quarter.",
+      "ko": "이 개들은 탐욕이 심하여 족한줄을 알지 못하는 자요 그들은 몰각한 목자들이라 다 자기 길로 돌이키며 어디 있는 자이든지 자기 이만 도모하며",
+      "source_text_hash": "c235ec526ec6ffbacd5f1e4be5468406efa99d24670d6776516349adec788e6c",
+      "translation_text_hash": "2da402063d3a93f1b8a28e0b61514cafe186ec0d4f31100395f2f942af645eea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 개들은 탐욕이 심하여 족한줄을 알지 못하는 자요 그들은 몰각한 목자들이라 다 자기 길로 돌이키며 어디 있는 자이든지 자기 이만 도모하며"
+      ],
+      "raw_text_hashes": [
+        "2da402063d3a93f1b8a28e0b61514cafe186ec0d4f31100395f2f942af645eea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:56:12",
+      "sequence": 18766,
+      "chapter_label": "ISA 56",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 56,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 56,
+          "verse": 12
+        }
+      ],
+      "en": "“Come,” they say, “I will get wine, and we will fill ourselves with strong drink; and tomorrow will be as today, great beyond measure.”",
+      "ko": "피차 이르기를 오라 내가 포도주를 가져오리라 우리가 독주를 잔뜩 먹자 내일도 오늘 같이 또 크게 넘치리라 하느니라",
+      "source_text_hash": "ba59ebb014cb5006cbcbbe480dca91bca79318ee6e306b3b57d9c5a0ec3e7b24",
+      "translation_text_hash": "23ca3ed27e3376a1f0962e209404968c1fd73aae0c38c8b3ca70b3de9e227406",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피차 이르기를 오라 내가 포도주를 가져오리라 우리가 독주를 잔뜩 먹자 내일도 오늘 같이 또 크게 넘치리라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "23ca3ed27e3376a1f0962e209404968c1fd73aae0c38c8b3ca70b3de9e227406"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:013",
+  "unit_ordinal": 280,
+  "unit_label": "2SA 13",
+  "book_code": "2SA",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:13:1",
+      "sequence": 8319,
+      "chapter_label": "2SA 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "After this, Absalom the son of David had a beautiful sister, whose name was Tamar; and Amnon the son of David loved her.",
+      "ko": "그 후에 이 일이 있으니라 다윗의 아들 압살롬에게 아름다운 누이가 있으니 이름은 다말이라 다윗의 아들 암논이 저를 연애하나",
+      "source_text_hash": "ae1ca72672a61a2630200c6bb123c28a43a164367b53b96d4806c635ae29530d",
+      "translation_text_hash": "24c49c11e331aaac57c336072af2da2a5d302c506244df151499c3e94e43056e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 이 일이 있으니라 다윗의 아들 압살롬에게 아름다운 누이가 있으니 이름은 다말이라 다윗의 아들 암논이 저를 연애하나"
+      ],
+      "raw_text_hashes": [
+        "24c49c11e331aaac57c336072af2da2a5d302c506244df151499c3e94e43056e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:2",
+      "sequence": 8320,
+      "chapter_label": "2SA 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Amnon was so troubled that he became sick because of his sister Tamar, for she was a virgin, and it seemed hard to Amnon to do anything to her.",
+      "ko": "저는 처녀이므로 어찌할 수 없는 줄을 알고 암논이 그 누이 다말을 인하여 심화로 병이 되니라",
+      "source_text_hash": "1fe2c373339c9caa168ef04b7598546a6a590572de59a81501b6afa20ccaa355",
+      "translation_text_hash": "329e85cfcdba4e375438d6ebf6e03376c3abd033c4db04b4ebbb1c94b7971f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 처녀이므로 어찌할 수 없는 줄을 알고 암논이 그 누이 다말을 인하여 심화로 병이 되니라"
+      ],
+      "raw_text_hashes": [
+        "329e85cfcdba4e375438d6ebf6e03376c3abd033c4db04b4ebbb1c94b7971f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:3",
+      "sequence": 8321,
+      "chapter_label": "2SA 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "But Amnon had a friend whose name was Jonadab the son of Shimeah, David’s brother; and Jonadab was a very subtle man.",
+      "ko": "암논에게 요나답이라 하는 친구가 있으니 저는 다윗의 형 시므아의 아들이요 심히 간교한 자라",
+      "source_text_hash": "c6a60bdc8a090abb8bef01c20821ecf7c046d857a7da3952a1911bf5bef3335e",
+      "translation_text_hash": "d1109c32bc732037300c4bbcd1ba28ef646cb564b110f1247adc848fcf26118f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암논에게 요나답이라 하는 친구가 있으니 저는 다윗의 형 시므아의 아들이요 심히 간교한 자라"
+      ],
+      "raw_text_hashes": [
+        "d1109c32bc732037300c4bbcd1ba28ef646cb564b110f1247adc848fcf26118f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:4",
+      "sequence": 8322,
+      "chapter_label": "2SA 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "He said to him, “Why, son of the king, are you so sad from day to day? Won’t you tell me?” Amnon said to him, “I love Tamar, my brother Absalom’s sister.”",
+      "ko": "저가 암논에게 이르되 왕자여 어찌하여 나날이 이렇게 파리하여 가느뇨 내게 고하지 아니하겠느뇨 암논이 말하되 내가 아우 압살롬의 누이 다말을 연애함이니라",
+      "source_text_hash": "015c0f39856d1e30bf2d87718efc60e51b0bd64810368663f4649efb4bd6e4ab",
+      "translation_text_hash": "baa63fedc96aa7c1003bc7a39af15fbab5bc4c005ca2309b048d7e0906e27eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 암논에게 이르되 왕자여 어찌하여 나날이 이렇게 파리하여 가느뇨 내게 고하지 아니하겠느뇨 암논이 말하되 내가 아우 압살롬의 누이 다말을 연애함이니라"
+      ],
+      "raw_text_hashes": [
+        "baa63fedc96aa7c1003bc7a39af15fbab5bc4c005ca2309b048d7e0906e27eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:5",
+      "sequence": 8323,
+      "chapter_label": "2SA 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Jonadab said to him, “Lay down on your bed and pretend to be sick. When your father comes to see you, tell him, ‘Please let my sister Tamar come and give me bread to eat, and prepare the food in my sight, that I may see it and eat it from her hand.’”",
+      "ko": "요나답이 저에게 이르되 침상에 누워 병든체하다가 네 부친이 너를 보러 오거든 너는 말하기를 청컨대 내 누이 다말로 와서 내게 식물을 먹이되 나 보는데서 식물을 차려 그 손으로 먹여주게 하옵소서 하라",
+      "source_text_hash": "b30bc1b25c82fabf17a096230d75bbac3c18b77cee7422c54d2d22aa01248e39",
+      "translation_text_hash": "4dc587be9ff20754cd605e50435fcfee06c5a34aea60f88484e52d2febe11b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나답이 저에게 이르되 침상에 누워 병든체하다가 네 부친이 너를 보러 오거든 너는 말하기를 청컨대 내 누이 다말로 와서 내게 식물을 먹이되 나 보는데서 식물을 차려 그 손으로 먹여주게 하옵소서 하라"
+      ],
+      "raw_text_hashes": [
+        "4dc587be9ff20754cd605e50435fcfee06c5a34aea60f88484e52d2febe11b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:6",
+      "sequence": 8324,
+      "chapter_label": "2SA 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "So Amnon lay down and faked being sick. When the king came to see him, Amnon said to the king, “Please let my sister Tamar come and make me a couple of cakes in my sight, that I may eat from her hand.”",
+      "ko": "암논이 곧 누워 병든체하다가 왕이 와서 저를 볼 때에 왕께 고하되 청컨대 내 누이 다말로 와서 내가 보는데서 과자 두어개를 만들어 그 손으로 내게 먹여 주게 하옵소서",
+      "source_text_hash": "3d2ba94cf2008bc6be7f6e6519377d90b0d86fbaafe8ad4c0e9018537c222230",
+      "translation_text_hash": "f4e51bfa3621ebe74c739ff4ba4c7534f206904a680cae91afef74b436c320ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암논이 곧 누워 병든체하다가 왕이 와서 저를 볼 때에 왕께 고하되 청컨대 내 누이 다말로 와서 내가 보는데서 과자 두어개를 만들어 그 손으로 내게 먹여 주게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "f4e51bfa3621ebe74c739ff4ba4c7534f206904a680cae91afef74b436c320ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:7",
+      "sequence": 8325,
+      "chapter_label": "2SA 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Then David sent home to Tamar, saying, “Go now to your brother Amnon’s house, and prepare food for him.”",
+      "ko": "다윗이 사람을 그 집으로 보내어 다말에게 이르되 네 오라비 암논의 집으로 가서 저를 위하여 음식을 차리라 한지라",
+      "source_text_hash": "f993951f919462e49d6ca1c7ba51b75087ae6dc2b0a3e0f099f2cfcaed9ecfb6",
+      "translation_text_hash": "49610bd0a8c046fc39509bcb207b0dd309083aeb4b05d215c33366aeae2c1e70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사람을 그 집으로 보내어 다말에게 이르되 네 오라비 암논의 집으로 가서 저를 위하여 음식을 차리라 한지라"
+      ],
+      "raw_text_hashes": [
+        "49610bd0a8c046fc39509bcb207b0dd309083aeb4b05d215c33366aeae2c1e70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:8",
+      "sequence": 8326,
+      "chapter_label": "2SA 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "So Tamar went to her brother Amnon’s house; and he was lying down. She took dough, kneaded it, made cakes in his sight, and baked the cakes.",
+      "ko": "다말이 그 오라비 암논의 집에 이르매 암논이 누웠더라 다말이 밀가루를 가지고 반죽하여 그 보는데서 과자를 만들고 그 과자를 굽고",
+      "source_text_hash": "b0596511b9b4367b98ec6c0df198fff14ad41948c1b3cd8a411f36c6b66fa5f0",
+      "translation_text_hash": "b544cfd29de6524069565e25184d2003a8106240ebf21f52ed2a7abfc7689a4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다말이 그 오라비 암논의 집에 이르매 암논이 누웠더라 다말이 밀가루를 가지고 반죽하여 그 보는데서 과자를 만들고 그 과자를 굽고"
+      ],
+      "raw_text_hashes": [
+        "b544cfd29de6524069565e25184d2003a8106240ebf21f52ed2a7abfc7689a4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:9",
+      "sequence": 8327,
+      "chapter_label": "2SA 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "She took the pan and poured them out before him, but he refused to eat. Amnon said, “Have all men leave me.” Then every man went out from him.",
+      "ko": "그 남비를 가져다가 그 앞에 쏟아 놓아도 암논이 먹기를 싫어하고 가로되 모든 사람을 나가게 하라 하니 다 저를 떠나 나가니라",
+      "source_text_hash": "bec13772d0d3c96336aff544be110d4cb360e38b1b852df46887901adf8068d5",
+      "translation_text_hash": "b312195c475289ad0b7d9c3aff8c9ce93b91c517f4788ccdfc4b99771481335d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남비를 가져다가 그 앞에 쏟아 놓아도 암논이 먹기를 싫어하고 가로되 모든 사람을 나가게 하라 하니 다 저를 떠나 나가니라"
+      ],
+      "raw_text_hashes": [
+        "b312195c475289ad0b7d9c3aff8c9ce93b91c517f4788ccdfc4b99771481335d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:10",
+      "sequence": 8328,
+      "chapter_label": "2SA 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Amnon said to Tamar, “Bring the food into the room, that I may eat from your hand.” Tamar took the cakes which she had made, and brought them into the room to Amnon her brother.",
+      "ko": "암논이 다말에게 이르되 식물을 가지고 침실로 들어오라 내가 네 손에서 먹으리라 다말이 자기의 만든 과자를 가지고 침실에 들어가 그 오라비 암논에게 이르러",
+      "source_text_hash": "fae48478cc466609c27e087da799732da770b92eac71463e61db0623306bdc08",
+      "translation_text_hash": "aae80ea37578172369a63fbaf213eeb3bf669a7a46318810e4fc27cd960fa445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암논이 다말에게 이르되 식물을 가지고 침실로 들어오라 내가 네 손에서 먹으리라 다말이 자기의 만든 과자를 가지고 침실에 들어가 그 오라비 암논에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "aae80ea37578172369a63fbaf213eeb3bf669a7a46318810e4fc27cd960fa445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:11",
+      "sequence": 8329,
+      "chapter_label": "2SA 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "When she had brought them near to him to eat, he took hold of her and said to her, “Come, lie with me, my sister!”",
+      "ko": "저에게 먹이려고 가까이 가지고 갈때에 암논이 그를 붙잡고 이르되 누이야 와서 나와 동침하자",
+      "source_text_hash": "c031e5ff2a6e9d49d94ffd03f61488a2b91ea5b44e6af328cf17be925ab723c7",
+      "translation_text_hash": "1c5ef8487eac738f23c4a60ef4cf62df5b4c15d9581d6ec40b75daf8d273d475",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 먹이려고 가까이 가지고 갈때에 암논이 그를 붙잡고 이르되 누이야 와서 나와 동침하자"
+      ],
+      "raw_text_hashes": [
+        "1c5ef8487eac738f23c4a60ef4cf62df5b4c15d9581d6ec40b75daf8d273d475"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:12",
+      "sequence": 8330,
+      "chapter_label": "2SA 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "She answered him, “No, my brother, do not force me! For no such thing ought to be done in Israel. Don’t you do this folly!",
+      "ko": "저가 대답하되 아니라 내 오라비여 나를 욕되게 말라 이런 일은 이스라엘에서 마땅히 행치 못할 것이니 이 괴악한 일을 행치 말라",
+      "source_text_hash": "7625d923c133910064a1c60b84c46c50bc38c88a35a4b64fad87b4b334a2f10a",
+      "translation_text_hash": "a7c94fca65fd6ea5363600b8d7409f305f0f2490e57ff1dbc25b2d3dd286d60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 대답하되 아니라 내 오라비여 나를 욕되게 말라 이런 일은 이스라엘에서 마땅히 행치 못할 것이니 이 괴악한 일을 행치 말라"
+      ],
+      "raw_text_hashes": [
+        "a7c94fca65fd6ea5363600b8d7409f305f0f2490e57ff1dbc25b2d3dd286d60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:13",
+      "sequence": 8331,
+      "chapter_label": "2SA 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "As for me, where would I carry my shame? And as for you, you will be as one of the fools in Israel. Now therefore, please speak to the king; for he will not withhold me from you.”",
+      "ko": "내가 이 수치를 무릅쓰고 어디로 가겠느냐 너도 이스라엘에서 괴악한 자 중 하나가 되리라 청컨대 왕께 말하라 저가 나를 네게 주기를 거절치 아니하시리라 하되",
+      "source_text_hash": "038b20e2cc8a82db05e4f0a0cfc889f1bf6a6469be6f4ec73397db6c70946371",
+      "translation_text_hash": "effcb8a34d8b749bfe9940160fdae4338542c69566376c49f73fc6693c5b4a1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 수치를 무릅쓰고 어디로 가겠느냐 너도 이스라엘에서 괴악한 자 중 하나가 되리라 청컨대 왕께 말하라 저가 나를 네게 주기를 거절치 아니하시리라 하되"
+      ],
+      "raw_text_hashes": [
+        "effcb8a34d8b749bfe9940160fdae4338542c69566376c49f73fc6693c5b4a1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:14",
+      "sequence": 8332,
+      "chapter_label": "2SA 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "However, he would not listen to her voice; but being stronger than she, he forced her and lay with her.",
+      "ko": "암논이 그 말을 듣지 아니하고 다말보다 힘이 세므로 억지로 동침하니라",
+      "source_text_hash": "002806bb726aa3f49c141ff6f364aa97f784c5aa9960d83816bcbc0595caccab",
+      "translation_text_hash": "6c9b99c2b6140d8e3d1da1fd282678e005e2d6762b08ad1857a3c60de91a7967",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암논이 그 말을 듣지 아니하고 다말보다 힘이 세므로 억지로 동침하니라"
+      ],
+      "raw_text_hashes": [
+        "6c9b99c2b6140d8e3d1da1fd282678e005e2d6762b08ad1857a3c60de91a7967"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:15",
+      "sequence": 8333,
+      "chapter_label": "2SA 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Then Amnon hated her with exceedingly great hatred; for the hatred with which he hated her was greater than the love with which he had loved her. Amnon said to her, “Arise, be gone!”",
+      "ko": "그리하고 암논이 저를 심히 미워하니 이제 미워하는 미움이 이왕 연애하던 연애보다 더한지라 곧 저에게 이르되 일어나 가라",
+      "source_text_hash": "1f3d406784cc185e7f52418c3539740af3b67a88a5e3c564145923c0b761fe76",
+      "translation_text_hash": "f11dfc75c21c82e6c2d2591b69245949463647cfb95281c50e6d840643399f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하고 암논이 저를 심히 미워하니 이제 미워하는 미움이 이왕 연애하던 연애보다 더한지라 곧 저에게 이르되 일어나 가라"
+      ],
+      "raw_text_hashes": [
+        "f11dfc75c21c82e6c2d2591b69245949463647cfb95281c50e6d840643399f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:16",
+      "sequence": 8334,
+      "chapter_label": "2SA 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "She said to him, “Not so, because this great wrong in sending me away is worse than the other that you did to me!” But he would not listen to her.",
+      "ko": "다말이 가로되 가치 아니하다 나를 쫓아 보내는 이 큰 악은 아까 내게 행한 그 악보다 더하다 하되 암논이 듣지 아니하고",
+      "source_text_hash": "0137c426ad6f4881b78cc2a59186e7d3b124571241ecec7930cbbd2d1db01b8f",
+      "translation_text_hash": "d5bfd004f037615b047a2185ff878a4c295c5a0242ef5273e09a7b9869ef9c3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다말이 가로되 가치 아니하다 나를 쫓아 보내는 이 큰 악은 아까 내게 행한 그 악보다 더하다 하되 암논이 듣지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "d5bfd004f037615b047a2185ff878a4c295c5a0242ef5273e09a7b9869ef9c3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:17",
+      "sequence": 8335,
+      "chapter_label": "2SA 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Then he called his servant who ministered to him, and said, “Now put this woman out from me, and bolt the door after her.”",
+      "ko": "그 부리는 종을 불러 이르되 이 계집을 내어보내고 곧 문빗장을 지르라 하니",
+      "source_text_hash": "5006841a531dc5356a6236e2b1df410761cd6a6c16a2216b19b38f2673d11c63",
+      "translation_text_hash": "ff1dfaf1ed31b0bd911fd7247fc00dfee1811a4bc8d3b6ba4515b4f31b2b4101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부리는 종을 불러 이르되 이 계집을 내어보내고 곧 문빗장을 지르라 하니"
+      ],
+      "raw_text_hashes": [
+        "ff1dfaf1ed31b0bd911fd7247fc00dfee1811a4bc8d3b6ba4515b4f31b2b4101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:18",
+      "sequence": 8336,
+      "chapter_label": "2SA 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "She had a garment of various colors on her, for the king’s daughters who were virgins dressed in such robes. Then his servant brought her out and bolted the door after her.",
+      "ko": "암논의 하인이 저를 끌어내고 곧 문빗장을 지르니라 다말이 채색옷을 입었으니 출가하지 아니한 공주는 이런 옷으로 단장하는 법이라",
+      "source_text_hash": "0a568a07835b474ed5ea0fa97c8b29d3ff48a3e1f98c12f08e4585b9e004921c",
+      "translation_text_hash": "e37ced695f504ec3070ae98e90ece700e587aa4bc33f3613f8bdb73f4420bd24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암논의 하인이 저를 끌어내고 곧 문빗장을 지르니라 다말이 채색옷을 입었으니 출가하지 아니한 공주는 이런 옷으로 단장하는 법이라"
+      ],
+      "raw_text_hashes": [
+        "e37ced695f504ec3070ae98e90ece700e587aa4bc33f3613f8bdb73f4420bd24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:19",
+      "sequence": 8337,
+      "chapter_label": "2SA 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Tamar put ashes on her head, and tore her garment of various colors that was on her; and she laid her hand on her head and went her way, crying aloud as she went.",
+      "ko": "다말이 재를 그 머리에 무릅쓰고 그 채색옷을 찢고 손을 머리 위에 얹고 크게 울며 가니라",
+      "source_text_hash": "273b1329e481a0c5b8dbe43931ef73f4cd5fe52bb3955b13ea1d1a08647e84c3",
+      "translation_text_hash": "508473f6916b6f2b28788949bc81a6c9510f8cd13728d9eefb577b42dc0679fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다말이 재를 그 머리에 무릅쓰고 그 채색옷을 찢고 손을 머리 위에 얹고 크게 울며 가니라"
+      ],
+      "raw_text_hashes": [
+        "508473f6916b6f2b28788949bc81a6c9510f8cd13728d9eefb577b42dc0679fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:20",
+      "sequence": 8338,
+      "chapter_label": "2SA 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Absalom her brother said to her, “Has Amnon your brother been with you? But now hold your peace, my sister. He is your brother. Don’t take this thing to heart.” So Tamar remained desolate in her brother Absalom’s house.",
+      "ko": "그 오라비 압살롬이 저에게 이르되 네 오라비 암논이 너와 함께 있었느냐 그러나 저는 네 오라비니 누이야 시방은 잠잠히 있고 이것으로 인하여 근심하지 말라 이에 다말이 그 오라비 압살롬의 집에 있어 처량하게 지내니라",
+      "source_text_hash": "557e06d3bf736b3eeebe34727bff62dd791e0da8019b5badd411d00428b5d153",
+      "translation_text_hash": "5ec3cac3af55a8708a495463dd30ddc8817cbaf7f2a627939972f35075c6e688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 오라비 압살롬이 저에게 이르되 네 오라비 암논이 너와 함께 있었느냐 그러나 저는 네 오라비니 누이야 시방은 잠잠히 있고 이것으로 인하여 근심하지 말라 이에 다말이 그 오라비 압살롬의 집에 있어 처량하게 지내니라"
+      ],
+      "raw_text_hashes": [
+        "5ec3cac3af55a8708a495463dd30ddc8817cbaf7f2a627939972f35075c6e688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:21",
+      "sequence": 8339,
+      "chapter_label": "2SA 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "But when King David heard of all these things, he was very angry.",
+      "ko": "다윗왕이 이 모든 일을 듣고 심히 노하니라",
+      "source_text_hash": "d9a6b101081a4c58cfd63007abded509d1d719dc4ed8fc46edf2aa9039e39402",
+      "translation_text_hash": "03313b9685b74e81845178b9e07b0a297b2396fedb3d296224fdc8526c1db3b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 이 모든 일을 듣고 심히 노하니라"
+      ],
+      "raw_text_hashes": [
+        "03313b9685b74e81845178b9e07b0a297b2396fedb3d296224fdc8526c1db3b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:22",
+      "sequence": 8340,
+      "chapter_label": "2SA 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "Absalom spoke to Amnon neither good nor bad; for Absalom hated Amnon, because he had forced his sister Tamar.",
+      "ko": "압살롬이 그 누이 다말을 암논이 욕되게 하였으므로 저를 미워하여 시비간에 말하지 아니하니라",
+      "source_text_hash": "15a3a8017dad0f0e1ab1144973b271f15594feafb9f22c851d5a9e6067db8aea",
+      "translation_text_hash": "3eebd11fe4b3fdf03376a1d6039aaabec1080b397db381950814689cf4a42475",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 그 누이 다말을 암논이 욕되게 하였으므로 저를 미워하여 시비간에 말하지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "3eebd11fe4b3fdf03376a1d6039aaabec1080b397db381950814689cf4a42475"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:23",
+      "sequence": 8341,
+      "chapter_label": "2SA 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "After two full years, Absalom had sheep shearers in Baal Hazor, which is beside Ephraim; and Absalom invited all the king’s sons.",
+      "ko": "이 주년 후에 에브라임 곁 바알하솔에서 압살롬의 양털을 깎는 일이 있으매 압살롬이 왕의 모든 아들을 청하고",
+      "source_text_hash": "4ce3fb3308720626a835d626854e2892f020851af68b6205f6c33b1730f2ca77",
+      "translation_text_hash": "9b1126870f5c435a9693c4c6295f761c9e7e1668cb9ee4e5d8d9c9332b1576f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 주년 후에 에브라임 곁 바알하솔에서 압살롬의 양털을 깎는 일이 있으매 압살롬이 왕의 모든 아들을 청하고"
+      ],
+      "raw_text_hashes": [
+        "9b1126870f5c435a9693c4c6295f761c9e7e1668cb9ee4e5d8d9c9332b1576f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:24",
+      "sequence": 8342,
+      "chapter_label": "2SA 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "Absalom came to the king and said, “See now, your servant has sheep shearers. Please let the king and his servants go with your servant.”",
+      "ko": "왕께 나아와 말하되 이제 종에게 양털 깎는 일이 있사오니 청컨대 왕은 신복들을 데리시고 이 종과 함께 가사이다",
+      "source_text_hash": "50f93f317386946c35b90d2e3225a036e692bbdf61a9fdb64a05cd30cd6be803",
+      "translation_text_hash": "5d0888377dc97a7ba8010ac8ef60c3895cf9ab71319d8df869d9301e1227b216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 나아와 말하되 이제 종에게 양털 깎는 일이 있사오니 청컨대 왕은 신복들을 데리시고 이 종과 함께 가사이다"
+      ],
+      "raw_text_hashes": [
+        "5d0888377dc97a7ba8010ac8ef60c3895cf9ab71319d8df869d9301e1227b216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:25",
+      "sequence": 8343,
+      "chapter_label": "2SA 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "The king said to Absalom, “No, my son, let’s not all go, lest we be burdensome to you.” He pressed him; however he would not go, but blessed him.",
+      "ko": "왕이 압살롬에게 이르되 아니라 내 아들아 우리가 다 갈 것이 없다 네게 누를 끼칠까 하노라 압살롬이 간청하되 저가 가지 아니하고 위하여 복을 비는지라",
+      "source_text_hash": "9f6ad652a79e68fe7eba29dfe7ec9accd68ec25847927cfcae8596dd6f3099f4",
+      "translation_text_hash": "b51493acb680563475976befec5f7e07464a3fd492800bb9a5d77ff6ff16b3c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 압살롬에게 이르되 아니라 내 아들아 우리가 다 갈 것이 없다 네게 누를 끼칠까 하노라 압살롬이 간청하되 저가 가지 아니하고 위하여 복을 비는지라"
+      ],
+      "raw_text_hashes": [
+        "b51493acb680563475976befec5f7e07464a3fd492800bb9a5d77ff6ff16b3c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:26",
+      "sequence": 8344,
+      "chapter_label": "2SA 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "Then Absalom said, “If not, please let my brother Amnon go with us.” The king said to him, “Why should he go with you?”",
+      "ko": "압살롬이 가로되 그렇게 아니하시려거든 청컨대 내 형 암논으로 우리와 함께 가게 하옵소서 왕이 저에게 이르되 그가 너와 함께 갈 것이 무엇이냐 하되",
+      "source_text_hash": "a2ed575633fd12342864bd6c4cbee45e395c5b5716c67c5646af7ecaac8bcc3c",
+      "translation_text_hash": "d4cd7476321d4b112a49d683f50349d1d4d82fad946efb55706aecebd2405589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 가로되 그렇게 아니하시려거든 청컨대 내 형 암논으로 우리와 함께 가게 하옵소서 왕이 저에게 이르되 그가 너와 함께 갈 것이 무엇이냐 하되"
+      ],
+      "raw_text_hashes": [
+        "d4cd7476321d4b112a49d683f50349d1d4d82fad946efb55706aecebd2405589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:27",
+      "sequence": 8345,
+      "chapter_label": "2SA 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "But Absalom pressed him, and he let Amnon and all the king’s sons go with him.",
+      "ko": "압살롬이 간청하매 왕이 암논과 왕의 모든 아들을 저와 함께 보내니라",
+      "source_text_hash": "a1ec0ecfcca68cfa0d1cbbabb74d16a333cef5b20cb881745a43b25ed4ee96df",
+      "translation_text_hash": "02d3e6833a5b552e83a39ed00382eb91450093acd796b9c42bec6af57ce2844d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 간청하매 왕이 암논과 왕의 모든 아들을 저와 함께 보내니라"
+      ],
+      "raw_text_hashes": [
+        "02d3e6833a5b552e83a39ed00382eb91450093acd796b9c42bec6af57ce2844d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:28",
+      "sequence": 8346,
+      "chapter_label": "2SA 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "Absalom commanded his servants, saying, “Mark now, when Amnon’s heart is merry with wine; and when I tell you, ‘Strike Amnon,’ then kill him. Don’t be afraid. Haven’t I commanded you? Be courageous, and be valiant!”",
+      "ko": "압살롬이 이미 그 사환들에게 분부하여 이르기를 너희는 암논의 마음이 술로 즐거워할 때를 자세히 보다가 내가 너희에게 암논을 치라 하거든 저를 죽이라 두려워 말라 내가 너희에게 명한 것이 아니냐 너희는 담대히 용맹을 내라 한지라",
+      "source_text_hash": "2ae8fbe06ecdce964ed0f698665978a12cad7868b7480030348abdeeb328e4b2",
+      "translation_text_hash": "b63d085f6d9d52fc1ad4856deb79a5448d955271ffd9e3bbd13896531e519ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 이미 그 사환들에게 분부하여 이르기를 너희는 암논의 마음이 술로 즐거워할 때를 자세히 보다가 내가 너희에게 암논을 치라 하거든 저를 죽이라 두려워 말라 내가 너희에게 명한 것이 아니냐 너희는 담대히 용맹을 내라 한지라"
+      ],
+      "raw_text_hashes": [
+        "b63d085f6d9d52fc1ad4856deb79a5448d955271ffd9e3bbd13896531e519ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:29",
+      "sequence": 8347,
+      "chapter_label": "2SA 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "The servants of Absalom did to Amnon as Absalom had commanded. Then all the king’s sons arose, and every man got up on his mule and fled.",
+      "ko": "압살롬의 사환들이 그 분부대로 암논에게 행하매 왕의 모든 아들이 일어나 각기 노새를 타고 도망하니라",
+      "source_text_hash": "52a603278b16a80098007d8432977cf960be8ad597f5ff0e88f3e72da7470afd",
+      "translation_text_hash": "a42d53d86452f1574b43371c843c1da1c06884dc5263b0d0cd83ccb24c96f4b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬의 사환들이 그 분부대로 암논에게 행하매 왕의 모든 아들이 일어나 각기 노새를 타고 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "a42d53d86452f1574b43371c843c1da1c06884dc5263b0d0cd83ccb24c96f4b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:30",
+      "sequence": 8348,
+      "chapter_label": "2SA 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "While they were on the way, the news came to David, saying, “Absalom has slain all the king’s sons, and there is not one of them left!”",
+      "ko": "저희가 길에 있을 때에 압살롬이 왕의 모든 아들을 죽이고 하나도 남기지 아니하였다는 소문이 다윗에게 이르매",
+      "source_text_hash": "ff437a9d9e8f765e2b34a5218987b0da0209ef401bf4b4446adbb39e5042e25a",
+      "translation_text_hash": "a91d58bb96d9e21482b149bf0d67142aeaf78a2d39a6f2f51b9cd6f8022afeca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 길에 있을 때에 압살롬이 왕의 모든 아들을 죽이고 하나도 남기지 아니하였다는 소문이 다윗에게 이르매"
+      ],
+      "raw_text_hashes": [
+        "a91d58bb96d9e21482b149bf0d67142aeaf78a2d39a6f2f51b9cd6f8022afeca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:31",
+      "sequence": 8349,
+      "chapter_label": "2SA 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "Then the king arose, and tore his garments, and lay on the earth; and all his servants stood by with their clothes torn.",
+      "ko": "왕이 곧 일어나서 그 옷을 찢고 땅에 엎드러지고 그 신복들도 다 옷을 찢고 모셔 선지라",
+      "source_text_hash": "2287fc6c2a2c6932437859434ea51d098f0057282475df06ce1feef872017650",
+      "translation_text_hash": "4ddcd8788cb1b153309f6ea704c1757251772038bc52cb8db04c116393bda358",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 곧 일어나서 그 옷을 찢고 땅에 엎드러지고 그 신복들도 다 옷을 찢고 모셔 선지라"
+      ],
+      "raw_text_hashes": [
+        "4ddcd8788cb1b153309f6ea704c1757251772038bc52cb8db04c116393bda358"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:32",
+      "sequence": 8350,
+      "chapter_label": "2SA 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "Jonadab the son of Shimeah, David’s brother, answered, “Don’t let my lord suppose that they have killed all the young men, the king’s sons, for Amnon only is dead; for by the appointment of Absalom this has been determined from the day that he forced his sister Tamar.",
+      "ko": "다윗의 형 시므아의 아들 요나답이 고하여 가로되 내 주여 소년 왕자들이 다 죽임을 당한줄로 생각지 마옵소서 오직 암논만 죽었으리이다 저가 압살롬의 누이 다말을 욕되게 한 날부터 압살롬이 결심한 것이니이다",
+      "source_text_hash": "e8e9416a6c9c24d05f8cf91ccc3187c9d335f95fc2b6b216489b22cdc336b82c",
+      "translation_text_hash": "0cf0bef4cb2aad49637a69eba87cfb71398688f645e4bd9c5589c788e7cd877d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 형 시므아의 아들 요나답이 고하여 가로되 내 주여 소년 왕자들이 다 죽임을 당한줄로 생각지 마옵소서 오직 암논만 죽었으리이다 저가 압살롬의 누이 다말을 욕되게 한 날부터 압살롬이 결심한 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "0cf0bef4cb2aad49637a69eba87cfb71398688f645e4bd9c5589c788e7cd877d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:33",
+      "sequence": 8351,
+      "chapter_label": "2SA 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "Now therefore don’t let my lord the king take the thing to his heart, to think that all the king’s sons are dead; for only Amnon is dead.”",
+      "ko": "그러하온즉 내 주 왕이여 왕자들이 다 죽은줄로 생각하여 괘념하지 마옵소서 암논만 죽었으리이다",
+      "source_text_hash": "59b063fafa8cf13089ab47e90814a21d66961528d2d22c71c15d0748db3f7c34",
+      "translation_text_hash": "e6725a2554a51a27f7f752ec2faf80bc04f9f126c97d55c1447a28b0f85d83f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하온즉 내 주 왕이여 왕자들이 다 죽은줄로 생각하여 괘념하지 마옵소서 암논만 죽었으리이다"
+      ],
+      "raw_text_hashes": [
+        "e6725a2554a51a27f7f752ec2faf80bc04f9f126c97d55c1447a28b0f85d83f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:34",
+      "sequence": 8352,
+      "chapter_label": "2SA 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "But Absalom fled. The young man who kept the watch lifted up his eyes and looked, and behold, many people were coming by way of the hillside behind him.",
+      "ko": "이에 압살롬은 도망하니라 파수하는 소년이 눈을 들어 보니 뒷산 언덕길로 여러 사람이 오더라",
+      "source_text_hash": "cda47f0498e41afad0a6451560fb39ed3710a37772e3288ec5ed13fbfa897542",
+      "translation_text_hash": "299260e019d7a8ab6c6d3bf790c2aa2cb11d2a6eba4058d9649307c881b717a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 압살롬은 도망하니라 파수하는 소년이 눈을 들어 보니 뒷산 언덕길로 여러 사람이 오더라"
+      ],
+      "raw_text_hashes": [
+        "299260e019d7a8ab6c6d3bf790c2aa2cb11d2a6eba4058d9649307c881b717a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:35",
+      "sequence": 8353,
+      "chapter_label": "2SA 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "Jonadab said to the king, “Behold, the king’s sons are coming! It is as your servant said.”",
+      "ko": "요나답이 왕께 고하되 왕자들이 오나이다 종의 말한대로 되었나이다",
+      "source_text_hash": "b34094a0a50b18472aa2ad6bc6972adef79e0f7cc929d5520cc6cf81a9edc2bd",
+      "translation_text_hash": "bdbd2cfa7e28f307b52ba751f84aefbb8a42dc45159d489d05860d653809c637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나답이 왕께 고하되 왕자들이 오나이다 종의 말한대로 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "bdbd2cfa7e28f307b52ba751f84aefbb8a42dc45159d489d05860d653809c637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:36",
+      "sequence": 8354,
+      "chapter_label": "2SA 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "As soon as he had finished speaking, behold, the king’s sons came, and lifted up their voices and wept. The king also and all his servants wept bitterly.",
+      "ko": "말을 마치자 왕자들이 이르러 대성통곡하니 왕과 그 모든 신복도 심히 통곡하니라",
+      "source_text_hash": "5594008e9b62d7c1ac585bfdb3a5c7829374cf8c3dfd35d8739386fe1383c7d5",
+      "translation_text_hash": "02ce58a5436395302838edc783460da2e43176e964c4fb4b85e6ebe2fec5dfa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말을 마치자 왕자들이 이르러 대성통곡하니 왕과 그 모든 신복도 심히 통곡하니라"
+      ],
+      "raw_text_hashes": [
+        "02ce58a5436395302838edc783460da2e43176e964c4fb4b85e6ebe2fec5dfa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:37",
+      "sequence": 8355,
+      "chapter_label": "2SA 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "But Absalom fled and went to Talmai the son of Ammihur, king of Geshur. David mourned for his son every day.",
+      "ko": "압살롬은 도망하여 그술 왕 암미훌의 아들 달매에게로 갔고 다윗은 날마다 그 아들을 인하여 슬퍼하니라",
+      "source_text_hash": "d2f130797cccecbca5e30efce426a50fce5f9b6213127fc6e628f9d890cc7861",
+      "translation_text_hash": "78e302dbd48b50ec18194e0021cce9780b060e8a2f614c19733239f99b5d3e81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬은 도망하여 그술 왕 암미훌의 아들 달매에게로 갔고 다윗은 날마다 그 아들을 인하여 슬퍼하니라"
+      ],
+      "raw_text_hashes": [
+        "78e302dbd48b50ec18194e0021cce9780b060e8a2f614c19733239f99b5d3e81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:38",
+      "sequence": 8356,
+      "chapter_label": "2SA 13",
+      "verse_label": "38",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 38
+        }
+      ],
+      "en": "So Absalom fled and went to Geshur, and was there three years.",
+      "ko": "압살롬이 도망하여 그술로 가서 거한지 삼년이라",
+      "source_text_hash": "b78102281d2fa587b5731ce68e4d7d93e0377ce532f15cd99125272cc9bceea7",
+      "translation_text_hash": "092b038c0ebae9e30292a5d035719d3aa5cf2a9a6962d0faa99adc6adceac0d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 도망하여 그술로 가서 거한지 삼년이라"
+      ],
+      "raw_text_hashes": [
+        "092b038c0ebae9e30292a5d035719d3aa5cf2a9a6962d0faa99adc6adceac0d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:13:39",
+      "sequence": 8357,
+      "chapter_label": "2SA 13",
+      "verse_label": "39",
+      "locator": {
+        "book": "2SA",
+        "chapter": 13,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 13,
+          "verse": 39
+        }
+      ],
+      "en": "King David longed to go out to Absalom, for he was comforted concerning Amnon, since he was dead.",
+      "ko": "다윗왕의 마음이 압살롬에게 향하여 간절하니 암논은 이미 죽었으므로 왕이 위로를 받았음이더라",
+      "source_text_hash": "92eb6d151c7c943b6e2b1548d44068e629a2068a6398dedcea76e722fa9896a0",
+      "translation_text_hash": "9c2958bb74b2920b4cc6d0ae4b6ec6e38b7c336770bc3e2663307c3a87638c71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕의 마음이 압살롬에게 향하여 간절하니 암논은 이미 죽었으므로 왕이 위로를 받았음이더라"
+      ],
+      "raw_text_hashes": [
+        "9c2958bb74b2920b4cc6d0ae4b6ec6e38b7c336770bc3e2663307c3a87638c71"
+      ]
+    }
+  ]
+}

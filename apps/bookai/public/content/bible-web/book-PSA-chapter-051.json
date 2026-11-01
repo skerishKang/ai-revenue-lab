@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:051",
+  "unit_ordinal": 529,
+  "unit_label": "PSA 51",
+  "book_code": "PSA",
+  "chapter_number": 51,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:51:1",
+      "sequence": 14693,
+      "chapter_label": "PSA 51",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 1
+        }
+      ],
+      "en": "Have mercy on me, God, according to your loving kindness. According to the multitude of your tender mercies, blot out my transgressions.",
+      "ko": "하나님이여 주의 인자를 좇아 나를 긍휼히 여기시며 주의 많은 자비를 좇아 내 죄과를 도말하소서",
+      "source_text_hash": "7f1f7e4d286ba9fcc5f80455c3e51cf4b71082d606406f918f186b55a6c83145",
+      "translation_text_hash": "e79abb9950e124ecb0683c8ce9891bb17c5e04882738f952464232c245f130ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 인자를 좇아 나를 긍휼히 여기시며 주의 많은 자비를 좇아 내 죄과를 도말하소서"
+      ],
+      "raw_text_hashes": [
+        "e79abb9950e124ecb0683c8ce9891bb17c5e04882738f952464232c245f130ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:2",
+      "sequence": 14694,
+      "chapter_label": "PSA 51",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 2
+        }
+      ],
+      "en": "Wash me thoroughly from my iniquity. Cleanse me from my sin.",
+      "ko": "나의 죄악을 말갛게 씻기시며 나의 죄를 깨끗이 제하소서",
+      "source_text_hash": "35ee59fd0ebf0b92dc7489f2af1a539e5b74dc29716c816c1f51ad97ad8830d8",
+      "translation_text_hash": "be7b74ac217a97d3cf4811a36018c6f48e355bd720e06306d5324e632f11cce9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 죄악을 말갛게 씻기시며 나의 죄를 깨끗이 제하소서"
+      ],
+      "raw_text_hashes": [
+        "be7b74ac217a97d3cf4811a36018c6f48e355bd720e06306d5324e632f11cce9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:3",
+      "sequence": 14695,
+      "chapter_label": "PSA 51",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 3
+        }
+      ],
+      "en": "For I know my transgressions. My sin is constantly before me.",
+      "ko": "대저 나는 내 죄과를 아오니 내 죄가 항상 내 앞에 있나이다",
+      "source_text_hash": "91da45160e3a4243e31391891b736b5306d1ee9d52eefc785c1b32f9b89176ac",
+      "translation_text_hash": "003ddc47e563f6f453368d571b606054c4eb0dbab26acb492d87e9f5072b7085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나는 내 죄과를 아오니 내 죄가 항상 내 앞에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "003ddc47e563f6f453368d571b606054c4eb0dbab26acb492d87e9f5072b7085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:4",
+      "sequence": 14696,
+      "chapter_label": "PSA 51",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 4
+        }
+      ],
+      "en": "Against you, and you only, I have sinned, and done that which is evil in your sight, so you may be proved right when you speak, and justified when you judge.",
+      "ko": "내가 주께만 범죄하여 주의 목전에 악을 행하였사오니 주께서 말씀하실 때에 의로우시다 하고 판단하실 때에 순전하시다 하리이다",
+      "source_text_hash": "4df2635716b0c1c6464a9f8aea52ddf3f450ca60b12ab26fca3d8affaaa14711",
+      "translation_text_hash": "9685b9fe676ee1e3ba59128fef0f7de318cedace55211076721b8b66dcc8809e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께만 범죄하여 주의 목전에 악을 행하였사오니 주께서 말씀하실 때에 의로우시다 하고 판단하실 때에 순전하시다 하리이다"
+      ],
+      "raw_text_hashes": [
+        "9685b9fe676ee1e3ba59128fef0f7de318cedace55211076721b8b66dcc8809e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:5",
+      "sequence": 14697,
+      "chapter_label": "PSA 51",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, I was born in iniquity. My mother conceived me in sin.",
+      "ko": "내가 죄악 중에 출생하였음이여 모친이 죄 중에 나를 잉태하였나이다",
+      "source_text_hash": "555afdf23ba1d1efb4f23c8413a0c4c5e48d10831eb00b80824c261fc1546689",
+      "translation_text_hash": "0dbd2b3d3cc7326eb11ec1bce9370a525f8f9d567a15186403039c8ac5a9a10e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 죄악 중에 출생하였음이여 모친이 죄 중에 나를 잉태하였나이다"
+      ],
+      "raw_text_hashes": [
+        "0dbd2b3d3cc7326eb11ec1bce9370a525f8f9d567a15186403039c8ac5a9a10e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:6",
+      "sequence": 14698,
+      "chapter_label": "PSA 51",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, you desire truth in the inward parts. You teach me wisdom in the inmost place.",
+      "ko": "중심에 진실함을 주께서 원하시오니 내 속에 지혜를 알게 하시리이다",
+      "source_text_hash": "adf7998fc23c6f2ec1eace92cd39b68e78725aa041b3f777bf2fbaadf914008f",
+      "translation_text_hash": "43c1f52e35811fb67207a77e2bdf29dbda5ac3f62011e7b15db4da02d8ca2fa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중심에 진실함을 주께서 원하시오니 내 속에 지혜를 알게 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "43c1f52e35811fb67207a77e2bdf29dbda5ac3f62011e7b15db4da02d8ca2fa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:7",
+      "sequence": 14699,
+      "chapter_label": "PSA 51",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 7
+        }
+      ],
+      "en": "Purify me with hyssop, and I will be clean. Wash me, and I will be whiter than snow.",
+      "ko": "우슬초로 나를 정결케 하소서 내가 정하리이다 나를 씻기소서 내가 눈보다 희리이다",
+      "source_text_hash": "d4345d53e0875ef2ea0287cad8307da063308f0ccf2b2ff4fd7609b0e97b5d91",
+      "translation_text_hash": "403f03542a8ff2cb2c7a93da8a9db8d1405526c07b9b12298aedcbf46bda0631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우슬초로 나를 정결케 하소서 내가 정하리이다 나를 씻기소서 내가 눈보다 희리이다"
+      ],
+      "raw_text_hashes": [
+        "403f03542a8ff2cb2c7a93da8a9db8d1405526c07b9b12298aedcbf46bda0631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:8",
+      "sequence": 14700,
+      "chapter_label": "PSA 51",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 8
+        }
+      ],
+      "en": "Let me hear joy and gladness, that the bones which you have broken may rejoice.",
+      "ko": "나로 즐겁고 기쁜 소리를 듣게 하사 주께서 꺾으신 뼈로 즐거워하게 하소서",
+      "source_text_hash": "5018ab2425cc22a9a9e86e59edc25d21682177ec3c2b952c88c1986b10494e99",
+      "translation_text_hash": "d578b91857341c4f03bf05cc854f404de22808d5387e9cbb5505dbc503f4fd67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 즐겁고 기쁜 소리를 듣게 하사 주께서 꺾으신 뼈로 즐거워하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "d578b91857341c4f03bf05cc854f404de22808d5387e9cbb5505dbc503f4fd67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:9",
+      "sequence": 14701,
+      "chapter_label": "PSA 51",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 9
+        }
+      ],
+      "en": "Hide your face from my sins, and blot out all of my iniquities.",
+      "ko": "주의 얼굴을 내 죄에서 돌이키시고 내 모든 죄악을 도말하소서",
+      "source_text_hash": "2424092f4b01d667bc122bc03c20180134509923d01e9558ea2b0e1656e19508",
+      "translation_text_hash": "77c1031dc4273f32946e6f8bc943c5f061c0e821bb0f412e1470eb30aa40b878",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 얼굴을 내 죄에서 돌이키시고 내 모든 죄악을 도말하소서"
+      ],
+      "raw_text_hashes": [
+        "77c1031dc4273f32946e6f8bc943c5f061c0e821bb0f412e1470eb30aa40b878"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:10",
+      "sequence": 14702,
+      "chapter_label": "PSA 51",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 10
+        }
+      ],
+      "en": "Create in me a clean heart, O God. Renew a right spirit within me.",
+      "ko": "하나님이여 내 속에 정한 마음을 창조하시고 내 안에 정직한 영을 새롭게 하소서",
+      "source_text_hash": "a77e9ace4f492b6981f60dc17bc0c21e2b3aaaf106fcd5a11d5b612dcbff6c15",
+      "translation_text_hash": "cefe5774dd1ed632e7d65299700e242853e1efde4ecf5aadc051136add86f0ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 속에 정한 마음을 창조하시고 내 안에 정직한 영을 새롭게 하소서"
+      ],
+      "raw_text_hashes": [
+        "cefe5774dd1ed632e7d65299700e242853e1efde4ecf5aadc051136add86f0ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:11",
+      "sequence": 14703,
+      "chapter_label": "PSA 51",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t throw me from your presence, and don’t take your Holy Spirit from me.",
+      "ko": "나를 주 앞에서 쫓아내지 마시며 주의 성신을 내게서 거두지 마소서",
+      "source_text_hash": "bc3b76c8e5a52ffe3b2bd35fc9f2afa67841b40dcb5b6d0b54c619f58397d8bc",
+      "translation_text_hash": "93c5caaa896d5049f923d32e2cbef33c24fc2f1ad23f0879aad667a0c9d8fb03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 주 앞에서 쫓아내지 마시며 주의 성신을 내게서 거두지 마소서"
+      ],
+      "raw_text_hashes": [
+        "93c5caaa896d5049f923d32e2cbef33c24fc2f1ad23f0879aad667a0c9d8fb03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:12",
+      "sequence": 14704,
+      "chapter_label": "PSA 51",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 12
+        }
+      ],
+      "en": "Restore to me the joy of your salvation. Uphold me with a willing spirit.",
+      "ko": "주의 구원의 즐거움을 내게 회복시키시고 자원하는 심령을 주사 나를 붙드소서",
+      "source_text_hash": "00be6cc1967ba8d5ed71b7cc93503a41cd66516a618a1a9d9adb1aab09f6658f",
+      "translation_text_hash": "313d2fb5b78aeef0ffa5e909e751a7dbf62ee496506743c6ef3f2bcd8f2fdcd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 구원의 즐거움을 내게 회복시키시고 자원하는 심령을 주사 나를 붙드소서"
+      ],
+      "raw_text_hashes": [
+        "313d2fb5b78aeef0ffa5e909e751a7dbf62ee496506743c6ef3f2bcd8f2fdcd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:13",
+      "sequence": 14705,
+      "chapter_label": "PSA 51",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 13
+        }
+      ],
+      "en": "Then I will teach transgressors your ways. Sinners will be converted to you.",
+      "ko": "그러하면 내가 범죄자에게 주의 도를 가르치리니 죄인들이 주께 돌아오리이다",
+      "source_text_hash": "251d1f9bffd04fd236d55331c8b0806bcd5d1a969a9602ed8301dab757b52c19",
+      "translation_text_hash": "ce34a7faacc189e3bc375a86019bb2a27963002722edc26ebc282c31d5e2ac3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하면 내가 범죄자에게 주의 도를 가르치리니 죄인들이 주께 돌아오리이다"
+      ],
+      "raw_text_hashes": [
+        "ce34a7faacc189e3bc375a86019bb2a27963002722edc26ebc282c31d5e2ac3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:14",
+      "sequence": 14706,
+      "chapter_label": "PSA 51",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 14
+        }
+      ],
+      "en": "Deliver me from the guilt of bloodshed, O God, the God of my salvation. My tongue will sing aloud of your righteousness.",
+      "ko": "하나님이여 나의 구원의 하나님이여 피 흘린 죄에서 나를 건지소서 내 혀가 주의 의를 높이 노래하리이다",
+      "source_text_hash": "c4c9b902a4640cb55cea867e5ec85fe8167ce1b5f555aab1e94e5cd598ceabb4",
+      "translation_text_hash": "08b5262c43fe142b7e0b1c0e77e4d6ff623bcef1c2f3abe9bf6084b8adadca53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나의 구원의 하나님이여 피 흘린 죄에서 나를 건지소서 내 혀가 주의 의를 높이 노래하리이다"
+      ],
+      "raw_text_hashes": [
+        "08b5262c43fe142b7e0b1c0e77e4d6ff623bcef1c2f3abe9bf6084b8adadca53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:15",
+      "sequence": 14707,
+      "chapter_label": "PSA 51",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 15
+        }
+      ],
+      "en": "Lord, open my lips. My mouth will declare your praise.",
+      "ko": "주여 내 입술을 열어주소서 내 입이 주를 찬송하여 전파하리이다",
+      "source_text_hash": "afdfaa957054dc820d54da2f900e927edc4e27b238896585c81ca496c8083cb3",
+      "translation_text_hash": "eebfe6ab4062f4f8c96cb5b0eff2e92a7edcb6a2abb9ca8998ac52f5a0dd1227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내 입술을 열어주소서 내 입이 주를 찬송하여 전파하리이다"
+      ],
+      "raw_text_hashes": [
+        "eebfe6ab4062f4f8c96cb5b0eff2e92a7edcb6a2abb9ca8998ac52f5a0dd1227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:16",
+      "sequence": 14708,
+      "chapter_label": "PSA 51",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 16
+        }
+      ],
+      "en": "For you don’t delight in sacrifice, or else I would give it. You have no pleasure in burnt offering.",
+      "ko": "주는 제사를 즐겨 아니하시나니 그렇지 않으면 내가 드렸을 것이라 주는 번제를 기뻐 아니하시나이다",
+      "source_text_hash": "becd9f0ae4ed8ffa901947c3644b28be863078a7814beedfe87ab70f1b9ef426",
+      "translation_text_hash": "7544787bc796f30ac4197e16789ddd5f1d2227cf515243461a9c44d5a4209005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 제사를 즐겨 아니하시나니 그렇지 않으면 내가 드렸을 것이라 주는 번제를 기뻐 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "7544787bc796f30ac4197e16789ddd5f1d2227cf515243461a9c44d5a4209005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:17",
+      "sequence": 14709,
+      "chapter_label": "PSA 51",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 17
+        }
+      ],
+      "en": "The sacrifices of God are a broken spirit. O God, you will not despise a broken and contrite heart.",
+      "ko": "하나님의 구하시는 제사는 상한 심령이라 하나님이여 상하고 통회하는 마음을 주께서 멸시치 아니하시리이다",
+      "source_text_hash": "65b9e51d90efb2d3248b076414f4d0d0a7b0aa39cf92ffe1a22ad4df4c6238f2",
+      "translation_text_hash": "972b9057e0789121413000c419c7200405d832ee450d245762cbb126321110c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 구하시는 제사는 상한 심령이라 하나님이여 상하고 통회하는 마음을 주께서 멸시치 아니하시리이다"
+      ],
+      "raw_text_hashes": [
+        "972b9057e0789121413000c419c7200405d832ee450d245762cbb126321110c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:18",
+      "sequence": 14710,
+      "chapter_label": "PSA 51",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 18
+        }
+      ],
+      "en": "Do well in your good pleasure to Zion. Build the walls of Jerusalem.",
+      "ko": "주의 은택으로 시온에 선을 행하시고 예루살렘성을 쌓으소서",
+      "source_text_hash": "57f965f4f81848c2cfaa2f0e5d21e1f61d9861365985c8f8dd1025ce656ccf49",
+      "translation_text_hash": "dc650e065bfdba37fa747d702410385cb62f6fb7d0c868a7d066ce5dea51227c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 은택으로 시온에 선을 행하시고 예루살렘성을 쌓으소서"
+      ],
+      "raw_text_hashes": [
+        "dc650e065bfdba37fa747d702410385cb62f6fb7d0c868a7d066ce5dea51227c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:51:19",
+      "sequence": 14711,
+      "chapter_label": "PSA 51",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 51,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 51,
+          "verse": 19
+        }
+      ],
+      "en": "Then you will delight in the sacrifices of righteousness, in burnt offerings and in whole burnt offerings. Then they will offer bulls on your altar.",
+      "ko": "그 때에 주께서 의로운 제사와 번제와 온전한 번제를 기뻐하시리니 저희가 수소로 주의 단에 드리리이다",
+      "source_text_hash": "e4a571f6ea1bb54ef0cab379d67dca16c282084d3a2d40954137484942f809ed",
+      "translation_text_hash": "b60e9f3d957c919cc341617245802c2418b4279440447fde202fc0aedf29937b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 주께서 의로운 제사와 번제와 온전한 번제를 기뻐하시리니 저희가 수소로 주의 단에 드리리이다"
+      ],
+      "raw_text_hashes": [
+        "b60e9f3d957c919cc341617245802c2418b4279440447fde202fc0aedf29937b"
+      ]
+    }
+  ]
+}

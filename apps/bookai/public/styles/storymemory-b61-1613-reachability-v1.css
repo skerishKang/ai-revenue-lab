@@ -1,0 +1,55 @@
+/* ===== B61 #1613 · UI reachability repair v1 =====
+   Restores real-UI reachability removed by the B61 visual simplification:
+   - D1: .ai-panel is an overlay sheet gated on body.ai-open (desktop + mobile).
+   - D2: .memory-rail / .ai-panel bottom sheets work on <=768px (foundation
+     sheet rules only covered <=720px and were defeated by display:none).
+   Reading surface default is unchanged: 2-col grid, panels hidden until opened.
+   No endpoint / payload / corpus / engine / secret changes here (CSS only). */
+
+/* --- Desktop (>768px): AI overlay sheet, hidden by default --- */
+.reader-layout>.ai-panel{display:none}
+@media(min-width:769px){
+  body.ai-open .reader-layout>.ai-panel{
+    display:flex;flex-direction:column;
+    position:fixed;top:0;right:0;bottom:0;width:min(400px,94vw);z-index:150;
+    border-left:1px solid var(--line);
+    background:linear-gradient(rgba(250,247,242,.98),rgba(246,241,234,.98));
+    box-shadow:-18px 0 48px rgba(40,28,18,.16);
+    overflow:auto;
+  }
+  /* Non-modal on desktop: reader stays usable while Companion is open. */
+  body.ai-open .scrim{opacity:0;pointer-events:none}
+}
+
+/* --- smal-dock AI entry: desktop only (mobile uses .mobile-dock) --- */
+#smalAiBtn{display:none}
+@media(min-width:769px){
+  #reader.active .smal-dock #smalAiBtn{display:grid}
+}
+
+/* --- Compact (<=768px): bottom sheets for Memory + AI --- */
+@media(max-width:768px){
+  .reader-layout>.memory-rail,.reader-layout>.ai-panel{
+    position:fixed;left:0;right:0;bottom:0;top:auto;height:min(74vh,620px);z-index:140;
+    display:flex;flex-direction:column;overflow:auto;
+    border:1px solid var(--line);border-radius:22px 22px 0 0;
+    background:linear-gradient(rgba(250,247,242,.98),rgba(246,241,234,.98));
+    box-shadow:0 -18px 48px rgba(40,28,18,.16);
+    transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.76,.2,1);
+    padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+  }
+  body.memory-open .reader-layout>.memory-rail{transform:translateY(0)}
+  body.ai-open .reader-layout>.ai-panel{transform:translateY(0)}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(28,24,20,.25);z-index:130;
+    opacity:0;pointer-events:none;transition:.25s}
+  body.memory-open .scrim,body.ai-open .scrim{opacity:1;pointer-events:auto}
+  body.memory-open .mobile-dock,body.ai-open .mobile-dock{opacity:0;pointer-events:none}
+}
+
+/* --- D4: explicit empty state for Memory search (current scope) --- */
+.memory-search-empty{
+  margin:8px 0;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;
+  font-family:var(--sans);font-size:11px;line-height:1.6;color:var(--muted);
+  background:rgba(255,255,255,.6);
+}
+.memory-search-empty b{display:block;font-size:11px;color:var(--ink);margin-bottom:2px}
