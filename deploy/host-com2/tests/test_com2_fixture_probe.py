@@ -1,7 +1,12 @@
 import importlib.util
 import json
 from pathlib import Path
-import pytest
+import unittest
+
+try:
+    import pytest
+except ImportError:  # unittest discovery imports this module in a lane with no pytest
+    raise unittest.SkipTest("pytest is required for the fixture probe contract tests")
 
 path = Path(__file__).resolve().parents[1] / 'com2_fixture_probe.py'
 spec = importlib.util.spec_from_file_location('fixture_probe', path)
