@@ -225,13 +225,14 @@
       "display_name": "Google: Gemma 4 31B",
       "provider_name": "Google AI Studio",
       "capabilities": [
-        "chat"
+        "chat",
+        "tools"
       ],
       "context_window": 262144,
       "input_price_usd_per_1m": 0.09,
       "output_price_usd_per_1m": 0.34,
-      "source": "google_ai_studio_official_catalog (2026-10-08 read)",
-      "source_checked_at": "2026-10-08",
+      "source": "google_ai_studio_official_catalog (2026-10-08 read); tools declared per https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api (2026-11-01)",
+      "source_checked_at": "2026-11-01",
       "enabled": true
     },
     {

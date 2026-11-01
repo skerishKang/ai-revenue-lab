@@ -427,9 +427,12 @@ def test_the_two_registered_gemini_routes_open_the_tool_wire() -> None:
     require_stream_tool_wire("google/gemini-3.5-flash-lite", "google")
 
 
+def test_the_owner_decided_gemma_route_opens_the_same_tool_wire() -> None:
+    require_stream_tool_wire("google/gemma-4-31b-it", "google")
+
+
 @pytest.mark.parametrize("model_id", [
     "google/gemma-4-26b-a4b-it",
-    "google/gemma-4-31b-it",
 ])
 def test_an_untagged_google_model_is_refused_before_dispatch(model_id) -> None:
     with pytest.raises(ToolsNotSupported):
