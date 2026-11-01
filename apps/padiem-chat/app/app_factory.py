@@ -383,6 +383,7 @@ from .project_file_routes import (
     project_file_original,
     project_files_collection,
 )
+from .tus_project_upload import project_file_tus_collection, project_file_tus_item
 from .document_convert_routes import (
     convert_item_detail,
     convert_item_delete,
@@ -640,6 +641,11 @@ def create_app(
         Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        # 1GB 통일 1단계 — tus 1.0.0 resumable chunked upload for project binaries.
+        # Registered before the {file_id} catch-all so "tus" is never read as a
+        # file id. See app/tus_project_upload.py.
+        Route("/api/projects/{project_id}/files/tus", project_file_tus_collection, methods=["POST", "OPTIONS"]),
+        Route("/api/projects/{project_id}/files/tus/{upload_id}", project_file_tus_item, methods=["HEAD", "PATCH", "GET"]),
         Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE", "PUT"]),
         # #5568 PDF→Markdown utility: a work ledger per upload session, one conversion
