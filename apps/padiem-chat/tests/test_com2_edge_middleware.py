@@ -1,6 +1,8 @@
+import asyncio
 import hashlib
 import hmac
 import sys
+import time
 from pathlib import Path
 
 from starlette.applications import Starlette
@@ -39,6 +41,89 @@ def test_api_proof_rejects_forgery_stale_and_replay(tmp_path, monkeypatch):
         assert client.get("/api/test", headers=forged).status_code == 403
         assert client.get("/api/test", headers=signed("GET", "/api/test", "3" * 32, at="1699999699")).status_code == 403
         assert client.get("/api/test", headers=signed("POST", "/api/test", "4" * 32)).status_code == 403
+
+
+async def echo_app(scope, receive, send):
+    await send({"type": "http.response.start", "status": 200,
+                "headers": [(b"content-type", b"text/plain")]})
+    await send({"type": "http.response.body", "body": b"ok"})
+
+
+def _scope(path, request_id):
+    headers = [(b"host", b"chat.padiem.net")] + [
+        (name.lower().encode(), value.encode())
+        for name, value in signed("GET", path, request_id).items()]
+    return {"type": "http", "http_version": "1.1", "method": "GET", "path": path,
+            "raw_path": path.encode(), "query_string": b"", "root_path": "",
+            "scheme": "https", "server": ("chat.padiem.net", 443),
+            "client": ("203.0.113.7", 1), "headers": headers, "state": {}}
+
+
+async def _call(app, path, request_id):
+    async def receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    sent = []
+
+    async def send(message):
+        sent.append(message)
+
+    await app(_scope(path, request_id), receive, send)
+    return sent[0]["status"]
+
+
+class CountingVerifier:
+    """Admits everything, and records how many verifications overlapped."""
+
+    def __init__(self):
+        self.live = 0
+        self.peak = 0
+
+    def verify(self, *, method, path, headers):
+        self.live += 1
+        self.peak = max(self.peak, self.live)
+        time.sleep(0.05)
+        self.live -= 1
+        return True
+
+
+def test_concurrent_requests_are_verified_one_at_a_time(capsys):
+    # The regression this pins: a dashboard fires eight signed requests at once,
+    # each one writing to the replay store, and every but the first timed out and
+    # was answered 403. Serialized, none of them is refused.
+    verifier = CountingVerifier()
+    app = EdgeProofMiddleware(echo_app, verifier=verifier)
+
+    async def all_at_once():
+        return await asyncio.gather(*[
+            _call(app, f"/api/item-{index}", f"{index:032x}") for index in range(8)])
+
+    results = asyncio.run(all_at_once())
+    assert set(results) == {200}, results
+    assert verifier.peak == 1, verifier.peak
+    out = capsys.readouterr().out
+    lines = [line for line in out.splitlines() if line.startswith("EDGE_VERIFY ")]
+    assert len(lines) == 8, lines
+    assert all(" result=ok ms=" in line for line in lines), lines
+    assert "x-padiem-edge-proof" not in out
+
+
+def test_the_decision_line_reports_a_rejection_too(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr("com2_edge_proof.time.time", lambda: 1700000000)
+    async def ok(request):
+        return PlainTextResponse("ok")
+    inner = Starlette(routes=[Route("/api/test", ok, methods=["GET"])])
+    verifier = EdgeProofVerifier(SECRET, str(tmp_path / "replay.sqlite"), all_requests=True)
+    app = EdgeProofMiddleware(inner, verifier=verifier)
+
+    async def twice():
+        return [await _call(app, "/api/test", "9" * 32), await _call(app, "/api/test", "9" * 32)]
+
+    assert asyncio.run(twice()) == [200, 403]      # the same id, now a replay
+    out = capsys.readouterr().out
+    assert "EDGE_VERIFY path=/api/test result=ok" in out
+    assert "EDGE_VERIFY path=/api/test result=reject" in out
+    assert "9" * 32 not in out                     # the id itself stays out
 
 
 def test_websocket_and_disabled_middleware(tmp_path, monkeypatch):

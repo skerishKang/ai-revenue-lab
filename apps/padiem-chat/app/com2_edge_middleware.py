@@ -1,5 +1,7 @@
 """Opt-in COM2 ingress authentication; no client proof header is trusted."""
 import asyncio
+import time
+
 from starlette.datastructures import Headers
 from .request_timing import measure
 
@@ -13,6 +15,26 @@ class EdgeProofMiddleware:
     def __init__(self, app, *, verifier):
         self.app = app
         self.verifier = verifier
+        # Admission is one SQLite write per request, and the store's busy timeout
+        # is five seconds: with the default executor two verifies overlap, the
+        # second waits the timeout out, sqlite3.Error is swallowed by the verifier
+        # and a legitimately signed request becomes a 403. One at a time, still off
+        # the event loop, so a slow disk delays requests without failing them.
+        self._verify_slot = asyncio.Semaphore(1)
+
+    async def _verify(self, scope):
+        path = scope.get("path", "")
+        method = "GET" if scope.get("type") == "websocket" else scope.get("method", "")
+        headers = Headers(scope=scope)
+        async with self._verify_slot:
+            started = time.monotonic()
+            valid = await asyncio.to_thread(
+                self.verifier.verify, method=method, path=path, headers=headers)
+            # Path, verdict and milliseconds, on one line: the headers carry the
+            # proof, and a proof is derived from the edge secret.
+            print(f"EDGE_VERIFY path={path} result={'ok' if valid else 'reject'} "
+                  f"ms={int((time.monotonic() - started) * 1000)}", flush=True)
+            return valid
 
     async def __call__(self, scope, receive, send):
         kind = scope.get("type")
@@ -24,10 +46,7 @@ class EdgeProofMiddleware:
         valid = all(names.count(name) == 1 for name in _PROOF_HEADERS)
         if valid:
             with measure('edge'):
-                valid = await asyncio.to_thread(self.verifier.verify,
-                    method="GET" if kind == "websocket" else scope.get("method", ""),
-                    path=scope.get("path", ""), headers=Headers(scope=scope),
-                )
+                valid = await self._verify(scope)
         if not valid:
             if kind == "websocket":
                 await send({"type": "websocket.close", "code": 1008})

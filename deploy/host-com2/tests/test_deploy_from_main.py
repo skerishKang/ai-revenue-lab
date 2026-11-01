@@ -118,6 +118,7 @@ BASE_FILES = {
     "apps/padiem-ai-engine/worker.py": "# worker\n",
     "apps/padiem-ai-engine/worker_identity.py": "# identity\n",
     "packages/padiem-ai-core/padiem_ai_core/__init__.py": "# core\n",
+    "packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py": "# metrics\n",
     "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
     "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     "apps/korean-ai-platform/asgi.py": "# b14\n",
@@ -706,6 +707,9 @@ class B14ScenarioTest(DeployHarness):
             self.b14.resolve(),
             (self.previous / self.first / "apps/korean-ai-platform").resolve(),
         )
+        # A rollback target that cannot be imported is not a rollback.
+        self.assertTrue((self.b14.resolve() / "padiem_ai_core" / "pc_work_metrics.py").is_file())
+        self.assertIn("B14_SHARED_MODULE=", result.stdout)
         # The installer failed before the unit was ever started, so the rollback
         # start is the only one — and the unit must be up after it.
         self.assertEqual(self._started("padiem-b14.service"), 1, self._calls())

@@ -81,8 +81,9 @@ fi
 write_staged() {
   # Copy only when the destination is absent or already identical. A foreign
   # destination is a decision the operator owns; silently replacing live host
-  # configuration is not this script's authority.
-  local source="$1" target="$2" label="$3"
+  # configuration is not this script's authority. An $ours_pattern says the file
+  # is unmistakably this service's own, so it is adopted rather than refused.
+  local source="$1" target="$2" label="$3" ours_pattern="${4:-}"
   if [ ! -e "$target" ]; then
     if $DRY_RUN; then note "would_stage:$label"; return 0; fi
     install -o root -g root -m 0644 "$source" "$target"
@@ -91,6 +92,11 @@ write_staged() {
   fi
   if cmp -s "$source" "$target"; then
     note "already_current:$label"
+    return 0
+  fi
+  if [ -n "${ours_pattern:-}" ] && grep -qE "$ours_pattern" "$target" 2>/dev/null; then
+    if $DRY_RUN; then note "would_adopt_local_$label"; return 0; fi
+    note "adopted_local_$label"
     return 0
   fi
   if [ "$label" = unit ] && unit_is_ours "$target"; then
@@ -106,11 +112,20 @@ write_staged "$SRC_DIR/padiem-b14.service.example" "$UNIT_TARGET" unit
 write_staged "$SRC_DIR/padiem-b14-admin.service.example" "$ADMIN_UNIT_TARGET" admin_unit
 
 if ! $DRY_RUN; then install -d -o root -g root -m 0755 "$DROPIN_TARGET_DIR"; fi
-write_staged "$SRC_DIR/20-log-to-file.conf.example" "$DROPIN_TARGET_DIR/20-log-to-file.conf" dropin
+# journald is the reviewed default, and the file-log drop-in is opt-in: installing
+# it because the template exists silently moved a running service off journald and
+# into a log path it may not own, which is how a deploy once put B14 in a restart
+# loop. Only refresh a drop-in the operator already chose to install.
+if [ -e "$DROPIN_TARGET_DIR/20-log-to-file.conf" ]; then
+  write_staged "$SRC_DIR/20-log-to-file.conf.example" "$DROPIN_TARGET_DIR/20-log-to-file.conf" \
+    dropin 'StandardOutput=append:[^ ]*b14'
+else
+  note "dropin_absent_journald_default"
+fi
 
 # Optional and explicitly inert until the operator installs it: the rotation file
 # only matters for the file-log mode, and journald collection is the default.
-write_staged "$SRC_DIR/logrotate.conf.example" "$LOGROTATE_TARGET" logrotate
+write_staged "$SRC_DIR/logrotate.conf.example" "$LOGROTATE_TARGET" logrotate '/opt/padiem/b14/logs'
 
 # The ingress config is shared with the file lane. Never write over one that
 # exists; the operator adds the missing hostname block by hand and validates it
