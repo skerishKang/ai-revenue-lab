@@ -40,6 +40,11 @@ Design decisions kept verbatim from the design doc (A안):
   string (D1/D2): a decimal longer than any ceiling we accept is refused as
   "too large" (413 for Upload-Length, 409 for Upload-Offset) and a malformed
   value as 400. No exception text is ever answered with.
+- One PATCH at a time per upload (D4): a per-upload registry lock lets the first
+  writer proceed and answers a simultaneous second with 409 ``upload_busy``
+  without waiting, and the metadata temp file is named per write so two writers
+  can never share one ``.tmp``. The registry is process-wide (the runtime is a
+  single process) and an entry is dropped when its upload is removed or swept.
 """
 
 from __future__ import annotations
@@ -51,6 +56,7 @@ import os
 import shutil
 import secrets
 import tempfile
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Mapping
@@ -232,10 +238,42 @@ def _store_meta(meta: dict) -> None:
     directory = os.path.join(upload_root(), str(meta["upload_id"]))
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, _META_NAME)
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as file:
-        json.dump(meta, file, ensure_ascii=False)
-    os.replace(tmp, path)
+    # D4: the temp name is unique per write, so two writers — even one that lost
+    # a race somewhere else — can never share or clobber one ``.tmp`` file.
+    tmp = f"{path}.{secrets.token_hex(8)}.tmp"
+    try:
+        with open(tmp, "w", encoding="utf-8") as file:
+            json.dump(meta, file, ensure_ascii=False)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+# D4: one writer per upload. The registry is process-wide — the runtime serves
+# every lane in a single process — and keyed by upload id. A threading.Lock
+# (not an asyncio.Lock) keeps the guarantee across the per-request event loops
+# the test client uses; the loser never waits, so no event loop ever blocks on
+# a held lock: it answers 409 upload_busy right away.
+_PATCH_LOCKS: dict[str, threading.Lock] = {}
+_PATCH_LOCKS_GUARD = threading.Lock()
+
+
+def _patch_lock(upload_id: str) -> threading.Lock:
+    with _PATCH_LOCKS_GUARD:
+        lock = _PATCH_LOCKS.get(upload_id)
+        if lock is None:
+            lock = threading.Lock()
+            _PATCH_LOCKS[upload_id] = lock
+        return lock
+
+
+def _forget_patch_lock(upload_id: str) -> None:
+    with _PATCH_LOCKS_GUARD:
+        _PATCH_LOCKS.pop(upload_id, None)
 
 
 def remove_upload(upload_id: str) -> None:
@@ -245,6 +283,7 @@ def remove_upload(upload_id: str) -> None:
     if os.path.commonpath([root, os.path.abspath(directory)]) != root:
         return
     shutil.rmtree(directory, ignore_errors=True)
+    _forget_patch_lock(upload_id)
 
 
 def sweep_expired_uploads() -> int:
@@ -276,6 +315,7 @@ def sweep_expired_uploads() -> int:
         if age_marker > deadline:
             continue
         shutil.rmtree(directory, ignore_errors=True)
+        _forget_patch_lock(name)
         removed += 1
     return removed
 
@@ -504,54 +544,65 @@ async def tus_resource(request: Request, lane: TusLane) -> Response:
         return error(415, "invalid_upload", "지원하지 않는 업로드 형식입니다.")
     if completed is not None:
         return error(409, "upload_completed", "이미 끝난 업로드입니다.")
-    offset_raw = (request.headers.get("upload-offset") or "").strip()
-    if not offset_raw:
-        return error(400, "invalid_offset", "업로드 위치 정보가 없습니다.")
-    requested_offset, oversized = _parse_decimal(offset_raw, allow_negative=True)
-    if requested_offset is None:
-        if oversized:
-            return error(409, "offset_mismatch", _OFFSET_MISMATCH_MESSAGE)
-        return error(400, "invalid_offset", "업로드 위치 형식이 올바르지 않습니다.")
-    # A negative offset can never equal a server offset; it is refused exactly
-    # like any other mismatch, and nothing is appended.
-    if requested_offset < 0 or requested_offset != offset:
-        return error(409, "offset_mismatch", _OFFSET_MISMATCH_MESSAGE)
 
-    allowed = min(chunk_max_bytes(), length - offset)
-    if allowed <= 0:
-        return error(409, "offset_mismatch", "업로드 위치가 맞지 않습니다. 새로고침 후 다시 시도해 주세요.")
-    data_path = os.path.join(upload_root(), upload_id, _DATA_NAME)
+    # D4: only one writer per upload. The loser does not wait for the winner —
+    # it answers 409 upload_busy right away, so a retried chunk can never race
+    # another one into the same byte range.
+    lock = _patch_lock(upload_id)
+    if not lock.acquire(blocking=False):
+        return error(409, "upload_busy",
+                     "같은 파일에 다른 조각을 받는 중이에요. 잠시 뒤 다시 시도해 주세요.")
     try:
-        # Receive into the same bounded spool the direct routes use, so an
-        # oversized PATCH never appends a single byte before it is refused.
-        async with open_bounded_spooled_request(request, max_bytes=allowed) as spool:
-            written = 0
-            with open(data_path, "r+b") as data:
-                data.seek(offset)
-                while True:
-                    block = spool.read(1024 * 1024)
-                    if not block:
-                        break
-                    data.write(block)
-                    written += len(block)
-    except RequestBodyTooLarge:
-        return error(
-            413, "chunk_too_large",
-            f"조각이 너무 커요 — 한 번에 최대 {human_bytes(chunk_max_bytes())}까지 보낼 수 있어요.",
-        )
-    except OSError:
-        return error(lane.unavailable_status, lane.unavailable_code, lane.unavailable_message)
+        offset_raw = (request.headers.get("upload-offset") or "").strip()
+        if not offset_raw:
+            return error(400, "invalid_offset", "업로드 위치 정보가 없습니다.")
+        requested_offset, oversized = _parse_decimal(offset_raw, allow_negative=True)
+        if requested_offset is None:
+            if oversized:
+                return error(409, "offset_mismatch", _OFFSET_MISMATCH_MESSAGE)
+            return error(400, "invalid_offset", "업로드 위치 형식이 올바르지 않습니다.")
+        # A negative offset can never equal a server offset; it is refused exactly
+        # like any other mismatch, and nothing is appended.
+        if requested_offset < 0 or requested_offset != offset:
+            return error(409, "offset_mismatch", _OFFSET_MISMATCH_MESSAGE)
 
-    offset += written
-    meta["offset_bytes"] = offset
-    meta["updated_at"] = time.time()
-    if offset >= length:
+        allowed = min(chunk_max_bytes(), length - offset)
+        if allowed <= 0:
+            return error(409, "offset_mismatch", "업로드 위치가 맞지 않습니다. 새로고침 후 다시 시도해 주세요.")
+        data_path = os.path.join(upload_root(), upload_id, _DATA_NAME)
         try:
-            meta["completed"] = await lane.finalize(request, data_path, meta)
-        except Exception:
-            meta["completed"] = _unavailable(lane)
-    _store_meta(meta)
-    return Response(status_code=204, headers=tus_headers({"Upload-Offset": str(offset)}))
+            # Receive into the same bounded spool the direct routes use, so an
+            # oversized PATCH never appends a single byte before it is refused.
+            async with open_bounded_spooled_request(request, max_bytes=allowed) as spool:
+                written = 0
+                with open(data_path, "r+b") as data:
+                    data.seek(offset)
+                    while True:
+                        block = spool.read(1024 * 1024)
+                        if not block:
+                            break
+                        data.write(block)
+                        written += len(block)
+        except RequestBodyTooLarge:
+            return error(
+                413, "chunk_too_large",
+                f"조각이 너무 커요 — 한 번에 최대 {human_bytes(chunk_max_bytes())}까지 보낼 수 있어요.",
+            )
+        except OSError:
+            return error(lane.unavailable_status, lane.unavailable_code, lane.unavailable_message)
+
+        offset += written
+        meta["offset_bytes"] = offset
+        meta["updated_at"] = time.time()
+        if offset >= length:
+            try:
+                meta["completed"] = await lane.finalize(request, data_path, meta)
+            except Exception:
+                meta["completed"] = _unavailable(lane)
+        _store_meta(meta)
+        return Response(status_code=204, headers=tus_headers({"Upload-Offset": str(offset)}))
+    finally:
+        lock.release()
 
 
 __all__ = [
