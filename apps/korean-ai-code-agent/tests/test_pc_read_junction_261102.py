@@ -166,7 +166,7 @@ class PcReparseCheckUnitTests(unittest.TestCase):
         executor = OracleMeshExecutor.__new__(OracleMeshExecutor)
         executor._command_port = _Port()
         executor._read_port = None  # must never be reached on a refusal
-        executor._timeout = None
+        executor._timeout = 30  # production always runs with a step deadline
         return executor
 
     def _dispatch(self):
@@ -192,8 +192,13 @@ class PcReparseCheckUnitTests(unittest.TestCase):
         reached = {}
 
         class _ReadPort:
-            def read_bytes(self, **call):
-                reached.update(call)
+            # The fake names the real port's parameters exactly, so a protocol
+            # drift fails here instead of being swallowed by **kwargs.
+            def read_bytes(self, *, node_ref: str, file_path: str,
+                           timeout_seconds: int, max_bytes: int = 1) -> bytes:
+                reached.update(node_ref=node_ref, file_path=file_path,
+                               timeout_seconds=timeout_seconds,
+                               max_bytes=max_bytes)
                 return b"inside content"
 
         executor = self._executor(marker_hit=False)
