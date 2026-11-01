@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>StoryMemory Visual Prototype v3.4.10-rc2 · Six-Work Direct UI Exposure Fix</title>
+<title>StoryMemory · 읽은 것을 기억으로</title>
 <link rel="stylesheet" href="./styles/storymemory-shell-foundation-v1.css">
 <link rel="stylesheet" href="./styles/storymemory-interaction-v28-v282.css">
 <link rel="stylesheet" href="./styles/storymemory-memory-v29-v298.css">
@@ -15,6 +15,10 @@
 <link rel="stylesheet" href="storymemory-pack-lifecycle-ui.css">
 <link rel="stylesheet" href="storymemory-pack-entitlement-ui.css">
   <link rel="stylesheet" href="storymemory-pack-verification-ui.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="./styles/storymemory-b61-typography-authority-v1.css">
 </head>
 <body><a class="skip-reader-link" href="#paper">본문으로 바로가기</a>
 <div class="transition-curtain" id="curtain"></div>
@@ -412,8 +416,8 @@
 
 <div class="scrim" id="scrim"></div>
 <div class="mobile-dock" id="mobileDock">
-  <button data-mobile="memory">Memory</button>
-  <button class="read-tab" data-mobile="read">Read</button>
+  <button data-mobile="memory">기억</button>
+  <button class="read-tab" data-mobile="read">읽기</button>
   <button data-mobile="ai">AI</button>
 </div>
 <div class="voice-toast" id="voiceToast"></div>
@@ -1263,6 +1267,7 @@ function applyVolumeSelection(v,b,arriving=false){
  document.getElementById('volumeFocusTitle').textContent=v;
  const count=VOLUME_CHAPTERS[v]||16;
  document.getElementById('volumeFocusCopy').textContent=volumeFocusText(v);
+ renderVolumeFocusFacts(v);
  selectedChapter=v==='고린도전서'?3:1;
  renderChapters(count);
  if(arriving){
@@ -8362,5 +8367,7 @@ window.__smV1823EvidenceUXV1={
 })();
 </script>
 
+<script src="./mobile-source-settings.js"></script>
+<link rel="stylesheet" href="./styles/storymemory-review-261031.css">
 </body>
 </html>

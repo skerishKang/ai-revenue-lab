@@ -210,6 +210,7 @@ function morphVolumeToPaper(v,b){
  const count=VOLUME_CHAPTERS[v]||16;
  /* #1845 [B] summary copy must come from the #1706 resume authority — no hardcoded demo line */
  document.getElementById('volumeFocusCopy').textContent=volumeFocusText(v);
+ renderVolumeFocusFacts(v);
 
  document.getElementById('volumeMorphTitle').textContent=v;
  morph.className='volume-morph active';
