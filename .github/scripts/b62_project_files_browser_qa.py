@@ -57,6 +57,7 @@ class FixtureState:
     file_deletes: list[str] = field(default_factory=list)
     stream_posts: list[dict[str, Any]] = field(default_factory=list)
     binary_posts: list[dict[str, Any]] = field(default_factory=list)
+    tus_uploads: dict[str, dict[str, Any]] = field(default_factory=dict)
     reject_next_uploads: int = 0
 
     @property
@@ -140,6 +141,104 @@ async def _install_api(page: Page, state: FixtureState) -> None:
             return
         await _reply_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
 
+    def tus_metadata(route: Route) -> dict[str, str]:
+        raw = route.request.headers.get("upload-metadata") or ""
+        decoded: dict[str, str] = {}
+        for pair in raw.split(","):
+            key, _, value = pair.partition(" ")
+            if value:
+                decoded[key] = base64.b64decode(value).decode("utf-8")
+        return decoded
+
+    def finish_tus_upload(route: Route) -> dict[str, Any]:
+        upload = state.tus_uploads[route.request.url.rsplit("/", 1)[-1].split("?", 1)[0]]
+        body = {"name": upload["name"], "media_type": upload["media_type"],
+                "bytes": bytes(upload["bytes"])}
+        state.file_posts.append(dict(body))
+        extracted = {PDF_MEDIA_TYPE: ("extracted/pdf", PDF_EXTRACTED_TEXT),
+                     DOCX_MEDIA_TYPE: ("extracted/docx", DOCX_EXTRACTED_TEXT)}
+        if body["media_type"] not in extracted:
+            return {"status": 422}
+        if body["bytes"] != (PDF_BYTES if body["media_type"] == PDF_MEDIA_TYPE else DOCX_BYTES):
+            raise AssertionError("tus upload bytes differ from picked file")
+        stored_type, extracted_text = extracted[body["media_type"]]
+        state.binary_posts.append(dict(body))
+        record = {
+            "id": f"{BINARY_ID_PREFIX}{len(state.binary_posts):02d}",
+            "project_id": PROJECT_ID,
+            "name": body["name"],
+            "media_type": stored_type,
+            "content_text": extracted_text,
+            "content_chars": len(extracted_text),
+            "created_at": "2026-09-11T05:11:00Z",
+            "updated_at": "2026-09-11T05:11:00Z",
+        }
+        state.files[record["id"]] = record
+        public = dict(record)
+        public.pop("content_text")
+        return {"status": 201, "file": public}
+
+    async def project_files_tus(route: Route) -> None:
+        # #6579: project binaries ride tus 1.0.0 on this collection. The QA
+        # answers the protocol itself, so the real browser client is exercised.
+        if route.request.method == "OPTIONS":
+            await route.fulfill(status=204, headers={
+                "Tus-Version": "1.0.0",
+                "Tus-Max-Size": str(1024 * 1024 * 1024),
+                "X-Padiem-Tus-Chunk-Max": str(90 * 1024 * 1024),
+            })
+            return
+        if route.request.method != "POST":
+            await _reply_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
+            return
+        metadata = tus_metadata(route)
+        upload_id = f"tusqa{len(state.tus_uploads) + 1}"
+        state.tus_uploads[upload_id] = {
+            "name": metadata.get("filename", ""),
+            "media_type": metadata.get("filetype", ""),
+            "length": int(route.request.headers.get("upload-length") or 0),
+            "bytes": bytearray(),
+        }
+        await route.fulfill(status=201, headers={
+            "Location": f"/api/projects/{PROJECT_ID}/files/tus/{upload_id}",
+            "Tus-Resumable": "1.0.0",
+        }, json={"upload_id": upload_id})
+
+    async def project_files_tus_item(route: Route) -> None:
+        upload_id = route.request.url.rsplit("/", 1)[-1].split("?", 1)[0]
+        upload = state.tus_uploads.get(upload_id)
+        if upload is None:
+            await _reply_json(route, {"error": {"code": "upload_not_found"}}, status=404)
+            return
+        if route.request.method == "HEAD":
+            await route.fulfill(status=200, headers={
+                "Upload-Offset": str(len(upload["bytes"])),
+                "Upload-Length": str(upload["length"]),
+            })
+            return
+        if route.request.method == "PATCH":
+            upload["bytes"] += route.request.post_data_buffer or b""
+            await route.fulfill(status=204, headers={
+                "Upload-Offset": str(len(upload["bytes"])),
+                "Tus-Resumable": "1.0.0",
+            })
+            return
+        if route.request.method != "GET":
+            await _reply_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
+            return
+        if len(upload["bytes"]) != upload["length"]:
+            await _reply_json(route, {"error": {"code": "upload_incomplete"}}, status=409)
+            return
+        if state.reject_next_uploads > 0:
+            state.reject_next_uploads -= 1
+            await _reply_json(route, {"error": {"code": "invalid_project_file", "message": SERVER_REJECT_MARKER}}, status=422)
+            return
+        result = finish_tus_upload(route)
+        if result["status"] != 201:
+            await _reply_json(route, {"error": {"code": "invalid_project_file", "message": "지원하지 않는 파일 형식입니다."}}, status=422)
+            return
+        await _reply_json(route, {"file": result["file"]}, status=201)
+
     async def project_files(route: Route) -> None:
         if route.request.method == "GET":
             await _reply_json(route, {"files": state.public_files()})
@@ -147,48 +246,12 @@ async def _install_api(page: Page, state: FixtureState) -> None:
         if route.request.method != "POST":
             await _reply_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
             return
-        is_binary = route.request.headers.get("content-type", "").split(";", 1)[0] == "application/octet-stream"
-        if is_binary:
-            from urllib.parse import unquote
-            media = route.request.headers.get("x-padiem-media-type", "")
-            name = unquote(route.request.headers.get("x-padiem-filename", ""))
-            payload = route.request.post_data_buffer
-            body = {"name": name, "media_type": media, "bytes": payload}
-        else:
-            body = _request_json(route)
+        body = _request_json(route)
         state.file_posts.append(body)
         keys = set(body)
         if state.reject_next_uploads > 0:
             state.reject_next_uploads -= 1
             await _reply_json(route, {"error": {"code": "invalid_project_file", "message": SERVER_REJECT_MARKER}}, status=422)
-            return
-        if keys == {"name", "media_type", "bytes"}:
-            # #2342 binary branch: server-legal project binaries are PDF/DOCX only and the
-            # POST must carry exactly {name, media_type, base64}. Persisted rows project the
-            # server-side extracted media type; original bytes never come back to the browser.
-            extracted = {PDF_MEDIA_TYPE: ("extracted/pdf", PDF_EXTRACTED_TEXT, PDF_BASE64),
-                         DOCX_MEDIA_TYPE: ("extracted/docx", DOCX_EXTRACTED_TEXT, DOCX_BASE64)}
-            if body["media_type"] not in extracted:
-                await _reply_json(route, {"error": {"code": "invalid_project_file", "message": "지원하지 않는 파일 형식입니다."}}, status=422)
-                return
-            if body["bytes"] != (PDF_BYTES if body["media_type"] == PDF_MEDIA_TYPE else DOCX_BYTES):
-                raise AssertionError("binary POST bytes differ from picked file")
-            stored_type, extracted_text, _ = extracted[body["media_type"]]
-            state.binary_posts.append(dict(body))
-            record = {
-                "id": f"{BINARY_ID_PREFIX}{len(state.binary_posts):02d}",
-                "project_id": PROJECT_ID,
-                "name": body["name"],
-                "media_type": stored_type,
-                "content_text": extracted_text,
-                "content_chars": len(extracted_text),
-                "created_at": "2026-09-11T05:11:00Z",
-                "updated_at": "2026-09-11T05:11:00Z",
-            }
-            state.files[record["id"]] = record
-            public = dict(record)
-            public.pop("content_text")
-            await _reply_json(route, {"file": public}, status=201)
             return
         if keys != {"name", "media_type", "text"}:
             raise AssertionError(f"unexpected Project File POST payload keys: {sorted(keys)}")
@@ -259,6 +322,8 @@ async def _install_api(page: Page, state: FixtureState) -> None:
     await page.route("**/api/chat/stream", stream)
     await page.route("**/api/projects/*/files", project_files)
     await page.route("**/api/projects/*/files/*", project_file_detail)
+    await page.route("**/api/projects/*/files/tus", project_files_tus)
+    await page.route("**/api/projects/*/files/tus/*", project_files_tus_item)
 
 
 async def _open_sidebar(page: Page, mobile: bool) -> None:
@@ -432,7 +497,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         "mimeType": PDF_MEDIA_TYPE,
         "buffer": PDF_BYTES,
     })
-    await _wait_text(page, "#projectFormError", "프로젝트 파일을 저장하지 못했습니다.")
+    await _wait_text(page, "#projectFormError", "이 형식은 올릴 수 없어요.")
     note = page.locator("#projectFormError .error-code")
     if "invalid_project_file" not in await note.inner_text():
         raise AssertionError("missing project file reference code")

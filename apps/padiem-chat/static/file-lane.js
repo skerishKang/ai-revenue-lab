@@ -40,7 +40,7 @@
     if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
     return error;
   }
-  async function upload(file, signal) {
+  async function uploadViaFileLane(file, signal) {
     const ticketResponse = await fetch("/api/files/ticket", {method: "POST", credentials: "same-origin",
       headers: {"Content-Type": "application/json"}, body: JSON.stringify({size_bytes: file.size}), signal});
     const ticket = await ticketResponse.json().catch(() => null);
@@ -56,6 +56,30 @@
       throw uploadError(data, "파일 서버에 첨부를 저장하지 못했습니다. 다시 시도해 주세요.");
     }
     return {fileId: data.file_id};
+  }
+  // #6579 3단계 — Chat 첨부도 조각 업로드(tus 1.0.0)로 이 서버에 바로 보관한다.
+  // 100MB 요청 한도에 걸리지 않고, 완료되면 원본은 파일째 저장소로 넘어간다.
+  // 진행률·자동 이어 올리기·한국어 안내는 공용 화면 모듈이 맡는다.
+  const RESUMABLE = new Set(["txt", "md", "csv", "pdf", "docx", "pptx", "xlsx"]);
+  const TUS_ENDPOINT = "/api/chat/attachments/tus";
+  async function uploadResumable(file, signal, onState) {
+    const mediaType = TYPES[extension(file)];
+    const body = await window.PadiemTusUpload.upload({
+      file, endpoint: TUS_ENDPOINT, mediaType, signal,
+      onState: (state) => { if (typeof onState === "function") onState(state); },
+    });
+    const fileId = body?.file?.file_id;
+    if (!/^file_[a-f0-9]{32}$/.test(fileId || "") || body.file.size_bytes !== file.size) {
+      throw uploadError(body, "첨부를 서버에 저장하지 못했습니다. 다시 시도해 주세요.");
+    }
+    return {fileId};
+  }
+  // hwpx 등 조각 레인이 받지 않는 형식은 기존 COM2 티켓 경로를 그대로 쓴다.
+  async function upload(file, signal, onState) {
+    if (window.PadiemTusUpload && RESUMABLE.has(extension(file))) {
+      return uploadResumable(file, signal, onState);
+    }
+    return uploadViaFileLane(file, signal);
   }
   // Refresh the picker only after the current product authentication changed.
   // A missing/unconfigured lane cannot advertise a binary parser it does not have.

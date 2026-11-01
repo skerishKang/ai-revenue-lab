@@ -1210,26 +1210,33 @@
     setProjectFileBusy(true);
     try {
       const projectBinary = projectBinaryMediaType(file);
-      let payload;
       if (projectBinary) {
-        // Send binary directly; do not materialize a Base64 JSON copy.
-        payload = null;
+        // #6579: every binary goes through the shared tus module, which owns the
+        // progress line, the resume policy and the first-party guidance copy.
+        if (!window.PadiemProjectFileUpload) throw mappedUiError(uiT("project-file-save-failed"), null);
+        const uploaded = await window.PadiemProjectFileUpload.upload({
+          file,
+          projectId: editingProjectId,
+          mediaType: projectBinary,
+          onProgress: (sent, total) => {
+            if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
+              const percent = Math.min(100, Math.round((sent / total) * 100));
+              projectFileStatus.textContent = `${uiT("document-saving")} ${percent}%`;
+            }
+          },
+        });
+        if (!uploaded || !uploaded.file) throw mappedUiError(uiT("project-file-save-failed"), null);
       } else {
         const documentFile = await readDocumentFile(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
-      }
-      const requestOptions = projectBinary
-        ? { method: "POST", headers: {
-            "Content-Type": "application/octet-stream", "Accept": "application/json",
-            "X-Padiem-Filename": encodeURIComponent(file.name),
-            "X-Padiem-Media-Type": projectBinary,
-          }, body: file }
-        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload) };
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.file) {
-        throw mappedUiError(uiT("project-file-save-failed"), data);
+        const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
+        const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
+          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || !data.file) {
+          throw mappedUiError(uiT("project-file-save-failed"), data);
+        }
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
@@ -3463,7 +3470,14 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       if (attachment?.fileLane && !attachment.fileId) {
-        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal);
+        // #6579 step 3: chunk progress rides the same status line; the shared
+        // module resumes a drop and owns the guidance shown on failure.
+        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal, (state) => {
+          if (!projectFileStatus) return;
+          setNote(state.phase === "finalizing"
+            ? uiT("document-saving")
+            : `${uiT("document-saving")} ${state.percent}%`, "normal");
+        });
         attachment = { ...attachment, ...reference };
       }
       const attachments = attachmentPayload(attachment);

@@ -27,6 +27,11 @@ const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+// Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
+// open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
+// the plain write deadline. PATCH/POST on those paths get their own allowance
+// (TUS_UPLOAD_TIMEOUT_MS); the HEAD offset check keeps the API read deadline.
+const DEFAULT_TUS_TIMEOUT_MS = 120000;
 // The common-login callback is a redirect, but COM2 only answers it after an OAuth
 // exchange, a JWKS verification and an identity RPC. Under the plain read deadline
 // the browser saw upstream_timeout while the host was still finishing the login, so
@@ -174,6 +179,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
+    const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
+      /^\/api\/projects\/[^/]+\/files\/tus(?:\/|$)/.test(url.pathname);
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
     const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
@@ -183,6 +190,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
+      : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
         : upstreamTimeout;
 
     if (isWrite) {
