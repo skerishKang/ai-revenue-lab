@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:024",
+  "unit_ordinal": 391,
+  "unit_label": "2CH 24",
+  "book_code": "2CH",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:24:1",
+      "sequence": 11679,
+      "chapter_label": "2CH 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Joash was seven years old when he began to reign, and he reigned forty years in Jerusalem. His mother’s name was Zibiah, of Beersheba.",
+      "ko": "요아스가 위에 나아갈 때에 나이 칠세라 예루살렘에서 사십년을 치리하니라 그 모친의 이름은 시비아라 브엘세바 사람이더라",
+      "source_text_hash": "03578170c1974f6155f25c0802587be823de63c355ba031f81933c05f0a93ab4",
+      "translation_text_hash": "943f7a227cb7bd93d4c77981ccaee623133e43fcac34d332b9187199790f1e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 위에 나아갈 때에 나이 칠세라 예루살렘에서 사십년을 치리하니라 그 모친의 이름은 시비아라 브엘세바 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "943f7a227cb7bd93d4c77981ccaee623133e43fcac34d332b9187199790f1e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:2",
+      "sequence": 11680,
+      "chapter_label": "2CH 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "Joash did that which was right in the LORD’s eyes all the days of Jehoiada the priest.",
+      "ko": "제사장 여호야다가 세상에 사는 모든 날에 요아스가 여호와 보시기에 정직히 행하였으며",
+      "source_text_hash": "c2a9e19208fa28a7301ba2539d1ead1d0b90a3296780593305ea5231735b5dad",
+      "translation_text_hash": "5e8f9a4833b8730efea497f2a5c72e46cbec977f01aa73d1ebe2eefdff0c2d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 여호야다가 세상에 사는 모든 날에 요아스가 여호와 보시기에 정직히 행하였으며"
+      ],
+      "raw_text_hashes": [
+        "5e8f9a4833b8730efea497f2a5c72e46cbec977f01aa73d1ebe2eefdff0c2d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:3",
+      "sequence": 11681,
+      "chapter_label": "2CH 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Jehoiada took for him two wives, and he became the father of sons and daughters.",
+      "ko": "여호야다가 왕으로 두 아내에게 장가들게 하였더니 자녀를 낳았더라",
+      "source_text_hash": "a5352ab94aa2102e76113d5c9b8eb3d30a6c95031c9038dc1bc45f9bbfd78376",
+      "translation_text_hash": "95bfa5655dc33aecd9440244ed846b63c632507112a2ba4100dc13e79de82399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다가 왕으로 두 아내에게 장가들게 하였더니 자녀를 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "95bfa5655dc33aecd9440244ed846b63c632507112a2ba4100dc13e79de82399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:4",
+      "sequence": 11682,
+      "chapter_label": "2CH 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "After this, Joash intended to restore the LORD’s house.",
+      "ko": "그 후에 요아스가 여호와의 전을 중수할 뜻을 두고",
+      "source_text_hash": "a61c58c01a21a5ecab6ec10840f213e0c58f98eb21d5a5ccd4235ca4d23c7700",
+      "translation_text_hash": "b8321244d005be1f9d703ef3dff8ee3d0c98a95e4e3c6ca18f7085a250e6381c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 요아스가 여호와의 전을 중수할 뜻을 두고"
+      ],
+      "raw_text_hashes": [
+        "b8321244d005be1f9d703ef3dff8ee3d0c98a95e4e3c6ca18f7085a250e6381c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:5",
+      "sequence": 11683,
+      "chapter_label": "2CH 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "He gathered together the priests and the Levites, and said to them, “Go out to the cities of Judah, and gather money to repair the house of your God from all Israel from year to year. See that you expedite this matter.” However the Levites didn’t do it right away.",
+      "ko": "제사장과 레위 사람을 모으고 저희에게 이르되 너희는 유다 여러 성읍에 가서 이스라엘 무리에게 해마다 너희 하나님의 전을 수리할 돈을 거두되 그 일을 빨리 하라 하였으나 레위 사람이 빨리 하지 아니한지라",
+      "source_text_hash": "822321c80ab30029a0e7c86d654cd8b64597df77c671cac3e6cbfea63c14a4c5",
+      "translation_text_hash": "9da7a79802a73fa433419286e6e71e4e993627987fcd2540ab2c671c765e9e79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장과 레위 사람을 모으고 저희에게 이르되 너희는 유다 여러 성읍에 가서 이스라엘 무리에게 해마다 너희 하나님의 전을 수리할 돈을 거두되 그 일을 빨리 하라 하였으나 레위 사람이 빨리 하지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "9da7a79802a73fa433419286e6e71e4e993627987fcd2540ab2c671c765e9e79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:6",
+      "sequence": 11684,
+      "chapter_label": "2CH 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "The king called for Jehoiada the chief, and said to him, “Why haven’t you required of the Levites to bring in the tax of Moses the servant of the LORD, and of the assembly of Israel, out of Judah and out of Jerusalem, for the Tent of the Testimony?”",
+      "ko": "왕이 대제사장 여호야다를 불러 이르되 네가 어찌하여 레위 사람을 시켜서 여호와의 종 모세와 이스라엘의 회중이 법막을 위하여 정한 세를 유다와 예루살렘에서 거두게 하지 아니하였느냐 하니",
+      "source_text_hash": "b0d84b44df5b2b1deefea37155350dc81d70ead1762da6a46e30ecc5ba35adda",
+      "translation_text_hash": "3375259ad8c390fd65e3bb054dd9801d956baa462c3e40d7f30c75b9c4db3d35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대제사장 여호야다를 불러 이르되 네가 어찌하여 레위 사람을 시켜서 여호와의 종 모세와 이스라엘의 회중이 법막을 위하여 정한 세를 유다와 예루살렘에서 거두게 하지 아니하였느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "3375259ad8c390fd65e3bb054dd9801d956baa462c3e40d7f30c75b9c4db3d35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:7",
+      "sequence": 11685,
+      "chapter_label": "2CH 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "For the sons of Athaliah, that wicked woman, had broken up God’s house; and they also gave all the dedicated things of the LORD’s house to the Baals.",
+      "ko": "이는 그 악한 여인 아달랴의 아들들이 하나님의 전을 깨뜨리고 또 여호와의 전의 모든 성물을 바알들에게 드렸음이었더라",
+      "source_text_hash": "6b28680efaf920381c29c137c67aa5373628f5e909b72f659ad6ddf8c456f5ad",
+      "translation_text_hash": "5cd395987c8644cffbbba2d73e0efc278c9aa6f927af2d303bc77ae482ae262f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 악한 여인 아달랴의 아들들이 하나님의 전을 깨뜨리고 또 여호와의 전의 모든 성물을 바알들에게 드렸음이었더라"
+      ],
+      "raw_text_hashes": [
+        "5cd395987c8644cffbbba2d73e0efc278c9aa6f927af2d303bc77ae482ae262f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:8",
+      "sequence": 11686,
+      "chapter_label": "2CH 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "So the king commanded, and they made a chest, and set it outside at the gate of the LORD’s house.",
+      "ko": "이에 왕이 명하여 한 궤를 만들어 여호와의 전 문밖에 두게 하고",
+      "source_text_hash": "b253ca636e5bee0b1218e805e654522c56e024619428e33a360c427685bfd7d1",
+      "translation_text_hash": "55ea0ac4fbf445f5b2879bf84f0473315e09ddc30c4004a597a99d4a277b7464",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕이 명하여 한 궤를 만들어 여호와의 전 문밖에 두게 하고"
+      ],
+      "raw_text_hashes": [
+        "55ea0ac4fbf445f5b2879bf84f0473315e09ddc30c4004a597a99d4a277b7464"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:9",
+      "sequence": 11687,
+      "chapter_label": "2CH 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "They made a proclamation through Judah and Jerusalem, to bring in for the LORD the tax that Moses the servant of God laid on Israel in the wilderness.",
+      "ko": "유다와 예루살렘에 반포하여 하나님의 종 모세가 광야에서 이스라엘에게 정한 세를 여호와께 드리라 하였더니",
+      "source_text_hash": "543ec31ffce2aecceb6684f0b8ff9e94e4034f480bb31f5bf65624162344038b",
+      "translation_text_hash": "b9d8d285c23285c8c3bb1fb465245c34939b9a76bdefc1787112b3835fd7e8dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 예루살렘에 반포하여 하나님의 종 모세가 광야에서 이스라엘에게 정한 세를 여호와께 드리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "b9d8d285c23285c8c3bb1fb465245c34939b9a76bdefc1787112b3835fd7e8dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:10",
+      "sequence": 11688,
+      "chapter_label": "2CH 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "All the princes and all the people rejoiced, and brought in, and cast into the chest, until they had filled it.",
+      "ko": "모든 방백과 백성들이 기뻐하여 마치기까지 돈을 가져다가 궤에 던진지라",
+      "source_text_hash": "00609cf000814b52bdf604c51887932cacbc6244c139cc1799750bcdcb86ddeb",
+      "translation_text_hash": "35b3942460cdbc37745eb4ce69cce18de1a72fa5d4069841ed0743ae4b0f2a11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 방백과 백성들이 기뻐하여 마치기까지 돈을 가져다가 궤에 던진지라"
+      ],
+      "raw_text_hashes": [
+        "35b3942460cdbc37745eb4ce69cce18de1a72fa5d4069841ed0743ae4b0f2a11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:11",
+      "sequence": 11689,
+      "chapter_label": "2CH 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Whenever the chest was brought to the king’s officers by the hand of the Levites, and when they saw that there was much money, the king’s scribe and the chief priest’s officer came and emptied the chest, and took it, and carried it to its place again. Thus they did day by day, and gathered money in abundance.",
+      "ko": "언제든지 레위 사람들이 궤를 메고 왕의 유사에게 가서 돈이 많은 것을 보면 왕의 서기관과 대제사장에게 속한 아전이 와서 그 궤를 쏟고 다시 그 처소에 갖다 두었더라 때때로 이렇게하여 돈을 많이 거두매",
+      "source_text_hash": "7c8c26ee6aff61dc3e74d6c9faecba84c0d28761121eac8c23dbffe47b817a6d",
+      "translation_text_hash": "9c753d9c719cdbe30c3893dc641f0a3b29e914b614e04d50f69fe53a45044f1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언제든지 레위 사람들이 궤를 메고 왕의 유사에게 가서 돈이 많은 것을 보면 왕의 서기관과 대제사장에게 속한 아전이 와서 그 궤를 쏟고 다시 그 처소에 갖다 두었더라 때때로 이렇게하여 돈을 많이 거두매"
+      ],
+      "raw_text_hashes": [
+        "9c753d9c719cdbe30c3893dc641f0a3b29e914b614e04d50f69fe53a45044f1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:12",
+      "sequence": 11690,
+      "chapter_label": "2CH 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "The king and Jehoiada gave it to those who did the work of the service of the LORD’s house. They hired masons and carpenters to restore the LORD’s house, and also those who worked iron and bronze to repair the LORD’s house.",
+      "ko": "왕과 여호야다가 그 돈을 여호와의 전 간역자에게 주어 석수와 목수를 고용하여 여호와의 전을 중수하며 또 철공장과 놋공장을 고용하여 여호와의 전을 수리하게 하였더니",
+      "source_text_hash": "9ba1c45509641eff56adf771784a2cb9048dad54fcfd1dd5e5dc46d11a0e0fef",
+      "translation_text_hash": "b8e940f2086ffaafe8406cc6e218471edd2c1f816fccf29b41e8a0b1ec1b6130",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 여호야다가 그 돈을 여호와의 전 간역자에게 주어 석수와 목수를 고용하여 여호와의 전을 중수하며 또 철공장과 놋공장을 고용하여 여호와의 전을 수리하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "b8e940f2086ffaafe8406cc6e218471edd2c1f816fccf29b41e8a0b1ec1b6130"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:13",
+      "sequence": 11691,
+      "chapter_label": "2CH 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "So the workmen worked, and the work of repairing went forward in their hands. They set up God’s house as it was designed, and strengthened it.",
+      "ko": "공장들이 맡아서 수리하는 역사가 점점 진취되므로 하나님의 전을 이전 모양대로 견고케 하니라",
+      "source_text_hash": "89750d3d7ea42c7f0a0ca622d57015f9bf8a46a4d60ef7adb95236896a4b7826",
+      "translation_text_hash": "790ef9b538bb459b857878cd7c4bfaa31dc0861eb7253d68f8f54319010a254e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공장들이 맡아서 수리하는 역사가 점점 진취되므로 하나님의 전을 이전 모양대로 견고케 하니라"
+      ],
+      "raw_text_hashes": [
+        "790ef9b538bb459b857878cd7c4bfaa31dc0861eb7253d68f8f54319010a254e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:14",
+      "sequence": 11692,
+      "chapter_label": "2CH 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "When they had finished, they brought the rest of the money before the king and Jehoiada, from which were made vessels for the LORD’s house, even vessels with which to minister and to offer, including spoons and vessels of gold and silver. They offered burnt offerings in the LORD’s house continually all the days of Jehoiada.",
+      "ko": "필역한 후에 그 남은 돈을 왕과 여호야다의 앞으로 가져온고로 그것으로 여호와의 전에 쓸 그릇을 만들었으니 곧 섬겨 제사 드리는 그릇이며 또 숟가락과 금, 은그릇들이라 여호야다가 세상에 사는 모든 날에 여호와의 전에 항상 번제를 드렸더라",
+      "source_text_hash": "7339de1dba77425089d8c8a5b143ef61a0d8396704c7948cedec7a94ce840078",
+      "translation_text_hash": "d3422b1734b4287e826ad4783497eb41c585c1ed01add17eabd39955b7d343e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "필역한 후에 그 남은 돈을 왕과 여호야다의 앞으로 가져온고로 그것으로 여호와의 전에 쓸 그릇을 만들었으니 곧 섬겨 제사 드리는 그릇이며 또 숟가락과 금, 은그릇들이라 여호야다가 세상에 사는 모든 날에 여호와의 전에 항상 번제를 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "d3422b1734b4287e826ad4783497eb41c585c1ed01add17eabd39955b7d343e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:15",
+      "sequence": 11693,
+      "chapter_label": "2CH 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "But Jehoiada grew old and was full of days, and he died. He was one hundred thirty years old when he died.",
+      "ko": "여호야다가 나이 많고 늙어서 죽으니 죽을 때에 일백삼십세라",
+      "source_text_hash": "434fdbfd83dcbe723511987fc951f8b7680a9a0ee8b3d9d595199a54b3909bf1",
+      "translation_text_hash": "c94b91fc65ed50ac0b4d0a2d587760a6093acd9f587185f2f8fc2213387a8c40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다가 나이 많고 늙어서 죽으니 죽을 때에 일백삼십세라"
+      ],
+      "raw_text_hashes": [
+        "c94b91fc65ed50ac0b4d0a2d587760a6093acd9f587185f2f8fc2213387a8c40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:16",
+      "sequence": 11694,
+      "chapter_label": "2CH 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "They buried him in David’s city among the kings, because he had done good in Israel, and toward God and his house.",
+      "ko": "무리가 다윗성 열왕의 묘실 중에 장사하였으니 이는 저가 이스라엘과 하나님과 그 전에 대하여 선을 행하였음이더라",
+      "source_text_hash": "99d45961d2ec4e3684607205db17c972e7c72e41e31280ef4c43ab2b463318aa",
+      "translation_text_hash": "f13a65953e6badab30a0ed44542865bf12c197338bceb52a8578851244397589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 다윗성 열왕의 묘실 중에 장사하였으니 이는 저가 이스라엘과 하나님과 그 전에 대하여 선을 행하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "f13a65953e6badab30a0ed44542865bf12c197338bceb52a8578851244397589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:17",
+      "sequence": 11695,
+      "chapter_label": "2CH 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "Now after the death of Jehoiada, the princes of Judah came and bowed down to the king. Then the king listened to them.",
+      "ko": "여호야다가 죽은 후에 유다 방백들이 와서 왕에게 절하매 왕이 그의 말을 듣고",
+      "source_text_hash": "3d8f120ed643b38020e7e33b4171d273ce1afa5e947e93a59f2a9b8e6f7409a3",
+      "translation_text_hash": "fd76c3f6e1d9cd508b089ae9fa94d95a2f8ace504fbdbf87ace9c16c5bf73946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다가 죽은 후에 유다 방백들이 와서 왕에게 절하매 왕이 그의 말을 듣고"
+      ],
+      "raw_text_hashes": [
+        "fd76c3f6e1d9cd508b089ae9fa94d95a2f8ace504fbdbf87ace9c16c5bf73946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:18",
+      "sequence": 11696,
+      "chapter_label": "2CH 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "They abandoned the house of the LORD, the God of their fathers, and served the Asherah poles and the idols, so wrath came on Judah and Jerusalem for this their guiltiness.",
+      "ko": "그 열조의 하나님 여호와의 전을 버리고 아세라 목상과 우상을 섬긴고로 이 죄로 인하여 진노가 유다와 예루살렘에 임하니라",
+      "source_text_hash": "d8d392c3808b2f15831d8ab0790fb68dec7ddfb4aa4621c1b1de4d9898978769",
+      "translation_text_hash": "fa2cc68d68291daaf1f027ec81162d1805c978dbb4e2d32f2d9c80c0f666126d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열조의 하나님 여호와의 전을 버리고 아세라 목상과 우상을 섬긴고로 이 죄로 인하여 진노가 유다와 예루살렘에 임하니라"
+      ],
+      "raw_text_hashes": [
+        "fa2cc68d68291daaf1f027ec81162d1805c978dbb4e2d32f2d9c80c0f666126d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:19",
+      "sequence": 11697,
+      "chapter_label": "2CH 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "Yet he sent prophets to them to bring them again to the LORD, and they testified against them; but they would not listen.",
+      "ko": "그러나 여호와께서 선지자를 저에게 보내사 다시 자기에게로 돌아오게 하려 하시매 선지자들이 저에게 경계하나 듣지 아니하니라",
+      "source_text_hash": "9534bc5e1147fbf82785a40bc3c254c8003ca308275259bf98ca5e5d31e2b8c2",
+      "translation_text_hash": "16dd04dbbed8e1a85d64b28dc1c879044060cf49269cf7b4af726d01361a86d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 선지자를 저에게 보내사 다시 자기에게로 돌아오게 하려 하시매 선지자들이 저에게 경계하나 듣지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "16dd04dbbed8e1a85d64b28dc1c879044060cf49269cf7b4af726d01361a86d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:20",
+      "sequence": 11698,
+      "chapter_label": "2CH 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "The Spirit of God came on Zechariah the son of Jehoiada the priest; and he stood above the people, and said to them, “God says, ‘Why do you disobey the LORD’s commandments, so that you can’t prosper? Because you have forsaken the LORD, he has also forsaken you.’”",
+      "ko": "이에 하나님의 신이 제사장 여호야다의 아들 스가랴를 감동시키시매 저가 백성 앞에 높이 서서 저희에게 이르되 여호와께서 말씀하시기를 너희가 어찌하여 여호와의 명령을 거역하여 스스로 형통치 못하게 하느냐 하셨나니 너희가 여호와를 버린고로 여호와께서도 너희를 버리셨느니라 하나",
+      "source_text_hash": "457e04c964374aedf4797b3b70570d281b7410bddd4a024c85c3d4b15e2ed0f1",
+      "translation_text_hash": "a9ac7faa3873c865aefda0b9b686c8293698ca01ed13afcdd78d1a4c96a79397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 하나님의 신이 제사장 여호야다의 아들 스가랴를 감동시키시매 저가 백성 앞에 높이 서서 저희에게 이르되 여호와께서 말씀하시기를 너희가 어찌하여 여호와의 명령을 거역하여 스스로 형통치 못하게 하느냐 하셨나니 너희가 여호와를 버린고로 여호와께서도 너희를 버리셨느니라 하나"
+      ],
+      "raw_text_hashes": [
+        "a9ac7faa3873c865aefda0b9b686c8293698ca01ed13afcdd78d1a4c96a79397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:21",
+      "sequence": 11699,
+      "chapter_label": "2CH 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "They conspired against him, and stoned him with stones at the commandment of the king in the court of the LORD’s house.",
+      "ko": "무리가 함께 꾀하고 왕의 명을 좇아 여호와의 전 뜰안에서 돌로 쳐 죽였더라",
+      "source_text_hash": "87059913e50eed1d6db66d8e0d91474a57dbdac789817e450972270b89d1cfdb",
+      "translation_text_hash": "034b9e80ac2313eccc8c17a2aaef5308fea718656637f680151f27e5d3a2999d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 함께 꾀하고 왕의 명을 좇아 여호와의 전 뜰안에서 돌로 쳐 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "034b9e80ac2313eccc8c17a2aaef5308fea718656637f680151f27e5d3a2999d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:22",
+      "sequence": 11700,
+      "chapter_label": "2CH 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Thus Joash the king didn’t remember the kindness which Jehoiada his father had done to him, but killed his son. When he died, he said, “May the LORD look at it, and repay it.”",
+      "ko": "요아스왕이 이와 같이 스가랴의 아비 여호야다의 베푼 은혜를 생각지 아니하고 그 아들을 죽이니 저가 죽을 때에 이르되 여호와는 감찰하시고 신원하여 주옵소서 하니라",
+      "source_text_hash": "29d8de7b5ee06ad4701dc41616608ec6bb5c6a3003508885380ed38cd723ce45",
+      "translation_text_hash": "10ac11e492fbb87b0db89ad1ffaf4e7a13b1e226c04e8d46aa0e600ca7160bfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스왕이 이와 같이 스가랴의 아비 여호야다의 베푼 은혜를 생각지 아니하고 그 아들을 죽이니 저가 죽을 때에 이르되 여호와는 감찰하시고 신원하여 주옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "10ac11e492fbb87b0db89ad1ffaf4e7a13b1e226c04e8d46aa0e600ca7160bfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:23",
+      "sequence": 11701,
+      "chapter_label": "2CH 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "At the end of the year, the army of the Syrians came up against him. They came to Judah and Jerusalem, and destroyed all the princes of the people from among the people, and sent all their plunder to the king of Damascus.",
+      "ko": "일주년 후에 아람 군대가 요아스를 치려하여 올라와서 유다와 예루살렘에 이르러 백성 중에서 그 모든 방백을 멸절하고 노략한 물건을 다메섹 왕에게로 보내니라",
+      "source_text_hash": "62858157f5a59d19a3726ad25b9abd2b469ca8be844237da882335bed5713568",
+      "translation_text_hash": "5a25792ffc7dbf085439b854f5c9fa2e26c336d05750c87e8972623944506b0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일주년 후에 아람 군대가 요아스를 치려하여 올라와서 유다와 예루살렘에 이르러 백성 중에서 그 모든 방백을 멸절하고 노략한 물건을 다메섹 왕에게로 보내니라"
+      ],
+      "raw_text_hashes": [
+        "5a25792ffc7dbf085439b854f5c9fa2e26c336d05750c87e8972623944506b0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:24",
+      "sequence": 11702,
+      "chapter_label": "2CH 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "For the army of the Syrians came with a small company of men; and the LORD delivered a very great army into their hand, because they had forsaken the LORD, the God of their fathers. So they executed judgment on Joash.",
+      "ko": "아람 군대가 적은 무리로 왔으나 여호와께서 심히 큰 군대를 그 손에 붙이셨으니 이는 유다 사람이 그 열조의 하나님 여호와를 버렸음이라 이와 같이 아람 사람이 요아스를 징벌하였더라",
+      "source_text_hash": "f3f0450f712cf9fb4208a27f3f040e803540277e5b3e86a28a4d6530dc7ac3f3",
+      "translation_text_hash": "737023d4a4da504d20d5b87153f4e6f306921605843cea8158c1032a03f92718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 군대가 적은 무리로 왔으나 여호와께서 심히 큰 군대를 그 손에 붙이셨으니 이는 유다 사람이 그 열조의 하나님 여호와를 버렸음이라 이와 같이 아람 사람이 요아스를 징벌하였더라"
+      ],
+      "raw_text_hashes": [
+        "737023d4a4da504d20d5b87153f4e6f306921605843cea8158c1032a03f92718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:25",
+      "sequence": 11703,
+      "chapter_label": "2CH 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "When they had departed from him (for they left him seriously wounded), his own servants conspired against him for the blood of the sons of Jehoiada the priest, and killed him on his bed, and he died. They buried him in David’s city, but they didn’t bury him in the tombs of the kings.",
+      "ko": "요아스가 크게 상하매 적군이 버리고 간 후에 그 신복들이 제사장 여호야다의 아들들의 피로 인하여 모반하여 그 침상에서 쳐 죽인지라 다윗성에 장사하였으나 열왕의 묘실에는 장사하지 아니 하였더라",
+      "source_text_hash": "c4a8a9eda1f7da98aac9d3b8d7502e6898e6ab37e55ee0867f314b1e76efeba9",
+      "translation_text_hash": "5995b334bc6aa654a8d6134fe52f54c1767c60cf01ea2544d5bd6991e7c95bd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 크게 상하매 적군이 버리고 간 후에 그 신복들이 제사장 여호야다의 아들들의 피로 인하여 모반하여 그 침상에서 쳐 죽인지라 다윗성에 장사하였으나 열왕의 묘실에는 장사하지 아니 하였더라"
+      ],
+      "raw_text_hashes": [
+        "5995b334bc6aa654a8d6134fe52f54c1767c60cf01ea2544d5bd6991e7c95bd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:26",
+      "sequence": 11704,
+      "chapter_label": "2CH 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "These are those who conspired against him: Zabad the son of Shimeath the Ammonitess and Jehozabad the son of Shimrith the Moabitess.",
+      "ko": "모반한 자는 암몬 여인 시므앗의 아들 사밧과 모압 여인 시므릿의 아들 여호사밧이더라",
+      "source_text_hash": "b708d493e3e24edc0cc6bcc9efaeb351396711baab92346d827e2fc722ffd9a9",
+      "translation_text_hash": "9f581b2ca001d9df30e571ff394305e3916a23124667b6c6b74899081fb8803c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모반한 자는 암몬 여인 시므앗의 아들 사밧과 모압 여인 시므릿의 아들 여호사밧이더라"
+      ],
+      "raw_text_hashes": [
+        "9f581b2ca001d9df30e571ff394305e3916a23124667b6c6b74899081fb8803c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:24:27",
+      "sequence": 11705,
+      "chapter_label": "2CH 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "Now concerning his sons, the greatness of the burdens laid on him, and the rebuilding of God’s house, behold, they are written in the commentary of the book of the kings. Amaziah his son reigned in his place.",
+      "ko": "요아스의 아들들의 사적과 요아스의 중대한 경책을 받은 것과 하나님의 전 중수한 사적은 다 열왕기 주석에 기록되니라 그 아들 아마샤가 대신하여 왕이 되니라",
+      "source_text_hash": "b7ba873c0bc9b147365f59380648d93f0fa71330604bec7466ea5254212e5f40",
+      "translation_text_hash": "5d707220e312d0fb6553e4ceae50bba01fb01d4a1b7318c9b8ec6a8b099700df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 아들들의 사적과 요아스의 중대한 경책을 받은 것과 하나님의 전 중수한 사적은 다 열왕기 주석에 기록되니라 그 아들 아마샤가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "5d707220e312d0fb6553e4ceae50bba01fb01d4a1b7318c9b8ec6a8b099700df"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:008",
+  "unit_ordinal": 8,
+  "unit_label": "GEN 8",
+  "book_code": "GEN",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:8:1",
+      "sequence": 185,
+      "chapter_label": "GEN 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "God remembered Noah, all the animals, and all the livestock that were with him in the ship; and God made a wind to pass over the earth. The waters subsided.",
+      "ko": "하나님이 노아와 그와 함께 방주에 있는 모든 들짐승과 육축을 권념하사 바람으로 땅위에 불게 하시매 물이 감하였고",
+      "source_text_hash": "5d154447b05a81d5dea200acc9e081ac3cac7f5a6416b9598b1838ffa5ca9525",
+      "translation_text_hash": "5f4dc38ff3fd7d657db7a166cbfe311a3745ccbc8a821eb8c66e71dc56c2a4d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아와 그와 함께 방주에 있는 모든 들짐승과 육축을 권념하사 바람으로 땅위에 불게 하시매 물이 감하였고"
+      ],
+      "raw_text_hashes": [
+        "5f4dc38ff3fd7d657db7a166cbfe311a3745ccbc8a821eb8c66e71dc56c2a4d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:2",
+      "sequence": 186,
+      "chapter_label": "GEN 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "The deep’s fountains and the sky’s windows were also stopped, and the rain from the sky was restrained.",
+      "ko": "깊음의 샘과 하늘의 창이 막히고 하늘에서 비가 그치매",
+      "source_text_hash": "4b03e139ace6077505a833a4a9aeab2a7f2918b0a2272db00d7911d991c377c9",
+      "translation_text_hash": "b8833260cb52fb83f76b363ceca15c85e533683e0845b9d0e40262b369d0e187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깊음의 샘과 하늘의 창이 막히고 하늘에서 비가 그치매"
+      ],
+      "raw_text_hashes": [
+        "b8833260cb52fb83f76b363ceca15c85e533683e0845b9d0e40262b369d0e187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:3",
+      "sequence": 187,
+      "chapter_label": "GEN 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "The waters continually receded from the earth. After the end of one hundred fifty days the waters receded.",
+      "ko": "물이 땅에서 물러가고 점점 물러가서 일백 오십일 후에 감하고",
+      "source_text_hash": "30177527399a2757e06db3760d4a845a98644abb1d4183ca4fe727e635134e23",
+      "translation_text_hash": "091fd0ec252ab63601d59fc9fcd53669e40daf61ab84cc0311134ca9df169121",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 땅에서 물러가고 점점 물러가서 일백 오십일 후에 감하고"
+      ],
+      "raw_text_hashes": [
+        "091fd0ec252ab63601d59fc9fcd53669e40daf61ab84cc0311134ca9df169121"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:4",
+      "sequence": 188,
+      "chapter_label": "GEN 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "The ship rested in the seventh month, on the seventeenth day of the month, on Ararat’s mountains.",
+      "ko": "칠월 곧 그 달 십칠일에 방주가 아라랏산에 머물렀으며",
+      "source_text_hash": "a9e6868144a7246c44052f9cb2769e6e947a0dc5ac5b682c0d97e8aff3168bfc",
+      "translation_text_hash": "3b30d6dda19f610b7dffe3955f3f1545d73a152d5561ecb5edec59d2c8772911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 곧 그 달 십칠일에 방주가 아라랏산에 머물렀으며"
+      ],
+      "raw_text_hashes": [
+        "3b30d6dda19f610b7dffe3955f3f1545d73a152d5561ecb5edec59d2c8772911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:5",
+      "sequence": 189,
+      "chapter_label": "GEN 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "The waters receded continually until the tenth month. In the tenth month, on the first day of the month, the tops of the mountains were visible.",
+      "ko": "물이 점점 감하여 시월 곧 그달 일일에 산들의 봉우리가 보였더라",
+      "source_text_hash": "6b1b632caf3022f00c037649b9f5c99f3f92754587cc786cb0e8b1f41c91ffe1",
+      "translation_text_hash": "5a8fe4bd4d2015a9652052d1ee953876302d409c025e19b52ac60e3ff1cb719f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 점점 감하여 시월 곧 그달 일일에 산들의 봉우리가 보였더라"
+      ],
+      "raw_text_hashes": [
+        "5a8fe4bd4d2015a9652052d1ee953876302d409c025e19b52ac60e3ff1cb719f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:6",
+      "sequence": 190,
+      "chapter_label": "GEN 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "At the end of forty days, Noah opened the window of the ship which he had made,",
+      "ko": "사십일을 지나서 노아가 그 방주에 지은 창을 열고",
+      "source_text_hash": "6547dfeeb4165973748cafe96dfaedbd1ab804182466247ed9ca59fd4236fcfd",
+      "translation_text_hash": "549159ea5ffdb706866d91d01fcbe921a70951dd9c3f523438f5ff55d43a80e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십일을 지나서 노아가 그 방주에 지은 창을 열고"
+      ],
+      "raw_text_hashes": [
+        "549159ea5ffdb706866d91d01fcbe921a70951dd9c3f523438f5ff55d43a80e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:7",
+      "sequence": 191,
+      "chapter_label": "GEN 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "and he sent out a raven. It went back and forth, until the waters were dried up from the earth.",
+      "ko": "까마귀를 내어 놓으매 까마귀가 물이 땅에서 마르기까지 날아 왕래하였더라",
+      "source_text_hash": "6088ec853e63268c178efe1917dbd9e490911067cac1835e3e57948038e755ef",
+      "translation_text_hash": "8d88b0385e50344ed797719dc24ca35bbffdbc388e14e2782a7caf72943d0eec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀를 내어 놓으매 까마귀가 물이 땅에서 마르기까지 날아 왕래하였더라"
+      ],
+      "raw_text_hashes": [
+        "8d88b0385e50344ed797719dc24ca35bbffdbc388e14e2782a7caf72943d0eec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:8",
+      "sequence": 192,
+      "chapter_label": "GEN 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "He himself sent out a dove to see if the waters were abated from the surface of the ground,",
+      "ko": "그가 또 비둘기를 내어 놓아 지면에 물이 감한 여부를 알고자 하매",
+      "source_text_hash": "d6335e828e3d01797f453245a7cb44fc71ff9f9dbb390563a04c4124c3088874",
+      "translation_text_hash": "db19510387925197d7acc3203c74a8dda20869f12787b5bfeef2399b9cb59864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 비둘기를 내어 놓아 지면에 물이 감한 여부를 알고자 하매"
+      ],
+      "raw_text_hashes": [
+        "db19510387925197d7acc3203c74a8dda20869f12787b5bfeef2399b9cb59864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:9",
+      "sequence": 193,
+      "chapter_label": "GEN 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "but the dove found no place to rest her foot, and she returned into the ship to him, for the waters were on the surface of the whole earth. He put out his hand, and took her, and brought her to him into the ship.",
+      "ko": "온 지면에 물이 있으므로 비둘기가 접족할 곳을 찾지 못하고 방주로 돌아와 그에게로 오는지라 그가 손을 내밀어 방주 속 자기에게로 받아 들이고",
+      "source_text_hash": "9732a2884530996b8c24dfd9a8b3d8f1deef95f8ad98cc0b66ea5b02ccd9039a",
+      "translation_text_hash": "3603d1bc278561162bc104cb0b9f44973555fd2a6fdf047f8c38a5a60a13443e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 지면에 물이 있으므로 비둘기가 접족할 곳을 찾지 못하고 방주로 돌아와 그에게로 오는지라 그가 손을 내밀어 방주 속 자기에게로 받아 들이고"
+      ],
+      "raw_text_hashes": [
+        "3603d1bc278561162bc104cb0b9f44973555fd2a6fdf047f8c38a5a60a13443e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:10",
+      "sequence": 194,
+      "chapter_label": "GEN 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "He waited yet another seven days; and again he sent the dove out of the ship.",
+      "ko": "또 칠일을 기다려 다시 비둘기를 방주에서 내어놓으매",
+      "source_text_hash": "276cc143dd364cc2f40400743021b899e76c635294021c8f8062838cf27e4e55",
+      "translation_text_hash": "8c5fdcd7f42010570d965a87fa2207bd57bca227337861c5455ee931545a3364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 칠일을 기다려 다시 비둘기를 방주에서 내어놓으매"
+      ],
+      "raw_text_hashes": [
+        "8c5fdcd7f42010570d965a87fa2207bd57bca227337861c5455ee931545a3364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:11",
+      "sequence": 195,
+      "chapter_label": "GEN 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "The dove came back to him at evening and, behold, in her mouth was a freshly plucked olive leaf. So Noah knew that the waters were abated from the earth.",
+      "ko": "저녁때에 비둘기가 그에게로 돌아왔는데 그 입에 감람 새 잎사귀가 있는지라 이에 노아가 땅에 물이 감한줄 알았으며",
+      "source_text_hash": "a4c53b4efca5da337ee5e89ad6fd75ed6df5cb60dc3ca3b6f3420efa26a00fe6",
+      "translation_text_hash": "179589c7d57ee10eaa481aa5ae53f42136d6bcca1467ce0edf929b747409382e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁때에 비둘기가 그에게로 돌아왔는데 그 입에 감람 새 잎사귀가 있는지라 이에 노아가 땅에 물이 감한줄 알았으며"
+      ],
+      "raw_text_hashes": [
+        "179589c7d57ee10eaa481aa5ae53f42136d6bcca1467ce0edf929b747409382e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:12",
+      "sequence": 196,
+      "chapter_label": "GEN 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "He waited yet another seven days, and sent out the dove; and she didn’t return to him any more.",
+      "ko": "또 칠일을 기다려 비둘기를 내어 놓으매 다시는 그에게로 돌아 오지 아니하였더라",
+      "source_text_hash": "64cbfe092c5de2ab8045c16227a05cad52a9fc423e1536d5106ad37a361eb6cf",
+      "translation_text_hash": "d5e26807fb56ece18dbc4056facba66521d5f68714bb780f219a926a6295be58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 칠일을 기다려 비둘기를 내어 놓으매 다시는 그에게로 돌아 오지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "d5e26807fb56ece18dbc4056facba66521d5f68714bb780f219a926a6295be58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:13",
+      "sequence": 197,
+      "chapter_label": "GEN 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "In the six hundred first year, in the first month, the first day of the month, the waters were dried up from the earth. Noah removed the covering of the ship, and looked. He saw that the surface of the ground was dry.",
+      "ko": "육백 일년 정월 곧 그 달 일일에 지면에 물이 걷힌지라 노아가 방주 뚜껑을 제치고 본즉 지면에 물이 걷혔더니",
+      "source_text_hash": "ca4d69eea8fe371521d74f6e9c7b5dee1fea6b99b1be2cee9a677ac4d04ddb46",
+      "translation_text_hash": "f37bdea5bc53641c15d29754e1effb1fa4f045dcf8fd9c0463cbf60da68eb66f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육백 일년 정월 곧 그 달 일일에 지면에 물이 걷힌지라 노아가 방주 뚜껑을 제치고 본즉 지면에 물이 걷혔더니"
+      ],
+      "raw_text_hashes": [
+        "f37bdea5bc53641c15d29754e1effb1fa4f045dcf8fd9c0463cbf60da68eb66f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:14",
+      "sequence": 198,
+      "chapter_label": "GEN 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "In the second month, on the twenty-seventh day of the month, the earth was dry.",
+      "ko": "이월 이십칠일에 땅이 말랐더라",
+      "source_text_hash": "7878b643cefa13a59d07081700648ce003da639dcf2054db6d73e9cf1302eea6",
+      "translation_text_hash": "a7cfd81266a3e5cb944d18fb3cd4820e0f943560f4d2d110636bef92c43b3adc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월 이십칠일에 땅이 말랐더라"
+      ],
+      "raw_text_hashes": [
+        "a7cfd81266a3e5cb944d18fb3cd4820e0f943560f4d2d110636bef92c43b3adc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:15",
+      "sequence": 199,
+      "chapter_label": "GEN 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "God spoke to Noah, saying,",
+      "ko": "하나님이 노아에게 말씀하여 가라사대",
+      "source_text_hash": "13fa0d5169cb70cf2beeb7f54d94f4867a033f2cfeaf84cc31e4373460f63eb9",
+      "translation_text_hash": "c5f6b8ae430f78d428704092036b6868c15018e340a435bcc810cfa17a79a491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아에게 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "c5f6b8ae430f78d428704092036b6868c15018e340a435bcc810cfa17a79a491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:16",
+      "sequence": 200,
+      "chapter_label": "GEN 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "“Go out of the ship, you, your wife, your sons, and your sons’ wives with you.",
+      "ko": "너는 네 아내와 네 아들들과 네 자부들로 더불어 방주에서 나오고",
+      "source_text_hash": "505b49bf64016bdf2a7459bca045ab6f0dd6948a8ecf3af4c74d1dd9ce295190",
+      "translation_text_hash": "643c97fbaf9a606ca791b8d8d9b2b033ee2a5d7cfa4abe07f0f92a85e9e978b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 아내와 네 아들들과 네 자부들로 더불어 방주에서 나오고"
+      ],
+      "raw_text_hashes": [
+        "643c97fbaf9a606ca791b8d8d9b2b033ee2a5d7cfa4abe07f0f92a85e9e978b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:17",
+      "sequence": 201,
+      "chapter_label": "GEN 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Bring out with you every living thing that is with you of all flesh, including birds, livestock, and every creeping thing that creeps on the earth, that they may breed abundantly on the earth, and be fruitful, and multiply on the earth.”",
+      "ko": "너와 함께한 모든 혈육 있는 생물 곧 새와 육축과 땅에 기는 모든 것을 다 이끌어 내라 이것들이 땅에서 생육하고 땅에서 번성하리라 하시매",
+      "source_text_hash": "133deb5ab597f1277f4a6dbc1c3fb6f6bc3f9cef1feb405eb3d53581e1d5adf3",
+      "translation_text_hash": "dceb77c150ae7165074696627073fe934a4e1ec1b8149986d02570bf7c2f7f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 함께한 모든 혈육 있는 생물 곧 새와 육축과 땅에 기는 모든 것을 다 이끌어 내라 이것들이 땅에서 생육하고 땅에서 번성하리라 하시매"
+      ],
+      "raw_text_hashes": [
+        "dceb77c150ae7165074696627073fe934a4e1ec1b8149986d02570bf7c2f7f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:18",
+      "sequence": 202,
+      "chapter_label": "GEN 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Noah went out, with his sons, his wife, and his sons’ wives with him.",
+      "ko": "노아가 그 아들들과 그 아내와 그 자부들과 함께 나왔고",
+      "source_text_hash": "4b3073a85853699080925dad2b807640cc6c2d9f2d333a5f156e938bc9acfbdc",
+      "translation_text_hash": "744a25ca09ae67f924b8d97c5a92b928927b4dcdb08cb9cc31a32a7f4276f839",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 그 아들들과 그 아내와 그 자부들과 함께 나왔고"
+      ],
+      "raw_text_hashes": [
+        "744a25ca09ae67f924b8d97c5a92b928927b4dcdb08cb9cc31a32a7f4276f839"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:19",
+      "sequence": 203,
+      "chapter_label": "GEN 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Every animal, every creeping thing, and every bird, whatever moves on the earth, after their families, went out of the ship.",
+      "ko": "땅위의 동물 곧 모든 짐승과 모든 기는 것과 모든 새도 그 종류대로 방주에서 나왔더라",
+      "source_text_hash": "f8b0bc17247faedad932568dc88bf8d282c9160d47606e6182a2384053f3af05",
+      "translation_text_hash": "1cc1094b7802ddb8487dbc416b32ac6c53ce6b541eb2a75ea1c1c267ba1d1d80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅위의 동물 곧 모든 짐승과 모든 기는 것과 모든 새도 그 종류대로 방주에서 나왔더라"
+      ],
+      "raw_text_hashes": [
+        "1cc1094b7802ddb8487dbc416b32ac6c53ce6b541eb2a75ea1c1c267ba1d1d80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:20",
+      "sequence": 204,
+      "chapter_label": "GEN 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Noah built an altar to the LORD, and took of every clean animal, and of every clean bird, and offered burnt offerings on the altar.",
+      "ko": "노아가 여호와를 위하여 단을 쌓고 모든 정결한 짐승 중에서와 모든 정결한 새 중에서 취하여 번제로 단에 드렸더니",
+      "source_text_hash": "3ac31560e65f62153be82a5e22492948662a23a85d9fc7a516133b1733fe3f69",
+      "translation_text_hash": "0ae53bfa57bf508e27e3f47b18c93680964e245a34de74e876133e43230e3e79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 여호와를 위하여 단을 쌓고 모든 정결한 짐승 중에서와 모든 정결한 새 중에서 취하여 번제로 단에 드렸더니"
+      ],
+      "raw_text_hashes": [
+        "0ae53bfa57bf508e27e3f47b18c93680964e245a34de74e876133e43230e3e79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:21",
+      "sequence": 205,
+      "chapter_label": "GEN 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD smelled the pleasant aroma. The LORD said in his heart, “I will not again curse the ground any more for man’s sake because the imagination of man’s heart is evil from his youth. I will never again strike every living thing, as I have done.",
+      "ko": "여호와께서 그 향기를 흠향하시고 그 중심에 이르시되 내가 다시는 사람으로 인하여 땅을 저주하지 아니하리니 이는 사람의 마음의 계획하는 바가 어려서부터 악함이라 내가 전에 행한 것 같이 모든 생물을 멸하지 아니하리니",
+      "source_text_hash": "b5c57f6a5279674b05988addaa0b37aadad547e481b5152132f61398492f8f8a",
+      "translation_text_hash": "4ad86f1b6bf82d3d687b8d3f0ee6a037c97c88db5a157af17602a7818a2e1941",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 향기를 흠향하시고 그 중심에 이르시되 내가 다시는 사람으로 인하여 땅을 저주하지 아니하리니 이는 사람의 마음의 계획하는 바가 어려서부터 악함이라 내가 전에 행한 것 같이 모든 생물을 멸하지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "4ad86f1b6bf82d3d687b8d3f0ee6a037c97c88db5a157af17602a7818a2e1941"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:8:22",
+      "sequence": 206,
+      "chapter_label": "GEN 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "While the earth remains, seed time and harvest, and cold and heat, and summer and winter, and day and night will not cease.”",
+      "ko": "땅이 있을 동안에는 심음과 거둠과 추위와 더위와 여름과 겨울과 낮과 밤이 쉬지 아니하리라",
+      "source_text_hash": "a47a8917f7adb16ab88802713ecda884bde80cf013104f725a5c95788778c512",
+      "translation_text_hash": "f720e25691650d3ed1094b8b7fb36d83cb953a1ac06ab9369378ed2afd5313d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 있을 동안에는 심음과 거둠과 추위와 더위와 여름과 겨울과 낮과 밤이 쉬지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f720e25691650d3ed1094b8b7fb36d83cb953a1ac06ab9369378ed2afd5313d2"
+      ]
+    }
+  ]
+}

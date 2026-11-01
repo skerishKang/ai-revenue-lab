@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:042",
+  "unit_ordinal": 478,
+  "unit_label": "JOB 42",
+  "book_code": "JOB",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:42:1",
+      "sequence": 13924,
+      "chapter_label": "JOB 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered the LORD:",
+      "ko": "욥이 여호와께 대답하여 가로되",
+      "source_text_hash": "528ad9e8dad1dcdd5461de52fc2355e23f443b07770e808ea44484a8e2e74735",
+      "translation_text_hash": "00c866afc4ed7ee64bd64661050c6c9618f406c6369a669d71ea94061ad0c976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 여호와께 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "00c866afc4ed7ee64bd64661050c6c9618f406c6369a669d71ea94061ad0c976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:2",
+      "sequence": 13925,
+      "chapter_label": "JOB 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "“I know that you can do all things, and that no purpose of yours can be restrained.",
+      "ko": "주께서는 무소불능하시오며 무슨 경영이든지 못 이루실 것이 없는줄 아오니",
+      "source_text_hash": "2211ef6d158b2507e168b831ac1a84685238bb0533e15ba16ad2ac305ada79bb",
+      "translation_text_hash": "3a4a47daf169ee955fcbac586ccb65760a53ff21f7f3329545c51a21395c0d0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 무소불능하시오며 무슨 경영이든지 못 이루실 것이 없는줄 아오니"
+      ],
+      "raw_text_hashes": [
+        "3a4a47daf169ee955fcbac586ccb65760a53ff21f7f3329545c51a21395c0d0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:3",
+      "sequence": 13926,
+      "chapter_label": "JOB 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "You asked, ‘Who is this who hides counsel without knowledge?’ therefore I have uttered that which I didn’t understand, things too wonderful for me, which I didn’t know.",
+      "ko": "무지한 말로 이치를 가리우는 자가 누구니이까 내가 스스로 깨달을 수 없는 일을 말하였고 스스로 알 수 없고 헤아리기 어려운 일을 말하였나이다",
+      "source_text_hash": "7e79399add88c0c272086fe8760fe6fe636d34d2a8c67621c760d4bc9aafb529",
+      "translation_text_hash": "fce3f956a4632c62a9c9f50e41ec552e3b866c0dd8e0714681fced116785ab0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무지한 말로 이치를 가리우는 자가 누구니이까 내가 스스로 깨달을 수 없는 일을 말하였고 스스로 알 수 없고 헤아리기 어려운 일을 말하였나이다"
+      ],
+      "raw_text_hashes": [
+        "fce3f956a4632c62a9c9f50e41ec552e3b866c0dd8e0714681fced116785ab0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:4",
+      "sequence": 13927,
+      "chapter_label": "JOB 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "You said, ‘Listen, now, and I will speak; I will question you, and you will answer me.’",
+      "ko": "내가 말하겠사오니 주여 들으시고 내가 주께 묻겠사오니 주여 내게 알게 하옵소서",
+      "source_text_hash": "3ca04264f6156f9a03120c34cfa11b1006ee7eb12af461e6791ea60a97839168",
+      "translation_text_hash": "ec0964cdc2d88b7fd1aa9d2ab1da04e64d3a49265341d2df2de0a81760f7f8e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하겠사오니 주여 들으시고 내가 주께 묻겠사오니 주여 내게 알게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "ec0964cdc2d88b7fd1aa9d2ab1da04e64d3a49265341d2df2de0a81760f7f8e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:5",
+      "sequence": 13928,
+      "chapter_label": "JOB 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "I had heard of you by the hearing of the ear, but now my eye sees you.",
+      "ko": "내가 주께 대하여 귀로 듣기만 하였삽더니 이제는 눈으로 주를 뵈옵나이다",
+      "source_text_hash": "cc701cab9ea58155835865b2599cb1772f534527d44558e7bb4e292ebacaf29e",
+      "translation_text_hash": "7e4734153721e826d308810665c165d35b7ee7b0b7d78f91ffbbbe1732599e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 대하여 귀로 듣기만 하였삽더니 이제는 눈으로 주를 뵈옵나이다"
+      ],
+      "raw_text_hashes": [
+        "7e4734153721e826d308810665c165d35b7ee7b0b7d78f91ffbbbe1732599e58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:6",
+      "sequence": 13929,
+      "chapter_label": "JOB 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore I abhor myself, and repent in dust and ashes.”",
+      "ko": "그러므로 내가 스스로 한하고 티끌과 재 가운데서 회개하나이다",
+      "source_text_hash": "c11fa6672cc35f4d34d505ce3577861457adb084081bc5980ea20d539e775926",
+      "translation_text_hash": "afaa9f7d96745b6132cc4342ae7a540249986c0fea20cfbaae96c03f2f12ab62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 스스로 한하고 티끌과 재 가운데서 회개하나이다"
+      ],
+      "raw_text_hashes": [
+        "afaa9f7d96745b6132cc4342ae7a540249986c0fea20cfbaae96c03f2f12ab62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:7",
+      "sequence": 13930,
+      "chapter_label": "JOB 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "It was so, that after the LORD had spoken these words to Job, the LORD said to Eliphaz the Temanite, “My wrath is kindled against you, and against your two friends; for you have not spoken of me the thing that is right, as my servant Job has.",
+      "ko": "여호와께서 욥에게 이 말씀을 하신 후에 데만 사람 엘리바스에게 이르시되 내가 너와 네 두 친구에게 노하나니 이는 너희가 나를 가리켜 말한 것이 내 종 욥의 말 같이 정당하지 못함이니라",
+      "source_text_hash": "94b4a9b6b0dc2c0b8d6a10deec2714b00e53fa2e324aabcbe755ab043ad5bcc3",
+      "translation_text_hash": "a1ae06a063c43dac52374a9fb487ad82cf7b1b907e495753f046221852544545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 욥에게 이 말씀을 하신 후에 데만 사람 엘리바스에게 이르시되 내가 너와 네 두 친구에게 노하나니 이는 너희가 나를 가리켜 말한 것이 내 종 욥의 말 같이 정당하지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "a1ae06a063c43dac52374a9fb487ad82cf7b1b907e495753f046221852544545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:8",
+      "sequence": 13931,
+      "chapter_label": "JOB 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "Now therefore, take to yourselves seven bulls and seven rams, and go to my servant Job, and offer up for yourselves a burnt offering; and my servant Job shall pray for you, for I will accept him, that I not deal with you according to your folly. For you have not spoken of me the thing that is right, as my servant Job has.”",
+      "ko": "그런즉 너희는 수송아지 일곱과 수양 일곱을 취하여 내 종 욥에게 가서 너희를 위하여 번제를 드리라 내 종 욥이 너희를 위하여 기도할 것인즉 내가 그를 기쁘게 받으리니 너희의 우매한대로 너희에게 갚지 아니하리라 이는 너희가 나를 가리켜 말한 것이 내 종 욥의 말 같이 정당하지 못함이니라",
+      "source_text_hash": "aa80be92e2b70d464533d0ebaf39ed51dfb9193c8847f18926766ccd44f96852",
+      "translation_text_hash": "16eec2cb32152de9fd6e58fcb1ee5bd2e80833054f0e0bd6133b148f486aae90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 수송아지 일곱과 수양 일곱을 취하여 내 종 욥에게 가서 너희를 위하여 번제를 드리라 내 종 욥이 너희를 위하여 기도할 것인즉 내가 그를 기쁘게 받으리니 너희의 우매한대로 너희에게 갚지 아니하리라 이는 너희가 나를 가리켜 말한 것이 내 종 욥의 말 같이 정당하지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "16eec2cb32152de9fd6e58fcb1ee5bd2e80833054f0e0bd6133b148f486aae90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:9",
+      "sequence": 13932,
+      "chapter_label": "JOB 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "So Eliphaz the Temanite and Bildad the Shuhite and Zophar the Naamathite went and did what the LORD commanded them, and the LORD accepted Job.",
+      "ko": "이에 데만 사람 엘리바스와 수아 사람 빌닷과 나아마 사람 소발이 가서 여호와께서 자기들에게 명하신대로 행하니라 여호와께서 욥을 기쁘게 받으셨더라",
+      "source_text_hash": "9744028714822ef8a6f7362a963c0368f5d2926a6d2df5eb3a6d688b1afe1920",
+      "translation_text_hash": "eae74b7ab1837428cab7db0e4c10a6f27b3003ac48f7ea8280007cd3d598dde1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 데만 사람 엘리바스와 수아 사람 빌닷과 나아마 사람 소발이 가서 여호와께서 자기들에게 명하신대로 행하니라 여호와께서 욥을 기쁘게 받으셨더라"
+      ],
+      "raw_text_hashes": [
+        "eae74b7ab1837428cab7db0e4c10a6f27b3003ac48f7ea8280007cd3d598dde1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:10",
+      "sequence": 13933,
+      "chapter_label": "JOB 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD restored Job’s prosperity when he prayed for his friends. The LORD gave Job twice as much as he had before.",
+      "ko": "욥이 그 벗들을 위하여 빌매 여호와께서 욥의 곤경을 돌이키시고 욥에게 그전 소유보다 갑절이나 주신지라",
+      "source_text_hash": "2a81ac704821c00cbb7f1164f8209c69af2e465aa7554b5dcca35de3d7d31ce2",
+      "translation_text_hash": "08595b5875c69c25e6247ad08af9ac2720650a596c6eef79c40488b1263336cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 그 벗들을 위하여 빌매 여호와께서 욥의 곤경을 돌이키시고 욥에게 그전 소유보다 갑절이나 주신지라"
+      ],
+      "raw_text_hashes": [
+        "08595b5875c69c25e6247ad08af9ac2720650a596c6eef79c40488b1263336cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:11",
+      "sequence": 13934,
+      "chapter_label": "JOB 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "Then all his brothers, all his sisters, and all those who had been of his acquaintance before, came to him and ate bread with him in his house. They comforted him, and consoled him concerning all the evil that the LORD had brought on him. Everyone also gave him a piece of money, and everyone a ring of gold.",
+      "ko": "이에 그의 모든 형제와 자매와 및 전에 알던 자들이 다 와서 그 집에서 그와 함께 식물을 먹고 여호와께서 그에게 내리신 모든 재앙에 대하여 그를 위하여 슬퍼하며 위로하고 각각 금 한 조각과 금고리 하나씩 주었더라",
+      "source_text_hash": "65b0b1c696cf5e50f1e1559f96a91ff3ff486bfee1bc6e7996f16051374761c7",
+      "translation_text_hash": "78d873bd2950861700ea9999767e18d0cc3ba1b48fd1f095ee6437ada4a05680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그의 모든 형제와 자매와 및 전에 알던 자들이 다 와서 그 집에서 그와 함께 식물을 먹고 여호와께서 그에게 내리신 모든 재앙에 대하여 그를 위하여 슬퍼하며 위로하고 각각 금 한 조각과 금고리 하나씩 주었더라"
+      ],
+      "raw_text_hashes": [
+        "78d873bd2950861700ea9999767e18d0cc3ba1b48fd1f095ee6437ada4a05680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:12",
+      "sequence": 13935,
+      "chapter_label": "JOB 42",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 12
+        }
+      ],
+      "en": "So the LORD blessed the latter end of Job more than his beginning. He had fourteen thousand sheep, six thousand camels, one thousand yoke of oxen, and a thousand female donkeys.",
+      "ko": "여호와께서 욥의 모년에 복을 주사 처음 복보다 더 하게 하시니 그가 양 일만 사천과 약대 육천과 소 일천 겨리와 암나귀 일천을 두었고",
+      "source_text_hash": "cc18077069870eab960366bb700539c068974af6cbdaaefc2270479bf91ffb12",
+      "translation_text_hash": "747728b1afb06cd7e45aa1fdfd0c0f10635b68d53f7ead00ebe99bf45cbdad85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 욥의 모년에 복을 주사 처음 복보다 더 하게 하시니 그가 양 일만 사천과 약대 육천과 소 일천 겨리와 암나귀 일천을 두었고"
+      ],
+      "raw_text_hashes": [
+        "747728b1afb06cd7e45aa1fdfd0c0f10635b68d53f7ead00ebe99bf45cbdad85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:13",
+      "sequence": 13936,
+      "chapter_label": "JOB 42",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 13
+        }
+      ],
+      "en": "He had also seven sons and three daughters.",
+      "ko": "또 아들 일곱과 딸 셋을 낳았으며",
+      "source_text_hash": "3ff97335d90f80342822e5d321d0a6a43cc18302276eaf0f1154de2e35be4a17",
+      "translation_text_hash": "cf28a25d18a699d68141ed4e18b0b34643a81fb53f9b0030c6f798dd5a3f2615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아들 일곱과 딸 셋을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "cf28a25d18a699d68141ed4e18b0b34643a81fb53f9b0030c6f798dd5a3f2615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:14",
+      "sequence": 13937,
+      "chapter_label": "JOB 42",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 14
+        }
+      ],
+      "en": "He called the name of the first, Jemimah; and the name of the second, Keziah; and the name of the third, Keren Happuch.",
+      "ko": "그가 첫째 딸은 여미마라 이름하였고 둘째 딸은 긋시아라 이름하였고 세째 딸은 게렌합북이라 이름하였으며",
+      "source_text_hash": "8db770f4f98a338ea71e83826645c38edb4b2825c3304297efede8aed61099b0",
+      "translation_text_hash": "4f283c6fa383eb109623a6ad72cf7b86b8d420d55d07d4f244b879ddb74e8941",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 첫째 딸은 여미마라 이름하였고 둘째 딸은 긋시아라 이름하였고 세째 딸은 게렌합북이라 이름하였으며"
+      ],
+      "raw_text_hashes": [
+        "4f283c6fa383eb109623a6ad72cf7b86b8d420d55d07d4f244b879ddb74e8941"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:15",
+      "sequence": 13938,
+      "chapter_label": "JOB 42",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 15
+        }
+      ],
+      "en": "In all the land were no women found so beautiful as the daughters of Job. Their father gave them an inheritance among their brothers.",
+      "ko": "전국 중에 욥의 딸들처럼 아리따운 여자가 없었더라 그 아비가 그들에게 그 오라비처럼 산업을 주었더라",
+      "source_text_hash": "9737dc658d4095fc9367fc395353828bc10b6c01455b7d38d6402314168dc734",
+      "translation_text_hash": "9aa35513fb6adce59df9d82c91f996aca106415653795cdc6e17492e9a1e3d0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전국 중에 욥의 딸들처럼 아리따운 여자가 없었더라 그 아비가 그들에게 그 오라비처럼 산업을 주었더라"
+      ],
+      "raw_text_hashes": [
+        "9aa35513fb6adce59df9d82c91f996aca106415653795cdc6e17492e9a1e3d0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:16",
+      "sequence": 13939,
+      "chapter_label": "JOB 42",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 16
+        }
+      ],
+      "en": "After this Job lived one hundred forty years, and saw his sons, and his sons’ sons, to four generations.",
+      "ko": "그 후에 욥이 일백 사십년을 살며 아들과 손자 사대를 보았고",
+      "source_text_hash": "ca0bbcebcbf17465a946228e9f8a06c3fe634ef106f6d39d7bfeae63c18a736d",
+      "translation_text_hash": "6d699c22a107ead3eddcf5e911ccdf4aa2302add36a70ff6dd0b0177c8dbf633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 욥이 일백 사십년을 살며 아들과 손자 사대를 보았고"
+      ],
+      "raw_text_hashes": [
+        "6d699c22a107ead3eddcf5e911ccdf4aa2302add36a70ff6dd0b0177c8dbf633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:42:17",
+      "sequence": 13940,
+      "chapter_label": "JOB 42",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 42,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 42,
+          "verse": 17
+        }
+      ],
+      "en": "So Job died, being old and full of days.",
+      "ko": "나이 늙고 기한이 차서 죽었더라",
+      "source_text_hash": "2cef9864d739ef4efda5e6a0401cdc2fe5aca230ad13334e970278dee43878f1",
+      "translation_text_hash": "e16d5872d60f841a4c28b4155ae2539226594b8148e44d58b4eaca476473284a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나이 늙고 기한이 차서 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "e16d5872d60f841a4c28b4155ae2539226594b8148e44d58b4eaca476473284a"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:013",
+  "unit_ordinal": 1075,
+  "unit_label": "1CO 13",
+  "book_code": "1CO",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:13:1",
+      "sequence": 28663,
+      "chapter_label": "1CO 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "If I speak with the languages of men and of angels, but don’t have love, I have become sounding brass or a clanging cymbal.",
+      "ko": "내가 사람의 방언과 천사의 말을 할찌라도 사랑이 없으면 소리나는 구리와 울리는 꽹과리가 되고",
+      "source_text_hash": "2f8d30043bcc58910cadb3b70db4857a4144ca13cdf19d152f27c54f6951a7fd",
+      "translation_text_hash": "ea44fff61a9894c994477f42bb054a7602dbcc5a66da24b9f586712c941d86b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사람의 방언과 천사의 말을 할찌라도 사랑이 없으면 소리나는 구리와 울리는 꽹과리가 되고"
+      ],
+      "raw_text_hashes": [
+        "ea44fff61a9894c994477f42bb054a7602dbcc5a66da24b9f586712c941d86b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:2",
+      "sequence": 28664,
+      "chapter_label": "1CO 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "If I have the gift of prophecy, and know all mysteries and all knowledge, and if I have all faith, so as to remove mountains, but don’t have love, I am nothing.",
+      "ko": "내가 예언하는 능이 있어 모든 비밀과 모든 지식을 알고 또 산을 옮길만한 모든 믿음이 있을찌라도 사랑이 없으면 내가 아무 것도 아니요",
+      "source_text_hash": "c6447d5dd5623e2892635a86d0a0a0c2b4719155ddae658df63e0e4e376a110e",
+      "translation_text_hash": "28c75d32ab8f645ad628fe0ac6747d6107ce94dfcee4ce1241acd93e00fcfcf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예언하는 능이 있어 모든 비밀과 모든 지식을 알고 또 산을 옮길만한 모든 믿음이 있을찌라도 사랑이 없으면 내가 아무 것도 아니요"
+      ],
+      "raw_text_hashes": [
+        "28c75d32ab8f645ad628fe0ac6747d6107ce94dfcee4ce1241acd93e00fcfcf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:3",
+      "sequence": 28665,
+      "chapter_label": "1CO 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "If I give away all my goods to feed the poor, and if I give my body to be burned, but don’t have love, it profits me nothing.",
+      "ko": "내가 내게 있는 모든 것으로 구제하고 또 내 몸을 불사르게 내어 줄찌라도 사랑이 없으면 내게 아무 유익이 없느니라",
+      "source_text_hash": "7d3671255ced3b815832ac13f45ac7c1d316870f57c0c1a5f1237267dccf49b2",
+      "translation_text_hash": "c2f8704b6aa09a5fb3b79876d714e16c9e2f46a8f4e38914c73d03e3b49d1749",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내게 있는 모든 것으로 구제하고 또 내 몸을 불사르게 내어 줄찌라도 사랑이 없으면 내게 아무 유익이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "c2f8704b6aa09a5fb3b79876d714e16c9e2f46a8f4e38914c73d03e3b49d1749"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:4",
+      "sequence": 28666,
+      "chapter_label": "1CO 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Love is patient and is kind. Love doesn’t envy. Love doesn’t brag, is not proud,",
+      "ko": "사랑은 오래 참고 사랑은 온유하며 투기하는 자가 되지 아니하며 사랑은 자랑하지 아니하며 교만하지 아니하며",
+      "source_text_hash": "174a5458a68f83fb417a8cff24c311faf976a853f330df88b1d176dbadf4894f",
+      "translation_text_hash": "1c83166bcb757ee0da76fbd1e0d4c7115c7bd8be8c1221c075360987d7cf04bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑은 오래 참고 사랑은 온유하며 투기하는 자가 되지 아니하며 사랑은 자랑하지 아니하며 교만하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "1c83166bcb757ee0da76fbd1e0d4c7115c7bd8be8c1221c075360987d7cf04bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:5",
+      "sequence": 28667,
+      "chapter_label": "1CO 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "doesn’t behave itself inappropriately, doesn’t seek its own way, is not provoked, takes no account of evil;",
+      "ko": "무례히 행치 아니하며 자기의 유익을 구치 아니하며 성내지 아니하며 악한 것을 생각지 아니하며",
+      "source_text_hash": "519352be16bb83ffc95d4319efa0084bb0cd6ce78cc7491aff9c567173b3f879",
+      "translation_text_hash": "1d5a17e5164b13548fa3e5d4a4cd2084cdb8b2ca99483e035efdd6cf2883d4e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무례히 행치 아니하며 자기의 유익을 구치 아니하며 성내지 아니하며 악한 것을 생각지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "1d5a17e5164b13548fa3e5d4a4cd2084cdb8b2ca99483e035efdd6cf2883d4e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:6",
+      "sequence": 28668,
+      "chapter_label": "1CO 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "doesn’t rejoice in unrighteousness, but rejoices with the truth;",
+      "ko": "불의를 기뻐하지 아니하며 진리와 함께 기뻐하고",
+      "source_text_hash": "f7ed8cfd89c1e0df30c2ed214a5de2319dc4cef3875c5ccd340c9b683ac120ee",
+      "translation_text_hash": "b1ac004ed05a53d9fc8261dc295764630dffb3b8e0f331680744a57e85ff1f85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의를 기뻐하지 아니하며 진리와 함께 기뻐하고"
+      ],
+      "raw_text_hashes": [
+        "b1ac004ed05a53d9fc8261dc295764630dffb3b8e0f331680744a57e85ff1f85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:7",
+      "sequence": 28669,
+      "chapter_label": "1CO 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "bears all things, believes all things, hopes all things, and endures all things.",
+      "ko": "모든 것을 참으며 모든 것을 믿으며 모든 것을 바라며 모든 것을 견디느니라",
+      "source_text_hash": "defaa9b09543061dfa41f6c42c5b1b9db6afc64046c96bb86553490b7fe87c8f",
+      "translation_text_hash": "967797cf68f7a8cec4704ed71ebcfe624adbbec4f7627c9c2ba87547bd827035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것을 참으며 모든 것을 믿으며 모든 것을 바라며 모든 것을 견디느니라"
+      ],
+      "raw_text_hashes": [
+        "967797cf68f7a8cec4704ed71ebcfe624adbbec4f7627c9c2ba87547bd827035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:8",
+      "sequence": 28670,
+      "chapter_label": "1CO 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Love never fails. But where there are prophecies, they will be done away with. Where there are various languages, they will cease. Where there is knowledge, it will be done away with.",
+      "ko": "사랑은 언제까지든지 떨어지지 아니하나 예언도 폐하고 방언도 그치고 지식도 폐하리라",
+      "source_text_hash": "fc890a42d846c351b3eae2bb770ae852d57df3975d05e6af9061cb66eb145a93",
+      "translation_text_hash": "453d9ede251396d0808cc4e04ed38bf6604568f7b31bf86dae8632a0f336755f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑은 언제까지든지 떨어지지 아니하나 예언도 폐하고 방언도 그치고 지식도 폐하리라"
+      ],
+      "raw_text_hashes": [
+        "453d9ede251396d0808cc4e04ed38bf6604568f7b31bf86dae8632a0f336755f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:9",
+      "sequence": 28671,
+      "chapter_label": "1CO 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "For we know in part and we prophesy in part;",
+      "ko": "우리가 부분적으로 알고 부분적으로 예언하니",
+      "source_text_hash": "ab7d0bdaab4ca6c2b4c430b81036dc0c3ecfc233dc288c11690cbcaf27e4f186",
+      "translation_text_hash": "39c557fc4dde3238bc01f427cbf10aa0b91e576741a89cd30af6c9f570bf9f88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 부분적으로 알고 부분적으로 예언하니"
+      ],
+      "raw_text_hashes": [
+        "39c557fc4dde3238bc01f427cbf10aa0b91e576741a89cd30af6c9f570bf9f88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:10",
+      "sequence": 28672,
+      "chapter_label": "1CO 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "but when that which is complete has come, then that which is partial will be done away with.",
+      "ko": "온전한 것이 올 때에는 부분적으로 하던 것이 폐하리라",
+      "source_text_hash": "a6fd179f5358ccd2f83a40a2dfd5f079cddc2cdaad61b912158ad7b0e455033a",
+      "translation_text_hash": "059fcbb5cfc22563fcff4b62333cebcbc1079238978f94ed7d384709cf6429c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온전한 것이 올 때에는 부분적으로 하던 것이 폐하리라"
+      ],
+      "raw_text_hashes": [
+        "059fcbb5cfc22563fcff4b62333cebcbc1079238978f94ed7d384709cf6429c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:11",
+      "sequence": 28673,
+      "chapter_label": "1CO 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "When I was a child, I spoke as a child, I felt as a child, I thought as a child. Now that I have become a man, I have put away childish things.",
+      "ko": "내가 어렸을 때에는 말하는 것이 어린 아이와 같고 깨닫는 것이 어린 아이와 같고 생각하는 것이 어린 아이와 같다가 장성한 사람이 되어서는 어린 아이의 일을 버렸노라",
+      "source_text_hash": "85c5fb944cee5b0ec70284251f0946777c1d9f7b3dd23378e1720b69d295ad7f",
+      "translation_text_hash": "cef1be22b69fded7fc409fb9d45296a0ebdd5bfb196eceb59e53338b26cc623a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어렸을 때에는 말하는 것이 어린 아이와 같고 깨닫는 것이 어린 아이와 같고 생각하는 것이 어린 아이와 같다가 장성한 사람이 되어서는 어린 아이의 일을 버렸노라"
+      ],
+      "raw_text_hashes": [
+        "cef1be22b69fded7fc409fb9d45296a0ebdd5bfb196eceb59e53338b26cc623a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:12",
+      "sequence": 28674,
+      "chapter_label": "1CO 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "For now we see in a mirror, dimly, but then face to face. Now I know in part, but then I will know fully, even as I was also fully known.",
+      "ko": "우리가 이제는 거울로 보는것 같이 희미하나 그 때에는 얼굴과 얼굴을 대하여 볼 것이요 이제는 내가 부분적으로 아나 그 때에는 주께서 나를 아신 것 같이 내가 온전히 알리라",
+      "source_text_hash": "a82791f064f5924060b4c20f58e86023623d714ac5c5849aa48514019aebe5e1",
+      "translation_text_hash": "50911d24871305543b4ea2794f4931466194878e838ed19c12ad6840dd9a084a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이제는 거울로 보는것 같이 희미하나 그 때에는 얼굴과 얼굴을 대하여 볼 것이요 이제는 내가 부분적으로 아나 그 때에는 주께서 나를 아신 것 같이 내가 온전히 알리라"
+      ],
+      "raw_text_hashes": [
+        "50911d24871305543b4ea2794f4931466194878e838ed19c12ad6840dd9a084a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:13:13",
+      "sequence": 28675,
+      "chapter_label": "1CO 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "But now faith, hope, and love remain—these three. The greatest of these is love.",
+      "ko": "그런즉 믿음, 소망, 사랑, 이 세 가지는 항상 있을 것인데 그 중에 제일은 사랑이라",
+      "source_text_hash": "61e8fff078e8b1d2ad00d107bf81b007d419f223bd90421e4ea11def2b844f98",
+      "translation_text_hash": "fd6107b8be132d3a5329d7d43540ee4adececa6b845df3215853312bddee2139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 믿음, 소망, 사랑, 이 세 가지는 항상 있을 것인데 그 중에 제일은 사랑이라"
+      ],
+      "raw_text_hashes": [
+        "fd6107b8be132d3a5329d7d43540ee4adececa6b845df3215853312bddee2139"
+      ]
+    }
+  ]
+}

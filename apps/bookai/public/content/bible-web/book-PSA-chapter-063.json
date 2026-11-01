@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:063",
+  "unit_ordinal": 541,
+  "unit_label": "PSA 63",
+  "book_code": "PSA",
+  "chapter_number": 63,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:63:1",
+      "sequence": 14841,
+      "chapter_label": "PSA 63",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 1
+        }
+      ],
+      "en": "God, you are my God. I will earnestly seek you. My soul thirsts for you. My flesh longs for you, in a dry and weary land, where there is no water.",
+      "ko": "하나님이여 주는 나의 하나님이시라 내가 간절히 주를 찾되 물이 없어 마르고 곤핍한 땅에서 내 영혼이 주를 갈망하며 내 육체가 주를 앙모하나이다",
+      "source_text_hash": "79d4f7ee99d77d95398a8a836cf176b83e1ce6f8a57419a915a615ab29b4deb1",
+      "translation_text_hash": "6cbdd2698d85607c54b80db4554a8517f02ba3a5684f836c25c9a7658204ec20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주는 나의 하나님이시라 내가 간절히 주를 찾되 물이 없어 마르고 곤핍한 땅에서 내 영혼이 주를 갈망하며 내 육체가 주를 앙모하나이다"
+      ],
+      "raw_text_hashes": [
+        "6cbdd2698d85607c54b80db4554a8517f02ba3a5684f836c25c9a7658204ec20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:2",
+      "sequence": 14842,
+      "chapter_label": "PSA 63",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 2
+        }
+      ],
+      "en": "So I have seen you in the sanctuary, watching your power and your glory.",
+      "ko": "내가 주의 권능과 영광을 보려 하여 이와 같이 성소에서 주를 바라보았나이다",
+      "source_text_hash": "e942193de44fc1ba4fc7f1ede29c817427a3af761efb2027322867d493cab9e4",
+      "translation_text_hash": "d7ff91650b877b837acf693390411383c026f56237c8aea8764bf594891240ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 권능과 영광을 보려 하여 이와 같이 성소에서 주를 바라보았나이다"
+      ],
+      "raw_text_hashes": [
+        "d7ff91650b877b837acf693390411383c026f56237c8aea8764bf594891240ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:3",
+      "sequence": 14843,
+      "chapter_label": "PSA 63",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 3
+        }
+      ],
+      "en": "Because your loving kindness is better than life, my lips shall praise you.",
+      "ko": "주의 인자가 생명보다 나으므로 내 입술이 주를 찬양할 것이라",
+      "source_text_hash": "8f6642a987edd9c9a13a9f65e96017f6f46efd26238f8ca402855b85497717a3",
+      "translation_text_hash": "70ae19026da7c8e914ccd2ead227505199e085ea5ca1c3ad3743de13bf6530d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자가 생명보다 나으므로 내 입술이 주를 찬양할 것이라"
+      ],
+      "raw_text_hashes": [
+        "70ae19026da7c8e914ccd2ead227505199e085ea5ca1c3ad3743de13bf6530d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:4",
+      "sequence": 14844,
+      "chapter_label": "PSA 63",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 4
+        }
+      ],
+      "en": "So I will bless you while I live. I will lift up my hands in your name.",
+      "ko": "이러므로 내 평생에 주를 송축하며 주의 이름으로 인하여 내 손을 들리이다",
+      "source_text_hash": "b7c8c922d9377047d5944f5bcc716afd18842df6e78650301218d30736ad58a2",
+      "translation_text_hash": "d7a403f3f41e8c8b3b4a6d0eaba87265117e554eabdb411bebcc0538afd60273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내 평생에 주를 송축하며 주의 이름으로 인하여 내 손을 들리이다"
+      ],
+      "raw_text_hashes": [
+        "d7a403f3f41e8c8b3b4a6d0eaba87265117e554eabdb411bebcc0538afd60273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:5",
+      "sequence": 14845,
+      "chapter_label": "PSA 63",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 5
+        }
+      ],
+      "en": "My soul shall be satisfied as with the richest food. My mouth shall praise you with joyful lips,",
+      "ko": "골수와 기름진 것을 먹음과 같이 내 영혼이 만족할 것이라 내 입이 기쁜 입술로 주를 찬송하되",
+      "source_text_hash": "794c72048719a9e7cd03c90eda9a7c3ea994d80bdb85e21f9cc7449741d5f4c6",
+      "translation_text_hash": "0a72967d0e0431b71f84dda021b089d59acc67b77b09f9df66d45afb36b86778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골수와 기름진 것을 먹음과 같이 내 영혼이 만족할 것이라 내 입이 기쁜 입술로 주를 찬송하되"
+      ],
+      "raw_text_hashes": [
+        "0a72967d0e0431b71f84dda021b089d59acc67b77b09f9df66d45afb36b86778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:6",
+      "sequence": 14846,
+      "chapter_label": "PSA 63",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 6
+        }
+      ],
+      "en": "when I remember you on my bed, and think about you in the night watches.",
+      "ko": "내가 나의 침상에서 주를 기억하며 밤중에 주를 묵상할 때에 하오리니",
+      "source_text_hash": "45d18a58f822fcc0bb96a9008aad1764bbf84a4f60c4c92d58011ec51bdcd97a",
+      "translation_text_hash": "f210776005e13e81e5cda5ebfbb5b616dc6526a7d7913d81573dc30cd8118f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 침상에서 주를 기억하며 밤중에 주를 묵상할 때에 하오리니"
+      ],
+      "raw_text_hashes": [
+        "f210776005e13e81e5cda5ebfbb5b616dc6526a7d7913d81573dc30cd8118f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:7",
+      "sequence": 14847,
+      "chapter_label": "PSA 63",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 7
+        }
+      ],
+      "en": "For you have been my help. I will rejoice in the shadow of your wings.",
+      "ko": "주는 나의 도움이 되셨음이라 내가 주의 날개 그늘에서 즐거이 부르리이다",
+      "source_text_hash": "80227f92c8b3ec96c6b53da4826b45d51732e880f03c732708bd40a44710251b",
+      "translation_text_hash": "3a3ca382f09c902577e882906fdb98a7ad3f3a639a85a074181fc231fdc56fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 도움이 되셨음이라 내가 주의 날개 그늘에서 즐거이 부르리이다"
+      ],
+      "raw_text_hashes": [
+        "3a3ca382f09c902577e882906fdb98a7ad3f3a639a85a074181fc231fdc56fa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:8",
+      "sequence": 14848,
+      "chapter_label": "PSA 63",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 8
+        }
+      ],
+      "en": "My soul stays close to you. Your right hand holds me up.",
+      "ko": "나의 영혼이 주를 가까이 따르니 주의 오른손이 나를 붙드시거니와",
+      "source_text_hash": "ec162755f4678e7ad5b52dbac83818f9442177b4b5806e5bc310d0e38bdf7300",
+      "translation_text_hash": "dabea0f3bb81e8c38c0f41afd58709d3d22d94520e159b9fd13aad46f1680302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼이 주를 가까이 따르니 주의 오른손이 나를 붙드시거니와"
+      ],
+      "raw_text_hashes": [
+        "dabea0f3bb81e8c38c0f41afd58709d3d22d94520e159b9fd13aad46f1680302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:9",
+      "sequence": 14849,
+      "chapter_label": "PSA 63",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 9
+        }
+      ],
+      "en": "But those who seek my soul to destroy it shall go into the lower parts of the earth.",
+      "ko": "나의 영혼을 찾아 멸하려 하는 저희는 땅 깊은 곳에 들어가며",
+      "source_text_hash": "3d0e40c351ef23368e0a67f93c53cf3106c9f694e97eec1d98681363691efde2",
+      "translation_text_hash": "182dc91ee3f652dc201a79ac7d74cd230d65bb0be1c3cdbfa946a6ea63e8b8f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼을 찾아 멸하려 하는 저희는 땅 깊은 곳에 들어가며"
+      ],
+      "raw_text_hashes": [
+        "182dc91ee3f652dc201a79ac7d74cd230d65bb0be1c3cdbfa946a6ea63e8b8f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:10",
+      "sequence": 14850,
+      "chapter_label": "PSA 63",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 10
+        }
+      ],
+      "en": "They shall be given over to the power of the sword. They shall be jackal food.",
+      "ko": "칼의 세력에 붙인바 되어 시랑의 밥이 되리이다",
+      "source_text_hash": "c760bebcc09fbe8835de74a94918fcccd9e5aa4c57b3e252d83b29a27b6d630d",
+      "translation_text_hash": "3512e782a84abf738c29cf6b47fe08a857e8818e27eb122297c48629b6593d62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼의 세력에 붙인바 되어 시랑의 밥이 되리이다"
+      ],
+      "raw_text_hashes": [
+        "3512e782a84abf738c29cf6b47fe08a857e8818e27eb122297c48629b6593d62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:63:11",
+      "sequence": 14851,
+      "chapter_label": "PSA 63",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 63,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 63,
+          "verse": 11
+        }
+      ],
+      "en": "But the king shall rejoice in God. Everyone who swears by him will praise him, for the mouth of those who speak lies shall be silenced.",
+      "ko": "왕은 하나님을 즐거워하리니 주로 맹세한 자마다 자랑할 것이나 거짓말하는 자의 입은 막히리로다",
+      "source_text_hash": "a8176e005477b725a6d450b35d82a78eedd992557bcfe0b880593e4679495feb",
+      "translation_text_hash": "6f7f4ccf8c023c68fe5f184ddf1556141edabf0571a8c0c98b5a6a5e933063a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 하나님을 즐거워하리니 주로 맹세한 자마다 자랑할 것이나 거짓말하는 자의 입은 막히리로다"
+      ],
+      "raw_text_hashes": [
+        "6f7f4ccf8c023c68fe5f184ddf1556141edabf0571a8c0c98b5a6a5e933063a7"
+      ]
+    }
+  ]
+}

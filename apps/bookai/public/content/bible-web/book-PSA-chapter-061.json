@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:061",
+  "unit_ordinal": 539,
+  "unit_label": "PSA 61",
+  "book_code": "PSA",
+  "chapter_number": 61,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:61:1",
+      "sequence": 14821,
+      "chapter_label": "PSA 61",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 1
+        }
+      ],
+      "en": "Hear my cry, God. Listen to my prayer.",
+      "ko": "하나님이여 나의 부르짖음을 들으시며 내 기도에 유의하소서",
+      "source_text_hash": "a958b4f35e76bd22c0c4d675e6a7731197fe4f868fdaf4a8c88d7679f216945c",
+      "translation_text_hash": "797503ca47fc0ba9d6e6c824adfd550d5486b243e3728664f599a462a0cbadaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나의 부르짖음을 들으시며 내 기도에 유의하소서"
+      ],
+      "raw_text_hashes": [
+        "797503ca47fc0ba9d6e6c824adfd550d5486b243e3728664f599a462a0cbadaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:2",
+      "sequence": 14822,
+      "chapter_label": "PSA 61",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 2
+        }
+      ],
+      "en": "From the end of the earth, I will call to you when my heart is overwhelmed. Lead me to the rock that is higher than I.",
+      "ko": "내 마음이 눌릴 때에 땅끝에서부터 주께 부르짖으오리니 나보다 높은 바위에 나를 인도하소서",
+      "source_text_hash": "b93043f704deffb1a3e2618cb04a9acbd2201d40129a9e6e29d37c43b6ef0ac0",
+      "translation_text_hash": "5f44b5e493538d3a08bbe7a7c26b6c286d9eaaeeaac473ad47c1aba6022614bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 눌릴 때에 땅끝에서부터 주께 부르짖으오리니 나보다 높은 바위에 나를 인도하소서"
+      ],
+      "raw_text_hashes": [
+        "5f44b5e493538d3a08bbe7a7c26b6c286d9eaaeeaac473ad47c1aba6022614bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:3",
+      "sequence": 14823,
+      "chapter_label": "PSA 61",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 3
+        }
+      ],
+      "en": "For you have been a refuge for me, a strong tower from the enemy.",
+      "ko": "주는 나의 피난처시요 원수를 피하는 견고한 망대심이니이다",
+      "source_text_hash": "36b52aec7dd0d47f9166882956f080900429fdbeff0a04834a5f86e9cdf36ba6",
+      "translation_text_hash": "880da2d286c295f72c9ff78fd89e3c5f0b9fa7ea031ae60785b384bc6ea78fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 피난처시요 원수를 피하는 견고한 망대심이니이다"
+      ],
+      "raw_text_hashes": [
+        "880da2d286c295f72c9ff78fd89e3c5f0b9fa7ea031ae60785b384bc6ea78fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:4",
+      "sequence": 14824,
+      "chapter_label": "PSA 61",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 4
+        }
+      ],
+      "en": "I will dwell in your tent forever. I will take refuge in the shelter of your wings. Selah.",
+      "ko": "내가 영원히 주의 장막에 거하며 내가 주의 날개 밑에 피하리이다(셀라)",
+      "source_text_hash": "925e6fb7f956000ec2f71a991816e9588bc156bdc9b8f27d98c9cf41850124cf",
+      "translation_text_hash": "a4aeb3636ff356a8fe356ccb51849109d0b32e3ab46a5c8aca15cce5ab8d7bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 영원히 주의 장막에 거하며 내가 주의 날개 밑에 피하리이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a4aeb3636ff356a8fe356ccb51849109d0b32e3ab46a5c8aca15cce5ab8d7bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:5",
+      "sequence": 14825,
+      "chapter_label": "PSA 61",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 5
+        }
+      ],
+      "en": "For you, God, have heard my vows. You have given me the heritage of those who fear your name.",
+      "ko": "하나님이여 내 서원을 들으시고 주의 이름을 경외하는 자의 얻을 기업을 내게 주셨나이다",
+      "source_text_hash": "7699837c3af7e572dc5d223706f8a17ced4405911fda0a36cbd01e6f343b78be",
+      "translation_text_hash": "999c0dde3fbd9ce8b65c93454c6a23c8ac84a709ae707f3097efd193d2b8e302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 서원을 들으시고 주의 이름을 경외하는 자의 얻을 기업을 내게 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "999c0dde3fbd9ce8b65c93454c6a23c8ac84a709ae707f3097efd193d2b8e302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:6",
+      "sequence": 14826,
+      "chapter_label": "PSA 61",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 6
+        }
+      ],
+      "en": "You will prolong the king’s life. His years will be for generations.",
+      "ko": "주께서 왕으로 장수케 하사 그 나이 여러 대에 미치게 하시리이다",
+      "source_text_hash": "fff73997451d80b42f68d7b13c103add6cc19ea45294fd4a08014a39fd9997be",
+      "translation_text_hash": "ec33e883535a561c92a89fa728000f1e05f83051d267c4c453d91919a21eb979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 왕으로 장수케 하사 그 나이 여러 대에 미치게 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "ec33e883535a561c92a89fa728000f1e05f83051d267c4c453d91919a21eb979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:7",
+      "sequence": 14827,
+      "chapter_label": "PSA 61",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 7
+        }
+      ],
+      "en": "He shall be enthroned in God’s presence forever. Appoint your loving kindness and truth, that they may preserve him.",
+      "ko": "저가 영원히 하나님 앞에 거하리니 인자와 진리를 예비하사 저를 보호하소서",
+      "source_text_hash": "b0ad6fe1ac345e6048a6e261ff7379fe6713bf23cf784f1ea151d1de45f36ded",
+      "translation_text_hash": "e224c7f86ee28aa11293dda0ed3ccf2fc8b075bd02ce1021c2eb0c9065fac263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 영원히 하나님 앞에 거하리니 인자와 진리를 예비하사 저를 보호하소서"
+      ],
+      "raw_text_hashes": [
+        "e224c7f86ee28aa11293dda0ed3ccf2fc8b075bd02ce1021c2eb0c9065fac263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:61:8",
+      "sequence": 14828,
+      "chapter_label": "PSA 61",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 61,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 61,
+          "verse": 8
+        }
+      ],
+      "en": "So I will sing praise to your name forever, that I may fulfill my vows daily.",
+      "ko": "그리하시면 내가 주의 이름을 영원히 찬양하며 매일 나의 서원을 이행하리이다",
+      "source_text_hash": "e3174946ad69920800b0b34b251a02e4921a2f7ecc022520316b09e90723ed80",
+      "translation_text_hash": "bdd3967e18e1c04981a653c78a76f108a77b6cfe68632ebcca31dd36ae437d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시면 내가 주의 이름을 영원히 찬양하며 매일 나의 서원을 이행하리이다"
+      ],
+      "raw_text_hashes": [
+        "bdd3967e18e1c04981a653c78a76f108a77b6cfe68632ebcca31dd36ae437d4c"
+      ]
+    }
+  ]
+}

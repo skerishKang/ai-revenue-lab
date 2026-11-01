@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:020",
+  "unit_ordinal": 70,
+  "unit_label": "EXO 20",
+  "book_code": "EXO",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:20:1",
+      "sequence": 2053,
+      "chapter_label": "EXO 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "God spoke all these words, saying,",
+      "ko": "하나님이 이 모든 말씀으로 일러 가라사대",
+      "source_text_hash": "2eb8c9405dbba263ed833e23a22ef94c3b94d1345d39bd5046feb27818fe7e6c",
+      "translation_text_hash": "e3c2d1593bcc5de9e6b2fc94f8103cdf55ef41ad8fb71b2abcde34b2b7ca6445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이 모든 말씀으로 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "e3c2d1593bcc5de9e6b2fc94f8103cdf55ef41ad8fb71b2abcde34b2b7ca6445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:2",
+      "sequence": 2054,
+      "chapter_label": "EXO 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "“I am the LORD your God, who brought you out of the land of Egypt, out of the house of bondage.",
+      "ko": "나는 너를 애굽 땅, 종 되었던 집에서 인도하여 낸 너의 하나님 여호와로라",
+      "source_text_hash": "6dc63617225e6acdf4400a27bb9207bef363149b8928640283ed8df92b7abcc5",
+      "translation_text_hash": "c20ac31e1983d47ded6facb0dc6bdf8ce5eaab36e97b468dd8a0d865f43eb0a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너를 애굽 땅, 종 되었던 집에서 인도하여 낸 너의 하나님 여호와로라"
+      ],
+      "raw_text_hashes": [
+        "c20ac31e1983d47ded6facb0dc6bdf8ce5eaab36e97b468dd8a0d865f43eb0a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:3",
+      "sequence": 2055,
+      "chapter_label": "EXO 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "“You shall have no other gods before me.",
+      "ko": "너는 나 외에는 다른 신들을 네게 있게 말찌니라",
+      "source_text_hash": "b83afeb8091631e55436b6d33885c3879211112d01dffc5e8b56e5976bc53f65",
+      "translation_text_hash": "e32a204bac12c7ec1e3092b061b00c03bf2cd460f2b8b5bd56203cc82f79add8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나 외에는 다른 신들을 네게 있게 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "e32a204bac12c7ec1e3092b061b00c03bf2cd460f2b8b5bd56203cc82f79add8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:4",
+      "sequence": 2056,
+      "chapter_label": "EXO 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "“You shall not make for yourselves an idol, nor any image of anything that is in the heavens above, or that is on the earth beneath, or that is in the water under the earth:",
+      "ko": "너를 위하여 새긴 우상을 만들지 말고 또 위로 하늘에 있는 것이나 아래로 땅에 있는 것이나 땅아래 물속에 있는 것의 아무 형상이든지 만들지 말며",
+      "source_text_hash": "5b2f78df50da08fa205482ceb03369761ee2f7bf44b1c2a1e8c93e1459886eef",
+      "translation_text_hash": "4000c33f8f03ba60b8cd540539ef3ffb9bdcaa245acc641250279dc32646e08e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 위하여 새긴 우상을 만들지 말고 또 위로 하늘에 있는 것이나 아래로 땅에 있는 것이나 땅아래 물속에 있는 것의 아무 형상이든지 만들지 말며"
+      ],
+      "raw_text_hashes": [
+        "4000c33f8f03ba60b8cd540539ef3ffb9bdcaa245acc641250279dc32646e08e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:5",
+      "sequence": 2057,
+      "chapter_label": "EXO 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "you shall not bow yourself down to them, nor serve them, for I, the LORD your God, am a jealous God, visiting the iniquity of the fathers on the children, on the third and on the fourth generation of those who hate me,",
+      "ko": "그것들에게 절하지 말며 그것들을 섬기지 말라 나 여호와 너의 하나님은 질투하는 하나님인즉 나를 미워하는 자의 죄를 갚되 아비로부터 아들에게로 삼 사대까지 이르게 하거니와",
+      "source_text_hash": "b7a8aaf5e93b10a737b38e5b70c6a62f2c52d9259a5cfec30b547ffe815cb23f",
+      "translation_text_hash": "23fa4ec1f706916b4034235f5ce9af91a0d56780db262532a0c17f7a154c24bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들에게 절하지 말며 그것들을 섬기지 말라 나 여호와 너의 하나님은 질투하는 하나님인즉 나를 미워하는 자의 죄를 갚되 아비로부터 아들에게로 삼 사대까지 이르게 하거니와"
+      ],
+      "raw_text_hashes": [
+        "23fa4ec1f706916b4034235f5ce9af91a0d56780db262532a0c17f7a154c24bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:6",
+      "sequence": 2058,
+      "chapter_label": "EXO 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "and showing loving kindness to thousands of those who love me and keep my commandments.",
+      "ko": "나를 사랑하고 내 계명을 지키는 자에게는 천 대까지 은혜를 베푸느니라",
+      "source_text_hash": "ff9dbbc32767d8bab766ef6c8fe8f7a5cefcc351709ad5487d71aa1de56bb21b",
+      "translation_text_hash": "7f00b642fb796b40ea76ed7173f947f08eca752d27430fd3cc6b6681b6d9be30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 사랑하고 내 계명을 지키는 자에게는 천 대까지 은혜를 베푸느니라"
+      ],
+      "raw_text_hashes": [
+        "7f00b642fb796b40ea76ed7173f947f08eca752d27430fd3cc6b6681b6d9be30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:7",
+      "sequence": 2059,
+      "chapter_label": "EXO 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "“You shall not misuse the name of the LORD your God, for the LORD will not hold him guiltless who misuses his name.",
+      "ko": "너는 너의 하나님 여호와의 이름을 망령되이 일컫지 말라 나 여호와는 나의 이름을 망령되이 일컫는 자를 죄 없다 하지 아니하리라",
+      "source_text_hash": "c8287edbca45ac7c8bf7d23631ae6b8bea8dc299fdea0e6a1bc83a3918a5e222",
+      "translation_text_hash": "c767879d2d6959f51a5359a52c598c0e56a18f4aa2092a90992af0a4c5a09e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 너의 하나님 여호와의 이름을 망령되이 일컫지 말라 나 여호와는 나의 이름을 망령되이 일컫는 자를 죄 없다 하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "c767879d2d6959f51a5359a52c598c0e56a18f4aa2092a90992af0a4c5a09e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:8",
+      "sequence": 2060,
+      "chapter_label": "EXO 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "“Remember the Sabbath day, to keep it holy.",
+      "ko": "안식일을 기억하여 거룩히 지키라",
+      "source_text_hash": "d19a94bf88cb6a422decbec97c097c41ec734e7803c38475fac632318a4d9aa1",
+      "translation_text_hash": "b8d1655cbde208f2843d506480d3daa7d78b25f9d2d4d758a37eadc2548cf07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일을 기억하여 거룩히 지키라"
+      ],
+      "raw_text_hashes": [
+        "b8d1655cbde208f2843d506480d3daa7d78b25f9d2d4d758a37eadc2548cf07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:9",
+      "sequence": 2061,
+      "chapter_label": "EXO 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "You shall labor six days, and do all your work,",
+      "ko": "엿새 동안은 힘써 네 모든 일을 행할 것이나",
+      "source_text_hash": "8c90eab3c1be58f79125710672e54cc1f4ff14b3b911ae920b45d3ee5b1e4f99",
+      "translation_text_hash": "1622ce55de004fb6b17d3d9e32a9e960eb179cad497b5a97491a9d51dd95fefe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 동안은 힘써 네 모든 일을 행할 것이나"
+      ],
+      "raw_text_hashes": [
+        "1622ce55de004fb6b17d3d9e32a9e960eb179cad497b5a97491a9d51dd95fefe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:10",
+      "sequence": 2062,
+      "chapter_label": "EXO 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "but the seventh day is a Sabbath to the LORD your God. You shall not do any work in it, you, nor your son, nor your daughter, your male servant, nor your female servant, nor your livestock, nor your stranger who is within your gates;",
+      "ko": "제 칠일은 너의 하나님 여호와의 안식일인즉 너나 네 아들이나 네 딸이나 네 남종이나 네 여종이나 네 육축이나 네 문안에 유하는 객이라도 아무 일도 하지 말라",
+      "source_text_hash": "da9e2e0eb16ac53b9009e609cb891ca6a8a41067d018c89629c0da8366efd087",
+      "translation_text_hash": "73f6b76c4237e540e06256b70ae2174344f41ab320fac6f03056155500d54100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일은 너의 하나님 여호와의 안식일인즉 너나 네 아들이나 네 딸이나 네 남종이나 네 여종이나 네 육축이나 네 문안에 유하는 객이라도 아무 일도 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "73f6b76c4237e540e06256b70ae2174344f41ab320fac6f03056155500d54100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:11",
+      "sequence": 2063,
+      "chapter_label": "EXO 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "for in six days the LORD made heaven and earth, the sea, and all that is in them, and rested the seventh day; therefore the LORD blessed the Sabbath day, and made it holy.",
+      "ko": "이는 엿새 동안에 나 여호와가 하늘과 땅과 바다와 그 가운데 모든 것을 만들고 제 칠일에 쉬었음이라 그러므로 나 여호와가 안식일을 복되게 하여 그 날을 거룩하게 하였느니라",
+      "source_text_hash": "c0b02dd8a6bbc13476a549a5d91cdcccf03a6b696278b39e6fd61da16a42ef25",
+      "translation_text_hash": "f559b2401381af076eab6d3e777bbfe493bfdaf7d3f28ff84c2bb6848c7ef45d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 엿새 동안에 나 여호와가 하늘과 땅과 바다와 그 가운데 모든 것을 만들고 제 칠일에 쉬었음이라 그러므로 나 여호와가 안식일을 복되게 하여 그 날을 거룩하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "f559b2401381af076eab6d3e777bbfe493bfdaf7d3f28ff84c2bb6848c7ef45d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:12",
+      "sequence": 2064,
+      "chapter_label": "EXO 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "“Honor your father and your mother, that your days may be long in the land which the LORD your God gives you.",
+      "ko": "네 부모를 공경하라 그리하면 너의 하나님 나 여호와가 네게 준 땅에서 네 생명이 길리라",
+      "source_text_hash": "6b607d12219af7aaf938fcfa8f60e6c88bfdc8bff297aa831c461d841431c337",
+      "translation_text_hash": "7e46d68085f68944ba620db16847cf2cbc8bd842de193314bff5879082ffd044",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 부모를 공경하라 그리하면 너의 하나님 나 여호와가 네게 준 땅에서 네 생명이 길리라"
+      ],
+      "raw_text_hashes": [
+        "7e46d68085f68944ba620db16847cf2cbc8bd842de193314bff5879082ffd044"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:13",
+      "sequence": 2065,
+      "chapter_label": "EXO 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "“You shall not murder.",
+      "ko": "살인하지 말찌니라",
+      "source_text_hash": "b6e343f603ab51a362edc6bb2ea48caeb2279c0ccec5c632375b2995a3fb6ab1",
+      "translation_text_hash": "e20bf5231dba26c89b1fffc4cad0d7c8590a79002f51287fdd3842512047598a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살인하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "e20bf5231dba26c89b1fffc4cad0d7c8590a79002f51287fdd3842512047598a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:14",
+      "sequence": 2066,
+      "chapter_label": "EXO 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "“You shall not commit adultery.",
+      "ko": "간음하지 말찌니라",
+      "source_text_hash": "fda483ccb01b2fca8a47babf320bc0f572186f0b199a0966c166ee5bcb6b793d",
+      "translation_text_hash": "cc081ed242c209bbcad11b407ea9ccf4cbb0c8d48b9c78af10b4b7c3b0e659a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "cc081ed242c209bbcad11b407ea9ccf4cbb0c8d48b9c78af10b4b7c3b0e659a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:15",
+      "sequence": 2067,
+      "chapter_label": "EXO 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "“You shall not steal.",
+      "ko": "도적질하지 말찌니라",
+      "source_text_hash": "b33c78c5c5e53e524d5e4a101e434ad9f62599ece738ccf58d120d33eb33234d",
+      "translation_text_hash": "fb524eef1a83444e14e08239056fae1b4964db36611be5a4d45a6a2add8f6af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적질하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "fb524eef1a83444e14e08239056fae1b4964db36611be5a4d45a6a2add8f6af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:16",
+      "sequence": 2068,
+      "chapter_label": "EXO 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "“You shall not give false testimony against your neighbor.",
+      "ko": "네 이웃에 대하여 거짓 증거하지 말찌니라",
+      "source_text_hash": "2220b1781ff15833569f5fe053f6621350eeb75259ed1126c1e836ae0b91548e",
+      "translation_text_hash": "200fd6e2bbaac0da98cc5fdb7cc9893cce7a7bea75892ffd3da4986e00c039a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃에 대하여 거짓 증거하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "200fd6e2bbaac0da98cc5fdb7cc9893cce7a7bea75892ffd3da4986e00c039a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:17",
+      "sequence": 2069,
+      "chapter_label": "EXO 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "“You shall not covet your neighbor’s house. You shall not covet your neighbor’s wife, nor his male servant, nor his female servant, nor his ox, nor his donkey, nor anything that is your neighbor’s.”",
+      "ko": "네 이웃의 집을 탐내지 말찌니라 네 이웃의 아내나 그의 남종이나 그의 여종이나 그의 소나 그의 나귀나 무릇 네 이웃의 소유를 탐내지 말찌니라",
+      "source_text_hash": "4264da3a4b190374108a16c98ee05ba0646b613ae6d0db8417899d0bef503ff2",
+      "translation_text_hash": "b039a02055b16fb6dca0a8881792aad22df17bf34f5912a738047fd007a64e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃의 집을 탐내지 말찌니라 네 이웃의 아내나 그의 남종이나 그의 여종이나 그의 소나 그의 나귀나 무릇 네 이웃의 소유를 탐내지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "b039a02055b16fb6dca0a8881792aad22df17bf34f5912a738047fd007a64e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:18",
+      "sequence": 2070,
+      "chapter_label": "EXO 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "All the people perceived the thunderings, the lightnings, the sound of the trumpet, and the mountain smoking. When the people saw it, they trembled, and stayed at a distance.",
+      "ko": "뭇 백성이 우뢰와 번개와 나팔소리와 산의 연기를 본지라 그들이 볼 때에 떨며 멀리 서서",
+      "source_text_hash": "f8f72affee17c0ee67464e193459ccd84752bad1f40ddaccc48eb0c02cf1787a",
+      "translation_text_hash": "72aaa5ef82873c33432d4662897e9324cfa18f6f7aa81667720786a81e2edfc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뭇 백성이 우뢰와 번개와 나팔소리와 산의 연기를 본지라 그들이 볼 때에 떨며 멀리 서서"
+      ],
+      "raw_text_hashes": [
+        "72aaa5ef82873c33432d4662897e9324cfa18f6f7aa81667720786a81e2edfc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:19",
+      "sequence": 2071,
+      "chapter_label": "EXO 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "They said to Moses, “Speak with us yourself, and we will listen; but don’t let God speak with us, lest we die.”",
+      "ko": "모세에게 이르되 당신이 우리에게 말씀하소서 우리가 들으리이다 하나님이 우리에게 말씀하시지 말게 하소서 우리가 죽을까 하나이다",
+      "source_text_hash": "be6abade98256eb35b0aa5fa2b6fe3b4e35f438c461b5cc8174c2a26c7d2a9e4",
+      "translation_text_hash": "7596f595122f571ff0417fbb63e0d31de4b5e6caed775303651391a374848496",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 이르되 당신이 우리에게 말씀하소서 우리가 들으리이다 하나님이 우리에게 말씀하시지 말게 하소서 우리가 죽을까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "7596f595122f571ff0417fbb63e0d31de4b5e6caed775303651391a374848496"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:20",
+      "sequence": 2072,
+      "chapter_label": "EXO 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "Moses said to the people, “Don’t be afraid, for God has come to test you, and that his fear may be before you, that you won’t sin.”",
+      "ko": "모세가 백성에게 이르되 두려워 말라 하나님이 강림하심은 너희를 시험하고 너희로 경외하여 범죄치 않게 하려 하심이니라",
+      "source_text_hash": "ee3e13a0645d463fb4a332b67f3a3797935423025ff3a81f5ce0f9bb3920bd33",
+      "translation_text_hash": "9b1172b5ac56ea8fa0dd35cf8d77f2911706d8022427943f11ecda8e98bc1104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 백성에게 이르되 두려워 말라 하나님이 강림하심은 너희를 시험하고 너희로 경외하여 범죄치 않게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "9b1172b5ac56ea8fa0dd35cf8d77f2911706d8022427943f11ecda8e98bc1104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:21",
+      "sequence": 2073,
+      "chapter_label": "EXO 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "The people stayed at a distance, and Moses came near to the thick darkness where God was.",
+      "ko": "백성은 멀리 섰고 모세는 하나님의 계신 암흑으로 가까이 가니라",
+      "source_text_hash": "e72e5569bc0e61094f7f162e7978554eab59aa285b5fd31fa08f11f8cf851bd1",
+      "translation_text_hash": "5a2b41cf43cf07215b6d8d93eb3a837eb91aecfe3607eaa140106a13c42c09df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성은 멀리 섰고 모세는 하나님의 계신 암흑으로 가까이 가니라"
+      ],
+      "raw_text_hashes": [
+        "5a2b41cf43cf07215b6d8d93eb3a837eb91aecfe3607eaa140106a13c42c09df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:22",
+      "sequence": 2074,
+      "chapter_label": "EXO 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD said to Moses, “This is what you shall tell the children of Israel: ‘You yourselves have seen that I have talked with you from heaven.",
+      "ko": "여호와께서 모세에게 이르시되 너는 이스라엘 자손에게 이같이 이르라 내가 하늘에서부터 너희에게 말하는 것을 너희가 친히 보았으니",
+      "source_text_hash": "3bb32bdc1aa6ea43d2342524124ab5c6a1a417d66778dd76c3fa38cfa3b279eb",
+      "translation_text_hash": "abf52e6cd7601a676033748682e7479a3d928e1e6c0771d2ba72f9f4a1a188b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 이스라엘 자손에게 이같이 이르라 내가 하늘에서부터 너희에게 말하는 것을 너희가 친히 보았으니"
+      ],
+      "raw_text_hashes": [
+        "abf52e6cd7601a676033748682e7479a3d928e1e6c0771d2ba72f9f4a1a188b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:23",
+      "sequence": 2075,
+      "chapter_label": "EXO 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "You shall most certainly not make gods of silver or gods of gold for yourselves to be alongside me.",
+      "ko": "너희는 나를 비겨서 은으로 신상이나 금으로 신상을 너희를 위하여 만들지 말고",
+      "source_text_hash": "aa7fc65e35d0072e99c5cb46f299bed96327071082edf65c83b202130cfb6878",
+      "translation_text_hash": "7c4a21d09722d7a0987f01c3cbeefe9ed54004bb370e64872baa4b6938378ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나를 비겨서 은으로 신상이나 금으로 신상을 너희를 위하여 만들지 말고"
+      ],
+      "raw_text_hashes": [
+        "7c4a21d09722d7a0987f01c3cbeefe9ed54004bb370e64872baa4b6938378ffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:24",
+      "sequence": 2076,
+      "chapter_label": "EXO 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "You shall make an altar of earth for me, and shall sacrifice on it your burnt offerings and your peace offerings, your sheep and your cattle. In every place where I record my name I will come to you and I will bless you.",
+      "ko": "내게 토단을 쌓고 그 위에 너의 양과 소로 너의 번제와 화목제를 드리라 내가 무릇 내 이름을 기념하게 하는 곳에서 네게 강림하여 복을 주리라",
+      "source_text_hash": "fadc254a6b301be5a57a0100130cdce4e4ce7035aa3bcf9b9bc6e4617d2b347d",
+      "translation_text_hash": "bf9c63ee280aaecfbdf3ac4767ab88acbf325730c2af97e7ee26d36997abfda3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 토단을 쌓고 그 위에 너의 양과 소로 너의 번제와 화목제를 드리라 내가 무릇 내 이름을 기념하게 하는 곳에서 네게 강림하여 복을 주리라"
+      ],
+      "raw_text_hashes": [
+        "bf9c63ee280aaecfbdf3ac4767ab88acbf325730c2af97e7ee26d36997abfda3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:25",
+      "sequence": 2077,
+      "chapter_label": "EXO 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "If you make me an altar of stone, you shall not build it of cut stones; for if you lift up your tool on it, you have polluted it.",
+      "ko": "네가 내게 돌로 단을 쌓거든 다듬은 돌로 쌓지 말라 네가 정으로 그것을 쪼면 부정하게 함이니라",
+      "source_text_hash": "b5848bce4bd510f7837309e233fa74de778761ecd17f05f7c83e6d88005a365c",
+      "translation_text_hash": "f9f2ce794f3e77f5de738a2f97347e725439e17f45864ce5f77295ed18be16b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내게 돌로 단을 쌓거든 다듬은 돌로 쌓지 말라 네가 정으로 그것을 쪼면 부정하게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "f9f2ce794f3e77f5de738a2f97347e725439e17f45864ce5f77295ed18be16b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:20:26",
+      "sequence": 2078,
+      "chapter_label": "EXO 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "You shall not go up by steps to my altar, that your nakedness may not be exposed to it.’",
+      "ko": "너는 층계로 내 단에 오르지 말라 네 하체가 그 위에서 드러날까 함이니라",
+      "source_text_hash": "0ac93e392d4e5396910b8c985d5f3081516a6c7ff8490a0969a177c878b925a7",
+      "translation_text_hash": "bfd209b9fc33ee01020363a18c9761d3b19a3a55e5b9411cb7fc09629d3c3abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 층계로 내 단에 오르지 말라 네 하체가 그 위에서 드러날까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "bfd209b9fc33ee01020363a18c9761d3b19a3a55e5b9411cb7fc09629d3c3abb"
+      ]
+    }
+  ]
+}

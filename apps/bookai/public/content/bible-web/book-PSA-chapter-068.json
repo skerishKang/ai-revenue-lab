@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:068",
+  "unit_ordinal": 546,
+  "unit_label": "PSA 68",
+  "book_code": "PSA",
+  "chapter_number": 68,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:68:1",
+      "sequence": 14902,
+      "chapter_label": "PSA 68",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 1
+        }
+      ],
+      "en": "Let God arise! Let his enemies be scattered! Let them who hate him also flee before him.",
+      "ko": "하나님은 일어나사 원수를 흩으시며 주를 미워하는 자로 주의 앞에서 도망하게 하소서",
+      "source_text_hash": "e10d9c5f773153fd38c4da6f1f2e01b9db2197abb39a8a1be59471d3c816d185",
+      "translation_text_hash": "897004d2e2c0a2983f12809f52405675c9e65bdf870b8f4bddd80198f75a00d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 일어나사 원수를 흩으시며 주를 미워하는 자로 주의 앞에서 도망하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "897004d2e2c0a2983f12809f52405675c9e65bdf870b8f4bddd80198f75a00d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:2",
+      "sequence": 14903,
+      "chapter_label": "PSA 68",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 2
+        }
+      ],
+      "en": "As smoke is driven away, so drive them away. As wax melts before the fire, so let the wicked perish at the presence of God.",
+      "ko": "연기가 몰려감 같이 저희를 몰아내소서 불 앞에서 밀이 녹음 같이 악인이 하나님 앞에서 망하게 하소서",
+      "source_text_hash": "ef149e7ff8483dc7d2efd8907739f2cefd05c0d5925a129e2148c78f714184e3",
+      "translation_text_hash": "261b92f46c849e34db892cc640f95d52b6f5adec169d9cce9c3d420574b909f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연기가 몰려감 같이 저희를 몰아내소서 불 앞에서 밀이 녹음 같이 악인이 하나님 앞에서 망하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "261b92f46c849e34db892cc640f95d52b6f5adec169d9cce9c3d420574b909f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:3",
+      "sequence": 14904,
+      "chapter_label": "PSA 68",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 3
+        }
+      ],
+      "en": "But let the righteous be glad. Let them rejoice before God. Yes, let them rejoice with gladness.",
+      "ko": "의인은 기뻐하여 하나님 앞에서 뛰놀며 기뻐하고 즐거워할찌어다",
+      "source_text_hash": "6000460cadeb5f537513dfd167246452795734bd85c838dbe1ce5873d507e026",
+      "translation_text_hash": "ed7ce7e3753d0ba93229bb3d7e4c7131920913a51902fea682fbac8b4fc5a517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인은 기뻐하여 하나님 앞에서 뛰놀며 기뻐하고 즐거워할찌어다"
+      ],
+      "raw_text_hashes": [
+        "ed7ce7e3753d0ba93229bb3d7e4c7131920913a51902fea682fbac8b4fc5a517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:4",
+      "sequence": 14905,
+      "chapter_label": "PSA 68",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 4
+        }
+      ],
+      "en": "Sing to God! Sing praises to his name! Extol him who rides on the clouds: to the LORD, his name! Rejoice before him!",
+      "ko": "하나님께 노래하며 그 이름을 찬양하라 타고 광야에 행하시던 자를 위하여 대로를 수축하라 그 이름은 여호와시니 그 앞에서 뛰놀찌어다",
+      "source_text_hash": "129fb80e06c573b6451d7630f357cfd0d533417d1a1ec3e5f27ffa19fe834bf3",
+      "translation_text_hash": "7b02da39f178184aaa71aac27119d1d5bd7908fc951258bf958c76eb1925fe9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 노래하며 그 이름을 찬양하라 타고 광야에 행하시던 자를 위하여 대로를 수축하라 그 이름은 여호와시니 그 앞에서 뛰놀찌어다"
+      ],
+      "raw_text_hashes": [
+        "7b02da39f178184aaa71aac27119d1d5bd7908fc951258bf958c76eb1925fe9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:5",
+      "sequence": 14906,
+      "chapter_label": "PSA 68",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 5
+        }
+      ],
+      "en": "A father of the fatherless, and a defender of the widows, is God in his holy habitation.",
+      "ko": "그 거룩한 처소에 계신 하나님은 고아의 아버지시며 과부의 재판장이시라",
+      "source_text_hash": "7ecac04e2de69fcb3faaba65437bad0a0992bd74848ea2cab421ae889a1fb058",
+      "translation_text_hash": "5b982d64efa11cf6f0d01ba7d191ca0361555acaaef9959b984938fe6bfe1337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 거룩한 처소에 계신 하나님은 고아의 아버지시며 과부의 재판장이시라"
+      ],
+      "raw_text_hashes": [
+        "5b982d64efa11cf6f0d01ba7d191ca0361555acaaef9959b984938fe6bfe1337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:6",
+      "sequence": 14907,
+      "chapter_label": "PSA 68",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 6
+        }
+      ],
+      "en": "God sets the lonely in families. He brings out the prisoners with singing, but the rebellious dwell in a sun-scorched land.",
+      "ko": "하나님은 고독한 자로 가속 중에 처하게 하시며 수금된 자를 이끌어 내사 형통케 하시느니라 오직 거역하는 자의 거처는 메마른 땅이로다",
+      "source_text_hash": "da32bdffa7d3eb36c98739f3370b244967526f0f3df3877361d4a08d74b85694",
+      "translation_text_hash": "1d41dccfd71e793a9cc91a8e91b82368914f076c1cb5269318dcc089a71854af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 고독한 자로 가속 중에 처하게 하시며 수금된 자를 이끌어 내사 형통케 하시느니라 오직 거역하는 자의 거처는 메마른 땅이로다"
+      ],
+      "raw_text_hashes": [
+        "1d41dccfd71e793a9cc91a8e91b82368914f076c1cb5269318dcc089a71854af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:7",
+      "sequence": 14908,
+      "chapter_label": "PSA 68",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 7
+        }
+      ],
+      "en": "God, when you went out before your people, when you marched through the wilderness... Selah.",
+      "ko": "하나님이여 주의 백성 앞에서 앞서 나가사 광야에 행진하셨을 때에(셀라)",
+      "source_text_hash": "a70667b3bc27e11aa55aaf0e0ff92303398079e35075ee8e600b6b0ac79aabe3",
+      "translation_text_hash": "30c9973c90d3c77bac81589410a317995c5aee02014df00a71f96f1c27d21bc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 백성 앞에서 앞서 나가사 광야에 행진하셨을 때에(셀라)"
+      ],
+      "raw_text_hashes": [
+        "30c9973c90d3c77bac81589410a317995c5aee02014df00a71f96f1c27d21bc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:8",
+      "sequence": 14909,
+      "chapter_label": "PSA 68",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 8
+        }
+      ],
+      "en": "The earth trembled. The sky also poured down rain at the presence of the God of Sinai— at the presence of God, the God of Israel.",
+      "ko": "땅이 진동하며 하늘이 하나님 앞에서 떨어지며 저 시내산도 하나님 곧 이스라엘의 하나님 앞에서 진동하였나이다",
+      "source_text_hash": "42b295bb8214ac847a2f8eecc3c57c3eda5c5ec50f0e29854fa7af7c2e3e1f6f",
+      "translation_text_hash": "efa8ff60dc9801afa66f381cb9e5a085e70c73f68501e327deb2170beed46376",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 진동하며 하늘이 하나님 앞에서 떨어지며 저 시내산도 하나님 곧 이스라엘의 하나님 앞에서 진동하였나이다"
+      ],
+      "raw_text_hashes": [
+        "efa8ff60dc9801afa66f381cb9e5a085e70c73f68501e327deb2170beed46376"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:9",
+      "sequence": 14910,
+      "chapter_label": "PSA 68",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 9
+        }
+      ],
+      "en": "You, God, sent a plentiful rain. You confirmed your inheritance when it was weary.",
+      "ko": "하나님이여 흡족한 비를 보내사 주의 산업이 곤핍할 때에 견고케 하셨고",
+      "source_text_hash": "6fe1c0f85a458e6a6e90c839f949a03a0f33050072fb1adca540733728398f79",
+      "translation_text_hash": "b91f959c80996a7b3459a43da136e86e127786cc36f0c11feac9dfb4ffb2f4b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 흡족한 비를 보내사 주의 산업이 곤핍할 때에 견고케 하셨고"
+      ],
+      "raw_text_hashes": [
+        "b91f959c80996a7b3459a43da136e86e127786cc36f0c11feac9dfb4ffb2f4b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:10",
+      "sequence": 14911,
+      "chapter_label": "PSA 68",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 10
+        }
+      ],
+      "en": "Your congregation lived therein. You, God, prepared your goodness for the poor.",
+      "ko": "주의 회중으로 그 가운데 거하게 하셨나이다 하나님이여 가난한 자를 위하여 주의 은택을 준비하셨나이다",
+      "source_text_hash": "f24e8607c45072ee2cc4a88ac82fca5d1b5999c681529b8d3d28810eb953e998",
+      "translation_text_hash": "112136a3ad56570b4db2656f0abef212d930c5221df912ce5e9cbeeec2e6e6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 회중으로 그 가운데 거하게 하셨나이다 하나님이여 가난한 자를 위하여 주의 은택을 준비하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "112136a3ad56570b4db2656f0abef212d930c5221df912ce5e9cbeeec2e6e6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:11",
+      "sequence": 14912,
+      "chapter_label": "PSA 68",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 11
+        }
+      ],
+      "en": "The Lord announced the word. The ones who proclaim it are a great company.",
+      "ko": "주께서 말씀을 주시니 소식을 공포하는 여자가 큰 무리라",
+      "source_text_hash": "ff6b2ba5cda72ad0ccdd246e0a260bba78a8a83ab5acdf4b6f7acd5eb81fdbf0",
+      "translation_text_hash": "1ae8e590a22ee936ffa94d776b1adab55fe6fe977a291de148befc993dec0eeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 말씀을 주시니 소식을 공포하는 여자가 큰 무리라"
+      ],
+      "raw_text_hashes": [
+        "1ae8e590a22ee936ffa94d776b1adab55fe6fe977a291de148befc993dec0eeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:12",
+      "sequence": 14913,
+      "chapter_label": "PSA 68",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 12
+        }
+      ],
+      "en": "“Kings of armies flee! They flee!” She who waits at home divides the plunder,",
+      "ko": "여러 군대의 왕들이 도망하고 도망하니 집에 거한 여자도 탈취물을 나누도다",
+      "source_text_hash": "7bd3cc3bbc70952584ec45b96e8d7c8ab74962e5ac77d9870ad170325992c4df",
+      "translation_text_hash": "9c0f470a0e8d714a29e376d63af5f48fc42d5b57f2e32a18a130d3b7cedb471e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 군대의 왕들이 도망하고 도망하니 집에 거한 여자도 탈취물을 나누도다"
+      ],
+      "raw_text_hashes": [
+        "9c0f470a0e8d714a29e376d63af5f48fc42d5b57f2e32a18a130d3b7cedb471e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:13",
+      "sequence": 14914,
+      "chapter_label": "PSA 68",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 13
+        }
+      ],
+      "en": "while you sleep among the camp fires, the wings of a dove sheathed with silver, her feathers with shining gold.",
+      "ko": "너희가 양우리에 누울 때에는 그 날개를 은으로 입히고 그 깃을 황금으로 입힌 비둘기 같도다",
+      "source_text_hash": "64e15640701e092ecb062b2d9df9c5725cd89990a67d4d5be78d0a76558f8162",
+      "translation_text_hash": "73d4525714b5c316bc08ac61e02afb93a2219bf05886d6b325ccb12431cd76ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 양우리에 누울 때에는 그 날개를 은으로 입히고 그 깃을 황금으로 입힌 비둘기 같도다"
+      ],
+      "raw_text_hashes": [
+        "73d4525714b5c316bc08ac61e02afb93a2219bf05886d6b325ccb12431cd76ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:14",
+      "sequence": 14915,
+      "chapter_label": "PSA 68",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 14
+        }
+      ],
+      "en": "When the Almighty scattered kings in her, it snowed on Zalmon.",
+      "ko": "전능하신 자가 열왕을 그 중에서 흩으실 때에는 살몬에 눈이 날림 같도다",
+      "source_text_hash": "abbb761cdd606f855c0d60212cedb078583ef1c9c8f3cc7df9be28dbba8701c2",
+      "translation_text_hash": "239430dadee3be63d4d8c3689c33e09dd352df03c1c0f0283cd31e67cab10802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능하신 자가 열왕을 그 중에서 흩으실 때에는 살몬에 눈이 날림 같도다"
+      ],
+      "raw_text_hashes": [
+        "239430dadee3be63d4d8c3689c33e09dd352df03c1c0f0283cd31e67cab10802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:15",
+      "sequence": 14916,
+      "chapter_label": "PSA 68",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 15
+        }
+      ],
+      "en": "The mountains of Bashan are majestic mountains. The mountains of Bashan are rugged.",
+      "ko": "바산의 산은 하나님의 산임이여 바산의 산은 높은 산이로다",
+      "source_text_hash": "c523d79fed5032259fb7327c50d4e756db3ab1a2bd896e10a143006ca7e08a46",
+      "translation_text_hash": "6831f9e707a5d19c541acd7794a6b9d867b0fb6754868a899d1420a8b8348c9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바산의 산은 하나님의 산임이여 바산의 산은 높은 산이로다"
+      ],
+      "raw_text_hashes": [
+        "6831f9e707a5d19c541acd7794a6b9d867b0fb6754868a899d1420a8b8348c9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:16",
+      "sequence": 14917,
+      "chapter_label": "PSA 68",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 16
+        }
+      ],
+      "en": "Why do you look in envy, you rugged mountains, at the mountain where God chooses to reign? Yes, the LORD will dwell there forever.",
+      "ko": "너희 높은 산들아 어찌하여 하나님이 거하시려 하는 산을 시기하여 보느뇨 진실로 여호와께서 이 산에 영영히 거하시리로다",
+      "source_text_hash": "d7d332f90e1240134692e287624c9a2b232da895becf8dd6501693e9fb188dc2",
+      "translation_text_hash": "bbbf82558106366f0da30d6367ec05024a9f81e8fd711bc6054491620f9b59b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 높은 산들아 어찌하여 하나님이 거하시려 하는 산을 시기하여 보느뇨 진실로 여호와께서 이 산에 영영히 거하시리로다"
+      ],
+      "raw_text_hashes": [
+        "bbbf82558106366f0da30d6367ec05024a9f81e8fd711bc6054491620f9b59b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:17",
+      "sequence": 14918,
+      "chapter_label": "PSA 68",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 17
+        }
+      ],
+      "en": "The chariots of God are tens of thousands and thousands of thousands. The Lord is among them, from Sinai, into the sanctuary.",
+      "ko": "하나님의 병거가 천천이요 만만이라 주께서 그 중에 계심이 시내산 성소에 계심 같도다",
+      "source_text_hash": "34dd8f3bf7759c8e0b91ce38155aaaa772e7e78187ab2f33e77fa4a5887efa92",
+      "translation_text_hash": "b11ebe1a5352b740ae71e150e3d58b1ed78a77d655da6232c61c273a57d6e907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 병거가 천천이요 만만이라 주께서 그 중에 계심이 시내산 성소에 계심 같도다"
+      ],
+      "raw_text_hashes": [
+        "b11ebe1a5352b740ae71e150e3d58b1ed78a77d655da6232c61c273a57d6e907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:18",
+      "sequence": 14919,
+      "chapter_label": "PSA 68",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 18
+        }
+      ],
+      "en": "You have ascended on high. You have led away captives. You have received gifts among people, yes, among the rebellious also, that the LORD God might dwell there.",
+      "ko": "주께서 높은 곳으로 오르시며 사로잡은 자를 끌고 선물을 인간에게서, 또는 패역자 중에서 받으시니 여호와 하나님이 저희와 함께 거하려 하심이로다",
+      "source_text_hash": "c6645ef991c25b0433a5c8b1e83103d0ac64a94065207f73c5b9b66649585f3e",
+      "translation_text_hash": "35036fc4950655d392956be27105de56a2eb3121bc94299fca53795bfa50e09b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 높은 곳으로 오르시며 사로잡은 자를 끌고 선물을 인간에게서, 또는 패역자 중에서 받으시니 여호와 하나님이 저희와 함께 거하려 하심이로다"
+      ],
+      "raw_text_hashes": [
+        "35036fc4950655d392956be27105de56a2eb3121bc94299fca53795bfa50e09b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:19",
+      "sequence": 14920,
+      "chapter_label": "PSA 68",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 19
+        }
+      ],
+      "en": "Blessed be the Lord, who daily bears our burdens, even the God who is our salvation. Selah.",
+      "ko": "날마다 우리 짐을 지시는 주 곧 우리의 구원이신 하나님을 찬송할찌로다",
+      "source_text_hash": "674956e83d567038d5ef0fac15ec94d3601891ce3364969c64179723f405c623",
+      "translation_text_hash": "52f32fd9aede266b800348d7a672aef6b6feb7f70e9ad82006e100e428b2c2de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날마다 우리 짐을 지시는 주 곧 우리의 구원이신 하나님을 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "52f32fd9aede266b800348d7a672aef6b6feb7f70e9ad82006e100e428b2c2de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:20",
+      "sequence": 14921,
+      "chapter_label": "PSA 68",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 20
+        }
+      ],
+      "en": "God is to us a God of deliverance. To GOD, the Lord, belongs escape from death.",
+      "ko": "하나님은 우리에게 구원의 하나님이시라 사망에서 피함이 주 여호와께로 말미암거니와",
+      "source_text_hash": "d4ac481562781f6728777601c02404196c9d585abe8c3399e9501e44bec86513",
+      "translation_text_hash": "40779e506a92c503e6481b2b3b719825b6254bb40b7405794f13f74d204c1aa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 우리에게 구원의 하나님이시라 사망에서 피함이 주 여호와께로 말미암거니와"
+      ],
+      "raw_text_hashes": [
+        "40779e506a92c503e6481b2b3b719825b6254bb40b7405794f13f74d204c1aa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:21",
+      "sequence": 14922,
+      "chapter_label": "PSA 68",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 21
+        }
+      ],
+      "en": "But God will strike through the head of his enemies, the hairy scalp of such a one as still continues in his guiltiness.",
+      "ko": "그 원수의 머리 곧 그 죄과에 항상 행하는 자의 정수리는 하나님이 쳐서 깨치시리로다",
+      "source_text_hash": "b86cf33ed088babba4adf152be8225fec2ff0130af0fed70fab353cb53125e8a",
+      "translation_text_hash": "032fa91e561a77713ef482db7973462f980a274ccde99e0d2df3d0ec6bb9f9f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 원수의 머리 곧 그 죄과에 항상 행하는 자의 정수리는 하나님이 쳐서 깨치시리로다"
+      ],
+      "raw_text_hashes": [
+        "032fa91e561a77713ef482db7973462f980a274ccde99e0d2df3d0ec6bb9f9f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:22",
+      "sequence": 14923,
+      "chapter_label": "PSA 68",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 22
+        }
+      ],
+      "en": "The Lord said, “I will bring you again from Bashan, I will bring you again from the depths of the sea,",
+      "ko": "주께서 말씀하시기를 내가 저희를 바산에서 돌아오게 하며 바다 깊은데서 도로 나오게 하고",
+      "source_text_hash": "e6d9ed890ee778ea9f1832e51ef36759baed3259e86ad9dd1f2157dd1856c365",
+      "translation_text_hash": "c305855cffc9d3fa7aab68839c23c1e3723b63358b9961ce8bbcb770b46dfd32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 말씀하시기를 내가 저희를 바산에서 돌아오게 하며 바다 깊은데서 도로 나오게 하고"
+      ],
+      "raw_text_hashes": [
+        "c305855cffc9d3fa7aab68839c23c1e3723b63358b9961ce8bbcb770b46dfd32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:23",
+      "sequence": 14924,
+      "chapter_label": "PSA 68",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 23
+        }
+      ],
+      "en": "that you may crush them, dipping your foot in blood, that the tongues of your dogs may have their portion from your enemies.”",
+      "ko": "너로 저희를 심히 치고 그 피에 네 발을 잠그게 하며 네 개의 혀로 네 원수에게서 제 분깃을 얻게 하리라 하시도다",
+      "source_text_hash": "58f7ca77d3ec4226715b5c2892cb5e06e7e90bdce0b408c654e9b44fb9be3368",
+      "translation_text_hash": "3145952e24eb657e002d18ecc9fa8be884e5f7c52aceb350ed90cd5325ab0218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너로 저희를 심히 치고 그 피에 네 발을 잠그게 하며 네 개의 혀로 네 원수에게서 제 분깃을 얻게 하리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "3145952e24eb657e002d18ecc9fa8be884e5f7c52aceb350ed90cd5325ab0218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:24",
+      "sequence": 14925,
+      "chapter_label": "PSA 68",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 24
+        }
+      ],
+      "en": "They have seen your processions, God, even the processions of my God, my King, into the sanctuary.",
+      "ko": "하나님이여 저희가 주의 행차하심을 보았으니 곧 나의 하나님, 나의 왕이 성소에 행차하시는 것이라",
+      "source_text_hash": "f076ab95c9c1f2a567278293f41e5a3ae8ffacd4a70404ec76c309c43c97051a",
+      "translation_text_hash": "fc3fbbf1780003c274c2fca37c41ffca5f4a41caed686380620f4607eceb1de4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 저희가 주의 행차하심을 보았으니 곧 나의 하나님, 나의 왕이 성소에 행차하시는 것이라"
+      ],
+      "raw_text_hashes": [
+        "fc3fbbf1780003c274c2fca37c41ffca5f4a41caed686380620f4607eceb1de4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:25",
+      "sequence": 14926,
+      "chapter_label": "PSA 68",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 25
+        }
+      ],
+      "en": "The singers went before, the minstrels followed after, among the ladies playing with tambourines,",
+      "ko": "소고 치는 동녀 중에 가객은 앞서고 악사는 뒤따르나이다",
+      "source_text_hash": "e32b3b92901bd23d109fcee5c444df05383ff62936b857f86bf7e5889caa3559",
+      "translation_text_hash": "45328f640d0c64a2c5b34649abb8c8c42813acf9eecfad63e041c0a59a59b687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소고 치는 동녀 중에 가객은 앞서고 악사는 뒤따르나이다"
+      ],
+      "raw_text_hashes": [
+        "45328f640d0c64a2c5b34649abb8c8c42813acf9eecfad63e041c0a59a59b687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:26",
+      "sequence": 14927,
+      "chapter_label": "PSA 68",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 26
+        }
+      ],
+      "en": "“Bless God in the congregations, even the Lord in the assembly of Israel!”",
+      "ko": "이스라엘의 근원에서 나온 너희여 대회 중에서 하나님 곧 주를 송축할찌어다",
+      "source_text_hash": "40ce8177a2c8290dc9f2b40fa4bd48bcf7bfdc73e532445c320be28d46a3d1b8",
+      "translation_text_hash": "6202d9e24807fd582e39580102c3ae24fdf1c9d71fd6d11d43857f7f9ca00e4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 근원에서 나온 너희여 대회 중에서 하나님 곧 주를 송축할찌어다"
+      ],
+      "raw_text_hashes": [
+        "6202d9e24807fd582e39580102c3ae24fdf1c9d71fd6d11d43857f7f9ca00e4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:27",
+      "sequence": 14928,
+      "chapter_label": "PSA 68",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 27
+        }
+      ],
+      "en": "There is little Benjamin, their ruler, the princes of Judah, their council, the princes of Zebulun, and the princes of Naphtali.",
+      "ko": "거기는 저희 주관자 작은 베냐민과 유다의 방백과 그 무리와 스불론의 방백과 납달리의 방백이 있도다",
+      "source_text_hash": "5b7f24251c1f95010b60e847a3827284f4f2729de773d334ab88df1e8d6e9f4d",
+      "translation_text_hash": "36840ebca2b22fc4eaa7f91e6b6a93599009a7ae7bb67970568b7fcad0f966ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 저희 주관자 작은 베냐민과 유다의 방백과 그 무리와 스불론의 방백과 납달리의 방백이 있도다"
+      ],
+      "raw_text_hashes": [
+        "36840ebca2b22fc4eaa7f91e6b6a93599009a7ae7bb67970568b7fcad0f966ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:28",
+      "sequence": 14929,
+      "chapter_label": "PSA 68",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 28
+        }
+      ],
+      "en": "Your God has commanded your strength. Strengthen, God, that which you have done for us.",
+      "ko": "네 하나님이 네 힘을 명하셨도다 하나님이여 우리를 위하여 행하신 것을 견고히 하소서",
+      "source_text_hash": "6f63d8da8e133eb3e03cb42d57e429e83a577b567fbf053d03f274d6867bf262",
+      "translation_text_hash": "b62fc1970329e00ceb467c03c38467f823b35bd02cccc5c6bf2635a3fe3b161e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님이 네 힘을 명하셨도다 하나님이여 우리를 위하여 행하신 것을 견고히 하소서"
+      ],
+      "raw_text_hashes": [
+        "b62fc1970329e00ceb467c03c38467f823b35bd02cccc5c6bf2635a3fe3b161e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:29",
+      "sequence": 14930,
+      "chapter_label": "PSA 68",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 29
+        }
+      ],
+      "en": "Because of your temple at Jerusalem, kings will bring presents to you.",
+      "ko": "예루살렘에 있는 주의 전을 위하여 왕들이 주께 예물을 드리리이다",
+      "source_text_hash": "4318c6cfe0546a873e832078995ba746226b9e9000b8338cf057b498aa74522e",
+      "translation_text_hash": "f2f4b074e8f8bbc0439eb95df3ee34bd17eca49714f01815d72d0966da3c14f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 있는 주의 전을 위하여 왕들이 주께 예물을 드리리이다"
+      ],
+      "raw_text_hashes": [
+        "f2f4b074e8f8bbc0439eb95df3ee34bd17eca49714f01815d72d0966da3c14f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:30",
+      "sequence": 14931,
+      "chapter_label": "PSA 68",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 30
+        }
+      ],
+      "en": "Rebuke the wild animal of the reeds, the multitude of the bulls with the calves of the peoples. Trample under foot the bars of silver. Scatter the nations who delight in war.",
+      "ko": "갈밭의 들짐승과 수소의 무리와 만민의 송아지를 꾸짖으시고 은 조각을 발 아래 밟으소서 저가 전쟁을 즐기는 백성을 흩으셨도다",
+      "source_text_hash": "72068f02991a53d7493986e0c2a5ed693fce8b591491aa745922be453ce34a41",
+      "translation_text_hash": "23cccbb51efaa9a9b923c4acf3df16eb11c607b74284ecdb7d00d21073ecb52c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈밭의 들짐승과 수소의 무리와 만민의 송아지를 꾸짖으시고 은 조각을 발 아래 밟으소서 저가 전쟁을 즐기는 백성을 흩으셨도다"
+      ],
+      "raw_text_hashes": [
+        "23cccbb51efaa9a9b923c4acf3df16eb11c607b74284ecdb7d00d21073ecb52c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:31",
+      "sequence": 14932,
+      "chapter_label": "PSA 68",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 31
+        }
+      ],
+      "en": "Princes shall come out of Egypt. Ethiopia shall hurry to stretch out her hands to God.",
+      "ko": "방백들은 애굽에서 나오고 구스인은 하나님을 향하여 그 손을 신속히 들리로다",
+      "source_text_hash": "2a31c8d5cd2d5a339f6b4c8fccc66b9b2289f0c101bc3e06e25491c138b400ee",
+      "translation_text_hash": "0cbd194017a6e3808e265da3d37414d2a06a85185754f70a31d4e6b30d13dd58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들은 애굽에서 나오고 구스인은 하나님을 향하여 그 손을 신속히 들리로다"
+      ],
+      "raw_text_hashes": [
+        "0cbd194017a6e3808e265da3d37414d2a06a85185754f70a31d4e6b30d13dd58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:32",
+      "sequence": 14933,
+      "chapter_label": "PSA 68",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 32
+        }
+      ],
+      "en": "Sing to God, you kingdoms of the earth! Sing praises to the Lord—Selah—",
+      "ko": "땅의 열방들아 하나님께 노래하고 주께 찬송할찌어다 (셀라)",
+      "source_text_hash": "1197f54ee1a76bcc8221d69ecdc5ce40847ab68d56b6084d44459cfc15ac4ada",
+      "translation_text_hash": "0db1cf22b2d062a15331db82cb07e14d9648c0ba9fa3c0972d818a1ab6b691e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 열방들아 하나님께 노래하고 주께 찬송할찌어다 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "0db1cf22b2d062a15331db82cb07e14d9648c0ba9fa3c0972d818a1ab6b691e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:33",
+      "sequence": 14934,
+      "chapter_label": "PSA 68",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 33
+        }
+      ],
+      "en": "to him who rides on the heaven of heavens, which are of old; behold, he utters his voice, a mighty voice.",
+      "ko": "옛적 하늘들의 하늘을 타신 자에게 찬송하라 주께서 그 소리를 발하시니 웅장한 소리로다",
+      "source_text_hash": "d34a7dbeb1702ca3499037b2a984d961da18b95e026413865a8a34e126594687",
+      "translation_text_hash": "05fe425d4257c06b8b108737ee161a62d21c7e959508c8d2eb70ddec49913d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적 하늘들의 하늘을 타신 자에게 찬송하라 주께서 그 소리를 발하시니 웅장한 소리로다"
+      ],
+      "raw_text_hashes": [
+        "05fe425d4257c06b8b108737ee161a62d21c7e959508c8d2eb70ddec49913d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:34",
+      "sequence": 14935,
+      "chapter_label": "PSA 68",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 34
+        }
+      ],
+      "en": "Ascribe strength to God! His excellency is over Israel, his strength is in the skies.",
+      "ko": "너희는 하나님께 능력을 돌릴찌어다 그 위엄이 이스라엘 위에 있고 그 능력이 하늘에 있도다",
+      "source_text_hash": "0bc309313d602c9412b1973a2ddd051e5a48c429e9b025cdec3ec11bf1d2ee88",
+      "translation_text_hash": "f384ba468c8ff2561a7dd4f54069ef8a0c6c8d3161bce18fbcd31b450425510b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 하나님께 능력을 돌릴찌어다 그 위엄이 이스라엘 위에 있고 그 능력이 하늘에 있도다"
+      ],
+      "raw_text_hashes": [
+        "f384ba468c8ff2561a7dd4f54069ef8a0c6c8d3161bce18fbcd31b450425510b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:68:35",
+      "sequence": 14936,
+      "chapter_label": "PSA 68",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 68,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 68,
+          "verse": 35
+        }
+      ],
+      "en": "You are awesome, God, in your sanctuaries. The God of Israel gives strength and power to his people. Praise be to God!",
+      "ko": "하나님이여 위엄을 성소에서 나타내시나이다 이스라엘의 하나님은 그 백성에게 힘과 능을 주시나니 하나님을 찬송할찌어다",
+      "source_text_hash": "14d3b607778a08aa774f2044f9ebea3680c159b929bf37dc01572aef89a9279f",
+      "translation_text_hash": "9261e25ad57be4c65708a10e62d21c18bc41af36be6caad7ad08b0b5194b7b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 위엄을 성소에서 나타내시나이다 이스라엘의 하나님은 그 백성에게 힘과 능을 주시나니 하나님을 찬송할찌어다"
+      ],
+      "raw_text_hashes": [
+        "9261e25ad57be4c65708a10e62d21c18bc41af36be6caad7ad08b0b5194b7b34"
+      ]
+    }
+  ]
+}

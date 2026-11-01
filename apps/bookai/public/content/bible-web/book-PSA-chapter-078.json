@@ -1,0 +1,2317 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:078",
+  "unit_ordinal": 556,
+  "unit_label": "PSA 78",
+  "book_code": "PSA",
+  "chapter_number": 78,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:78:1",
+      "sequence": 15115,
+      "chapter_label": "PSA 78",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 1
+        }
+      ],
+      "en": "Hear my teaching, my people. Turn your ears to the words of my mouth.",
+      "ko": "내 백성이여, 내 교훈을 들으며 내 입의 말에 귀를 기울일찌어다",
+      "source_text_hash": "70adee3c0dac46c410afb662a0520cd184b6dcc27ee198eab3195594fef948c1",
+      "translation_text_hash": "00314447f8e23bdb7daaa567b52fa38dee81f9ded19d3f1fef63cf3a6393dbeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이여, 내 교훈을 들으며 내 입의 말에 귀를 기울일찌어다"
+      ],
+      "raw_text_hashes": [
+        "00314447f8e23bdb7daaa567b52fa38dee81f9ded19d3f1fef63cf3a6393dbeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:2",
+      "sequence": 15116,
+      "chapter_label": "PSA 78",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 2
+        }
+      ],
+      "en": "I will open my mouth in a parable. I will utter dark sayings of old,",
+      "ko": "내가 입을 열고 비유를 베풀어서 옛 비밀한 말을 발표하리니",
+      "source_text_hash": "259545c152e747fe263052cde4de12836e914ea9a34aecd76813ec5126040c66",
+      "translation_text_hash": "9f99c202407b8e95476ebe06e076faa5935575c132adf82f9ff336b23cc42eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 입을 열고 비유를 베풀어서 옛 비밀한 말을 발표하리니"
+      ],
+      "raw_text_hashes": [
+        "9f99c202407b8e95476ebe06e076faa5935575c132adf82f9ff336b23cc42eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:3",
+      "sequence": 15117,
+      "chapter_label": "PSA 78",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 3
+        }
+      ],
+      "en": "which we have heard and known, and our fathers have told us.",
+      "ko": "이는 우리가 들은 바요 아는 바요 우리 열조가 우리에게 전한 바라",
+      "source_text_hash": "54f7b7d3cd22d84838f4a13cba2a5bc025c09f07590e6e36c798189dd6eaf509",
+      "translation_text_hash": "aaa8352918e813f1c212388c7c91c7387e36d441b7009b59a4cbd97a4fed3d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 들은 바요 아는 바요 우리 열조가 우리에게 전한 바라"
+      ],
+      "raw_text_hashes": [
+        "aaa8352918e813f1c212388c7c91c7387e36d441b7009b59a4cbd97a4fed3d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:4",
+      "sequence": 15118,
+      "chapter_label": "PSA 78",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 4
+        }
+      ],
+      "en": "We will not hide them from their children, telling to the generation to come the praises of the LORD, his strength, and his wondrous deeds that he has done.",
+      "ko": "우리가 이를 그 자손에게 숨기지 아니하고 여호와의 영예와 그 능력과 기이한 사적을 후대에 전하리로다",
+      "source_text_hash": "0d954e6277a6c6ed60521337c98b5eeed8c448182a587177a0b06d57dc95316c",
+      "translation_text_hash": "1a9f23e0e39684c9b56f791b7dc308b1ef1ad22935eaea8609080a3852a8819a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이를 그 자손에게 숨기지 아니하고 여호와의 영예와 그 능력과 기이한 사적을 후대에 전하리로다"
+      ],
+      "raw_text_hashes": [
+        "1a9f23e0e39684c9b56f791b7dc308b1ef1ad22935eaea8609080a3852a8819a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:5",
+      "sequence": 15119,
+      "chapter_label": "PSA 78",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 5
+        }
+      ],
+      "en": "For he established a covenant in Jacob, and appointed a teaching in Israel, which he commanded our fathers, that they should make them known to their children;",
+      "ko": "여호와께서 증거를 야곱에게 세우시며 법도를 이스라엘에게 정하시고 우리 열조에게 명하사 저희 자손에게 알게 하라 하셨으니",
+      "source_text_hash": "c904e1cb15b1acadf886c7a6d95392aca417e5462b94bb4c2d806637314d0a19",
+      "translation_text_hash": "f19e8961388855158af711ee90b4132c9d25e22ae8f71a8ecee5222e00c70f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 증거를 야곱에게 세우시며 법도를 이스라엘에게 정하시고 우리 열조에게 명하사 저희 자손에게 알게 하라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "f19e8961388855158af711ee90b4132c9d25e22ae8f71a8ecee5222e00c70f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:6",
+      "sequence": 15120,
+      "chapter_label": "PSA 78",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 6
+        }
+      ],
+      "en": "that the generation to come might know, even the children who should be born; who should arise and tell their children,",
+      "ko": "이는 저희로 후대 곧 후생 자손에게 이를 알게 하고 그들은 일어나 그 자손에게 일러서",
+      "source_text_hash": "84eec9078169e0acd35cacf78ec07ccd9e1dd7f7f613d52ad0411d9b0e363172",
+      "translation_text_hash": "cab57c4c4fde0f33138974686422aa9b7a60ce476f14365cc076fc25918905dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희로 후대 곧 후생 자손에게 이를 알게 하고 그들은 일어나 그 자손에게 일러서"
+      ],
+      "raw_text_hashes": [
+        "cab57c4c4fde0f33138974686422aa9b7a60ce476f14365cc076fc25918905dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:7",
+      "sequence": 15121,
+      "chapter_label": "PSA 78",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 7
+        }
+      ],
+      "en": "that they might set their hope in God, and not forget God’s deeds, but keep his commandments,",
+      "ko": "저희로 그 소망을 하나님께 두며 하나님의 행사를 잊지 아니하고 오직 그 계명을 지켜서",
+      "source_text_hash": "ad58b36232d3d30047bf34367adb847c41981494646f532e68643e0e3704bf30",
+      "translation_text_hash": "477eacbb0ef99264d8b35c781f30ed138637640bbaee742d6048d3db4f3a3f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 그 소망을 하나님께 두며 하나님의 행사를 잊지 아니하고 오직 그 계명을 지켜서"
+      ],
+      "raw_text_hashes": [
+        "477eacbb0ef99264d8b35c781f30ed138637640bbaee742d6048d3db4f3a3f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:8",
+      "sequence": 15122,
+      "chapter_label": "PSA 78",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 8
+        }
+      ],
+      "en": "and might not be as their fathers— a stubborn and rebellious generation, a generation that didn’t make their hearts loyal, whose spirit was not steadfast with God.",
+      "ko": "그 열조 곧 완고하고 패역하여 그 마음이 정직하지 못하며 그 심령은 하나님께 충성치 아니한 세대와 같지 않게 하려 하심이로다",
+      "source_text_hash": "5cf91284dfb9e572fa020cc2e2ae866948630ef1ab8167746725fb8e113a8d71",
+      "translation_text_hash": "c9de779b803a00782bcbb3a78c7974ae9face11f8236c65579734891afd56e86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열조 곧 완고하고 패역하여 그 마음이 정직하지 못하며 그 심령은 하나님께 충성치 아니한 세대와 같지 않게 하려 하심이로다"
+      ],
+      "raw_text_hashes": [
+        "c9de779b803a00782bcbb3a78c7974ae9face11f8236c65579734891afd56e86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:9",
+      "sequence": 15123,
+      "chapter_label": "PSA 78",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Ephraim, being armed and carrying bows, turned back in the day of battle.",
+      "ko": "에브라임 자손은 병기를 갖추며 활을 가졌으나 전쟁의 날에 물러갔도다",
+      "source_text_hash": "cf700aaf65417e13414e43ee397362560b5921581679a81845aec33885f1ba23",
+      "translation_text_hash": "a6672ed1642c455f5f67c2aba4bb2ba8bfa8756930b95af529f664995afc0ea8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손은 병기를 갖추며 활을 가졌으나 전쟁의 날에 물러갔도다"
+      ],
+      "raw_text_hashes": [
+        "a6672ed1642c455f5f67c2aba4bb2ba8bfa8756930b95af529f664995afc0ea8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:10",
+      "sequence": 15124,
+      "chapter_label": "PSA 78",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 10
+        }
+      ],
+      "en": "They didn’t keep God’s covenant, and refused to walk in his law.",
+      "ko": "저희가 하나님의 언약을 지키지 아니하고 그 율법 준행하기를 거절하며",
+      "source_text_hash": "5e4608453bc413bd23c9435a3fe21f31302e79cfbf1eb8409a81b25cccb76e92",
+      "translation_text_hash": "7b18ddda4498af09ed38b2bd98ccabbe5dc3ed726caa2b4cc14c6584827eabc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 하나님의 언약을 지키지 아니하고 그 율법 준행하기를 거절하며"
+      ],
+      "raw_text_hashes": [
+        "7b18ddda4498af09ed38b2bd98ccabbe5dc3ed726caa2b4cc14c6584827eabc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:11",
+      "sequence": 15125,
+      "chapter_label": "PSA 78",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 11
+        }
+      ],
+      "en": "They forgot his doings, his wondrous deeds that he had shown them.",
+      "ko": "여호와의 행하신 것과 저희에게 보이신 기사를 잊었도다",
+      "source_text_hash": "4c496ce51a10d29f9e7039f9b284d53e7b7907037af54cc9a6f0d5b0007fcf2e",
+      "translation_text_hash": "3a6834dc4234acf1203a65f337bd9a251a92d766995af0b54cbdb70543832442",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 행하신 것과 저희에게 보이신 기사를 잊었도다"
+      ],
+      "raw_text_hashes": [
+        "3a6834dc4234acf1203a65f337bd9a251a92d766995af0b54cbdb70543832442"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:12",
+      "sequence": 15126,
+      "chapter_label": "PSA 78",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 12
+        }
+      ],
+      "en": "He did marvelous things in the sight of their fathers, in the land of Egypt, in the field of Zoan.",
+      "ko": "옛적에 하나님이 애굽 땅 소안 들에서 기이한 일을 저희 열조의 목전에서 행하셨으되",
+      "source_text_hash": "6bdff8e31c0e7126cdea667777d74cb0d63a7505db89cd6f9f9b7066fe33895b",
+      "translation_text_hash": "1a7e9d3ab6564ef91591ccb7ff94c66a1b5a30be4a04baaab73fa1d1f6534fdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 하나님이 애굽 땅 소안 들에서 기이한 일을 저희 열조의 목전에서 행하셨으되"
+      ],
+      "raw_text_hashes": [
+        "1a7e9d3ab6564ef91591ccb7ff94c66a1b5a30be4a04baaab73fa1d1f6534fdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:13",
+      "sequence": 15127,
+      "chapter_label": "PSA 78",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 13
+        }
+      ],
+      "en": "He split the sea, and caused them to pass through. He made the waters stand as a heap.",
+      "ko": "저가 바다를 갈라 물을 무더기 같이 서게 하시고 저희로 지나게 하셨으며",
+      "source_text_hash": "9fe4168f15a0cbfa74d5e14acb262abcce9e21b812f885c9a7b810c8fcc3749f",
+      "translation_text_hash": "86529d507d74abdce82ba6c35d53386f61841b5fb71245bfc4dc2f21b14bf42b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 바다를 갈라 물을 무더기 같이 서게 하시고 저희로 지나게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "86529d507d74abdce82ba6c35d53386f61841b5fb71245bfc4dc2f21b14bf42b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:14",
+      "sequence": 15128,
+      "chapter_label": "PSA 78",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 14
+        }
+      ],
+      "en": "In the daytime he also led them with a cloud, and all night with a light of fire.",
+      "ko": "낮에는 구름으로, 온 밤에는 화광으로 인도하셨으며",
+      "source_text_hash": "1cbc5e29e333bcb63b07eb66e5a0618f2250ca8aeb6f407d8737d71de912d3bf",
+      "translation_text_hash": "f02aae4aa5eeaf31ec56cc1080012edd90f6d0606f79951adb931bd4483564cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에는 구름으로, 온 밤에는 화광으로 인도하셨으며"
+      ],
+      "raw_text_hashes": [
+        "f02aae4aa5eeaf31ec56cc1080012edd90f6d0606f79951adb931bd4483564cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:15",
+      "sequence": 15129,
+      "chapter_label": "PSA 78",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 15
+        }
+      ],
+      "en": "He split rocks in the wilderness, and gave them drink abundantly as out of the depths.",
+      "ko": "광야에서 반석을 쪼개시고 깊은 수원에서 나는 것 같이 저희에게 물을 흡족히 마시우셨으며",
+      "source_text_hash": "c45b5264773a23452549c74a7fa6ccf3b93fd8d1700c25dc08844e2a3ac275f1",
+      "translation_text_hash": "ab6152adbc8ff157b0ead6b077755a6f6d72b1df0fe5a9f624898acf71248d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에서 반석을 쪼개시고 깊은 수원에서 나는 것 같이 저희에게 물을 흡족히 마시우셨으며"
+      ],
+      "raw_text_hashes": [
+        "ab6152adbc8ff157b0ead6b077755a6f6d72b1df0fe5a9f624898acf71248d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:16",
+      "sequence": 15130,
+      "chapter_label": "PSA 78",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 16
+        }
+      ],
+      "en": "He brought streams also out of the rock, and caused waters to run down like rivers.",
+      "ko": "또 반석에서 시내를 내사 물이 강 같이 흐르게 하셨으나",
+      "source_text_hash": "3cec90d965990d7493c6d470801646177f213b051983fd513937454cd1af1497",
+      "translation_text_hash": "8233a522b7ebf0644833e084d0677160ae877efb32d51d1e724c23a3df6d8227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 반석에서 시내를 내사 물이 강 같이 흐르게 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "8233a522b7ebf0644833e084d0677160ae877efb32d51d1e724c23a3df6d8227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:17",
+      "sequence": 15131,
+      "chapter_label": "PSA 78",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 17
+        }
+      ],
+      "en": "Yet they still went on to sin against him, to rebel against the Most High in the desert.",
+      "ko": "저희는 계속하여 하나님께 범죄하여 황야에서 지존자를 배반하였도다",
+      "source_text_hash": "39420110ba27b98a92bd8d2470f5afc36eeedc19fe6c061f3b7161a94bb2559e",
+      "translation_text_hash": "e3a2c044d7052eac24d0629c068049897d206df5e7c986dbd9e2d2cb460b4e6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 계속하여 하나님께 범죄하여 황야에서 지존자를 배반하였도다"
+      ],
+      "raw_text_hashes": [
+        "e3a2c044d7052eac24d0629c068049897d206df5e7c986dbd9e2d2cb460b4e6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:18",
+      "sequence": 15132,
+      "chapter_label": "PSA 78",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 18
+        }
+      ],
+      "en": "They tempted God in their heart by asking food according to their desire.",
+      "ko": "저희가 저희 탐욕대로 식물을 구하여 그 심중에 하나님을 시험하였으며",
+      "source_text_hash": "1d34bc29aea6bd1b1dccdab1b896cc1f379b5c07e8fca04c41f31a5954e690d1",
+      "translation_text_hash": "84b5cbe41c1ed147442118abdc7730f98ea9a0aff5cceb12e5418796cb4bf696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 저희 탐욕대로 식물을 구하여 그 심중에 하나님을 시험하였으며"
+      ],
+      "raw_text_hashes": [
+        "84b5cbe41c1ed147442118abdc7730f98ea9a0aff5cceb12e5418796cb4bf696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:19",
+      "sequence": 15133,
+      "chapter_label": "PSA 78",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 19
+        }
+      ],
+      "en": "Yes, they spoke against God. They said, “Can God prepare a table in the wilderness?",
+      "ko": "그 뿐 아니라 하나님을 대적하여 말하기를 하나님이 광야에서 능히 식탁을 준비하시랴",
+      "source_text_hash": "6f14a8065a691cf7ce4139029e1208d2548ed182d19a7398ecfc79ddfd127b43",
+      "translation_text_hash": "7b3e955e89d86efb570d09745a51b64efb04324958da3f3b7f10269cfa8405be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뿐 아니라 하나님을 대적하여 말하기를 하나님이 광야에서 능히 식탁을 준비하시랴"
+      ],
+      "raw_text_hashes": [
+        "7b3e955e89d86efb570d09745a51b64efb04324958da3f3b7f10269cfa8405be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:20",
+      "sequence": 15134,
+      "chapter_label": "PSA 78",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 20
+        }
+      ],
+      "en": "Behold, he struck the rock, so that waters gushed out, and streams overflowed. Can he give bread also? Will he provide meat for his people?”",
+      "ko": "저가 반석을 쳐서 물을 내시매 시내가 넘쳤거니와 또 능히 떡을 주시며 그 백성을 위하여 고기를 예비하시랴 하였도다",
+      "source_text_hash": "09e2f1268c7ddaf101f34ddd06f8e820aa7b0a5b0eb2d971a5d3e1983721acf5",
+      "translation_text_hash": "7b990244eb61c5ff795873611ac99d01672cab6271bf6e17757275e7e40b10a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 반석을 쳐서 물을 내시매 시내가 넘쳤거니와 또 능히 떡을 주시며 그 백성을 위하여 고기를 예비하시랴 하였도다"
+      ],
+      "raw_text_hashes": [
+        "7b990244eb61c5ff795873611ac99d01672cab6271bf6e17757275e7e40b10a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:21",
+      "sequence": 15135,
+      "chapter_label": "PSA 78",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore the LORD heard, and was angry. A fire was kindled against Jacob, anger also went up against Israel,",
+      "ko": "그러므로 여호와께서 듣고 노하심이여 야곱을 향하여 노가 맹렬하며 이스라엘을 향하여 노가 올랐으니",
+      "source_text_hash": "3380828edc33067a0c54f8073405f8f8c6c1c4e96a0ea933ab725e33732e7084",
+      "translation_text_hash": "1c86e6fed64c84197bfa9f0072b28c6b36c8386fdc7b6c73b53c19e45cd7a9cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 듣고 노하심이여 야곱을 향하여 노가 맹렬하며 이스라엘을 향하여 노가 올랐으니"
+      ],
+      "raw_text_hashes": [
+        "1c86e6fed64c84197bfa9f0072b28c6b36c8386fdc7b6c73b53c19e45cd7a9cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:22",
+      "sequence": 15136,
+      "chapter_label": "PSA 78",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 22
+        }
+      ],
+      "en": "because they didn’t believe in God, and didn’t trust in his salvation.",
+      "ko": "이는 하나님을 믿지 아니하며 그 구원을 의지하지 아니한 연고로다",
+      "source_text_hash": "871070df3c60895411fe28e032c165dc0ec0c95af52ee1b2b5106635baf0cfc6",
+      "translation_text_hash": "209771bd6109e38f932c2f7df7b8f43a953c8b1ff1ad6db97dbb77db23272a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님을 믿지 아니하며 그 구원을 의지하지 아니한 연고로다"
+      ],
+      "raw_text_hashes": [
+        "209771bd6109e38f932c2f7df7b8f43a953c8b1ff1ad6db97dbb77db23272a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:23",
+      "sequence": 15137,
+      "chapter_label": "PSA 78",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 23
+        }
+      ],
+      "en": "Yet he commanded the skies above, and opened the doors of heaven.",
+      "ko": "그러나 저가 오히려 위의 궁창을 명하시며 하늘 문을 여시고",
+      "source_text_hash": "9772d13bac34fd6d68be4280e3b54eb230b6eae9a9e872a753366a5abfbbcf39",
+      "translation_text_hash": "0339117897867e1027c3ad3139dd0c12ecf949db569a2a20f3f86b23a6b39ba6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저가 오히려 위의 궁창을 명하시며 하늘 문을 여시고"
+      ],
+      "raw_text_hashes": [
+        "0339117897867e1027c3ad3139dd0c12ecf949db569a2a20f3f86b23a6b39ba6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:24",
+      "sequence": 15138,
+      "chapter_label": "PSA 78",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 24
+        }
+      ],
+      "en": "He rained down manna on them to eat, and gave them food from the sky.",
+      "ko": "저희에게 만나를 비같이 내려 먹이시며 하늘 양식으로 주셨나니",
+      "source_text_hash": "83d4b78d169e2d7a1cb813e7a4e8fa7a899e2b5a5f8f32d8515f78da050433fb",
+      "translation_text_hash": "a07cef76c3088fa91ca59cf555e7119d47b3519b46ec080b1ee825e63a28280b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 만나를 비같이 내려 먹이시며 하늘 양식으로 주셨나니"
+      ],
+      "raw_text_hashes": [
+        "a07cef76c3088fa91ca59cf555e7119d47b3519b46ec080b1ee825e63a28280b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:25",
+      "sequence": 15139,
+      "chapter_label": "PSA 78",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 25
+        }
+      ],
+      "en": "Man ate the bread of angels. He sent them food to the full.",
+      "ko": "사람이 권세 있는 자의 떡을 먹음이여 하나님이 식물을 충족히 주셨도다",
+      "source_text_hash": "b8506357930de18b2c08e50a23bd4fdc9507bde5f6aa195f1bf9e355e30b5909",
+      "translation_text_hash": "8b2ddfb8cb79959ac130d0a8c14a705433be797a765b37578f7d87fd30a13db2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 권세 있는 자의 떡을 먹음이여 하나님이 식물을 충족히 주셨도다"
+      ],
+      "raw_text_hashes": [
+        "8b2ddfb8cb79959ac130d0a8c14a705433be797a765b37578f7d87fd30a13db2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:26",
+      "sequence": 15140,
+      "chapter_label": "PSA 78",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 26
+        }
+      ],
+      "en": "He caused the east wind to blow in the sky. By his power he guided the south wind.",
+      "ko": "저가 동풍으로 하늘에서 일게 하시며 그 권능으로 남풍을 인도하시고",
+      "source_text_hash": "6e8c690382e1ec049a3a15b48354791fb5878339fdf00ca51c7e1145878689af",
+      "translation_text_hash": "64b0f5521e02ef39e07862866ced575548d29c91684102682a570add161f23c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 동풍으로 하늘에서 일게 하시며 그 권능으로 남풍을 인도하시고"
+      ],
+      "raw_text_hashes": [
+        "64b0f5521e02ef39e07862866ced575548d29c91684102682a570add161f23c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:27",
+      "sequence": 15141,
+      "chapter_label": "PSA 78",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 27
+        }
+      ],
+      "en": "He also rained meat on them as the dust, winged birds as the sand of the seas.",
+      "ko": "저희에게 고기를 티끌 같이 내리시니 곧 바다 모래 같은 나는 새라",
+      "source_text_hash": "ac779db0f637c3e47644bb7af32ade4251315f0eb3c9713429d4db1fa89d27c9",
+      "translation_text_hash": "5988c7bd7d07b48c7d1909f207d3a6d94996522c73e7362aa05e8ac33590ae0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 고기를 티끌 같이 내리시니 곧 바다 모래 같은 나는 새라"
+      ],
+      "raw_text_hashes": [
+        "5988c7bd7d07b48c7d1909f207d3a6d94996522c73e7362aa05e8ac33590ae0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:28",
+      "sequence": 15142,
+      "chapter_label": "PSA 78",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 28
+        }
+      ],
+      "en": "He let them fall in the middle of their camp, around their habitations.",
+      "ko": "그 진 중에 떨어지게 하사 그 거처에 둘리셨도다",
+      "source_text_hash": "46223d2a1a3f16735223d4a912d30fe17f4305ccf5e74aa6487c2e12c516a408",
+      "translation_text_hash": "6dd8bb0d756b9e84a216e63dc6933dd500a260191628001a51cce84270df8beb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 진 중에 떨어지게 하사 그 거처에 둘리셨도다"
+      ],
+      "raw_text_hashes": [
+        "6dd8bb0d756b9e84a216e63dc6933dd500a260191628001a51cce84270df8beb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:29",
+      "sequence": 15143,
+      "chapter_label": "PSA 78",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 29
+        }
+      ],
+      "en": "So they ate, and were well filled. He gave them their own desire.",
+      "ko": "저희가 먹고 배불렀나니 하나님이 저희 소욕대로 주셨도다",
+      "source_text_hash": "2cfc6ccf904f7d3fbd95cfcb56ec728fa5e7e4db022661734e203216bf65ac2f",
+      "translation_text_hash": "dddb6e7b37d31711cc283a5127a38c7bf717bcfecba760f43dc71e14b6395804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹고 배불렀나니 하나님이 저희 소욕대로 주셨도다"
+      ],
+      "raw_text_hashes": [
+        "dddb6e7b37d31711cc283a5127a38c7bf717bcfecba760f43dc71e14b6395804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:30",
+      "sequence": 15144,
+      "chapter_label": "PSA 78",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 30
+        }
+      ],
+      "en": "They didn’t turn from their cravings. Their food was yet in their mouths,",
+      "ko": "저희가 그 욕심에서 떠나지 아니하고 저희 식물이 아직 그 입에 있을 때에",
+      "source_text_hash": "4070832ff62c399afd9c481009bacb94659766275d626e60d4ee8b96a3475350",
+      "translation_text_hash": "c21292fa886ce61a4d00e4aa547bf82418b3172d6b5e66b2091dc18d9302d560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 욕심에서 떠나지 아니하고 저희 식물이 아직 그 입에 있을 때에"
+      ],
+      "raw_text_hashes": [
+        "c21292fa886ce61a4d00e4aa547bf82418b3172d6b5e66b2091dc18d9302d560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:31",
+      "sequence": 15145,
+      "chapter_label": "PSA 78",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 31
+        }
+      ],
+      "en": "when the anger of God went up against them, killed some of their strongest, and struck down the young men of Israel.",
+      "ko": "하나님이 저희를 대하여 노를 발하사 저희 중 살진 자를 죽이시며 이스라엘의 청년을 쳐 엎드러뜨리셨도다",
+      "source_text_hash": "5427debbf0d6eedd62dbb88583600f95c345d5de57ca95ca4b5742afed47453b",
+      "translation_text_hash": "b64c419c516b3127f63476a52ca88c6f60f2d2719eea7aaa951409d1b28a1d6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 저희를 대하여 노를 발하사 저희 중 살진 자를 죽이시며 이스라엘의 청년을 쳐 엎드러뜨리셨도다"
+      ],
+      "raw_text_hashes": [
+        "b64c419c516b3127f63476a52ca88c6f60f2d2719eea7aaa951409d1b28a1d6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:32",
+      "sequence": 15146,
+      "chapter_label": "PSA 78",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 32
+        }
+      ],
+      "en": "For all this they still sinned, and didn’t believe in his wondrous works.",
+      "ko": "그럴찌라도 저희가 오히려 범죄하여 그의 기사를 믿지 아니하였으므로",
+      "source_text_hash": "49aca3563b7450b34896dfce14edf26d5707adc8aa7d260ef90f841c832a90c3",
+      "translation_text_hash": "1ae7fc70a6009c9b8195142faba13de760186cd99b6434ae37e1340267e3627d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴찌라도 저희가 오히려 범죄하여 그의 기사를 믿지 아니하였으므로"
+      ],
+      "raw_text_hashes": [
+        "1ae7fc70a6009c9b8195142faba13de760186cd99b6434ae37e1340267e3627d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:33",
+      "sequence": 15147,
+      "chapter_label": "PSA 78",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 33
+        }
+      ],
+      "en": "Therefore he consumed their days in vanity, and their years in terror.",
+      "ko": "하나님이 저희 날을 헛되이 보내게 하시며 저희 해를 두렵게 지내게 하셨도다",
+      "source_text_hash": "3cba04a7b87f945995fe2a3dde702310d12224dc7e3fbb6d37c99c4116c1d3a2",
+      "translation_text_hash": "723ed100fc63e6552190dc08365f6622e73063787a069014b14989d8dce1f26e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 저희 날을 헛되이 보내게 하시며 저희 해를 두렵게 지내게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "723ed100fc63e6552190dc08365f6622e73063787a069014b14989d8dce1f26e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:34",
+      "sequence": 15148,
+      "chapter_label": "PSA 78",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 34
+        }
+      ],
+      "en": "When he killed them, then they inquired after him. They returned and sought God earnestly.",
+      "ko": "하나님이 저희를 죽이실 때에 저희가 그에게 구하며 돌이켜 하나님을 간절히 찾았고",
+      "source_text_hash": "8d151bafc6d46e5b4cd656540699bf1b5dbfbb89c220cfa1a9a30a639cf88479",
+      "translation_text_hash": "4e5174b06e3a1a6db67e83474cb86c9ef6572ba8c3b3b14b2169a5a9383b8949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 저희를 죽이실 때에 저희가 그에게 구하며 돌이켜 하나님을 간절히 찾았고"
+      ],
+      "raw_text_hashes": [
+        "4e5174b06e3a1a6db67e83474cb86c9ef6572ba8c3b3b14b2169a5a9383b8949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:35",
+      "sequence": 15149,
+      "chapter_label": "PSA 78",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 35
+        }
+      ],
+      "en": "They remembered that God was their rock, the Most High God, their redeemer.",
+      "ko": "하나님이 저희의 반석이시요 지존하신 하나님이 저희 구속자이심을 기억하였도다",
+      "source_text_hash": "7976d16c43ff45e03a17657e1ca3088c0c3661ace565cc7c345827cc03b94dd7",
+      "translation_text_hash": "42d9105e4e28d5d55492e21fe97073c7a5b5d474ec8206e90448be17bae18bbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 저희의 반석이시요 지존하신 하나님이 저희 구속자이심을 기억하였도다"
+      ],
+      "raw_text_hashes": [
+        "42d9105e4e28d5d55492e21fe97073c7a5b5d474ec8206e90448be17bae18bbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:36",
+      "sequence": 15150,
+      "chapter_label": "PSA 78",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 36
+        }
+      ],
+      "en": "But they flattered him with their mouth, and lied to him with their tongue.",
+      "ko": "그러나 저희가 입으로 그에게 아첨하며 자기 혀로 그에게 거짓을 말하였으니",
+      "source_text_hash": "6cbe9786d733345451acd731cdb7ba5d4ffb57348de78887196726f0574fd47b",
+      "translation_text_hash": "87867c9818671ba66653739cc2e4eafa56e1e8775a91a132d49f1126f0e0142b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희가 입으로 그에게 아첨하며 자기 혀로 그에게 거짓을 말하였으니"
+      ],
+      "raw_text_hashes": [
+        "87867c9818671ba66653739cc2e4eafa56e1e8775a91a132d49f1126f0e0142b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:37",
+      "sequence": 15151,
+      "chapter_label": "PSA 78",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 37
+        }
+      ],
+      "en": "For their heart was not right with him, neither were they faithful in his covenant.",
+      "ko": "이는 하나님께 향하는 저희 마음이 정함이 없으며 그의 언약에 성실치 아니하였음이로다",
+      "source_text_hash": "28c1d1c80aa7db8ed332bd1590867bc5ee7a76e3a99abbd1dd2214657a95c9e4",
+      "translation_text_hash": "cd6cefd962980e0565b59c617f85a678daed2dc83d3c0f6f922fbb284863282f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님께 향하는 저희 마음이 정함이 없으며 그의 언약에 성실치 아니하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "cd6cefd962980e0565b59c617f85a678daed2dc83d3c0f6f922fbb284863282f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:38",
+      "sequence": 15152,
+      "chapter_label": "PSA 78",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 38
+        }
+      ],
+      "en": "But he, being merciful, forgave iniquity, and didn’t destroy them. Yes, many times he turned his anger away, and didn’t stir up all his wrath.",
+      "ko": "오직 하나님은 자비하심으로 죄악을 사하사 멸하지 아니하시고 그 진노를 여러번 돌이키시며 그 분을 다 발하지 아니하셨으니",
+      "source_text_hash": "a6b5d57e46d45cbcc1c7a310ed08f2c713c3c3d882db9503022461492cfb3ddf",
+      "translation_text_hash": "a4e7feec93ec026e3deb515835fcd1054823fad7ad91c911fb20ed0365ce5dbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 하나님은 자비하심으로 죄악을 사하사 멸하지 아니하시고 그 진노를 여러번 돌이키시며 그 분을 다 발하지 아니하셨으니"
+      ],
+      "raw_text_hashes": [
+        "a4e7feec93ec026e3deb515835fcd1054823fad7ad91c911fb20ed0365ce5dbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:39",
+      "sequence": 15153,
+      "chapter_label": "PSA 78",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 39
+        }
+      ],
+      "en": "He remembered that they were but flesh, a wind that passes away, and doesn’t come again.",
+      "ko": "저희는 육체뿐이라 가고 다시 오지 못하는 바람임을 기억하셨음이로다",
+      "source_text_hash": "af2b22f7f696b1bd380676d318c510235e6ce1a9d34fdfd6a5de7a1a88214e4f",
+      "translation_text_hash": "6a72d3d9130307f1c939271b7de9450fbf37a8a76a72309575024fdd2527fb38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 육체뿐이라 가고 다시 오지 못하는 바람임을 기억하셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "6a72d3d9130307f1c939271b7de9450fbf37a8a76a72309575024fdd2527fb38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:40",
+      "sequence": 15154,
+      "chapter_label": "PSA 78",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 40
+        }
+      ],
+      "en": "How often they rebelled against him in the wilderness, and grieved him in the desert!",
+      "ko": "저희가 광야에서 그를 반항하며 사막에서 그를 슬프시게 함이 몇번인고",
+      "source_text_hash": "e327457092fd8da4b632b8825396033cde22d48b06d67f9d9158919536b54eea",
+      "translation_text_hash": "696f0b3541f0b7b2a097ffc5aed73125cd9104d981da5909e8b260c3335cbf8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 광야에서 그를 반항하며 사막에서 그를 슬프시게 함이 몇번인고"
+      ],
+      "raw_text_hashes": [
+        "696f0b3541f0b7b2a097ffc5aed73125cd9104d981da5909e8b260c3335cbf8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:41",
+      "sequence": 15155,
+      "chapter_label": "PSA 78",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 41
+        }
+      ],
+      "en": "They turned again and tempted God, and provoked the Holy One of Israel.",
+      "ko": "저희가 돌이켜 하나님을 재삼 시험하며 이스라엘의 거룩한 자를 격동하였도다",
+      "source_text_hash": "7907d66ed28fafea3d8106353766180a180a9f2402e53a5476536d27e6ddad9d",
+      "translation_text_hash": "f468f8ae8b829f6b96c38fd32f13f820a697eee43abf31abf85788f38fa57da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 돌이켜 하나님을 재삼 시험하며 이스라엘의 거룩한 자를 격동하였도다"
+      ],
+      "raw_text_hashes": [
+        "f468f8ae8b829f6b96c38fd32f13f820a697eee43abf31abf85788f38fa57da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:42",
+      "sequence": 15156,
+      "chapter_label": "PSA 78",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 42
+        }
+      ],
+      "en": "They didn’t remember his hand, nor the day when he redeemed them from the adversary;",
+      "ko": "저희가 그의 권능을 기억지 아니하며 대적에게서 구속하신 날도 생각지 아니하였도다",
+      "source_text_hash": "1b338990f5597d8ac4b317b5c8478790003d03a05ba3e7b42bb319c41d9c501e",
+      "translation_text_hash": "b0abbaf4bf3cc47aa2e93ff09546a61cc521d40ec38d5a8851bee804be31b6f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그의 권능을 기억지 아니하며 대적에게서 구속하신 날도 생각지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "b0abbaf4bf3cc47aa2e93ff09546a61cc521d40ec38d5a8851bee804be31b6f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:43",
+      "sequence": 15157,
+      "chapter_label": "PSA 78",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 43
+        }
+      ],
+      "en": "how he set his signs in Egypt, his wonders in the field of Zoan,",
+      "ko": "그 때에 하나님이 애굽에서 그 징조를, 소안 들에서 그 기사를 나타내사",
+      "source_text_hash": "8dfcfad26605ae5c30b42ba55323219700b286cd27116fea6c85db0a84f6dfa8",
+      "translation_text_hash": "a21d1c59de17cff5bed84d92d1d40bf6132f5639469c69b0ba3ed6b749d3566c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 하나님이 애굽에서 그 징조를, 소안 들에서 그 기사를 나타내사"
+      ],
+      "raw_text_hashes": [
+        "a21d1c59de17cff5bed84d92d1d40bf6132f5639469c69b0ba3ed6b749d3566c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:44",
+      "sequence": 15158,
+      "chapter_label": "PSA 78",
+      "verse_label": "44",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 44
+        }
+      ],
+      "en": "he turned their rivers into blood, and their streams, so that they could not drink.",
+      "ko": "저희의 강과 시내를 피로 변하여 저희로 마실 수 없게 하시며",
+      "source_text_hash": "6f9d046eb227447f3171b7bf7a0065b45d587d4995cd93f04539385fd64571d0",
+      "translation_text_hash": "32ebbab906e16d89b6765f064a38c5420b900cfa978604369c876dbc4f33edf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 강과 시내를 피로 변하여 저희로 마실 수 없게 하시며"
+      ],
+      "raw_text_hashes": [
+        "32ebbab906e16d89b6765f064a38c5420b900cfa978604369c876dbc4f33edf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:45",
+      "sequence": 15159,
+      "chapter_label": "PSA 78",
+      "verse_label": "45",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 45
+        }
+      ],
+      "en": "He sent among them swarms of flies, which devoured them; and frogs, which destroyed them.",
+      "ko": "파리 떼를 저희 중에 보내어 물게 하시고 개구리를 보내어 해하게 하셨으며",
+      "source_text_hash": "938d89bd08a2b50d2bb1c203230c939f1b37b50d2ada0692de5ffce02c966cb3",
+      "translation_text_hash": "ff6623e078826aebb03621e01e6daccba36a3399f11421bde9f9965d752ea97f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파리 떼를 저희 중에 보내어 물게 하시고 개구리를 보내어 해하게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "ff6623e078826aebb03621e01e6daccba36a3399f11421bde9f9965d752ea97f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:46",
+      "sequence": 15160,
+      "chapter_label": "PSA 78",
+      "verse_label": "46",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 46
+        }
+      ],
+      "en": "He also gave their increase to the caterpillar, and their labor to the locust.",
+      "ko": "저희의 토산물을 황충에게 주시며 저희의 수고한 것을 메뚜기에게 주셨으며",
+      "source_text_hash": "84b3ab54349f2eb78b458060ffe0b7e23b9b3ef5852914391e50c3a72f5ba5f0",
+      "translation_text_hash": "9c931f08290a40da21aebce1cd3dc43810618ff222fe9d2613d6d6ec89ea3eb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 토산물을 황충에게 주시며 저희의 수고한 것을 메뚜기에게 주셨으며"
+      ],
+      "raw_text_hashes": [
+        "9c931f08290a40da21aebce1cd3dc43810618ff222fe9d2613d6d6ec89ea3eb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:47",
+      "sequence": 15161,
+      "chapter_label": "PSA 78",
+      "verse_label": "47",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 47
+        }
+      ],
+      "en": "He destroyed their vines with hail, their sycamore fig trees with frost.",
+      "ko": "저희 포도나무를 우박으로, 저희 뽕나무를 서리로 죽이셨으며",
+      "source_text_hash": "2667f12662a66f67c48e62164db4bb114a305172a13d619155b62df1d1c90727",
+      "translation_text_hash": "c6270d1ecbec8b55ce11004ea798448a0e5f61582a37f4225d222ed36f84d7ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 포도나무를 우박으로, 저희 뽕나무를 서리로 죽이셨으며"
+      ],
+      "raw_text_hashes": [
+        "c6270d1ecbec8b55ce11004ea798448a0e5f61582a37f4225d222ed36f84d7ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:48",
+      "sequence": 15162,
+      "chapter_label": "PSA 78",
+      "verse_label": "48",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 48
+        }
+      ],
+      "en": "He also gave over their livestock to the hail, and their flocks to hot thunderbolts.",
+      "ko": "저희 가축을 우박에, 저희 양떼를 번갯불에 붙이셨으며",
+      "source_text_hash": "7b8c65eb1ef20daac36f56c9f0e59443a33c2c0e9607a3b0a1f5b026ceb48618",
+      "translation_text_hash": "861c3396108a5b53e0faf7b7253b15ed6bb5dd7884cbbc17132e115e5655615d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 가축을 우박에, 저희 양떼를 번갯불에 붙이셨으며"
+      ],
+      "raw_text_hashes": [
+        "861c3396108a5b53e0faf7b7253b15ed6bb5dd7884cbbc17132e115e5655615d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:49",
+      "sequence": 15163,
+      "chapter_label": "PSA 78",
+      "verse_label": "49",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 49
+        }
+      ],
+      "en": "He threw on them the fierceness of his anger, wrath, indignation, and trouble, and a band of angels of evil.",
+      "ko": "그 맹렬한 노와 분과 분노와 고난 곧 벌하는 사자들을 저희에게 내려 보내셨으며",
+      "source_text_hash": "2f9dfa67ad3358ad88f40c09fb2adb752bfd3758ba35a7050126cab0e2a060ae",
+      "translation_text_hash": "4a58a03326ba3cd38f36383029bfc15988058bc4eb6443af23479b78ee883379",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 맹렬한 노와 분과 분노와 고난 곧 벌하는 사자들을 저희에게 내려 보내셨으며"
+      ],
+      "raw_text_hashes": [
+        "4a58a03326ba3cd38f36383029bfc15988058bc4eb6443af23479b78ee883379"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:50",
+      "sequence": 15164,
+      "chapter_label": "PSA 78",
+      "verse_label": "50",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 50
+        }
+      ],
+      "en": "He made a path for his anger. He didn’t spare their soul from death, but gave their life over to the pestilence,",
+      "ko": "그 노를 위하여 치도하사 저희 혼의 사망을 면케 아니하시고 저희 생명을 염병에 붙이셨으며",
+      "source_text_hash": "9c7d5f4ed326f2891c656087ec00180b602608827601e3a860d461e26e6b88fc",
+      "translation_text_hash": "f9b39994ebc41c19bcf6c18f070645bbcf8ef44591b966d4090a635fe80b1d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 노를 위하여 치도하사 저희 혼의 사망을 면케 아니하시고 저희 생명을 염병에 붙이셨으며"
+      ],
+      "raw_text_hashes": [
+        "f9b39994ebc41c19bcf6c18f070645bbcf8ef44591b966d4090a635fe80b1d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:51",
+      "sequence": 15165,
+      "chapter_label": "PSA 78",
+      "verse_label": "51",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 51
+        }
+      ],
+      "en": "and struck all the firstborn in Egypt, the chief of their strength in the tents of Ham.",
+      "ko": "애굽에서 모든 장자 곧 함의 장막에 있는 그 기력의 시작을 치셨으나",
+      "source_text_hash": "814ede422add7b8a183153640ebd20c882d973418a07b1491c6b8d86566f3b04",
+      "translation_text_hash": "5cb7980f34f4e399cad432db4420f146179b737a51d8613a08a03c337ee5e829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 모든 장자 곧 함의 장막에 있는 그 기력의 시작을 치셨으나"
+      ],
+      "raw_text_hashes": [
+        "5cb7980f34f4e399cad432db4420f146179b737a51d8613a08a03c337ee5e829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:52",
+      "sequence": 15166,
+      "chapter_label": "PSA 78",
+      "verse_label": "52",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 52
+        }
+      ],
+      "en": "But he led out his own people like sheep, and guided them in the wilderness like a flock.",
+      "ko": "자기 백성을 양 같이 인도하여 내시고 광야에서 양떼 같이 지도하셨도다",
+      "source_text_hash": "b3eabd38516f9f9cef9293be4c02cbacd77d1b2faa9522bf1bc390f4e06720a4",
+      "translation_text_hash": "ae83017afa013a6660b2f78f87de13b18c5cba1adb763a28be28793fdc134a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 백성을 양 같이 인도하여 내시고 광야에서 양떼 같이 지도하셨도다"
+      ],
+      "raw_text_hashes": [
+        "ae83017afa013a6660b2f78f87de13b18c5cba1adb763a28be28793fdc134a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:53",
+      "sequence": 15167,
+      "chapter_label": "PSA 78",
+      "verse_label": "53",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 53
+        }
+      ],
+      "en": "He led them safely, so that they weren’t afraid, but the sea overwhelmed their enemies.",
+      "ko": "저희를 안전히 인도하시니 저희는 두려움이 없었으나 저희 원수는 바다에 엄몰되었도다",
+      "source_text_hash": "a523823d16738fefabe19c7b705febf38dd271c994c5447ab89a7810482a0f93",
+      "translation_text_hash": "f291ea34c95fb64a6718a3c3609d70350bb1d2a5d7e3ff779d3d5bfa9c0e5993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 안전히 인도하시니 저희는 두려움이 없었으나 저희 원수는 바다에 엄몰되었도다"
+      ],
+      "raw_text_hashes": [
+        "f291ea34c95fb64a6718a3c3609d70350bb1d2a5d7e3ff779d3d5bfa9c0e5993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:54",
+      "sequence": 15168,
+      "chapter_label": "PSA 78",
+      "verse_label": "54",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 54
+        }
+      ],
+      "en": "He brought them to the border of his sanctuary, to this mountain, which his right hand had taken.",
+      "ko": "저희를 그 성소의 지경 곧 그의 오른손이 취하신 산으로 인도하시고",
+      "source_text_hash": "cf39a7b9be7c7ff091e7c55f3020c41764e9f055202e98c0575357adfa0da50d",
+      "translation_text_hash": "79adcdf7db6f95bb47dfb61608395b9d79616af99369aa2652bfbc8fb870745e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 그 성소의 지경 곧 그의 오른손이 취하신 산으로 인도하시고"
+      ],
+      "raw_text_hashes": [
+        "79adcdf7db6f95bb47dfb61608395b9d79616af99369aa2652bfbc8fb870745e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:55",
+      "sequence": 15169,
+      "chapter_label": "PSA 78",
+      "verse_label": "55",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 55
+        }
+      ],
+      "en": "He also drove out the nations before them, allotted them for an inheritance by line, and made the tribes of Israel to dwell in their tents.",
+      "ko": "또 열방을 저희 앞에서 쫓아 내시며 줄로 저희 기업을 분배하시고 이스라엘 지파로 그 장막에 거하게 하셨도다",
+      "source_text_hash": "1da11a586e2744c3d74e37b2e053f2bfb3dc9a519f6952a0a647b3f0423d9f97",
+      "translation_text_hash": "16ab6ae98fd4bcc0054d6aa8e7d51af0db5579251d989b0511abbdbbf1a5eaed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 열방을 저희 앞에서 쫓아 내시며 줄로 저희 기업을 분배하시고 이스라엘 지파로 그 장막에 거하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "16ab6ae98fd4bcc0054d6aa8e7d51af0db5579251d989b0511abbdbbf1a5eaed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:56",
+      "sequence": 15170,
+      "chapter_label": "PSA 78",
+      "verse_label": "56",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 56
+        }
+      ],
+      "en": "Yet they tempted and rebelled against the Most High God, and didn’t keep his testimonies,",
+      "ko": "그럴찌라도 저희가 지존하신 하나님을 시험하며 반항하여 그 증거를 지키지 아니하며",
+      "source_text_hash": "134bc385f820742606fbe02d59711fde351519a1926047987104e8b1eb2f6d03",
+      "translation_text_hash": "e913d76287e536e041c828542384acd6e39ab27113d199c40fecaca7fc7f631e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴찌라도 저희가 지존하신 하나님을 시험하며 반항하여 그 증거를 지키지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "e913d76287e536e041c828542384acd6e39ab27113d199c40fecaca7fc7f631e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:57",
+      "sequence": 15171,
+      "chapter_label": "PSA 78",
+      "verse_label": "57",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 57
+        }
+      ],
+      "en": "but turned back, and dealt treacherously like their fathers. They were twisted like a deceitful bow.",
+      "ko": "저희 열조 같이 배반하고 궤사를 행하여 속이는 활 같이 빗가서",
+      "source_text_hash": "847d426d9f4aa43b70c338b6dfd3451e1ca9354b06a1e15355394153d17740cb",
+      "translation_text_hash": "17b7c673d808e2c5c3cfb6c5e12cf4b32e2dbb73fcfff5353dafccc9a796d906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 열조 같이 배반하고 궤사를 행하여 속이는 활 같이 빗가서"
+      ],
+      "raw_text_hashes": [
+        "17b7c673d808e2c5c3cfb6c5e12cf4b32e2dbb73fcfff5353dafccc9a796d906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:58",
+      "sequence": 15172,
+      "chapter_label": "PSA 78",
+      "verse_label": "58",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 58
+        }
+      ],
+      "en": "For they provoked him to anger with their high places, and moved him to jealousy with their engraved images.",
+      "ko": "자기 산당으로 그 노를 격동하며 저희 조각한 우상으로 그를 진노케 하였으매",
+      "source_text_hash": "0a470c9f3e777983aafce43ce6ce3ea3e3137ce99d12f9155b9d46c2cd8760f6",
+      "translation_text_hash": "1f08e66d264eeffe388d16ddfb71e44d66b027b3e8bd9af22ce9bb89125b91e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 산당으로 그 노를 격동하며 저희 조각한 우상으로 그를 진노케 하였으매"
+      ],
+      "raw_text_hashes": [
+        "1f08e66d264eeffe388d16ddfb71e44d66b027b3e8bd9af22ce9bb89125b91e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:59",
+      "sequence": 15173,
+      "chapter_label": "PSA 78",
+      "verse_label": "59",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 59
+        }
+      ],
+      "en": "When God heard this, he was angry, and greatly abhorred Israel,",
+      "ko": "하나님이 들으시고 분내어 이스라엘을 크게 미워하사",
+      "source_text_hash": "3c28a85eda2702e599cef190cace597ea0788f97f7595e2c4d3c231e37e892f6",
+      "translation_text_hash": "e852e62891f8efb8270e803206af2bdc6c2ea801fdb13ac19a917070ae88a0e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 들으시고 분내어 이스라엘을 크게 미워하사"
+      ],
+      "raw_text_hashes": [
+        "e852e62891f8efb8270e803206af2bdc6c2ea801fdb13ac19a917070ae88a0e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:60",
+      "sequence": 15174,
+      "chapter_label": "PSA 78",
+      "verse_label": "60",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 60
+        }
+      ],
+      "en": "so that he abandoned the tent of Shiloh, the tent which he placed among men,",
+      "ko": "실로의 성막 곧 인간에 세우신 장막을 떠나시고",
+      "source_text_hash": "b9cb488e0be0e74c66812a98a45a686f9dfed1cf8210f48e9cef4168bac37975",
+      "translation_text_hash": "fd44258d4413a3191f44f8a64041b740a0bff67cebc5cfd4060624a087a3f729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실로의 성막 곧 인간에 세우신 장막을 떠나시고"
+      ],
+      "raw_text_hashes": [
+        "fd44258d4413a3191f44f8a64041b740a0bff67cebc5cfd4060624a087a3f729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:61",
+      "sequence": 15175,
+      "chapter_label": "PSA 78",
+      "verse_label": "61",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 61
+        }
+      ],
+      "en": "and delivered his strength into captivity, his glory into the adversary’s hand.",
+      "ko": "그 능력된 자를 포로에 붙이시며 자기 영광을 대적의 손에 붙이시고",
+      "source_text_hash": "d1edfd99e41f4e2d660eb147365c80fa29b42ff7c02d999c723512f7683ea91c",
+      "translation_text_hash": "4908a0f5071b6712cb9fef8a6a22c548c7124b28602b998bb84f876b5c2bf970",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 능력된 자를 포로에 붙이시며 자기 영광을 대적의 손에 붙이시고"
+      ],
+      "raw_text_hashes": [
+        "4908a0f5071b6712cb9fef8a6a22c548c7124b28602b998bb84f876b5c2bf970"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:62",
+      "sequence": 15176,
+      "chapter_label": "PSA 78",
+      "verse_label": "62",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 62
+        }
+      ],
+      "en": "He also gave his people over to the sword, and was angry with his inheritance.",
+      "ko": "그 백성을 또 칼에 붙이사 그의 기업에게 분내셨으니",
+      "source_text_hash": "982db677d18376d48edc12d176ec04153b510ea5cf1bd7c259bfe95c03b3bbac",
+      "translation_text_hash": "d990b7657119f05f37c770f78a27c4a5c6ac4fb58eef590230ef5c1c608b936f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성을 또 칼에 붙이사 그의 기업에게 분내셨으니"
+      ],
+      "raw_text_hashes": [
+        "d990b7657119f05f37c770f78a27c4a5c6ac4fb58eef590230ef5c1c608b936f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:63",
+      "sequence": 15177,
+      "chapter_label": "PSA 78",
+      "verse_label": "63",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 63
+        }
+      ],
+      "en": "Fire devoured their young men. Their virgins had no wedding song.",
+      "ko": "저희 청년은 불에 살라지고 저희 처녀에게는 혼인 노래가 없으며",
+      "source_text_hash": "dc8f076f0cbd26acf98851ed00c893b4d420974e020f6c50fb44888db1079494",
+      "translation_text_hash": "5f2188e4b5605aa23e4340aa01db27b334ce22640d1d1bd3ebb12a5d1a74ff6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 청년은 불에 살라지고 저희 처녀에게는 혼인 노래가 없으며"
+      ],
+      "raw_text_hashes": [
+        "5f2188e4b5605aa23e4340aa01db27b334ce22640d1d1bd3ebb12a5d1a74ff6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:64",
+      "sequence": 15178,
+      "chapter_label": "PSA 78",
+      "verse_label": "64",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 64
+        }
+      ],
+      "en": "Their priests fell by the sword, and their widows couldn’t weep.",
+      "ko": "저희 제사장들은 칼에 엎드러지고 저희 과부들은 애곡하지 못하였도다",
+      "source_text_hash": "b82c61a98669b6c04b5467c780fe20a18b7e6b36e99fc20f2d5f09b9cc14ebc6",
+      "translation_text_hash": "c987b765dd82b4370eb65d4fbeb9c622fe980e41dc979e38dce73ae314cb219f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 제사장들은 칼에 엎드러지고 저희 과부들은 애곡하지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "c987b765dd82b4370eb65d4fbeb9c622fe980e41dc979e38dce73ae314cb219f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:65",
+      "sequence": 15179,
+      "chapter_label": "PSA 78",
+      "verse_label": "65",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 65
+        }
+      ],
+      "en": "Then the Lord awakened as one out of sleep, like a mighty man who shouts by reason of wine.",
+      "ko": "때에 주께서 자다가 깬자 같이, 포도주로 인하여 외치는 용사같이 일어나사",
+      "source_text_hash": "bd390ab34ba0875595656349bd0177999645b4a914e7ca48672060d0bb6d1ecb",
+      "translation_text_hash": "ca76db53efe545ce9fb7ce17f4070e1f86c2b4aa90685782c0fdbe10695e2578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 주께서 자다가 깬자 같이, 포도주로 인하여 외치는 용사같이 일어나사"
+      ],
+      "raw_text_hashes": [
+        "ca76db53efe545ce9fb7ce17f4070e1f86c2b4aa90685782c0fdbe10695e2578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:66",
+      "sequence": 15180,
+      "chapter_label": "PSA 78",
+      "verse_label": "66",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 66
+        }
+      ],
+      "en": "He struck his adversaries backward. He put them to a perpetual reproach.",
+      "ko": "그 대적을 쳐 물리쳐서 길이 욕되게 하시고",
+      "source_text_hash": "ae19d23ce09075edbe829b3c775767cab29dc8a0a18a7c9bc184f80d14a5d989",
+      "translation_text_hash": "95247befe7ec34a75d6b167cd371be6137ba192452319f64b0942e427de1a918",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 대적을 쳐 물리쳐서 길이 욕되게 하시고"
+      ],
+      "raw_text_hashes": [
+        "95247befe7ec34a75d6b167cd371be6137ba192452319f64b0942e427de1a918"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:67",
+      "sequence": 15181,
+      "chapter_label": "PSA 78",
+      "verse_label": "67",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 67
+        }
+      ],
+      "en": "Moreover he rejected the tent of Joseph, and didn’t choose the tribe of Ephraim,",
+      "ko": "또 요셉의 장막을 싫어 버리시며 에브라임 지파를 택하지 아니하시고",
+      "source_text_hash": "ed68aa6ffb300093fcb89c5cd810949af193010d7773d72b26fc6a2bd5126ffb",
+      "translation_text_hash": "3be806aa95daaa59e4200368ba03eb7301be99b5b3ad1cac7ae204722ffe196b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 요셉의 장막을 싫어 버리시며 에브라임 지파를 택하지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "3be806aa95daaa59e4200368ba03eb7301be99b5b3ad1cac7ae204722ffe196b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:68",
+      "sequence": 15182,
+      "chapter_label": "PSA 78",
+      "verse_label": "68",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 68
+        }
+      ],
+      "en": "But chose the tribe of Judah, Mount Zion which he loved.",
+      "ko": "오직 유다 지파와 그 사랑하시는 시온산을 택하시고",
+      "source_text_hash": "0b7bcb966d835667733760c5cc31b0fefc060fd85c8c7ffde5bd692153a24861",
+      "translation_text_hash": "e0d8effe8b6bd805d152e271026f7a51480dd7f03da8e4da1fb337b40a6b5019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 유다 지파와 그 사랑하시는 시온산을 택하시고"
+      ],
+      "raw_text_hashes": [
+        "e0d8effe8b6bd805d152e271026f7a51480dd7f03da8e4da1fb337b40a6b5019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:69",
+      "sequence": 15183,
+      "chapter_label": "PSA 78",
+      "verse_label": "69",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 69
+        }
+      ],
+      "en": "He built his sanctuary like the heights, like the earth which he has established forever.",
+      "ko": "그 성소를 산의 높음 같이, 영원히 두신 땅 같이 지으셨으며",
+      "source_text_hash": "34bf6dcfa2df6b2fe5ef680ed627f82dd89e296e87e8bf3276b4205c3056c344",
+      "translation_text_hash": "c46df1c0ac8fac56300971e7e83a4dec52864f0b57b2835a8f4e6ddbca82df03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성소를 산의 높음 같이, 영원히 두신 땅 같이 지으셨으며"
+      ],
+      "raw_text_hashes": [
+        "c46df1c0ac8fac56300971e7e83a4dec52864f0b57b2835a8f4e6ddbca82df03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:70",
+      "sequence": 15184,
+      "chapter_label": "PSA 78",
+      "verse_label": "70",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 70
+        }
+      ],
+      "en": "He also chose David his servant, and took him from the sheepfolds;",
+      "ko": "또 그 종 다윗을 택하시되 양의 우리에서 취하시며",
+      "source_text_hash": "537e9da58a21036f057e5097601fdc538eff5dfe6878710ccf8cd321b71eba8c",
+      "translation_text_hash": "f76262324f5f9a88a5117608f908bcee83cd8eea9f9f8aa4aae3d614ec1f8a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 종 다윗을 택하시되 양의 우리에서 취하시며"
+      ],
+      "raw_text_hashes": [
+        "f76262324f5f9a88a5117608f908bcee83cd8eea9f9f8aa4aae3d614ec1f8a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:71",
+      "sequence": 15185,
+      "chapter_label": "PSA 78",
+      "verse_label": "71",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 71
+        }
+      ],
+      "en": "from following the ewes that have their young, he brought him to be the shepherd of Jacob, his people, and Israel, his inheritance.",
+      "ko": "젖 양을 지키는 중에서 저희를 이끄사 그 백성인 야곱, 그 기업인 이스라엘을 기르게 하셨더니",
+      "source_text_hash": "5dacee53318d27a167162df03c8c36eb68751d09bed2c1edba9b4fc26d695a18",
+      "translation_text_hash": "38593f51967ad9fc344eaf5fab33c62afbef75bdd354871f1d96827fe0e7f382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젖 양을 지키는 중에서 저희를 이끄사 그 백성인 야곱, 그 기업인 이스라엘을 기르게 하셨더니"
+      ],
+      "raw_text_hashes": [
+        "38593f51967ad9fc344eaf5fab33c62afbef75bdd354871f1d96827fe0e7f382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:78:72",
+      "sequence": 15186,
+      "chapter_label": "PSA 78",
+      "verse_label": "72",
+      "locator": {
+        "book": "PSA",
+        "chapter": 78,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 78,
+          "verse": 72
+        }
+      ],
+      "en": "So he was their shepherd according to the integrity of his heart, and guided them by the skillfulness of his hands.",
+      "ko": "이에 저가 그 마음의 성실함으로 기르고 그 손의 공교함으로 지도하였도다",
+      "source_text_hash": "a2e3ad1cc1c8e882d6e711644062f35544469e0c9a8d8331f767a8c7088f493c",
+      "translation_text_hash": "bc15d5e21ac56d2c077e9e55a9255d71e290a60e55df1e6a8d00a3af2bc40fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저가 그 마음의 성실함으로 기르고 그 손의 공교함으로 지도하였도다"
+      ],
+      "raw_text_hashes": [
+        "bc15d5e21ac56d2c077e9e55a9255d71e290a60e55df1e6a8d00a3af2bc40fe5"
+      ]
+    }
+  ]
+}

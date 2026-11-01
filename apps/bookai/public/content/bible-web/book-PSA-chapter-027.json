@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:027",
+  "unit_ordinal": 505,
+  "unit_label": "PSA 27",
+  "book_code": "PSA",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:27:1",
+      "sequence": 14287,
+      "chapter_label": "PSA 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD is my light and my salvation. Whom shall I fear? The LORD is the strength of my life. Of whom shall I be afraid?",
+      "ko": "여호와는 나의 빛이요 나의 구원이시니 내가 누구를 두려워하리요 여호와는 내 생명의 능력이시니 내가 누구를 무서워하리요",
+      "source_text_hash": "98bbf05ae26fa2736d0a10ffd4fcf4fa47b76517fd1899140714004fd26c337f",
+      "translation_text_hash": "4286c4a7664307ca9aa3a6156c0d68b96677ed3b4e36e152db0451661221ccf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 빛이요 나의 구원이시니 내가 누구를 두려워하리요 여호와는 내 생명의 능력이시니 내가 누구를 무서워하리요"
+      ],
+      "raw_text_hashes": [
+        "4286c4a7664307ca9aa3a6156c0d68b96677ed3b4e36e152db0451661221ccf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:2",
+      "sequence": 14288,
+      "chapter_label": "PSA 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "When evildoers came at me to eat up my flesh, even my adversaries and my foes, they stumbled and fell.",
+      "ko": "나의 대적, 나의 원수된 행악자가 내 살을 먹으려고 내게로 왔다가 실족하여 넘어졌도다",
+      "source_text_hash": "a381e604ffed4290bfb06fa2dbf4f6aeaecf05d1574a9f0fe5f3bc31c280238c",
+      "translation_text_hash": "0966caf721e4bbe2bc7431dbceef7d3434ed296575cb87f3367f4cd70c0f5ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 대적, 나의 원수된 행악자가 내 살을 먹으려고 내게로 왔다가 실족하여 넘어졌도다"
+      ],
+      "raw_text_hashes": [
+        "0966caf721e4bbe2bc7431dbceef7d3434ed296575cb87f3367f4cd70c0f5ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:3",
+      "sequence": 14289,
+      "chapter_label": "PSA 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "Though an army should encamp against me, my heart shall not fear. Though war should rise against me, even then I will be confident.",
+      "ko": "군대가 나를 대적하여 진 칠찌라도 내 마음이 두렵지 아니하며 전쟁이 일어나 나를 치려 할찌라도 내가 오히려 안연하리로다",
+      "source_text_hash": "4fcfb1ea62cab2510f43e163466283e40f327d71560ffa2dffb29059d0e993b7",
+      "translation_text_hash": "024654b6f940fb61d1d7e8b9256b47dd64fce2de54a184f035870362c021152c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군대가 나를 대적하여 진 칠찌라도 내 마음이 두렵지 아니하며 전쟁이 일어나 나를 치려 할찌라도 내가 오히려 안연하리로다"
+      ],
+      "raw_text_hashes": [
+        "024654b6f940fb61d1d7e8b9256b47dd64fce2de54a184f035870362c021152c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:4",
+      "sequence": 14290,
+      "chapter_label": "PSA 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "One thing I have asked of the LORD, that I will seek after: that I may dwell in the LORD’s house all the days of my life, to see the LORD’s beauty, and to inquire in his temple.",
+      "ko": "내가 여호와께 청하였던 한 가지 일 곧 그것을 구하리니 곧 나로 내 생전에 여호와의 집에 거하여 여호와의 아름다움을 앙망하며 그 전에서 사모하게 하실 것이라",
+      "source_text_hash": "b56da4d02881557bdf6780bd678e0a32f57f4b06410100f8300d8792e1dc25a1",
+      "translation_text_hash": "80acfc97b620806fab0d097d5815014c595d19dd2d476bc5f6c57bcef1f0286d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 청하였던 한 가지 일 곧 그것을 구하리니 곧 나로 내 생전에 여호와의 집에 거하여 여호와의 아름다움을 앙망하며 그 전에서 사모하게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "80acfc97b620806fab0d097d5815014c595d19dd2d476bc5f6c57bcef1f0286d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:5",
+      "sequence": 14291,
+      "chapter_label": "PSA 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "For in the day of trouble, he will keep me secretly in his pavilion. In the secret place of his tabernacle, he will hide me. He will lift me up on a rock.",
+      "ko": "여호와께서 환난 날에 나를 그 초막 속에 비밀히 지키시고 그 장막 은밀한 곳에 나를 숨기시며 바위 위에 높이 두시리로다",
+      "source_text_hash": "170da7a1c471dbecbcfcfa78490fa8331da8a1a42fff61f343fccc1fa24e9cdf",
+      "translation_text_hash": "fffd6ae9941c758243c8a550842219fb4350db43fc69c7cccf4a2034cc74f49a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 환난 날에 나를 그 초막 속에 비밀히 지키시고 그 장막 은밀한 곳에 나를 숨기시며 바위 위에 높이 두시리로다"
+      ],
+      "raw_text_hashes": [
+        "fffd6ae9941c758243c8a550842219fb4350db43fc69c7cccf4a2034cc74f49a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:6",
+      "sequence": 14292,
+      "chapter_label": "PSA 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "Now my head will be lifted up above my enemies around me. I will offer sacrifices of joy in his tent. I will sing, yes, I will sing praises to the LORD.",
+      "ko": "이제 내 머리가 나를 두른 내 원수 위에 들리리니 내가 그 장막에서 즐거운 제사를 드리겠고 노래하여 여호와를 찬송하리로다",
+      "source_text_hash": "3e21e785f5eb1b78b7d8f5106fa98bdd90a6f143cad70140b71c2f98e1acf4a7",
+      "translation_text_hash": "c49683297c56d8b05733fbda293f453659e7d7e196ea1399bf149362124bac40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내 머리가 나를 두른 내 원수 위에 들리리니 내가 그 장막에서 즐거운 제사를 드리겠고 노래하여 여호와를 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "c49683297c56d8b05733fbda293f453659e7d7e196ea1399bf149362124bac40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:7",
+      "sequence": 14293,
+      "chapter_label": "PSA 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "Hear, LORD, when I cry with my voice. Have mercy also on me, and answer me.",
+      "ko": "여호와여 내가 소리로 부르짖을 때에 들으시고 또한 나를 긍휼히 여기사 응답하소서",
+      "source_text_hash": "3041e382065fa5bf36703c1681ba3d5a17fb16c7d10ba7a30086dfb1af9854a6",
+      "translation_text_hash": "926ec94572c3b1a01b8dc85b8aae01b6fe75e269f1d1e5abde2b595332f16694",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 소리로 부르짖을 때에 들으시고 또한 나를 긍휼히 여기사 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "926ec94572c3b1a01b8dc85b8aae01b6fe75e269f1d1e5abde2b595332f16694"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:8",
+      "sequence": 14294,
+      "chapter_label": "PSA 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "When you said, “Seek my face,” my heart said to you, “I will seek your face, LORD.”",
+      "ko": "너희는 내 얼굴을 찾으라 하실 때에 내 마음이 주께 말하되 여호와여 내가 주의 얼굴을 찾으리이다 하였나이다",
+      "source_text_hash": "7fe676d0645dd3883c8960a6c4d5a48ac3f64853a9d6e553173c30edc920d8c5",
+      "translation_text_hash": "6df0e3580ab8a8bd5073d891fa8ab83a16229256addc0c9c0c06aad73e3555b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 얼굴을 찾으라 하실 때에 내 마음이 주께 말하되 여호와여 내가 주의 얼굴을 찾으리이다 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "6df0e3580ab8a8bd5073d891fa8ab83a16229256addc0c9c0c06aad73e3555b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:9",
+      "sequence": 14295,
+      "chapter_label": "PSA 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t hide your face from me. Don’t put your servant away in anger. You have been my help. Don’t abandon me, neither forsake me, God of my salvation.",
+      "ko": "주의 얼굴을 내게서 숨기지 마시고 주의 종을 노하여 버리지 마소서 주는 나의 도움이 되셨나이다 나의 구원의 하나님이시여 나를 버리지 말고 떠나지 마옵소서",
+      "source_text_hash": "4b3246ceec9b5ec1230f516270705949e836cc9177a65699cc37f8b99b58e5ce",
+      "translation_text_hash": "72f04941ca650c612033f8679f24d5738fde214d853671770dbba28766b7e45b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 얼굴을 내게서 숨기지 마시고 주의 종을 노하여 버리지 마소서 주는 나의 도움이 되셨나이다 나의 구원의 하나님이시여 나를 버리지 말고 떠나지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "72f04941ca650c612033f8679f24d5738fde214d853671770dbba28766b7e45b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:10",
+      "sequence": 14296,
+      "chapter_label": "PSA 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "When my father and my mother forsake me, then the LORD will take me up.",
+      "ko": "내 부모는 나를 버렸으나 여호와는 나를 영접하시리이다",
+      "source_text_hash": "735a4e1e3db56a15ebf01e894b941d7a461fcf6dc256ae2fe28e6f0a88de830d",
+      "translation_text_hash": "fcb44d39b4208342d187c6b84c6c074ac3ef02160d5f5c7cd1b7e84d4086d03e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 부모는 나를 버렸으나 여호와는 나를 영접하시리이다"
+      ],
+      "raw_text_hashes": [
+        "fcb44d39b4208342d187c6b84c6c074ac3ef02160d5f5c7cd1b7e84d4086d03e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:11",
+      "sequence": 14297,
+      "chapter_label": "PSA 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "Teach me your way, LORD. Lead me in a straight path, because of my enemies.",
+      "ko": "여호와여 주의 길로 나를 가르치시고 내 원수를 인하여 평탄한 길로 인도하소서",
+      "source_text_hash": "be3c2421344ef939ac6a39ad0671f1c32a20d44125fdba5b3c88de28c8ef64f7",
+      "translation_text_hash": "1dc45f1c8a46350977ca6cd03af5c909f94b87c733db172c8a709d6521bf994d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 길로 나를 가르치시고 내 원수를 인하여 평탄한 길로 인도하소서"
+      ],
+      "raw_text_hashes": [
+        "1dc45f1c8a46350977ca6cd03af5c909f94b87c733db172c8a709d6521bf994d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:12",
+      "sequence": 14298,
+      "chapter_label": "PSA 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "Don’t deliver me over to the desire of my adversaries, for false witnesses have risen up against me, such as breathe out cruelty.",
+      "ko": "내 생명을 내 대적의 뜻에 맡기지 마소서 위증자와 악을 토하는 자가 일어나 나를 치려 함이니이다",
+      "source_text_hash": "b5e3b63413acf3c8408cec78edc2b1ae7e1731d833d2f6dbcf3449789aaec4e4",
+      "translation_text_hash": "8cf5f600a419cde78b197b968b4166e3f3e542a679d3032df5c809d00b3e653f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생명을 내 대적의 뜻에 맡기지 마소서 위증자와 악을 토하는 자가 일어나 나를 치려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "8cf5f600a419cde78b197b968b4166e3f3e542a679d3032df5c809d00b3e653f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:13",
+      "sequence": 14299,
+      "chapter_label": "PSA 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "I am still confident of this: I will see the goodness of the LORD in the land of the living.",
+      "ko": "내가 산 자의 땅에 있음이여 여호와의 은혜 볼 것을 믿었도다",
+      "source_text_hash": "37eac02db1e69a19167090f3f4636da68df6c89c6e4241fd1611def798c41ab6",
+      "translation_text_hash": "6634ce880dc55cba9a44191d534863330c4b8c3ef7cb8add7e9e0f489de51c52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 산 자의 땅에 있음이여 여호와의 은혜 볼 것을 믿었도다"
+      ],
+      "raw_text_hashes": [
+        "6634ce880dc55cba9a44191d534863330c4b8c3ef7cb8add7e9e0f489de51c52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:27:14",
+      "sequence": 14300,
+      "chapter_label": "PSA 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "Wait for the LORD. Be strong, and let your heart take courage. Yes, wait for the LORD.",
+      "ko": "너는 여호와를 바랄찌어다 강하고 담대하며 여호와를 바랄찌어다",
+      "source_text_hash": "8e3c9b551ff0344f3629fccaac5c91a0a875d48078f7f51b47dd0d66e59c8236",
+      "translation_text_hash": "6c9d7a4a620ee754ae633773796dcc35c92881f75c822b5748b8f22c91ab480b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여호와를 바랄찌어다 강하고 담대하며 여호와를 바랄찌어다"
+      ],
+      "raw_text_hashes": [
+        "6c9d7a4a620ee754ae633773796dcc35c92881f75c822b5748b8f22c91ab480b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:026",
+  "unit_ordinal": 504,
+  "unit_label": "PSA 26",
+  "book_code": "PSA",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:26:1",
+      "sequence": 14275,
+      "chapter_label": "PSA 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "Judge me, LORD, for I have walked in my integrity. I have trusted also in the LORD without wavering.",
+      "ko": "내가 나의 완전함에 행하였사오며 요동치 아니하고 여호와를 의지하였사오니 여호와여 나를 판단하소서",
+      "source_text_hash": "e92124c2d35a755ac9f33ee1535bdd5fe2770846e6e7f8e9929c799936af5eb0",
+      "translation_text_hash": "6989eb39855d853325a1d7d5be58d5afeacf71207eb0961830afb2f3de0b0b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 완전함에 행하였사오며 요동치 아니하고 여호와를 의지하였사오니 여호와여 나를 판단하소서"
+      ],
+      "raw_text_hashes": [
+        "6989eb39855d853325a1d7d5be58d5afeacf71207eb0961830afb2f3de0b0b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:2",
+      "sequence": 14276,
+      "chapter_label": "PSA 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "Examine me, LORD, and prove me. Try my heart and my mind.",
+      "ko": "여호와여 나를 살피시고 시험하사 내 뜻과 내 마음을 단련하소서",
+      "source_text_hash": "06bf1f47a5bf899b745cc829b5da413fab748b16612976daf6fefd3ca5c8f8bb",
+      "translation_text_hash": "97f3237536cae25777bf352de38f3cdfb6c12800f32aa8d4ff4f9ed2aaf65263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 살피시고 시험하사 내 뜻과 내 마음을 단련하소서"
+      ],
+      "raw_text_hashes": [
+        "97f3237536cae25777bf352de38f3cdfb6c12800f32aa8d4ff4f9ed2aaf65263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:3",
+      "sequence": 14277,
+      "chapter_label": "PSA 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "For your loving kindness is before my eyes. I have walked in your truth.",
+      "ko": "주의 인자하심이 내 목전에 있나이다 내가 주의 진리 중에 행하여",
+      "source_text_hash": "8622eef2099c30d73b063ea27f04e31093d4810e283bbc52b6f44e04eb05e20d",
+      "translation_text_hash": "cd42fbebc541092407322897eed4a5f214a16331e29ff15555e0dc4a996128cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하심이 내 목전에 있나이다 내가 주의 진리 중에 행하여"
+      ],
+      "raw_text_hashes": [
+        "cd42fbebc541092407322897eed4a5f214a16331e29ff15555e0dc4a996128cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:4",
+      "sequence": 14278,
+      "chapter_label": "PSA 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "I have not sat with deceitful men, neither will I go in with hypocrites.",
+      "ko": "허망한 사람과 같이 앉지 아니하였사오니 간사한 자와 동행치도 아니하리이다",
+      "source_text_hash": "82277eda59e67ef0bd9b29448047439a027d0cea1337979041fae7d5b1de23e2",
+      "translation_text_hash": "59309912b5dda6154a127172c29d395c5a785f58b521541eb4169192fbb031de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허망한 사람과 같이 앉지 아니하였사오니 간사한 자와 동행치도 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "59309912b5dda6154a127172c29d395c5a785f58b521541eb4169192fbb031de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:5",
+      "sequence": 14279,
+      "chapter_label": "PSA 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "I hate the assembly of evildoers, and will not sit with the wicked.",
+      "ko": "내가 행악자의 집회를 미워하오니 악한 자와 같이 앉지 아니하리이다",
+      "source_text_hash": "7c5ba79c1e1200d2d28ea6dae00bb78dba2ea2af277c41b9e750752aa42cc601",
+      "translation_text_hash": "ef73c55bcc76eb47b127a78b98affbce106329da1c3890988c7fb87be306942f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 행악자의 집회를 미워하오니 악한 자와 같이 앉지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "ef73c55bcc76eb47b127a78b98affbce106329da1c3890988c7fb87be306942f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:6",
+      "sequence": 14280,
+      "chapter_label": "PSA 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "I will wash my hands in innocence, so I will go about your altar, LORD,",
+      "ko": "여호와여 내가 무죄하므로 손을 씻고 주의 단에 두루 다니며",
+      "source_text_hash": "7e88e925b2b36e53e061e6db9e3740bd330764062cd30b59ac0704e4e7e07b4d",
+      "translation_text_hash": "52b1f98b1134944ef88168783ba5613b35ec41ff4fa931f4bb71411673c232cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 무죄하므로 손을 씻고 주의 단에 두루 다니며"
+      ],
+      "raw_text_hashes": [
+        "52b1f98b1134944ef88168783ba5613b35ec41ff4fa931f4bb71411673c232cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:7",
+      "sequence": 14281,
+      "chapter_label": "PSA 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "that I may make the voice of thanksgiving to be heard and tell of all your wondrous deeds.",
+      "ko": "감사의 소리를 들리고 주의 기이한 모든 일을 이르리이다",
+      "source_text_hash": "63acaa744e0fecf0e932138a1044f279c9d72202edf8b69712a098e764863f05",
+      "translation_text_hash": "573d7e9387f5f278c907c8ad15b291b9b78d558888a5979f6df7258a636771e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사의 소리를 들리고 주의 기이한 모든 일을 이르리이다"
+      ],
+      "raw_text_hashes": [
+        "573d7e9387f5f278c907c8ad15b291b9b78d558888a5979f6df7258a636771e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:8",
+      "sequence": 14282,
+      "chapter_label": "PSA 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "LORD, I love the habitation of your house, the place where your glory dwells.",
+      "ko": "여호와여 내가 주의 계신 집과 주의 영광이 거하는 곳을 사랑하오니",
+      "source_text_hash": "ae2b5c4cd3a0f05658e73588ce81dd0c21beb25b0ed082fab69ae7434f187ac6",
+      "translation_text_hash": "6fbbe069228e9a74ae5d64a1257cb1a8591e236faae67dd5fe636f3ceb6fa13e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주의 계신 집과 주의 영광이 거하는 곳을 사랑하오니"
+      ],
+      "raw_text_hashes": [
+        "6fbbe069228e9a74ae5d64a1257cb1a8591e236faae67dd5fe636f3ceb6fa13e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:9",
+      "sequence": 14283,
+      "chapter_label": "PSA 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t gather my soul with sinners, nor my life with bloodthirsty men",
+      "ko": "내 영혼을 죄인과 함께, 내 생명을 살인자와 함께 거두지 마소서",
+      "source_text_hash": "15f2b30078888ce860e3881b57f8576c2e64124ef1a17f9db9628349aeb0f0f4",
+      "translation_text_hash": "66f631552d66f609c7f9288c5aec8ffc912edc9839db2856029cbb8f19a88c3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 죄인과 함께, 내 생명을 살인자와 함께 거두지 마소서"
+      ],
+      "raw_text_hashes": [
+        "66f631552d66f609c7f9288c5aec8ffc912edc9839db2856029cbb8f19a88c3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:10",
+      "sequence": 14284,
+      "chapter_label": "PSA 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "in whose hands is wickedness; their right hand is full of bribes.",
+      "ko": "저희 손에 악특함이 있고 그 오른손에 뇌물이 가득하오나",
+      "source_text_hash": "aa02ac9f5256fe1b11d0577f407282bc5b685b66b20cc556f15389978343d96c",
+      "translation_text_hash": "b5b39756bcf0842ef261d827ebd4300ea8384663bd4f945064b87b46bd29598e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 손에 악특함이 있고 그 오른손에 뇌물이 가득하오나"
+      ],
+      "raw_text_hashes": [
+        "b5b39756bcf0842ef261d827ebd4300ea8384663bd4f945064b87b46bd29598e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:11",
+      "sequence": 14285,
+      "chapter_label": "PSA 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "But as for me, I will walk in my integrity. Redeem me, and be merciful to me.",
+      "ko": "나는 나의 완전함에 행하오리니 나를 구속하시고 긍휼히 여기소서",
+      "source_text_hash": "fff3a1221d96d6b925602784272b22adf083dca22dfb452ba44989295f706d48",
+      "translation_text_hash": "4800899b2923255f955ad33e25e801d4964b4df49552ac663c66174df126ab9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 나의 완전함에 행하오리니 나를 구속하시고 긍휼히 여기소서"
+      ],
+      "raw_text_hashes": [
+        "4800899b2923255f955ad33e25e801d4964b4df49552ac663c66174df126ab9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:26:12",
+      "sequence": 14286,
+      "chapter_label": "PSA 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "My foot stands in an even place. In the congregations I will bless the LORD.",
+      "ko": "내 발이 평탄한데 섰사오니 회중에서 여호와를 송축하리이다",
+      "source_text_hash": "e1e4c68d732d40ab15e3b723d7fa878d83b6d66161a6b58fbc5619fdbb101a16",
+      "translation_text_hash": "426061905725ee51f42f82ecb5051046a64f60be97481f6d78c9d9d52c69236d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 발이 평탄한데 섰사오니 회중에서 여호와를 송축하리이다"
+      ],
+      "raw_text_hashes": [
+        "426061905725ee51f42f82ecb5051046a64f60be97481f6d78c9d9d52c69236d"
+      ]
+    }
+  ]
+}

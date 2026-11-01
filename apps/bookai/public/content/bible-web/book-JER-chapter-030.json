@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:030",
+  "unit_ordinal": 775,
+  "unit_label": "JER 30",
+  "book_code": "JER",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:30:1",
+      "sequence": 19669,
+      "chapter_label": "JER 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "The word that came to Jeremiah from the LORD, saying,",
+      "ko": "여호와께로서 말씀이 예레미야에게 임하여 이르시니라",
+      "source_text_hash": "0b7aecf94589262a25f4a6d51a5896c92a0223223f69004e738ca7dc8c0970f6",
+      "translation_text_hash": "596aa7f5a8f2c40395add81341d02a0889aab3fff0feb6eea6ebe13a3f1cbdd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께로서 말씀이 예레미야에게 임하여 이르시니라"
+      ],
+      "raw_text_hashes": [
+        "596aa7f5a8f2c40395add81341d02a0889aab3fff0feb6eea6ebe13a3f1cbdd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:2",
+      "sequence": 19670,
+      "chapter_label": "JER 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD, the God of Israel, says, ‘Write all the words that I have spoken to you in a book.",
+      "ko": "이스라엘의 하나님 여호와께서 이같이 일러 가라사대 내가 네게 이른 모든 말을 책에 기록하라",
+      "source_text_hash": "1b05b633a15916c350550a1daf92db66d1497ced08a5292972048f00dd3b41aa",
+      "translation_text_hash": "18dbfad93eb0139e5dcb93f02080bc601320c56f8a06798f51734f2d004bcd20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와께서 이같이 일러 가라사대 내가 네게 이른 모든 말을 책에 기록하라"
+      ],
+      "raw_text_hashes": [
+        "18dbfad93eb0139e5dcb93f02080bc601320c56f8a06798f51734f2d004bcd20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:3",
+      "sequence": 19671,
+      "chapter_label": "JER 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "For, behold, the days come,’ says the LORD, ‘that I will reverse the captivity of my people Israel and Judah,’ says the LORD. ‘I will cause them to return to the land that I gave to their fathers, and they will possess it.’”",
+      "ko": "나 여호와가 말하노라 내가 내 백성 이스라엘과 유다의 포로를 돌이킬 때가 이르리니 내가 그들을 그 열조에게 준 땅으로 돌아오게 할 것이라 그들이 그것을 차지하리라 여호와의 말이니라",
+      "source_text_hash": "18246756dbb6ab6437144e7033d3f426bf62b98274b7762c5ca659e58d742984",
+      "translation_text_hash": "49beb5036052b0494b67b0012795035807cf313a6e3a0198854c7a71e0e4c52d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 내 백성 이스라엘과 유다의 포로를 돌이킬 때가 이르리니 내가 그들을 그 열조에게 준 땅으로 돌아오게 할 것이라 그들이 그것을 차지하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "49beb5036052b0494b67b0012795035807cf313a6e3a0198854c7a71e0e4c52d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:4",
+      "sequence": 19672,
+      "chapter_label": "JER 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "These are the words that the LORD spoke concerning Israel and concerning Judah.",
+      "ko": "여호와께서 이스라엘과 유다에 대하여 하신 말씀이 이러하니라",
+      "source_text_hash": "e7299b9b8d672e4b6939fd3eb495d7cda4c868419f66baa8ee69bdef48136077",
+      "translation_text_hash": "09481a5c45c3e11e2ccbc41bccaf091a7dc1a9e6d083d6d60c3b237c064fea0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘과 유다에 대하여 하신 말씀이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "09481a5c45c3e11e2ccbc41bccaf091a7dc1a9e6d083d6d60c3b237c064fea0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:5",
+      "sequence": 19673,
+      "chapter_label": "JER 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "For the LORD says: “We have heard a voice of trembling; a voice of fear, and not of peace.",
+      "ko": "여호와께서 이같이 말씀하시되 우리가 떨리는 소리를 들으니 두려움이요 평안함이 아니로다",
+      "source_text_hash": "b7e9296396930bf00042e440fd6f801e77bab5de4923ecefa6239042d6843d69",
+      "translation_text_hash": "6ee3da4c04d22b94846b94205885fcdbe600830b2d067c3b343c3db3183aade0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 우리가 떨리는 소리를 들으니 두려움이요 평안함이 아니로다"
+      ],
+      "raw_text_hashes": [
+        "6ee3da4c04d22b94846b94205885fcdbe600830b2d067c3b343c3db3183aade0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:6",
+      "sequence": 19674,
+      "chapter_label": "JER 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "Ask now, and see whether a man travails with child. Why do I see every man with his hands on his waist, as a woman in travail, and all faces are turned pale?",
+      "ko": "너희는 자식을 해산하는 남자가 있는가 물어보라 남자마다 해산하는 여인 같이 손으로 각기 허리를 짚고 그 얼굴 빛이 창백하여 보임은 어찜이뇨",
+      "source_text_hash": "976d91027b47e8f9513642274a36b44d02ef0aac6d22968270adc60922289f47",
+      "translation_text_hash": "7dfdbcf19fdfb38708b9c846bfdc9f83af2a00a419c3f08abafb468289c02cee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자식을 해산하는 남자가 있는가 물어보라 남자마다 해산하는 여인 같이 손으로 각기 허리를 짚고 그 얼굴 빛이 창백하여 보임은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "7dfdbcf19fdfb38708b9c846bfdc9f83af2a00a419c3f08abafb468289c02cee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:7",
+      "sequence": 19675,
+      "chapter_label": "JER 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "Alas, for that day is great, so that none is like it! It is even the time of Jacob’s trouble; but he will be saved out of it.",
+      "ko": "슬프다 그 날이여 비할데 없이 크니 이는 야곱의 환난의 때가 됨이로다마는 그가 이에서 구하여냄을 얻으리로다",
+      "source_text_hash": "b86e7d96ef099a7ec73a49b824f712ae155ccaa5f01445cdcac44d9785a25bf6",
+      "translation_text_hash": "0198caa07c18fe6f8811d0a774733361703e0a47fde741efd893cc39e89b16c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 그 날이여 비할데 없이 크니 이는 야곱의 환난의 때가 됨이로다마는 그가 이에서 구하여냄을 얻으리로다"
+      ],
+      "raw_text_hashes": [
+        "0198caa07c18fe6f8811d0a774733361703e0a47fde741efd893cc39e89b16c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:8",
+      "sequence": 19676,
+      "chapter_label": "JER 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "It will come to pass in that day, says the LORD of Armies, that I will break his yoke from off your neck, and will burst your bonds. Strangers will no more make them their bondservants;",
+      "ko": "만군의 여호와가 말하노라 그 날에 내가 네 목에서 그 멍에를 꺾어버리며 네 줄을 끊으리니 이방인이 다시는 너를 부리지 못할 것이며",
+      "source_text_hash": "19b9e541057c3ff9697755419ea536336cce05a30e6ea31237526d9989b4da8d",
+      "translation_text_hash": "29c519ca85c80a798af3b863e91192daaf4e2b7c5d414075eb2c46f53a958c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하노라 그 날에 내가 네 목에서 그 멍에를 꺾어버리며 네 줄을 끊으리니 이방인이 다시는 너를 부리지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "29c519ca85c80a798af3b863e91192daaf4e2b7c5d414075eb2c46f53a958c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:9",
+      "sequence": 19677,
+      "chapter_label": "JER 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "but they will serve the LORD their God, and David their king, whom I will raise up to them.",
+      "ko": "너희는 너희 하나님 나 여호와를 섬기며 내가 너희를 위하여 일으킬 너희 왕 다윗을 섬기리라",
+      "source_text_hash": "d5711ba5909bd4434647b272a0211282219b312404948a8b334b6ceb695c6b9d",
+      "translation_text_hash": "4569a1502ae2c828d8b1574e585307c2f3317a55085a022429519b9d82340b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님 나 여호와를 섬기며 내가 너희를 위하여 일으킬 너희 왕 다윗을 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "4569a1502ae2c828d8b1574e585307c2f3317a55085a022429519b9d82340b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:10",
+      "sequence": 19678,
+      "chapter_label": "JER 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore don’t be afraid, O Jacob my servant, says the LORD. Don’t be dismayed, Israel. For, behold, I will save you from afar, and save your offspring from the land of their captivity. Jacob will return, and will be quiet and at ease. No one will make him afraid.",
+      "ko": "그러므로 나 여호와가 말하노라 내 종 야곱아 두려워 말라 이스라엘아 놀라지 말라 내가 너를 원방에서 구원하고 네 자손을 포로된 땅에서 구원하리니 야곱이 돌아와서 태평과 안락을 얻을 것이라 너를 두렵게 할 자 없으리라",
+      "source_text_hash": "3f2a8ff8929f348e0fde598cd9d83d6d8ca07e09851d5e6b27792bb4623f889e",
+      "translation_text_hash": "8592e0e07a8d46b25eb89ea27104a4f30c180fbe603ead545300733d67f8f0e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 내 종 야곱아 두려워 말라 이스라엘아 놀라지 말라 내가 너를 원방에서 구원하고 네 자손을 포로된 땅에서 구원하리니 야곱이 돌아와서 태평과 안락을 얻을 것이라 너를 두렵게 할 자 없으리라"
+      ],
+      "raw_text_hashes": [
+        "8592e0e07a8d46b25eb89ea27104a4f30c180fbe603ead545300733d67f8f0e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:11",
+      "sequence": 19679,
+      "chapter_label": "JER 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "For I am with you, says the LORD, to save you; for I will make a full end of all the nations where I have scattered you, but I will not make a full end of you; but I will correct you in measure, and will in no way leave you unpunished.”",
+      "ko": "나 여호와가 말하노라 내가 너와 함께하여 너를 구원할 것이라 내가 너를 흩었던 그 열방은 진멸한다 할찌라도 너는 진멸하지 아니하리라 그러나 내가 공도로 너를 징책할 것이요 결코 무죄한 자로 여기지 아니하리라",
+      "source_text_hash": "28f86e7a332018216b3d15fe4c89631844a2e8911483f7209cb9f389627297a6",
+      "translation_text_hash": "3de55d3a5c521920d08a22938d90bae1aca29e0f9f8135fb76c3468341e7a5ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 너와 함께하여 너를 구원할 것이라 내가 너를 흩었던 그 열방은 진멸한다 할찌라도 너는 진멸하지 아니하리라 그러나 내가 공도로 너를 징책할 것이요 결코 무죄한 자로 여기지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "3de55d3a5c521920d08a22938d90bae1aca29e0f9f8135fb76c3468341e7a5ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:12",
+      "sequence": 19680,
+      "chapter_label": "JER 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "For the LORD says, “Your hurt is incurable. Your wound is grievous.",
+      "ko": "나 여호와가 말하노라 네 상처는 고칠 수 없고 네 창상은 중하도다",
+      "source_text_hash": "41aa185351d914fe6d0486075f06a0916a854e15cf4d8bac7f6afb1c13a1a34e",
+      "translation_text_hash": "e1f19953c8bd8766dd91307d61c3603547fa049cb04abd3b6cc94c23ac69eeca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 네 상처는 고칠 수 없고 네 창상은 중하도다"
+      ],
+      "raw_text_hashes": [
+        "e1f19953c8bd8766dd91307d61c3603547fa049cb04abd3b6cc94c23ac69eeca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:13",
+      "sequence": 19681,
+      "chapter_label": "JER 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "There is no one to plead your cause, that you may be bound up. You have no healing medicines.",
+      "ko": "네 송사를 변호할 자가 없고 네 상처를 싸맬 약이 없도다",
+      "source_text_hash": "519e02486bc5cb705a07bbe0482e9753bfdf11fdfe85977c18c5326814e497dd",
+      "translation_text_hash": "462ccf132cdab627b6bdc2783d9c9d0aa1c2684b90919f6139f6ab577e46e77c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 송사를 변호할 자가 없고 네 상처를 싸맬 약이 없도다"
+      ],
+      "raw_text_hashes": [
+        "462ccf132cdab627b6bdc2783d9c9d0aa1c2684b90919f6139f6ab577e46e77c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:14",
+      "sequence": 19682,
+      "chapter_label": "JER 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "All your lovers have forgotten you. They don’t seek you. For I have wounded you with the wound of an enemy, with the chastisement of a cruel one, for the greatness of your iniquity, because your sins were increased.",
+      "ko": "너를 사랑하던 자가 다 너를 잊고 찾지 아니하니 이는 네 허물이 크고 네 죄가 수다함을 인하여 내가 대적의 상하게하는 그 것으로 너를 상하게 하며 잔학한 자의 징계하는 그 것으로 너를 징계함이어늘",
+      "source_text_hash": "f66b3a0c4472672ab1923272feb2129ee1be2467fe9b1636a12f5302a3f58710",
+      "translation_text_hash": "11f1baf0ca5b4e4ee268a04a0b961b6486a37a09c24a61d99041219151d9971a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 사랑하던 자가 다 너를 잊고 찾지 아니하니 이는 네 허물이 크고 네 죄가 수다함을 인하여 내가 대적의 상하게하는 그 것으로 너를 상하게 하며 잔학한 자의 징계하는 그 것으로 너를 징계함이어늘"
+      ],
+      "raw_text_hashes": [
+        "11f1baf0ca5b4e4ee268a04a0b961b6486a37a09c24a61d99041219151d9971a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:15",
+      "sequence": 19683,
+      "chapter_label": "JER 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "Why do you cry over your injury? Your pain is incurable. For the greatness of your iniquity, because your sins have increased, I have done these things to you.",
+      "ko": "어찌하여 네 상처를 인하여 부르짖느뇨 네 고통이 낫지 못하리라 네 죄악의 큼과 죄의 수다함을 인하여 내가 네게 이 일을 행하였느니라",
+      "source_text_hash": "c1a6115b6ed22fb5d13701bf79737cb4a27e606f60f453b5cf1310184e59aa62",
+      "translation_text_hash": "48f44e29f297ffbe6cf40c2cf93e04e7f8475e0225bb838a1e74a4d958e4e596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 네 상처를 인하여 부르짖느뇨 네 고통이 낫지 못하리라 네 죄악의 큼과 죄의 수다함을 인하여 내가 네게 이 일을 행하였느니라"
+      ],
+      "raw_text_hashes": [
+        "48f44e29f297ffbe6cf40c2cf93e04e7f8475e0225bb838a1e74a4d958e4e596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:16",
+      "sequence": 19684,
+      "chapter_label": "JER 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore all those who devour you will be devoured. All your adversaries, everyone of them, will go into captivity. Those who plunder you will be plunder. I will make all who prey on you become prey.",
+      "ko": "그러나 무릇 너를 먹는 자는 먹히며 무릇 너를 치는 자는 다 포로가 되며 너를 탈취하는 자는 탈취를 당하며 무릇 너를 약탈하는 자는 내가 그로 약탈을 당하게 하리라",
+      "source_text_hash": "3e92fe26f2a22ca8bdd732019ac46f64666ab4ee262d19e04bb3955dfc1744fe",
+      "translation_text_hash": "928cd0e9f1b79b916d89c3a39d503f2abc1fda2c8e2225f2c1e61e6eb182206e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 무릇 너를 먹는 자는 먹히며 무릇 너를 치는 자는 다 포로가 되며 너를 탈취하는 자는 탈취를 당하며 무릇 너를 약탈하는 자는 내가 그로 약탈을 당하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "928cd0e9f1b79b916d89c3a39d503f2abc1fda2c8e2225f2c1e61e6eb182206e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:17",
+      "sequence": 19685,
+      "chapter_label": "JER 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "For I will restore health to you, and I will heal you of your wounds,” says the LORD, “because they have called you an outcast, saying, ‘It is Zion, whom no man seeks after.’”",
+      "ko": "나 여호와가 말하노라 그들이 쫓겨난 자라 하며 찾는 자가 없는 시온이라 한즉 내가 너를 치료하여 네 상처를 낫게 하리라",
+      "source_text_hash": "137cec56f2fdeaf9bc330d96685aadcb790e333cd9c00794066d1562bcaa4b27",
+      "translation_text_hash": "11fa1d47a9cf4c33f016a3ccae36d2574c44af11401e025efeccbcecfc230fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그들이 쫓겨난 자라 하며 찾는 자가 없는 시온이라 한즉 내가 너를 치료하여 네 상처를 낫게 하리라"
+      ],
+      "raw_text_hashes": [
+        "11fa1d47a9cf4c33f016a3ccae36d2574c44af11401e025efeccbcecfc230fd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:18",
+      "sequence": 19686,
+      "chapter_label": "JER 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD says: “Behold, I will reverse the captivity of Jacob’s tents, and have compassion on his dwelling places. The city will be built on its own hill, and the palace will be inhabited in its own place.",
+      "ko": "나 여호와가 말하노라 보라 내가 포로된 야곱의 장막들을 돌이키고 그 거하는 곳들을 긍휼히 여길 것이라 그 성읍은 자기 산에 중건 될 것이요 그 궁궐은 본래대로 거하는 곳이 될 것이며",
+      "source_text_hash": "0cce2e1e3dde9f67bb467e6a699d0ebfa0f56cdf5b483e5512e20a7cd3a33267",
+      "translation_text_hash": "3a85b9c37048f366d284db01f20ec62fd646ee9f6fb3299813c9a668640252ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 내가 포로된 야곱의 장막들을 돌이키고 그 거하는 곳들을 긍휼히 여길 것이라 그 성읍은 자기 산에 중건 될 것이요 그 궁궐은 본래대로 거하는 곳이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "3a85b9c37048f366d284db01f20ec62fd646ee9f6fb3299813c9a668640252ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:19",
+      "sequence": 19687,
+      "chapter_label": "JER 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "Thanksgiving will proceed out of them with the voice of those who make merry. I will multiply them, and they will not be few; I will also glorify them, and they will not be small.",
+      "ko": "감사하는 소리와 즐거워하는 자의 목소리가 그 중에서 나오리라 내가 그들을 번성케 하리니 쇠잔치 아니하겠고 내가 그들을 영화롭게 하리니 비천하지 아니하겠으며",
+      "source_text_hash": "6276830134934b87de61f3befca920ceee42904f7c4830b719c80898669196d2",
+      "translation_text_hash": "51c351edbaab65af4923b81c73ff68b08ece6e1e1e9dc5a952f43323000fcfe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사하는 소리와 즐거워하는 자의 목소리가 그 중에서 나오리라 내가 그들을 번성케 하리니 쇠잔치 아니하겠고 내가 그들을 영화롭게 하리니 비천하지 아니하겠으며"
+      ],
+      "raw_text_hashes": [
+        "51c351edbaab65af4923b81c73ff68b08ece6e1e1e9dc5a952f43323000fcfe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:20",
+      "sequence": 19688,
+      "chapter_label": "JER 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "Their children also will be as before, and their congregation will be established before me. I will punish all who oppress them.",
+      "ko": "그 자손은 여전하겠고 그 회중은 내 앞에 굳게 설 것이며 무릇 그를 압박하는 자는 내가 다 벌하리라",
+      "source_text_hash": "2d2ede7dc627d8c183becedbb1bc28eab9e1ecd95b938c2157fb98462ac3e15e",
+      "translation_text_hash": "0e80120765188cde38627f1a19bc623795b4fbb0e581e26cc1bcc979f6760447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손은 여전하겠고 그 회중은 내 앞에 굳게 설 것이며 무릇 그를 압박하는 자는 내가 다 벌하리라"
+      ],
+      "raw_text_hashes": [
+        "0e80120765188cde38627f1a19bc623795b4fbb0e581e26cc1bcc979f6760447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:21",
+      "sequence": 19689,
+      "chapter_label": "JER 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "Their prince will be one of them, and their ruler will proceed from among them. I will cause him to draw near, and he will approach me; for who is he who has had boldness to approach me?” says the LORD.",
+      "ko": "그 왕은 그 본족에게서 날 것이요 그 통치자는 그들 중에서 나올 것이며 내가 그를 가까이 오게 하므로 그가 내게 접근하리라 그렇지 않고 담대히 내게 접근할 자가 누구뇨 여호와의 말이니라",
+      "source_text_hash": "495576ac61adc04f01a56c278f05944a985226d76d8bc5b69e4ff5b32f50f761",
+      "translation_text_hash": "80383bd0a43a17a3d5fdaff2283544533b45a62b128c49bf6a3a719984f9b10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 왕은 그 본족에게서 날 것이요 그 통치자는 그들 중에서 나올 것이며 내가 그를 가까이 오게 하므로 그가 내게 접근하리라 그렇지 않고 담대히 내게 접근할 자가 누구뇨 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "80383bd0a43a17a3d5fdaff2283544533b45a62b128c49bf6a3a719984f9b10d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:22",
+      "sequence": 19690,
+      "chapter_label": "JER 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "“You shall be my people, and I will be your God.",
+      "ko": "너희는 내 백성이 되겠고 나는 너희 하나님이 되리라",
+      "source_text_hash": "90b790967ded44dec7e69c0e28a1e490f6a6bf5d83cd9cf72483de6fa4e2a14c",
+      "translation_text_hash": "320df0f41fb50025f04887e21b05682b420a1495cbbce1bfce69869fe6066acf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 백성이 되겠고 나는 너희 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "320df0f41fb50025f04887e21b05682b420a1495cbbce1bfce69869fe6066acf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:23",
+      "sequence": 19691,
+      "chapter_label": "JER 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "Behold, the LORD’s storm, his wrath, has gone out, a sweeping storm; it will burst on the head of the wicked.",
+      "ko": "보라 여호와의 노가 발하여 폭풍과 회리바람처럼 악인의 머리를 칠 것이라",
+      "source_text_hash": "f4ef683adda1eaa411c6087f85d4479589725088a6a02d1924dd7022bca1a99e",
+      "translation_text_hash": "fbdf49f846dd997a0890f8906a950fff383431683b587bab97fe481d40e2b634",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여호와의 노가 발하여 폭풍과 회리바람처럼 악인의 머리를 칠 것이라"
+      ],
+      "raw_text_hashes": [
+        "fbdf49f846dd997a0890f8906a950fff383431683b587bab97fe481d40e2b634"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:30:24",
+      "sequence": 19692,
+      "chapter_label": "JER 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "The fierce anger of the LORD will not return until he has accomplished, and until he has performed the intentions of his heart. In the latter days you will understand it.”",
+      "ko": "나 여호와의 진노는 내 마음의 뜻한 바를 행하여 이루기까지는 쉬지 아니하나니 너희가 말일에 그것을 깨달으리라",
+      "source_text_hash": "620f32cefd440716760b51e666fbb1fcb013ab918ac6bd0e5473fd724dab2531",
+      "translation_text_hash": "8ed7614de169ea5b2d25c8bb91ab31aefe8f10739dadcd598d4a86d4c89c7d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와의 진노는 내 마음의 뜻한 바를 행하여 이루기까지는 쉬지 아니하나니 너희가 말일에 그것을 깨달으리라"
+      ],
+      "raw_text_hashes": [
+        "8ed7614de169ea5b2d25c8bb91ab31aefe8f10739dadcd598d4a86d4c89c7d9f"
+      ]
+    }
+  ]
+}

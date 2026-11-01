@@ -1,0 +1,27 @@
+
+/* ===== StoryMemory v3.3.2 — Reading Journal ===== */
+.sm-journal-shell{display:grid;gap:10px;margin:0 0 10px}
+.sm-journal-tools{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:8px;align-items:center}
+.sm-journal-search{width:100%;min-width:0;border:1px solid rgba(48,42,34,.12);background:rgba(255,255,255,.58);padding:10px 12px;font:500 9px/1.2 var(--sans);letter-spacing:.03em;color:#3a342e;outline:none}
+.sm-journal-search:focus{border-color:rgba(170,103,71,.42);box-shadow:0 0 0 2px rgba(170,103,71,.08)}
+.sm-journal-book{border:1px solid rgba(48,42,34,.12);background:rgba(255,255,255,.58);padding:9px 28px 9px 10px;font:700 8px/1.2 var(--sans);letter-spacing:.06em;color:#635b53;min-width:150px}
+.sm-journal-filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sm-journal-chip{border:1px solid rgba(48,42,34,.11);background:rgba(255,255,255,.42);padding:7px 9px;font:700 7px/1 var(--sans);letter-spacing:.08em;color:#8a7d72}
+.sm-journal-chip.is-active{background:#3d352f;color:#f8f1e8;border-color:#3d352f}
+.sm-journal-chip.sm-memory-focus{margin-left:auto;color:#715f89}
+.sm-journal-chip.sm-memory-focus.is-active{background:#74618a;border-color:#74618a;color:#fff}
+.sm-journal-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 7px/1.2 var(--sans);letter-spacing:.07em;color:#9a9087}
+.sm-journal-summary b{color:#5f554d}
+.sm-journal-clear{border:0;background:none;color:#9c6a50;font:700 7px/1 var(--sans);letter-spacing:.08em;padding:0}
+.sm-journal-day{display:grid;gap:6px}
+.sm-journal-day-head{display:flex;align-items:center;gap:8px;padding:8px 2px 3px;font:700 7px/1 var(--sans);letter-spacing:.12em;color:#9a8d82}
+.sm-journal-day-head::after{content:"";height:1px;flex:1;background:rgba(60,50,42,.09)}
+.sm-journal-day-head b{color:#645a52}
+.sm-journal-day-head span{font-weight:600;letter-spacing:.03em;color:#b0a69e}
+.sm-journal-empty{padding:22px 14px;border:1px dashed rgba(60,50,42,.14);font:500 10px/1.5 var(--sans);color:#8c8177;text-align:center;background:rgba(255,255,255,.25)}
+@media(max-width:700px){
+ .sm-journal-tools{grid-template-columns:1fr}
+ .sm-journal-book{width:100%}
+ .sm-journal-chip.sm-memory-focus{margin-left:0}
+ .sm-journal-summary{align-items:flex-start;flex-direction:column}
+}

@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:006",
+  "unit_ordinal": 217,
+  "unit_label": "JDG 6",
+  "book_code": "JDG",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:6:1",
+      "sequence": 6656,
+      "chapter_label": "JDG 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The children of Israel did that which was evil in the LORD’s sight, so the LORD delivered them into the hand of Midian seven years.",
+      "ko": "이스라엘 자손이 또 여호와의 목전에 악을 행하였으므로 여호와께서 칠년 동안 그들을 미디안의 손에 붙이시니",
+      "source_text_hash": "66758d9854ecf5a6c08fe57ef4a08169fdbde0ba185e6fdc9c4a5535f627bbc4",
+      "translation_text_hash": "b17ab8eedf450f788dd36c7830eed593b98f1225154f76bf9f6fd0c5b86375fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 또 여호와의 목전에 악을 행하였으므로 여호와께서 칠년 동안 그들을 미디안의 손에 붙이시니"
+      ],
+      "raw_text_hashes": [
+        "b17ab8eedf450f788dd36c7830eed593b98f1225154f76bf9f6fd0c5b86375fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:2",
+      "sequence": 6657,
+      "chapter_label": "JDG 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The hand of Midian prevailed against Israel; and because of Midian the children of Israel made themselves the dens which are in the mountains, the caves, and the strongholds.",
+      "ko": "미디안의 손이 이스라엘을 이긴지라 이스라엘 자손이 미디안을 인하여 산에서 구멍과 굴과 산성을 자기를 위하여 만들었으며",
+      "source_text_hash": "5da958066221baaa814ca167fd656be6e787260afd80ded848e326e3493a1d37",
+      "translation_text_hash": "f42ae70785bb077994d9a836b5d5400642e3bdc904707956951a36c7ffed1bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안의 손이 이스라엘을 이긴지라 이스라엘 자손이 미디안을 인하여 산에서 구멍과 굴과 산성을 자기를 위하여 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "f42ae70785bb077994d9a836b5d5400642e3bdc904707956951a36c7ffed1bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:3",
+      "sequence": 6658,
+      "chapter_label": "JDG 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "So it was, when Israel had sown, that the Midianites, the Amalekites, and the children of the east came up against them.",
+      "ko": "이스라엘이 파종한 때면 미디안 사람, 아말렉 사람, 동방 사람이 치러 올라와서",
+      "source_text_hash": "dc5188ed0c2da18d81645904759ae5aa5362af0dcc12e511e3de25a3d1d8bfbf",
+      "translation_text_hash": "dd32cc3db8bba67c797f64061c69f4011d7d73f64075c7e9402810412ddaa696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 파종한 때면 미디안 사람, 아말렉 사람, 동방 사람이 치러 올라와서"
+      ],
+      "raw_text_hashes": [
+        "dd32cc3db8bba67c797f64061c69f4011d7d73f64075c7e9402810412ddaa696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:4",
+      "sequence": 6659,
+      "chapter_label": "JDG 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "They encamped against them, and destroyed the increase of the earth, until you come to Gaza. They left no sustenance in Israel, and no sheep, ox, or donkey.",
+      "ko": "진을 치고 가사에 이르도록 토지 소산을 멸하여 이스라엘 가운데 식물을 남겨두지 아니하며 양이나 소나 나귀도 남기지 아니하니",
+      "source_text_hash": "ba5295dbab3cabec0261e422b07ccf869919978ff30d88d73f1e96e0dc7427dd",
+      "translation_text_hash": "4adc466dd644c4bb94035f70ce72f6727e32e09e63d2bbeb64ea712946bb492f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진을 치고 가사에 이르도록 토지 소산을 멸하여 이스라엘 가운데 식물을 남겨두지 아니하며 양이나 소나 나귀도 남기지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "4adc466dd644c4bb94035f70ce72f6727e32e09e63d2bbeb64ea712946bb492f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:5",
+      "sequence": 6660,
+      "chapter_label": "JDG 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "For they came up with their livestock and their tents. They came in as locusts for multitude. Both they and their camels were without number; and they came into the land to destroy it.",
+      "ko": "이는 그들이 그 짐승과 장막을 가지고 올라와서 메뚜기떼 같이 들어오니 그 사람과 약대가 무수함이라 그들이 그 땅에 들어와 멸하려 하니",
+      "source_text_hash": "8ce821e0b0532cd15d09fc065892dde76124899dc7f0578ccb863ae9f109e756",
+      "translation_text_hash": "8bfc604374576dcea963dc4b3ba183980ec7ef57f150206194cae38d9d0a6f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 그 짐승과 장막을 가지고 올라와서 메뚜기떼 같이 들어오니 그 사람과 약대가 무수함이라 그들이 그 땅에 들어와 멸하려 하니"
+      ],
+      "raw_text_hashes": [
+        "8bfc604374576dcea963dc4b3ba183980ec7ef57f150206194cae38d9d0a6f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:6",
+      "sequence": 6661,
+      "chapter_label": "JDG 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Israel was brought very low because of Midian; and the children of Israel cried to the LORD.",
+      "ko": "이스라엘이 미디안을 인하여 미약함이 심한지라 이에 이스라엘 자손이 여호와께 부르짖었더라",
+      "source_text_hash": "c7f2f552d9cf225c7723dc5df4d1c37be29f6498c364c8450b513b15e9157965",
+      "translation_text_hash": "a88232f4ce04ca2479cfd4aa56a2c11d91e5bc1cb2bfafa0ce96a9d82a64bc43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 미디안을 인하여 미약함이 심한지라 이에 이스라엘 자손이 여호와께 부르짖었더라"
+      ],
+      "raw_text_hashes": [
+        "a88232f4ce04ca2479cfd4aa56a2c11d91e5bc1cb2bfafa0ce96a9d82a64bc43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:7",
+      "sequence": 6662,
+      "chapter_label": "JDG 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "When the children of Israel cried to the LORD because of Midian,",
+      "ko": "이스라엘 자손이 미디안을 인하여 여호와께 부르짖은고로",
+      "source_text_hash": "9386586de03983535228403b8c67dd89e960824eea3b56f6b6e3047bfe70b504",
+      "translation_text_hash": "b4f2e864d006605239247293b637a6f41cf9b5191fab0d8f3a52d415aadc74ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 미디안을 인하여 여호와께 부르짖은고로"
+      ],
+      "raw_text_hashes": [
+        "b4f2e864d006605239247293b637a6f41cf9b5191fab0d8f3a52d415aadc74ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:8",
+      "sequence": 6663,
+      "chapter_label": "JDG 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD sent a prophet to the children of Israel; and he said to them, “The LORD, the God of Israel, says, ‘I brought you up from Egypt, and brought you out of the house of bondage.",
+      "ko": "여호와께서 이스라엘 자손에게 한 선지자를 보내사 그들에게 이르되 이스라엘 하나님 여호와의 말씀에 내가 너희를 애굽에서 인도하여 내며 너희를 그 종 되었던 집에서 나오게 하여",
+      "source_text_hash": "5f53865776c67ef239996af6d44a3c92a13ef0f004bb80519d4e07dc38f3ef57",
+      "translation_text_hash": "cda9cc635244fff5ade1f0d32a30632fa67c1eb53bae944a41dcaf4dfa323117",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘 자손에게 한 선지자를 보내사 그들에게 이르되 이스라엘 하나님 여호와의 말씀에 내가 너희를 애굽에서 인도하여 내며 너희를 그 종 되었던 집에서 나오게 하여"
+      ],
+      "raw_text_hashes": [
+        "cda9cc635244fff5ade1f0d32a30632fa67c1eb53bae944a41dcaf4dfa323117"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:9",
+      "sequence": 6664,
+      "chapter_label": "JDG 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "I delivered you out of the hand of the Egyptians and out of the hand of all who oppressed you, and drove them out from before you, and gave you their land.",
+      "ko": "애굽 사람의 손과 너희를 학대하는 모든 자의 손에서 너희를 건져내고 그들을 너희 앞에서 쫓아내고 그 땅을 너희에게 주었으며",
+      "source_text_hash": "1536317c3dfcc6fefe538e304e6ab35abc2edb6ab472f6187de9021a806adfd1",
+      "translation_text_hash": "f0dc7fde99eb84be3debb61f755e146f9bb9c57b3806768f17835c44b7dbc932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람의 손과 너희를 학대하는 모든 자의 손에서 너희를 건져내고 그들을 너희 앞에서 쫓아내고 그 땅을 너희에게 주었으며"
+      ],
+      "raw_text_hashes": [
+        "f0dc7fde99eb84be3debb61f755e146f9bb9c57b3806768f17835c44b7dbc932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:10",
+      "sequence": 6665,
+      "chapter_label": "JDG 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "I said to you, “I am the LORD your God. You shall not fear the gods of the Amorites, in whose land you dwell.” But you have not listened to my voice.’”",
+      "ko": "내가 또 너희에게 이르기를 나는 너희 하나님 여호와니 너희의 거하는 아모리 사람의 땅의 신들을 두려워 말라 하였으나 너희가 내 목소리를 청종치 아니하였느니라 하셨다 하니라",
+      "source_text_hash": "86680eecfca3165f10d33c9b11b0f0c05ff30dc78d83255b062f477059a74d19",
+      "translation_text_hash": "0e6f6e2374f10b381af7547fc60ea3e9e21f7dd375f9fc8226e6c441b2ed9c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너희에게 이르기를 나는 너희 하나님 여호와니 너희의 거하는 아모리 사람의 땅의 신들을 두려워 말라 하였으나 너희가 내 목소리를 청종치 아니하였느니라 하셨다 하니라"
+      ],
+      "raw_text_hashes": [
+        "0e6f6e2374f10b381af7547fc60ea3e9e21f7dd375f9fc8226e6c441b2ed9c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:11",
+      "sequence": 6666,
+      "chapter_label": "JDG 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD’s angel came and sat under the oak which was in Ophrah, that belonged to Joash the Abiezrite. His son Gideon was beating out wheat in the wine press, to hide it from the Midianites.",
+      "ko": "여호와의 사자가 아비에셀 사람 요아스에게 속한 오브라에 이르러 상수리나무 아래 앉으니라 마침 요아스의 아들 기드온이 미디안 사람에게 알리지 아니하려 하여 밀을 포도주 틀에서 타작하더니",
+      "source_text_hash": "a1b2faf8520d7c446adeaaa2536e67799364662c1f52b5eb9d9f485a462dd175",
+      "translation_text_hash": "932c670e7ba420cc0c03d9ad9beac03c26741aca2f617ea4a5467cc2ceea9e84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 아비에셀 사람 요아스에게 속한 오브라에 이르러 상수리나무 아래 앉으니라 마침 요아스의 아들 기드온이 미디안 사람에게 알리지 아니하려 하여 밀을 포도주 틀에서 타작하더니"
+      ],
+      "raw_text_hashes": [
+        "932c670e7ba420cc0c03d9ad9beac03c26741aca2f617ea4a5467cc2ceea9e84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:12",
+      "sequence": 6667,
+      "chapter_label": "JDG 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD’s angel appeared to him, and said to him, “The LORD is with you, you mighty man of valor!”",
+      "ko": "여호와의 사자가 기드온에게 나타나 이르되 큰 용사여 여호와께서 너와 함께 계시도다",
+      "source_text_hash": "97d6a798a9c3fd15ef7eedf2f473924729b05e93efa63a9e21eea8c4aac71d80",
+      "translation_text_hash": "cce69ec752f17b0e8dcdc192892e2d319556585d2ae1cd16e21e59d8133f4a87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 기드온에게 나타나 이르되 큰 용사여 여호와께서 너와 함께 계시도다"
+      ],
+      "raw_text_hashes": [
+        "cce69ec752f17b0e8dcdc192892e2d319556585d2ae1cd16e21e59d8133f4a87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:13",
+      "sequence": 6668,
+      "chapter_label": "JDG 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Gideon said to him, “Oh, my lord, if the LORD is with us, why then has all this happened to us? Where are all his wondrous works which our fathers told us of, saying, ‘Didn’t the LORD bring us up from Egypt?’ But now the LORD has cast us off, and delivered us into the hand of Midian.”",
+      "ko": "기드온이 그에게 대답하되 나의 주여 여호와께서 우리와 함께 계시면 어찌하여 이 모든 일이 우리에게 미쳤나이까 또 우리 열조가 일찍 우리에게 이르기를 여호와께서 우리를 애굽에서 나오게 하신 것이 아니냐 한 그 모든 이적이 어디 있나이까 이제 여호와께서 우리를 버리사 미디안의 손에 붙이셨나이다",
+      "source_text_hash": "0dd6fa71fddbb18360b01b8e9833875c4bfeb09652907d68b7f1097ad4552976",
+      "translation_text_hash": "16d46cdd83da53d05a5405945251f0a84ab037ca14d19c168d50ff0eccf94e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그에게 대답하되 나의 주여 여호와께서 우리와 함께 계시면 어찌하여 이 모든 일이 우리에게 미쳤나이까 또 우리 열조가 일찍 우리에게 이르기를 여호와께서 우리를 애굽에서 나오게 하신 것이 아니냐 한 그 모든 이적이 어디 있나이까 이제 여호와께서 우리를 버리사 미디안의 손에 붙이셨나이다"
+      ],
+      "raw_text_hashes": [
+        "16d46cdd83da53d05a5405945251f0a84ab037ca14d19c168d50ff0eccf94e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:14",
+      "sequence": 6669,
+      "chapter_label": "JDG 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD looked at him, and said, “Go in this your might, and save Israel from the hand of Midian. Haven’t I sent you?”",
+      "ko": "여호와께서 그를 돌아보아 가라사대 너는 이 네 힘을 의지하고 가서 이스라엘을 미디안의 손에서 구원하라 내가 너를 보낸 것이 아니냐",
+      "source_text_hash": "0188742c5645a24c9d726759bf9602fb5255a2d764a570b9cf50869005f60fb6",
+      "translation_text_hash": "88ef3430e429edfa85721ef44d6b870c1ced0d6b529c18e2d5355e972d366471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그를 돌아보아 가라사대 너는 이 네 힘을 의지하고 가서 이스라엘을 미디안의 손에서 구원하라 내가 너를 보낸 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "88ef3430e429edfa85721ef44d6b870c1ced0d6b529c18e2d5355e972d366471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:15",
+      "sequence": 6670,
+      "chapter_label": "JDG 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "He said to him, “O Lord, how shall I save Israel? Behold, my family is the poorest in Manasseh, and I am the least in my father’s house.”",
+      "ko": "기드온이 그에게 대답하되 주여 내가 무엇으로 이스라엘을 구원하리이까 보소서 나의 집은 므낫세 중에 극히 약하고 나는 내 아비 집에서 제일 작은 자니이다",
+      "source_text_hash": "537e3bb7c96409181f0ac17db2c84734742b1283f5e1d522aff0981b51d626ac",
+      "translation_text_hash": "cc78aa8404431cfa175dbef159570f3cd9c26f7dd1dfdff8ecd1faad03d52f75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그에게 대답하되 주여 내가 무엇으로 이스라엘을 구원하리이까 보소서 나의 집은 므낫세 중에 극히 약하고 나는 내 아비 집에서 제일 작은 자니이다"
+      ],
+      "raw_text_hashes": [
+        "cc78aa8404431cfa175dbef159570f3cd9c26f7dd1dfdff8ecd1faad03d52f75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:16",
+      "sequence": 6671,
+      "chapter_label": "JDG 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD said to him, “Surely I will be with you, and you shall strike the Midianites as one man.”",
+      "ko": "여호와께서 그에게 이르시되 내가 반드시 너와 함께 하리니 네가 미디안 사람 치기를 한 사람을 치듯하리라",
+      "source_text_hash": "3486677d8a68eced4dd8c996d9354260548e73e7db8347c211015e96560f29b5",
+      "translation_text_hash": "0649f86281a8addf52962424a281780701e7bfb515f6f7bc09ccdba568b25eac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 내가 반드시 너와 함께 하리니 네가 미디안 사람 치기를 한 사람을 치듯하리라"
+      ],
+      "raw_text_hashes": [
+        "0649f86281a8addf52962424a281780701e7bfb515f6f7bc09ccdba568b25eac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:17",
+      "sequence": 6672,
+      "chapter_label": "JDG 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "He said to him, “If now I have found favor in your sight, then show me a sign that it is you who talk with me.",
+      "ko": "기드온이 그에게 대답하되 내가 주께 은혜를 얻었사오면 나와 말씀하신 이가 주 되시는 표징을 내게 보이소서",
+      "source_text_hash": "b20a52f8b797befaa1ac90287f07446268cdfa99f3a186d390860ed7af02018f",
+      "translation_text_hash": "4da418e6f43449f1f0730459af08d02e411fad0b6171bf9d48024d6fb3ae337e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그에게 대답하되 내가 주께 은혜를 얻었사오면 나와 말씀하신 이가 주 되시는 표징을 내게 보이소서"
+      ],
+      "raw_text_hashes": [
+        "4da418e6f43449f1f0730459af08d02e411fad0b6171bf9d48024d6fb3ae337e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:18",
+      "sequence": 6673,
+      "chapter_label": "JDG 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "Please don’t go away until I come to you, and bring out my present, and lay it before you.” He said, “I will wait until you come back.”",
+      "ko": "내가 예물을 가지고 다시 주께로 와서 그것을 주 앞에 드리기까지 이곳을 떠나지 마시기를 원하나이다 그가 가로되 내가 너 돌아오기를 기다리리라",
+      "source_text_hash": "c5bfa5ff8e3892444f3b6288892dc99070dd7604f6bab0cb7ff6a6041d3039c8",
+      "translation_text_hash": "1125bb0b77eab6bf18ee48abaa85b871a32e5839f4dd09dcbedf95cc1151f087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예물을 가지고 다시 주께로 와서 그것을 주 앞에 드리기까지 이곳을 떠나지 마시기를 원하나이다 그가 가로되 내가 너 돌아오기를 기다리리라"
+      ],
+      "raw_text_hashes": [
+        "1125bb0b77eab6bf18ee48abaa85b871a32e5839f4dd09dcbedf95cc1151f087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:19",
+      "sequence": 6674,
+      "chapter_label": "JDG 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Gideon went in and prepared a young goat and unleavened cakes of an ephah of meal. He put the meat in a basket and he put the broth in a pot, and brought it out to him under the oak, and presented it.",
+      "ko": "기드온이 가서 염소 새끼 하나를 준비하고 가루 한 에바로 무교전병을 만들고 고기를 소쿠리에 담고 국을 양푼에 담아서 상수리나무 아래 그에게로 가져다가 드리매",
+      "source_text_hash": "8a617dde601f809c8b1d7f28da4f8d8efd20413c4c6db771800b26b90031ced7",
+      "translation_text_hash": "b8d87778b1ffce2072d1063d2975350480f21f473590f9ba7377c3bde84b8f86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 가서 염소 새끼 하나를 준비하고 가루 한 에바로 무교전병을 만들고 고기를 소쿠리에 담고 국을 양푼에 담아서 상수리나무 아래 그에게로 가져다가 드리매"
+      ],
+      "raw_text_hashes": [
+        "b8d87778b1ffce2072d1063d2975350480f21f473590f9ba7377c3bde84b8f86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:20",
+      "sequence": 6675,
+      "chapter_label": "JDG 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "The angel of God said to him, “Take the meat and the unleavened cakes, and lay them on this rock, and pour out the broth.” He did so.",
+      "ko": "하나님의 사자가 그에게 이르되 고기와 무교전병을 가져 이 반석 위에 두고 그 위에 국을 쏟으라 기드온이 그대로 하니",
+      "source_text_hash": "c15bb522002ce62d6403169446c55bd17a6ebb9ca1bf16579c0f756b1c332f31",
+      "translation_text_hash": "dbb29bcb5dabe1b63498ef8958636d84e9319f7661ed464e1a3a3cdcd704da9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사자가 그에게 이르되 고기와 무교전병을 가져 이 반석 위에 두고 그 위에 국을 쏟으라 기드온이 그대로 하니"
+      ],
+      "raw_text_hashes": [
+        "dbb29bcb5dabe1b63498ef8958636d84e9319f7661ed464e1a3a3cdcd704da9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:21",
+      "sequence": 6676,
+      "chapter_label": "JDG 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Then the LORD’s angel stretched out the end of the staff that was in his hand, and touched the meat and the unleavened cakes; and fire went up out of the rock and consumed the meat and the unleavened cakes. Then the LORD’s angel departed out of his sight.",
+      "ko": "여호와의 사자가 손에 잡은 지팡이 끝을 내밀어 고기와 무교전병에 대매 불이 반석에서 나와 고기와 무교전병을 살랐고 여호와의 사자는 떠나서 보이지 아니한지라",
+      "source_text_hash": "f42091e41d38b782a4aa9f5cf99ce039c4663fceab51d082844e311986086168",
+      "translation_text_hash": "81b56d41de6a0794e70ac686cda93ed8b748399ce94de2d592180f52fe5790d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 손에 잡은 지팡이 끝을 내밀어 고기와 무교전병에 대매 불이 반석에서 나와 고기와 무교전병을 살랐고 여호와의 사자는 떠나서 보이지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "81b56d41de6a0794e70ac686cda93ed8b748399ce94de2d592180f52fe5790d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:22",
+      "sequence": 6677,
+      "chapter_label": "JDG 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "Gideon saw that he was the LORD’s angel; and Gideon said, “Alas, Lord GOD! Because I have seen the LORD’s angel face to face!”",
+      "ko": "기드온이 그가 여호와의 사자인줄 알고 가로되 슬프도소이다 주 여호와여 내가 여호와의 사자를 대면하여 보았나이다",
+      "source_text_hash": "93e6264a0835bf29609f05fa4c6fa10a764f414114bc01d3565e747e7b54c71e",
+      "translation_text_hash": "a50a1c7c79e95759b9554b5b1e1acc0f6437169ea74d31a077d04fbf8d3f4d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 그가 여호와의 사자인줄 알고 가로되 슬프도소이다 주 여호와여 내가 여호와의 사자를 대면하여 보았나이다"
+      ],
+      "raw_text_hashes": [
+        "a50a1c7c79e95759b9554b5b1e1acc0f6437169ea74d31a077d04fbf8d3f4d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:23",
+      "sequence": 6678,
+      "chapter_label": "JDG 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD said to him, “Peace be to you! Don’t be afraid. You shall not die.”",
+      "ko": "여호와께서 그에게 이르시되 너는 안심하라 두려워 말라 죽지 아니하리라 하시니라",
+      "source_text_hash": "fb9794c019011782d6162f81cc4478afbd4b2250876665506612e41dfcca46ce",
+      "translation_text_hash": "61f8066435ad7d29be786b1299e81eda2ea0dd842f4f66ec1517b02bf3df824c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 너는 안심하라 두려워 말라 죽지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "61f8066435ad7d29be786b1299e81eda2ea0dd842f4f66ec1517b02bf3df824c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:24",
+      "sequence": 6679,
+      "chapter_label": "JDG 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "Then Gideon built an altar there to the LORD, and called it “The LORD is Peace.” To this day it is still in Ophrah of the Abiezrites.",
+      "ko": "기드온이 여호와를 위하여 거기서 단을 쌓고 이름을 여호와살롬이라 하였더라 그것이 오늘까지 아비에셀 사람에게 속한 오브라에 있더라",
+      "source_text_hash": "a90225616862303f5aa879d03cbc73c4cc5f892837bddbdf4963397e72640e55",
+      "translation_text_hash": "070f2bd1fc5cb10df230c43ee0386b932078276e6db33c744faed41d62c36840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 여호와를 위하여 거기서 단을 쌓고 이름을 여호와살롬이라 하였더라 그것이 오늘까지 아비에셀 사람에게 속한 오브라에 있더라"
+      ],
+      "raw_text_hashes": [
+        "070f2bd1fc5cb10df230c43ee0386b932078276e6db33c744faed41d62c36840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:25",
+      "sequence": 6680,
+      "chapter_label": "JDG 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "That same night, the LORD said to him, “Take your father’s bull, even the second bull seven years old, and throw down the altar of Baal that your father has, and cut down the Asherah that is by it.",
+      "ko": "이날 밤에 여호와께서 기드온에게 이르시되 네 아비의 수소 곧 칠년된 둘째 수소를 취하고 네 아비에게 있는 바알의 단을 헐며 단 곁의 아세라 상을 찍고",
+      "source_text_hash": "a550d3a4392444b6973c3d7f142630e504e5dfc55b15b69c4a1a2402f8aaceec",
+      "translation_text_hash": "5e252c8a1193c80a870c4e51e405b941d9f6dd1b7ea3753efcc53ded155658bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이날 밤에 여호와께서 기드온에게 이르시되 네 아비의 수소 곧 칠년된 둘째 수소를 취하고 네 아비에게 있는 바알의 단을 헐며 단 곁의 아세라 상을 찍고"
+      ],
+      "raw_text_hashes": [
+        "5e252c8a1193c80a870c4e51e405b941d9f6dd1b7ea3753efcc53ded155658bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:26",
+      "sequence": 6681,
+      "chapter_label": "JDG 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "Then build an altar to the LORD your God on the top of this stronghold, in an orderly way, and take the second bull, and offer a burnt offering with the wood of the Asherah which you shall cut down.”",
+      "ko": "또 이 견고한 성 위에 네 하나님 여호와를 위하여 규례대로 한 단을 쌓고 그 둘째 수소를 취하여 네가 찍은 아세라나무로 번제를 드릴찌니라",
+      "source_text_hash": "4b691d261fd4478d0095712cb8c3a50950734a0b121d563d4f8aa34fb378e27c",
+      "translation_text_hash": "9b44e61bd3304e61a8bc5bc7712d6cc9da8d8e89d4ba87f929e23d4ebeb7cc90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 견고한 성 위에 네 하나님 여호와를 위하여 규례대로 한 단을 쌓고 그 둘째 수소를 취하여 네가 찍은 아세라나무로 번제를 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "9b44e61bd3304e61a8bc5bc7712d6cc9da8d8e89d4ba87f929e23d4ebeb7cc90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:27",
+      "sequence": 6682,
+      "chapter_label": "JDG 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Then Gideon took ten men of his servants, and did as the LORD had spoken to him. Because he feared his father’s household and the men of the city, he could not do it by day, but he did it by night.",
+      "ko": "이에 기드온이 종 열을 데리고 여호와의 말씀하신대로 행하되 아비의 가족과 그 성읍 사람들을 두려워하므로 이 일을 감히 백주에 행하지 못하고 밤에 행하니라",
+      "source_text_hash": "91e628ee3579424e29b4ed21cb52ae9189caac23c69116575d6902652f352f59",
+      "translation_text_hash": "14a8a54ff9860fe74d9b7c5e9f9c78463536d5887cef3367c5757642b3fdd42f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 기드온이 종 열을 데리고 여호와의 말씀하신대로 행하되 아비의 가족과 그 성읍 사람들을 두려워하므로 이 일을 감히 백주에 행하지 못하고 밤에 행하니라"
+      ],
+      "raw_text_hashes": [
+        "14a8a54ff9860fe74d9b7c5e9f9c78463536d5887cef3367c5757642b3fdd42f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:28",
+      "sequence": 6683,
+      "chapter_label": "JDG 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "When the men of the city arose early in the morning, behold, the altar of Baal was broken down, and the Asherah was cut down that was by it, and the second bull was offered on the altar that was built.",
+      "ko": "성읍 사람들이 아침에 일찌기 일어나 본즉 바알의 단이 훼파되었으며 단 곁의 아세라가 찍혔고 새로 쌓은 단 위에 그 둘째 수소를 드렸는지라",
+      "source_text_hash": "823974f6f8a2365a925eebff87333dc7c059ae4c3d2ddd1a6a76b910b0566e00",
+      "translation_text_hash": "8d133c34b236bea95012ce12238b10c8066c00afacb9089b19b629e28fa0ffca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍 사람들이 아침에 일찌기 일어나 본즉 바알의 단이 훼파되었으며 단 곁의 아세라가 찍혔고 새로 쌓은 단 위에 그 둘째 수소를 드렸는지라"
+      ],
+      "raw_text_hashes": [
+        "8d133c34b236bea95012ce12238b10c8066c00afacb9089b19b629e28fa0ffca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:29",
+      "sequence": 6684,
+      "chapter_label": "JDG 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "They said to one another, “Who has done this thing?” When they inquired and asked, they said, “Gideon the son of Joash has done this thing.”",
+      "ko": "서로 물어 가로되 이것이 누구의 소위인고 하고 그들이 캐어 물은 후에 가로되 요아스의 아들 기드온이 이를 행하였도다 하고",
+      "source_text_hash": "5483e0099febcd50a36c26e979ddf012b3ce3d7f4bc647a0ce72726210f6a3ba",
+      "translation_text_hash": "a821426f957e90e1dd6d1ccaa8dc8c5b53ab84304fbb3a973b25bead327b043a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 물어 가로되 이것이 누구의 소위인고 하고 그들이 캐어 물은 후에 가로되 요아스의 아들 기드온이 이를 행하였도다 하고"
+      ],
+      "raw_text_hashes": [
+        "a821426f957e90e1dd6d1ccaa8dc8c5b53ab84304fbb3a973b25bead327b043a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:30",
+      "sequence": 6685,
+      "chapter_label": "JDG 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "Then the men of the city said to Joash, “Bring out your son, that he may die, because he has broken down the altar of Baal, and because he has cut down the Asherah that was by it.”",
+      "ko": "성읍 사람들이 요아스에게 이르되 네 아들을 끌어내라 그는 당연히 죽을찌니 이는 바알의 단을 훼파하고 단 곁의 아세라를 찍었음이니라",
+      "source_text_hash": "0d06b99333de17cc95727264d107186ac5aabe61767fa8704ef6c9e164eb32a8",
+      "translation_text_hash": "5fedd7f6793acad41026e08e145fe261986705ae67d2ac57d604139b985c407f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍 사람들이 요아스에게 이르되 네 아들을 끌어내라 그는 당연히 죽을찌니 이는 바알의 단을 훼파하고 단 곁의 아세라를 찍었음이니라"
+      ],
+      "raw_text_hashes": [
+        "5fedd7f6793acad41026e08e145fe261986705ae67d2ac57d604139b985c407f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:31",
+      "sequence": 6686,
+      "chapter_label": "JDG 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "Joash said to all who stood against him, “Will you contend for Baal? Or will you save him? He who will contend for him, let him be put to death by morning! If he is a god, let him contend for himself, because someone has broken down his altar!”",
+      "ko": "요아스가 자기를 둘러선 모든 자에게 이르되 너희가 바알을 위하여 쟁론하느냐 너희가 바알을 구원하겠느냐 그를 위하여 쟁론하는 자는 이 아침에 죽음을 당하리라 바알이 과연 신일찐대 그 단을 훼파하였은즉 스스로 쟁론할 것이니라 하니라",
+      "source_text_hash": "acb5e1c31f0588a3d1adabeb34b051c0922d77cfb7386cfde31674caa3b778a7",
+      "translation_text_hash": "7b3b06a6e71644068c479c934c140ef77957222191f3b80e0aca4e804600f800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 자기를 둘러선 모든 자에게 이르되 너희가 바알을 위하여 쟁론하느냐 너희가 바알을 구원하겠느냐 그를 위하여 쟁론하는 자는 이 아침에 죽음을 당하리라 바알이 과연 신일찐대 그 단을 훼파하였은즉 스스로 쟁론할 것이니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "7b3b06a6e71644068c479c934c140ef77957222191f3b80e0aca4e804600f800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:32",
+      "sequence": 6687,
+      "chapter_label": "JDG 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "Therefore on that day he named him Jerub-Baal, saying, “Let Baal contend against him, because he has broken down his altar.”",
+      "ko": "그 날에 기드온을 여룹바알이라 하였으니 이는 그가 바알의 단을 훼파하였은즉 바알이 더불어 쟁론할 것이라 함이었더라",
+      "source_text_hash": "379eb44473db75ba7027548b5248a09399a11b6c3a49502af3f2587b8dadfe02",
+      "translation_text_hash": "1dec339b2a873675d6a8b7d7210d2d627482876f30415593847e6c4f75b775ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 기드온을 여룹바알이라 하였으니 이는 그가 바알의 단을 훼파하였은즉 바알이 더불어 쟁론할 것이라 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "1dec339b2a873675d6a8b7d7210d2d627482876f30415593847e6c4f75b775ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:33",
+      "sequence": 6688,
+      "chapter_label": "JDG 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "Then all the Midianites and the Amalekites and the children of the east assembled themselves together; and they passed over, and encamped in the valley of Jezreel.",
+      "ko": "때에 미디안 사람과 아말렉 사람과 동방 사람들이 다 모여 요단을 건너와서 이스르엘 골짜기에 진을 친지라",
+      "source_text_hash": "cc0a43689e4a4b3f2708d02df6774f07ee7e3cb02ec4a575ec1b15cabac50f69",
+      "translation_text_hash": "e2ae9499e3cdbc69c64afd31bc5de50482238d058d39b6bfebe39d4fa17f2bdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 미디안 사람과 아말렉 사람과 동방 사람들이 다 모여 요단을 건너와서 이스르엘 골짜기에 진을 친지라"
+      ],
+      "raw_text_hashes": [
+        "e2ae9499e3cdbc69c64afd31bc5de50482238d058d39b6bfebe39d4fa17f2bdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:34",
+      "sequence": 6689,
+      "chapter_label": "JDG 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "But the LORD’s Spirit came on Gideon, and he blew a trumpet; and Abiezer was gathered together to follow him.",
+      "ko": "여호와의 신이 기드온에게 강림하시니 기드온이 나팔을 불매 아비에셀 족속이 다 모여서 그를 좇고",
+      "source_text_hash": "06f452c8023cda3ad4a0b970f55fefdf596676835a225e05d1dfe737668474ee",
+      "translation_text_hash": "9717098cb9fdec65011b6414123af5a6ea8a9a62dfe04ebb43369cea9f45118b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 기드온에게 강림하시니 기드온이 나팔을 불매 아비에셀 족속이 다 모여서 그를 좇고"
+      ],
+      "raw_text_hashes": [
+        "9717098cb9fdec65011b6414123af5a6ea8a9a62dfe04ebb43369cea9f45118b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:35",
+      "sequence": 6690,
+      "chapter_label": "JDG 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "He sent messengers throughout all Manasseh, and they also were gathered together to follow him. He sent messengers to Asher, to Zebulun, and to Naphtali; and they came up to meet them.",
+      "ko": "기드온이 또 사자를 온 므낫세에 두루 보내매 그들도 모여서 그를 좇고 또 사자를 아셀과 스불론과 납달리에 보내매 그 무리도 올라와서 그를 영접하더라",
+      "source_text_hash": "fa9252d246792e71ec04de8fef44ea3ab16fa0d3920f61170dda41a328e46ccc",
+      "translation_text_hash": "e1b79ed90955759f0a2f0bc46b7aca2ef2ef58f7870b0a1b2a0db7207a4ce47c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 또 사자를 온 므낫세에 두루 보내매 그들도 모여서 그를 좇고 또 사자를 아셀과 스불론과 납달리에 보내매 그 무리도 올라와서 그를 영접하더라"
+      ],
+      "raw_text_hashes": [
+        "e1b79ed90955759f0a2f0bc46b7aca2ef2ef58f7870b0a1b2a0db7207a4ce47c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:36",
+      "sequence": 6691,
+      "chapter_label": "JDG 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "Gideon said to God, “If you will save Israel by my hand, as you have spoken,",
+      "ko": "기드온이 하나님께 여짜오되 주께서 이미 말씀하심 같이 내 손으로 이스라엘을 구원하려 하시거든",
+      "source_text_hash": "80822199ea3b4b8b35e4e89f92eca301e82eab17dcbdd1a2b0e598ed7f1311d7",
+      "translation_text_hash": "5845d2e38a99f3e4e65ad8dd9bcee408b202b3369292ae2004dadac922ccda62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 하나님께 여짜오되 주께서 이미 말씀하심 같이 내 손으로 이스라엘을 구원하려 하시거든"
+      ],
+      "raw_text_hashes": [
+        "5845d2e38a99f3e4e65ad8dd9bcee408b202b3369292ae2004dadac922ccda62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:37",
+      "sequence": 6692,
+      "chapter_label": "JDG 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "behold, I will put a fleece of wool on the threshing floor. If there is dew on the fleece only, and it is dry on all the ground, then I’ll know that you will save Israel by my hand, as you have spoken.”",
+      "ko": "보소서 내가 양털 한 뭉치를 타작마당에 두리니 이슬이 양털에만 있고 사면 땅은 마르면 주께서 이미 말씀하심 같이 내 손으로 이스라엘을 구원하실줄 내가 알겠나이다 하였더니",
+      "source_text_hash": "2992f9f721967526074ef1458eaae34353d53ea1393a5fbbd1a8e2592cf0bf72",
+      "translation_text_hash": "f33bb7bbeb5aa2fe90aa7fbcd60a440cb945125cb7d2015a8ef049c2d95bbc83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보소서 내가 양털 한 뭉치를 타작마당에 두리니 이슬이 양털에만 있고 사면 땅은 마르면 주께서 이미 말씀하심 같이 내 손으로 이스라엘을 구원하실줄 내가 알겠나이다 하였더니"
+      ],
+      "raw_text_hashes": [
+        "f33bb7bbeb5aa2fe90aa7fbcd60a440cb945125cb7d2015a8ef049c2d95bbc83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:38",
+      "sequence": 6693,
+      "chapter_label": "JDG 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "It was so; for he rose up early on the next day, and pressed the fleece together, and wrung the dew out of the fleece, a bowl full of water.",
+      "ko": "그대로 된지라 이튿날 기드온이 일찌기 일어나서 양털을 취하여 이슬을 짜니 물이 그릇에 가득하더라",
+      "source_text_hash": "5c521f4b3bb68069cf1afddd91e174d8040148691f5c0e9f929d75efdb8ef533",
+      "translation_text_hash": "ca7913a057bea9fe9182fb6bfc7f85b7a1a9c44ec7964a4e4f1983e2fe39341c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대로 된지라 이튿날 기드온이 일찌기 일어나서 양털을 취하여 이슬을 짜니 물이 그릇에 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "ca7913a057bea9fe9182fb6bfc7f85b7a1a9c44ec7964a4e4f1983e2fe39341c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:39",
+      "sequence": 6694,
+      "chapter_label": "JDG 6",
+      "verse_label": "39",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 39
+        }
+      ],
+      "en": "Gideon said to God, “Don’t let your anger be kindled against me, and I will speak but this once. Please let me make a trial just this once with the fleece. Let it now be dry only on the fleece, and on all the ground let there be dew.”",
+      "ko": "기드온이 또 하나님께 여짜오되 주여 내게 진노하지 마옵소서 내가 이번만 말하리이다 구하옵나니 나로 다시 한번 양털로 시험하게 하소서 양털만 마르고 사면 땅에는 다 이슬이 있게 하옵소서 하였더니",
+      "source_text_hash": "7027a7272aa8f95f098468b3275d25dc30e7d983197622557456933b3006f339",
+      "translation_text_hash": "7ede9d3e7ccf338e2e21c404f3e54dd410dd4833b40a4677491c734aa026289c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기드온이 또 하나님께 여짜오되 주여 내게 진노하지 마옵소서 내가 이번만 말하리이다 구하옵나니 나로 다시 한번 양털로 시험하게 하소서 양털만 마르고 사면 땅에는 다 이슬이 있게 하옵소서 하였더니"
+      ],
+      "raw_text_hashes": [
+        "7ede9d3e7ccf338e2e21c404f3e54dd410dd4833b40a4677491c734aa026289c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:6:40",
+      "sequence": 6695,
+      "chapter_label": "JDG 6",
+      "verse_label": "40",
+      "locator": {
+        "book": "JDG",
+        "chapter": 6,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 6,
+          "verse": 40
+        }
+      ],
+      "en": "God did so that night; for it was dry on the fleece only, and there was dew on all the ground.",
+      "ko": "이 밤에 하나님이 그대로 행하시니 곧 양털만 마르고 사면 땅에는 다 이슬이 있었더라",
+      "source_text_hash": "3dc3f7018c94ebb2057ae3a211fa29c1a9460762dc7fe7daed6a7d07dcab42bd",
+      "translation_text_hash": "61fc3c20a0ef83d15d6b63f72352c0e9f40bde4d25388258a24ec30cd753df4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤에 하나님이 그대로 행하시니 곧 양털만 마르고 사면 땅에는 다 이슬이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "61fc3c20a0ef83d15d6b63f72352c0e9f40bde4d25388258a24ec30cd753df4f"
+      ]
+    }
+  ]
+}

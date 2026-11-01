@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:006",
+  "unit_ordinal": 665,
+  "unit_label": "ECC 6",
+  "book_code": "ECC",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:6:1",
+      "sequence": 17419,
+      "chapter_label": "ECC 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "There is an evil which I have seen under the sun, and it is heavy on men:",
+      "ko": "내가 해 아래서 한가지 폐단 있는 것을 보았나니 이는 사람에게 중한 것이라",
+      "source_text_hash": "f5b4e1b0e6ccb2ba4a394c778fb242e19ce998764a735882aff89f9a618035e1",
+      "translation_text_hash": "3bb5fcf9483c92495e67728cb235df22bf20641343fdd34c0f9dc545d482da89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 한가지 폐단 있는 것을 보았나니 이는 사람에게 중한 것이라"
+      ],
+      "raw_text_hashes": [
+        "3bb5fcf9483c92495e67728cb235df22bf20641343fdd34c0f9dc545d482da89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:2",
+      "sequence": 17420,
+      "chapter_label": "ECC 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "a man to whom God gives riches, wealth, and honor, so that he lacks nothing for his soul of all that he desires, yet God gives him no power to eat of it, but an alien eats it. This is vanity, and it is an evil disease.",
+      "ko": "어떤 사람은 그 심령의 모든 소원에 부족함이 없어 재물과 부요와 존귀를 하나님께 받았으나 능히 누리게 하심을 얻지 못하였으므로 다른 사람이 누리나니 이것도 헛되어 악한 병이로다",
+      "source_text_hash": "2f1a8261fbe2b650bde0ead678e8f40f57c9a2f1f156c8d741c820d065999c25",
+      "translation_text_hash": "d2db8a746e2781b6256d1274e15db693a7a26ac474c4590dfa1d194dea24325d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 그 심령의 모든 소원에 부족함이 없어 재물과 부요와 존귀를 하나님께 받았으나 능히 누리게 하심을 얻지 못하였으므로 다른 사람이 누리나니 이것도 헛되어 악한 병이로다"
+      ],
+      "raw_text_hashes": [
+        "d2db8a746e2781b6256d1274e15db693a7a26ac474c4590dfa1d194dea24325d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:3",
+      "sequence": 17421,
+      "chapter_label": "ECC 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "If a man fathers a hundred children, and lives many years, so that the days of his years are many, but his soul is not filled with good, and moreover he has no burial, I say that a stillborn child is better than he;",
+      "ko": "사람이 비록 일백 자녀를 낳고 또 장수하여 사는 날이 많을찌라도 그 심령에 낙이 족하지 못하고 또 그 몸이 매장되지 못하면 나는 이르기를 낙태된 자가 저보다 낫다 하노니",
+      "source_text_hash": "1af558f3d2b2b596319fbbe16611762df5d6d2fdcdc7a7d41777a86b3da0ee3e",
+      "translation_text_hash": "d066cf9e259e4506e89fc71e10c9778fbbb19ede5fb061451d49bbd944760c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 비록 일백 자녀를 낳고 또 장수하여 사는 날이 많을찌라도 그 심령에 낙이 족하지 못하고 또 그 몸이 매장되지 못하면 나는 이르기를 낙태된 자가 저보다 낫다 하노니"
+      ],
+      "raw_text_hashes": [
+        "d066cf9e259e4506e89fc71e10c9778fbbb19ede5fb061451d49bbd944760c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:4",
+      "sequence": 17422,
+      "chapter_label": "ECC 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "for it comes in vanity, and departs in darkness, and its name is covered with darkness.",
+      "ko": "낙태된 자는 헛되이 왔다가 어두운 중에 가매 그 이름이 어두움에 덮이니",
+      "source_text_hash": "7fb57617d78bcbcc15a5b03777092b2b0cfc395c11dd77602c9e11c3bc6cfc6d",
+      "translation_text_hash": "5527efc79457acf87a5061f18cab81b60069d860a1063e820222914fb830306c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낙태된 자는 헛되이 왔다가 어두운 중에 가매 그 이름이 어두움에 덮이니"
+      ],
+      "raw_text_hashes": [
+        "5527efc79457acf87a5061f18cab81b60069d860a1063e820222914fb830306c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:5",
+      "sequence": 17423,
+      "chapter_label": "ECC 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Moreover it has not seen the sun nor known it. This has rest rather than the other.",
+      "ko": "햇빛을 보지 못하고 알지 못하나 이가 저보다 평안함이라",
+      "source_text_hash": "2dc6bfeb5b10db44f8df9dbb0b172f062a5976aecfb02d3ca3238c2f83dee1b7",
+      "translation_text_hash": "d774931e9abe91a33630ce9746962b1077c7c912a2003a5ae264e061c8b36c52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "햇빛을 보지 못하고 알지 못하나 이가 저보다 평안함이라"
+      ],
+      "raw_text_hashes": [
+        "d774931e9abe91a33630ce9746962b1077c7c912a2003a5ae264e061c8b36c52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:6",
+      "sequence": 17424,
+      "chapter_label": "ECC 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Yes, though he live a thousand years twice told, and yet fails to enjoy good, don’t all go to one place?",
+      "ko": "저가 비록 천년의 갑절을 산다 할찌라도 낙을 누리지 못하면 마침내 다 한곳으로 돌아가는 것뿐이 아니냐",
+      "source_text_hash": "7e757d179e9104e93245d5025d50b4e7d8c8d3030a2aecbfb075580e87224efc",
+      "translation_text_hash": "783051c5e6a7d94b2a66f4b4ac4259253c2570d1152d56dd7af1d44202fad0dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 비록 천년의 갑절을 산다 할찌라도 낙을 누리지 못하면 마침내 다 한곳으로 돌아가는 것뿐이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "783051c5e6a7d94b2a66f4b4ac4259253c2570d1152d56dd7af1d44202fad0dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:7",
+      "sequence": 17425,
+      "chapter_label": "ECC 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "All the labor of man is for his mouth, and yet the appetite is not filled.",
+      "ko": "사람의 수고는 다 그 입을 위함이나 그 식욕은 차지 아니하느니라",
+      "source_text_hash": "06c4dd78a5ca62e6bb249216058d1a8f368f63e5b639aa576420364ed8f67138",
+      "translation_text_hash": "e9510e948d84f6f2ea13fc1cf18f2d1ffeae2454217b1576d1d65b14959d23ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 수고는 다 그 입을 위함이나 그 식욕은 차지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "e9510e948d84f6f2ea13fc1cf18f2d1ffeae2454217b1576d1d65b14959d23ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:8",
+      "sequence": 17426,
+      "chapter_label": "ECC 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "For what advantage has the wise more than the fool? What has the poor man, that knows how to walk before the living?",
+      "ko": "지혜자가 우매자보다 나은 것이 무엇이뇨 인생 앞에서 행할줄을 아는 가난한 자는 무엇이 유익한고",
+      "source_text_hash": "71aaa6b1f2d0c35f3a8e10a16a7c219a121143f96ed52e69a891e8a69b24a78d",
+      "translation_text_hash": "f1e2f3fc93c20de818b22f702e919fbcc79dbc47e9d2a3ead9e84692f0ea19fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자가 우매자보다 나은 것이 무엇이뇨 인생 앞에서 행할줄을 아는 가난한 자는 무엇이 유익한고"
+      ],
+      "raw_text_hashes": [
+        "f1e2f3fc93c20de818b22f702e919fbcc79dbc47e9d2a3ead9e84692f0ea19fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:9",
+      "sequence": 17427,
+      "chapter_label": "ECC 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Better is the sight of the eyes than the wandering of the desire. This also is vanity and a chasing after wind.",
+      "ko": "눈으로 보는 것이 심령의 공상보다 나으나 이것도 헛되어 바람을 잡으려는 것이로다",
+      "source_text_hash": "fb265abd21fef6d7dd1d612b3951bea3610fc45886a609580b7e7445c77e4ac2",
+      "translation_text_hash": "c7ac34eef8c5b38b57c2655e39a73b2bf9fff940768b84f14dbf775a3f0dfaad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈으로 보는 것이 심령의 공상보다 나으나 이것도 헛되어 바람을 잡으려는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "c7ac34eef8c5b38b57c2655e39a73b2bf9fff940768b84f14dbf775a3f0dfaad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:10",
+      "sequence": 17428,
+      "chapter_label": "ECC 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Whatever has been, its name was given long ago; and it is known what man is; neither can he contend with him who is mightier than he.",
+      "ko": "이미 있는 무엇이든지 오래 전부터 그 이름이 칭한바 되었으며 사람이 무엇인지도 이미 안바 되었나니 자기보다 강한 자와 능히 다툴 수 없느니라",
+      "source_text_hash": "3563740cff0c9a85a990ecdc200c55bf5e918629f775d33c2001038384688fc5",
+      "translation_text_hash": "4f1a7b708a1f67c179f2246d3e2bc8f38f8c343568168b31570ec4685a248c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 있는 무엇이든지 오래 전부터 그 이름이 칭한바 되었으며 사람이 무엇인지도 이미 안바 되었나니 자기보다 강한 자와 능히 다툴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "4f1a7b708a1f67c179f2246d3e2bc8f38f8c343568168b31570ec4685a248c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:11",
+      "sequence": 17429,
+      "chapter_label": "ECC 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "For there are many words that create vanity. What does that profit man?",
+      "ko": "헛된 것을 더하게 하는 많은 일이 있나니 사람에게 무엇이 유익하랴",
+      "source_text_hash": "65e47775607e56151c883d45a9dce3c4113323d4d20b99703077eeb8017d72a5",
+      "translation_text_hash": "fbe3807117db8dc157c9fc48b872f8bbf4a8bba87969e996e0242a99a7ddcc1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헛된 것을 더하게 하는 많은 일이 있나니 사람에게 무엇이 유익하랴"
+      ],
+      "raw_text_hashes": [
+        "fbe3807117db8dc157c9fc48b872f8bbf4a8bba87969e996e0242a99a7ddcc1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:6:12",
+      "sequence": 17430,
+      "chapter_label": "ECC 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "For who knows what is good for man in life, all the days of his vain life which he spends like a shadow? For who can tell a man what will be after him under the sun?",
+      "ko": "헛된 생명의 모든 날을 그림자 같이 보내는 일평생에 사람에게 무엇이 낙인지 누가 알며 그 신후에 해 아래서 무슨 일이 있을 것을 누가 능히 그에게 고하리요",
+      "source_text_hash": "43209ee4279d722a19bd5a8d9fe06b7a22eccc15663a7b6251ad03bef41af0d0",
+      "translation_text_hash": "f48bac866e5583b3d7a0e8e94248063f8a4ce01c67f4f7497b78b1591d201710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헛된 생명의 모든 날을 그림자 같이 보내는 일평생에 사람에게 무엇이 낙인지 누가 알며 그 신후에 해 아래서 무슨 일이 있을 것을 누가 능히 그에게 고하리요"
+      ],
+      "raw_text_hashes": [
+        "f48bac866e5583b3d7a0e8e94248063f8a4ce01c67f4f7497b78b1591d201710"
+      ]
+    }
+  ]
+}

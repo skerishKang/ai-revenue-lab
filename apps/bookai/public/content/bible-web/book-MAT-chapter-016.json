@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:016",
+  "unit_ordinal": 945,
+  "unit_label": "MAT 16",
+  "book_code": "MAT",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:16:1",
+      "sequence": 23674,
+      "chapter_label": "MAT 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "The Pharisees and Sadducees came, and testing him, asked him to show them a sign from heaven.",
+      "ko": "바리새인과 사두개인들이 와서 예수를 시험하여 하늘로서 오는 표적 보이기를 청하니",
+      "source_text_hash": "99ceccd77f27b014e95558e05042774b822540f5d0977505d06ebee065768f92",
+      "translation_text_hash": "1d808c9509e66abef4f90edd2076aaade756a050afe86cada7a449bcb559ec57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인과 사두개인들이 와서 예수를 시험하여 하늘로서 오는 표적 보이기를 청하니"
+      ],
+      "raw_text_hashes": [
+        "1d808c9509e66abef4f90edd2076aaade756a050afe86cada7a449bcb559ec57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:2",
+      "sequence": 23675,
+      "chapter_label": "MAT 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "But he answered them, “When it is evening, you say, ‘It will be fair weather, for the sky is red.’",
+      "ko": "예수께서 대답하여 가라사대 너희가 저녁에 하늘이 붉으면 날이 좋겠다 하고",
+      "source_text_hash": "c095f9be68ee65dfdffa7458a7702c8da6cc5db56ed73d477221769b81b21018",
+      "translation_text_hash": "9bcb636575e557713488e31c0623432844fc9fb4932af5334d38456749df3822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희가 저녁에 하늘이 붉으면 날이 좋겠다 하고"
+      ],
+      "raw_text_hashes": [
+        "9bcb636575e557713488e31c0623432844fc9fb4932af5334d38456749df3822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:3",
+      "sequence": 23676,
+      "chapter_label": "MAT 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "In the morning, ‘It will be foul weather today, for the sky is red and threatening.’ Hypocrites! You know how to discern the appearance of the sky, but you can’t discern the signs of the times!",
+      "ko": "아침에 하늘이 붉고 흐리면 오늘은 날이 궂겠다 하나니 너희가 천기는 분별할줄 알면서 시대의 표적은 분별할 수 없느냐",
+      "source_text_hash": "677d1ba5af05c598f54f7875b724b2c45796c550fc176ac14093970f2a5ff377",
+      "translation_text_hash": "54b0de376b2fbd26b399fc3e5cd996b2b016bfd2991832fce3e838636d601db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 하늘이 붉고 흐리면 오늘은 날이 궂겠다 하나니 너희가 천기는 분별할줄 알면서 시대의 표적은 분별할 수 없느냐"
+      ],
+      "raw_text_hashes": [
+        "54b0de376b2fbd26b399fc3e5cd996b2b016bfd2991832fce3e838636d601db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:4",
+      "sequence": 23677,
+      "chapter_label": "MAT 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "An evil and adulterous generation seeks after a sign, and there will be no sign given to it, except the sign of the prophet Jonah.”He left them and departed.",
+      "ko": "악하고 음란한 세대가 표적을 구하나 요나의 표적 밖에는 보여 줄 표적이 없느니라 하시고 저희를 떠나 가시다",
+      "source_text_hash": "2882f080140e72bc5447e7abce3843c0398b7b30be3d714b7149b9e7df221788",
+      "translation_text_hash": "deb6b6657eb7dc33bda042fe914ec226a370696946f713f7bf939e9f5e697829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악하고 음란한 세대가 표적을 구하나 요나의 표적 밖에는 보여 줄 표적이 없느니라 하시고 저희를 떠나 가시다"
+      ],
+      "raw_text_hashes": [
+        "deb6b6657eb7dc33bda042fe914ec226a370696946f713f7bf939e9f5e697829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:5",
+      "sequence": 23678,
+      "chapter_label": "MAT 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "The disciples came to the other side and had forgotten to take bread.",
+      "ko": "제자들이 건너편으로 갈째 떡 가져가기를 잊었더니",
+      "source_text_hash": "3bce7d4e1d5e9ad31b62db88ef24a322c18f2ae09a22371e1be4c264860f7039",
+      "translation_text_hash": "493ac8ac69bfa57aee0e237190ceb73c7181dbaf60394f73e4cd77d63a3e8d6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 건너편으로 갈째 떡 가져가기를 잊었더니"
+      ],
+      "raw_text_hashes": [
+        "493ac8ac69bfa57aee0e237190ceb73c7181dbaf60394f73e4cd77d63a3e8d6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:6",
+      "sequence": 23679,
+      "chapter_label": "MAT 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Jesus said to them, “Take heed and beware of the yeast of the Pharisees and Sadducees.”",
+      "ko": "예수께서 이르시되 삼가 바리새인과 사두개인들의 누룩을 주의하라 하신대",
+      "source_text_hash": "8958485d789aed6446a9774d460b086e96fa04970f60ff38498201d7ec18cb38",
+      "translation_text_hash": "3036305530bf33094061b165791d132c77068d1ce0ed2b20c4f1bb7b16a75c31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 삼가 바리새인과 사두개인들의 누룩을 주의하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "3036305530bf33094061b165791d132c77068d1ce0ed2b20c4f1bb7b16a75c31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:7",
+      "sequence": 23680,
+      "chapter_label": "MAT 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "They reasoned among themselves, saying, “We brought no bread.”",
+      "ko": "제자들이 서로 의논하여 가로되 우리가 떡을 가져 오지 아니하였도다 하거늘",
+      "source_text_hash": "1705b1f0bdda598daf70f55b287fc99dd1611aec42857646cc4c049d9b37f9fe",
+      "translation_text_hash": "8e45dec4837274d300cda1ad842c6efb43067a1ea497526d0af5b47aa00bd0df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 서로 의논하여 가로되 우리가 떡을 가져 오지 아니하였도다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "8e45dec4837274d300cda1ad842c6efb43067a1ea497526d0af5b47aa00bd0df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:8",
+      "sequence": 23681,
+      "chapter_label": "MAT 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus, perceiving it, said, “Why do you reason among yourselves, you of little faith, because you have brought no bread?",
+      "ko": "예수께서 아시고 가라사대 믿음이 적은 자들아 어찌 떡이 없음으로 서로 의논하느냐",
+      "source_text_hash": "de0a1e8eacce883c5db2b17f88e8aa2034fb992dcf46783f3256421dc9ade15a",
+      "translation_text_hash": "6e9a6fa23edbf59f41d20207b2b4bed1d8dda787777e17ad57860dabf2221741",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 아시고 가라사대 믿음이 적은 자들아 어찌 떡이 없음으로 서로 의논하느냐"
+      ],
+      "raw_text_hashes": [
+        "6e9a6fa23edbf59f41d20207b2b4bed1d8dda787777e17ad57860dabf2221741"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:9",
+      "sequence": 23682,
+      "chapter_label": "MAT 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t you yet perceive or remember the five loaves for the five thousand, and how many baskets you took up,",
+      "ko": "너희가 아직도 깨닫지 못하느냐 떡 다섯 개로 오천 명을 먹이고 주운 것이 몇 바구니며",
+      "source_text_hash": "751615f5eb03d0432b53af3a099f9fe0d65453092b5e31718b090524502e81a9",
+      "translation_text_hash": "a7336c19747ad3896e6927328323455ce02c0912ed72d14241ecece82f647454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아직도 깨닫지 못하느냐 떡 다섯 개로 오천 명을 먹이고 주운 것이 몇 바구니며"
+      ],
+      "raw_text_hashes": [
+        "a7336c19747ad3896e6927328323455ce02c0912ed72d14241ecece82f647454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:10",
+      "sequence": 23683,
+      "chapter_label": "MAT 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "or the seven loaves for the four thousand, and how many baskets you took up?",
+      "ko": "떡 일곱 개로 사천명을 먹이고 주운 것이 몇 광주리이던 것을 기억지 못하느냐",
+      "source_text_hash": "9160672567c592aee17b7959d3fd5a8034f02f8e0713c4bf62832496ed706142",
+      "translation_text_hash": "ad7bad9e74e3ae1f23939ff20b2a5bea6495ba9e98dfa583d248a21dcedba731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡 일곱 개로 사천명을 먹이고 주운 것이 몇 광주리이던 것을 기억지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "ad7bad9e74e3ae1f23939ff20b2a5bea6495ba9e98dfa583d248a21dcedba731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:11",
+      "sequence": 23684,
+      "chapter_label": "MAT 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "How is it that you don’t perceive that I didn’t speak to you concerning bread? But beware of the yeast of the Pharisees and Sadducees.”",
+      "ko": "어찌 내 말한 것이 떡에 관함이 아닌 줄을 깨닫지 못하느냐 오직 바리새인과 사두개인들의 누룩을 주의하라 하시니",
+      "source_text_hash": "53613d41b5ed607cf2252364df11432270da6bf10b1890cd913e24f0dbfae06d",
+      "translation_text_hash": "4c8b7df26aef3dba66283a25eea523df274f2a3e8ee85419acc3b29527f401f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌 내 말한 것이 떡에 관함이 아닌 줄을 깨닫지 못하느냐 오직 바리새인과 사두개인들의 누룩을 주의하라 하시니"
+      ],
+      "raw_text_hashes": [
+        "4c8b7df26aef3dba66283a25eea523df274f2a3e8ee85419acc3b29527f401f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:12",
+      "sequence": 23685,
+      "chapter_label": "MAT 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Then they understood that he didn’t tell them to beware of the yeast of bread, but of the teaching of the Pharisees and Sadducees.",
+      "ko": "그제야 제자들이 떡의 누룩이 아니요 바리새인과 사두개인들의 교훈을 삼가라고 말씀하신 줄을 깨달으니라",
+      "source_text_hash": "b516b5c373ef635a2e7697955126e32634d1180a07f891578a3ae8bafe446809",
+      "translation_text_hash": "1cd6bff30faaee93389a067c29b16460466db958982d1075f27465667ba2ac36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그제야 제자들이 떡의 누룩이 아니요 바리새인과 사두개인들의 교훈을 삼가라고 말씀하신 줄을 깨달으니라"
+      ],
+      "raw_text_hashes": [
+        "1cd6bff30faaee93389a067c29b16460466db958982d1075f27465667ba2ac36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:13",
+      "sequence": 23686,
+      "chapter_label": "MAT 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Now when Jesus came into the parts of Caesarea Philippi, he asked his disciples, saying, “Who do men say that I, the Son of Man, am?”",
+      "ko": "예수께서 가이사랴 빌립보 지방에 이르러 제자들에게 물어 가라사대 사람들이 인자를 누구라 하느냐",
+      "source_text_hash": "eda588758379323e243fca02c112764933f29ed2c7cef1437d1bd2b23b965f5c",
+      "translation_text_hash": "fa3ad7e6b90f889f39d9c99835ba0a521afefefb8a81d84b857bfdde262c1c3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가이사랴 빌립보 지방에 이르러 제자들에게 물어 가라사대 사람들이 인자를 누구라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "fa3ad7e6b90f889f39d9c99835ba0a521afefefb8a81d84b857bfdde262c1c3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:14",
+      "sequence": 23687,
+      "chapter_label": "MAT 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "They said, “Some say John the Baptizer, some, Elijah, and others, Jeremiah or one of the prophets.”",
+      "ko": "가로되 더러는 세례 요한, 더러는 엘리야, 어떤이는 예레미야나 선지자 중의 하나라 하나이다",
+      "source_text_hash": "86a9b5650656580db297f1b2ab0b4ce9d7f85224f25371af0949a260aab2c86c",
+      "translation_text_hash": "3dfc86c296bba65d7b6dd181c4dda9c8b89d30119eabd04ca76af3069d4f04a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 더러는 세례 요한, 더러는 엘리야, 어떤이는 예레미야나 선지자 중의 하나라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "3dfc86c296bba65d7b6dd181c4dda9c8b89d30119eabd04ca76af3069d4f04a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:15",
+      "sequence": 23688,
+      "chapter_label": "MAT 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "He said to them, “But who do you say that I am?”",
+      "ko": "가라사대 너희는 나를 누구라 하느냐",
+      "source_text_hash": "435ef14f3f4e08d629162dec9aacd198532c1778cbe5f8277757b972180a609b",
+      "translation_text_hash": "c2cc256bd00eea51073958b0f95a0e27949a39618ae3739cda0657051114173f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희는 나를 누구라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "c2cc256bd00eea51073958b0f95a0e27949a39618ae3739cda0657051114173f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:16",
+      "sequence": 23689,
+      "chapter_label": "MAT 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "Simon Peter answered, “You are the Christ, the Son of the living God.”",
+      "ko": "시몬 베드로가 대답하여 가로되 주는 그리스도시요 살아계신 하나님의 아들이시니이다",
+      "source_text_hash": "b28467b265e7a01b143e46e96ad9d23ca1ce14ea0927601509653d10c937325a",
+      "translation_text_hash": "24a8b0a0b3338ace507a47e85f45ad1081d75322caee95d8f1fb3654b933c3b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 대답하여 가로되 주는 그리스도시요 살아계신 하나님의 아들이시니이다"
+      ],
+      "raw_text_hashes": [
+        "24a8b0a0b3338ace507a47e85f45ad1081d75322caee95d8f1fb3654b933c3b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:17",
+      "sequence": 23690,
+      "chapter_label": "MAT 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus answered him, “Blessed are you, Simon Bar Jonah, for flesh and blood has not revealed this to you, but my Father who is in heaven.",
+      "ko": "예수께서 대답하여 가라사대 바요나 시몬아 네가 복이 있도다 이를 네게 알게 한 이는 혈육이 아니요 하늘에 계신 내 아버지시니라",
+      "source_text_hash": "d71637bca67acb0c178a16ca7f08c1a64f5f1d4cb6a9777e62a2b59870e4f2c4",
+      "translation_text_hash": "a32b08fa088d52dd239386141db86026a7c5f9cca1affebe382f06d4e7a2dbf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 바요나 시몬아 네가 복이 있도다 이를 네게 알게 한 이는 혈육이 아니요 하늘에 계신 내 아버지시니라"
+      ],
+      "raw_text_hashes": [
+        "a32b08fa088d52dd239386141db86026a7c5f9cca1affebe382f06d4e7a2dbf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:18",
+      "sequence": 23691,
+      "chapter_label": "MAT 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "I also tell you that you are Peter,and on this rock I will build my assembly, and the gates of Hadeswill not prevail against it.",
+      "ko": "또 내가 네게 이르노니 너는 베드로라 내가 이 반석 위에 내 교회를 세우리니 음부의 권세가 이기지 못하리라",
+      "source_text_hash": "8f46ca29d7ace4a4d9959620f227050cf3552143f43fceb650252b8ab8bf0a2d",
+      "translation_text_hash": "4f12ac4839699e807c45081a9275e8c4c6a1d0fe47e20a70c4e7a656efdfb537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 네게 이르노니 너는 베드로라 내가 이 반석 위에 내 교회를 세우리니 음부의 권세가 이기지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "4f12ac4839699e807c45081a9275e8c4c6a1d0fe47e20a70c4e7a656efdfb537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:19",
+      "sequence": 23692,
+      "chapter_label": "MAT 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "I will give to you the keys of the Kingdom of Heaven, and whatever you bind on earth will have been bound in heaven; and whatever you release on earth will have been released in heaven.”",
+      "ko": "내가 천국 열쇠를 네게 주리니 네가 땅에서 무엇이든지 매면 하늘에서도 매일 것이요 네가 땅에서 무엇이든지 풀면 하늘에서도 풀리리라 하시고",
+      "source_text_hash": "bc9ebde97458db7619386da5e7506556599290d10227c9bfd99331d68b00d800",
+      "translation_text_hash": "1e3b2ca0521ff9bac776c42920b7b4dfb79e79b9e825b68032b1df4b84433819",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 천국 열쇠를 네게 주리니 네가 땅에서 무엇이든지 매면 하늘에서도 매일 것이요 네가 땅에서 무엇이든지 풀면 하늘에서도 풀리리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "1e3b2ca0521ff9bac776c42920b7b4dfb79e79b9e825b68032b1df4b84433819"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:20",
+      "sequence": 23693,
+      "chapter_label": "MAT 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Then he commanded the disciples that they should tell no one that he was Jesus the Christ.",
+      "ko": "이에 제자들을 경계하사 자기가 그리스도인 것을 아무에게도 이르지 말라 하시니라",
+      "source_text_hash": "7cf8aa5e78d32fe6d9e809c3fb643bc906074fa6de6ed2141792e6a4f107bb05",
+      "translation_text_hash": "5dd3aa5edda60574566b9feca66e659b0f38240eb4653cc171f48528e44b805a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제자들을 경계하사 자기가 그리스도인 것을 아무에게도 이르지 말라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "5dd3aa5edda60574566b9feca66e659b0f38240eb4653cc171f48528e44b805a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:21",
+      "sequence": 23694,
+      "chapter_label": "MAT 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "From that time, Jesus began to show his disciples that he must go to Jerusalem and suffer many things from the elders, chief priests, and scribes, and be killed, and the third day be raised up.",
+      "ko": "이때로부터 예수 그리스도께서 자기가 예루살렘에 올라가 장로들과 대제사장들과 서기관들에게 많은 고난을 받고 죽임을 당하고 제 삼일에 살아나야 할것을 제자들에게 비로소 가르치시니",
+      "source_text_hash": "9950a58f4eec536e39fa20b78d93cc385385c159bc706891bb6f6f36b4adfc12",
+      "translation_text_hash": "abc188a2bbeb21eb0ef509fe2ed1a4230368ce89f83262f894b654e506c5e67f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이때로부터 예수 그리스도께서 자기가 예루살렘에 올라가 장로들과 대제사장들과 서기관들에게 많은 고난을 받고 죽임을 당하고 제 삼일에 살아나야 할것을 제자들에게 비로소 가르치시니"
+      ],
+      "raw_text_hashes": [
+        "abc188a2bbeb21eb0ef509fe2ed1a4230368ce89f83262f894b654e506c5e67f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:22",
+      "sequence": 23695,
+      "chapter_label": "MAT 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "Peter took him aside and began to rebuke him, saying, “Far be it from you, Lord! This will never be done to you.”",
+      "ko": "베드로가 예수를 붙들고 간하여 가로되 주여 그리 마옵소서 이 일이 결코 주에게 미치지 아니하리이다",
+      "source_text_hash": "6e7a47f1b2252fb4074aa288d219cbd71ca7ed583abf031ee4e257bc9a6df21e",
+      "translation_text_hash": "16b4a39e11e455c57085b450b929e73ff62bb537db4933df6423c205093c25ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 예수를 붙들고 간하여 가로되 주여 그리 마옵소서 이 일이 결코 주에게 미치지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "16b4a39e11e455c57085b450b929e73ff62bb537db4933df6423c205093c25ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:23",
+      "sequence": 23696,
+      "chapter_label": "MAT 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "But he turned and said to Peter, “Get behind me, Satan! You are a stumbling block to me, for you are not setting your mind on the things of God, but on the things of men.”",
+      "ko": "예수께서 돌이키시며 베드로에게 이르시되 사단아 내 뒤로 물러 가라 너는 나를 넘어지게 하는 자로다 네가 하나님의 일을 생각지 아니하고 도리어 사람의 일을 생각하는도다 하시고",
+      "source_text_hash": "ef25c86209dd301c6db070693b1d119cbf74e08f4121bdfa6e53720af8c52d1f",
+      "translation_text_hash": "5b7d258da89bb371d261d6ec003122e8b97820a5a09c49f5989c6714e6ac125b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌이키시며 베드로에게 이르시되 사단아 내 뒤로 물러 가라 너는 나를 넘어지게 하는 자로다 네가 하나님의 일을 생각지 아니하고 도리어 사람의 일을 생각하는도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "5b7d258da89bb371d261d6ec003122e8b97820a5a09c49f5989c6714e6ac125b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:24",
+      "sequence": 23697,
+      "chapter_label": "MAT 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "Then Jesus said to his disciples, “If anyone desires to come after me, let him deny himself, take up his cross, and follow me.",
+      "ko": "이에 예수께서 제자들에게 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 자기 십자가를 지고 나를 좇을 것이니라",
+      "source_text_hash": "e1d37e0c0a3c72ba0484360839dd19d461bce3d73c8404fc3fbf3996bb476926",
+      "translation_text_hash": "95564add1186deccd8bb085cb26e639879bf1bf6d6812461e66ec836460fbb0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 제자들에게 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 자기 십자가를 지고 나를 좇을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "95564add1186deccd8bb085cb26e639879bf1bf6d6812461e66ec836460fbb0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:25",
+      "sequence": 23698,
+      "chapter_label": "MAT 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "For whoever desires to save his life will lose it, and whoever will lose his life for my sake will find it.",
+      "ko": "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나를 위하여 제 목숨을 잃으면 찾으리라",
+      "source_text_hash": "4de26a1868ca0da9faf52f10f90e298a52b2dd6d03564eb6f2ad4ed5fa753cf7",
+      "translation_text_hash": "7f846339a358a1ccffe23ff3daee3593c14a4361172d71d65dbac25601b70bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나를 위하여 제 목숨을 잃으면 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "7f846339a358a1ccffe23ff3daee3593c14a4361172d71d65dbac25601b70bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:26",
+      "sequence": 23699,
+      "chapter_label": "MAT 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "For what will it profit a man if he gains the whole world and forfeits his life? Or what will a man give in exchange for his life?",
+      "ko": "사람이 만일 온 천하를 얻고도 제 목숨을 잃으면 무엇이 유익하리요 사람이 무엇을 주고 제 목숨을 바꾸겠느냐",
+      "source_text_hash": "f63117d19690b3efa2393a8a6a3a0830034da24db10e168abae6545a52b40685",
+      "translation_text_hash": "434dc50b00ebbc97cf8b1b3d45f9bd107ee6affee55d79def43a8e28b276e894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 온 천하를 얻고도 제 목숨을 잃으면 무엇이 유익하리요 사람이 무엇을 주고 제 목숨을 바꾸겠느냐"
+      ],
+      "raw_text_hashes": [
+        "434dc50b00ebbc97cf8b1b3d45f9bd107ee6affee55d79def43a8e28b276e894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:27",
+      "sequence": 23700,
+      "chapter_label": "MAT 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "For the Son of Man will come in the glory of his Father with his angels, and then he will give to everyone according to his deeds.",
+      "ko": "인자가 아버지의 영광으로 그 천사들과 함께 오리니 그 때에 각 사람의 행한대로 갚으리라",
+      "source_text_hash": "ef3dbf47aba118e1fb3a858fcebe523c60eec33e7af944c263e63323629b277b",
+      "translation_text_hash": "ba499a230931a00ffb15ae96f88bbda7f0196ad37cd73eddd506da3a653444ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 아버지의 영광으로 그 천사들과 함께 오리니 그 때에 각 사람의 행한대로 갚으리라"
+      ],
+      "raw_text_hashes": [
+        "ba499a230931a00ffb15ae96f88bbda7f0196ad37cd73eddd506da3a653444ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:16:28",
+      "sequence": 23701,
+      "chapter_label": "MAT 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "Most certainly I tell you, there are some standing here who will in no way taste of death until they see the Son of Man coming in his Kingdom.”",
+      "ko": "진실로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 인자가 그 왕권을 가지고 오는 것을 볼 자들도 있느니라",
+      "source_text_hash": "9a48371df43118e57e51a7245e7998ea817071ac4070a67a50b28f7a8a42dfe3",
+      "translation_text_hash": "8c75fff116306c1126f9a2448beb3d80c1054dc6b8596e67a319a86c25aed10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 인자가 그 왕권을 가지고 오는 것을 볼 자들도 있느니라"
+      ],
+      "raw_text_hashes": [
+        "8c75fff116306c1126f9a2448beb3d80c1054dc6b8596e67a319a86c25aed10d"
+      ]
+    }
+  ]
+}

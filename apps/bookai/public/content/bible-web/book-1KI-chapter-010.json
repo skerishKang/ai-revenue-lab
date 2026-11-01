@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:010",
+  "unit_ordinal": 301,
+  "unit_label": "1KI 10",
+  "book_code": "1KI",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:10:1",
+      "sequence": 9081,
+      "chapter_label": "1KI 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "When the queen of Sheba heard of the fame of Solomon concerning the LORD’s name, she came to test him with hard questions.",
+      "ko": "스바 여왕이 여호와의 이름으로 말미암은 솔로몬의 명예를 듣고 와서 어려운 문제로 저를 시험코자 하여",
+      "source_text_hash": "438765553647d2c427e6187861c2afd7d5093298580913397dd00a7f410e792c",
+      "translation_text_hash": "68e0f4b6c5b396f03e9358f2a7d984f06adf20d4cf6cce081f951e0232836d93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바 여왕이 여호와의 이름으로 말미암은 솔로몬의 명예를 듣고 와서 어려운 문제로 저를 시험코자 하여"
+      ],
+      "raw_text_hashes": [
+        "68e0f4b6c5b396f03e9358f2a7d984f06adf20d4cf6cce081f951e0232836d93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:2",
+      "sequence": 9082,
+      "chapter_label": "1KI 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "She came to Jerusalem with a very great caravan, with camels that bore spices, very much gold, and precious stones; and when she had come to Solomon, she talked with him about all that was in her heart.",
+      "ko": "예루살렘에 이르니 수원이 심히 많고 향품과 심히 많은 금과 보석을 약대에 실었더라 저가 솔로몬에게 나아와 자기 마음에 있는 것을 다 말하매",
+      "source_text_hash": "168d02dd9192301244949b768ba436ad07d4c9fad69df140a0a36b697c762243",
+      "translation_text_hash": "1b013cb9d6c4339946d0c6a8691b3eeab508930e1cb6ba369ffe93ad14ad45de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 이르니 수원이 심히 많고 향품과 심히 많은 금과 보석을 약대에 실었더라 저가 솔로몬에게 나아와 자기 마음에 있는 것을 다 말하매"
+      ],
+      "raw_text_hashes": [
+        "1b013cb9d6c4339946d0c6a8691b3eeab508930e1cb6ba369ffe93ad14ad45de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:3",
+      "sequence": 9083,
+      "chapter_label": "1KI 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Solomon answered all her questions. There wasn’t anything hidden from the king which he didn’t tell her.",
+      "ko": "솔로몬이 그 묻는 말을 다 대답하였으니 왕이 은미하여 대답지 못한 것이 없었더라",
+      "source_text_hash": "6a44bf4ec5dfe58621444771a502e27ca872fc4ddeaf30abf7e7fdb68abfc829",
+      "translation_text_hash": "97e6092d1b1ada91940ccb86d4e5634df6867a6f5e2bc6d2c82f2f4d56738db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 그 묻는 말을 다 대답하였으니 왕이 은미하여 대답지 못한 것이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "97e6092d1b1ada91940ccb86d4e5634df6867a6f5e2bc6d2c82f2f4d56738db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:4",
+      "sequence": 9084,
+      "chapter_label": "1KI 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "When the queen of Sheba had seen all the wisdom of Solomon, the house that he had built,",
+      "ko": "스바 여왕이 솔로몬의 모든 지혜와 그 건축한 궁과",
+      "source_text_hash": "4ccadd2925db12239e57aca735dacaa86091895375bfa93dc60baaf6ac6f0ebb",
+      "translation_text_hash": "59c6d51dead38b8640236a566afa951b33ff5f0652e99422ab2781059d2167a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바 여왕이 솔로몬의 모든 지혜와 그 건축한 궁과"
+      ],
+      "raw_text_hashes": [
+        "59c6d51dead38b8640236a566afa951b33ff5f0652e99422ab2781059d2167a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:5",
+      "sequence": 9085,
+      "chapter_label": "1KI 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "the food of his table, the sitting of his servants, the attendance of his officials, their clothing, his cup bearers, and his ascent by which he went up to the LORD’s house, there was no more spirit in her.",
+      "ko": "그 상의 식물과 그 신복들의 좌석과 그 신하들의 시립한 것과 그들의 공복과 술관원들과 여호와의 전에 올라가는 층계를 보고 정신이 현황하여",
+      "source_text_hash": "bbf0d02fbc9362ecfcde3973fb5c6a78808ec556e00a69995fb7a4f2059ec081",
+      "translation_text_hash": "6e8e000e7c07c6f5d5c07b28b1d7dab835b663202fdaa93ca8ab8fd378451375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 상의 식물과 그 신복들의 좌석과 그 신하들의 시립한 것과 그들의 공복과 술관원들과 여호와의 전에 올라가는 층계를 보고 정신이 현황하여"
+      ],
+      "raw_text_hashes": [
+        "6e8e000e7c07c6f5d5c07b28b1d7dab835b663202fdaa93ca8ab8fd378451375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:6",
+      "sequence": 9086,
+      "chapter_label": "1KI 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "She said to the king, “It was a true report that I heard in my own land of your acts and of your wisdom.",
+      "ko": "왕께 고하되 내가 내 나라에서 당신의 행위와 당신의 지혜에 대하여 들은 소문이 진실하도다",
+      "source_text_hash": "2582dee54473a6ebc4b290288bfd01da2cf1395227c0c502aa095c93d512ef2d",
+      "translation_text_hash": "ae52b842330ef306ad1f3736031f36b8a7ff0ba224fa09ae31b6fd6ddb75bda7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 고하되 내가 내 나라에서 당신의 행위와 당신의 지혜에 대하여 들은 소문이 진실하도다"
+      ],
+      "raw_text_hashes": [
+        "ae52b842330ef306ad1f3736031f36b8a7ff0ba224fa09ae31b6fd6ddb75bda7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:7",
+      "sequence": 9087,
+      "chapter_label": "1KI 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "However, I didn’t believe the words until I came and my eyes had seen it. Behold, not even half was told me! Your wisdom and prosperity exceed the fame which I heard.",
+      "ko": "내가 그 말들을 믿지 아니하였더니 이제 와서 목도한즉 내게 말한 것은 절반도 못되니 당신의 지혜와 복이 나의 들은 소문에 지나도다",
+      "source_text_hash": "dd0416d01ef8acba76c1a081ed19ec536eabb80dfcf233b3ff92024dd19a7905",
+      "translation_text_hash": "7e5d2b8092f7fb6b22558fa7faf2e2fc1e704694d493a569d3664cf15b58c061",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 말들을 믿지 아니하였더니 이제 와서 목도한즉 내게 말한 것은 절반도 못되니 당신의 지혜와 복이 나의 들은 소문에 지나도다"
+      ],
+      "raw_text_hashes": [
+        "7e5d2b8092f7fb6b22558fa7faf2e2fc1e704694d493a569d3664cf15b58c061"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:8",
+      "sequence": 9088,
+      "chapter_label": "1KI 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Happy are your men, happy are these your servants who stand continually before you, who hear your wisdom.",
+      "ko": "복되도다 당신의 사람들이여 복되도다 당신의 이 신복들이여 항상 당신의 앞에 서서 당신의 지혜를 들음이로다",
+      "source_text_hash": "7367ecbb0e9c978fbb84a2ca668ad3952f8b21017b5db21bf4310854cdfa44cb",
+      "translation_text_hash": "c28a7f04098068096a99cf65a3ddaa612e29745067478e3ff7d8b79c82b2a1b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복되도다 당신의 사람들이여 복되도다 당신의 이 신복들이여 항상 당신의 앞에 서서 당신의 지혜를 들음이로다"
+      ],
+      "raw_text_hashes": [
+        "c28a7f04098068096a99cf65a3ddaa612e29745067478e3ff7d8b79c82b2a1b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:9",
+      "sequence": 9089,
+      "chapter_label": "1KI 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Blessed is the LORD your God, who delighted in you, to set you on the throne of Israel. Because the LORD loved Israel forever, therefore he made you king, to do justice and righteousness.”",
+      "ko": "당신의 하나님 여호와를 송축할찌로다 여호와께서 당신을 기뻐하사 이스라엘 위에 올리셨고 여호와께서 영영히 이스라엘을 사랑하시므로 당신을 세워 왕을 삼아 공과 의를 행하게 하셨도다 하고",
+      "source_text_hash": "09f194d247d8a97351ef6edfeb8cf726b3d0409646076757d41fb4840f88ddf5",
+      "translation_text_hash": "8fcc27dd0a343aabe0c7661831777dc7494cc538aa2fffc4aacae91100e57eec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 하나님 여호와를 송축할찌로다 여호와께서 당신을 기뻐하사 이스라엘 위에 올리셨고 여호와께서 영영히 이스라엘을 사랑하시므로 당신을 세워 왕을 삼아 공과 의를 행하게 하셨도다 하고"
+      ],
+      "raw_text_hashes": [
+        "8fcc27dd0a343aabe0c7661831777dc7494cc538aa2fffc4aacae91100e57eec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:10",
+      "sequence": 9090,
+      "chapter_label": "1KI 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "She gave the king one hundred twenty talents of gold, and a very great quantity of spices, and precious stones. Never again was there such an abundance of spices as these which the queen of Sheba gave to King Solomon.",
+      "ko": "이에 저가 금 일백 이십 달란트와 심히 많은 향품과 보석을 왕께 드렸으니 스바 여왕이 솔로몬왕께 드린 것처럼 많은 향품이 다시 오지 아니하였더라",
+      "source_text_hash": "1d5de0b2903a760a066d4d1e5eb1c38e536471505e2cc39729db5e381a50e9ef",
+      "translation_text_hash": "c78259b6f89eb2f7ea5326bb77e7232ebf20601b9a095ed95e806dd7570ff3c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저가 금 일백 이십 달란트와 심히 많은 향품과 보석을 왕께 드렸으니 스바 여왕이 솔로몬왕께 드린 것처럼 많은 향품이 다시 오지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "c78259b6f89eb2f7ea5326bb77e7232ebf20601b9a095ed95e806dd7570ff3c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:11",
+      "sequence": 9091,
+      "chapter_label": "1KI 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "The fleet of Hiram that brought gold from Ophir also brought in from Ophir great quantities of almug trees and precious stones.",
+      "ko": "[오빌에서부터 금을 실어온 히람의 배들이 오빌에서 많은 백단목과 보석을 운반하여 오매",
+      "source_text_hash": "749ad3f28a6d460ae10d63bea17e45ebaa8448efaafb8e2c7b34bdbf7880e85e",
+      "translation_text_hash": "36a8a1a2a9f4a349be0c665ca11aedc4330b535e9fab4b870d529d2f2afd9c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "[오빌에서부터 금을 실어온 히람의 배들이 오빌에서 많은 백단목과 보석을 운반하여 오매"
+      ],
+      "raw_text_hashes": [
+        "36a8a1a2a9f4a349be0c665ca11aedc4330b535e9fab4b870d529d2f2afd9c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:12",
+      "sequence": 9092,
+      "chapter_label": "1KI 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "The king made of the almug trees pillars for the LORD’s house and for the king’s house, harps also and stringed instruments for the singers; no such almug trees came or were seen to this day.",
+      "ko": "왕이 백단목으로 여호와의 전과 왕궁의 난간을 만들고 또 노래하는 자를 위하여 수금과 비파를 만들었으니 이같은 백단목은 전에도 온 일이 없었고 오늘까지도 보지 못하였더라]",
+      "source_text_hash": "275925f13191b7cd8522ff834c8269768c1ab77de197af3c1bdd08a6c6ec8142",
+      "translation_text_hash": "e3f781d74bd4516ce0a4801aaab9b763422333663f7b4e80c9aa7bf95798c099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 백단목으로 여호와의 전과 왕궁의 난간을 만들고 또 노래하는 자를 위하여 수금과 비파를 만들었으니 이같은 백단목은 전에도 온 일이 없었고 오늘까지도 보지 못하였더라]"
+      ],
+      "raw_text_hashes": [
+        "e3f781d74bd4516ce0a4801aaab9b763422333663f7b4e80c9aa7bf95798c099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:13",
+      "sequence": 9093,
+      "chapter_label": "1KI 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "King Solomon gave to the queen of Sheba all her desire, whatever she asked, in addition to that which Solomon gave her of his royal bounty. So she turned and went to her own land, she and her servants.",
+      "ko": "솔로몬왕이 왕의 규례대로 스바 여왕에게 물건을 준 외에 또 저의 소원대로 무릇 구하는 것을 주니 이에 저가 그 신복들로 더불어 본국으로 돌아갔더라",
+      "source_text_hash": "3838c069557d3bfc6941bb9b71fbe845e89d3f5e7b60d0252d7ac88296cd0b82",
+      "translation_text_hash": "7a025e829a4f555de34b4ef65a4be07bf19ea094a1614cf3e002bb479dee83b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 왕의 규례대로 스바 여왕에게 물건을 준 외에 또 저의 소원대로 무릇 구하는 것을 주니 이에 저가 그 신복들로 더불어 본국으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "7a025e829a4f555de34b4ef65a4be07bf19ea094a1614cf3e002bb479dee83b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:14",
+      "sequence": 9094,
+      "chapter_label": "1KI 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Now the weight of gold that came to Solomon in one year was six hundred sixty-six talents of gold,",
+      "ko": "솔로몬의 세입금의 중수가 육백 륙십 륙 금 달란트요",
+      "source_text_hash": "341fe069d2df1c022a9d04d1744550716b2a0bd7014dde97022b35beff421a44",
+      "translation_text_hash": "4ac352859e09373386a31380369800d3c9e075d1c6a739a302c1b3be86eb5f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 세입금의 중수가 육백 륙십 륙 금 달란트요"
+      ],
+      "raw_text_hashes": [
+        "4ac352859e09373386a31380369800d3c9e075d1c6a739a302c1b3be86eb5f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:15",
+      "sequence": 9095,
+      "chapter_label": "1KI 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "in addition to that which the traders brought, and the traffic of the merchants, and of all the kings of the mixed people, and of the governors of the country.",
+      "ko": "그 외에 또 상고와 무역하는 객상과 아라비아 왕들과 나라의 방백들에게서도 가져온지라",
+      "source_text_hash": "c4ee78b3dd58db735579ba67cbcd62029c3c97bbf1dc317324192b4f8ed73e6a",
+      "translation_text_hash": "38240b1dfa4f57d7202b86c8d194cf24ce6599e11fff36f96df430a5585359c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 외에 또 상고와 무역하는 객상과 아라비아 왕들과 나라의 방백들에게서도 가져온지라"
+      ],
+      "raw_text_hashes": [
+        "38240b1dfa4f57d7202b86c8d194cf24ce6599e11fff36f96df430a5585359c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:16",
+      "sequence": 9096,
+      "chapter_label": "1KI 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "King Solomon made two hundred bucklers of beaten gold; six hundred shekels of gold went to one buckler.",
+      "ko": "솔로몬왕이 쳐서 늘인 금으로 큰 방패 이백을 만들었으니 매 방패에 든 금이 육백 세겔이며",
+      "source_text_hash": "41b4e5ef74e6aff31e1017d08b243404a45ec3ae55fde160e5ad35f16b9adfe5",
+      "translation_text_hash": "bc03d40f527054678c0ced7001513b8bb0f75c228d96855ad5ab5309447dcd57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 쳐서 늘인 금으로 큰 방패 이백을 만들었으니 매 방패에 든 금이 육백 세겔이며"
+      ],
+      "raw_text_hashes": [
+        "bc03d40f527054678c0ced7001513b8bb0f75c228d96855ad5ab5309447dcd57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:17",
+      "sequence": 9097,
+      "chapter_label": "1KI 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "He made three hundred shields of beaten gold; three minas of gold went to one shield; and the king put them in the House of the Forest of Lebanon.",
+      "ko": "또 쳐서 늘인 금으로 작은 방패 삼백을 만들었으니 매 방패에 든 금이 삼 마네라 왕이 이것들을 레바논 나무 궁에 두었더라",
+      "source_text_hash": "7b62fd1b7ba58c0173b3b0b55231f961b1050d60240ce5d63a59100bdcffb8b1",
+      "translation_text_hash": "effe7ff1a98ba663d6afaf787b6d5647aea5394a2dd602ee534013eb5b7e0a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 쳐서 늘인 금으로 작은 방패 삼백을 만들었으니 매 방패에 든 금이 삼 마네라 왕이 이것들을 레바논 나무 궁에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "effe7ff1a98ba663d6afaf787b6d5647aea5394a2dd602ee534013eb5b7e0a31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:18",
+      "sequence": 9098,
+      "chapter_label": "1KI 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Moreover the king made a great throne of ivory, and overlaid it with the finest gold.",
+      "ko": "왕이 또 상아로 큰 보좌를 만들고 정금으로 입혔으니",
+      "source_text_hash": "2c126b85ec04590872dce87e9535956cb74359de47a117e73df0ab8821401ac2",
+      "translation_text_hash": "428b01394307b3f94c03418df260b4517ed02ada01bdc6c137a959dbf9e0b498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 상아로 큰 보좌를 만들고 정금으로 입혔으니"
+      ],
+      "raw_text_hashes": [
+        "428b01394307b3f94c03418df260b4517ed02ada01bdc6c137a959dbf9e0b498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:19",
+      "sequence": 9099,
+      "chapter_label": "1KI 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "There were six steps to the throne, and the top of the throne was round behind; and there were armrests on either side by the place of the seat, and two lions standing beside the armrests.",
+      "ko": "그 보좌에는 여섯 층계가 있고 보좌 뒤에 둥근 머리가 있고 앉는 자리 양편에는 팔걸이가 있고 팔걸이 곁에는 사자가 하나씩 섰으며",
+      "source_text_hash": "f08f46d7667c27ace25bdca2bfecd390032d518b9135668c452a0fe326765714",
+      "translation_text_hash": "97e9020c3d16bf2e30d3db3d5453e29d4d55e6e6ea6f398cc29abe427f2bbba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 보좌에는 여섯 층계가 있고 보좌 뒤에 둥근 머리가 있고 앉는 자리 양편에는 팔걸이가 있고 팔걸이 곁에는 사자가 하나씩 섰으며"
+      ],
+      "raw_text_hashes": [
+        "97e9020c3d16bf2e30d3db3d5453e29d4d55e6e6ea6f398cc29abe427f2bbba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:20",
+      "sequence": 9100,
+      "chapter_label": "1KI 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Twelve lions stood there on the one side and on the other on the six steps. Nothing like it was made in any kingdom.",
+      "ko": "또 열 두 사자가 있어 그 여섯 층계 좌우편에 섰으니 아무 나라에도 이같이 만든 것이 없었더라",
+      "source_text_hash": "e51e591a68acaef11fc3dc48b91c253c6ab0210dce1e903e120d8ca43a847ddf",
+      "translation_text_hash": "0f518275a77380f277234c8da596c6f6c0fafb798cd2db642dd02d33b1aecd5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 열 두 사자가 있어 그 여섯 층계 좌우편에 섰으니 아무 나라에도 이같이 만든 것이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "0f518275a77380f277234c8da596c6f6c0fafb798cd2db642dd02d33b1aecd5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:21",
+      "sequence": 9101,
+      "chapter_label": "1KI 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "All King Solomon’s drinking vessels were of gold, and all the vessels of the House of the Forest of Lebanon were of pure gold. None were of silver, because it was considered of little value in the days of Solomon.",
+      "ko": "솔로몬왕의 마시는 그릇은 다 금이요 레바논 나무 궁의 그릇들도 다 정금이라 은 기물이 없으니 솔로몬의 시대에 은을 귀히 여기지 아니함은",
+      "source_text_hash": "675cbdc2e7878eff18950061b680a7f9d4f641dcb773f610937b78854ec3251c",
+      "translation_text_hash": "bc389c4ad79700c233bf13963f508b0ca05f072285e221740d7c75856b79cdbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕의 마시는 그릇은 다 금이요 레바논 나무 궁의 그릇들도 다 정금이라 은 기물이 없으니 솔로몬의 시대에 은을 귀히 여기지 아니함은"
+      ],
+      "raw_text_hashes": [
+        "bc389c4ad79700c233bf13963f508b0ca05f072285e221740d7c75856b79cdbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:22",
+      "sequence": 9102,
+      "chapter_label": "1KI 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "For the king had a fleet of ships of Tarshish at sea with Hiram’s fleet. Once every three years the fleet of Tarshish came bringing gold, silver, ivory, apes, and peacocks.",
+      "ko": "왕이 바다에 다시스 배들을 두어 히람의 배와 함께 있게 하고 그 다시스 배로 삼년에 일차씩 금과 은과 상아와 잔나비와 공작을 실어 왔음이더라",
+      "source_text_hash": "cc662dccee593438087d25587a29e6df7d902fc3fa1474c9c163e854f56d5f86",
+      "translation_text_hash": "dff64e83a2af1129f82d6f25373588d65575f83368785c02853159378f6a5ef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 바다에 다시스 배들을 두어 히람의 배와 함께 있게 하고 그 다시스 배로 삼년에 일차씩 금과 은과 상아와 잔나비와 공작을 실어 왔음이더라"
+      ],
+      "raw_text_hashes": [
+        "dff64e83a2af1129f82d6f25373588d65575f83368785c02853159378f6a5ef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:23",
+      "sequence": 9103,
+      "chapter_label": "1KI 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "So King Solomon exceeded all the kings of the earth in riches and in wisdom.",
+      "ko": "솔로몬왕의 재산과 지혜가 천하 열왕보다 큰지라",
+      "source_text_hash": "9929482a1aa6e0a6bc068abaf580e4c30e7faf25969d4141546f09fe1ed89875",
+      "translation_text_hash": "004e9034eb53596cdfba96ecb3a5fc22867bd9137b7434dcaf727a8da82c2a56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕의 재산과 지혜가 천하 열왕보다 큰지라"
+      ],
+      "raw_text_hashes": [
+        "004e9034eb53596cdfba96ecb3a5fc22867bd9137b7434dcaf727a8da82c2a56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:24",
+      "sequence": 9104,
+      "chapter_label": "1KI 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "All the earth sought the presence of Solomon to hear his wisdom which God had put in his heart.",
+      "ko": "천하가 다 하나님께서 솔로몬의 마음에 주신 지혜를 들으며 그 얼굴을 보기 원하여",
+      "source_text_hash": "1e543f3bbeede833690007912ac212debf1114af13b1a03ccf8da264f9e6e5b2",
+      "translation_text_hash": "471727c9ae56af2be1de24bc7cc4431b997d26fea88ac56db33c99ff9080a43f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천하가 다 하나님께서 솔로몬의 마음에 주신 지혜를 들으며 그 얼굴을 보기 원하여"
+      ],
+      "raw_text_hashes": [
+        "471727c9ae56af2be1de24bc7cc4431b997d26fea88ac56db33c99ff9080a43f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:25",
+      "sequence": 9105,
+      "chapter_label": "1KI 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Year after year, every man brought his tribute, vessels of silver, vessels of gold, clothing, armor, spices, horses, and mules.",
+      "ko": "각기 예물을 가지고 왔으니 곧 은 그릇과 금 그릇과 의복과 갑옷과 향품과 말과 노새라 해마다 정한 수가 있었더라",
+      "source_text_hash": "91ec7e77fdd484765847bb31811049b731923207bf180a2d3eea4a7b5bcaabad",
+      "translation_text_hash": "44aafeb90f790e792c6f6d00eb0248012028604a80e99c5d896b1e45c4eb74a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각기 예물을 가지고 왔으니 곧 은 그릇과 금 그릇과 의복과 갑옷과 향품과 말과 노새라 해마다 정한 수가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "44aafeb90f790e792c6f6d00eb0248012028604a80e99c5d896b1e45c4eb74a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:26",
+      "sequence": 9106,
+      "chapter_label": "1KI 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Solomon gathered together chariots and horsemen. He had one thousand four hundred chariots and twelve thousand horsemen. He kept them in the chariot cities and with the king at Jerusalem.",
+      "ko": "솔로몬이 병거와 마병을 모으매 병거가 일천 사백이요 마병이 일만 이천이라 병거성에도 두고 예루살렘 왕에게도 두었으며",
+      "source_text_hash": "8f8b7a596525d82cd1d912d3f4ad92d94ca546b12599144ede5e26938972b213",
+      "translation_text_hash": "9f08e44cd523a16e0aceb576102fdadd523cbd0e7c48c573580aa904aee769ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 병거와 마병을 모으매 병거가 일천 사백이요 마병이 일만 이천이라 병거성에도 두고 예루살렘 왕에게도 두었으며"
+      ],
+      "raw_text_hashes": [
+        "9f08e44cd523a16e0aceb576102fdadd523cbd0e7c48c573580aa904aee769ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:27",
+      "sequence": 9107,
+      "chapter_label": "1KI 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "The king made silver as common as stones in Jerusalem, and cedars as common as the sycamore trees that are in the lowland.",
+      "ko": "왕이 예루살렘에서 은을 돌 같이 흔하게 하고 백향목을 평지의 뽕나무 같이 많게 하였더라",
+      "source_text_hash": "076eda4d3f60ffbf7e4ef49cc13d722c95827a6be856c3f3d1adecd1e1cfcd8e",
+      "translation_text_hash": "9fc2879c4a7fde7025c04bd28573c02a06e1f6c0098a85108e53cee4c405a3f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 예루살렘에서 은을 돌 같이 흔하게 하고 백향목을 평지의 뽕나무 같이 많게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "9fc2879c4a7fde7025c04bd28573c02a06e1f6c0098a85108e53cee4c405a3f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:28",
+      "sequence": 9108,
+      "chapter_label": "1KI 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "The horses which Solomon had were brought out of Egypt. The king’s merchants received them in droves, each drove at a price.",
+      "ko": "솔로몬의 말들은 애굽에서 내어왔으니 왕의 상고들이 떼로 정가하여 산 것이며",
+      "source_text_hash": "499fc83f9a4e970dbd821959ae004a9ee04c3c5ea75d5efe92fe4b84dcdd15d5",
+      "translation_text_hash": "b5704f072f72e6e747777cd3b8346c66a07e9479ad86b9dc68c96776e1cdcc1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 말들은 애굽에서 내어왔으니 왕의 상고들이 떼로 정가하여 산 것이며"
+      ],
+      "raw_text_hashes": [
+        "b5704f072f72e6e747777cd3b8346c66a07e9479ad86b9dc68c96776e1cdcc1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:10:29",
+      "sequence": 9109,
+      "chapter_label": "1KI 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "A chariot was imported from Egypt for six hundred shekels of silver, and a horse for one hundred fifty shekels; and so they exported them to all the kings of the Hittites and to the kings of Syria.",
+      "ko": "애굽에서 내어올린 병거는 하나에 은 육백 세겔이요 말은 일백 오십 세겔이라 이와 같이 헷 사람의 모든 왕과 아람 왕들을 위하여도 그 손으로 내어왔더라",
+      "source_text_hash": "b6d4363bb86fef1a227a94973be0ff7b558b8e9c1c82707ef102e772fb08533b",
+      "translation_text_hash": "65c34170cc2e0c079d3a3df0b01f0cf80a2d737673823d56c22ef59ec7d32d95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 내어올린 병거는 하나에 은 육백 세겔이요 말은 일백 오십 세겔이라 이와 같이 헷 사람의 모든 왕과 아람 왕들을 위하여도 그 손으로 내어왔더라"
+      ],
+      "raw_text_hashes": [
+        "65c34170cc2e0c079d3a3df0b01f0cf80a2d737673823d56c22ef59ec7d32d95"
+      ]
+    }
+  ]
+}

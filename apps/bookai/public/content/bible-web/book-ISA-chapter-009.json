@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:009",
+  "unit_ordinal": 688,
+  "unit_label": "ISA 9",
+  "book_code": "ISA",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:9:1",
+      "sequence": 17831,
+      "chapter_label": "ISA 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "But there shall be no more gloom for her who was in anguish. In the former time, he brought into contempt the land of Zebulun and the land of Naphtali; but in the latter time he has made it glorious, by the way of the sea, beyond the Jordan, Galilee of the nations.",
+      "ko": "전에 고통하던 자에게는 흑암이 없으리로다 옛적에는 여호와께서 스불론 땅과 납달리 땅으로 멸시를 당케 하셨더니 후에는 해변 길과 요단 저편 이방의 갈릴리를 영화롭게 하셨느니라",
+      "source_text_hash": "2b953a8923acb5cef6564aee5583ba3ca08365d38e84c6074cce3f93ec4f4944",
+      "translation_text_hash": "47b6f3a166439057902063d91c8ea8580976a4f751353cf25f6c8844c61934b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 고통하던 자에게는 흑암이 없으리로다 옛적에는 여호와께서 스불론 땅과 납달리 땅으로 멸시를 당케 하셨더니 후에는 해변 길과 요단 저편 이방의 갈릴리를 영화롭게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "47b6f3a166439057902063d91c8ea8580976a4f751353cf25f6c8844c61934b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:2",
+      "sequence": 17832,
+      "chapter_label": "ISA 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "The people who walked in darkness have seen a great light. The light has shined on those who lived in the land of the shadow of death.",
+      "ko": "흑암에 행하던 백성이 큰 빛을 보고 사망의 그늘진 땅에 거하던 자에게 빛이 비취도다",
+      "source_text_hash": "7abd1d3ace011a995de19c53d6493f9bb6866c958d3a2767182608568ce53082",
+      "translation_text_hash": "ae44fc85d76a7042b3ee1cc06fae13db351c523e88ccb5b2e23a82757e3b2477",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑암에 행하던 백성이 큰 빛을 보고 사망의 그늘진 땅에 거하던 자에게 빛이 비취도다"
+      ],
+      "raw_text_hashes": [
+        "ae44fc85d76a7042b3ee1cc06fae13db351c523e88ccb5b2e23a82757e3b2477"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:3",
+      "sequence": 17833,
+      "chapter_label": "ISA 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "You have multiplied the nation. You have increased their joy. They rejoice before you according to the joy in harvest, as men rejoice when they divide the plunder.",
+      "ko": "주께서 이 나라를 창성케 하시며 그 즐거움을 더하게 하셨으므로 추수하는 즐거움과 탈취물을 나누는 때의 즐거움 같이 그들이 주의 앞에서 즐거워하오니",
+      "source_text_hash": "5d81956d362ab4a72f6d710a334f2450b0b00edd50b85cd2264fe474d1367915",
+      "translation_text_hash": "704dea759801aa983fb4584df8cd643ef052ed6e32b960816b2ca01ce9e70a6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이 나라를 창성케 하시며 그 즐거움을 더하게 하셨으므로 추수하는 즐거움과 탈취물을 나누는 때의 즐거움 같이 그들이 주의 앞에서 즐거워하오니"
+      ],
+      "raw_text_hashes": [
+        "704dea759801aa983fb4584df8cd643ef052ed6e32b960816b2ca01ce9e70a6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:4",
+      "sequence": 17834,
+      "chapter_label": "ISA 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "For the yoke of his burden, and the staff of his shoulder, the rod of his oppressor, you have broken as in the day of Midian.",
+      "ko": "이는 그들의 무겁게 멘 멍에와 그 어깨의 채찍과 그 압제자의 막대기를 꺾으시되 미디안의 날과 같이 하셨음이니이다",
+      "source_text_hash": "3f8f0b0e67da9d0ff58fd975a1b9ad6f975b453742cd91c47c7f2727e7f573a7",
+      "translation_text_hash": "c936d2b3e32b0d2c0e1c1c582003436f6f7ff92cc8757e04165bd94c5967ac53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들의 무겁게 멘 멍에와 그 어깨의 채찍과 그 압제자의 막대기를 꺾으시되 미디안의 날과 같이 하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "c936d2b3e32b0d2c0e1c1c582003436f6f7ff92cc8757e04165bd94c5967ac53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:5",
+      "sequence": 17835,
+      "chapter_label": "ISA 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "For all the armor of the armed man in the noisy battle, and the garments rolled in blood, will be for burning, fuel for the fire.",
+      "ko": "어지러이 싸우는 군인의 갑옷과 피묻은 복장이 불에 섶 같이 살라지리니",
+      "source_text_hash": "e132a421171e2ccd7e44c598a04b13cc28ec2c85036dcc68d19bfc0cc1415511",
+      "translation_text_hash": "b9eef0928995a041a32d9f4748b9d8a18d06a48d0fcfbf574d7b97fad919e727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어지러이 싸우는 군인의 갑옷과 피묻은 복장이 불에 섶 같이 살라지리니"
+      ],
+      "raw_text_hashes": [
+        "b9eef0928995a041a32d9f4748b9d8a18d06a48d0fcfbf574d7b97fad919e727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:6",
+      "sequence": 17836,
+      "chapter_label": "ISA 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "For a child is born to us. A son is given to us; and the government will be on his shoulders. His name will be called Wonderful Counselor, Mighty God, Everlasting Father, Prince of Peace.",
+      "ko": "이는 한 아기가 우리에게 났고 한 아들을 우리에게 주신바 되었는데 그 어깨에는 정사를 메었고 그 이름은 기묘자라, 모사라, 전능하신 하나님이라, 영존하시는 아버지라, 평강의 왕이라 할것임이라",
+      "source_text_hash": "78d61143888238982cfa075741b359d0499b8f1afd63389ad6da58bd345b7a10",
+      "translation_text_hash": "9e056be31decc1356b66a117b9371768db048d9aa81179a9cc6a7f5f77bab02d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 한 아기가 우리에게 났고 한 아들을 우리에게 주신바 되었는데 그 어깨에는 정사를 메었고 그 이름은 기묘자라, 모사라, 전능하신 하나님이라, 영존하시는 아버지라, 평강의 왕이라 할것임이라"
+      ],
+      "raw_text_hashes": [
+        "9e056be31decc1356b66a117b9371768db048d9aa81179a9cc6a7f5f77bab02d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:7",
+      "sequence": 17837,
+      "chapter_label": "ISA 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Of the increase of his government and of peace there shall be no end, on David’s throne, and on his kingdom, to establish it, and to uphold it with justice and with righteousness from that time on, even forever. The zeal of the LORD of Armies will perform this.",
+      "ko": "그 정사와 평강의 더함이 무궁하며 또 다윗의 위에 앉아서 그 나라를 굳게 세우고 자금 이후 영원토록 공평과 정의로 그것을 보존하실 것이라 만군의 여호와의 열심이 이를 이루시리라",
+      "source_text_hash": "88808e4511b706916d8e7c90715cf6b352ae4cf694f86b3e63bdf8348d1b85d3",
+      "translation_text_hash": "456abe0026072f017ebc971dc04bb39aa8d770d67fb489d4207eaea8c836b6f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 정사와 평강의 더함이 무궁하며 또 다윗의 위에 앉아서 그 나라를 굳게 세우고 자금 이후 영원토록 공평과 정의로 그것을 보존하실 것이라 만군의 여호와의 열심이 이를 이루시리라"
+      ],
+      "raw_text_hashes": [
+        "456abe0026072f017ebc971dc04bb39aa8d770d67fb489d4207eaea8c836b6f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:8",
+      "sequence": 17838,
+      "chapter_label": "ISA 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "The Lord sent a word into Jacob, and it falls on Israel.",
+      "ko": "주께서 야곱에게 말씀을 보내시며 그것을 이스라엘에게 임하게 하셨은즉",
+      "source_text_hash": "1d26694164d3c0ee8673d858b6e8fc06ef7b7a13eeec768be48d23780b9cadd5",
+      "translation_text_hash": "baad66d500523a7d181258e26db39907c40bc4b1c67a3fa74270e5aa99ffd542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 야곱에게 말씀을 보내시며 그것을 이스라엘에게 임하게 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "baad66d500523a7d181258e26db39907c40bc4b1c67a3fa74270e5aa99ffd542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:9",
+      "sequence": 17839,
+      "chapter_label": "ISA 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "All the people will know, including Ephraim and the inhabitants of Samaria, who say in pride and in arrogance of heart,",
+      "ko": "모든 백성 곧 에브라임과 사마리아 거민이 알것이어늘 그들이 교만하고 완악한 마음으로 말하기를",
+      "source_text_hash": "fbea337f04e0d6ef93fb8edf7183b0eaba9df69a325900cde21fb30399714589",
+      "translation_text_hash": "b0e0827f8ae80645c4a1d67519ece207cf2df59c5a5463acc5deeec7028fd490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성 곧 에브라임과 사마리아 거민이 알것이어늘 그들이 교만하고 완악한 마음으로 말하기를"
+      ],
+      "raw_text_hashes": [
+        "b0e0827f8ae80645c4a1d67519ece207cf2df59c5a5463acc5deeec7028fd490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:10",
+      "sequence": 17840,
+      "chapter_label": "ISA 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "“The bricks have fallen, but we will build with cut stone. The sycamore fig trees have been cut down, but we will put cedars in their place.”",
+      "ko": "벽돌이 무너졌으나 우리는 다듬은 돌로 쌓고 뽕나무들이 찍혔으나 우리는 백향목으로 그것을 대신하리라 하도다",
+      "source_text_hash": "cfd0f37287ff77f226711e8c4b3fd8fff27047138b3e43f98da25c040ce86547",
+      "translation_text_hash": "03803312e156f5ddca8bb4d907a3f320a57cf1a91dc36b4c402fa3a101136b32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벽돌이 무너졌으나 우리는 다듬은 돌로 쌓고 뽕나무들이 찍혔으나 우리는 백향목으로 그것을 대신하리라 하도다"
+      ],
+      "raw_text_hashes": [
+        "03803312e156f5ddca8bb4d907a3f320a57cf1a91dc36b4c402fa3a101136b32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:11",
+      "sequence": 17841,
+      "chapter_label": "ISA 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore the LORD will set up on high against him the adversaries of Rezin, and will stir up his enemies,",
+      "ko": "그러므로 여호와께서 르신의 대적을 일으켜 그를 치게 하시며 그 원수들을 격동시키시리니",
+      "source_text_hash": "38be54bbba0f0dc32bf7ecbcda272a48c95ddb6173b667bb5e17f0550e693f01",
+      "translation_text_hash": "7fbc2253bb5ae09d2af89a1aeff7db024b7a270a8f3e9eda42f522e97d7995ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 르신의 대적을 일으켜 그를 치게 하시며 그 원수들을 격동시키시리니"
+      ],
+      "raw_text_hashes": [
+        "7fbc2253bb5ae09d2af89a1aeff7db024b7a270a8f3e9eda42f522e97d7995ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:12",
+      "sequence": 17842,
+      "chapter_label": "ISA 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "The Syrians in front, and the Philistines behind; and they will devour Israel with open mouth. For all this, his anger is not turned away, but his hand is stretched out still.",
+      "ko": "앞에는 아람 사람이요 뒤에는 블레셋 사람이라 그들이 그 입을 벌려 이스라엘을 삼키리라 그럴찌라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라",
+      "source_text_hash": "cac31946f78ae252992b8dea47df6e70130d185cc48da954c427f826dc7f0249",
+      "translation_text_hash": "5781810f4b1e2f685bdec0f0c43866e999e735f51e29f1a6e3af9f816ddbd23e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞에는 아람 사람이요 뒤에는 블레셋 사람이라 그들이 그 입을 벌려 이스라엘을 삼키리라 그럴찌라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라"
+      ],
+      "raw_text_hashes": [
+        "5781810f4b1e2f685bdec0f0c43866e999e735f51e29f1a6e3af9f816ddbd23e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:13",
+      "sequence": 17843,
+      "chapter_label": "ISA 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Yet the people have not turned to him who struck them, neither have they sought the LORD of Armies.",
+      "ko": "이 백성이 오히려 자기들을 치시는 자에게로 돌아오지 아니하며 만군의 여호와를 찾지 아니하도다",
+      "source_text_hash": "0e5dd749d1307f7b63007eac8de3528ab256be7f7c48771fdaf993524946752a",
+      "translation_text_hash": "f9348a3961f4c9f080b32025f9db9e4263c30005a8df47d7f19a8bac67e1c881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 오히려 자기들을 치시는 자에게로 돌아오지 아니하며 만군의 여호와를 찾지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "f9348a3961f4c9f080b32025f9db9e4263c30005a8df47d7f19a8bac67e1c881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:14",
+      "sequence": 17844,
+      "chapter_label": "ISA 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore the LORD will cut off from Israel head and tail, palm branch and reed, in one day.",
+      "ko": "이러므로 여호와께서 하루 사이에 이스라엘 중에서 머리와 꼬리며 종려가지와 갈대를 끊으시리니",
+      "source_text_hash": "7912a70c9d44c3faf620ee4f41520eed40302732d4252ab57fdb65ca4b5b7d76",
+      "translation_text_hash": "64ddab5fab2b89d5fa7e3b48f5c6390765ed193d2561ec826361abc143bd1264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여호와께서 하루 사이에 이스라엘 중에서 머리와 꼬리며 종려가지와 갈대를 끊으시리니"
+      ],
+      "raw_text_hashes": [
+        "64ddab5fab2b89d5fa7e3b48f5c6390765ed193d2561ec826361abc143bd1264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:15",
+      "sequence": 17845,
+      "chapter_label": "ISA 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "The elder and the honorable man is the head, and the prophet who teaches lies is the tail.",
+      "ko": "머리는 곧 장로와 존귀한 자요 꼬리는 곧 거짓말을 가르치는 선지자라",
+      "source_text_hash": "6d8a21b196db45c1c4419bf772c272060c62955ef466479c78acfe67f571f64f",
+      "translation_text_hash": "143868e2b5775f4e26f2659230810da4e86dc7993d08c3e6498c27872b9f9c7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리는 곧 장로와 존귀한 자요 꼬리는 곧 거짓말을 가르치는 선지자라"
+      ],
+      "raw_text_hashes": [
+        "143868e2b5775f4e26f2659230810da4e86dc7993d08c3e6498c27872b9f9c7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:16",
+      "sequence": 17846,
+      "chapter_label": "ISA 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "For those who lead this people lead them astray; and those who are led by them are destroyed.",
+      "ko": "백성을 인도하는 자가 그들로 미혹케 하니 인도를 받는 자가 멸망을 당하는도다",
+      "source_text_hash": "fa714b6ae5db45f13cb682ea491b46c9c3c0ded4f7bf5aefb7d498acdc8e8814",
+      "translation_text_hash": "83fb6713a008d4b0463fc0a677870c2fd31403204eab4cddf58358fa9165a0e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성을 인도하는 자가 그들로 미혹케 하니 인도를 받는 자가 멸망을 당하는도다"
+      ],
+      "raw_text_hashes": [
+        "83fb6713a008d4b0463fc0a677870c2fd31403204eab4cddf58358fa9165a0e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:17",
+      "sequence": 17847,
+      "chapter_label": "ISA 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore the Lord will not rejoice over their young men, neither will he have compassion on their fatherless and widows; for everyone is profane and an evildoer, and every mouth speaks folly. For all this his anger is not turned away, but his hand is stretched out still.",
+      "ko": "이 백성이 각기 설만하며 악을 행하며 입으로 망령되이 말하니 그러므로 주께서 그 장정을 기뻐 아니하시며 그 고아와 과부를 긍휼히 여기지 아니하시리라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라",
+      "source_text_hash": "ca481da52f20e8044d6044b37d5671d27eb7179e501bdccfb034ff34f07837f9",
+      "translation_text_hash": "0eef1df37757f17ff30f4f36656c62b54d19df776ab7bd277cbd2ddb0a537d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 각기 설만하며 악을 행하며 입으로 망령되이 말하니 그러므로 주께서 그 장정을 기뻐 아니하시며 그 고아와 과부를 긍휼히 여기지 아니하시리라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라"
+      ],
+      "raw_text_hashes": [
+        "0eef1df37757f17ff30f4f36656c62b54d19df776ab7bd277cbd2ddb0a537d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:18",
+      "sequence": 17848,
+      "chapter_label": "ISA 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "For wickedness burns like a fire. It devours the briers and thorns; yes, it kindles in the thickets of the forest, and they roll upward in a column of smoke.",
+      "ko": "대저 악행은 불 태우는것 같으니 곧 질려와 형극을 삼키며 빽빽한 수풀을 살라서 연기로 위로 올라가게 함과 같은 것이라",
+      "source_text_hash": "c2efaf7db7bbd3d66145e322acbc0e5958d96fbe8973d9c8735255e3bdf24343",
+      "translation_text_hash": "0612f089a6cc738070976ced5a87bc3b54db4e5f335dddb15ba4904c7a78cb01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 악행은 불 태우는것 같으니 곧 질려와 형극을 삼키며 빽빽한 수풀을 살라서 연기로 위로 올라가게 함과 같은 것이라"
+      ],
+      "raw_text_hashes": [
+        "0612f089a6cc738070976ced5a87bc3b54db4e5f335dddb15ba4904c7a78cb01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:19",
+      "sequence": 17849,
+      "chapter_label": "ISA 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Through the LORD of Armies’ wrath, the land is burned up; and the people are the fuel for the fire. No one spares his brother.",
+      "ko": "만군의 여호와의 진노로 인하여 이 땅이 소화되리니 백성은 불에 타는 섶나무와 같을 것이라 사람이 그 형제를 아끼지 아니하며",
+      "source_text_hash": "bf938fc2d6d9afa714cfa9f04bbf09eb138c599a3501a02ae0197a084bf6a72a",
+      "translation_text_hash": "783ef59a068c4d8d6ec45c976083169642ca492d3460a5d6b0ec58129a435f9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 진노로 인하여 이 땅이 소화되리니 백성은 불에 타는 섶나무와 같을 것이라 사람이 그 형제를 아끼지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "783ef59a068c4d8d6ec45c976083169642ca492d3460a5d6b0ec58129a435f9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:20",
+      "sequence": 17850,
+      "chapter_label": "ISA 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "One will devour on the right hand, and be hungry; and he will eat on the left hand, and they will not be satisfied. Everyone will eat the flesh of his own arm:",
+      "ko": "우편으로 움킬지라도 주리고 좌편으로 먹을지라도 배부르지 못하여 각각 자기 팔의 고기를 먹을 것이며",
+      "source_text_hash": "8c36b82e3174d1594f67fa60cc4a98667ae2909dbc882e5c507af3c01f8b53f4",
+      "translation_text_hash": "97710b5467ba6023e835a61152e0ff82a0338350f7fd90a49a2de4da5691639c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우편으로 움킬지라도 주리고 좌편으로 먹을지라도 배부르지 못하여 각각 자기 팔의 고기를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "97710b5467ba6023e835a61152e0ff82a0338350f7fd90a49a2de4da5691639c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:9:21",
+      "sequence": 17851,
+      "chapter_label": "ISA 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Manasseh eating Ephraim and Ephraim eating Manasseh, and they together will be against Judah. For all this his anger is not turned away, but his hand is stretched out still.",
+      "ko": "므낫세는 에브라임을, 에브라임은 므낫세를 먹을 것이요 또 그들이 합하여 유다를 치리라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라",
+      "source_text_hash": "efbd522255d67eff7188ac4db2116d3a021f09094090c46fce6d22cd3bf21d9a",
+      "translation_text_hash": "80602fda80c74661d2c7b89a4207ecf58ca1ec16245b2192ebf8eff67a4778ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세는 에브라임을, 에브라임은 므낫세를 먹을 것이요 또 그들이 합하여 유다를 치리라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라"
+      ],
+      "raw_text_hashes": [
+        "80602fda80c74661d2c7b89a4207ecf58ca1ec16245b2192ebf8eff67a4778ee"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:116",
+  "unit_ordinal": 594,
+  "unit_label": "PSA 116",
+  "book_code": "PSA",
+  "chapter_number": 116,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:116:1",
+      "sequence": 15850,
+      "chapter_label": "PSA 116",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 1
+        }
+      ],
+      "en": "I love the LORD, because he listens to my voice, and my cries for mercy.",
+      "ko": "여호와께서 내 음성과 내 간구를 들으시므로 내가 저를 사랑하는도다",
+      "source_text_hash": "7be887aebfc471f2f6e7e7f833c9fe66b32e84bddfe21d1fcd6a71f004046366",
+      "translation_text_hash": "85cf2fd84d7263946a3f3dff923d2f9bbb90bd059b39004f46ebf4ce1f8a1397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 음성과 내 간구를 들으시므로 내가 저를 사랑하는도다"
+      ],
+      "raw_text_hashes": [
+        "85cf2fd84d7263946a3f3dff923d2f9bbb90bd059b39004f46ebf4ce1f8a1397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:2",
+      "sequence": 15851,
+      "chapter_label": "PSA 116",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 2
+        }
+      ],
+      "en": "Because he has turned his ear to me, therefore I will call on him as long as I live.",
+      "ko": "그 귀를 내게 기울이셨으므로 내가 평생에 기도하리로다",
+      "source_text_hash": "7edf8da31b093666b3719e4f2bc6a142792141ce398732296323d8eed7d65455",
+      "translation_text_hash": "545ae8c010dc1a5119b6bdd21bfbfe04397e884cc9c61eec3e9a227acb195c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 귀를 내게 기울이셨으므로 내가 평생에 기도하리로다"
+      ],
+      "raw_text_hashes": [
+        "545ae8c010dc1a5119b6bdd21bfbfe04397e884cc9c61eec3e9a227acb195c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:3",
+      "sequence": 15852,
+      "chapter_label": "PSA 116",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 3
+        }
+      ],
+      "en": "The cords of death surrounded me, the pains of Sheol got a hold of me. I found trouble and sorrow.",
+      "ko": "사망의 줄이 나를 두르고 음부의 고통이 내게 미치므로 내가 환난과 슬픔을 만났을 때에",
+      "source_text_hash": "720a4c69d7a1ef32342fdf549df632bad0e6d532c7cf4bb3618c78917d54bc64",
+      "translation_text_hash": "bf3f2b13b951c9fb2db4e0532d247edde8a097cd13d25b8617c7b3da0e151499",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망의 줄이 나를 두르고 음부의 고통이 내게 미치므로 내가 환난과 슬픔을 만났을 때에"
+      ],
+      "raw_text_hashes": [
+        "bf3f2b13b951c9fb2db4e0532d247edde8a097cd13d25b8617c7b3da0e151499"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:4",
+      "sequence": 15853,
+      "chapter_label": "PSA 116",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 4
+        }
+      ],
+      "en": "Then I called on the LORD’s name: “LORD, I beg you, deliver my soul.”",
+      "ko": "내가 여호와의 이름으로 기도하기를 여호와여 주께 구하오니 내 영혼을 건지소서 하였도다",
+      "source_text_hash": "c02817d62189d4f7cbfcb4ba341564cb6357ef4eeaeb64741b6cb68c0b976cda",
+      "translation_text_hash": "0cd275e072f84144c6ce1716d5129f7a0b42ab4cce64958d46e9a9d3239d791a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와의 이름으로 기도하기를 여호와여 주께 구하오니 내 영혼을 건지소서 하였도다"
+      ],
+      "raw_text_hashes": [
+        "0cd275e072f84144c6ce1716d5129f7a0b42ab4cce64958d46e9a9d3239d791a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:5",
+      "sequence": 15854,
+      "chapter_label": "PSA 116",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD is gracious and righteous. Yes, our God is merciful.",
+      "ko": "여호와는 은혜로우시며 의로우시며 우리 하나님은 자비하시도다",
+      "source_text_hash": "9ae03c88d0d4f1a5a701c92a6235cf57a1ea0df3774bdef0181e43730bb05dfc",
+      "translation_text_hash": "82fea514c13d991350e820977786e804535894148c4e92a77e0bfc99bb73a2a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 은혜로우시며 의로우시며 우리 하나님은 자비하시도다"
+      ],
+      "raw_text_hashes": [
+        "82fea514c13d991350e820977786e804535894148c4e92a77e0bfc99bb73a2a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:6",
+      "sequence": 15855,
+      "chapter_label": "PSA 116",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD preserves the simple. I was brought low, and he saved me.",
+      "ko": "여호와께서는 어리석은 자를 보존하시나니 내가 낮게 될 때에 나를 구원하셨도다",
+      "source_text_hash": "24fdd1afb938f6bdef488ade5fe48c99af86b9a3c8d3c12cb17606d2d622a88b",
+      "translation_text_hash": "8d7b6fcc825c0ccf6a91184d2f04e49ebd5bf42afed5122b76bc24c06607c3e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 어리석은 자를 보존하시나니 내가 낮게 될 때에 나를 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "8d7b6fcc825c0ccf6a91184d2f04e49ebd5bf42afed5122b76bc24c06607c3e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:7",
+      "sequence": 15856,
+      "chapter_label": "PSA 116",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 7
+        }
+      ],
+      "en": "Return to your rest, my soul, for the LORD has dealt bountifully with you.",
+      "ko": "내 영혼아 네 평안함에 돌아갈지어다 여호와께서 너를 후대하심이로다",
+      "source_text_hash": "512307bd4885a2972f9067a9bda43349aadaf5023968d658eb9f34bded9cf5ea",
+      "translation_text_hash": "249ee2bdda2321297262c615492dfd581581894648911d6fd10c52f725ec6f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 네 평안함에 돌아갈지어다 여호와께서 너를 후대하심이로다"
+      ],
+      "raw_text_hashes": [
+        "249ee2bdda2321297262c615492dfd581581894648911d6fd10c52f725ec6f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:8",
+      "sequence": 15857,
+      "chapter_label": "PSA 116",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 8
+        }
+      ],
+      "en": "For you have delivered my soul from death, my eyes from tears, and my feet from falling.",
+      "ko": "주께서 내 영혼을 사망에서, 내 눈을 눈물에서, 내 발을 넘어짐에서 건지셨나이다",
+      "source_text_hash": "f3db5bc0dae39e1852f913019dc87deb72ea97700de5aa4bdea765af63421ed7",
+      "translation_text_hash": "f0370b024e1b991c07671214e23ed5cafc66eca5b4aeb057a053ef391db47b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 영혼을 사망에서, 내 눈을 눈물에서, 내 발을 넘어짐에서 건지셨나이다"
+      ],
+      "raw_text_hashes": [
+        "f0370b024e1b991c07671214e23ed5cafc66eca5b4aeb057a053ef391db47b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:9",
+      "sequence": 15858,
+      "chapter_label": "PSA 116",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 9
+        }
+      ],
+      "en": "I will walk before the LORD in the land of the living.",
+      "ko": "내가 생존 세계에서 여호와 앞에 행하리로다",
+      "source_text_hash": "9362c68b3f574c62ea5e18d103a3136efbd4fe0a96f9e34f60672dbd9d105c03",
+      "translation_text_hash": "44e10912fc18258d918fa51ed99a0da663cfe0df27574b16e5d2022c2be50a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 생존 세계에서 여호와 앞에 행하리로다"
+      ],
+      "raw_text_hashes": [
+        "44e10912fc18258d918fa51ed99a0da663cfe0df27574b16e5d2022c2be50a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:10",
+      "sequence": 15859,
+      "chapter_label": "PSA 116",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 10
+        }
+      ],
+      "en": "I believed, therefore I said, “I was greatly afflicted.”",
+      "ko": "내가 믿는고로 말하리라 내가 큰 곤란을 당하였도다",
+      "source_text_hash": "c093952b6aa322482e2ac5662bb37ccb03023b656ae1e9d9620c815fc82b7614",
+      "translation_text_hash": "f57e33014f4c8199553e111de5cec5f2f48e2c804efab5758122e0a8a3b7f65b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 믿는고로 말하리라 내가 큰 곤란을 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "f57e33014f4c8199553e111de5cec5f2f48e2c804efab5758122e0a8a3b7f65b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:11",
+      "sequence": 15860,
+      "chapter_label": "PSA 116",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 11
+        }
+      ],
+      "en": "I said in my haste, “All people are liars.”",
+      "ko": "내가 경겁 중에 이르기를 모든 사람은 거짓말장이라 하였도다",
+      "source_text_hash": "d936e1627b2398f8d191d7e5454ebc7ad001ea454d09def67e7b4fd7b84193a8",
+      "translation_text_hash": "ce405f31b202a016b8fe81f6fa8fcff7e4eedfa595d9acdcf30ae7b57c9c7dbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 경겁 중에 이르기를 모든 사람은 거짓말장이라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "ce405f31b202a016b8fe81f6fa8fcff7e4eedfa595d9acdcf30ae7b57c9c7dbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:12",
+      "sequence": 15861,
+      "chapter_label": "PSA 116",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 12
+        }
+      ],
+      "en": "What will I give to the LORD for all his benefits toward me?",
+      "ko": "여호와께서 내게 주신 모든 은혜를 무엇으로 보답할꼬",
+      "source_text_hash": "27c06dae47a3a55f273a77de89b6ebfd12d76d454bd9ef42e862ae8812d2d257",
+      "translation_text_hash": "d7012d753e2d965bdb9829344d40f107c1026d076967c26a50bf76949de597c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 주신 모든 은혜를 무엇으로 보답할꼬"
+      ],
+      "raw_text_hashes": [
+        "d7012d753e2d965bdb9829344d40f107c1026d076967c26a50bf76949de597c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:13",
+      "sequence": 15862,
+      "chapter_label": "PSA 116",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 13
+        }
+      ],
+      "en": "I will take the cup of salvation, and call on the LORD’s name.",
+      "ko": "내가 구원의 잔을 들고 여호와의 이름을 부르며",
+      "source_text_hash": "8b8bd47a73cac8fb48c31e6ef5490884f6c376acdf79d0cc3c1d72c0e7a82bbc",
+      "translation_text_hash": "df1df8e63e1718d3314dc7da43a649f11c59fec8957e9b0dbf3551917acf0c82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 구원의 잔을 들고 여호와의 이름을 부르며"
+      ],
+      "raw_text_hashes": [
+        "df1df8e63e1718d3314dc7da43a649f11c59fec8957e9b0dbf3551917acf0c82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:14",
+      "sequence": 15863,
+      "chapter_label": "PSA 116",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 14
+        }
+      ],
+      "en": "I will pay my vows to the LORD, yes, in the presence of all his people.",
+      "ko": "여호와의 모든 백성 앞에서 나의 서원을 여호와께 갚으리로다",
+      "source_text_hash": "231b0b5ae148e70a15473ba1372bd938ddfdaa6595ec24139f18c164746568af",
+      "translation_text_hash": "52149cb332fabd0181e503ae1cc4e2aa206591d1e9633bad88d32fafee948e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 모든 백성 앞에서 나의 서원을 여호와께 갚으리로다"
+      ],
+      "raw_text_hashes": [
+        "52149cb332fabd0181e503ae1cc4e2aa206591d1e9633bad88d32fafee948e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:15",
+      "sequence": 15864,
+      "chapter_label": "PSA 116",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 15
+        }
+      ],
+      "en": "Precious in the LORD’s sight is the death of his saints.",
+      "ko": "성도의 죽는 것을 여호와께서 귀중히 보시는도다",
+      "source_text_hash": "b0dbe8d4f06f7c83b21e09fc74917874ed86651cf82ba4c83f4c4bc5eed63326",
+      "translation_text_hash": "88c199c54e542546a7e6a548a940f4e47336c62f600e9eb379d5e6788802fcfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도의 죽는 것을 여호와께서 귀중히 보시는도다"
+      ],
+      "raw_text_hashes": [
+        "88c199c54e542546a7e6a548a940f4e47336c62f600e9eb379d5e6788802fcfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:16",
+      "sequence": 15865,
+      "chapter_label": "PSA 116",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 16
+        }
+      ],
+      "en": "LORD, truly I am your servant. I am your servant, the son of your servant girl. You have freed me from my chains.",
+      "ko": "여호와여 나는 진실로 주의 종이요 주의 여종의 아들 곧 주의 종이라 주께서 나의 결박을 푸셨나이다",
+      "source_text_hash": "31082dbb98e6c056e1b0c4a21664b02bb3595cd37f8b5bda1d44502593438177",
+      "translation_text_hash": "85c894a31e4584fbfe8a79d8a0763c22540952b99a6b33bed28ae604b6af0858",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나는 진실로 주의 종이요 주의 여종의 아들 곧 주의 종이라 주께서 나의 결박을 푸셨나이다"
+      ],
+      "raw_text_hashes": [
+        "85c894a31e4584fbfe8a79d8a0763c22540952b99a6b33bed28ae604b6af0858"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:17",
+      "sequence": 15866,
+      "chapter_label": "PSA 116",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 17
+        }
+      ],
+      "en": "I will offer to you the sacrifice of thanksgiving, and will call on the LORD’s name.",
+      "ko": "내가 주께 감사제를 드리고 여호와의 이름을 부르리이다",
+      "source_text_hash": "72d37eba7885788a25ca19b4375f5e12193b4d77c644e057685833f3fd1fc97b",
+      "translation_text_hash": "8ece6e81ba4cfda9f33f0cc82c88453fed2f35e5745da0d0b74b840863073a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 감사제를 드리고 여호와의 이름을 부르리이다"
+      ],
+      "raw_text_hashes": [
+        "8ece6e81ba4cfda9f33f0cc82c88453fed2f35e5745da0d0b74b840863073a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:18",
+      "sequence": 15867,
+      "chapter_label": "PSA 116",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 18
+        }
+      ],
+      "en": "I will pay my vows to the LORD, yes, in the presence of all his people,",
+      "ko": "내가 여호와의 모든 백성 앞에서 나의 서원을 여호와께 갚을찌라",
+      "source_text_hash": "edb23e33e38ab2280ef8b25b3b1d59ea1c05e65c36ea28beb51bebc43b47500c",
+      "translation_text_hash": "49c17715e3b62875bae5fa8f6dabddfb8656994ca35132567937c9abe6c844be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와의 모든 백성 앞에서 나의 서원을 여호와께 갚을찌라"
+      ],
+      "raw_text_hashes": [
+        "49c17715e3b62875bae5fa8f6dabddfb8656994ca35132567937c9abe6c844be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:116:19",
+      "sequence": 15868,
+      "chapter_label": "PSA 116",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 116,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 116,
+          "verse": 19
+        }
+      ],
+      "en": "in the courts of the LORD’s house, in the middle of you, Jerusalem. Praise the LORD!",
+      "ko": "예루살렘아, 네 가운데서, 여호와의 전 정에서 내가 갚으리로다 할렐루야",
+      "source_text_hash": "60cafdc75e15b9c17b88dcce5de90428327257923e575aeadc1045bd9a6bb382",
+      "translation_text_hash": "a823fa6a885bd039ef37bd9dc6207002f58b1f98b7b87f5eea99ee4e4dd99526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아, 네 가운데서, 여호와의 전 정에서 내가 갚으리로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "a823fa6a885bd039ef37bd9dc6207002f58b1f98b7b87f5eea99ee4e4dd99526"
+      ]
+    }
+  ]
+}

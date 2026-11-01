@@ -25,17 +25,21 @@ from typing import Any
 
 import httpx
 from padiem_control_plane import AuthSessionSnapshot, SubjectType
+from starlette.responses import FileResponse
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
-from .app_factory import create_app
+from .app_factory import STATIC_DIR, create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
+from .cpython_aes_gcm import CPythonAesGcmPort
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
 from .control_plane_identity_shadow import D1IdentityShadowStore
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
-from .local_r2 import LocalDiskR2
+from .local_r2 import ThreadedLocalDiskR2
 from .local_service_bridge import (
     HttpRpcBinding,
     LocalB66PdfRendererClient,
@@ -221,8 +225,8 @@ def build_app():
     if applied:
         print(f"[local] migrations applied: {applied}")
 
-    db = SqliteD1(connection)
-    r2 = LocalDiskR2(data_dir / "objects")
+    db = SqliteD1(connection, threaded=True)
+    r2 = ThreadedLocalDiskR2(data_dir / "objects")
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
     # configured origin+secret pair builds one; a half-configured pair is a
@@ -256,6 +260,7 @@ def build_app():
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
         d1_binding=db,
+        custom_credential_cipher=CPythonAesGcmPort(),
         r2_binding=r2,
         project_file_store=D1ProjectFileStore(db),
         saved_output_store=D1SavedOutputStore(db),
@@ -265,7 +270,24 @@ def build_app():
         b66_pdf_renderer_client=pdf_renderer,
     )
 
-    # Reuse the Worker's D1-backed stores on the local SQLite facade.
+    # Match the Worker's staged entry layout while keeping the council app as
+    # the sole source. The installer checks the checkout contains these assets.
+    council_static = Path(__file__).resolve().parents[2] / "padiem-council-apps" / "static"
+
+    async def council_entry(request):
+        return FileResponse(council_static / "index.html")
+
+    async def councillor_entry(request):
+        return FileResponse(STATIC_DIR / "councillor" / "councillor.html")
+
+    static_index = next(i for i, route in enumerate(app.router.routes)
+                        if isinstance(route, Mount) and route.name == "static")
+    app.router.routes[static_index:static_index] = [
+        Route("/apps/council/", council_entry, methods=["GET"]),
+        Mount("/apps/council/static", app=StaticFiles(directory=str(council_static)), name="council-assets"),
+        Route("/councillor/", councillor_entry, methods=["GET"]),
+    ]
+
     # The explicit COM2 queue below replaces them when that backend is selected.
     from .mesh_device_presence_store import D1MeshDevicePresenceStore
     from .pc_device_pairing_store import D1PcPairingStore

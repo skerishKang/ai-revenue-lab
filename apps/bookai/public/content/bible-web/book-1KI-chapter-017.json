@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:017",
+  "unit_ordinal": 308,
+  "unit_label": "1KI 17",
+  "book_code": "1KI",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:17:1",
+      "sequence": 9319,
+      "chapter_label": "1KI 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Elijah the Tishbite, who was one of the settlers of Gilead, said to Ahab, “As the LORD, the God of Israel, lives, before whom I stand, there shall not be dew nor rain these years, but according to my word.”",
+      "ko": "길르앗에 우거하는 자 중에 디셉 사람 엘리야가 아합에게 고하되 나의 섬기는 이스라엘 하나님 여호와의 사심을 가리켜 맹세하노니 내 말이 없으면 수년 동안 우로가 있지 아니하리라 하니라",
+      "source_text_hash": "852f450b4220aedd9da5eccf62d4c04cded51b4846f155a3e46055d7f58f26ea",
+      "translation_text_hash": "28501e342d42dac0154422cb405d0a41a58950a2aef9f79e4aa42a3d8054165a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗에 우거하는 자 중에 디셉 사람 엘리야가 아합에게 고하되 나의 섬기는 이스라엘 하나님 여호와의 사심을 가리켜 맹세하노니 내 말이 없으면 수년 동안 우로가 있지 아니하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "28501e342d42dac0154422cb405d0a41a58950a2aef9f79e4aa42a3d8054165a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:2",
+      "sequence": 9320,
+      "chapter_label": "1KI 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Then the LORD’s word came to him, saying,",
+      "ko": "여호와의 말씀이 엘리야에게 임하여 가라사대",
+      "source_text_hash": "2563e4b0191232a320ea699b0da4762a10b11c4009d0f1fa8864270d60d14a37",
+      "translation_text_hash": "cc5c51e847af9792d521c16ff5c660a5c93ecfbdf900b631aaef9aab7b797770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 엘리야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "cc5c51e847af9792d521c16ff5c660a5c93ecfbdf900b631aaef9aab7b797770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:3",
+      "sequence": 9321,
+      "chapter_label": "1KI 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "“Go away from here, turn eastward, and hide yourself by the brook Cherith, that is before the Jordan.",
+      "ko": "너는 여기서 떠나 동으로 가서 요단 앞 그릿 시냇가에 숨고",
+      "source_text_hash": "72a3647304206d376dfb8063e13e03986ab4c2d808c18b9cfafe3676c057f440",
+      "translation_text_hash": "ed8fbd165e36127eb7186bde91511591cc2af6beca111c0a0957effb2944a8a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여기서 떠나 동으로 가서 요단 앞 그릿 시냇가에 숨고"
+      ],
+      "raw_text_hashes": [
+        "ed8fbd165e36127eb7186bde91511591cc2af6beca111c0a0957effb2944a8a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:4",
+      "sequence": 9322,
+      "chapter_label": "1KI 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "You shall drink from the brook. I have commanded the ravens to feed you there.”",
+      "ko": "그 시냇물을 마시라 내가 까마귀들을 명하여 거기서 너를 먹이게 하리라",
+      "source_text_hash": "af12d09c9980b15d1607fd362aad9cae3131141f79082b20345ec508dba8ab53",
+      "translation_text_hash": "b5a968fa2f9bb0a44a008957b087e23b613960c64bc2e3cb0e4f265527fa6ac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시냇물을 마시라 내가 까마귀들을 명하여 거기서 너를 먹이게 하리라"
+      ],
+      "raw_text_hashes": [
+        "b5a968fa2f9bb0a44a008957b087e23b613960c64bc2e3cb0e4f265527fa6ac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:5",
+      "sequence": 9323,
+      "chapter_label": "1KI 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "So he went and did according to the LORD’s word, for he went and lived by the brook Cherith that is before the Jordan.",
+      "ko": "저가 여호와의 말씀과 같이 하여 곧 가서 요단 앞 그릿 시냇가에 머물매",
+      "source_text_hash": "5b1c94dab58da4c9704fbb78afe4661f41d6283725b4eed50c7748caf4844cc3",
+      "translation_text_hash": "0e1fd4004f569096170664e199f5dda7144c1bf76398b401901facf5e53ac452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와의 말씀과 같이 하여 곧 가서 요단 앞 그릿 시냇가에 머물매"
+      ],
+      "raw_text_hashes": [
+        "0e1fd4004f569096170664e199f5dda7144c1bf76398b401901facf5e53ac452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:6",
+      "sequence": 9324,
+      "chapter_label": "1KI 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "The ravens brought him bread and meat in the morning, and bread and meat in the evening; and he drank from the brook.",
+      "ko": "까마귀들이 아침에도 떡과 고기를, 저녁에도 떡과 고기를 가져왔고 저가 시내를 마셨더니",
+      "source_text_hash": "6500020d1ad0abd82cb9cc2f5882860bd84d7980ce594ed5a22424636782c514",
+      "translation_text_hash": "a1547af6df863864f03b293467c0b4c75b9d637cc1f05040dad924de45e46c4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀들이 아침에도 떡과 고기를, 저녁에도 떡과 고기를 가져왔고 저가 시내를 마셨더니"
+      ],
+      "raw_text_hashes": [
+        "a1547af6df863864f03b293467c0b4c75b9d637cc1f05040dad924de45e46c4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:7",
+      "sequence": 9325,
+      "chapter_label": "1KI 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "After a while, the brook dried up, because there was no rain in the land.",
+      "ko": "땅에 비가 내리지 아니하므로 얼마 후에 그 시내가 마르니라",
+      "source_text_hash": "3ed53a238d6aec365ff9a6e9d737a99ff45310415e232949f3321a6e558634d8",
+      "translation_text_hash": "9355589d7d8318fec92292f635dc05fec2d47839ebd2107c4db2c2090f6dba1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 비가 내리지 아니하므로 얼마 후에 그 시내가 마르니라"
+      ],
+      "raw_text_hashes": [
+        "9355589d7d8318fec92292f635dc05fec2d47839ebd2107c4db2c2090f6dba1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:8",
+      "sequence": 9326,
+      "chapter_label": "1KI 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD’s word came to him, saying,",
+      "ko": "여호와의 말씀이 엘리야에게 임하여 가라사대",
+      "source_text_hash": "378cca33b9e0c3e8a47ea9b157c19a08667f023f011a2a23c6cf62982cadb036",
+      "translation_text_hash": "cc5c51e847af9792d521c16ff5c660a5c93ecfbdf900b631aaef9aab7b797770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 엘리야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "cc5c51e847af9792d521c16ff5c660a5c93ecfbdf900b631aaef9aab7b797770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:9",
+      "sequence": 9327,
+      "chapter_label": "1KI 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "“Arise, go to Zarephath, which belongs to Sidon, and stay there. Behold, I have commanded a widow there to sustain you.”",
+      "ko": "너는 일어나 시돈에 속한 사르밧으로 가서 거기 유하라 내가 그곳 과부에게 명하여 너를 공궤하게 하였느니라",
+      "source_text_hash": "bc3fded0535a1a698c9d8bd69d075c28281327a8a1eef0b8e4ef755e6bd2df48",
+      "translation_text_hash": "5499f1d9880c9c6b35789804a3b1684f88a01dfdd54a8813e91fec206ad9b46a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 시돈에 속한 사르밧으로 가서 거기 유하라 내가 그곳 과부에게 명하여 너를 공궤하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5499f1d9880c9c6b35789804a3b1684f88a01dfdd54a8813e91fec206ad9b46a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:10",
+      "sequence": 9328,
+      "chapter_label": "1KI 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "So he arose and went to Zarephath; and when he came to the gate of the city, behold, a widow was there gathering sticks. He called to her and said, “Please get me a little water in a jar, that I may drink.”",
+      "ko": "저가 일어나 사르밧으로 가서 성문에 이를 때에 한 과부가 그곳에서 나무가지를 줍는지라 이에 불러 가로되 청컨대 그릇에 물을 조금 가져다가 나로 마시게 하라",
+      "source_text_hash": "a002b8990d27a8c21807047bbd317fe8b725b220d6936a2ed9ea73daf76d8f34",
+      "translation_text_hash": "53517df5c34660a69f776c17ce2a6c09673db7e38270efe63ba0807b3ecccd9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 일어나 사르밧으로 가서 성문에 이를 때에 한 과부가 그곳에서 나무가지를 줍는지라 이에 불러 가로되 청컨대 그릇에 물을 조금 가져다가 나로 마시게 하라"
+      ],
+      "raw_text_hashes": [
+        "53517df5c34660a69f776c17ce2a6c09673db7e38270efe63ba0807b3ecccd9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:11",
+      "sequence": 9329,
+      "chapter_label": "1KI 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "As she was going to get it, he called to her and said, “Please bring me a morsel of bread in your hand.”",
+      "ko": "저가 가지러 갈때에 엘리야가 저를 불러 가로되 청컨대 네 손에 떡 한 조각을 내게로 가져오라",
+      "source_text_hash": "4109a944701903a78265a984b2a43dd11d2cbe713096ba50da709f9ced57887b",
+      "translation_text_hash": "9eebef0ca5b40df7de6a69ffc2d4241ffcb1a1c23990eb2da51e2d3eb7f00b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가지러 갈때에 엘리야가 저를 불러 가로되 청컨대 네 손에 떡 한 조각을 내게로 가져오라"
+      ],
+      "raw_text_hashes": [
+        "9eebef0ca5b40df7de6a69ffc2d4241ffcb1a1c23990eb2da51e2d3eb7f00b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:12",
+      "sequence": 9330,
+      "chapter_label": "1KI 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "She said, “As the LORD your God lives, I don’t have anything baked, but only a handful of meal in a jar and a little oil in a jar. Behold, I am gathering two sticks, that I may go in and bake it for me and my son, that we may eat it, and die.”",
+      "ko": "저가 가로되 당신의 하나님 여호와의 사심을 가리켜 맹세하노니 나는 떡이 없고 다만 통에 가루 한 움큼과 병에 기름 조금 뿐이라 내가 나무가지 두엇을 주워다가 나와 내 아들을 위하여 음식을 만들어 먹고 그 후에는 죽으리라",
+      "source_text_hash": "c6e9719b99c7a6561847e5d04d9736349a01ce36396f41fb4913aed603ac076a",
+      "translation_text_hash": "06feb4e6a4baa1dedd809c524d7ebbcae8ef88d66aba4483073efc08721c80a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가로되 당신의 하나님 여호와의 사심을 가리켜 맹세하노니 나는 떡이 없고 다만 통에 가루 한 움큼과 병에 기름 조금 뿐이라 내가 나무가지 두엇을 주워다가 나와 내 아들을 위하여 음식을 만들어 먹고 그 후에는 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "06feb4e6a4baa1dedd809c524d7ebbcae8ef88d66aba4483073efc08721c80a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:13",
+      "sequence": 9331,
+      "chapter_label": "1KI 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Elijah said to her, “Don’t be afraid. Go and do as you have said; but make me a little cake from it first, and bring it out to me, and afterward make some for you and for your son.",
+      "ko": "엘리야가 저에게 이르되 두려워 말고 가서 네 말대로 하려니와 먼저 그것으로 나를 위하여 작은 떡 하나를 만들어 내게로 가져오고 그 후에 너와 네 아들을 위하여 만들라",
+      "source_text_hash": "dc8d0d87dba9aa80bc44f59dbc663e669d435a737b4d0cedb37a6f30ad989c60",
+      "translation_text_hash": "88eb2ca53fdfd90898194647c2621bbc97a0a0be5c7babbac339a5e538c508ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 저에게 이르되 두려워 말고 가서 네 말대로 하려니와 먼저 그것으로 나를 위하여 작은 떡 하나를 만들어 내게로 가져오고 그 후에 너와 네 아들을 위하여 만들라"
+      ],
+      "raw_text_hashes": [
+        "88eb2ca53fdfd90898194647c2621bbc97a0a0be5c7babbac339a5e538c508ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:14",
+      "sequence": 9332,
+      "chapter_label": "1KI 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "For the LORD, the God of Israel, says, ‘The jar of meal will not run out, and the jar of oil will not fail, until the day that the LORD sends rain on the earth.’”",
+      "ko": "이스라엘 하나님 여호와의 말씀이 나 여호와가 비를 지면에 내리는 날까지 그 통의 가루는 다하지 아니하고 그 병의 기름은 없어지지 아니하리라 하셨느니라",
+      "source_text_hash": "302243850e403f0dd0dc440bcbe583861656acf1763a0d799342f47c5d4ee12f",
+      "translation_text_hash": "7c102c7b890c25b47df02d7f62431d47af7fe690599edbf1f09d1ca9c4ba4017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님 여호와의 말씀이 나 여호와가 비를 지면에 내리는 날까지 그 통의 가루는 다하지 아니하고 그 병의 기름은 없어지지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "7c102c7b890c25b47df02d7f62431d47af7fe690599edbf1f09d1ca9c4ba4017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:15",
+      "sequence": 9333,
+      "chapter_label": "1KI 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "She went and did according to the saying of Elijah; and she, he, and her household ate many days.",
+      "ko": "저가 가서 엘리야의 말대로 하였더니 저와 엘리야와 식구가 여러날 먹었으나",
+      "source_text_hash": "fb9c7c24d989ffa902cfad75e4eca2626ed4298908cfba5c74468fe9a7783f2c",
+      "translation_text_hash": "703c927d7a59b73faa43b1654063f24f550e8a86558e905f787482996b8c14e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가서 엘리야의 말대로 하였더니 저와 엘리야와 식구가 여러날 먹었으나"
+      ],
+      "raw_text_hashes": [
+        "703c927d7a59b73faa43b1654063f24f550e8a86558e905f787482996b8c14e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:16",
+      "sequence": 9334,
+      "chapter_label": "1KI 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "The jar of meal didn’t run out and the jar of oil didn’t fail, according to the LORD’s word, which he spoke by Elijah.",
+      "ko": "여호와께서 엘리야로 하신 말씀 같이 통의 가루가 다하지 아니하고 병의 기름이 없어지지 아니하니라",
+      "source_text_hash": "28091c1a304dd3a7402ee856ecd1ee18c3f810a719a8911da4063d1931ff7071",
+      "translation_text_hash": "97f8e5f54774c54c83ba78b74c0ac0cd9a4d68a5e813840defa9976942dc4ea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 엘리야로 하신 말씀 같이 통의 가루가 다하지 아니하고 병의 기름이 없어지지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "97f8e5f54774c54c83ba78b74c0ac0cd9a4d68a5e813840defa9976942dc4ea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:17",
+      "sequence": 9335,
+      "chapter_label": "1KI 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "After these things, the son of the woman, the mistress of the house, became sick; and his sickness was so severe that there was no breath left in him.",
+      "ko": "이 일 후에 그 집 주모 되는 여인의 아들이 병들어 증세가 심히 위중하다가 숨이 끊어진지라",
+      "source_text_hash": "ec55daf98a21ddda67e393d11043d8c20d5047a2356e37e49ae949b7a52876e0",
+      "translation_text_hash": "78368c412276c5a8b8553a5d16348ab9e3885103ed874f7d38146379efafd660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 그 집 주모 되는 여인의 아들이 병들어 증세가 심히 위중하다가 숨이 끊어진지라"
+      ],
+      "raw_text_hashes": [
+        "78368c412276c5a8b8553a5d16348ab9e3885103ed874f7d38146379efafd660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:18",
+      "sequence": 9336,
+      "chapter_label": "1KI 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "She said to Elijah, “What have I to do with you, you man of God? You have come to me to bring my sin to memory, and to kill my son!”",
+      "ko": "여인이 엘리야에게 이르되 하나님의 사람이여 당신이 나로 더불어 무슨 상관이 있기로 내 죄를 생각나게 하고 또 내 아들을 죽게 하려고 내게 오셨나이까",
+      "source_text_hash": "4a4cd2296b585623474eb3cf94d47d2938f9bd5db09f2f725f10301f95d6e317",
+      "translation_text_hash": "fb038f3f3a485232fae8782c2fd6efa9fc6dd76040565d372758d8dcda06a9b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 엘리야에게 이르되 하나님의 사람이여 당신이 나로 더불어 무슨 상관이 있기로 내 죄를 생각나게 하고 또 내 아들을 죽게 하려고 내게 오셨나이까"
+      ],
+      "raw_text_hashes": [
+        "fb038f3f3a485232fae8782c2fd6efa9fc6dd76040565d372758d8dcda06a9b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:19",
+      "sequence": 9337,
+      "chapter_label": "1KI 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "He said to her, “Give me your son.” He took him out of her bosom, and carried him up into the room where he stayed, and laid him on his own bed.",
+      "ko": "엘리야가 저에게 그 아들을 달라 하여 그를 그 여인의 품에서 취하여 안고 자기의 거처하는 다락에 올라 가서 자기 침상에 누이고",
+      "source_text_hash": "90466368be0bb39a8bc9a37ee305d0d211466936410f4f942394f33566df1380",
+      "translation_text_hash": "6a41091e289b6362d59335aea16220047b36925147d547a5056fb540bba629c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 저에게 그 아들을 달라 하여 그를 그 여인의 품에서 취하여 안고 자기의 거처하는 다락에 올라 가서 자기 침상에 누이고"
+      ],
+      "raw_text_hashes": [
+        "6a41091e289b6362d59335aea16220047b36925147d547a5056fb540bba629c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:20",
+      "sequence": 9338,
+      "chapter_label": "1KI 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "He cried to the LORD and said, “LORD my God, have you also brought evil on the widow with whom I am staying, by killing her son?”",
+      "ko": "여호와께 부르짖어 가로되 나의 하나님 여호와여 주께서 또 내가 우거하는 집 과부에게 재앙을 내리사 그 아들로 죽게 하셨나이까 하고",
+      "source_text_hash": "c70dfcbdc9069f98cc3d42b2a05edffb8b52a066e33f1eb03aea2f6d24ca9c2a",
+      "translation_text_hash": "87a07348b698a6972bcc270f610db9d8727302cce30cc4cc0687a345c67ae2f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 부르짖어 가로되 나의 하나님 여호와여 주께서 또 내가 우거하는 집 과부에게 재앙을 내리사 그 아들로 죽게 하셨나이까 하고"
+      ],
+      "raw_text_hashes": [
+        "87a07348b698a6972bcc270f610db9d8727302cce30cc4cc0687a345c67ae2f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:21",
+      "sequence": 9339,
+      "chapter_label": "1KI 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "He stretched himself on the child three times, and cried to the LORD and said, “LORD my God, please let this child’s soul come into him again.”",
+      "ko": "그 아이 위에 몸을 세번 펴서 엎드리고 여호와께 부르짖어 가로되 나의 하나님 여호와여 원컨대 이 아이의 혼으로 그 몸에 돌아오게 하옵소서 하니",
+      "source_text_hash": "e7aed973097a0afd8c2e88ec5f1f14939664dde75ce40f970a31d89c98793d58",
+      "translation_text_hash": "c75206eca9754a34ccae7c761b8397ad5f42376887d78be09af8ca619e60738c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이 위에 몸을 세번 펴서 엎드리고 여호와께 부르짖어 가로되 나의 하나님 여호와여 원컨대 이 아이의 혼으로 그 몸에 돌아오게 하옵소서 하니"
+      ],
+      "raw_text_hashes": [
+        "c75206eca9754a34ccae7c761b8397ad5f42376887d78be09af8ca619e60738c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:22",
+      "sequence": 9340,
+      "chapter_label": "1KI 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD listened to the voice of Elijah; and the soul of the child came into him again, and he revived.",
+      "ko": "여호와께서 엘리야의 소리를 들으시므로 그 아이의 혼이 몸으로 돌아 오고 살아난지라",
+      "source_text_hash": "0f0256656dee1024a13b0de67bf149cb0eafe870039ac8d1089156bac12162ed",
+      "translation_text_hash": "3f7132692ca04f8e600e4a9a3c431fe5799e2bb659b04060873b8e0d1d72c901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 엘리야의 소리를 들으시므로 그 아이의 혼이 몸으로 돌아 오고 살아난지라"
+      ],
+      "raw_text_hashes": [
+        "3f7132692ca04f8e600e4a9a3c431fe5799e2bb659b04060873b8e0d1d72c901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:23",
+      "sequence": 9341,
+      "chapter_label": "1KI 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "Elijah took the child and brought him down out of the room into the house, and delivered him to his mother; and Elijah said, “Behold, your son lives.”",
+      "ko": "엘리야가 그 아이를 안고 다락에서 방으로 내려가서 그 어미에게 주며 이르되 보라 네 아들이 살았느니라",
+      "source_text_hash": "c70123a4523f0c59f4f8d4f62a3f901ab92a3f48628fdb99b2571a1789834080",
+      "translation_text_hash": "acfe07b6b81efd2e7e06eb6afa94c7079d4afceedee56b6f2ffc9747070af84c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 그 아이를 안고 다락에서 방으로 내려가서 그 어미에게 주며 이르되 보라 네 아들이 살았느니라"
+      ],
+      "raw_text_hashes": [
+        "acfe07b6b81efd2e7e06eb6afa94c7079d4afceedee56b6f2ffc9747070af84c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:17:24",
+      "sequence": 9342,
+      "chapter_label": "1KI 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "The woman said to Elijah, “Now I know that you are a man of God, and that the LORD’s word in your mouth is truth.”",
+      "ko": "여인이 엘리야에게 이르되 내가 이제야 당신은 하나님의 사람이시요 당신의 입에 있는 여호와의 말씀이 진실한줄 아노라 하니라",
+      "source_text_hash": "deabcbfb02bfaca40224068cf4d95bb374da2a4a01c4755411c570b326035413",
+      "translation_text_hash": "dd94fca63177313b1aaa75d98ce5d61e499ad7a0b835040c95eb3d2b8127396e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 엘리야에게 이르되 내가 이제야 당신은 하나님의 사람이시요 당신의 입에 있는 여호와의 말씀이 진실한줄 아노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "dd94fca63177313b1aaa75d98ce5d61e499ad7a0b835040c95eb3d2b8127396e"
+      ]
+    }
+  ]
+}

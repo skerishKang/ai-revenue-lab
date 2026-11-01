@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:011",
+  "unit_ordinal": 940,
+  "unit_label": "MAT 11",
+  "book_code": "MAT",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:11:1",
+      "sequence": 23461,
+      "chapter_label": "MAT 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "When Jesus had finished directing his twelve disciples, he departed from there to teach and preach in their cities.",
+      "ko": "예수께서 열 두 제자에게 명하시기를 마치시고 이에 저희 여러 동네에서 가르치시며 전도하시려고 거기를 떠나 가시니라",
+      "source_text_hash": "186ff2097f27b05ac2656bd8ea6d1bdab5d168c708c2e6d8ecdb9383fccdff00",
+      "translation_text_hash": "3896a62cf8fe40f0381488b33d8800b9f65af084b43bca36b61c2bf705653397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 열 두 제자에게 명하시기를 마치시고 이에 저희 여러 동네에서 가르치시며 전도하시려고 거기를 떠나 가시니라"
+      ],
+      "raw_text_hashes": [
+        "3896a62cf8fe40f0381488b33d8800b9f65af084b43bca36b61c2bf705653397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:2",
+      "sequence": 23462,
+      "chapter_label": "MAT 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Now when John heard in the prison the works of Christ, he sent two of his disciples",
+      "ko": "요한이 옥에서 그리스도의 하신 일을 듣고 제자들을 보내어",
+      "source_text_hash": "c434ffc6d172e0397a707e4ba7cf1fd81ea6bd3fe174501761b934bf98e7210b",
+      "translation_text_hash": "2f1c5b76dbc6100479e97d21a0b11407d1aac3f4bc3b2514c44e325056de9fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 옥에서 그리스도의 하신 일을 듣고 제자들을 보내어"
+      ],
+      "raw_text_hashes": [
+        "2f1c5b76dbc6100479e97d21a0b11407d1aac3f4bc3b2514c44e325056de9fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:3",
+      "sequence": 23463,
+      "chapter_label": "MAT 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "and said to him, “Are you he who comes, or should we look for another?”",
+      "ko": "예수께 여짜오되 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까",
+      "source_text_hash": "f338407067c7c8cb1ec1b52cf4d55121165379c30edc794dfc7fa7a3595364ef",
+      "translation_text_hash": "c2ad76eb63bac2523fbc7422a995dd203e625eb5cbc0ff3baaf0bf6667689a83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 여짜오되 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까"
+      ],
+      "raw_text_hashes": [
+        "c2ad76eb63bac2523fbc7422a995dd203e625eb5cbc0ff3baaf0bf6667689a83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:4",
+      "sequence": 23464,
+      "chapter_label": "MAT 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus answered them, “Go and tell John the things which you hear and see:",
+      "ko": "예수께서 대답하여 가라사대 너희가 가서 듣고 보는 것을 요한에게 고하되",
+      "source_text_hash": "3c8dcea15b6b2fd4df6670c7e75b4fb39cb5c4b7cdb1060a3bd7dd685f566250",
+      "translation_text_hash": "86be885f43ec500bead318d327765d10591b37a28de4a38dffc48c4df68fe5ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희가 가서 듣고 보는 것을 요한에게 고하되"
+      ],
+      "raw_text_hashes": [
+        "86be885f43ec500bead318d327765d10591b37a28de4a38dffc48c4df68fe5ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:5",
+      "sequence": 23465,
+      "chapter_label": "MAT 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "the blind receive their sight, the lame walk, the lepers are cleansed, the deaf hear,the dead are raised up, and the poor have good news preached to them.",
+      "ko": "소경이 보며 앉은뱅이가 걸으며 문둥이가 깨끗함을 받으며 귀머거리가 들으며 죽은 자가 살아나며 가난한 자에게 복음이 전파된다 하라",
+      "source_text_hash": "ec9fdafabebf621212357eee434e10c56bb54ea6264211310f63c8a9ed29a1e9",
+      "translation_text_hash": "261da822e29d96b694dba14f17572896993acb418923fbabc0bcd47448745803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경이 보며 앉은뱅이가 걸으며 문둥이가 깨끗함을 받으며 귀머거리가 들으며 죽은 자가 살아나며 가난한 자에게 복음이 전파된다 하라"
+      ],
+      "raw_text_hashes": [
+        "261da822e29d96b694dba14f17572896993acb418923fbabc0bcd47448745803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:6",
+      "sequence": 23466,
+      "chapter_label": "MAT 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "Blessed is he who finds no occasion for stumbling in me.”",
+      "ko": "누구든지 나를 인하여 실족하지 아니하는 자는 복이 있도다 하시니라",
+      "source_text_hash": "2dc1629160aeef472c8b2ba8789831d5db389b2375765e0f8aadad85abf0fc1b",
+      "translation_text_hash": "5e330335d4ac3a6dafab0172fc26493a1bc7507431fb1a1987f65da6b22bcbeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 나를 인하여 실족하지 아니하는 자는 복이 있도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "5e330335d4ac3a6dafab0172fc26493a1bc7507431fb1a1987f65da6b22bcbeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:7",
+      "sequence": 23467,
+      "chapter_label": "MAT 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "As these went their way, Jesus began to say to the multitudes concerning John, “What did you go out into the wilderness to see? A reed shaken by the wind?",
+      "ko": "저희가 떠나매 예수께서 무리에게 요한에 대하여 말씀하시되 너희가 무엇을 보려고 광야에 나갔더냐 바람에 흔들리는 갈대냐",
+      "source_text_hash": "9363f5d54a9f945e29ecf5a02603a0828c7d0eafe0b4774e4167121cbb0b4673",
+      "translation_text_hash": "780939451d20e0779897e0afc355098dff30439cf945297d8cd8d1b9a9689326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 떠나매 예수께서 무리에게 요한에 대하여 말씀하시되 너희가 무엇을 보려고 광야에 나갔더냐 바람에 흔들리는 갈대냐"
+      ],
+      "raw_text_hashes": [
+        "780939451d20e0779897e0afc355098dff30439cf945297d8cd8d1b9a9689326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:8",
+      "sequence": 23468,
+      "chapter_label": "MAT 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "But what did you go out to see? A man in soft clothing? Behold, those who wear soft clothing are in kings’ houses.",
+      "ko": "그러면 너희가 무엇을 보려고 나갔더냐 부드러운 옷 입은 사람이냐 부드러운 옷을 입은 자들은 왕궁에 있느니라",
+      "source_text_hash": "f2d4972aaee66c010899fdcda00c6afd705569c0c4bc2d3b95a9770f63b6277e",
+      "translation_text_hash": "cbb74432ae26898014ad2beced01ac1d1d6b1759c8afd3122736ce15fed70575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 무엇을 보려고 나갔더냐 부드러운 옷 입은 사람이냐 부드러운 옷을 입은 자들은 왕궁에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "cbb74432ae26898014ad2beced01ac1d1d6b1759c8afd3122736ce15fed70575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:9",
+      "sequence": 23469,
+      "chapter_label": "MAT 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "But why did you go out? To see a prophet? Yes, I tell you, and much more than a prophet.",
+      "ko": "그러면 너희가 어찌하여 나갔더냐 선지자를 보려더냐 옳다 내가 너희에게 이르노니 선지자보다도 나은 자니라",
+      "source_text_hash": "f5dfa02428a2029e9e0e21b29069ec94ed6eb5589b476c4c1eb8e10b7463cae8",
+      "translation_text_hash": "522dbbe7b8484f4ab70e3c13b1d7b8db9eeac6011ab11ac1735b392d90bcd9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 어찌하여 나갔더냐 선지자를 보려더냐 옳다 내가 너희에게 이르노니 선지자보다도 나은 자니라"
+      ],
+      "raw_text_hashes": [
+        "522dbbe7b8484f4ab70e3c13b1d7b8db9eeac6011ab11ac1735b392d90bcd9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:10",
+      "sequence": 23470,
+      "chapter_label": "MAT 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "For this is he, of whom it is written, ‘Behold, I send my messenger before your face, who will prepare your way before you.’",
+      "ko": "기록된바 보라 내가 내 사자를 네 앞에 보내노니 저가 네 길을 네 앞에 예비하리라 하신 것이 이 사람에 대한 말씀이니라",
+      "source_text_hash": "40e0c859ad4d3616248d2f8ada41fe4f073d724d58eee365886b27a402db4c72",
+      "translation_text_hash": "3fd88f30a59dcca0ee30865bb39ac478385eb490f8d28cbfb06c70107421e3e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 보라 내가 내 사자를 네 앞에 보내노니 저가 네 길을 네 앞에 예비하리라 하신 것이 이 사람에 대한 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "3fd88f30a59dcca0ee30865bb39ac478385eb490f8d28cbfb06c70107421e3e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:11",
+      "sequence": 23471,
+      "chapter_label": "MAT 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Most certainly I tell you, among those who are born of women there has not arisen anyone greater than John the Baptizer; yet he who is least in the Kingdom of Heaven is greater than he.",
+      "ko": "내가 진실로 너희에게 말하노니 여자가 낳은 자 중에 세례 요한보다 큰이가 일어남이 없도다 그러나 천국에서는 극히 작은 자라도 저보다 크니라",
+      "source_text_hash": "8dab2cf8e5d0a5c8a5d08d13b48fb1aca4e1e0668986dd0052e47bd9e1219385",
+      "translation_text_hash": "038df211d7c969347cd3913c0b165f1394897fee7e696438a7aef14313824fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 말하노니 여자가 낳은 자 중에 세례 요한보다 큰이가 일어남이 없도다 그러나 천국에서는 극히 작은 자라도 저보다 크니라"
+      ],
+      "raw_text_hashes": [
+        "038df211d7c969347cd3913c0b165f1394897fee7e696438a7aef14313824fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:12",
+      "sequence": 23472,
+      "chapter_label": "MAT 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "From the days of John the Baptizer until now, the Kingdom of Heaven suffers violence, and the violent take it by force.",
+      "ko": "세례 요한의 때부터 지금까지 천국은 침노를 당하나니 침노하는 자는 빼앗느니라",
+      "source_text_hash": "bad83ee14429f26c0c270c06d85da14d3ed8596128e875a52bbd51f31e5e9cd5",
+      "translation_text_hash": "4c8030d1f0007011c55766f0168493a220011124c7ace76b80cefe189d28bd4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세례 요한의 때부터 지금까지 천국은 침노를 당하나니 침노하는 자는 빼앗느니라"
+      ],
+      "raw_text_hashes": [
+        "4c8030d1f0007011c55766f0168493a220011124c7ace76b80cefe189d28bd4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:13",
+      "sequence": 23473,
+      "chapter_label": "MAT 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "For all the prophets and the law prophesied until John.",
+      "ko": "모든 선지자와 및 율법의 예언한 것이 요한까지니",
+      "source_text_hash": "df8388a597bca012032b87ae30f127ffb95189312294b1556d5f5baf2a52a9a3",
+      "translation_text_hash": "9476a584282027a7c271647dc01b19accffc1fc0b076a25dd38a86dc2b1137d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 선지자와 및 율법의 예언한 것이 요한까지니"
+      ],
+      "raw_text_hashes": [
+        "9476a584282027a7c271647dc01b19accffc1fc0b076a25dd38a86dc2b1137d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:14",
+      "sequence": 23474,
+      "chapter_label": "MAT 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "If you are willing to receive it, this is Elijah, who is to come.",
+      "ko": "만일 너희가 즐겨 받을찐대 오리라 한 엘리야가 곧 이 사람이니라",
+      "source_text_hash": "6f57a8c5a8830164c306f9f72b06172e5ef49ff6a3337474e5623b303aa26bf6",
+      "translation_text_hash": "e40789ee52f703185e889a7b31f66aa2bc71960389037f3f5e1afb9cbe4ee529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 즐겨 받을찐대 오리라 한 엘리야가 곧 이 사람이니라"
+      ],
+      "raw_text_hashes": [
+        "e40789ee52f703185e889a7b31f66aa2bc71960389037f3f5e1afb9cbe4ee529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:15",
+      "sequence": 23475,
+      "chapter_label": "MAT 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "He who has ears to hear, let him hear.",
+      "ko": "귀 있는 자는 들을찌어다",
+      "source_text_hash": "4b97d7348df712b0b416b9219119d3961fe5d22f74bd1bb07e3fcb1c67db852a",
+      "translation_text_hash": "574d460b1bbfc905487da2dac2fdee79af43a6b86665e88495bf8764e22652e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "574d460b1bbfc905487da2dac2fdee79af43a6b86665e88495bf8764e22652e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:16",
+      "sequence": 23476,
+      "chapter_label": "MAT 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "“But to what shall I compare this generation? It is like children sitting in the marketplaces, who call to their companions",
+      "ko": "이 세대를 무엇으로 비유할꼬 비유컨대 아이들이 장터에 앉아 제 동무를 불러",
+      "source_text_hash": "ebfca16a1a252a32c807097c31a5a2d0fdecb00205880b572cf569f972b7ba0f",
+      "translation_text_hash": "3ca0f825d5c73c0145e03bf1374b4ba2b12538ac396dda7b452e8f570994c8f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세대를 무엇으로 비유할꼬 비유컨대 아이들이 장터에 앉아 제 동무를 불러"
+      ],
+      "raw_text_hashes": [
+        "3ca0f825d5c73c0145e03bf1374b4ba2b12538ac396dda7b452e8f570994c8f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:17",
+      "sequence": 23477,
+      "chapter_label": "MAT 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "and say, ‘We played the flute for you, and you didn’t dance. We mourned for you, and you didn’t lament.’",
+      "ko": "가로되 우리가 너희를 향하여 피리를 불어도 너희가 춤추지 않고 우리가 애곡하여도 너희가 가슴을 치지 아니하였다 함과 같도다",
+      "source_text_hash": "ad3b0f5cb31fbb9e4c49ee240439b244c72ffa08c96a2ecb3371dbcc619d4b7b",
+      "translation_text_hash": "9f420ceca9acfe1fb4179150fc15be51cc665e0b93b6db0d52e1237bb5141d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 우리가 너희를 향하여 피리를 불어도 너희가 춤추지 않고 우리가 애곡하여도 너희가 가슴을 치지 아니하였다 함과 같도다"
+      ],
+      "raw_text_hashes": [
+        "9f420ceca9acfe1fb4179150fc15be51cc665e0b93b6db0d52e1237bb5141d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:18",
+      "sequence": 23478,
+      "chapter_label": "MAT 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "For John came neither eating nor drinking, and they say, ‘He has a demon.’",
+      "ko": "요한이 와서 먹지도 않고 마시지도 아니하매 저희가 말하기를 귀신이 들렸다 하더니",
+      "source_text_hash": "db7700b896e42230182b58c273a6d5428b905df6c901bb7bcd7365784a18ecc6",
+      "translation_text_hash": "5691d61d454691efd920a0bf7bf41b576cfc299888ac20ab2f439476843f6f10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 와서 먹지도 않고 마시지도 아니하매 저희가 말하기를 귀신이 들렸다 하더니"
+      ],
+      "raw_text_hashes": [
+        "5691d61d454691efd920a0bf7bf41b576cfc299888ac20ab2f439476843f6f10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:19",
+      "sequence": 23479,
+      "chapter_label": "MAT 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "The Son of Man came eating and drinking, and they say, ‘Behold, a gluttonous man and a drunkard, a friend of tax collectors and sinners!’ But wisdom is justified by her children.”",
+      "ko": "인자는 와서 먹고 마시매 말하기를 보라 먹기를 탐하고 포도주를 즐기는 사람이요 세리와 죄인의 친구로다 하니 지혜는 그 행한 일로 인하여 옳다 함을 얻느니라",
+      "source_text_hash": "d0d69c58bf4e58584a91df960adcbc2e3bd31b04f22fea4cd5e826ca96e99ae7",
+      "translation_text_hash": "137c1c97320fadb18f5c8d6e92fdb6f68ed9a601a2725a80b0f87656f492c0f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 와서 먹고 마시매 말하기를 보라 먹기를 탐하고 포도주를 즐기는 사람이요 세리와 죄인의 친구로다 하니 지혜는 그 행한 일로 인하여 옳다 함을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "137c1c97320fadb18f5c8d6e92fdb6f68ed9a601a2725a80b0f87656f492c0f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:20",
+      "sequence": 23480,
+      "chapter_label": "MAT 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "Then he began to denounce the cities in which most of his mighty works had been done, because they didn’t repent.",
+      "ko": "예수께서 권능을 가장 많이 베푸신 고을들이 회개치 아니하므로 그 때에 책망하시되",
+      "source_text_hash": "c6a0befc8fd7a7d96fd8b7707198e199d7c1f0baf8cbc4cc73511b2be1c90ba0",
+      "translation_text_hash": "499109d7f0eeba5c2bcef15d81f9803503c4bc7110809e59a0a59ba97a04795e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 권능을 가장 많이 베푸신 고을들이 회개치 아니하므로 그 때에 책망하시되"
+      ],
+      "raw_text_hashes": [
+        "499109d7f0eeba5c2bcef15d81f9803503c4bc7110809e59a0a59ba97a04795e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:21",
+      "sequence": 23481,
+      "chapter_label": "MAT 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "“Woe to you, Chorazin! Woe to you, Bethsaida! For if the mighty works had been done in Tyre and Sidon which were done in you, they would have repented long ago in sackcloth and ashes.",
+      "ko": "화가 있을찐저 고라신아 화가 있을찐저 벳새다야 너희에게서 행한 모든 권능을 두로와 시돈에서 행하였더면 저희가 벌써 베옷을 입고 재에 앉아 회개하였으리라",
+      "source_text_hash": "0aa5dc5363234ebee5d7544888c68c558a485a1165d954f01e010c055a735871",
+      "translation_text_hash": "76ae9cbe69113316def4cde7e4151d2754122133a3a93104e4ca5b15916fa3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화가 있을찐저 고라신아 화가 있을찐저 벳새다야 너희에게서 행한 모든 권능을 두로와 시돈에서 행하였더면 저희가 벌써 베옷을 입고 재에 앉아 회개하였으리라"
+      ],
+      "raw_text_hashes": [
+        "76ae9cbe69113316def4cde7e4151d2754122133a3a93104e4ca5b15916fa3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:22",
+      "sequence": 23482,
+      "chapter_label": "MAT 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "But I tell you, it will be more tolerable for Tyre and Sidon on the day of judgment than for you.",
+      "ko": "내가 너희에게 이르노니 심판날에 두로와 시돈이 너희보다 견디기 쉬우리라",
+      "source_text_hash": "af6b29f8ef06b49744c9feaeb2813280b6c423fd3f8546a7b9196d82a5c35e61",
+      "translation_text_hash": "073206e4056f37f190947179cc040c90700d856af0de7e55a090a8bd27c78044",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 심판날에 두로와 시돈이 너희보다 견디기 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "073206e4056f37f190947179cc040c90700d856af0de7e55a090a8bd27c78044"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:23",
+      "sequence": 23483,
+      "chapter_label": "MAT 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "You, Capernaum, who are exalted to heaven, you will go down to Hades. For if the mighty works had been done in Sodom which were done in you, it would have remained until today.",
+      "ko": "가버나움아 네가 하늘에까지 높아지겠느냐 음부에까지 낮아지리라 네게서 행한 모든 권능을 소돔에서 행하였더면 그 성이 오늘날까지 있었으리라",
+      "source_text_hash": "f3166dfd3fabeb7d812b5fd738a5ebda1dcdbadf3c49de6f536b47c6cafd8910",
+      "translation_text_hash": "dba46fc9eaa55f3fca086692b01cdb6fa99744c4617d1622a58ace9c4e5b4506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가버나움아 네가 하늘에까지 높아지겠느냐 음부에까지 낮아지리라 네게서 행한 모든 권능을 소돔에서 행하였더면 그 성이 오늘날까지 있었으리라"
+      ],
+      "raw_text_hashes": [
+        "dba46fc9eaa55f3fca086692b01cdb6fa99744c4617d1622a58ace9c4e5b4506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:24",
+      "sequence": 23484,
+      "chapter_label": "MAT 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "But I tell you that it will be more tolerable for the land of Sodom on the day of judgment, than for you.”",
+      "ko": "내가 너희에게 이르노니 심판 날에 소돔 땅이 너보다 견디기 쉬우리라 하시니라",
+      "source_text_hash": "61502c48cef3e60432e368306fc9f8358f03447e59487ab309b84db168e6260e",
+      "translation_text_hash": "e7997cd1966d0d2c25a4169eda71dcfabbc51b958ad8ba884ed2d2da65d57721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 심판 날에 소돔 땅이 너보다 견디기 쉬우리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e7997cd1966d0d2c25a4169eda71dcfabbc51b958ad8ba884ed2d2da65d57721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:25",
+      "sequence": 23485,
+      "chapter_label": "MAT 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "At that time, Jesus answered, “I thank you, Father, Lord of heaven and earth, that you hid these things from the wise and understanding, and revealed them to infants.",
+      "ko": "그 때에 예수께서 대답하여 가라사대 천지의 주재이신 아버지여 이것을 지혜롭고 슬기 있는 자들에게는 숨기시고 어린 아이들에게는 나타내심을 감사하나이다",
+      "source_text_hash": "936ed2b005c495425ed4556653297a9db13fd61bec934da022776e226337c845",
+      "translation_text_hash": "66943247ab4421319949d398c05f3863a5f78cc0bc056a57f4a8b959ed206c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예수께서 대답하여 가라사대 천지의 주재이신 아버지여 이것을 지혜롭고 슬기 있는 자들에게는 숨기시고 어린 아이들에게는 나타내심을 감사하나이다"
+      ],
+      "raw_text_hashes": [
+        "66943247ab4421319949d398c05f3863a5f78cc0bc056a57f4a8b959ed206c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:26",
+      "sequence": 23486,
+      "chapter_label": "MAT 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Yes, Father, for so it was well-pleasing in your sight.",
+      "ko": "옳소이다 이렇게 된 것이 아버지의 뜻이니이다",
+      "source_text_hash": "64d2900675724957bcdfcd1b5336dbb2a8cdadb56fb8383e2b1858f93988b290",
+      "translation_text_hash": "8b38aa6a30919c7100cc43a4ce41f682eec432388b41315e26f3c31f9a2fdf4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옳소이다 이렇게 된 것이 아버지의 뜻이니이다"
+      ],
+      "raw_text_hashes": [
+        "8b38aa6a30919c7100cc43a4ce41f682eec432388b41315e26f3c31f9a2fdf4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:27",
+      "sequence": 23487,
+      "chapter_label": "MAT 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "All things have been delivered to me by my Father. No one knows the Son, except the Father; neither does anyone know the Father, except the Son and he to whom the Son desires to reveal him.",
+      "ko": "내 아버지께서 모든 것을 내게 주셨으니 아버지 외에는 아들을 아는 자가 없고 아들과 또 아들의 소원대로 계시를 받는 자 외에는 아버지를 아는 자가 없느니라",
+      "source_text_hash": "aaf2704c15a94466db6784893b6fd6c21a2857dc30d0be961caf73fb97a870f6",
+      "translation_text_hash": "fdae3cc3bad9bbcd724e78db1021b1669a2f5571f689f0a6777d90fa15c227d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아버지께서 모든 것을 내게 주셨으니 아버지 외에는 아들을 아는 자가 없고 아들과 또 아들의 소원대로 계시를 받는 자 외에는 아버지를 아는 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "fdae3cc3bad9bbcd724e78db1021b1669a2f5571f689f0a6777d90fa15c227d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:28",
+      "sequence": 23488,
+      "chapter_label": "MAT 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "“Come to me, all you who labor and are heavily burdened, and I will give you rest.",
+      "ko": "수고하고 무거운 짐진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라",
+      "source_text_hash": "ea6bea34b928014110591226957790f52ad0cbbf55ff9d08b6e87209451b2043",
+      "translation_text_hash": "477e825aff33c779e7599f17ed35f76e96a3fea83393b483016414a71b75cfea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수고하고 무거운 짐진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라"
+      ],
+      "raw_text_hashes": [
+        "477e825aff33c779e7599f17ed35f76e96a3fea83393b483016414a71b75cfea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:29",
+      "sequence": 23489,
+      "chapter_label": "MAT 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "Take my yoke upon you and learn from me, for I am gentle and humble in heart; and you will find rest for your souls.",
+      "ko": "나는 마음이 온유하고 겸손하니 나의 멍에를 메고 내게 배우라 그러면 너희 마음이 쉼을 얻으리니",
+      "source_text_hash": "fedb4269e79d07b48deeefc71d0f14c2f3246ae51ab4d11129281e2d591ca678",
+      "translation_text_hash": "9c1cf0352905427b7b945d9d286bc471635c92d80dc0095bbb0098f6fc283213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 마음이 온유하고 겸손하니 나의 멍에를 메고 내게 배우라 그러면 너희 마음이 쉼을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "9c1cf0352905427b7b945d9d286bc471635c92d80dc0095bbb0098f6fc283213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:11:30",
+      "sequence": 23490,
+      "chapter_label": "MAT 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "For my yoke is easy, and my burden is light.”",
+      "ko": "이는 내 멍에는 쉽고 내 짐은 가벼움이라 하시니라",
+      "source_text_hash": "8fe8b76ae8b2cd8a719275a0290636b80dbb5ddffc5d8afe2ec5a72d19f9066f",
+      "translation_text_hash": "9a6775b7a69b302e48075199dda1a20fad636983001fa3b6508b6ba9b05c6de1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 멍에는 쉽고 내 짐은 가벼움이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9a6775b7a69b302e48075199dda1a20fad636983001fa3b6508b6ba9b05c6de1"
+      ]
+    }
+  ]
+}

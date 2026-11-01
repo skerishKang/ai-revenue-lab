@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:047",
+  "unit_ordinal": 525,
+  "unit_label": "PSA 47",
+  "book_code": "PSA",
+  "chapter_number": 47,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:47:1",
+      "sequence": 14627,
+      "chapter_label": "PSA 47",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 1
+        }
+      ],
+      "en": "Oh clap your hands, all you nations. Shout to God with the voice of triumph!",
+      "ko": "너희 만민들아 손바닥을 치고 즐거운 소리로 하나님께 외칠찌어다",
+      "source_text_hash": "77b44ab43b754e5acc818a8888abff10126c1c9fe313038f5d2b166d36d998a7",
+      "translation_text_hash": "ce5ad2cd994f114fbf2fa219c01ae4038c7284d9b3bd9eeedbce665b2a30f99e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 만민들아 손바닥을 치고 즐거운 소리로 하나님께 외칠찌어다"
+      ],
+      "raw_text_hashes": [
+        "ce5ad2cd994f114fbf2fa219c01ae4038c7284d9b3bd9eeedbce665b2a30f99e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:2",
+      "sequence": 14628,
+      "chapter_label": "PSA 47",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 2
+        }
+      ],
+      "en": "For the LORD Most High is awesome. He is a great King over all the earth.",
+      "ko": "지존하신 여호와는 엄위하시고 온 땅에 큰 임군이 되심이로다",
+      "source_text_hash": "70166c77d387a9b1ee03fb525a083d5513b6607bdc40db58d44d54a48259a408",
+      "translation_text_hash": "bf8df19d5464eaf9ffbbe727c19e5898182cda0c5b844932f1bfdcc5cc7f90b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지존하신 여호와는 엄위하시고 온 땅에 큰 임군이 되심이로다"
+      ],
+      "raw_text_hashes": [
+        "bf8df19d5464eaf9ffbbe727c19e5898182cda0c5b844932f1bfdcc5cc7f90b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:3",
+      "sequence": 14629,
+      "chapter_label": "PSA 47",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 3
+        }
+      ],
+      "en": "He subdues nations under us, and peoples under our feet.",
+      "ko": "여호와께서 만민을 우리에게, 열방을 우리 발 아래 복종케 하시며",
+      "source_text_hash": "be0630e0001f68b544554d9b3128d13ca1e545300f8ac5f61a39734be80c4905",
+      "translation_text_hash": "19d3fcd375ac966239b5878dd0bba54c411c2e1c51f862c0bffc77f3a0e21979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 만민을 우리에게, 열방을 우리 발 아래 복종케 하시며"
+      ],
+      "raw_text_hashes": [
+        "19d3fcd375ac966239b5878dd0bba54c411c2e1c51f862c0bffc77f3a0e21979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:4",
+      "sequence": 14630,
+      "chapter_label": "PSA 47",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 4
+        }
+      ],
+      "en": "He chooses our inheritance for us, the glory of Jacob whom he loved. Selah.",
+      "ko": "우리를 위하여 기업을 택하시나니 곧 사랑하신 야곱의 영화로다 (셀라)",
+      "source_text_hash": "652edb34956db9b0142699594d8dad894cfe44c2038e9ca50d74cfa437daaf6f",
+      "translation_text_hash": "03066601eef1bfc22a577ad07389bd4fe082ad3059188f097b1386bf59e1dc93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 위하여 기업을 택하시나니 곧 사랑하신 야곱의 영화로다 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "03066601eef1bfc22a577ad07389bd4fe082ad3059188f097b1386bf59e1dc93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:5",
+      "sequence": 14631,
+      "chapter_label": "PSA 47",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 5
+        }
+      ],
+      "en": "God has gone up with a shout, the LORD with the sound of a trumpet.",
+      "ko": "하나님이 즐거이 부르는 중에 올라가심이여 여호와께서 나팔 소리 중에 올라 가시도다",
+      "source_text_hash": "bba7a377584a8a616471fee206b47e6d0731834d0eb10a56c5e430b634252004",
+      "translation_text_hash": "af5b85fa578a3e45b0ce9e88b6bc946592974a186ac88e1f84c5b80006c63079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 즐거이 부르는 중에 올라가심이여 여호와께서 나팔 소리 중에 올라 가시도다"
+      ],
+      "raw_text_hashes": [
+        "af5b85fa578a3e45b0ce9e88b6bc946592974a186ac88e1f84c5b80006c63079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:6",
+      "sequence": 14632,
+      "chapter_label": "PSA 47",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 6
+        }
+      ],
+      "en": "Sing praises to God! Sing praises! Sing praises to our King! Sing praises!",
+      "ko": "찬양하라 하나님을 찬양하라 찬양하라 우리 왕을 찬양하라",
+      "source_text_hash": "90a557679f6b8d418b13c11f5fa06020c503484d7ddcada03e41174094a388cb",
+      "translation_text_hash": "bf64609508b2f0cb1d376dae92aadc5d77833cfae2128c3d239bd2370409f55c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬양하라 하나님을 찬양하라 찬양하라 우리 왕을 찬양하라"
+      ],
+      "raw_text_hashes": [
+        "bf64609508b2f0cb1d376dae92aadc5d77833cfae2128c3d239bd2370409f55c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:7",
+      "sequence": 14633,
+      "chapter_label": "PSA 47",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 7
+        }
+      ],
+      "en": "For God is the King of all the earth. Sing praises with understanding.",
+      "ko": "하나님은 온 땅에 왕이심이라 지혜의 시로 찬양할찌어다",
+      "source_text_hash": "94d5f982da4032f7cd29abdd7a9351405054e789a1bc669b7e5f194c77482f14",
+      "translation_text_hash": "69afebd45a16099cc5e63151c4d45cfc6058f4e27a470be02055b49a0a0e3bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 온 땅에 왕이심이라 지혜의 시로 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "69afebd45a16099cc5e63151c4d45cfc6058f4e27a470be02055b49a0a0e3bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:8",
+      "sequence": 14634,
+      "chapter_label": "PSA 47",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 8
+        }
+      ],
+      "en": "God reigns over the nations. God sits on his holy throne.",
+      "ko": "하나님이 열방을 치리하시며 하나님이 그 거룩한 보좌에 앉으셨도다",
+      "source_text_hash": "5913f2291d72f683bf54d367601396b97c23fb10b5ffb17f00ce3d3a13eaea0f",
+      "translation_text_hash": "8d22ced09d035757e894fb03fd7d47439db74b328947c4d3d67c479842aa178a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 열방을 치리하시며 하나님이 그 거룩한 보좌에 앉으셨도다"
+      ],
+      "raw_text_hashes": [
+        "8d22ced09d035757e894fb03fd7d47439db74b328947c4d3d67c479842aa178a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:47:9",
+      "sequence": 14635,
+      "chapter_label": "PSA 47",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 47,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 47,
+          "verse": 9
+        }
+      ],
+      "en": "The princes of the peoples are gathered together, the people of the God of Abraham. For the shields of the earth belong to God. He is greatly exalted!",
+      "ko": "열방의 방백들이 모임이여 아브라함의 하나님의 백성이 되도다 세상의 모든 방패는 여호와의 것임이여 저는 지존하시도다",
+      "source_text_hash": "6fbd826a3f46a039519241e40a31f691c26002525436b77016517c6310182efb",
+      "translation_text_hash": "9aca00466d2c5fa6bbc33fce8b41d64d2557a31145a43c94895b52956d0d87a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 방백들이 모임이여 아브라함의 하나님의 백성이 되도다 세상의 모든 방패는 여호와의 것임이여 저는 지존하시도다"
+      ],
+      "raw_text_hashes": [
+        "9aca00466d2c5fa6bbc33fce8b41d64d2557a31145a43c94895b52956d0d87a1"
+      ]
+    }
+  ]
+}

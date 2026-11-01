@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:025",
+  "unit_ordinal": 338,
+  "unit_label": "2KI 25",
+  "book_code": "2KI",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:25:1",
+      "sequence": 10224,
+      "chapter_label": "2KI 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "In the ninth year of his reign, in the tenth month, in the tenth day of the month, Nebuchadnezzar king of Babylon came, he and all his army, against Jerusalem, and encamped against it; and they built forts against it around it.",
+      "ko": "시드기야 구년 시월 십일에 바벨론 왕 느부갓네살이 그 모든 군대를 거느리고 예루살렘을 치러 올라와서 진을 치고 사면으로 토성을 쌓으매",
+      "source_text_hash": "7ae781c1834e8995cbb47b2279ded16da1aa9faacbd7b1b213bb244a8efd6af8",
+      "translation_text_hash": "e43d0b228c28bff66fddfdea77bef66f9f5b5000bc55c9bcb8180c0d4e308274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야 구년 시월 십일에 바벨론 왕 느부갓네살이 그 모든 군대를 거느리고 예루살렘을 치러 올라와서 진을 치고 사면으로 토성을 쌓으매"
+      ],
+      "raw_text_hashes": [
+        "e43d0b228c28bff66fddfdea77bef66f9f5b5000bc55c9bcb8180c0d4e308274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:2",
+      "sequence": 10225,
+      "chapter_label": "2KI 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "So the city was besieged until the eleventh year of King Zedekiah.",
+      "ko": "성이 시드기야왕 십 일년까지 에워싸였더니",
+      "source_text_hash": "d3197e80cf9246220c7296004167e656c565a0956fb8a0083c14f32cc6ab5985",
+      "translation_text_hash": "b1c3f7175f416fc47ddd215027dcec7f3f8225b19188044df8280cfcde19e652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성이 시드기야왕 십 일년까지 에워싸였더니"
+      ],
+      "raw_text_hashes": [
+        "b1c3f7175f416fc47ddd215027dcec7f3f8225b19188044df8280cfcde19e652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:3",
+      "sequence": 10226,
+      "chapter_label": "2KI 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "On the ninth day of the fourth month, the famine was severe in the city, so that there was no bread for the people of the land.",
+      "ko": "그 사월 구일에 성중에 기근이 심하여 그 땅 백성의 양식이 진하였고",
+      "source_text_hash": "d5a353511090b57559497e176423cd6cf63b741b66a35ed659c22f73890bcf22",
+      "translation_text_hash": "ef08a9ca81b16eef2c953bf2c9d2a288d66ea0e7393f04b04314c89a4244838b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사월 구일에 성중에 기근이 심하여 그 땅 백성의 양식이 진하였고"
+      ],
+      "raw_text_hashes": [
+        "ef08a9ca81b16eef2c953bf2c9d2a288d66ea0e7393f04b04314c89a4244838b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:4",
+      "sequence": 10227,
+      "chapter_label": "2KI 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "Then a breach was made in the city, and all the men of war fled by night by the way of the gate between the two walls, which was by the king’s garden (now the Chaldeans were against the city around it); and the king went by the way of the Arabah.",
+      "ko": "갈대아 사람이 그 성읍을 에워쌌으므로 성벽에 구멍을 뚫은지라 모든 군사가 밤중에 두 성벽 사이 왕의 동산 곁문 길로 도망하여 아라바 길로 가더니",
+      "source_text_hash": "c67a9d1c158d260979b9e06ad5b0c816e7aba3c07e033935fe15feb99bea1399",
+      "translation_text_hash": "8b9d0cbfa6badfda863de913e6ea4770123c2c2ad0f35fed8711ff7fe40d7a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 사람이 그 성읍을 에워쌌으므로 성벽에 구멍을 뚫은지라 모든 군사가 밤중에 두 성벽 사이 왕의 동산 곁문 길로 도망하여 아라바 길로 가더니"
+      ],
+      "raw_text_hashes": [
+        "8b9d0cbfa6badfda863de913e6ea4770123c2c2ad0f35fed8711ff7fe40d7a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:5",
+      "sequence": 10228,
+      "chapter_label": "2KI 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "But the Chaldean army pursued the king, and overtook him in the plains of Jericho; and all his army was scattered from him.",
+      "ko": "갈대아 군사가 왕을 쫓아가서 여리고 평지에 미치매 왕의 모든 군사가 저를 떠나 흩어진지라",
+      "source_text_hash": "6b0493096446691019d793677e19540069509d367e0afdbe30ae277c5f350da6",
+      "translation_text_hash": "92df89e2322f2b9721349132351c48306ae036c5aac7ed453fe016b2ad68d9dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 군사가 왕을 쫓아가서 여리고 평지에 미치매 왕의 모든 군사가 저를 떠나 흩어진지라"
+      ],
+      "raw_text_hashes": [
+        "92df89e2322f2b9721349132351c48306ae036c5aac7ed453fe016b2ad68d9dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:6",
+      "sequence": 10229,
+      "chapter_label": "2KI 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "Then they captured the king and carried him up to the king of Babylon to Riblah; and they passed judgment on him.",
+      "ko": "갈대아 군사가 왕을 잡아 립나 바벨론 왕에게로 끌고 가매 저에게 신문하고",
+      "source_text_hash": "5d0c98c9cd58364cbc7a98f31e049e9b490a75094d04936a1663b49219b795fa",
+      "translation_text_hash": "5bdb7d8b937fd8f43b39c8d607b340e95c774374bd4e2f105080e3b2194d9313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 군사가 왕을 잡아 립나 바벨론 왕에게로 끌고 가매 저에게 신문하고"
+      ],
+      "raw_text_hashes": [
+        "5bdb7d8b937fd8f43b39c8d607b340e95c774374bd4e2f105080e3b2194d9313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:7",
+      "sequence": 10230,
+      "chapter_label": "2KI 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "They killed Zedekiah’s sons before his eyes, then put out Zedekiah’s eyes, bound him in fetters, and carried him to Babylon.",
+      "ko": "시드기야의 아들들을 저의 목전에서 죽이고 시드기야의 두 눈을 빼고 사슬로 결박하여 바벨론으로 끌어갔더라",
+      "source_text_hash": "667f1b7b68c8b7b0020673ca0910992b9a3c958f2cecefe27fd4a66c245aa751",
+      "translation_text_hash": "d8f129cfe60b4477f01dbdcdd8bf729243db0e546fe96becfa386aeb8811cb10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야의 아들들을 저의 목전에서 죽이고 시드기야의 두 눈을 빼고 사슬로 결박하여 바벨론으로 끌어갔더라"
+      ],
+      "raw_text_hashes": [
+        "d8f129cfe60b4477f01dbdcdd8bf729243db0e546fe96becfa386aeb8811cb10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:8",
+      "sequence": 10231,
+      "chapter_label": "2KI 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Now in the fifth month, on the seventh day of the month, which was the nineteenth year of King Nebuchadnezzar king of Babylon, Nebuzaradan the captain of the guard, a servant of the king of Babylon, came to Jerusalem.",
+      "ko": "바벨론 왕 느부갓네살의 십 구년 오월 칠일에 바벨론 왕의 신하 시위대 장관 느부사라단이 예루살렘에 이르러",
+      "source_text_hash": "393371f0f8e0bf3636e2321d65ae63ac393812aea5c3b911f715bf391a2942bc",
+      "translation_text_hash": "28f2886d9a28168071f5be761dac8575104aa7617b9a0dbc11065ed6b9969785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살의 십 구년 오월 칠일에 바벨론 왕의 신하 시위대 장관 느부사라단이 예루살렘에 이르러"
+      ],
+      "raw_text_hashes": [
+        "28f2886d9a28168071f5be761dac8575104aa7617b9a0dbc11065ed6b9969785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:9",
+      "sequence": 10232,
+      "chapter_label": "2KI 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "He burned the LORD’s house, the king’s house, and all the houses of Jerusalem. He burned every great house with fire.",
+      "ko": "여호와의 전과 왕궁을 사르고 예루살렘의 모든 집을 귀인의 집까지 불살랐으며",
+      "source_text_hash": "8363cf303eb61305fa253ccc58769cf46b98ffba9b64d3b5b50b8312c24cbaff",
+      "translation_text_hash": "a8be463fab83b6a20e214c2ca8f95e9a0e60517cf695256f9f253502ffe819e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 전과 왕궁을 사르고 예루살렘의 모든 집을 귀인의 집까지 불살랐으며"
+      ],
+      "raw_text_hashes": [
+        "a8be463fab83b6a20e214c2ca8f95e9a0e60517cf695256f9f253502ffe819e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:10",
+      "sequence": 10233,
+      "chapter_label": "2KI 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "All the army of the Chaldeans, who were with the captain of the guard, broke down the walls around Jerusalem.",
+      "ko": "시위대 장관을 좇는 갈대아 온 군대가 예루살렘 사면 성벽을 헐었으며",
+      "source_text_hash": "4ef8bd201b40f6583642fd526ccb7ad99c3c79b4cbc6175d33943e958e60398e",
+      "translation_text_hash": "ddfec5f2d505646d9df14f3300db8f41d4816b50612cf359d8c45602d6cf3512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관을 좇는 갈대아 온 군대가 예루살렘 사면 성벽을 헐었으며"
+      ],
+      "raw_text_hashes": [
+        "ddfec5f2d505646d9df14f3300db8f41d4816b50612cf359d8c45602d6cf3512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:11",
+      "sequence": 10234,
+      "chapter_label": "2KI 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "Nebuzaradan the captain of the guard carried away captive the rest of the people who were left in the city and those who had deserted to the king of Babylon—all the rest of the multitude.",
+      "ko": "성중에 남아 있는 백성과 바벨론 왕에게 항복한 자와 무리의 남은 자는 시위대 장관 느부사라단이 다 사로잡아가고",
+      "source_text_hash": "99a55e779f427f107229f8e842635dde489fd869e60c3a5e49291c8d46254c45",
+      "translation_text_hash": "ac09d587dd314c542ab211b49f1c26e3401b4798642bebce3e75e6e4343ae9b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성중에 남아 있는 백성과 바벨론 왕에게 항복한 자와 무리의 남은 자는 시위대 장관 느부사라단이 다 사로잡아가고"
+      ],
+      "raw_text_hashes": [
+        "ac09d587dd314c542ab211b49f1c26e3401b4798642bebce3e75e6e4343ae9b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:12",
+      "sequence": 10235,
+      "chapter_label": "2KI 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "But the captain of the guard left some of the poorest of the land to work the vineyards and fields.",
+      "ko": "빈천한 국민을 그 땅에 남겨두어 포도원을 다스리는 자와 농부가 되게 하였더라",
+      "source_text_hash": "5a34d493584134cfddabe513849b42e06d92c4ba7b5f11d54f4527d625a3ac79",
+      "translation_text_hash": "6e11d8e32c6d4567ef2798df94aac2f4f2a482b7d532a94d89f8cefd7976b865",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈천한 국민을 그 땅에 남겨두어 포도원을 다스리는 자와 농부가 되게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "6e11d8e32c6d4567ef2798df94aac2f4f2a482b7d532a94d89f8cefd7976b865"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:13",
+      "sequence": 10236,
+      "chapter_label": "2KI 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "The Chaldeans broke up the pillars of bronze that were in the LORD’s house and the bases and the bronze sea that were in the LORD’s house, and carried the bronze pieces to Babylon.",
+      "ko": "갈대아 사람이 또 여호와의 전의 두 놋기둥과 받침들과 여호와의 전의 놋바다를 깨뜨려 그 놋을 바벨론으로 가져가고",
+      "source_text_hash": "23f4a58932f9437aaade08041b8368fbf1749152ae46f434a84a64d645c5ab93",
+      "translation_text_hash": "cb56a5c19410f28c29b4d0cef4bb0074ba26daf560e523c3b1826d23f2f5cf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아 사람이 또 여호와의 전의 두 놋기둥과 받침들과 여호와의 전의 놋바다를 깨뜨려 그 놋을 바벨론으로 가져가고"
+      ],
+      "raw_text_hashes": [
+        "cb56a5c19410f28c29b4d0cef4bb0074ba26daf560e523c3b1826d23f2f5cf5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:14",
+      "sequence": 10237,
+      "chapter_label": "2KI 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "They took away the pots, the shovels, the snuffers, the spoons, and all the vessels of bronze with which they ministered.",
+      "ko": "또 가마들과 부삽들과 불집게들과 숟가락들과 섬길 때에 쓰는 모든 놋그릇을 다 가져 갔으며",
+      "source_text_hash": "f3b0de156f18024993bbc99329bb40e473f7698c22b9f69f4819fa4b7a6db75d",
+      "translation_text_hash": "633e2504d0f692af257455abe1ae176af117f11b3c25c528b556b44f8ce851c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가마들과 부삽들과 불집게들과 숟가락들과 섬길 때에 쓰는 모든 놋그릇을 다 가져 갔으며"
+      ],
+      "raw_text_hashes": [
+        "633e2504d0f692af257455abe1ae176af117f11b3c25c528b556b44f8ce851c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:15",
+      "sequence": 10238,
+      "chapter_label": "2KI 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "The captain of the guard took away the fire pans, the basins, that which was of gold, for gold, and that which was of silver, for silver.",
+      "ko": "시위대 장관이 또 불 옮기는 그릇들과 주발들 곧 금물의 금과 은물의 은을 가져갔으며",
+      "source_text_hash": "4d9f376ebb960a21c389b09ea09bc7651233a2ba0e4c743aa52a2c5e730a6f78",
+      "translation_text_hash": "e808569632885dd9a7a8e61e36830367a656c7614b3c89d910ed3d04825bfeef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관이 또 불 옮기는 그릇들과 주발들 곧 금물의 금과 은물의 은을 가져갔으며"
+      ],
+      "raw_text_hashes": [
+        "e808569632885dd9a7a8e61e36830367a656c7614b3c89d910ed3d04825bfeef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:16",
+      "sequence": 10239,
+      "chapter_label": "2KI 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "The two pillars, the one sea, and the bases, which Solomon had made for the LORD’s house, the bronze of all these vessels was not weighed.",
+      "ko": "또 솔로몬이 여호와의 전을 위하여 만든 두 기둥과 한 바다와 받침들을 취하였는데 이 모든 기구의 놋 중수를 헤아릴 수 없었으니",
+      "source_text_hash": "20360575d8a5988b06225ffa521e0c2862cc8a14d1293316b0a280edba21b802",
+      "translation_text_hash": "263977657d14dd38c11ad6397c6905dde94b34f7238ef1ad9aafc525b8188c0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 솔로몬이 여호와의 전을 위하여 만든 두 기둥과 한 바다와 받침들을 취하였는데 이 모든 기구의 놋 중수를 헤아릴 수 없었으니"
+      ],
+      "raw_text_hashes": [
+        "263977657d14dd38c11ad6397c6905dde94b34f7238ef1ad9aafc525b8188c0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:17",
+      "sequence": 10240,
+      "chapter_label": "2KI 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "The height of the one pillar was eighteen cubits, and a capital of bronze was on it. The height of the capital was three cubits, with network and pomegranates on the capital around it, all of bronze; and the second pillar with its network was like these.",
+      "ko": "그 한 기둥은 고가 십 팔 규빗이요 그 꼭대기에 놋머리가 있어 고가 삼 규빗이요 그 머리에 둘린 그물과 석류가 다 놋이라 다른 기둥의 장식과 그물도 이와 같았더라",
+      "source_text_hash": "70c3784a483f77c3203857330796f28fa530ae06ca758787a9b002043e1e0513",
+      "translation_text_hash": "e1f4768731e741974a8f136b68fba5904a378aa32e9d4bb8af2c62650fd93509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 한 기둥은 고가 십 팔 규빗이요 그 꼭대기에 놋머리가 있어 고가 삼 규빗이요 그 머리에 둘린 그물과 석류가 다 놋이라 다른 기둥의 장식과 그물도 이와 같았더라"
+      ],
+      "raw_text_hashes": [
+        "e1f4768731e741974a8f136b68fba5904a378aa32e9d4bb8af2c62650fd93509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:18",
+      "sequence": 10241,
+      "chapter_label": "2KI 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "The captain of the guard took Seraiah the chief priest, Zephaniah the second priest, and the three keepers of the threshold;",
+      "ko": "시위대 장관이 대제사장 스라야와 부제사장 스바냐와 전 문지기 세 사람을 잡고",
+      "source_text_hash": "2d6d51d57555c84fd96635148875abcbe9596fc2435426b2c61fc64e652d2718",
+      "translation_text_hash": "b444be0bb08d3974b1d63f099d20f28b481015042a35b73dd783b5960946f7ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관이 대제사장 스라야와 부제사장 스바냐와 전 문지기 세 사람을 잡고"
+      ],
+      "raw_text_hashes": [
+        "b444be0bb08d3974b1d63f099d20f28b481015042a35b73dd783b5960946f7ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:19",
+      "sequence": 10242,
+      "chapter_label": "2KI 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "and out of the city he took an officer who was set over the men of war; and five men of those who saw the king’s face, who were found in the city; and the scribe, the captain of the army, who mustered the people of the land, and sixty men of the people of the land who were found in the city.",
+      "ko": "또 성중에서 사람을 잡았으니 곧 군사를 거느린 내시 하나와 또 성중에서 만난바 왕의 시종 다섯 사람과 국민을 초모하는 장관의 서기관 하나와 성중에서 만난바 국민 육십명이라",
+      "source_text_hash": "65ca2d0655c96f5fee83e5ce777660f06c18ad66f2142a197f285d6a63fa63db",
+      "translation_text_hash": "f26aba9630c8ed9ec2c8a128adf37dac594181a71901c8112fd1af399b6f5c97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성중에서 사람을 잡았으니 곧 군사를 거느린 내시 하나와 또 성중에서 만난바 왕의 시종 다섯 사람과 국민을 초모하는 장관의 서기관 하나와 성중에서 만난바 국민 육십명이라"
+      ],
+      "raw_text_hashes": [
+        "f26aba9630c8ed9ec2c8a128adf37dac594181a71901c8112fd1af399b6f5c97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:20",
+      "sequence": 10243,
+      "chapter_label": "2KI 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "Nebuzaradan the captain of the guard took them, and brought them to the king of Babylon to Riblah.",
+      "ko": "시위대 장관 느부사라단이 저희를 잡아가지고 립나 바벨론 왕에게 나아가매",
+      "source_text_hash": "82d6a4a90ff2958c8ee7a296db5ac1d11a322ef7ff07a95d006a053e66ffd8dd",
+      "translation_text_hash": "9a6cd18bd6a129fcbc07a41a0c775a5f1d194accdf0fc1e2002c230b20963069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관 느부사라단이 저희를 잡아가지고 립나 바벨론 왕에게 나아가매"
+      ],
+      "raw_text_hashes": [
+        "9a6cd18bd6a129fcbc07a41a0c775a5f1d194accdf0fc1e2002c230b20963069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:21",
+      "sequence": 10244,
+      "chapter_label": "2KI 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "The king of Babylon attacked them and put them to death at Riblah in the land of Hamath. So Judah was carried away captive out of his land.",
+      "ko": "바벨론 왕이 하맛 땅 립나에서 다 쳐 죽였더라 이와 같이 유다가 사로잡혀 본토에서 떠났더라",
+      "source_text_hash": "75d4be91871f8bebd00305b9180da1b80e46951a5cba9054df64926e22f99daf",
+      "translation_text_hash": "69aa1e7cfd998afd40424112500000dfe68945b70c3a52b29d78b4d2819d39f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 하맛 땅 립나에서 다 쳐 죽였더라 이와 같이 유다가 사로잡혀 본토에서 떠났더라"
+      ],
+      "raw_text_hashes": [
+        "69aa1e7cfd998afd40424112500000dfe68945b70c3a52b29d78b4d2819d39f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:22",
+      "sequence": 10245,
+      "chapter_label": "2KI 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "As for the people who were left in the land of Judah whom Nebuchadnezzar king of Babylon had left, even over them he made Gedaliah the son of Ahikam, the son of Shaphan, governor.",
+      "ko": "유다 땅에 머물러 있는 백성은 곧 바벨론 왕 느부갓네살이 남긴 자라 왕이 사반의 손자 아히감의 아들 그달리야로 관할하게 하였더라",
+      "source_text_hash": "bf9fbb77d6c3c7e8aa739813e94896c08b4a6245e808e0de7fd6e71ed9492927",
+      "translation_text_hash": "abb39b1f053107a88a2a849d15ae837fe216cbe3664a74112179c37b07c84a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 땅에 머물러 있는 백성은 곧 바벨론 왕 느부갓네살이 남긴 자라 왕이 사반의 손자 아히감의 아들 그달리야로 관할하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "abb39b1f053107a88a2a849d15ae837fe216cbe3664a74112179c37b07c84a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:23",
+      "sequence": 10246,
+      "chapter_label": "2KI 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "Now when all the captains of the forces, they and their men, heard that the king of Babylon had made Gedaliah governor, they came to Gedaliah to Mizpah, even Ishmael the son of Nethaniah, Johanan the son of Kareah, Seraiah the son of Tanhumeth the Netophathite, and Jaazaniah the son of the Maacathite, they and their men.",
+      "ko": "모든 군대 장관과 그 좇는 자가 바벨론 왕이 그달리야로 방백을 삼았다 함을 듣고 이에 느다니야의 아들 이스마엘과 가레아의 아들 요하난과 느도바 사람 단후멧의 아들 스라야와 마아가 사람의 아들 야아사니야와 그 좇는 사람이 모두 미스바로 가서 그달리야에게 나아가매",
+      "source_text_hash": "148c1967851582a771aa326d85e7d5a5b4cb0599e0760d55d64c6c396f387cfd",
+      "translation_text_hash": "adb25eec28e797f18e1113502876c75ac10559dbd4fa2f34c69674c73fb567da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 군대 장관과 그 좇는 자가 바벨론 왕이 그달리야로 방백을 삼았다 함을 듣고 이에 느다니야의 아들 이스마엘과 가레아의 아들 요하난과 느도바 사람 단후멧의 아들 스라야와 마아가 사람의 아들 야아사니야와 그 좇는 사람이 모두 미스바로 가서 그달리야에게 나아가매"
+      ],
+      "raw_text_hashes": [
+        "adb25eec28e797f18e1113502876c75ac10559dbd4fa2f34c69674c73fb567da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:24",
+      "sequence": 10247,
+      "chapter_label": "2KI 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "Gedaliah swore to them and to their men, and said to them, “Don’t be afraid because of the servants of the Chaldeans. Dwell in the land and serve the king of Babylon, and it will be well with you.”",
+      "ko": "그달리야가 저희와 그 좇는 자들에게 맹세하여 이르되 너희는 갈대아 신복을 인하여 두려워 말고 이 땅에 거하여 바벨론 왕을 섬기라 그리하면 너희가 평안하리라 하니라",
+      "source_text_hash": "cc44c705c58b798c3d8c578d4172775ccd62758520c38f64286f44213aad0faf",
+      "translation_text_hash": "73888043dd853eddd75b93e47e60af567b838021316f537e9a5a4aec5de10fbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그달리야가 저희와 그 좇는 자들에게 맹세하여 이르되 너희는 갈대아 신복을 인하여 두려워 말고 이 땅에 거하여 바벨론 왕을 섬기라 그리하면 너희가 평안하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "73888043dd853eddd75b93e47e60af567b838021316f537e9a5a4aec5de10fbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:25",
+      "sequence": 10248,
+      "chapter_label": "2KI 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "But in the seventh month, Ishmael the son of Nethaniah, the son of Elishama, of the royal offspring came, and ten men with him, and struck Gedaliah so that he died, with the Jews and the Chaldeans that were with him at Mizpah.",
+      "ko": "칠월에 왕족 엘리사마의 손자 느다니야의 아들 이스마엘이 십인을 거느리고 와서 그달리야를 쳐서 죽이고 또 저와 함께 미스바에 있는 유다 사람과 갈대아 사람을 죽인지라",
+      "source_text_hash": "f3602a9fe9be7ab3692eba67db9b1e3eb77f03f26d4adea59e70087664d40f80",
+      "translation_text_hash": "fc31bc19bde18b10a750697b19fc79d70c0976c75cc226504b89eb0dc9912d87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월에 왕족 엘리사마의 손자 느다니야의 아들 이스마엘이 십인을 거느리고 와서 그달리야를 쳐서 죽이고 또 저와 함께 미스바에 있는 유다 사람과 갈대아 사람을 죽인지라"
+      ],
+      "raw_text_hashes": [
+        "fc31bc19bde18b10a750697b19fc79d70c0976c75cc226504b89eb0dc9912d87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:26",
+      "sequence": 10249,
+      "chapter_label": "2KI 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "All the people, both small and great, and the captains of the forces arose and came to Egypt; for they were afraid of the Chaldeans.",
+      "ko": "대소 백성과 군대 장관들이 다 일어나서 애굽으로 갔으니 이는 갈대아 사람을 두려워함이었더라",
+      "source_text_hash": "f8011dd6f8d6384029a16fc054e0d5f735f5c245e11972c97108ce6279f1b6ee",
+      "translation_text_hash": "8746b475dd34c72e8ca2f83d08b62880f254eb2c7d4e6cbd1042a1b60cd7fedc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대소 백성과 군대 장관들이 다 일어나서 애굽으로 갔으니 이는 갈대아 사람을 두려워함이었더라"
+      ],
+      "raw_text_hashes": [
+        "8746b475dd34c72e8ca2f83d08b62880f254eb2c7d4e6cbd1042a1b60cd7fedc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:27",
+      "sequence": 10250,
+      "chapter_label": "2KI 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "In the thirty-seventh year of the captivity of Jehoiachin king of Judah, in the twelfth month, on the twenty-seventh day of the month, Evilmerodach king of Babylon, in the year that he began to reign, released Jehoiachin king of Judah out of prison,",
+      "ko": "유다 왕 여호야긴이 사로잡혀 간지 삼십 칠년 곧 바벨론 왕 에윌므로닥의 즉위한 원년 십 이월 이십 칠일에 유다 왕 여호야긴을 옥에서 내어놓아 그 머리를 들게 하고",
+      "source_text_hash": "163c4b95efc90cadaa2202f495453a6f4bd549d63d4fa69742a7e0cfcf06c30c",
+      "translation_text_hash": "c27de9f8206f1c4da8e75d43b3561aab5c712792b3c7471b6d4441b5d15df28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호야긴이 사로잡혀 간지 삼십 칠년 곧 바벨론 왕 에윌므로닥의 즉위한 원년 십 이월 이십 칠일에 유다 왕 여호야긴을 옥에서 내어놓아 그 머리를 들게 하고"
+      ],
+      "raw_text_hashes": [
+        "c27de9f8206f1c4da8e75d43b3561aab5c712792b3c7471b6d4441b5d15df28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:28",
+      "sequence": 10251,
+      "chapter_label": "2KI 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "and he spoke kindly to him and set his throne above the throne of the kings who were with him in Babylon,",
+      "ko": "선히 말하고 그 위를 바벨론에 저와 함께 있는 모든 왕의 위보다 높이고",
+      "source_text_hash": "56c7fab79b4d7711de57a306fd0c1bf04968ed55a670bce06f576b95894cfcfb",
+      "translation_text_hash": "52e539036fd5ba2317cd89e979ebd69d4dcc8b35a0e0b2655cea6d01c404b006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선히 말하고 그 위를 바벨론에 저와 함께 있는 모든 왕의 위보다 높이고"
+      ],
+      "raw_text_hashes": [
+        "52e539036fd5ba2317cd89e979ebd69d4dcc8b35a0e0b2655cea6d01c404b006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:29",
+      "sequence": 10252,
+      "chapter_label": "2KI 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "and changed his prison garments. Jehoiachin ate bread before him continually all the days of his life;",
+      "ko": "그 죄수의 의복을 바꾸게 하고 그 일평생에 항상 왕의 앞에서 먹게 하였고",
+      "source_text_hash": "00074b6ee11b6971ddcbaa989873691f580ddf2cfd15421de0bbdcf5a0dd43d4",
+      "translation_text_hash": "cff579d9b6f7cabadc9e0fd6913ab685b9b790237a72d53522687ad9911b4fca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄수의 의복을 바꾸게 하고 그 일평생에 항상 왕의 앞에서 먹게 하였고"
+      ],
+      "raw_text_hashes": [
+        "cff579d9b6f7cabadc9e0fd6913ab685b9b790237a72d53522687ad9911b4fca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:25:30",
+      "sequence": 10253,
+      "chapter_label": "2KI 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "and for his allowance, there was a continual allowance given him from the king, every day a portion, all the days of his life.",
+      "ko": "저의 쓸 것은 날마다 왕에게서 받는 정수가 있어서 종신토록 끊이지 아니하였더라",
+      "source_text_hash": "ed0ff9f219020b5b025626efbf04d80b62ff21528d7866ad3d8c3d46b3cc747f",
+      "translation_text_hash": "fc4ce41910c9df1879af294b67fc090687e640429f75074c91ff05e573617b07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 쓸 것은 날마다 왕에게서 받는 정수가 있어서 종신토록 끊이지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "fc4ce41910c9df1879af294b67fc090687e640429f75074c91ff05e573617b07"
+      ]
+    }
+  ]
+}

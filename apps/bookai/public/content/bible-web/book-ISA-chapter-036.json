@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:036",
+  "unit_ordinal": 715,
+  "unit_label": "ISA 36",
+  "book_code": "ISA",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:36:1",
+      "sequence": 18332,
+      "chapter_label": "ISA 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the fourteenth year of King Hezekiah, Sennacherib king of Assyria attacked all of the fortified cities of Judah and captured them.",
+      "ko": "히스기야왕 십 사년에 앗수르 왕 산헤립이 올라와서 유다 모든 견고한 성을 쳐서 취하니라",
+      "source_text_hash": "1f1d61fe084973969276caae51a5bfaf6d98fbd4b16eb97f083a51d354dc5eb5",
+      "translation_text_hash": "621e7c967a535e762050c6418c1dedd32c76b228dfefcc84543cfddf8dc8bff5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕 십 사년에 앗수르 왕 산헤립이 올라와서 유다 모든 견고한 성을 쳐서 취하니라"
+      ],
+      "raw_text_hashes": [
+        "621e7c967a535e762050c6418c1dedd32c76b228dfefcc84543cfddf8dc8bff5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:2",
+      "sequence": 18333,
+      "chapter_label": "ISA 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "The king of Assyria sent Rabshakeh from Lachish to Jerusalem to King Hezekiah with a large army. He stood by the aqueduct from the upper pool in the fuller’s field highway.",
+      "ko": "앗수르 왕이 라기스에서부터 랍사게를 예루살렘으로 보내되 대군을 거느리고 히스기야왕에게로 가게 하매 그가 세탁업자의 터의 대로 윗못 수도구 곁에 서매",
+      "source_text_hash": "276a6308b82500285d31f33961ef390926578f2975bacd93a38ba0eb51b92404",
+      "translation_text_hash": "faf008754fb180774a97a8324260bf4bdc442a848be7e5328f5fe221bba03c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 라기스에서부터 랍사게를 예루살렘으로 보내되 대군을 거느리고 히스기야왕에게로 가게 하매 그가 세탁업자의 터의 대로 윗못 수도구 곁에 서매"
+      ],
+      "raw_text_hashes": [
+        "faf008754fb180774a97a8324260bf4bdc442a848be7e5328f5fe221bba03c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:3",
+      "sequence": 18334,
+      "chapter_label": "ISA 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "Then Eliakim the son of Hilkiah, who was over the household, and Shebna the scribe, and Joah, the son of Asaph the recorder came out to him.",
+      "ko": "힐기야의 아들 궁내대신 엘리아김과 서기관 셉나와 아삽의 아들 사관 요아가 그에게 나아가니라",
+      "source_text_hash": "0be853f88ab703df5f055de9f8ef15885bb1701143e4c97f42fe08786f2a50c7",
+      "translation_text_hash": "cf6c7c14f3414e24ce6973a3498e024de292953382da64c139c52fe263eac1fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힐기야의 아들 궁내대신 엘리아김과 서기관 셉나와 아삽의 아들 사관 요아가 그에게 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "cf6c7c14f3414e24ce6973a3498e024de292953382da64c139c52fe263eac1fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:4",
+      "sequence": 18335,
+      "chapter_label": "ISA 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "Rabshakeh said to them, “Now tell Hezekiah, ‘The great king, the king of Assyria, says, “What confidence is this in which you trust?",
+      "ko": "랍사게가 그들에게 이르되 이제 히스기야에게 고하라 대왕 앗수르 왕이 이같이 말씀하시기를 네가 의뢰하니 무엇을 의뢰하느냐",
+      "source_text_hash": "c3e606b5e672d5064be4851c285370d0e8fab5644fbf41a9f317f5ee9f5bd1a5",
+      "translation_text_hash": "26311a6af045d00f544a9921b6d82e379bc5ff27c2105feedcd5b0104af68d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 그들에게 이르되 이제 히스기야에게 고하라 대왕 앗수르 왕이 이같이 말씀하시기를 네가 의뢰하니 무엇을 의뢰하느냐"
+      ],
+      "raw_text_hashes": [
+        "26311a6af045d00f544a9921b6d82e379bc5ff27c2105feedcd5b0104af68d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:5",
+      "sequence": 18336,
+      "chapter_label": "ISA 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "I say that your counsel and strength for the war are only vain words. Now in whom do you trust, that you have rebelled against me?",
+      "ko": "내가 말하노니 네가 족히 싸울 모략과 용맹이 있노라 함은 입술에 붙은 말 뿐이니라 네가 이제 누구를 의뢰하고 나를 반역하느냐",
+      "source_text_hash": "49817b90e712bd4111916658d6ee73e3de0c5ce7922ed4df50dd15a00a1e2075",
+      "translation_text_hash": "958e6046a9ebbf086caa798aeb08c0aa47d8a4a96f3c48279b54615d309f7d35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하노니 네가 족히 싸울 모략과 용맹이 있노라 함은 입술에 붙은 말 뿐이니라 네가 이제 누구를 의뢰하고 나를 반역하느냐"
+      ],
+      "raw_text_hashes": [
+        "958e6046a9ebbf086caa798aeb08c0aa47d8a4a96f3c48279b54615d309f7d35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:6",
+      "sequence": 18337,
+      "chapter_label": "ISA 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, you trust in the staff of this bruised reed, even in Egypt, which if a man leans on it, it will go into his hand and pierce it. So is Pharaoh king of Egypt to all who trust in him.",
+      "ko": "보라 네가 애굽을 의뢰하도다 그것은 상한 갈대지팡이와 일반이라 사람이 그것을 의지하면 손에 찔려들어가리니 애굽 왕 바로는 그 의뢰하는 자에게 이와 같으니라",
+      "source_text_hash": "04fd94374e8cb4213bd13fa7a98f02fe9854c1190af26be164e293423a156bdc",
+      "translation_text_hash": "ed5b71161c42dcba93aaf494aaf402e6f0eda57c0aa65d7b36da82e35139569c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네가 애굽을 의뢰하도다 그것은 상한 갈대지팡이와 일반이라 사람이 그것을 의지하면 손에 찔려들어가리니 애굽 왕 바로는 그 의뢰하는 자에게 이와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "ed5b71161c42dcba93aaf494aaf402e6f0eda57c0aa65d7b36da82e35139569c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:7",
+      "sequence": 18338,
+      "chapter_label": "ISA 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "But if you tell me, ‘We trust in the LORD our God,’ isn’t that he whose high places and whose altars Hezekiah has taken away, and has said to Judah and to Jerusalem, ‘You shall worship before this altar’?”",
+      "ko": "혹시 네가 내게 이르기를 우리는 우리 하나님 여호와를 의뢰하노라 하리라 마는 그는 그의 산당과 제단을 히스기야가 제하여 버리고 유다와 예루살렘에 명하기를 너희는 이 제단 앞에서만 경배하라 하던 그 신이 아니냐 하셨느니라",
+      "source_text_hash": "91e6c62528e84bf303903049a90a68f7a496a0c563517ae19bf49f422e9d10a8",
+      "translation_text_hash": "484e63a1c76d13619e0992f1962363c607f7055692e72d0c2b3630c7fd6231e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 네가 내게 이르기를 우리는 우리 하나님 여호와를 의뢰하노라 하리라 마는 그는 그의 산당과 제단을 히스기야가 제하여 버리고 유다와 예루살렘에 명하기를 너희는 이 제단 앞에서만 경배하라 하던 그 신이 아니냐 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "484e63a1c76d13619e0992f1962363c607f7055692e72d0c2b3630c7fd6231e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:8",
+      "sequence": 18339,
+      "chapter_label": "ISA 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "Now therefore, please make a pledge to my master the king of Assyria, and I will give you two thousand horses, if you are able on your part to set riders on them.",
+      "ko": "그러므로 이제 청하노니 내 주 앗수르 왕과 내기하라 나는 네게 말 이천필을 주어도 너는 그 탈 자를 능히 내지 못하리라",
+      "source_text_hash": "1353d3990f68824a1da1984a70ec9b3bd2e52d2527915a51411fa2f324294f8c",
+      "translation_text_hash": "2ce500f87034a60c1a029c1adce37ee8af5a82530866bddf3c3e39576f9882b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 청하노니 내 주 앗수르 왕과 내기하라 나는 네게 말 이천필을 주어도 너는 그 탈 자를 능히 내지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "2ce500f87034a60c1a029c1adce37ee8af5a82530866bddf3c3e39576f9882b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:9",
+      "sequence": 18340,
+      "chapter_label": "ISA 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "How then can you turn away the face of one captain of the least of my master’s servants, and put your trust in Egypt for chariots and for horsemen?",
+      "ko": "그런즉 네가 어찌 내 주의 종 가운데 극히 작은 장관 한 사람인들 물리칠 수 있으랴 어찌 애굽을 의뢰하여 병거와 기병을 얻으려 하느냐",
+      "source_text_hash": "2df107bc460b3d58563c7cc392276f596aa942b8243d70fc30a5ec458c2615a5",
+      "translation_text_hash": "884115859067357024e2e43d3379df6eb9a517fd028c95c67ad4bdef9e66677a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 네가 어찌 내 주의 종 가운데 극히 작은 장관 한 사람인들 물리칠 수 있으랴 어찌 애굽을 의뢰하여 병거와 기병을 얻으려 하느냐"
+      ],
+      "raw_text_hashes": [
+        "884115859067357024e2e43d3379df6eb9a517fd028c95c67ad4bdef9e66677a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:10",
+      "sequence": 18341,
+      "chapter_label": "ISA 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "Have I come up now without the LORD against this land to destroy it? The LORD said to me, “Go up against this land, and destroy it.”’”",
+      "ko": "내가 이제 올라와서 이 땅을 멸하는 것이 여호와의 뜻이 없음이겠느냐 여호와께서 내게 이르시기를 올라가 그 땅을 쳐서 멸하라 하셨느니라",
+      "source_text_hash": "48f47cd4b4039b2b182341d13772bdd6a97f6b6bb08da6083364049839650f57",
+      "translation_text_hash": "8b544a805019467e9322c575fa8d3ec3fda71ff1260f86e4d7832a69d7db5314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제 올라와서 이 땅을 멸하는 것이 여호와의 뜻이 없음이겠느냐 여호와께서 내게 이르시기를 올라가 그 땅을 쳐서 멸하라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "8b544a805019467e9322c575fa8d3ec3fda71ff1260f86e4d7832a69d7db5314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:11",
+      "sequence": 18342,
+      "chapter_label": "ISA 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "Then Eliakim, Shebna and Joah said to Rabshakeh, “Please speak to your servants in Aramaic, for we understand it. Don’t speak to us in the Jews’ language in the hearing of the people who are on the wall.”",
+      "ko": "이에 엘리아김과 셉나와 요아가 랍사게에게 이르되 우리가 아람 방언을 아오니 청컨대 그 방언으로 당신의 종들에게 말씀하고 성 위에 있는 백성의 듣는데서 유다 방언으로 말하지 마소서",
+      "source_text_hash": "34aa95867726466ee385458748382fb862b31afd654d7cf075723a2108211628",
+      "translation_text_hash": "4628755825d9d917a55a487ad41c0e2faea89abba8378a206462a73b95404e2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 엘리아김과 셉나와 요아가 랍사게에게 이르되 우리가 아람 방언을 아오니 청컨대 그 방언으로 당신의 종들에게 말씀하고 성 위에 있는 백성의 듣는데서 유다 방언으로 말하지 마소서"
+      ],
+      "raw_text_hashes": [
+        "4628755825d9d917a55a487ad41c0e2faea89abba8378a206462a73b95404e2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:12",
+      "sequence": 18343,
+      "chapter_label": "ISA 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "But Rabshakeh said, “Has my master sent me only to your master and to you, to speak these words, and not to the men who sit on the wall, who will eat their own dung and drink their own urine with you?”",
+      "ko": "랍사게가 가로되 내 주께서 이 일을 네 주와 네게만 말하라고 나를 보내신 것이냐 너희와 함께 자기의 대변을 먹으며 자기의 소변을 마실 성 위에 앉은 사람들에게도 하라고 보내신 것이 아니냐",
+      "source_text_hash": "e9ad333d6201942d142dfd8ce70bd46cb09ae759bc6cc19eb9ebb4a7a6d13827",
+      "translation_text_hash": "7fb5667e8a2593e49c2bc1af1dfd72e54f34ec1d97a90fcd0a7573fbb14a0435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 가로되 내 주께서 이 일을 네 주와 네게만 말하라고 나를 보내신 것이냐 너희와 함께 자기의 대변을 먹으며 자기의 소변을 마실 성 위에 앉은 사람들에게도 하라고 보내신 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "7fb5667e8a2593e49c2bc1af1dfd72e54f34ec1d97a90fcd0a7573fbb14a0435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:13",
+      "sequence": 18344,
+      "chapter_label": "ISA 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "Then Rabshakeh stood, and called out with a loud voice in the Jews’ language, and said, “Hear the words of the great king, the king of Assyria!",
+      "ko": "이에 랍사게가 일어서서 유다 방언으로 크게 외쳐 가로되 너희는 대왕 앗수르 왕의 말씀을 들으라",
+      "source_text_hash": "400e72c2c2c0237418437fd8d1d71321f297d3dc0888b477b2ab907b7d32ee24",
+      "translation_text_hash": "fec31ec25b32c7c4d9dbb7ce75283641a607ab56404b694f91dfd38555307456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 랍사게가 일어서서 유다 방언으로 크게 외쳐 가로되 너희는 대왕 앗수르 왕의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "fec31ec25b32c7c4d9dbb7ce75283641a607ab56404b694f91dfd38555307456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:14",
+      "sequence": 18345,
+      "chapter_label": "ISA 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "The king says, ‘Don’t let Hezekiah deceive you; for he will not be able to deliver you.",
+      "ko": "왕의 말씀에 너희는 히스기야에게 미혹되지 말라 그가 능히 너희를 건지지 못할 것이니라",
+      "source_text_hash": "3c4b272cf3428e5bf4772ea56414b24bd83daf960c9c232ec4351b209b5e2d12",
+      "translation_text_hash": "bdbaef7fc8e87702fdf3dc48340cf1b21f4eb0a5757b21d5425e91db517932a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 말씀에 너희는 히스기야에게 미혹되지 말라 그가 능히 너희를 건지지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "bdbaef7fc8e87702fdf3dc48340cf1b21f4eb0a5757b21d5425e91db517932a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:15",
+      "sequence": 18346,
+      "chapter_label": "ISA 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "Don’t let Hezekiah make you trust in the LORD, saying, “The LORD will surely deliver us. This city won’t be given into the hand of the king of Assyria.”’",
+      "ko": "히스기야가 너희로 여호와를 의뢰하게 하려는 것을 받지 말라 그가 말하기를 여호와께서 반드시 우리를 건지시리니 이 성이 앗수르 왕의 손에 붙임이 되지 아니하리라 할찌라도",
+      "source_text_hash": "be7e858062e832635933a85ed5746e5c7f01c137136bbbe1d68c528804c664b1",
+      "translation_text_hash": "12771e8f7671ba266e9e0cfeb5fe6df01a336daade5ad08cc146ef3ff0f57f9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 너희로 여호와를 의뢰하게 하려는 것을 받지 말라 그가 말하기를 여호와께서 반드시 우리를 건지시리니 이 성이 앗수르 왕의 손에 붙임이 되지 아니하리라 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "12771e8f7671ba266e9e0cfeb5fe6df01a336daade5ad08cc146ef3ff0f57f9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:16",
+      "sequence": 18347,
+      "chapter_label": "ISA 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t listen to Hezekiah, for the king of Assyria says, ‘Make your peace with me, and come out to me; and each of you eat from his vine, and each one from his fig tree, and each one of you drink the waters of his own cistern;",
+      "ko": "히스기야를 청종치 말라 앗수르 왕이 또 말씀하시기를 너희는 내게 항복하고 내게로 나아오라 그리하면 너희가 각각 자기의 포도와 자기의 무화과를 먹을 것이며 각각 자기의 우물 물을 마실 것이요",
+      "source_text_hash": "e075b5af14f2f3b54d63947dcf1ba8b7f341a456dc17e1d443662068e3bd5eac",
+      "translation_text_hash": "3c7ff518a07185c204d818d862a00a93405a2a9c09aca62e57f6213c30c1dedc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야를 청종치 말라 앗수르 왕이 또 말씀하시기를 너희는 내게 항복하고 내게로 나아오라 그리하면 너희가 각각 자기의 포도와 자기의 무화과를 먹을 것이며 각각 자기의 우물 물을 마실 것이요"
+      ],
+      "raw_text_hashes": [
+        "3c7ff518a07185c204d818d862a00a93405a2a9c09aca62e57f6213c30c1dedc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:17",
+      "sequence": 18348,
+      "chapter_label": "ISA 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "until I come and take you away to a land like your own land, a land of grain and new wine, a land of bread and vineyards.",
+      "ko": "내가 와서 너희를 너희 본토와 같이 곡식과 포도주와 떡과 포도원이 있는 땅에 옮기기까지 하리라",
+      "source_text_hash": "379161a792c05c072c942684412047ddcbe401480b87a64b2909dc1518399d8b",
+      "translation_text_hash": "951b4529ad12a7dfc1261df145782cc8070f43b57ef837628ff81a27e3749ac4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 와서 너희를 너희 본토와 같이 곡식과 포도주와 떡과 포도원이 있는 땅에 옮기기까지 하리라"
+      ],
+      "raw_text_hashes": [
+        "951b4529ad12a7dfc1261df145782cc8070f43b57ef837628ff81a27e3749ac4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:18",
+      "sequence": 18349,
+      "chapter_label": "ISA 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "Beware lest Hezekiah persuade you, saying, “The LORD will deliver us.” Have any of the gods of the nations delivered their lands from the hand of the king of Assyria?",
+      "ko": "혹시 히스기야가 너희에게 이르기를 여호와께서 우리를 건지시리라 할찌라도 꾀임을 받지 말라 열국의 신들 중에 그 땅을 앗수르 왕의 손에서 건진 자가 있느냐",
+      "source_text_hash": "6fe6e2364ac01210c59f074e71bf4b481611a229e1af777d50aa47e72ceb3be4",
+      "translation_text_hash": "6be0de8c8e72e9a01674bb0e3c78eaf1c1d164706af2942aeffe0b1769c5e378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 히스기야가 너희에게 이르기를 여호와께서 우리를 건지시리라 할찌라도 꾀임을 받지 말라 열국의 신들 중에 그 땅을 앗수르 왕의 손에서 건진 자가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "6be0de8c8e72e9a01674bb0e3c78eaf1c1d164706af2942aeffe0b1769c5e378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:19",
+      "sequence": 18350,
+      "chapter_label": "ISA 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "Where are the gods of Hamath and Arpad? Where are the gods of Sepharvaim? Have they delivered Samaria from my hand?",
+      "ko": "하맛과 아르밧의 신들이 어디 있느냐 스발와임의 신들이 어디 있느냐 그들이 사마리아를 내 손에서 건졌느냐",
+      "source_text_hash": "aba162f2b61090bca185da6600082ff4edd22ad0220cc0b6dc29b0c9f73f9394",
+      "translation_text_hash": "fe217a7e1b0e62117b8df7f2178fea39d39848d5d500d22e3830cb2984bc6489",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하맛과 아르밧의 신들이 어디 있느냐 스발와임의 신들이 어디 있느냐 그들이 사마리아를 내 손에서 건졌느냐"
+      ],
+      "raw_text_hashes": [
+        "fe217a7e1b0e62117b8df7f2178fea39d39848d5d500d22e3830cb2984bc6489"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:20",
+      "sequence": 18351,
+      "chapter_label": "ISA 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "Who are they among all the gods of these countries that have delivered their country out of my hand, that the LORD should deliver Jerusalem out of my hand?’”",
+      "ko": "이 열방의 신들 중에 어떤 신이 그 나라를 내 손에서 건져내었기에 여호와가 능히 예루살렘을 내 손에서 건지겠느냐 하셨느니라",
+      "source_text_hash": "cdc4c2aa2eb0af0ee71d79ab9964229284cdc55e5f056eac2b4e1a7e3e5c2278",
+      "translation_text_hash": "9e1d88c3fc3edc924b9656006c6eacc4f19e5a6fadcd901e6c56497ec376b0b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 열방의 신들 중에 어떤 신이 그 나라를 내 손에서 건져내었기에 여호와가 능히 예루살렘을 내 손에서 건지겠느냐 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9e1d88c3fc3edc924b9656006c6eacc4f19e5a6fadcd901e6c56497ec376b0b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:21",
+      "sequence": 18352,
+      "chapter_label": "ISA 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "But they remained silent, and said nothing in reply, for the king’s commandment was, “Don’t answer him.”",
+      "ko": "그러나 그들이 잠잠하여 한 말도 대답지 아니하였으니 이는 왕이 그들에게 명하여 대답지 말라 하였음이었더라",
+      "source_text_hash": "4a824bedd4c148be9c486749f5ba11d6a27c74cfc319d1d9f498a6b23fbb100d",
+      "translation_text_hash": "f433f54d62977fd4991591e79b8a3f371a9387d3808f4778c1f0507c955b9fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그들이 잠잠하여 한 말도 대답지 아니하였으니 이는 왕이 그들에게 명하여 대답지 말라 하였음이었더라"
+      ],
+      "raw_text_hashes": [
+        "f433f54d62977fd4991591e79b8a3f371a9387d3808f4778c1f0507c955b9fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:36:22",
+      "sequence": 18353,
+      "chapter_label": "ISA 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "Then Eliakim the son of Hilkiah, who was over the household, and Shebna the scribe, and Joah, the son of Asaph the recorder, came to Hezekiah with their clothes torn, and told him the words of Rabshakeh.",
+      "ko": "때에 힐기야의 아들 궁내대신 엘리아김과 서기관 셉나와 아삽의 아들 사관 요아가 그 옷을 찢고 히스기야에게 나아가서 랍사게의 말을 고하니라",
+      "source_text_hash": "32f385db6993fbaf716d698409486afdc157de6d24342279e82ad9c6eaa1f91a",
+      "translation_text_hash": "841d2dcfbc07eb89044c7a44c76c781c94acc03e6fee780298be4f09c54df2e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 힐기야의 아들 궁내대신 엘리아김과 서기관 셉나와 아삽의 아들 사관 요아가 그 옷을 찢고 히스기야에게 나아가서 랍사게의 말을 고하니라"
+      ],
+      "raw_text_hashes": [
+        "841d2dcfbc07eb89044c7a44c76c781c94acc03e6fee780298be4f09c54df2e4"
+      ]
+    }
+  ]
+}

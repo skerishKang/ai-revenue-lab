@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2JN:chapter:001",
+  "unit_ordinal": 1165,
+  "unit_label": "2JN 1",
+  "book_code": "2JN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2JN:1:1",
+      "sequence": 30643,
+      "chapter_label": "2JN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The elder, to the chosen lady and her children, whom I love in truth, and not I only, but also all those who know the truth,",
+      "ko": "장로는 택하심을 입은 부녀와 그의 자녀에게 편지하노니 내가 참으로 사랑하는 자요 나뿐 아니라 진리를 아는 모든 자도 그리하는 것은",
+      "source_text_hash": "9df26c75c433ff722f838a5cf1b951256dccaa2deb4533555e542c7eba8a94b8",
+      "translation_text_hash": "22b38997d9adaf7308796a7b7d657e5c8e128da1d9833d8d9cbbedfe8c9eafc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장로는 택하심을 입은 부녀와 그의 자녀에게 편지하노니 내가 참으로 사랑하는 자요 나뿐 아니라 진리를 아는 모든 자도 그리하는 것은"
+      ],
+      "raw_text_hashes": [
+        "22b38997d9adaf7308796a7b7d657e5c8e128da1d9833d8d9cbbedfe8c9eafc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:2",
+      "sequence": 30644,
+      "chapter_label": "2JN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "for the truth’s sake, which remains in us, and it will be with us forever:",
+      "ko": "우리 안에 거하여 영원히 우리와 함께할 진리를 인함이로다",
+      "source_text_hash": "02e1eaf9a554684fae0c2c7947852ad117cb8c381dc2437d3c097cea047809be",
+      "translation_text_hash": "e1de1d7fba8e97f245acbe871946d29ffab0a68d3a0b2549bee493199a2d0711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 안에 거하여 영원히 우리와 함께할 진리를 인함이로다"
+      ],
+      "raw_text_hashes": [
+        "e1de1d7fba8e97f245acbe871946d29ffab0a68d3a0b2549bee493199a2d0711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:3",
+      "sequence": 30645,
+      "chapter_label": "2JN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Grace, mercy, and peace will be with us, from God the Father and from the Lord Jesus Christ, the Son of the Father, in truth and love.",
+      "ko": "은혜와 긍휼과 평강이 하나님 아버지와 아버지의 아들 예수 그리스도께로부터 진리와 사랑 가운데서 우리와 함께 있으리라",
+      "source_text_hash": "260d594d7daa7efebf1f076e3de81145c91a25cad90d77f32f5fa8a7184fc8bd",
+      "translation_text_hash": "0196f2486b045d96dd18219c652a0449553afd2921f717d9fed56279b618ff67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은혜와 긍휼과 평강이 하나님 아버지와 아버지의 아들 예수 그리스도께로부터 진리와 사랑 가운데서 우리와 함께 있으리라"
+      ],
+      "raw_text_hashes": [
+        "0196f2486b045d96dd18219c652a0449553afd2921f717d9fed56279b618ff67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:4",
+      "sequence": 30646,
+      "chapter_label": "2JN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "I rejoice greatly that I have found some of your children walking in truth, even as we have been commanded by the Father.",
+      "ko": "너의 자녀 중에 우리가 아버지께 받은 계명대로 진리에 행하는 자를 내가 보니 심히 기쁘도다",
+      "source_text_hash": "fc48f7d2419a45ab028ba9b5d091c842d5f5b76f7c9bdb542868b04e9b91c85f",
+      "translation_text_hash": "ff9b136c6ef04304d1908d7da493a70d33c8b0f5fa17a695f644a3763b9782a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 자녀 중에 우리가 아버지께 받은 계명대로 진리에 행하는 자를 내가 보니 심히 기쁘도다"
+      ],
+      "raw_text_hashes": [
+        "ff9b136c6ef04304d1908d7da493a70d33c8b0f5fa17a695f644a3763b9782a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:5",
+      "sequence": 30647,
+      "chapter_label": "2JN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Now I beg you, dear lady, not as though I wrote to you a new commandment, but that which we had from the beginning, that we love one another.",
+      "ko": "부녀여, 내가 이제 네게 구하노니 서로 사랑하자 이는 새 계명 같이 네게 쓰는 것이 아니요 오직 처음부터 우리가 가진 것이라",
+      "source_text_hash": "6018a6a014a1b4e89dfd175408174ecbd00055ce1c5ce6f8e0fd9708ccc21b61",
+      "translation_text_hash": "4a5c16ce21bdb23ec45838a34e6cdb5c9f40be0762bdf74e80796fdfc8a7e6d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부녀여, 내가 이제 네게 구하노니 서로 사랑하자 이는 새 계명 같이 네게 쓰는 것이 아니요 오직 처음부터 우리가 가진 것이라"
+      ],
+      "raw_text_hashes": [
+        "4a5c16ce21bdb23ec45838a34e6cdb5c9f40be0762bdf74e80796fdfc8a7e6d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:6",
+      "sequence": 30648,
+      "chapter_label": "2JN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "This is love, that we should walk according to his commandments. This is the commandment, even as you heard from the beginning, that you should walk in it.",
+      "ko": "또 사랑은 이것이니 우리가 그 계명을 좇아 행하는 것이요 계명은 이것이니 너희가 처음부터 들은 바와 같이 그 가운데서 행하라 하심이라",
+      "source_text_hash": "55755f1f290d55fb796c291164064f24d6efc53bc489188a8d65b993bbfa7040",
+      "translation_text_hash": "e565c765cb9a3d8424904e45e613f88ce9d3b57581d646cb82126c7e0ef482f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 사랑은 이것이니 우리가 그 계명을 좇아 행하는 것이요 계명은 이것이니 너희가 처음부터 들은 바와 같이 그 가운데서 행하라 하심이라"
+      ],
+      "raw_text_hashes": [
+        "e565c765cb9a3d8424904e45e613f88ce9d3b57581d646cb82126c7e0ef482f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:7",
+      "sequence": 30649,
+      "chapter_label": "2JN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "For many deceivers have gone out into the world, those who don’t confess that Jesus Christ came in the flesh. This is the deceiver and the Antichrist.",
+      "ko": "미혹하는 자가 많이 세상에 나왔나니 이는 예수 그리스도께서 육체로 임하심을 부인하는 자라 이것이 미혹하는 자요 적그리스도니",
+      "source_text_hash": "a369719de68d9b7b0e19a20030283cefb17683f6cb05c3f99f3ca1fc77463fc9",
+      "translation_text_hash": "0c62e30faf1245ab01a566222695187c7ffa4d7f5d769640dab75e7e7ed3af57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미혹하는 자가 많이 세상에 나왔나니 이는 예수 그리스도께서 육체로 임하심을 부인하는 자라 이것이 미혹하는 자요 적그리스도니"
+      ],
+      "raw_text_hashes": [
+        "0c62e30faf1245ab01a566222695187c7ffa4d7f5d769640dab75e7e7ed3af57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:8",
+      "sequence": 30650,
+      "chapter_label": "2JN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Watch yourselves, that we don’t lose the things which we have accomplished, but that we receive a full reward.",
+      "ko": "너희는 너희를 삼가 우리의 일한 것을 잃지 말고 오직 온전한 상을 얻으라",
+      "source_text_hash": "7f300049632a3e08534b3f511e4cfb3adb27bfb00c5c4316a73e8bfbd85eaa92",
+      "translation_text_hash": "093c49f8387c4e74908f2edf4f6909e8a3a2903011a7f3609bfd095e9c5d9e6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희를 삼가 우리의 일한 것을 잃지 말고 오직 온전한 상을 얻으라"
+      ],
+      "raw_text_hashes": [
+        "093c49f8387c4e74908f2edf4f6909e8a3a2903011a7f3609bfd095e9c5d9e6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:9",
+      "sequence": 30651,
+      "chapter_label": "2JN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Whoever transgresses and doesn’t remain in the teaching of Christ doesn’t have God. He who remains in the teaching has both the Father and the Son.",
+      "ko": "지내쳐 그리스도 교훈 안에 거하지 아니하는 자마다 하나님을 모시지 못하되 교훈 안에 거하는 이 사람이 아버지와 아들을 모시느니라",
+      "source_text_hash": "847e4f05a0d56fa6f3344b3e4f6d52051b2a0f5472575697c14863e63b1dd3ea",
+      "translation_text_hash": "8357c9738e25b39f11dfa970436ee5b10e47be0fbef2cc77fafd967dce062d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지내쳐 그리스도 교훈 안에 거하지 아니하는 자마다 하나님을 모시지 못하되 교훈 안에 거하는 이 사람이 아버지와 아들을 모시느니라"
+      ],
+      "raw_text_hashes": [
+        "8357c9738e25b39f11dfa970436ee5b10e47be0fbef2cc77fafd967dce062d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:10",
+      "sequence": 30652,
+      "chapter_label": "2JN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "If anyone comes to you and doesn’t bring this teaching, don’t receive him into your house, and don’t welcome him,",
+      "ko": "누구든지 이 교훈을 가지지 않고 너희에게 나아가거든 그를 집에 들이지도 말고 인사도 말라",
+      "source_text_hash": "63cedf2c229521246ca9dca5c848aaa4bc6e7a5408a0d22ecac481564c0cda3e",
+      "translation_text_hash": "1953b6dbf99821717ead5017260b8f43a1c32849a6a36545b553b8b744394a6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 이 교훈을 가지지 않고 너희에게 나아가거든 그를 집에 들이지도 말고 인사도 말라"
+      ],
+      "raw_text_hashes": [
+        "1953b6dbf99821717ead5017260b8f43a1c32849a6a36545b553b8b744394a6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:11",
+      "sequence": 30653,
+      "chapter_label": "2JN 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "for he who welcomes him participates in his evil deeds.",
+      "ko": "그에게 인사하는 자는 그 악한 일에 참예하는 자임이니라",
+      "source_text_hash": "af40beee4ae5bd8372e4e52f2d96074995f19a38308113a97d9d64c65d6c4cf5",
+      "translation_text_hash": "acb8f70723a7bcd892b2ac4f77f4ab7db949b9497928af174843e82d764849f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 인사하는 자는 그 악한 일에 참예하는 자임이니라"
+      ],
+      "raw_text_hashes": [
+        "acb8f70723a7bcd892b2ac4f77f4ab7db949b9497928af174843e82d764849f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:12",
+      "sequence": 30654,
+      "chapter_label": "2JN 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Having many things to write to you, I don’t want to do so with paper and ink, but I hope to come to you and to speak face to face, that our joy may be made full.",
+      "ko": "내가 너희에게 쓸 것이 많으나 종이와 먹으로 쓰기를 원치 아니하고 오히려 너희에게 가서 면대하여 말하려 하니 이는 너희 기쁨을 충만케 하려 함이라",
+      "source_text_hash": "80f2038a45e38fecbcb589a0699f9e79535d9d8d18d5c6cd8c97ca5d9c2b7d44",
+      "translation_text_hash": "5c0ede8739fa1d37735113c36f1cef139b26fc1807eeccf24210f04d1cbcbb74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 쓸 것이 많으나 종이와 먹으로 쓰기를 원치 아니하고 오히려 너희에게 가서 면대하여 말하려 하니 이는 너희 기쁨을 충만케 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "5c0ede8739fa1d37735113c36f1cef139b26fc1807eeccf24210f04d1cbcbb74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2JN:1:13",
+      "sequence": 30655,
+      "chapter_label": "2JN 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "2JN",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2JN",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "The children of your chosen sister greet you. Amen.",
+      "ko": "택하심을 입은 네 자매의 자녀가 네게 문안하느니라",
+      "source_text_hash": "df81375909fcddb3ac733ffa3407d99a1c33ea999a177eeef904bdfe569409ee",
+      "translation_text_hash": "8fa4f562bcc9bd037685d8ef2d9de5cdd5e5d8d6d7d239d46b3f032aff552f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "택하심을 입은 네 자매의 자녀가 네게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "8fa4f562bcc9bd037685d8ef2d9de5cdd5e5d8d6d7d239d46b3f032aff552f51"
+      ]
+    }
+  ]
+}

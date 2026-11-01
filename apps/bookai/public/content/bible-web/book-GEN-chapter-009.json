@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:009",
+  "unit_ordinal": 9,
+  "unit_label": "GEN 9",
+  "book_code": "GEN",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:9:1",
+      "sequence": 207,
+      "chapter_label": "GEN 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "God blessed Noah and his sons, and said to them, “Be fruitful, multiply, and replenish the earth.",
+      "ko": "하나님이 노아와 그 아들들에게 복을 주시며 그들에게 이르시되 생육하고 번성하여 땅에 충만하라",
+      "source_text_hash": "f4789cc0f5d461c85512d3c4d8f5ba3711b503a4e2ba9c266d3da422c5ce8523",
+      "translation_text_hash": "918e77ed2f24be8b7527d20afd053d7e15065b93c610bb2e36d279998bd861c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아와 그 아들들에게 복을 주시며 그들에게 이르시되 생육하고 번성하여 땅에 충만하라"
+      ],
+      "raw_text_hashes": [
+        "918e77ed2f24be8b7527d20afd053d7e15065b93c610bb2e36d279998bd861c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:2",
+      "sequence": 208,
+      "chapter_label": "GEN 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "The fear of you and the dread of you will be on every animal of the earth, and on every bird of the sky. Everything that moves along the ground, and all the fish of the sea, are delivered into your hand.",
+      "ko": "땅의 모든 짐승과 공중의 모든 새와 땅에 기는 모든것과 바다의 모든 고기가 너희를 두려워하며 너희를 무서워하리니 이들은 너희 손에 붙이웠음이라",
+      "source_text_hash": "755665fac5ba7c213f0ed35061ad636f61236e14f466c8fdede70b923e340d4c",
+      "translation_text_hash": "a9807578f6a3d660a4f0192b0253e9025417834f8370777052078455cff7aeef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 모든 짐승과 공중의 모든 새와 땅에 기는 모든것과 바다의 모든 고기가 너희를 두려워하며 너희를 무서워하리니 이들은 너희 손에 붙이웠음이라"
+      ],
+      "raw_text_hashes": [
+        "a9807578f6a3d660a4f0192b0253e9025417834f8370777052078455cff7aeef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:3",
+      "sequence": 209,
+      "chapter_label": "GEN 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Every moving thing that lives will be food for you. As I gave you the green herb, I have given everything to you.",
+      "ko": "무릇 산 동물은 너희의 식물이 될찌라 채소 같이 내가 이것을 다 너희에게 주노라",
+      "source_text_hash": "6c8337be5902d1abdf5ec1e224908b2c94376c05f2c72945a6f70eb149f699f5",
+      "translation_text_hash": "35f88c65e49fd25eaa43ef41321a394fd120f529aa30a89e77bc67d6d1f135bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 산 동물은 너희의 식물이 될찌라 채소 같이 내가 이것을 다 너희에게 주노라"
+      ],
+      "raw_text_hashes": [
+        "35f88c65e49fd25eaa43ef41321a394fd120f529aa30a89e77bc67d6d1f135bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:4",
+      "sequence": 210,
+      "chapter_label": "GEN 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "But flesh with its life, that is, its blood, you shall not eat.",
+      "ko": "그러나 고기를 그 생명 되는 피채 먹지 말것이니라",
+      "source_text_hash": "b0c062c1512ebba24e294f879f877a885c152a5e64a28edfc9ada6e41c1c92fa",
+      "translation_text_hash": "ad22736639ddbde1c934e323c762e01fa74f25becb9e86e4705a29bfbf5e0f22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 고기를 그 생명 되는 피채 먹지 말것이니라"
+      ],
+      "raw_text_hashes": [
+        "ad22736639ddbde1c934e323c762e01fa74f25becb9e86e4705a29bfbf5e0f22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:5",
+      "sequence": 211,
+      "chapter_label": "GEN 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "I will surely require accounting for your life’s blood. At the hand of every animal I will require it. At the hand of man, even at the hand of every man’s brother, I will require the life of man.",
+      "ko": "내가 반드시 너희 피 곧 너희 생명의 피를 찾으리니 짐승이면 그 짐승에게서, 사람이나 사람의 형제면 그에게서 그의 생명을 찾으리라",
+      "source_text_hash": "60d07053a7d35bddbda0e2229ca3b618944b338207e65c57db959d03988e4bec",
+      "translation_text_hash": "7f827a02a226073eaf9d871b395630e4fc4b4210910db5bf83afa3839c8939de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 반드시 너희 피 곧 너희 생명의 피를 찾으리니 짐승이면 그 짐승에게서, 사람이나 사람의 형제면 그에게서 그의 생명을 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "7f827a02a226073eaf9d871b395630e4fc4b4210910db5bf83afa3839c8939de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:6",
+      "sequence": 212,
+      "chapter_label": "GEN 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Whoever sheds man’s blood, his blood will be shed by man, for God made man in his own image.",
+      "ko": "무릇 사람의 피를 흘리면 사람이 그 피를 흘릴 것이니 이는 하나님이 자기 형상대로 사람을 지었음이니라",
+      "source_text_hash": "8489bf3f10c87c127738750275033500d0a9f5150b498b87e133b7b0da64a74b",
+      "translation_text_hash": "c0443a4f7a0bf29b437e120ef7e10b0f8a9678a3df0abfaa7201b1df649fa57d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 사람의 피를 흘리면 사람이 그 피를 흘릴 것이니 이는 하나님이 자기 형상대로 사람을 지었음이니라"
+      ],
+      "raw_text_hashes": [
+        "c0443a4f7a0bf29b437e120ef7e10b0f8a9678a3df0abfaa7201b1df649fa57d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:7",
+      "sequence": 213,
+      "chapter_label": "GEN 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Be fruitful and multiply. Increase abundantly on the earth, and multiply in it.”",
+      "ko": "너희는 생육하고 번성하며 땅에 편만하여 그 중에서 번성하라 하셨더라",
+      "source_text_hash": "41be126f57c5acebf136bc6cddad1130e116f716242c961a6e389de769867037",
+      "translation_text_hash": "7de178b0df5d7ef064d0738a3670bb38b3ed63447eb402aa5b7a4904e560a594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 생육하고 번성하며 땅에 편만하여 그 중에서 번성하라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "7de178b0df5d7ef064d0738a3670bb38b3ed63447eb402aa5b7a4904e560a594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:8",
+      "sequence": 214,
+      "chapter_label": "GEN 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "God spoke to Noah and to his sons with him, saying,",
+      "ko": "하나님이 노아와 그와 함께한 아들들에게 일러 가라사대",
+      "source_text_hash": "7dc40f57bea3376d3f8c4ea84177fe3ce009fa0efa8059cfc1004f8c278bc781",
+      "translation_text_hash": "39bb2191abe815531453c4c14ce672abc18dc7169c27fac319867e52121b7ad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아와 그와 함께한 아들들에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "39bb2191abe815531453c4c14ce672abc18dc7169c27fac319867e52121b7ad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:9",
+      "sequence": 215,
+      "chapter_label": "GEN 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "“As for me, behold, I establish my covenant with you, and with your offspring after you,",
+      "ko": "내가 내 언약을 너희와 너희 후손과",
+      "source_text_hash": "8214cbc22f870e591971f0e279005cfb258819b761b973ef72a09770a9e2e284",
+      "translation_text_hash": "7f89fa14b7f1e711caff8b36600ab94589d2bd639e77b857d94ec2712a500cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 언약을 너희와 너희 후손과"
+      ],
+      "raw_text_hashes": [
+        "7f89fa14b7f1e711caff8b36600ab94589d2bd639e77b857d94ec2712a500cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:10",
+      "sequence": 216,
+      "chapter_label": "GEN 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "and with every living creature that is with you: the birds, the livestock, and every animal of the earth with you, of all that go out of the ship, even every animal of the earth.",
+      "ko": "너희와 함께한 모든 생물 곧 너희와 함께한 새와 육축과 땅의 모든 생물에게 세우리니 방주에서 나온 모든것 곧 땅의 모든 짐승에게니라",
+      "source_text_hash": "ee4e1eb30fb2d8b78c1a6f0d3558334fa49ff7b4e52608f1331060ac19878b57",
+      "translation_text_hash": "8c370a8612da83b062790e061ef76cf850ff1e964e9995a21448348bda268c49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 함께한 모든 생물 곧 너희와 함께한 새와 육축과 땅의 모든 생물에게 세우리니 방주에서 나온 모든것 곧 땅의 모든 짐승에게니라"
+      ],
+      "raw_text_hashes": [
+        "8c370a8612da83b062790e061ef76cf850ff1e964e9995a21448348bda268c49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:11",
+      "sequence": 217,
+      "chapter_label": "GEN 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "I will establish my covenant with you: All flesh will not be cut off any more by the waters of the flood. There will never again be a flood to destroy the earth.”",
+      "ko": "내가 너희와 언약을 세우리니 다시는 모든 생물을 홍수로 멸하지 아니할 것이라 땅을 침몰할 홍수가 다시 있지 아니하리라",
+      "source_text_hash": "d950bc5e6b0d250bd292bb081e1448033b55bc0af76c6cb903ccc9c399009ef7",
+      "translation_text_hash": "237c26ecc6ac5cdefa2ead6e5b4b495c47e3de767feebf134cbbea5396792cce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희와 언약을 세우리니 다시는 모든 생물을 홍수로 멸하지 아니할 것이라 땅을 침몰할 홍수가 다시 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "237c26ecc6ac5cdefa2ead6e5b4b495c47e3de767feebf134cbbea5396792cce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:12",
+      "sequence": 218,
+      "chapter_label": "GEN 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "God said, “This is the token of the covenant which I make between me and you and every living creature that is with you, for perpetual generations:",
+      "ko": "하나님이 가라사대 내가 나와 너희와 및 너희와 함께하는 모든 생물 사이에 영세까지 세우는 언약의 증거는 이것이라",
+      "source_text_hash": "791041b26a3e95362e92516db3289e6b1d6f5cafb44bebc5bae47648bf734390",
+      "translation_text_hash": "e73988f6c7da6321c48fa9cf03d01f94f6567a05d1572481849d313691a180cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 내가 나와 너희와 및 너희와 함께하는 모든 생물 사이에 영세까지 세우는 언약의 증거는 이것이라"
+      ],
+      "raw_text_hashes": [
+        "e73988f6c7da6321c48fa9cf03d01f94f6567a05d1572481849d313691a180cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:13",
+      "sequence": 219,
+      "chapter_label": "GEN 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "I set my rainbow in the cloud, and it will be a sign of a covenant between me and the earth.",
+      "ko": "내가 내 무지개를 구름 속에 두었나니 이것이 나의 세상과의 언약의 증거니라",
+      "source_text_hash": "6ab4ccb5417c88193ad3fb8ba68b2712a5ba2a54880a16a8fa507457c6513c51",
+      "translation_text_hash": "dca8462960067d16f602de16aa2aa078df4b1d115ec5e4df78e9cd705e932c05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 무지개를 구름 속에 두었나니 이것이 나의 세상과의 언약의 증거니라"
+      ],
+      "raw_text_hashes": [
+        "dca8462960067d16f602de16aa2aa078df4b1d115ec5e4df78e9cd705e932c05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:14",
+      "sequence": 220,
+      "chapter_label": "GEN 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "When I bring a cloud over the earth, that the rainbow will be seen in the cloud,",
+      "ko": "내가 구름으로 땅을 덮을 때에 무지개가 구름 속에 나타나면",
+      "source_text_hash": "3a4d8a2f16941830295889ede8d93c533fa74eda730565ad6b45d55f8098c462",
+      "translation_text_hash": "51076570628f0501029e93d0c374ec18df3abdd5cef4170d39a6c1833c95e660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 구름으로 땅을 덮을 때에 무지개가 구름 속에 나타나면"
+      ],
+      "raw_text_hashes": [
+        "51076570628f0501029e93d0c374ec18df3abdd5cef4170d39a6c1833c95e660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:15",
+      "sequence": 221,
+      "chapter_label": "GEN 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "I will remember my covenant, which is between me and you and every living creature of all flesh, and the waters will no more become a flood to destroy all flesh.",
+      "ko": "내가 나와 너희와 및 혈기 있는 모든 생물 사이의 내 언약을 기억하리니 다시는 물이 모든 혈기 있는 자를 멸하는 홍수가 되지 아니할찌라",
+      "source_text_hash": "9e1b82275510cffe5f16cf1bb22c1eb98ea9f4182ea2f78736002699028a0dcd",
+      "translation_text_hash": "c7e724ba84372a581f943ea8004bc24d1f088d1df8100b19aa03ead9b5fdbbb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나와 너희와 및 혈기 있는 모든 생물 사이의 내 언약을 기억하리니 다시는 물이 모든 혈기 있는 자를 멸하는 홍수가 되지 아니할찌라"
+      ],
+      "raw_text_hashes": [
+        "c7e724ba84372a581f943ea8004bc24d1f088d1df8100b19aa03ead9b5fdbbb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:16",
+      "sequence": 222,
+      "chapter_label": "GEN 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "The rainbow will be in the cloud. I will look at it, that I may remember the everlasting covenant between God and every living creature of all flesh that is on the earth.”",
+      "ko": "무지개가 구름 사이에 있으리니 내가 보고 나 하나님과 땅의 무릇 혈기 있는 모든 생물 사이에 된 영원한 언약을 기억하리라",
+      "source_text_hash": "3f7c92fbc688bec800b194458cffa0ed98dae406df3cca67c76e91bd81c7776a",
+      "translation_text_hash": "b3014ab754813600d71927748a552f0c111d08ca411b9cd08517e0302d3076de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무지개가 구름 사이에 있으리니 내가 보고 나 하나님과 땅의 무릇 혈기 있는 모든 생물 사이에 된 영원한 언약을 기억하리라"
+      ],
+      "raw_text_hashes": [
+        "b3014ab754813600d71927748a552f0c111d08ca411b9cd08517e0302d3076de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:17",
+      "sequence": 223,
+      "chapter_label": "GEN 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "God said to Noah, “This is the token of the covenant which I have established between me and all flesh that is on the earth.”",
+      "ko": "하나님이 노아에게 또 이르시되 내가 나와 땅에 있는 모든 생물 사이에 세운 언약의 증거가 이것이라 하셨더라",
+      "source_text_hash": "ff287fb561a1a08747ab06f21439bdac15720e5642bca962453020057a0d4774",
+      "translation_text_hash": "c71bb341a1ea099a4bd4d713a7c5a8888c0e3984d03fc9afc8583d6f4a120640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아에게 또 이르시되 내가 나와 땅에 있는 모든 생물 사이에 세운 언약의 증거가 이것이라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "c71bb341a1ea099a4bd4d713a7c5a8888c0e3984d03fc9afc8583d6f4a120640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:18",
+      "sequence": 224,
+      "chapter_label": "GEN 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "The sons of Noah who went out from the ship were Shem, Ham, and Japheth. Ham is the father of Canaan.",
+      "ko": "방주에서 나온 노아의 아들들은 셈과 함과 야벳이며 함은 가나안의 아비라",
+      "source_text_hash": "ee6f7a3e9783adb31a5c29ee881953d6cbc45bef9cfc9c9c4ea227e2e62b5d4e",
+      "translation_text_hash": "400fb17d4f729ffd88da1df2663ccc7f37bd5cbb27482f67389394444efa936c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방주에서 나온 노아의 아들들은 셈과 함과 야벳이며 함은 가나안의 아비라"
+      ],
+      "raw_text_hashes": [
+        "400fb17d4f729ffd88da1df2663ccc7f37bd5cbb27482f67389394444efa936c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:19",
+      "sequence": 225,
+      "chapter_label": "GEN 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "These three were the sons of Noah, and from these the whole earth was populated.",
+      "ko": "노아의 이 세 아들로 좇아 백성이 온 땅에 퍼지니라",
+      "source_text_hash": "ddd47249f02fde2aa045aa129b2974270ccaf5e92c336c8fccf0693721cf651f",
+      "translation_text_hash": "a7d0a9433fcb3b8dbe8ce3b80d0849dede43ad4d2ae40b7d6a08c27fd22ea07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아의 이 세 아들로 좇아 백성이 온 땅에 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "a7d0a9433fcb3b8dbe8ce3b80d0849dede43ad4d2ae40b7d6a08c27fd22ea07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:20",
+      "sequence": 226,
+      "chapter_label": "GEN 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Noah began to be a farmer, and planted a vineyard.",
+      "ko": "노아가 농업을 시작하여 포도나무를 심었더니",
+      "source_text_hash": "786f20fbcacd09dee39523bbd6f8770635318b86c957426a00fc261578613d06",
+      "translation_text_hash": "768cd1d86f32b96d2643102e2cccbaa7b04e7105513065312b017e41213ab862",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 농업을 시작하여 포도나무를 심었더니"
+      ],
+      "raw_text_hashes": [
+        "768cd1d86f32b96d2643102e2cccbaa7b04e7105513065312b017e41213ab862"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:21",
+      "sequence": 227,
+      "chapter_label": "GEN 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "He drank of the wine and got drunk. He was uncovered within his tent.",
+      "ko": "포도주를 마시고 취하여 그 장막 안에서 벌거벗은지라",
+      "source_text_hash": "bbb4471d9b387019c40f4904bf549a7c2e60938d009ddd5bb39be2d867339996",
+      "translation_text_hash": "96251a84521d3cfa5a0b53aa15c2332e81d225de176b9155ef140aeb085d5828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주를 마시고 취하여 그 장막 안에서 벌거벗은지라"
+      ],
+      "raw_text_hashes": [
+        "96251a84521d3cfa5a0b53aa15c2332e81d225de176b9155ef140aeb085d5828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:22",
+      "sequence": 228,
+      "chapter_label": "GEN 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Ham, the father of Canaan, saw the nakedness of his father, and told his two brothers outside.",
+      "ko": "가나안의 아비 함이 그 아비의 하체를 보고 밖으로 나가서 두 형제에게 고하매",
+      "source_text_hash": "d1cb4b9ebc01f8c687d8627270ed68c2ba5a9c11f8aff5cec2198cebb0d9d2b5",
+      "translation_text_hash": "19ccfee7953c04726e94d86d54b478d47c50158953ddcf3ba221d047b94a5123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안의 아비 함이 그 아비의 하체를 보고 밖으로 나가서 두 형제에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "19ccfee7953c04726e94d86d54b478d47c50158953ddcf3ba221d047b94a5123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:23",
+      "sequence": 229,
+      "chapter_label": "GEN 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Shem and Japheth took a garment, and laid it on both their shoulders, went in backwards, and covered the nakedness of their father. Their faces were backwards, and they didn’t see their father’s nakedness.",
+      "ko": "셈과 야벳이 옷을 취하여 자기들의 어깨에 메고 뒷걸음쳐 들어가서 아비의 하체에 덮었으며 그들이 얼굴을 돌이키고 그 아비의 하체를 보지 아니하였더라",
+      "source_text_hash": "07a0c3722a3bd663a70c2d83eb33cb2c2772d5b2ebfccfbf9dbb9db3ac77daf5",
+      "translation_text_hash": "e655a0b3eaa637bac8388ead5e1835d0c2722f0e799f3fa987e27229a71888d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셈과 야벳이 옷을 취하여 자기들의 어깨에 메고 뒷걸음쳐 들어가서 아비의 하체에 덮었으며 그들이 얼굴을 돌이키고 그 아비의 하체를 보지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "e655a0b3eaa637bac8388ead5e1835d0c2722f0e799f3fa987e27229a71888d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:24",
+      "sequence": 230,
+      "chapter_label": "GEN 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "Noah awoke from his wine, and knew what his youngest son had done to him.",
+      "ko": "노아가 술이 깨어 그 작은 아들이 자기에게 행한 일을 알고",
+      "source_text_hash": "ce13dfbd4288bfe3c820fc04aacd6ee66da5386d7a2336c440f203f9912d9d24",
+      "translation_text_hash": "cce6c7ac8a4462103ee35d759399c7c4a932f6fa3622e50c6ab5f04a5cd9fb98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 술이 깨어 그 작은 아들이 자기에게 행한 일을 알고"
+      ],
+      "raw_text_hashes": [
+        "cce6c7ac8a4462103ee35d759399c7c4a932f6fa3622e50c6ab5f04a5cd9fb98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:25",
+      "sequence": 231,
+      "chapter_label": "GEN 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "He said, “Canaan is cursed. He will be a servant of servants to his brothers.”",
+      "ko": "이에 가로되 가나안은 저주를 받아 그 형제의 종들의 종이 되기를 원하노라",
+      "source_text_hash": "e94df7a33a7d5f0c469180911aa78c6386fbd028ef144490c14ea26fdcd880b2",
+      "translation_text_hash": "e5203226835b7cac98263eec48d2e1d2f98cdd5bebef4bd4f37c4e9ea8fc9452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가로되 가나안은 저주를 받아 그 형제의 종들의 종이 되기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "e5203226835b7cac98263eec48d2e1d2f98cdd5bebef4bd4f37c4e9ea8fc9452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:26",
+      "sequence": 232,
+      "chapter_label": "GEN 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "He said, “Blessed be the LORD, the God of Shem. Let Canaan be his servant.",
+      "ko": "또 가로되 셈의 하나님 여호와를 찬송하리로다 가나안은 셈의 종이 되고",
+      "source_text_hash": "a7dd81906f406ae5b5707f3e8f3d35df119b979be722bf08364a879ff36381a0",
+      "translation_text_hash": "b39fc46392630fdcb8832b98ae7f918b49b89e3aec1a82b8da5ba31a1b1a9a4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 셈의 하나님 여호와를 찬송하리로다 가나안은 셈의 종이 되고"
+      ],
+      "raw_text_hashes": [
+        "b39fc46392630fdcb8832b98ae7f918b49b89e3aec1a82b8da5ba31a1b1a9a4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:27",
+      "sequence": 233,
+      "chapter_label": "GEN 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "May God enlarge Japheth. Let him dwell in the tents of Shem. Let Canaan be his servant.”",
+      "ko": "하나님이 야벳을 창대케 하사 셈의 장막에 거하게 하시고 가나안은 그의 종이 되게 하시기를 원하노라 하였더라",
+      "source_text_hash": "f03899d1c965aef8f8d5e08e1333b2c652014289f3854fc15f38cc8f5c8af7fc",
+      "translation_text_hash": "f0f866dd5fbcc4f9ab0c8a88b5e1d1aa43cfcb75883f9ea0b5afcafd7fa658a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 야벳을 창대케 하사 셈의 장막에 거하게 하시고 가나안은 그의 종이 되게 하시기를 원하노라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f0f866dd5fbcc4f9ab0c8a88b5e1d1aa43cfcb75883f9ea0b5afcafd7fa658a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:28",
+      "sequence": 234,
+      "chapter_label": "GEN 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "Noah lived three hundred fifty years after the flood.",
+      "ko": "홍수 후에 노아가 삼백 오십년을 지내었고",
+      "source_text_hash": "476efe8ad60140b68c718372284a485e399445f075184965c81364bd993ec45e",
+      "translation_text_hash": "a1c986259c8235def422a5c384329fda260361783bec79fbd7f9592bd0ff11c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍수 후에 노아가 삼백 오십년을 지내었고"
+      ],
+      "raw_text_hashes": [
+        "a1c986259c8235def422a5c384329fda260361783bec79fbd7f9592bd0ff11c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:9:29",
+      "sequence": 235,
+      "chapter_label": "GEN 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "All the days of Noah were nine hundred fifty years, and then he died.",
+      "ko": "향년이 구백 오십세에 죽었더라",
+      "source_text_hash": "a50628e53bdca40a338881ef5778825cab374998b6d6930f238ee39d9ca8ce3f",
+      "translation_text_hash": "a98c655316a53364bd6cb315d54eb55f4d8873dcb95fa42fe0c072877b2a4699",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "향년이 구백 오십세에 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "a98c655316a53364bd6cb315d54eb55f4d8873dcb95fa42fe0c072877b2a4699"
+      ]
+    }
+  ]
+}

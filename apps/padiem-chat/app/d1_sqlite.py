@@ -14,7 +14,9 @@ writer's row (history.py:_changed_rows).
 """
 from __future__ import annotations
 
+import asyncio
 import sqlite3
+import threading
 from typing import Any
 
 __all__ = ["SqliteD1", "connect"]
@@ -31,9 +33,21 @@ def connect(path: str) -> sqlite3.Connection:
     return connection
 
 
+class _InlineOwner:
+    async def _invoke(self, function):
+        return function()
+
+
 class _Statement:
-    def __init__(self, connection: sqlite3.Connection, sql: str):
-        self._connection = connection
+    def __init__(self, owner: "SqliteD1 | sqlite3.Connection", sql: str):
+        # A bare connection is still accepted (older callers and tests build a statement
+        # directly); it runs inline, without the binding's thread hop or lock.
+        if isinstance(owner, sqlite3.Connection):
+            self._owner = _InlineOwner()
+            self._connection = owner
+        else:
+            self._owner = owner
+            self._connection = owner.connection
         self._sql = sql
         self._values: tuple[Any, ...] = ()
 
@@ -66,28 +80,40 @@ class _Statement:
         }
 
     async def run(self) -> dict[str, Any]:
-        return self._one_result()
+        return await self._owner._invoke(self._one_result)
 
     async def first(self) -> dict[str, Any] | None:
-        rows = self._execute()
-        return rows[0] if rows else None
+        def first_row():
+            rows = self._execute()
+            return rows[0] if rows else None
+        return await self._owner._invoke(first_row)
 
     async def all(self) -> list[dict[str, Any]]:
-        return self._execute()
+        return await self._owner._invoke(self._execute)
 
 
 class SqliteD1:
     """The `env.PADIEM_CHAT_DB` surface over one SQLite connection."""
 
-    def __init__(self, connection: sqlite3.Connection):
+    def __init__(self, connection: sqlite3.Connection, *, threaded: bool = False):
         if connection is None:
             raise ValueError("a SQLite connection is required")
         self.connection = connection
+        self._threaded = threaded
+        self._lock = threading.RLock()
+
+    async def _invoke(self, function):
+        def locked():
+            with self._lock:
+                return function()
+        if self._threaded:
+            return await asyncio.to_thread(locked)
+        return locked()
 
     def prepare(self, sql: str) -> _Statement:
         if not isinstance(sql, str) or not sql.strip():
             raise ValueError("D1 prepare requires statement text")
-        return _Statement(self.connection, sql)
+        return _Statement(self, sql)
 
     async def batch(self, statements: list["_Statement"]) -> list[dict[str, Any]]:
         """Run the statements as ONE atomic unit, like `env.DB.batch()`.
@@ -103,6 +129,9 @@ class SqliteD1:
         for statement in prepared:
             if not isinstance(statement, _Statement) or statement._connection is not self.connection:
                 raise TypeError("batch accepts only statements prepared on this binding")
+        return await self._invoke(lambda: self._batch_sync(prepared))
+
+    def _batch_sync(self, prepared: list["_Statement"]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
         # The connection is opened in autocommit mode, so the explicit
         # transaction is what makes the whole batch all-or-nothing.

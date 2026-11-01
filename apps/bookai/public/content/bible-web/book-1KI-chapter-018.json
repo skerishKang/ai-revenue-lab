@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:018",
+  "unit_ordinal": 309,
+  "unit_label": "1KI 18",
+  "book_code": "1KI",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:18:1",
+      "sequence": 9343,
+      "chapter_label": "1KI 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "After many days, the LORD’s word came to Elijah, in the third year, saying, “Go, show yourself to Ahab; and I will send rain on the earth.”",
+      "ko": "많은 날을 지내고 제 삼년에 여호와의 말씀이 엘리야에게 임하여 가라사대 너는 가서 아합에게 보이라 내가 비를 지면에 내리리라",
+      "source_text_hash": "5778ca4a6ba350367c54f608161902751f2438ed922845b06fc68c88ed2e1c9e",
+      "translation_text_hash": "70855824689ab45017885fdfdb018761a1510de09077ecc2b02dc240201d7941",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 날을 지내고 제 삼년에 여호와의 말씀이 엘리야에게 임하여 가라사대 너는 가서 아합에게 보이라 내가 비를 지면에 내리리라"
+      ],
+      "raw_text_hashes": [
+        "70855824689ab45017885fdfdb018761a1510de09077ecc2b02dc240201d7941"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:2",
+      "sequence": 9344,
+      "chapter_label": "1KI 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "Elijah went to show himself to Ahab. The famine was severe in Samaria.",
+      "ko": "엘리야가 아합에게 보이려고 가니 그 때에 사마리아에 기근이 심하였더라",
+      "source_text_hash": "97dc7cbc8f289c3e15cc995ddc10fee090aaf33badefea1abb44795fc5186495",
+      "translation_text_hash": "aa55b2f8c3d51eac0d171870f4b05d75a877eefaa5005faf9e3e3ce2113015f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 아합에게 보이려고 가니 그 때에 사마리아에 기근이 심하였더라"
+      ],
+      "raw_text_hashes": [
+        "aa55b2f8c3d51eac0d171870f4b05d75a877eefaa5005faf9e3e3ce2113015f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:3",
+      "sequence": 9345,
+      "chapter_label": "1KI 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "Ahab called Obadiah, who was over the household. (Now Obadiah feared the LORD greatly;",
+      "ko": "아합이 궁내대신 오바댜를 불렀으니 이 오바댜는 크게 여호와를 경외하는 자라",
+      "source_text_hash": "dc7cdbc1152efda3694be675953e2947574957060b536d6343bdc5b8b9f9777c",
+      "translation_text_hash": "f89ad70e4b0edec5d820c27598592e97035a38800b9818dfde54cf96aca3ebf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 궁내대신 오바댜를 불렀으니 이 오바댜는 크게 여호와를 경외하는 자라"
+      ],
+      "raw_text_hashes": [
+        "f89ad70e4b0edec5d820c27598592e97035a38800b9818dfde54cf96aca3ebf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:4",
+      "sequence": 9346,
+      "chapter_label": "1KI 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "for when Jezebel cut off the LORD’s prophets, Obadiah took one hundred prophets, and hid them fifty to a cave, and fed them with bread and water.)",
+      "ko": "이세벨이 여호와의 선지자들을 멸할 때에 오바댜가 선지자 일백인을 가져 오십인씩 굴에 숨기고 떡과 물을 먹였었더라",
+      "source_text_hash": "afc000eade9f378cb20451d83a1087cf1be50bff42723ff33afbc4ef51e8419a",
+      "translation_text_hash": "687ff09c8adaee16c417b8d2324db400c5585b4e38d78a38bf723f91935b4029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨이 여호와의 선지자들을 멸할 때에 오바댜가 선지자 일백인을 가져 오십인씩 굴에 숨기고 떡과 물을 먹였었더라"
+      ],
+      "raw_text_hashes": [
+        "687ff09c8adaee16c417b8d2324db400c5585b4e38d78a38bf723f91935b4029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:5",
+      "sequence": 9347,
+      "chapter_label": "1KI 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "Ahab said to Obadiah, “Go through the land, to all the springs of water, and to all the brooks. Perhaps we may find grass and save the horses and mules alive, that we not lose all the animals.”",
+      "ko": "아합이 오바댜에게 이르되 이 땅의 모든 물 근원과 모든 내로 가자 혹시 꼴을 얻으리라 그러면 말과 노새를 살리리니 짐승을 다 잃지 않게 되리라 하고",
+      "source_text_hash": "b1498355fb898888269bf757cfaba3b9a97e0cd9c3effc728c2c264509cdb723",
+      "translation_text_hash": "8e932f5493d8dadd10bccbaec960d39c9711c19288aa166598cf64661015cab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 오바댜에게 이르되 이 땅의 모든 물 근원과 모든 내로 가자 혹시 꼴을 얻으리라 그러면 말과 노새를 살리리니 짐승을 다 잃지 않게 되리라 하고"
+      ],
+      "raw_text_hashes": [
+        "8e932f5493d8dadd10bccbaec960d39c9711c19288aa166598cf64661015cab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:6",
+      "sequence": 9348,
+      "chapter_label": "1KI 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "So they divided the land between them to pass throughout it. Ahab went one way by himself, and Obadiah went another way by himself.",
+      "ko": "두 사람이 두루 다닐 땅을 나누어 아합은 홀로 이 길로 가고 오바댜는 홀로 저 길로 가니라",
+      "source_text_hash": "03712e3d592f5fd3f3ce6c2ead6871158c36da95bf2a9b971e3604d79c658582",
+      "translation_text_hash": "19d71a636959dee24347187164c09d4fe055bdda16589732f56404e772c36ee2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 두루 다닐 땅을 나누어 아합은 홀로 이 길로 가고 오바댜는 홀로 저 길로 가니라"
+      ],
+      "raw_text_hashes": [
+        "19d71a636959dee24347187164c09d4fe055bdda16589732f56404e772c36ee2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:7",
+      "sequence": 9349,
+      "chapter_label": "1KI 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "As Obadiah was on the way, behold, Elijah met him. He recognized him, and fell on his face, and said, “Is it you, my lord Elijah?”",
+      "ko": "오바댜가 길에 있을 때에 엘리야가 저를 만난지라 저가 알아보고 엎드려 말하되 내 주 엘리야여 당신이시니이까",
+      "source_text_hash": "015d17c92bb119821cbdaf0579049abe4ac35238edbb74d139c70e11b57c2cba",
+      "translation_text_hash": "38c4ecd6d57079c507d1fbca48d8af4fc6fd9cd43bccaf1020bcddb7345f05f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오바댜가 길에 있을 때에 엘리야가 저를 만난지라 저가 알아보고 엎드려 말하되 내 주 엘리야여 당신이시니이까"
+      ],
+      "raw_text_hashes": [
+        "38c4ecd6d57079c507d1fbca48d8af4fc6fd9cd43bccaf1020bcddb7345f05f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:8",
+      "sequence": 9350,
+      "chapter_label": "1KI 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "He answered him, “It is I. Go, tell your lord, ‘Behold, Elijah is here!’”",
+      "ko": "대답하되 그러하다 가서 네 주에게 고하기를 엘리야가 여기 있다 하라",
+      "source_text_hash": "3c4b3b9290306bcf2e3c4db517c918ee720da62a5010d01e3b383df191bf49d3",
+      "translation_text_hash": "d1b1f80f45de1a924068559c3242cde6adaeea5533df1a57842badccc3ec0b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 그러하다 가서 네 주에게 고하기를 엘리야가 여기 있다 하라"
+      ],
+      "raw_text_hashes": [
+        "d1b1f80f45de1a924068559c3242cde6adaeea5533df1a57842badccc3ec0b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:9",
+      "sequence": 9351,
+      "chapter_label": "1KI 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “How have I sinned, that you would deliver your servant into the hand of Ahab, to kill me?",
+      "ko": "가로되 내가 무슨 죄를 범하였기에 당신이 당신의 종을 아합의 손에 붙여 죽이게 하려 하시나이까",
+      "source_text_hash": "30bd51f809b10153bb74b97298951c8951677d97a6453acd2f0f3cf795550a83",
+      "translation_text_hash": "a1c49a85587c03eea7c7d11aa2ffd28dd3fa57db9f58a6d9550b9997ed4b2534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 무슨 죄를 범하였기에 당신이 당신의 종을 아합의 손에 붙여 죽이게 하려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "a1c49a85587c03eea7c7d11aa2ffd28dd3fa57db9f58a6d9550b9997ed4b2534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:10",
+      "sequence": 9352,
+      "chapter_label": "1KI 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "As the LORD your God lives, there is no nation or kingdom where my lord has not sent to seek you. When they said, ‘He is not here,’ he took an oath of the kingdom and nation that they didn’t find you.",
+      "ko": "당신의 하나님 여호와의 사심을 가리켜 맹세하노니 내 주께서 사람을 보내어 당신을 찾지 아니한 족속이나 나라가 없었는데 저희가 말하기를 엘리야가 없다 하면 그 나라와 그 족속으로 당신을 보지 못하였다는 맹세를 하게 하였거늘",
+      "source_text_hash": "2ee49dbe735d0096eb1bf8106337a091a8146cc5ff0994beef934509c21a2670",
+      "translation_text_hash": "9f1b4659864b99b17da38fc53288c3eebe6c5a3c56f3c6965f8330d4d3220dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 하나님 여호와의 사심을 가리켜 맹세하노니 내 주께서 사람을 보내어 당신을 찾지 아니한 족속이나 나라가 없었는데 저희가 말하기를 엘리야가 없다 하면 그 나라와 그 족속으로 당신을 보지 못하였다는 맹세를 하게 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "9f1b4659864b99b17da38fc53288c3eebe6c5a3c56f3c6965f8330d4d3220dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:11",
+      "sequence": 9353,
+      "chapter_label": "1KI 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Now you say, ‘Go, tell your lord, “Behold, Elijah is here.”’",
+      "ko": "이제 당신의 말씀이 가서 네 주에게 고하기를 엘리야가 여기 있다 하라 하시나",
+      "source_text_hash": "ac0569b7465b938ef33ff404b80f26c80fbf76255a9336bf2c577557fb44e3a7",
+      "translation_text_hash": "87d725daaabfd4c96898040e16742c19db66d07c347c44c6efee1c71c2107968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 당신의 말씀이 가서 네 주에게 고하기를 엘리야가 여기 있다 하라 하시나"
+      ],
+      "raw_text_hashes": [
+        "87d725daaabfd4c96898040e16742c19db66d07c347c44c6efee1c71c2107968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:12",
+      "sequence": 9354,
+      "chapter_label": "1KI 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "It will happen, as soon as I leave you, that the LORD’s Spirit will carry you I don’t know where; and so when I come and tell Ahab, and he can’t find you, he will kill me. But I, your servant, have feared the LORD from my youth.",
+      "ko": "내가 당신을 떠나간 후에 여호와의 신이 나의 알지 못하는 곳으로 당신을 이끌어 가시리니 내가 가서 아합에게 고하였다가 저가 당신을 찾지 못하면 내가 죽임을 당하리이다 당신의 종은 어려서부터 여호와를 경외하는 자라",
+      "source_text_hash": "36282462a22f48d8133bc77a8ab897606c10539195d7df2f818453d72174198f",
+      "translation_text_hash": "cfa2d129c2331ec0aab46e698bd526afd2a9fb2c92520efa23fa3efc115aefca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 당신을 떠나간 후에 여호와의 신이 나의 알지 못하는 곳으로 당신을 이끌어 가시리니 내가 가서 아합에게 고하였다가 저가 당신을 찾지 못하면 내가 죽임을 당하리이다 당신의 종은 어려서부터 여호와를 경외하는 자라"
+      ],
+      "raw_text_hashes": [
+        "cfa2d129c2331ec0aab46e698bd526afd2a9fb2c92520efa23fa3efc115aefca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:13",
+      "sequence": 9355,
+      "chapter_label": "1KI 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "Wasn’t it told my lord what I did when Jezebel killed the LORD’s prophets, how I hid one hundred men of the LORD’s prophets with fifty to a cave, and fed them with bread and water?",
+      "ko": "이세벨이 여호와의 선지자들을 죽일 때에 내가 여호와의 선지자 중에 일백인을 오십인씩 굴에 숨기고 떡과 물로 먹인 일이 내 주께 들리지 아니하였나이까",
+      "source_text_hash": "6b24890d2c0a491add77b77b42f41372e8ac690ffcc745111398690886671bd3",
+      "translation_text_hash": "02a3ad3b64d17b3180a6b48888b67859c60b43c29eae10564eee407e368f3e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨이 여호와의 선지자들을 죽일 때에 내가 여호와의 선지자 중에 일백인을 오십인씩 굴에 숨기고 떡과 물로 먹인 일이 내 주께 들리지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "02a3ad3b64d17b3180a6b48888b67859c60b43c29eae10564eee407e368f3e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:14",
+      "sequence": 9356,
+      "chapter_label": "1KI 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Now you say, ‘Go, tell your lord, “Behold, Elijah is here”.’ He will kill me.”",
+      "ko": "이제 당신의 말씀이 가서 네 주에게 고하기를 엘리야가 여기 있다 하라 하시니 그리하면 저가 나를 죽이리이다",
+      "source_text_hash": "ce40f1a135a4bf000a6142cc8430c270bac618e97bc11eef2dd52e32e2acf556",
+      "translation_text_hash": "20d90fbbb4d7f4921a1267987a0f42fffef192a0c892da422bccc413b64dc64a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 당신의 말씀이 가서 네 주에게 고하기를 엘리야가 여기 있다 하라 하시니 그리하면 저가 나를 죽이리이다"
+      ],
+      "raw_text_hashes": [
+        "20d90fbbb4d7f4921a1267987a0f42fffef192a0c892da422bccc413b64dc64a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:15",
+      "sequence": 9357,
+      "chapter_label": "1KI 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Elijah said, “As the LORD of Armies lives, before whom I stand, I will surely show myself to him today.”",
+      "ko": "엘리야가 이르되 내가 모시는 만군의 여호와의 사심을 가리켜 맹세하노니 내가 오늘날 아합에게 보이리라",
+      "source_text_hash": "0feb679bae5030a1080fbaa34ab7511700b695cbb817623637922eb5734b0987",
+      "translation_text_hash": "38d87b7386ee3873e0642f9333ab737384f11ef5de016a5e554673e214ddf88f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 이르되 내가 모시는 만군의 여호와의 사심을 가리켜 맹세하노니 내가 오늘날 아합에게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "38d87b7386ee3873e0642f9333ab737384f11ef5de016a5e554673e214ddf88f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:16",
+      "sequence": 9358,
+      "chapter_label": "1KI 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "So Obadiah went to meet Ahab, and told him; and Ahab went to meet Elijah.",
+      "ko": "오바댜가 가서 아합을 만나 고하매 아합이 엘리야를 만나려 하여 가다가",
+      "source_text_hash": "699741e531dc84431c7ab9ff87b70bcc4cc21dd24583be5662c4ccefd54101e6",
+      "translation_text_hash": "5d4d6ea904e09da4ecf303cd1e61afc20c772eaf24683cf1582b01daf1321b62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오바댜가 가서 아합을 만나 고하매 아합이 엘리야를 만나려 하여 가다가"
+      ],
+      "raw_text_hashes": [
+        "5d4d6ea904e09da4ecf303cd1e61afc20c772eaf24683cf1582b01daf1321b62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:17",
+      "sequence": 9359,
+      "chapter_label": "1KI 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "When Ahab saw Elijah, Ahab said to him, “Is that you, you troubler of Israel?”",
+      "ko": "엘리야를 볼 때에 저에게 이르되 이스라엘을 괴롭게 하는 자여 네냐",
+      "source_text_hash": "d38f90cd3fc3a399954570717391444278f40db0f5bd1a48a8e6f4207f8f5d81",
+      "translation_text_hash": "706b1ff93c007c627386d14658c95cc763bfbf4c831730d126ada8fae1a255cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야를 볼 때에 저에게 이르되 이스라엘을 괴롭게 하는 자여 네냐"
+      ],
+      "raw_text_hashes": [
+        "706b1ff93c007c627386d14658c95cc763bfbf4c831730d126ada8fae1a255cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:18",
+      "sequence": 9360,
+      "chapter_label": "1KI 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "He answered, “I have not troubled Israel, but you and your father’s house, in that you have forsaken the LORD’s commandments and you have followed the Baals.",
+      "ko": "저가 대답하되 내가 이스라엘을 괴롭게 한 것이 아니라 당신과 당신의 아비의 집이 괴롭게 하였으니 이는 여호와의 명령을 버렸고 당신이 바알들을 좇았음이라",
+      "source_text_hash": "8c8f72eabf4c7038ebebd4acfd824e16b78180a4cb99851ef2343347cc1c8b7b",
+      "translation_text_hash": "3108c325b7a6741930c1d15dbc2fd547ccdb499556f820b0bdc4c39325013cff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 대답하되 내가 이스라엘을 괴롭게 한 것이 아니라 당신과 당신의 아비의 집이 괴롭게 하였으니 이는 여호와의 명령을 버렸고 당신이 바알들을 좇았음이라"
+      ],
+      "raw_text_hashes": [
+        "3108c325b7a6741930c1d15dbc2fd547ccdb499556f820b0bdc4c39325013cff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:19",
+      "sequence": 9361,
+      "chapter_label": "1KI 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore send, and gather to me all Israel to Mount Carmel, and four hundred fifty of the prophets of Baal, and four hundred of the prophets of the Asherah, who eat at Jezebel’s table.”",
+      "ko": "그런즉 보내어 온 이스라엘과 이세벨의 상에서 먹는 바알의 선지자 사백 오십인과 아세라의 선지자 사백인을 갈멜산으로 모아 내게로 나오게 하소서",
+      "source_text_hash": "d1cac92748eba9118ce3cd6538b4c0c3e940572afa963fa42c93d4770faedaee",
+      "translation_text_hash": "2bde4e4990c39784dba84aa68b6813acc31aa6f98070bd94b2ffbd447988ccf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 보내어 온 이스라엘과 이세벨의 상에서 먹는 바알의 선지자 사백 오십인과 아세라의 선지자 사백인을 갈멜산으로 모아 내게로 나오게 하소서"
+      ],
+      "raw_text_hashes": [
+        "2bde4e4990c39784dba84aa68b6813acc31aa6f98070bd94b2ffbd447988ccf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:20",
+      "sequence": 9362,
+      "chapter_label": "1KI 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "So Ahab sent to all the children of Israel, and gathered the prophets together to Mount Carmel.",
+      "ko": "아합이 이에 이스라엘 모든 자손에게로 보내어 선지자들을 갈멜산으로 모으니라",
+      "source_text_hash": "2c6a23bb77050037a29b0a9e06e9769546d787faa1684c894531df188a509afd",
+      "translation_text_hash": "0e2d66863d50ec365da1fc9f1683163f8789c4dec299cacff057749834b2201d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 이에 이스라엘 모든 자손에게로 보내어 선지자들을 갈멜산으로 모으니라"
+      ],
+      "raw_text_hashes": [
+        "0e2d66863d50ec365da1fc9f1683163f8789c4dec299cacff057749834b2201d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:21",
+      "sequence": 9363,
+      "chapter_label": "1KI 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Elijah came near to all the people, and said, “How long will you waver between the two sides? If the LORD is God, follow him; but if Baal, then follow him.” The people didn’t say a word.",
+      "ko": "엘리야가 모든 백성에게 가까이 나아가 이르되 너희가 어느때까지 두 사이에서 머뭇머뭇 하려느냐 여호와가 만일 하나님이면 그를 좇고 바알이 만일 하나님이면 그를 좇을찌니라 하니 백성이 한 말도 대답지 아니하는지라",
+      "source_text_hash": "bdbf63765ebbd5637722300ee4945e9acc722b2658d823be7f248684386bc278",
+      "translation_text_hash": "09d9406cdb58879aebfd2ff22c3a131958ba70c8b39d537b296eddf41665207a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 모든 백성에게 가까이 나아가 이르되 너희가 어느때까지 두 사이에서 머뭇머뭇 하려느냐 여호와가 만일 하나님이면 그를 좇고 바알이 만일 하나님이면 그를 좇을찌니라 하니 백성이 한 말도 대답지 아니하는지라"
+      ],
+      "raw_text_hashes": [
+        "09d9406cdb58879aebfd2ff22c3a131958ba70c8b39d537b296eddf41665207a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:22",
+      "sequence": 9364,
+      "chapter_label": "1KI 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "Then Elijah said to the people, “I, even I only, am left as a prophet of the LORD; but Baal’s prophets are four hundred fifty men.",
+      "ko": "엘리야가 백성에게 이르되 여호와의 선지자는 나만 홀로 남았으나 바알의 선지자는 사백 오십인이로다",
+      "source_text_hash": "2834cecb74d6c69a631645b862e7ec09dc9bf6ad29eff8ff486a274a481c596c",
+      "translation_text_hash": "88495f7f618963d65071391441ccf1fd4cfd0c99da3dbc04fb8895cd069bf1d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 백성에게 이르되 여호와의 선지자는 나만 홀로 남았으나 바알의 선지자는 사백 오십인이로다"
+      ],
+      "raw_text_hashes": [
+        "88495f7f618963d65071391441ccf1fd4cfd0c99da3dbc04fb8895cd069bf1d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:23",
+      "sequence": 9365,
+      "chapter_label": "1KI 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Let them therefore give us two bulls; and let them choose one bull for themselves, and cut it in pieces, and lay it on the wood, and put no fire under; and I will dress the other bull, and lay it on the wood, and put no fire under it.",
+      "ko": "그런즉 두 송아지를 우리에게 가져오게 하고 저희는 한 송아지를 택하여 각을 떠서 나무 위에 놓고 불은 놓지 말며 나도 한 송아지를 잡아 나무 위에 놓고 불은 놓지 말고",
+      "source_text_hash": "c2c9ed83e34ef315894535842ee1ac369be91b5acde62f883416281f5ccc9bb7",
+      "translation_text_hash": "962784d84062499b65829dd93c178edadea041befb83f5580d700a49fbc49e29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 두 송아지를 우리에게 가져오게 하고 저희는 한 송아지를 택하여 각을 떠서 나무 위에 놓고 불은 놓지 말며 나도 한 송아지를 잡아 나무 위에 놓고 불은 놓지 말고"
+      ],
+      "raw_text_hashes": [
+        "962784d84062499b65829dd93c178edadea041befb83f5580d700a49fbc49e29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:24",
+      "sequence": 9366,
+      "chapter_label": "1KI 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "You call on the name of your god, and I will call on the LORD’s name. The God who answers by fire, let him be God.” All the people answered, “What you say is good.”",
+      "ko": "너희는 너희 신의 이름을 부르라 나는 여호와의 이름을 부르리니 이에 불로 응답하는 신 그가 하나님이니라 백성이 다 대답하되 그 말이 옳도다",
+      "source_text_hash": "b8d7ff6d41a229bebddfef556307afc9814e95aea56e5d5f3e2c7f3363c049cb",
+      "translation_text_hash": "2592deed35c90aba2ee7fc14e317855e552e2f10c028ad3ade8335a56bca1076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 신의 이름을 부르라 나는 여호와의 이름을 부르리니 이에 불로 응답하는 신 그가 하나님이니라 백성이 다 대답하되 그 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "2592deed35c90aba2ee7fc14e317855e552e2f10c028ad3ade8335a56bca1076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:25",
+      "sequence": 9367,
+      "chapter_label": "1KI 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "Elijah said to the prophets of Baal, “Choose one bull for yourselves, and dress it first, for you are many; and call on the name of your god, but put no fire under it.”",
+      "ko": "엘리야가 바알의 선지자들에게 이르되 너희는 많으니 먼저 한 송아지를 택하여 잡고 너희 신의 이름을 부르라 그러나 불을 놓지 말라",
+      "source_text_hash": "05c7e98838452e185e04186fb0ca64a449f99b21f1aa503685a6b55bde56ab2a",
+      "translation_text_hash": "4fefd32220fba00090a63cb42462980509d9051c24eb3de3f16772fe44011295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 바알의 선지자들에게 이르되 너희는 많으니 먼저 한 송아지를 택하여 잡고 너희 신의 이름을 부르라 그러나 불을 놓지 말라"
+      ],
+      "raw_text_hashes": [
+        "4fefd32220fba00090a63cb42462980509d9051c24eb3de3f16772fe44011295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:26",
+      "sequence": 9368,
+      "chapter_label": "1KI 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "They took the bull which was given them, and they dressed it, and called on the name of Baal from morning even until noon, saying, “Baal, hear us!” But there was no voice, and nobody answered. They leaped about the altar which was made.",
+      "ko": "저희가 그 받은 송아지를 취하여 잡고 아침부터 낮까지 바알의 이름을 불러 가로되 바알이여 우리에게 응답하소서 하나 아무 소리도 없고 아무 응답하는 자도 없으므로 저희가 그 쌓은 단 주위에서 뛰놀더라",
+      "source_text_hash": "c2da12a8717265dc0cbf90c5557170d4024287642b9408cb294be6fbb5c7975e",
+      "translation_text_hash": "804515287094e7b1013fd8313fb7941f0faffe1e2cfed477516006d001e9c4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 받은 송아지를 취하여 잡고 아침부터 낮까지 바알의 이름을 불러 가로되 바알이여 우리에게 응답하소서 하나 아무 소리도 없고 아무 응답하는 자도 없으므로 저희가 그 쌓은 단 주위에서 뛰놀더라"
+      ],
+      "raw_text_hashes": [
+        "804515287094e7b1013fd8313fb7941f0faffe1e2cfed477516006d001e9c4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:27",
+      "sequence": 9369,
+      "chapter_label": "1KI 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "At noon, Elijah mocked them, and said, “Cry aloud, for he is a god. Either he is deep in thought, or he has gone somewhere, or he is on a journey, or perhaps he sleeps and must be awakened.”",
+      "ko": "오정에 이르러는 엘리야가 저희를 조롱하여 가로되 큰 소리로 부르라 저는 신인즉 묵상하고 있는지 혹 잠간 나갔는지 혹 길을 행하는지 혹 잠이 들어서 깨워야 할 것인지.....하매",
+      "source_text_hash": "9b83b2b544af5cfb9064433a02658f79be2356f05684b316a33d5b9054dc476d",
+      "translation_text_hash": "7ea85ab19b9d77d8c11c4b9513d340a72755e8be0b4ac7f90c01cca188af0f7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오정에 이르러는 엘리야가 저희를 조롱하여 가로되 큰 소리로 부르라 저는 신인즉 묵상하고 있는지 혹 잠간 나갔는지 혹 길을 행하는지 혹 잠이 들어서 깨워야 할 것인지.....하매"
+      ],
+      "raw_text_hashes": [
+        "7ea85ab19b9d77d8c11c4b9513d340a72755e8be0b4ac7f90c01cca188af0f7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:28",
+      "sequence": 9370,
+      "chapter_label": "1KI 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "They cried aloud, and cut themselves in their way with knives and lances until the blood gushed out on them.",
+      "ko": "이에 저희가 큰 소리로 부르고 그 규례를 따라 피가 흐르기까지 칼과 창으로 그 몸을 상하게 하더라",
+      "source_text_hash": "17655de83da017fd482d927985049681f49023e8a7db6b348b8c0705ab25f1fc",
+      "translation_text_hash": "66340a264aa315b1213cc835b6be36b542995fbd8eeb7b75187aec55c3cbfcb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 큰 소리로 부르고 그 규례를 따라 피가 흐르기까지 칼과 창으로 그 몸을 상하게 하더라"
+      ],
+      "raw_text_hashes": [
+        "66340a264aa315b1213cc835b6be36b542995fbd8eeb7b75187aec55c3cbfcb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:29",
+      "sequence": 9371,
+      "chapter_label": "1KI 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "When midday was past, they prophesied until the time of the evening offering; but there was no voice, no answer, and nobody paid attention.",
+      "ko": "이같이 하여 오정이 지났으나 저희가 오히려 진언을 하여 저녁 소제 드릴 때까지 이를찌라도 아무 소리도 없고 아무 응답하는 자도 없고 아무 돌아보는 자도 없더라",
+      "source_text_hash": "492d85bb81d2322e32888c0f0bd4c5d80f531a95da37aaf688a7cdfffae58941",
+      "translation_text_hash": "f2f47d386b38af3e09f8cdda530b50243f70749b5dfb0725e7a3407e473960a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 하여 오정이 지났으나 저희가 오히려 진언을 하여 저녁 소제 드릴 때까지 이를찌라도 아무 소리도 없고 아무 응답하는 자도 없고 아무 돌아보는 자도 없더라"
+      ],
+      "raw_text_hashes": [
+        "f2f47d386b38af3e09f8cdda530b50243f70749b5dfb0725e7a3407e473960a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:30",
+      "sequence": 9372,
+      "chapter_label": "1KI 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "Elijah said to all the people, “Come near to me!”; and all the people came near to him. He repaired the LORD’s altar that had been thrown down.",
+      "ko": "엘리야가 모든 백성을 향하여 이르되 내게로 가까이 오라 백성이 다 저에게 가까이 오매 저가 무너진 여호와의 단을 수축하되",
+      "source_text_hash": "e34fcf8af2abd9df24cd3cbe5dc47a748d9c105f0c3e8d221ba5e4ead7d0332d",
+      "translation_text_hash": "5ad80cfcf9c1125715381d2d4aa92e4fd12cc99722b72f780ec12c144983c003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 모든 백성을 향하여 이르되 내게로 가까이 오라 백성이 다 저에게 가까이 오매 저가 무너진 여호와의 단을 수축하되"
+      ],
+      "raw_text_hashes": [
+        "5ad80cfcf9c1125715381d2d4aa92e4fd12cc99722b72f780ec12c144983c003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:31",
+      "sequence": 9373,
+      "chapter_label": "1KI 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "Elijah took twelve stones, according to the number of the tribes of the sons of Jacob, to whom the LORD’s word came, saying, “Israel shall be your name.”",
+      "ko": "야곱의 아들들의 지파의 수효를 따라 열 두 돌을 취하니 이 야곱은 여호와께서 옛적에 저에게 임하여 이르시기를 네 이름을 이스라엘이라 하리라 하신 자더라",
+      "source_text_hash": "d2de53cb5c88d8264573cf59855b2315ac85478a4d77aaa68184c189c720443c",
+      "translation_text_hash": "6602be34d8650373e5a371406e6e35d14cbc626ea775a9c2ae0485e4447af41a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아들들의 지파의 수효를 따라 열 두 돌을 취하니 이 야곱은 여호와께서 옛적에 저에게 임하여 이르시기를 네 이름을 이스라엘이라 하리라 하신 자더라"
+      ],
+      "raw_text_hashes": [
+        "6602be34d8650373e5a371406e6e35d14cbc626ea775a9c2ae0485e4447af41a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:32",
+      "sequence": 9374,
+      "chapter_label": "1KI 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "With the stones he built an altar in the LORD’s name. He made a trench around the altar large enough to contain two seahs of seed.",
+      "ko": "저가 여호와의 이름을 의지하여 그 돌로 단을 쌓고 단으로 돌아가며 곡식 종자 두 세아를 용납할만한 도랑을 만들고",
+      "source_text_hash": "80bcdd1281aacdba45d98924ff99dd7fb129ef156bdbb5222af729785a98faa6",
+      "translation_text_hash": "c79406b6ff5f98464258a3516d16d54e4b3c76049869e677498ec5652c597627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와의 이름을 의지하여 그 돌로 단을 쌓고 단으로 돌아가며 곡식 종자 두 세아를 용납할만한 도랑을 만들고"
+      ],
+      "raw_text_hashes": [
+        "c79406b6ff5f98464258a3516d16d54e4b3c76049869e677498ec5652c597627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:33",
+      "sequence": 9375,
+      "chapter_label": "1KI 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "He put the wood in order, and cut the bull in pieces and laid it on the wood. He said, “Fill four jars with water, and pour it on the burnt offering and on the wood.”",
+      "ko": "또 나무를 벌이고 송아지의 각을 떠서 나무 위에 놓고 이르되 통 넷에 물을 채워다가 번제물과 나무 위에 부으라 하고",
+      "source_text_hash": "b1eba84c8b3cd243c4a8ab009e195bae87c9123426ced1d0fbfa39cb830afc20",
+      "translation_text_hash": "8053be025cf593287be8847a66b9f9bc0afc0c8acdcb76d8291d3b4b249da322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나무를 벌이고 송아지의 각을 떠서 나무 위에 놓고 이르되 통 넷에 물을 채워다가 번제물과 나무 위에 부으라 하고"
+      ],
+      "raw_text_hashes": [
+        "8053be025cf593287be8847a66b9f9bc0afc0c8acdcb76d8291d3b4b249da322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:34",
+      "sequence": 9376,
+      "chapter_label": "1KI 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "He said, “Do it a second time;” and they did it the second time. He said, “Do it a third time;” and they did it the third time.",
+      "ko": "또 이르되 다시 그리하라 하여 다시 그리하니 또 이르되 세번 그리하라 하여 세번 그리하니",
+      "source_text_hash": "f829d764c9c9b25f5db635aa1cd1247bd59b8a07aa8a7333d18d58f820a41095",
+      "translation_text_hash": "f9de8be0eee34df72491e13eac8e9da3f4505c017be9e4aa7d3bc9842c4e4009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르되 다시 그리하라 하여 다시 그리하니 또 이르되 세번 그리하라 하여 세번 그리하니"
+      ],
+      "raw_text_hashes": [
+        "f9de8be0eee34df72491e13eac8e9da3f4505c017be9e4aa7d3bc9842c4e4009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:35",
+      "sequence": 9377,
+      "chapter_label": "1KI 18",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 35
+        }
+      ],
+      "en": "The water ran around the altar; and he also filled the trench with water.",
+      "ko": "물이 단으로 두루 흐르고 도랑에도 물이 가득하게 되었더라",
+      "source_text_hash": "ae1178e61ba16b148db92a2fc52497adc773ad01d4153ced35c3a77f98860ba8",
+      "translation_text_hash": "435a74e4e1df5738de681b7b3af9bd03353835c6867a04dd20ff7d1e1e600d8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 단으로 두루 흐르고 도랑에도 물이 가득하게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "435a74e4e1df5738de681b7b3af9bd03353835c6867a04dd20ff7d1e1e600d8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:36",
+      "sequence": 9378,
+      "chapter_label": "1KI 18",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 36
+        }
+      ],
+      "en": "At the time of the evening offering, Elijah the prophet came near and said, “LORD, the God of Abraham, of Isaac, and of Israel, let it be known today that you are God in Israel and that I am your servant, and that I have done all these things at your word.",
+      "ko": "저녁 소제 드릴 때에 이르러 선지자 엘리야가 나아가서 말하되 아브라함과 이삭과 이스라엘의 하나님 여호와여 주께서 이스라엘 중에서 하나님이 되심과 내가 주의 종이 됨과 내가 주의 말씀대로 이 모든 일을 행하는 것을 오늘날 알게 하옵소서",
+      "source_text_hash": "da586dc96e1f64be144a4892331d417bff1137ae659d93da1b9352e6723e7b1e",
+      "translation_text_hash": "42e3562b2eca2bbff8ffd2040c907792505197b75b8a26749cf9e66d70eb7e0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁 소제 드릴 때에 이르러 선지자 엘리야가 나아가서 말하되 아브라함과 이삭과 이스라엘의 하나님 여호와여 주께서 이스라엘 중에서 하나님이 되심과 내가 주의 종이 됨과 내가 주의 말씀대로 이 모든 일을 행하는 것을 오늘날 알게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "42e3562b2eca2bbff8ffd2040c907792505197b75b8a26749cf9e66d70eb7e0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:37",
+      "sequence": 9379,
+      "chapter_label": "1KI 18",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 37
+        }
+      ],
+      "en": "Hear me, LORD, hear me, that this people may know that you, LORD, are God, and that you have turned their heart back again.”",
+      "ko": "여호와여 내게 응답하옵소서 내게 응답하옵소서 이 백성으로 주 여호와는 하나님이신 것과 주는 저희의 마음으로 돌이키게 하시는 것을 알게 하옵소서 하매",
+      "source_text_hash": "90d7d6b7df1d1aa602f546bb5674f10df10514789a462ee0109a828037224660",
+      "translation_text_hash": "5bf97fe051ef93d5939561127e3fee8361c3014472ae55ab11cbb955f23c3eb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내게 응답하옵소서 내게 응답하옵소서 이 백성으로 주 여호와는 하나님이신 것과 주는 저희의 마음으로 돌이키게 하시는 것을 알게 하옵소서 하매"
+      ],
+      "raw_text_hashes": [
+        "5bf97fe051ef93d5939561127e3fee8361c3014472ae55ab11cbb955f23c3eb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:38",
+      "sequence": 9380,
+      "chapter_label": "1KI 18",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 38
+        }
+      ],
+      "en": "Then the LORD’s fire fell and consumed the burnt offering, the wood, the stones, and the dust; and it licked up the water that was in the trench.",
+      "ko": "이에 여호와의 불이 내려서 번제물과 나무와 돌과 흙을 태우고 또 도랑의 물을 핥은지라",
+      "source_text_hash": "90a1089ca6741406c02b98327c48dec768e6636c92165b3c6c3c256aa948cd3b",
+      "translation_text_hash": "ff2958a771ab1bfc70db172f2c83323c603c73ab8c20159d6f8a09e70cb13b5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와의 불이 내려서 번제물과 나무와 돌과 흙을 태우고 또 도랑의 물을 핥은지라"
+      ],
+      "raw_text_hashes": [
+        "ff2958a771ab1bfc70db172f2c83323c603c73ab8c20159d6f8a09e70cb13b5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:39",
+      "sequence": 9381,
+      "chapter_label": "1KI 18",
+      "verse_label": "39",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 39
+        }
+      ],
+      "en": "When all the people saw it, they fell on their faces. They said, “The LORD, he is God! The LORD, he is God!”",
+      "ko": "모든 백성이 보고 엎드려 말하되 여호와 그는 하나님이시로다 여호와 그는 하나님이시로다 하니",
+      "source_text_hash": "64dcccc47f2cc0d41a633b21870cf5405205e9597c399c8cdf3397f502aa00a3",
+      "translation_text_hash": "034b201bd31754a6880275818e2a6c07eaa876cb8437b75b586f5b9610ee6210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 보고 엎드려 말하되 여호와 그는 하나님이시로다 여호와 그는 하나님이시로다 하니"
+      ],
+      "raw_text_hashes": [
+        "034b201bd31754a6880275818e2a6c07eaa876cb8437b75b586f5b9610ee6210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:40",
+      "sequence": 9382,
+      "chapter_label": "1KI 18",
+      "verse_label": "40",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 40
+        }
+      ],
+      "en": "Elijah said to them, “Seize the prophets of Baal! Don’t let one of them escape!” They seized them; and Elijah brought them down to the brook Kishon, and killed them there.",
+      "ko": "엘리야가 저희에게 이르되 바알의 선지자를 잡되 하나도 도망하지 못하게 하라 하매 곧 잡은지라 엘리야가 저희를 기손 시내로 내려다가 거기서 죽이니라",
+      "source_text_hash": "28a1fd3e4070d88926a1a87a8bb601dc9ac290a9d791bb367b8a9a627918c75a",
+      "translation_text_hash": "fafffd8ce097ea8e040edadebeec872ada977b73ecdf329139f372c0675d7860",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 저희에게 이르되 바알의 선지자를 잡되 하나도 도망하지 못하게 하라 하매 곧 잡은지라 엘리야가 저희를 기손 시내로 내려다가 거기서 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "fafffd8ce097ea8e040edadebeec872ada977b73ecdf329139f372c0675d7860"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:41",
+      "sequence": 9383,
+      "chapter_label": "1KI 18",
+      "verse_label": "41",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 41
+        }
+      ],
+      "en": "Elijah said to Ahab, “Get up, eat and drink; for there is the sound of abundance of rain.”",
+      "ko": "엘리야가 아합에게 이르되 올라가서 먹고 마시소서 큰 비의 소리가 있나이다",
+      "source_text_hash": "b06d5f8296266e5c7c6d9a5afdcdc1834ac3c35633f13d2becd65c39a7454110",
+      "translation_text_hash": "612da98db70ef29ec6696551296143dc138a1dfce5d6547d324196db7dd5e0b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 아합에게 이르되 올라가서 먹고 마시소서 큰 비의 소리가 있나이다"
+      ],
+      "raw_text_hashes": [
+        "612da98db70ef29ec6696551296143dc138a1dfce5d6547d324196db7dd5e0b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:42",
+      "sequence": 9384,
+      "chapter_label": "1KI 18",
+      "verse_label": "42",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 42
+        }
+      ],
+      "en": "So Ahab went up to eat and to drink. Elijah went up to the top of Carmel; and he bowed himself down on the earth, and put his face between his knees.",
+      "ko": "아합이 먹고 마시러 올라가니라 엘리야가 갈멜산 꼭대기로 올라가서 땅에 꿇어엎드려 그 얼굴을 무릎 사이에 넣고",
+      "source_text_hash": "bf4d0f5201f7b0e853cae843c8341e689f13c802e70bb5adee4cae19380a0841",
+      "translation_text_hash": "fa022e8ecc41ed9a9f26f9e827965aa9e6a22ec769e7a242475ac1bd7af0b8e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 먹고 마시러 올라가니라 엘리야가 갈멜산 꼭대기로 올라가서 땅에 꿇어엎드려 그 얼굴을 무릎 사이에 넣고"
+      ],
+      "raw_text_hashes": [
+        "fa022e8ecc41ed9a9f26f9e827965aa9e6a22ec769e7a242475ac1bd7af0b8e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:43",
+      "sequence": 9385,
+      "chapter_label": "1KI 18",
+      "verse_label": "43",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 43
+        }
+      ],
+      "en": "He said to his servant, “Go up now and look toward the sea.” He went up and looked, then said, “There is nothing.” He said, “Go again” seven times.",
+      "ko": "그 사환에게 이르되 올라가 바다편을 바라보라 저가 올라가 바라보고 고하되 아무것도 없나이다 가로되 일곱번까지 다시 가라",
+      "source_text_hash": "7058aebcc32a0f21fc2f24d256ab898a3a9ac79e4078ec29f84c5324b93a5d3c",
+      "translation_text_hash": "3b3897ed1ba8db69e5e6232227a6f6cd6f587e08a75a5ce3382239adebe3eb4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사환에게 이르되 올라가 바다편을 바라보라 저가 올라가 바라보고 고하되 아무것도 없나이다 가로되 일곱번까지 다시 가라"
+      ],
+      "raw_text_hashes": [
+        "3b3897ed1ba8db69e5e6232227a6f6cd6f587e08a75a5ce3382239adebe3eb4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:44",
+      "sequence": 9386,
+      "chapter_label": "1KI 18",
+      "verse_label": "44",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 44
+        }
+      ],
+      "en": "On the seventh time, he said, “Behold, a small cloud, like a man’s hand, is rising out of the sea.” He said, “Go up, tell Ahab, ‘Get ready and go down, so that the rain doesn’t stop you.’”",
+      "ko": "일곱번째 이르러서는 저가 고하되 바다에서 사람의 손만한 작은 구름이 일어나나이다 가로되 올라가 아합에게 고하기를 비에 막히지 아니하도록 마차를 갖추고 내려가소서 하라 하니라",
+      "source_text_hash": "e45b4c3ad9f0617925f79c1bdb8f9184425a4ef5c7cb675c5a3f1a2c8780816a",
+      "translation_text_hash": "9eca23d054012fa9e89e172c7d736327fdf10a06018104b152d0dc90e99666c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱번째 이르러서는 저가 고하되 바다에서 사람의 손만한 작은 구름이 일어나나이다 가로되 올라가 아합에게 고하기를 비에 막히지 아니하도록 마차를 갖추고 내려가소서 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9eca23d054012fa9e89e172c7d736327fdf10a06018104b152d0dc90e99666c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:45",
+      "sequence": 9387,
+      "chapter_label": "1KI 18",
+      "verse_label": "45",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 45
+        }
+      ],
+      "en": "In a little while, the sky grew black with clouds and wind, and there was a great rain. Ahab rode, and went to Jezreel.",
+      "ko": "조금 후에 구름과 바람이 일어나서 하늘이 캄캄하여지며 큰 비가 내리는지라 아합이 마차를 타고 이스르엘로 가니",
+      "source_text_hash": "514c68fda07d0d4630b7c855520aa7aadbc9b5481a50c51d977398d6a3209e9a",
+      "translation_text_hash": "8ef01d83bf15729c059c0d3d80b242aa38f7bf53325a5be77ec9a9f5498a7243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 후에 구름과 바람이 일어나서 하늘이 캄캄하여지며 큰 비가 내리는지라 아합이 마차를 타고 이스르엘로 가니"
+      ],
+      "raw_text_hashes": [
+        "8ef01d83bf15729c059c0d3d80b242aa38f7bf53325a5be77ec9a9f5498a7243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:18:46",
+      "sequence": 9388,
+      "chapter_label": "1KI 18",
+      "verse_label": "46",
+      "locator": {
+        "book": "1KI",
+        "chapter": 18,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 18,
+          "verse": 46
+        }
+      ],
+      "en": "The LORD’s hand was on Elijah; and he tucked his cloak into his belt and ran before Ahab to the entrance of Jezreel.",
+      "ko": "여호와의 능력이 엘리야에게 임하매 저가 허리를 동이고 이스르엘로 들어가는 곳까지 아합 앞에서 달려갔더라",
+      "source_text_hash": "a82cc7d7bcbf3fdc199a3e40d56202fec0ead4cc8dce2b2f9aab1f72dbfe3bf3",
+      "translation_text_hash": "d2dcce3c0aaf9434e485ba1d57130f838b68d19bec71d3d00cd9d294a470c0a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 능력이 엘리야에게 임하매 저가 허리를 동이고 이스르엘로 들어가는 곳까지 아합 앞에서 달려갔더라"
+      ],
+      "raw_text_hashes": [
+        "d2dcce3c0aaf9434e485ba1d57130f838b68d19bec71d3d00cd9d294a470c0a4"
+      ]
+    }
+  ]
+}

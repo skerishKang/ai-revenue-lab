@@ -1,0 +1,5 @@
+
+.pack-verification-launch{margin-top:8px;width:100%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:inherit;border-radius:10px;padding:9px 10px;font:inherit;cursor:pointer}
+.pack-verification-panel{margin-top:8px;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(10,12,16,.78)}
+.pack-verification-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:8px}.pack-verification-head small,.pack-verification-note,.pack-verification-card small{opacity:.68}
+.pack-verification-card{padding:9px 0;border-top:1px solid rgba(255,255,255,.08)}.pack-verification-card:first-child{border-top:0}.pack-verification-card p{margin:5px 0;font-size:12px;line-height:1.45}.pack-verification-chip{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-size:10px;letter-spacing:.04em}.pack-verification-chip.ok{border-color:rgba(131,216,165,.55)}.pack-verification-empty,.pack-verification-note{font-size:11px;line-height:1.45}

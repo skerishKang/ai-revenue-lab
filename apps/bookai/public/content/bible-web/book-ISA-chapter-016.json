@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:016",
+  "unit_ordinal": 695,
+  "unit_label": "ISA 16",
+  "book_code": "ISA",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:16:1",
+      "sequence": 17971,
+      "chapter_label": "ISA 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Send the lambs for the ruler of the land from Selah to the wilderness, to the mountain of the daughter of Zion.",
+      "ko": "너희는 이 땅 치리자에게 어린 양들을 드리되 셀라에서부터 광야를 지나 딸 시온산으로 보낼찌니라",
+      "source_text_hash": "d0b8c62f8cc5c9d97d5e71a12d1f493d30885e39f33c397c1e9538f53131de92",
+      "translation_text_hash": "738fba0c1bd73ed662b751f4437d6ca59239237c1d906a7c21da4f824a7ef39e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 땅 치리자에게 어린 양들을 드리되 셀라에서부터 광야를 지나 딸 시온산으로 보낼찌니라"
+      ],
+      "raw_text_hashes": [
+        "738fba0c1bd73ed662b751f4437d6ca59239237c1d906a7c21da4f824a7ef39e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:2",
+      "sequence": 17972,
+      "chapter_label": "ISA 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "For it will be that as wandering birds, as a scattered nest, so will the daughters of Moab be at the fords of the Arnon.",
+      "ko": "모압의 여자들은 아르논 나루에서 떠다니는 새 같고 보금자리에서 흩어진 새 새끼 같을 것이라",
+      "source_text_hash": "6fb42fe073e216559c01851c628d8cefabf6634694affd44df01947249e971ae",
+      "translation_text_hash": "b2cad635626047b202e5a1541219bc6a93319c19a79ae46ea6943211554d8074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 여자들은 아르논 나루에서 떠다니는 새 같고 보금자리에서 흩어진 새 새끼 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "b2cad635626047b202e5a1541219bc6a93319c19a79ae46ea6943211554d8074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:3",
+      "sequence": 17973,
+      "chapter_label": "ISA 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "Give counsel! Execute justice! Make your shade like the night in the middle of the noonday! Hide the outcasts! Don’t betray the fugitive!",
+      "ko": "너는 모략을 베풀며 공의로 판결하며 오정 때에 밤 같이 그늘을 짓고 쫓겨난 자를 숨기며 도망한 자를 발각시키지 말며",
+      "source_text_hash": "b083987fc75af2e0b8415ca9a081c6ee579abcceff69cdb55a01dcd7efd09be2",
+      "translation_text_hash": "6723117899fbf16363f8c9076441e642dd7281c6fdeb32c5d31972da6c0d8ac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 모략을 베풀며 공의로 판결하며 오정 때에 밤 같이 그늘을 짓고 쫓겨난 자를 숨기며 도망한 자를 발각시키지 말며"
+      ],
+      "raw_text_hashes": [
+        "6723117899fbf16363f8c9076441e642dd7281c6fdeb32c5d31972da6c0d8ac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:4",
+      "sequence": 17974,
+      "chapter_label": "ISA 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "Let my outcasts dwell with you! As for Moab, be a hiding place for him from the face of the destroyer. For the extortionist is brought to nothing. Destruction ceases. The oppressors are consumed out of the land.",
+      "ko": "나의 쫓겨난 자들로 너와 함께 있게 하되 너 모압은 멸절하는 자 앞에서 그 피할 곳이 되라 대저 토색하는 자가 망하였고 멸절하는 자가 그쳤고 압제하는 자가 이 땅에서 멸절하였으며",
+      "source_text_hash": "833a36757771b88981d087bfc2369014f1274a6be2959a9ed987022b952ef30b",
+      "translation_text_hash": "3e32195d04fe9c5ce9760e5c8c92f28c83098df23b9f484abaa7537c624c8e14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 쫓겨난 자들로 너와 함께 있게 하되 너 모압은 멸절하는 자 앞에서 그 피할 곳이 되라 대저 토색하는 자가 망하였고 멸절하는 자가 그쳤고 압제하는 자가 이 땅에서 멸절하였으며"
+      ],
+      "raw_text_hashes": [
+        "3e32195d04fe9c5ce9760e5c8c92f28c83098df23b9f484abaa7537c624c8e14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:5",
+      "sequence": 17975,
+      "chapter_label": "ISA 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "A throne will be established in loving kindness. One will sit on it in truth, in the tent of David, judging, seeking justice, and swift to do righteousness.",
+      "ko": "다윗의 장막에 왕위는 인자함으로 굳게 설 것이요 그 위에 앉을 자는 충실함으로 판결하며 공평을 구하며 의를 신속히 행하리라",
+      "source_text_hash": "ea3793e6ee92c0beac594dea0c954eb1ce9aef1ee99392604024acb5104380b0",
+      "translation_text_hash": "d2c51dfe90a0e78e44784dbaa880e0355e154c4a99606f4f2c81a5723130e596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 장막에 왕위는 인자함으로 굳게 설 것이요 그 위에 앉을 자는 충실함으로 판결하며 공평을 구하며 의를 신속히 행하리라"
+      ],
+      "raw_text_hashes": [
+        "d2c51dfe90a0e78e44784dbaa880e0355e154c4a99606f4f2c81a5723130e596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:6",
+      "sequence": 17976,
+      "chapter_label": "ISA 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "We have heard of the pride of Moab, that he is very proud; even of his arrogance, his pride, and his wrath. His boastings are nothing.",
+      "ko": "우리가 모압의 교만을 들었나니 심히 교만하도다 그의 거만하며 교만하며 분노함도 들었거니와 그 과장이 헛되도다",
+      "source_text_hash": "3dbe52a076b21f8c6a6ab61a2bd0ca0eff8b13a373824f7f8d903ba5bc7645cd",
+      "translation_text_hash": "069264913c10a9d9ecfb9ecd598cb303836dffd3056234448398bee4bf37d703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 모압의 교만을 들었나니 심히 교만하도다 그의 거만하며 교만하며 분노함도 들었거니와 그 과장이 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "069264913c10a9d9ecfb9ecd598cb303836dffd3056234448398bee4bf37d703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:7",
+      "sequence": 17977,
+      "chapter_label": "ISA 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore Moab will wail for Moab. Everyone will wail. You will mourn for the raisin cakes of Kir Hareseth, utterly stricken.",
+      "ko": "그러므로 모압이 모압을 위하여 통곡하되 다 통곡하며 길하레셋 건포도 떡을 위하여 그들이 슬퍼하며 심히 근심하리니",
+      "source_text_hash": "0064bafeb5f9062891382095b86cd88eaab69d653efd58a831a70ace158798f6",
+      "translation_text_hash": "ffde01dd5875b0869642b606d6998d014d8dd24b29e9e12cb4566174091e20df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모압이 모압을 위하여 통곡하되 다 통곡하며 길하레셋 건포도 떡을 위하여 그들이 슬퍼하며 심히 근심하리니"
+      ],
+      "raw_text_hashes": [
+        "ffde01dd5875b0869642b606d6998d014d8dd24b29e9e12cb4566174091e20df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:8",
+      "sequence": 17978,
+      "chapter_label": "ISA 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "For the fields of Heshbon languish with the vine of Sibmah. The lords of the nations have broken down its choice branches, which reached even to Jazer, which wandered into the wilderness. Its shoots were spread abroad. They passed over the sea.",
+      "ko": "이는 헤스본의 밭과 십마의 포도나무가 말랐음이라 전에는 그 가지가 야셀에 미쳐 광야에 이르고 그 싹이 자라서 바다를 건넜더니 이제 열국 주권자들이 그 좋은 가지를 꺾었도다",
+      "source_text_hash": "2d170abab785889b64bab46526e28c36e6a9c11609d63a1a3af41ecfdfbb8b7c",
+      "translation_text_hash": "22d2d9f26d4437fac95b4c0373b888e5cdffdb297d59af25d94922891ca0c88b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 헤스본의 밭과 십마의 포도나무가 말랐음이라 전에는 그 가지가 야셀에 미쳐 광야에 이르고 그 싹이 자라서 바다를 건넜더니 이제 열국 주권자들이 그 좋은 가지를 꺾었도다"
+      ],
+      "raw_text_hashes": [
+        "22d2d9f26d4437fac95b4c0373b888e5cdffdb297d59af25d94922891ca0c88b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:9",
+      "sequence": 17979,
+      "chapter_label": "ISA 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore I will weep with the weeping of Jazer for the vine of Sibmah. I will water you with my tears, Heshbon, and Elealeh: for on your summer fruits and on your harvest the battle shout has fallen.",
+      "ko": "그러므로 내가 야셀의 울음처럼 십마의 포도나무를 위하여 울리라 헤스본이여, 엘르알레여, 나의 눈물로 너를 적시리니 너의 여름실과, 너의 농작물에 떠드는 소리가 일어남이니라",
+      "source_text_hash": "fdaa94fdadf5bc716bd48cce2186c94992310838ce7bbc1ade7f1aa65a8badd4",
+      "translation_text_hash": "f0d7529a4cf0c1a801fb5ed9563a13dc7f288d9c1afd354f13f18e776f62b049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 야셀의 울음처럼 십마의 포도나무를 위하여 울리라 헤스본이여, 엘르알레여, 나의 눈물로 너를 적시리니 너의 여름실과, 너의 농작물에 떠드는 소리가 일어남이니라"
+      ],
+      "raw_text_hashes": [
+        "f0d7529a4cf0c1a801fb5ed9563a13dc7f288d9c1afd354f13f18e776f62b049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:10",
+      "sequence": 17980,
+      "chapter_label": "ISA 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Gladness is taken away, and joy out of the fruitful field; and in the vineyards there will be no singing, neither joyful noise. Nobody will tread out wine in the presses. I have made the shouting stop.",
+      "ko": "즐거움과 기쁨이 기름진 밭에서 떠났고 포도원에는 노래와 즐거운 소리가 없어지겠고 틀에는 포도를 밟을 사람이 없으리니 이는 내가 그 소리를 그치게 하였음이라",
+      "source_text_hash": "402fd89fdadc3c7e1e11e5d9e0b8780d3c66e4282596f536401c462df30e0b40",
+      "translation_text_hash": "c99ffad5a68004ad97b43168ecb59ca0081add24f3d7c0713c184a5a6340c4ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "즐거움과 기쁨이 기름진 밭에서 떠났고 포도원에는 노래와 즐거운 소리가 없어지겠고 틀에는 포도를 밟을 사람이 없으리니 이는 내가 그 소리를 그치게 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "c99ffad5a68004ad97b43168ecb59ca0081add24f3d7c0713c184a5a6340c4ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:11",
+      "sequence": 17981,
+      "chapter_label": "ISA 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore my heart sounds like a harp for Moab, and my inward parts for Kir Heres.",
+      "ko": "이러므로 나의 마음이 모압을 위하여 수금 같이 소리를 발하며 나의 창자가 길하레셋을 위하여 그러하도다",
+      "source_text_hash": "0e2304ae7451276a40aa41c24ba1d61eff35f2528d5f4a35c70c61257d4c2ecf",
+      "translation_text_hash": "14f6e3ceef2af284d0eef029ef485038444cca9ffbefe6854c993ff4d45d373d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 나의 마음이 모압을 위하여 수금 같이 소리를 발하며 나의 창자가 길하레셋을 위하여 그러하도다"
+      ],
+      "raw_text_hashes": [
+        "14f6e3ceef2af284d0eef029ef485038444cca9ffbefe6854c993ff4d45d373d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:12",
+      "sequence": 17982,
+      "chapter_label": "ISA 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "It will happen that when Moab presents himself, when he wearies himself on the high place, and comes to his sanctuary to pray, that he will not prevail.",
+      "ko": "모압 사람이 그 산당에서 피곤하도록 봉사하며 자기 성소에 나아가서 기도할찌라도 무효하리로다",
+      "source_text_hash": "a4da47821d6a1406a8afe31933fa9d6f085ebaa73e1a6d30410fff50a6e61e65",
+      "translation_text_hash": "90e909e8441537480be98285d9cdf1e6c36375840ea92be3d04c7fc77848acd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 사람이 그 산당에서 피곤하도록 봉사하며 자기 성소에 나아가서 기도할찌라도 무효하리로다"
+      ],
+      "raw_text_hashes": [
+        "90e909e8441537480be98285d9cdf1e6c36375840ea92be3d04c7fc77848acd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:13",
+      "sequence": 17983,
+      "chapter_label": "ISA 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "This is the word that the LORD spoke concerning Moab in time past.",
+      "ko": "이는 여호와께서 전에 모압을 들어 하신 말씀이어니와",
+      "source_text_hash": "faf5580c64b48a778cc454f35bfab41cfffe03895d0950eb74dab638d0a49cfc",
+      "translation_text_hash": "28b846693885e056f9896619fb9512bfdfc512acaa8bc3dff51994389028b01b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 전에 모압을 들어 하신 말씀이어니와"
+      ],
+      "raw_text_hashes": [
+        "28b846693885e056f9896619fb9512bfdfc512acaa8bc3dff51994389028b01b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:16:14",
+      "sequence": 17984,
+      "chapter_label": "ISA 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "But now the LORD has spoken, saying, “Within three years, as a worker bound by contract would count them, the glory of Moab shall be brought into contempt, with all his great multitude; and the remnant will be very small and feeble.”",
+      "ko": "이제 여호와께서 말씀하여 가라사대 품군의 정한 해와 같이 삼년내에 모압의 영화와 그 큰 무리가 능욕을 당할찌라 그 남은 수가 심히 적어 소용이 없이 되리라 하시도다",
+      "source_text_hash": "05590b3dd1e23b116bdd0d88f830f4160a8e01f5eebcf0bf185373aa92c08fe0",
+      "translation_text_hash": "fff0e783bfeee4cab1715c1c4bc4b6367efb79865e3049cd0e0793094b76b4f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 여호와께서 말씀하여 가라사대 품군의 정한 해와 같이 삼년내에 모압의 영화와 그 큰 무리가 능욕을 당할찌라 그 남은 수가 심히 적어 소용이 없이 되리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "fff0e783bfeee4cab1715c1c4bc4b6367efb79865e3049cd0e0793094b76b4f1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:011",
+  "unit_ordinal": 302,
+  "unit_label": "1KI 11",
+  "book_code": "1KI",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:11:1",
+      "sequence": 9110,
+      "chapter_label": "1KI 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Now King Solomon loved many foreign women, together with the daughter of Pharaoh: women of the Moabites, Ammonites, Edomites, Sidonians, and Hittites,",
+      "ko": "솔로몬왕이 바로의 딸 외에 이방의 많은 여인을 사랑하였으니 곧 모압과 암몬과 에돔과 시돈과 헷 여인이라",
+      "source_text_hash": "fb38b664588533b1b4c0757c862cbd3f076064f92fda07a3d5985782e99d5d19",
+      "translation_text_hash": "117637bad5c379216477eb9e46e465e9cbfafb549a697532dd434b739ab0fb36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 바로의 딸 외에 이방의 많은 여인을 사랑하였으니 곧 모압과 암몬과 에돔과 시돈과 헷 여인이라"
+      ],
+      "raw_text_hashes": [
+        "117637bad5c379216477eb9e46e465e9cbfafb549a697532dd434b739ab0fb36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:2",
+      "sequence": 9111,
+      "chapter_label": "1KI 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "of the nations concerning which the LORD said to the children of Israel, “You shall not go among them, neither shall they come among you, for surely they will turn away your heart after their gods.” Solomon joined to these in love.",
+      "ko": "여호와께서 일찌기 이 여러 국민에게 대하여 이스라엘 자손에게 말씀하시기를 너희는 저희와 서로 통하지 말며 저희도 너희와 서로 통하게 말라 저희가 정녕코 너희의 마음을 돌이켜 저희의 신들을 좇게 하리라 하셨으나 솔로몬이 저희를 연애하였더라",
+      "source_text_hash": "42f848581c4bd3a5d90baef1b6c003ebab7090dec9895fcfb70209791f299c02",
+      "translation_text_hash": "4e490a67e49458050d4d4de2b89bf6fec0ce96197541e6d1a76950e43e56823f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 일찌기 이 여러 국민에게 대하여 이스라엘 자손에게 말씀하시기를 너희는 저희와 서로 통하지 말며 저희도 너희와 서로 통하게 말라 저희가 정녕코 너희의 마음을 돌이켜 저희의 신들을 좇게 하리라 하셨으나 솔로몬이 저희를 연애하였더라"
+      ],
+      "raw_text_hashes": [
+        "4e490a67e49458050d4d4de2b89bf6fec0ce96197541e6d1a76950e43e56823f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:3",
+      "sequence": 9112,
+      "chapter_label": "1KI 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "He had seven hundred wives, princesses, and three hundred concubines. His wives turned his heart away.",
+      "ko": "왕은 후비가 칠백인이요 빈장이 삼백인이라 왕비들이 왕의 마음을 돌이켰더라",
+      "source_text_hash": "e946d008db5627699806fa7372fe61954da3878b818ca958946265e5eab38706",
+      "translation_text_hash": "ec0438d0b550c73682caf9c087a573a2f685bf179b2f4e25bf3891dbb4a032f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 후비가 칠백인이요 빈장이 삼백인이라 왕비들이 왕의 마음을 돌이켰더라"
+      ],
+      "raw_text_hashes": [
+        "ec0438d0b550c73682caf9c087a573a2f685bf179b2f4e25bf3891dbb4a032f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:4",
+      "sequence": 9113,
+      "chapter_label": "1KI 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "When Solomon was old, his wives turned away his heart after other gods; and his heart was not perfect with the LORD his God, as the heart of David his father was.",
+      "ko": "솔로몬의 나이 늙을 때에 왕비들이 그 마음을 돌이켜 다른 신들을 좇게 하였으므로 왕의 마음이 그 부친 다윗의 마음과 같지 아니하여 그 하나님 여호와 앞에 온전치 못하였으니",
+      "source_text_hash": "365491f3cf72bcce1ddeaa1e1a15c3a2e7cfc8a2b5ee8ee68b145cc54a482bf9",
+      "translation_text_hash": "cd26c55c7211a22f1f7daab0ea6502da635bbf02e8b577647a3ae332864a67f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 나이 늙을 때에 왕비들이 그 마음을 돌이켜 다른 신들을 좇게 하였으므로 왕의 마음이 그 부친 다윗의 마음과 같지 아니하여 그 하나님 여호와 앞에 온전치 못하였으니"
+      ],
+      "raw_text_hashes": [
+        "cd26c55c7211a22f1f7daab0ea6502da635bbf02e8b577647a3ae332864a67f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:5",
+      "sequence": 9114,
+      "chapter_label": "1KI 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "For Solomon went after Ashtoreth the goddess of the Sidonians, and after Milcom the abomination of the Ammonites.",
+      "ko": "이는 시돈 사람의 여신 아스다롯을 좇고 암몬 사람의 가증한 밀곰을 좇음이라",
+      "source_text_hash": "693b9121e68103f1d1c4d08153011a42c12a1ad9f7d7189792d9b9321dc97bcb",
+      "translation_text_hash": "757fae3b891e0e947ba76aff10d72d41f7a69c69fda13167b9d25006d546698a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 시돈 사람의 여신 아스다롯을 좇고 암몬 사람의 가증한 밀곰을 좇음이라"
+      ],
+      "raw_text_hashes": [
+        "757fae3b891e0e947ba76aff10d72d41f7a69c69fda13167b9d25006d546698a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:6",
+      "sequence": 9115,
+      "chapter_label": "1KI 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "Solomon did that which was evil in the LORD’s sight, and didn’t go fully after the LORD, as David his father did.",
+      "ko": "솔로몬이 여호와의 눈앞에서 악을 행하여 그 부친 다윗이 여호와를 온전히 좇음 같이 좇지 아니하고",
+      "source_text_hash": "bd319eec8e71183550acdc110130e02d3d915bac0072d0badcba1fed1c067ca9",
+      "translation_text_hash": "a9030d616ea628a9434913abf19fc9338a1e5fbd5257300d1ce3016c5cfa9914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 눈앞에서 악을 행하여 그 부친 다윗이 여호와를 온전히 좇음 같이 좇지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "a9030d616ea628a9434913abf19fc9338a1e5fbd5257300d1ce3016c5cfa9914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:7",
+      "sequence": 9116,
+      "chapter_label": "1KI 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "Then Solomon built a high place for Chemosh the abomination of Moab, on the mountain that is before Jerusalem, and for Molech the abomination of the children of Ammon.",
+      "ko": "모압의 가증한 그모스를 위하여 예루살렘 앞 산에 산당을 지었고 또 암몬 자손의 가증한 몰록을 위하여 그와 같이 하였으며",
+      "source_text_hash": "55281bc44b125f6ae3b5ef65ab4b6cc72045e987bfbc737b49429b7edcf01b3e",
+      "translation_text_hash": "27a3c4d6bcd5317d5086c3744cc39fde86aa2d2c0d112997d181df25a9799944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 가증한 그모스를 위하여 예루살렘 앞 산에 산당을 지었고 또 암몬 자손의 가증한 몰록을 위하여 그와 같이 하였으며"
+      ],
+      "raw_text_hashes": [
+        "27a3c4d6bcd5317d5086c3744cc39fde86aa2d2c0d112997d181df25a9799944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:8",
+      "sequence": 9117,
+      "chapter_label": "1KI 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "So he did for all his foreign wives, who burned incense and sacrificed to their gods.",
+      "ko": "저가 또 이족 후비들을 위하여 다 그와 같이 한지라 저희가 자기의 신들에게 분향하며 제사하였더라",
+      "source_text_hash": "a9cd6bb908d441108619f36f253ceb22dc35a512659eb5b4d9bacbb408ce9535",
+      "translation_text_hash": "7492c56c46647a55e2f1783b808df8809bf3f9d98cde3379772a1cb31f8bb4cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 이족 후비들을 위하여 다 그와 같이 한지라 저희가 자기의 신들에게 분향하며 제사하였더라"
+      ],
+      "raw_text_hashes": [
+        "7492c56c46647a55e2f1783b808df8809bf3f9d98cde3379772a1cb31f8bb4cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:9",
+      "sequence": 9118,
+      "chapter_label": "1KI 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD was angry with Solomon, because his heart was turned away from the LORD, the God of Israel, who had appeared to him twice,",
+      "ko": "솔로몬이 마음을 돌이켜 이스라엘 하나님 여호와를 떠나므로 여호와께서 저에게 진노하시니라 여호와께서 일찌기 두번이나 저에게 나타나시고",
+      "source_text_hash": "b419f4610e836a388b5e58f58a8f7ed78d0dce7744dccf3d4870243b6beb8734",
+      "translation_text_hash": "a002715ce5d8ceab798623a7ac432053561a59e2d9d0ae5f39a22130d820df1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 마음을 돌이켜 이스라엘 하나님 여호와를 떠나므로 여호와께서 저에게 진노하시니라 여호와께서 일찌기 두번이나 저에게 나타나시고"
+      ],
+      "raw_text_hashes": [
+        "a002715ce5d8ceab798623a7ac432053561a59e2d9d0ae5f39a22130d820df1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:10",
+      "sequence": 9119,
+      "chapter_label": "1KI 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "and had commanded him concerning this thing, that he should not go after other gods; but he didn’t keep that which the LORD commanded.",
+      "ko": "이 일에 대하여 명하사 다른 신을 좇지 말라 하셨으나 저가 여호와의 명령을 지키지 않았으므로",
+      "source_text_hash": "31a5436af142c5966b1c19152c60fc49fae98132fe2b61a00e3eb090c84927d8",
+      "translation_text_hash": "cf152c2bb3ee633c2d35c2b04a7faf617fbf8edd77d3b19e3f576d83f4f5c54b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일에 대하여 명하사 다른 신을 좇지 말라 하셨으나 저가 여호와의 명령을 지키지 않았으므로"
+      ],
+      "raw_text_hashes": [
+        "cf152c2bb3ee633c2d35c2b04a7faf617fbf8edd77d3b19e3f576d83f4f5c54b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:11",
+      "sequence": 9120,
+      "chapter_label": "1KI 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore the LORD said to Solomon, “Because this is done by you, and you have not kept my covenant and my statutes, which I have commanded you, I will surely tear the kingdom from you, and will give it to your servant.",
+      "ko": "여호와께서 솔로몬에게 말씀하시되 네게 이러한 일이 있었고 또 네가 나의 언약과 내가 네게 명한 법도를 지키지 아니하였으니 내가 결단코 이 나라를 네게서 빼앗아 네 신복에게 주리라",
+      "source_text_hash": "975989dd9c49a1218cc2ea93ceaee8e545962560091bcfde6a0bbd03fd77e9c7",
+      "translation_text_hash": "eb13ae8a44cc4fab50c66f80b729ca3fdde04bd2f15764c8fccc63498a3ce5b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 솔로몬에게 말씀하시되 네게 이러한 일이 있었고 또 네가 나의 언약과 내가 네게 명한 법도를 지키지 아니하였으니 내가 결단코 이 나라를 네게서 빼앗아 네 신복에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "eb13ae8a44cc4fab50c66f80b729ca3fdde04bd2f15764c8fccc63498a3ce5b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:12",
+      "sequence": 9121,
+      "chapter_label": "1KI 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Nevertheless, I will not do it in your days, for David your father’s sake; but I will tear it out of your son’s hand.",
+      "ko": "그러나 네 아비 다윗을 위하여 네 세대에는 이 일을 행치 아니하고 네 아들의 손에서 빼앗으려니와",
+      "source_text_hash": "fe1c3191bd32876d75971515e3dd78e31b58c6a45b41f72f7c99d657cd6edfe8",
+      "translation_text_hash": "c59374fbc2d264e7150877706243527bbe81ef13d6a3f2ea15c3872724326d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네 아비 다윗을 위하여 네 세대에는 이 일을 행치 아니하고 네 아들의 손에서 빼앗으려니와"
+      ],
+      "raw_text_hashes": [
+        "c59374fbc2d264e7150877706243527bbe81ef13d6a3f2ea15c3872724326d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:13",
+      "sequence": 9122,
+      "chapter_label": "1KI 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "However, I will not tear away all the kingdom; but I will give one tribe to your son, for David my servant’s sake, and for Jerusalem’s sake which I have chosen.”",
+      "ko": "오직 내가 이 나라를 다 빼앗지 아니하고 나의 종 다윗과 나의 뺀 예루살렘을 위하여 한 지파를 네 아들에게 주리라 하셨더라",
+      "source_text_hash": "05f50b22b69fc4475b1cb4843ca641672c1b929171cb091357259bc07dbed5e7",
+      "translation_text_hash": "4b86b76df66b6a5aeb153842c1c7399271b91d98c43b0fca5546b0f854e452ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내가 이 나라를 다 빼앗지 아니하고 나의 종 다윗과 나의 뺀 예루살렘을 위하여 한 지파를 네 아들에게 주리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "4b86b76df66b6a5aeb153842c1c7399271b91d98c43b0fca5546b0f854e452ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:14",
+      "sequence": 9123,
+      "chapter_label": "1KI 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD raised up an adversary to Solomon: Hadad the Edomite. He was one of the king’s offspring in Edom.",
+      "ko": "여호와께서 에돔 사람 하닷을 일으켜 솔로몬의 대적이 되게 하시니 저는 왕의 자손으로서 에돔에 거하였더라",
+      "source_text_hash": "20f3d083a0ba176c4ec284431a712d6d8b866fb1a19e7cee4581f60528e26168",
+      "translation_text_hash": "c806deca439e191f4bc0a72c14da5b7dc8132b9ea9fd3db44c11dfda3e9d5bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 에돔 사람 하닷을 일으켜 솔로몬의 대적이 되게 하시니 저는 왕의 자손으로서 에돔에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "c806deca439e191f4bc0a72c14da5b7dc8132b9ea9fd3db44c11dfda3e9d5bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:15",
+      "sequence": 9124,
+      "chapter_label": "1KI 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "For when David was in Edom, and Joab the captain of the army had gone up to bury the slain, and had struck every male in Edom",
+      "ko": "전에 다윗이 에돔에 있을 때에 군대장관 요압이 가서 죽임을 당한 자들을 장사하고 에돔의 남자를 다 쳐서 죽였는데",
+      "source_text_hash": "6fdeaf85f65d56d04c86ed85f114c06c948904ee894b99356a9c463f7785c010",
+      "translation_text_hash": "91e0c60778151a0c5ae7dc0ec1b042615516c63b3082a249e19774a18c8e3334",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 다윗이 에돔에 있을 때에 군대장관 요압이 가서 죽임을 당한 자들을 장사하고 에돔의 남자를 다 쳐서 죽였는데"
+      ],
+      "raw_text_hashes": [
+        "91e0c60778151a0c5ae7dc0ec1b042615516c63b3082a249e19774a18c8e3334"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:16",
+      "sequence": 9125,
+      "chapter_label": "1KI 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "(for Joab and all Israel remained there six months, until he had cut off every male in Edom),",
+      "ko": "요압은 에돔의 남자를 다 없이 하기까지 이스라엘 무리와 함께 여섯달을 그곳에 유하였었더라",
+      "source_text_hash": "85af3eb0974d760d2996b21191271fb22744e7bd028331411d90b4498c12cd74",
+      "translation_text_hash": "58fd0e4db00aa5d576b1012ae4d3a55333d23239c72153c769f88c1916c4f286",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압은 에돔의 남자를 다 없이 하기까지 이스라엘 무리와 함께 여섯달을 그곳에 유하였었더라"
+      ],
+      "raw_text_hashes": [
+        "58fd0e4db00aa5d576b1012ae4d3a55333d23239c72153c769f88c1916c4f286"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:17",
+      "sequence": 9126,
+      "chapter_label": "1KI 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "Hadad fled, he and certain Edomites of his father’s servants with him, to go into Egypt, when Hadad was still a little child.",
+      "ko": "그 때에 하닷은 작은 아이라 그 아비의 신복 중 두어 에돔 사람과 함께 도망하여 애굽으로 가려 하여",
+      "source_text_hash": "6657d0616da4cff2239c12a622b7e9e82a48024abc5c9f4a0a4bef0272c1465d",
+      "translation_text_hash": "a2fff6e399658e5eda86e7bb3a39dc4cfc6bbe69e917c3e4babfce6c8044d362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 하닷은 작은 아이라 그 아비의 신복 중 두어 에돔 사람과 함께 도망하여 애굽으로 가려 하여"
+      ],
+      "raw_text_hashes": [
+        "a2fff6e399658e5eda86e7bb3a39dc4cfc6bbe69e917c3e4babfce6c8044d362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:18",
+      "sequence": 9127,
+      "chapter_label": "1KI 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "They arose out of Midian and came to Paran; and they took men with them out of Paran, and they came to Egypt, to Pharaoh king of Egypt, who gave him a house, and appointed him food, and gave him land.",
+      "ko": "미디안에서 발행하여 바란에 이르고 거기서 사람을 데리고 애굽으로 가서 애굽 왕 바로에게 나아가매 바로가 저에게 집을 주고 먹을 양식을 정하며 또 토지를 주었더라",
+      "source_text_hash": "271807dd409b31826c1ac7d5f3a5851ef4a0e0e9a74059860b18e0f4bcd94e64",
+      "translation_text_hash": "c193f8df64fed0d890144a09c30020f81d17d8fd5f90ad162d54205af651cd61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안에서 발행하여 바란에 이르고 거기서 사람을 데리고 애굽으로 가서 애굽 왕 바로에게 나아가매 바로가 저에게 집을 주고 먹을 양식을 정하며 또 토지를 주었더라"
+      ],
+      "raw_text_hashes": [
+        "c193f8df64fed0d890144a09c30020f81d17d8fd5f90ad162d54205af651cd61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:19",
+      "sequence": 9128,
+      "chapter_label": "1KI 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Hadad found great favor in the sight of Pharaoh, so that he gave him as wife the sister of his own wife, the sister of Tahpenes the queen.",
+      "ko": "하닷이 바로의 눈 앞에 크게 은총을 얻었으므로 바로가 자기의 처제 곧 왕비 다브네스의 아우로 저의 아내를 삼으매",
+      "source_text_hash": "c3c7ad43776a878a8da1f383f4a55f8050cad0b3c062bf4a2fffa18021de2b1e",
+      "translation_text_hash": "3f2ab0bd75e10a3a6bf386c7eccf51ee47fe02c7ff2b2b3a77848a926deb919a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷이 바로의 눈 앞에 크게 은총을 얻었으므로 바로가 자기의 처제 곧 왕비 다브네스의 아우로 저의 아내를 삼으매"
+      ],
+      "raw_text_hashes": [
+        "3f2ab0bd75e10a3a6bf386c7eccf51ee47fe02c7ff2b2b3a77848a926deb919a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:20",
+      "sequence": 9129,
+      "chapter_label": "1KI 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "The sister of Tahpenes bore him Genubath his son, whom Tahpenes weaned in Pharaoh’s house; and Genubath was in Pharaoh’s house among the sons of Pharaoh.",
+      "ko": "다브네스의 아우가 그로 말미암아 아들 그누밧을 낳았더니 다브네스가 그 아이를 바로의 궁중에서 젖을 떼게 하매 그누밧이 바로의 궁에서 바로의 아들 가운데 있었더라",
+      "source_text_hash": "c4627e0823679b700acf1be47c4e6e9e7cf9e69e486abf2e66c74509ce122c2f",
+      "translation_text_hash": "1d96fd4d49d753b9bc6253b580d74110c1a2f125023d47b3de055de033e8a280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다브네스의 아우가 그로 말미암아 아들 그누밧을 낳았더니 다브네스가 그 아이를 바로의 궁중에서 젖을 떼게 하매 그누밧이 바로의 궁에서 바로의 아들 가운데 있었더라"
+      ],
+      "raw_text_hashes": [
+        "1d96fd4d49d753b9bc6253b580d74110c1a2f125023d47b3de055de033e8a280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:21",
+      "sequence": 9130,
+      "chapter_label": "1KI 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "When Hadad heard in Egypt that David slept with his fathers, and that Joab the captain of the army was dead, Hadad said to Pharaoh, “Let me depart, that I may go to my own country.”",
+      "ko": "하닷이 애굽에 있어서 다윗이 그 열조와 함께 잔 것과 군대장관 요압의 죽은 것을 듣고 바로에게 고하되 나를 보내어 내 고국으로 가게 하옵소서",
+      "source_text_hash": "768870c7c2886ce8aefd598257cf86fbf9303dfa76196b57cf752bbd331fcd12",
+      "translation_text_hash": "084a43a4e71c2857084e743b52be4cc164101e510c98b520700c8f4c96edadb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷이 애굽에 있어서 다윗이 그 열조와 함께 잔 것과 군대장관 요압의 죽은 것을 듣고 바로에게 고하되 나를 보내어 내 고국으로 가게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "084a43a4e71c2857084e743b52be4cc164101e510c98b520700c8f4c96edadb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:22",
+      "sequence": 9131,
+      "chapter_label": "1KI 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Then Pharaoh said to him, “But what have you lacked with me, that behold, you seek to go to your own country?” He answered, “Nothing, however only let me depart.”",
+      "ko": "바로가 저에게 이르되 네가 나와 함께 있어 무슨 부족함이 있기에 네 고국으로 가기를 구하느뇨 대답하되 없나이다 그러나 아무쪼록 나를 보내옵소서 하였더라",
+      "source_text_hash": "1e0b74e6b81db75d24ea89fd6dfa97d6b6fb78d25c162d80eccec4c73bf85451",
+      "translation_text_hash": "d5dda56d39a98a1e79accc6b9b23c56b4fe3dae71267951fa111ce283a1a26a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 저에게 이르되 네가 나와 함께 있어 무슨 부족함이 있기에 네 고국으로 가기를 구하느뇨 대답하되 없나이다 그러나 아무쪼록 나를 보내옵소서 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d5dda56d39a98a1e79accc6b9b23c56b4fe3dae71267951fa111ce283a1a26a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:23",
+      "sequence": 9132,
+      "chapter_label": "1KI 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "God raised up an adversary to him, Rezon the son of Eliada, who had fled from his lord, Hadadezer king of Zobah.",
+      "ko": "하나님이 또 엘리아다의 아들 르손을 일으켜 솔로몬의 대적이 되게 하시니 저는 그 주인 소바 왕 하닷에셀에게서 도망한 자라",
+      "source_text_hash": "54f9eb1182728ef1ec673f367ced08a8eb5784f7a77e408d15ec94a563e0d800",
+      "translation_text_hash": "40f61d4e0cddac900ecfb81e8874d2045ba868c82c254fecdcde1dd8a83fa035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 또 엘리아다의 아들 르손을 일으켜 솔로몬의 대적이 되게 하시니 저는 그 주인 소바 왕 하닷에셀에게서 도망한 자라"
+      ],
+      "raw_text_hashes": [
+        "40f61d4e0cddac900ecfb81e8874d2045ba868c82c254fecdcde1dd8a83fa035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:24",
+      "sequence": 9133,
+      "chapter_label": "1KI 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "He gathered men to himself, and became captain over a troop, when David killed them of Zobah. They went to Damascus and lived there, and reigned in Damascus.",
+      "ko": "다윗이 소바 사람을 죽일 때에 르손이 사람들을 모으고 그 떼의 괴수가 되며 다메섹으로 가서 웅거하고 거기서 왕이 되었더라",
+      "source_text_hash": "331d504ee022dc71a092d9ad8ffb21dfb49a580461943be362d0bfbd6549a7f4",
+      "translation_text_hash": "4cf1472097f4a7410537b3535a184576ffb7e9d7bf2c7f8482125049032fddf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 소바 사람을 죽일 때에 르손이 사람들을 모으고 그 떼의 괴수가 되며 다메섹으로 가서 웅거하고 거기서 왕이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "4cf1472097f4a7410537b3535a184576ffb7e9d7bf2c7f8482125049032fddf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:25",
+      "sequence": 9134,
+      "chapter_label": "1KI 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "He was an adversary to Israel all the days of Solomon, in addition to the mischief of Hadad. He abhorred Israel, and reigned over Syria.",
+      "ko": "솔로몬의 일평생에 하닷의 끼친 환난 외에 르손이 수리아 왕이 되어 이스라엘을 대적하고 미워하였더라",
+      "source_text_hash": "ca50896d835ed074a12c0c469efe157517625b4454dce00f76d0b36dd7b5ecd9",
+      "translation_text_hash": "30a4bd61d1dc2cb179f5260ea4d9eb8d7cd697a3ddc214f60d4576f46725c6a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 일평생에 하닷의 끼친 환난 외에 르손이 수리아 왕이 되어 이스라엘을 대적하고 미워하였더라"
+      ],
+      "raw_text_hashes": [
+        "30a4bd61d1dc2cb179f5260ea4d9eb8d7cd697a3ddc214f60d4576f46725c6a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:26",
+      "sequence": 9135,
+      "chapter_label": "1KI 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Jeroboam the son of Nebat, an Ephraimite of Zeredah, a servant of Solomon, whose mother’s name was Zeruah, a widow, also lifted up his hand against the king.",
+      "ko": "솔로몬의 신복 느밧의 아들 여로보암이 또한 손을 들어 왕을 대적하였으니 저는 에브라임 족속인 스레다 사람이요 그 어미의 이름은 스루아니 과부더라",
+      "source_text_hash": "700246d5e95a0bdd7ba8efe147984297cba6886591d2508e925fdb553dd6c536",
+      "translation_text_hash": "6240c8ef6e6c67e059121b09eeb33e5c2c6bf7733f5b39c87707cccb728d4ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 신복 느밧의 아들 여로보암이 또한 손을 들어 왕을 대적하였으니 저는 에브라임 족속인 스레다 사람이요 그 어미의 이름은 스루아니 과부더라"
+      ],
+      "raw_text_hashes": [
+        "6240c8ef6e6c67e059121b09eeb33e5c2c6bf7733f5b39c87707cccb728d4ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:27",
+      "sequence": 9136,
+      "chapter_label": "1KI 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "This was the reason why he lifted up his hand against the king: Solomon built Millo, and repaired the breach of his father David’s city.",
+      "ko": "저가 손을 들어 왕을 대적하는 까닭은 이러하니라 솔로몬이 밀로를 건축하고 그 부친 다윗의 성의 무너진 것을 수축하였는데",
+      "source_text_hash": "be23e4bff69ae33e1cbbf5cba713c2c518ed5caf33b50b1a6246c1c4aea33320",
+      "translation_text_hash": "256c2fd2aad14006a859701d0b26e17db93674b639919502381bcdab8eb42163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 손을 들어 왕을 대적하는 까닭은 이러하니라 솔로몬이 밀로를 건축하고 그 부친 다윗의 성의 무너진 것을 수축하였는데"
+      ],
+      "raw_text_hashes": [
+        "256c2fd2aad14006a859701d0b26e17db93674b639919502381bcdab8eb42163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:28",
+      "sequence": 9137,
+      "chapter_label": "1KI 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "The man Jeroboam was a mighty man of valor; and Solomon saw that the young man was industrious, and he put him in charge of all the labor of the house of Joseph.",
+      "ko": "이 사람 여로보암은 큰 용사라 솔로몬이 이 소년의 부지런함을 보고 세워 요셉 족속의 역사를 감독하게 하였더니",
+      "source_text_hash": "ae42d5dceb0828077bf62031eba99bc15cf804608b3a838d6dac8f1080bfd916",
+      "translation_text_hash": "54fa51fb94202d3920bed9f62adfcd5ff36a3f9d01094cae3738c79485dc8448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람 여로보암은 큰 용사라 솔로몬이 이 소년의 부지런함을 보고 세워 요셉 족속의 역사를 감독하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "54fa51fb94202d3920bed9f62adfcd5ff36a3f9d01094cae3738c79485dc8448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:29",
+      "sequence": 9138,
+      "chapter_label": "1KI 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "At that time, when Jeroboam went out of Jerusalem, the prophet Ahijah the Shilonite found him on the way. Now Ahijah had clad himself with a new garment; and the two of them were alone in the field.",
+      "ko": "그 즈음에 여로보암이 예루살렘에서 나갈 때에 실로 사람 선지자 아히야가 길에서 저를 만나니 아히야가 새 의복을 입었고 그 두 사람만 들에 있었더라",
+      "source_text_hash": "1c62bd635140aad3749528cc09c232d09d460e1d42e7fd8c8f33d0ad8663ae9b",
+      "translation_text_hash": "72af3c2785da03763368e3d6d159d0d47b0e3dd975333f514080f96c18ccd59b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 즈음에 여로보암이 예루살렘에서 나갈 때에 실로 사람 선지자 아히야가 길에서 저를 만나니 아히야가 새 의복을 입었고 그 두 사람만 들에 있었더라"
+      ],
+      "raw_text_hashes": [
+        "72af3c2785da03763368e3d6d159d0d47b0e3dd975333f514080f96c18ccd59b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:30",
+      "sequence": 9139,
+      "chapter_label": "1KI 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Ahijah took the new garment that was on him, and tore it in twelve pieces.",
+      "ko": "아히야가 그 입은 새 옷을 잡아 열 두 조각에 찢고",
+      "source_text_hash": "4e2d0a26dd71fec3576234e2bde8d2cf4ca61676920208c700be7d120fdb55e2",
+      "translation_text_hash": "45df778383fb546f04c00ad02fe8f71f2be05fd9f75cfe9809659595e36adf23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히야가 그 입은 새 옷을 잡아 열 두 조각에 찢고"
+      ],
+      "raw_text_hashes": [
+        "45df778383fb546f04c00ad02fe8f71f2be05fd9f75cfe9809659595e36adf23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:31",
+      "sequence": 9140,
+      "chapter_label": "1KI 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "He said to Jeroboam, “Take ten pieces; for the LORD, the God of Israel, says, ‘Behold, I will tear the kingdom out of the hand of Solomon and will give ten tribes to you",
+      "ko": "여로보암에게 이르되 너는 열 조각을 취하라 이스라엘 하나님 여호와의 말씀이 내가 이 나라를 솔로몬의 손에서 찢어 빼앗아 열 지파를 네게 주고",
+      "source_text_hash": "4dbef2b8e76700a44223602cf359371e16698720bfb4f543345efb612c6e4212",
+      "translation_text_hash": "3c86c2d565ebe9d0f684550f56088eccae18b1fd8b3384bcb8d8be7a6291a730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암에게 이르되 너는 열 조각을 취하라 이스라엘 하나님 여호와의 말씀이 내가 이 나라를 솔로몬의 손에서 찢어 빼앗아 열 지파를 네게 주고"
+      ],
+      "raw_text_hashes": [
+        "3c86c2d565ebe9d0f684550f56088eccae18b1fd8b3384bcb8d8be7a6291a730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:32",
+      "sequence": 9141,
+      "chapter_label": "1KI 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "(but he shall have one tribe, for my servant David’s sake and for Jerusalem’s sake, the city which I have chosen out of all the tribes of Israel),",
+      "ko": "오직 내 종 다윗을 위하고 이스라엘 모든 지파 중에서 뺀 성 예루살렘을 위하여 한 지파를 솔로몬에게 주리니",
+      "source_text_hash": "0be953d97a272be0657867b7d0f0f1b3a081287f602cdf2cba58ef7399db8717",
+      "translation_text_hash": "ad1ce94b19357b51cc31e331a05b7cb58d4ca503446237b02d615f432f816678",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내 종 다윗을 위하고 이스라엘 모든 지파 중에서 뺀 성 예루살렘을 위하여 한 지파를 솔로몬에게 주리니"
+      ],
+      "raw_text_hashes": [
+        "ad1ce94b19357b51cc31e331a05b7cb58d4ca503446237b02d615f432f816678"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:33",
+      "sequence": 9142,
+      "chapter_label": "1KI 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "because they have forsaken me, and have worshiped Ashtoreth the goddess of the Sidonians, Chemosh the god of Moab, and Milcom the god of the children of Ammon. They have not walked in my ways, to do that which is right in my eyes, and to keep my statutes and my ordinances, as David his father did.",
+      "ko": "이는 저희가 나를 버리고 시돈 사람의 여신 아스다롯과 모압의 신 그모스와 암몬 자손의 신 밀곰을 숭배하며 그 아비 다윗의 행함 같지 아니하여 내 길로 행치 아니하며 나 보기에 정직한 일과 나의 법도와 나의 율례를 행치 아니함이니라",
+      "source_text_hash": "d79c35d9c85da1858bdd290f26f1ff8418d0aa86ecdc468d24bd05f0f0ff4e91",
+      "translation_text_hash": "22ac82dd9c90dc436f164a08e452893e7d8292b4aa8372e13d414bae06051c5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 나를 버리고 시돈 사람의 여신 아스다롯과 모압의 신 그모스와 암몬 자손의 신 밀곰을 숭배하며 그 아비 다윗의 행함 같지 아니하여 내 길로 행치 아니하며 나 보기에 정직한 일과 나의 법도와 나의 율례를 행치 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "22ac82dd9c90dc436f164a08e452893e7d8292b4aa8372e13d414bae06051c5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:34",
+      "sequence": 9143,
+      "chapter_label": "1KI 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "“‘However, I will not take the whole kingdom out of his hand, but I will make him prince all the days of his life for David my servant’s sake whom I chose, who kept my commandments and my statutes,",
+      "ko": "그러나 내가 뺀 내 종 다윗이 내 명령과 내 법도를 지켰으므로 내가 저를 위하여 솔로몬의 생전에는 온 나라를 그 손에서 빼앗지 아니하고 주관하게 하려니와",
+      "source_text_hash": "febfb99deb3e25f3970cd6fdeb9d12fb5cbf4e489b3963b88ff0316c022334ef",
+      "translation_text_hash": "d526d5b9bc97ab78a1026a9202155e2adaac8dc5bab377c993ef631ec0519209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 뺀 내 종 다윗이 내 명령과 내 법도를 지켰으므로 내가 저를 위하여 솔로몬의 생전에는 온 나라를 그 손에서 빼앗지 아니하고 주관하게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "d526d5b9bc97ab78a1026a9202155e2adaac8dc5bab377c993ef631ec0519209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:35",
+      "sequence": 9144,
+      "chapter_label": "1KI 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "but I will take the kingdom out of his son’s hand and will give it to you, even ten tribes.",
+      "ko": "내가 그 아들의 손에서 나라를 빼앗아 그 열 지파를 네게 줄 것이요",
+      "source_text_hash": "1c62611946b34e0452613dc64b0c2e6d1aa19c496caa59771ab9d5d53a604743",
+      "translation_text_hash": "3950349cecdb03c5369b2b50de84284cd8bde46f0540200235d6432748fda34a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 아들의 손에서 나라를 빼앗아 그 열 지파를 네게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "3950349cecdb03c5369b2b50de84284cd8bde46f0540200235d6432748fda34a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:36",
+      "sequence": 9145,
+      "chapter_label": "1KI 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "I will give one tribe to his son, that David my servant may have a lamp always before me in Jerusalem, the city which I have chosen for myself to put my name there.",
+      "ko": "그 아들에게는 내가 한 지파를 주어서 내가 내 이름을 두고자 하여 택한 성 예루살렘에서 내 종 다윗에게 한 등불이 항상 내 앞에 있게 하리라",
+      "source_text_hash": "599069bcad19f301ce4d8ed4eb7293971e7fa77eb952e811f31242dae23d618c",
+      "translation_text_hash": "166c458ef11004114972a3a2ca5fa2c6538246df6fe650d4315257cdfc3271af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들에게는 내가 한 지파를 주어서 내가 내 이름을 두고자 하여 택한 성 예루살렘에서 내 종 다윗에게 한 등불이 항상 내 앞에 있게 하리라"
+      ],
+      "raw_text_hashes": [
+        "166c458ef11004114972a3a2ca5fa2c6538246df6fe650d4315257cdfc3271af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:37",
+      "sequence": 9146,
+      "chapter_label": "1KI 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "I will take you, and you shall reign according to all that your soul desires, and shall be king over Israel.",
+      "ko": "내가 너를 취하리니 너는 무릇 네 마음에 원하는대로 다스려 이스라엘 위에 왕이 되되",
+      "source_text_hash": "7c59427098f9941edba2de6d775135a3e44879ba627735c63795b3ebeeca9e96",
+      "translation_text_hash": "fe5e16c3d6b4345f76fcb846affd45c3f6c33fcc045126a11a1111e4b18d0fe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 취하리니 너는 무릇 네 마음에 원하는대로 다스려 이스라엘 위에 왕이 되되"
+      ],
+      "raw_text_hashes": [
+        "fe5e16c3d6b4345f76fcb846affd45c3f6c33fcc045126a11a1111e4b18d0fe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:38",
+      "sequence": 9147,
+      "chapter_label": "1KI 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "It shall be, if you will listen to all that I command you, and will walk in my ways, and do that which is right in my eyes, to keep my statutes and my commandments, as David my servant did, that I will be with you, and will build you a sure house, as I built for David, and will give Israel to you.",
+      "ko": "네가 만일 내가 명한 모든 일에 순종하고 내 길로 행하며 내 눈에 합당한 일을 하며 내 종 다윗의 행함 같이 내 율례와 명령을 지키면 내가 너와 함께 있어 내가 다윗을 위하여 세운것 같이 너를 위하여 견고한 집을 세우고 이스라엘을 네게 주리라",
+      "source_text_hash": "e5705e7d190a6e46c1365a25264137a019b0153a4199c901a42fe940c9807656",
+      "translation_text_hash": "8542b897bb603529ff6011b3b309f38e2b29206b9348faa57bb5197c350cbcd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 내가 명한 모든 일에 순종하고 내 길로 행하며 내 눈에 합당한 일을 하며 내 종 다윗의 행함 같이 내 율례와 명령을 지키면 내가 너와 함께 있어 내가 다윗을 위하여 세운것 같이 너를 위하여 견고한 집을 세우고 이스라엘을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "8542b897bb603529ff6011b3b309f38e2b29206b9348faa57bb5197c350cbcd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:39",
+      "sequence": 9148,
+      "chapter_label": "1KI 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "I will afflict the offspring of David for this, but not forever.’”",
+      "ko": "내가 이로 인하여 다윗의 자손을 괴롭게 할터이나 영원히 하지는 아니하리라 하셨느니라 한지라",
+      "source_text_hash": "b40d46b7d123245cb4b035e62ba3d7fe96647fc1eaf88c3d99e43e78ea4968e8",
+      "translation_text_hash": "9cb641df4c058b23e54d33ec398d0549c982c4133fa2c105003ffe28b54d6152",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이로 인하여 다윗의 자손을 괴롭게 할터이나 영원히 하지는 아니하리라 하셨느니라 한지라"
+      ],
+      "raw_text_hashes": [
+        "9cb641df4c058b23e54d33ec398d0549c982c4133fa2c105003ffe28b54d6152"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:40",
+      "sequence": 9149,
+      "chapter_label": "1KI 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "Therefore Solomon sought to kill Jeroboam, but Jeroboam arose and fled into Egypt, to Shishak king of Egypt, and was in Egypt until the death of Solomon.",
+      "ko": "이러므로 솔로몬이 여로보암을 죽이려 하매 여로보암이 일어나 애굽으로 도망하여 애굽 왕 시삭에게 이르러 솔로몬의 죽기까지 애굽에 있으니라",
+      "source_text_hash": "1fbed1660b8303e123d602e166420ecbcd2c8fd918a3f0df6212c68f21533b73",
+      "translation_text_hash": "9bc926322f7a27bfd7f594ad381ec4f1e4179d836d23e11e62f7ec31eb179697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 솔로몬이 여로보암을 죽이려 하매 여로보암이 일어나 애굽으로 도망하여 애굽 왕 시삭에게 이르러 솔로몬의 죽기까지 애굽에 있으니라"
+      ],
+      "raw_text_hashes": [
+        "9bc926322f7a27bfd7f594ad381ec4f1e4179d836d23e11e62f7ec31eb179697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:41",
+      "sequence": 9150,
+      "chapter_label": "1KI 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "Now the rest of the acts of Solomon, and all that he did, and his wisdom, aren’t they written in the book of the acts of Solomon?",
+      "ko": "솔로몬의 남은 사적과 무릇 저의 행한 일과 그 지혜는 솔로몬의 행장에 기록되지 아니하였느냐",
+      "source_text_hash": "bf3582b5c38764e0969551684824e55d90705ddf0e6d36a5a0a5e7db90465ad0",
+      "translation_text_hash": "207029a8dcce47b91a9decf536f7044b05e2fc2e1971d650ac0087e4329f6b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 남은 사적과 무릇 저의 행한 일과 그 지혜는 솔로몬의 행장에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "207029a8dcce47b91a9decf536f7044b05e2fc2e1971d650ac0087e4329f6b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:42",
+      "sequence": 9151,
+      "chapter_label": "1KI 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "The time that Solomon reigned in Jerusalem over all Israel was forty years.",
+      "ko": "솔로몬이 예루살렘에서 온 이스라엘을 다스린 날 수가 사십년이라",
+      "source_text_hash": "f03aad08c37d38db7e151c4e8f326c3949cdaa4ec2f0f12b1bf5c832a455a828",
+      "translation_text_hash": "c3575e59b3fc5b6adfe099a590a10eb9e296cdd9bbf92416dcb69ddf80cf3256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 예루살렘에서 온 이스라엘을 다스린 날 수가 사십년이라"
+      ],
+      "raw_text_hashes": [
+        "c3575e59b3fc5b6adfe099a590a10eb9e296cdd9bbf92416dcb69ddf80cf3256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:11:43",
+      "sequence": 9152,
+      "chapter_label": "1KI 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "1KI",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "Solomon slept with his fathers, and was buried in his father David’s city; and Rehoboam his son reigned in his place.",
+      "ko": "솔로몬이 그 열조와 함께 자매 그 부친 다윗의 성에 장사되고 그 아들 르호보암이 대신하여 왕이 되니라",
+      "source_text_hash": "82fe8a05428078515fd87b7180d8867f7c583e225fc89a713067e21feb34ce51",
+      "translation_text_hash": "bfd9572e320529c863b400a7674225f4324687b487585bc9667b329fbdf4f8df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 그 열조와 함께 자매 그 부친 다윗의 성에 장사되고 그 아들 르호보암이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "bfd9572e320529c863b400a7674225f4324687b487585bc9667b329fbdf4f8df"
+      ]
+    }
+  ]
+}

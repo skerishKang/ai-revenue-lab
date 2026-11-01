@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:144",
+  "unit_ordinal": 622,
+  "unit_label": "PSA 144",
+  "book_code": "PSA",
+  "chapter_number": 144,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:144:1",
+      "sequence": 16307,
+      "chapter_label": "PSA 144",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 1
+        }
+      ],
+      "en": "Blessed be the LORD, my rock, who trains my hands to war, and my fingers to battle—",
+      "ko": "나의 반석 여호와를 찬송하리로다 저가 내 손을 가르쳐 싸우게 하시며 손가락을 가르쳐 치게 하시도다",
+      "source_text_hash": "b2644c38ab2e6909458ca87eaab32e2d2882360d63360ce1f9999770038ff5a5",
+      "translation_text_hash": "e31c4167ebcc7b6488c2ee20155f1b68845f9b3968c536d5e308d94ee7eab9d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 반석 여호와를 찬송하리로다 저가 내 손을 가르쳐 싸우게 하시며 손가락을 가르쳐 치게 하시도다"
+      ],
+      "raw_text_hashes": [
+        "e31c4167ebcc7b6488c2ee20155f1b68845f9b3968c536d5e308d94ee7eab9d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:2",
+      "sequence": 16308,
+      "chapter_label": "PSA 144",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 2
+        }
+      ],
+      "en": "my loving kindness, my fortress, my high tower, my deliverer, my shield, and he in whom I take refuge, who subdues my people under me.",
+      "ko": "여호와는 나의 인자시요 나의 요새시요 나의 산성이시요 나를 건지는 자시요 나의 방패시요 나의 피난처시요 내 백성을 내게 복종케 하시는 자시로다",
+      "source_text_hash": "31faf476691ef07c7f2035a24085c11bb9420ff843d0d8e979a06c871de6f2b7",
+      "translation_text_hash": "77991db472c8979b100e7202283c4665ad49ffbbaf66b1fe261a386c9671d858",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 인자시요 나의 요새시요 나의 산성이시요 나를 건지는 자시요 나의 방패시요 나의 피난처시요 내 백성을 내게 복종케 하시는 자시로다"
+      ],
+      "raw_text_hashes": [
+        "77991db472c8979b100e7202283c4665ad49ffbbaf66b1fe261a386c9671d858"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:3",
+      "sequence": 16309,
+      "chapter_label": "PSA 144",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 3
+        }
+      ],
+      "en": "LORD, what is man, that you care for him? Or the son of man, that you think of him?",
+      "ko": "여호와여 사람이 무엇이관대 주께서 저를 알아주시며 인생이 무엇이관대 저를 생각하시나이까",
+      "source_text_hash": "a7bb349966acbd2977c8b85c00ffe1da6747c534b83fb962f95ea252b22fb99d",
+      "translation_text_hash": "78513d6effdbec2c4949d155b6029db922c7abba7b47cb9c969f58efe003ac71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 사람이 무엇이관대 주께서 저를 알아주시며 인생이 무엇이관대 저를 생각하시나이까"
+      ],
+      "raw_text_hashes": [
+        "78513d6effdbec2c4949d155b6029db922c7abba7b47cb9c969f58efe003ac71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:4",
+      "sequence": 16310,
+      "chapter_label": "PSA 144",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 4
+        }
+      ],
+      "en": "Man is like a breath. His days are like a shadow that passes away.",
+      "ko": "사람은 헛것 같고 그의 날은 지나가는 그림자 같으니이다",
+      "source_text_hash": "89d17bf97c06e634dbb284a9956c76423fde88213f73aaae27a6b14df3aed063",
+      "translation_text_hash": "616a92c3ef969612e019aa0614d69db688ad3d0a4b8778199f83e93f8836c6fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 헛것 같고 그의 날은 지나가는 그림자 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "616a92c3ef969612e019aa0614d69db688ad3d0a4b8778199f83e93f8836c6fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:5",
+      "sequence": 16311,
+      "chapter_label": "PSA 144",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 5
+        }
+      ],
+      "en": "Part your heavens, LORD, and come down. Touch the mountains, and they will smoke.",
+      "ko": "여호와여 주의 하늘을 드리우고 강림하시며 산들에 접촉하사 연기가 발하게 하소서",
+      "source_text_hash": "28970172e45b9598cc4c561bd799c116cd8548df01d94cacb8ede96f43ebf67f",
+      "translation_text_hash": "7227f44db1aa6afca57815ec108977a69089cf721670a3c8cd1de044dd614171",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 하늘을 드리우고 강림하시며 산들에 접촉하사 연기가 발하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "7227f44db1aa6afca57815ec108977a69089cf721670a3c8cd1de044dd614171"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:6",
+      "sequence": 16312,
+      "chapter_label": "PSA 144",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 6
+        }
+      ],
+      "en": "Throw out lightning, and scatter them. Send out your arrows, and rout them.",
+      "ko": "번개를 번득이사 대적을 흩으시며 주의 살을 발하사 저희를 파하소서",
+      "source_text_hash": "381a207a6cc0779da0955c9c05550507975eb62a78646a1c45168293753c9b8a",
+      "translation_text_hash": "fffb8527943cec37cce706f67c89c87e31e8892b4e38034a2436131b631de0ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번개를 번득이사 대적을 흩으시며 주의 살을 발하사 저희를 파하소서"
+      ],
+      "raw_text_hashes": [
+        "fffb8527943cec37cce706f67c89c87e31e8892b4e38034a2436131b631de0ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:7",
+      "sequence": 16313,
+      "chapter_label": "PSA 144",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 7
+        }
+      ],
+      "en": "Stretch out your hand from above, rescue me, and deliver me out of great waters, out of the hands of foreigners,",
+      "ko": "위에서부터 주의 손을 펴사 나를 큰 물과 이방인의 손에서 구하여 건지소서",
+      "source_text_hash": "d768aba973ca8e4caad06bcf4e8989fe19a351d667186d0649ef5860eb48b473",
+      "translation_text_hash": "54607fcebcfc516df5748228a1da85317e82c35073253017f78a42b5794546cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에서부터 주의 손을 펴사 나를 큰 물과 이방인의 손에서 구하여 건지소서"
+      ],
+      "raw_text_hashes": [
+        "54607fcebcfc516df5748228a1da85317e82c35073253017f78a42b5794546cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:8",
+      "sequence": 16314,
+      "chapter_label": "PSA 144",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 8
+        }
+      ],
+      "en": "whose mouths speak deceit, whose right hand is a right hand of falsehood.",
+      "ko": "저희 입은 궤사를 말하며 그 오른손은 거짓의 오른손이니이다",
+      "source_text_hash": "b6530245da67404dca549d6f5b1e1122122cd3f90a2b5c01ae590d4a65469091",
+      "translation_text_hash": "ac40305557a874a1c83a90a8779d08316ef2384a53d80338b06d2e1a432c0c60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 입은 궤사를 말하며 그 오른손은 거짓의 오른손이니이다"
+      ],
+      "raw_text_hashes": [
+        "ac40305557a874a1c83a90a8779d08316ef2384a53d80338b06d2e1a432c0c60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:9",
+      "sequence": 16315,
+      "chapter_label": "PSA 144",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 9
+        }
+      ],
+      "en": "I will sing a new song to you, God. On a ten-stringed lyre, I will sing praises to you.",
+      "ko": "하나님이여 내가 주께 새 노래로 노래하며 열 줄 비파로 주를 찬양하리이다",
+      "source_text_hash": "a25b7af3976395e41ff0ee5ca710a1a0746961d2118900c7d312c5ab306751f7",
+      "translation_text_hash": "158d0517b4f86f649c1b9574786b5648184d06f005600ffbe32ec7dd3ef75052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내가 주께 새 노래로 노래하며 열 줄 비파로 주를 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "158d0517b4f86f649c1b9574786b5648184d06f005600ffbe32ec7dd3ef75052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:10",
+      "sequence": 16316,
+      "chapter_label": "PSA 144",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 10
+        }
+      ],
+      "en": "You are he who gives salvation to kings, who rescues David, his servant, from the deadly sword.",
+      "ko": "주는 왕들에게 구원을 베푸시는 자시요 종 다윗을 그 해하는 칼에서 구하시는 자시니이다",
+      "source_text_hash": "c81a9d7470d846fb0594be1c16979e70735225a5322c6df2986157bb194c47cd",
+      "translation_text_hash": "e966d4bb027e48c6be18bfd75aff33e652ef0ae4382495edec2d39fb24d34907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 왕들에게 구원을 베푸시는 자시요 종 다윗을 그 해하는 칼에서 구하시는 자시니이다"
+      ],
+      "raw_text_hashes": [
+        "e966d4bb027e48c6be18bfd75aff33e652ef0ae4382495edec2d39fb24d34907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:11",
+      "sequence": 16317,
+      "chapter_label": "PSA 144",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 11
+        }
+      ],
+      "en": "Rescue me, and deliver me out of the hands of foreigners, whose mouths speak deceit, whose right hand is a right hand of falsehood.",
+      "ko": "이방인의 손에서 나를 구하여 건지소서 저희 입은 궤사를 말하며 그 오른손은 거짓의 오른손이니이다",
+      "source_text_hash": "e81b46a3c7c29a3c3e35b1b56c29cc817c32d06136959589bfb43e3c0a2bdf56",
+      "translation_text_hash": "fba0c6c1bbae4b5517d12ce699efc3e4f354c33eae4ac2cbf7db04d8fdd1b8f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인의 손에서 나를 구하여 건지소서 저희 입은 궤사를 말하며 그 오른손은 거짓의 오른손이니이다"
+      ],
+      "raw_text_hashes": [
+        "fba0c6c1bbae4b5517d12ce699efc3e4f354c33eae4ac2cbf7db04d8fdd1b8f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:12",
+      "sequence": 16318,
+      "chapter_label": "PSA 144",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 12
+        }
+      ],
+      "en": "Then our sons will be like well-nurtured plants, our daughters like pillars carved to adorn a palace.",
+      "ko": "우리 아들들은 어리다가 장성한 나무 같으며 우리 딸들은 궁전의 식양대로 아름답게 다듬은 모퉁이 돌과 같으며",
+      "source_text_hash": "cc58776ac0f9bca8fef89d20f5b91e6993ba569326a8f736b02f81823ea5238c",
+      "translation_text_hash": "6e39b73e0fee886d141a6575203674e4fb31111b05519e2b1a870bb194d18aa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 아들들은 어리다가 장성한 나무 같으며 우리 딸들은 궁전의 식양대로 아름답게 다듬은 모퉁이 돌과 같으며"
+      ],
+      "raw_text_hashes": [
+        "6e39b73e0fee886d141a6575203674e4fb31111b05519e2b1a870bb194d18aa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:13",
+      "sequence": 16319,
+      "chapter_label": "PSA 144",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 13
+        }
+      ],
+      "en": "Our barns are full, filled with all kinds of provision. Our sheep produce thousands and ten thousands in our fields.",
+      "ko": "우리의 곳간에는 백곡이 가득하며 우리의 양은 들에서 천천과 만만으로 번성하며",
+      "source_text_hash": "ef76acb1faa36854a2f4b1e8f4f319cb3b2dd6d8bbb44885898b0e5d94d38bfe",
+      "translation_text_hash": "8623057566226ccf9c3274eb7726c2d30ed9c5575358e06ae06eb499ca8232cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 곳간에는 백곡이 가득하며 우리의 양은 들에서 천천과 만만으로 번성하며"
+      ],
+      "raw_text_hashes": [
+        "8623057566226ccf9c3274eb7726c2d30ed9c5575358e06ae06eb499ca8232cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:14",
+      "sequence": 16320,
+      "chapter_label": "PSA 144",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 14
+        }
+      ],
+      "en": "Our oxen will pull heavy loads. There is no breaking in, and no going away, and no outcry in our streets.",
+      "ko": "우리 수소는 무겁게 실었으며 또 우리를 침로하는 일이나 우리가 나아가 막는 일이 없으며 우리 거리에는 슬피 부르짖음이 없을찐대",
+      "source_text_hash": "bac266abcf286d1a06e233225e0d5bbe261c46d2aaf64232389fb96d1ed980f3",
+      "translation_text_hash": "1450200bb7b194eec44f51455edae248c9ef17f700d1683907487705c195c8af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 수소는 무겁게 실었으며 또 우리를 침로하는 일이나 우리가 나아가 막는 일이 없으며 우리 거리에는 슬피 부르짖음이 없을찐대"
+      ],
+      "raw_text_hashes": [
+        "1450200bb7b194eec44f51455edae248c9ef17f700d1683907487705c195c8af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:144:15",
+      "sequence": 16321,
+      "chapter_label": "PSA 144",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 144,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 144,
+          "verse": 15
+        }
+      ],
+      "en": "Happy are the people who are in such a situation. Happy are the people whose God is the LORD.",
+      "ko": "이러한 백성은 복이 있나니 여호와를 자기 하나님으로 삼는 백성은 복이 있도다",
+      "source_text_hash": "5a23bb5fd67223d2f43ac72dd4b16ba49429dc3b79e331780a94bdbf20bf52d4",
+      "translation_text_hash": "a17e73a7f43993be0354cbfd5364ae9ce8bb6b724284c9c62e6477e0d9d2d154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 백성은 복이 있나니 여호와를 자기 하나님으로 삼는 백성은 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "a17e73a7f43993be0354cbfd5364ae9ce8bb6b724284c9c62e6477e0d9d2d154"
+      ]
+    }
+  ]
+}

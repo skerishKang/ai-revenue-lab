@@ -1,0 +1,11 @@
+{
+  "version": "3.4.10-rc2",
+  "build": "sm093-six-work-ui-exposure-fix",
+  "runtime_contract": "storymemory-universal-source-runtime-1.0",
+  "auto_pack_contract": "storymemory-auto-pack-generation-1.0",
+  "entitlement_contract": "storymemory-pack-entitlement-1.0",
+  "deployment": "DEFERRED_TO_BI_PORTAL",
+  "portal_target_route": "/b61/",
+  "release": "SM-093 Six-Work Direct UI Exposure Fix Release Candidate",
+  "verification_contract": "storymemory-pack-verification-1.0"
+}

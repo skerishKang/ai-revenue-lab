@@ -1,0 +1,1741 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:031",
+  "unit_ordinal": 148,
+  "unit_label": "NUM 31",
+  "book_code": "NUM",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:31:1",
+      "sequence": 4666,
+      "chapter_label": "NUM 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:2",
+      "sequence": 4667,
+      "chapter_label": "NUM 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "“Avenge the children of Israel on the Midianites. Afterward you shall be gathered to your people.”",
+      "ko": "이스라엘 자손의 원수를 미디안에게 갚으라 그 후에 네가 네 조상에게로 돌아가리라",
+      "source_text_hash": "b7cf549a79fcf1b3c2171803e32af19363293720b22c9690d89347a3bd2bff9c",
+      "translation_text_hash": "0b3e67f81471f81ee8a26a9caa758a001403c6e2a789ff95cb2d02557e6903fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 원수를 미디안에게 갚으라 그 후에 네가 네 조상에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "0b3e67f81471f81ee8a26a9caa758a001403c6e2a789ff95cb2d02557e6903fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:3",
+      "sequence": 4668,
+      "chapter_label": "NUM 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "Moses spoke to the people, saying, “Arm men from among you for war, that they may go against Midian, to execute the LORD’s vengeance on Midian.",
+      "ko": "모세가 백성에게 일러 가로되 너희 중에서 사람을 택하여 싸움에 나갈 준비를 시키고 미디안을 치러 보내어서 여호와의 원수를 미디안에게 갚되",
+      "source_text_hash": "4c5524ca271355a194bffeb536f8fc80cd7db8e47fd45f1355a7bed9cbda81ed",
+      "translation_text_hash": "2cb4395f6cefb56908f02e7b82ed8f47f4733cf8944fca6358c26501e76b71b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 백성에게 일러 가로되 너희 중에서 사람을 택하여 싸움에 나갈 준비를 시키고 미디안을 치러 보내어서 여호와의 원수를 미디안에게 갚되"
+      ],
+      "raw_text_hashes": [
+        "2cb4395f6cefb56908f02e7b82ed8f47f4733cf8944fca6358c26501e76b71b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:4",
+      "sequence": 4669,
+      "chapter_label": "NUM 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "You shall send one thousand out of every tribe, throughout all the tribes of Israel, to the war.”",
+      "ko": "이스라엘 모든 지파에 대하여 각 지파에서 일천인씩을 싸움에 보낼찌니라 하매",
+      "source_text_hash": "64204d590a4b430d43d5b3fa779819413f5af7b14304548f8c234ac4ba666c04",
+      "translation_text_hash": "c02fe89b730f73286e556fb86c5a6ff5c78f27e4861dad9c032c614a0c47614a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파에 대하여 각 지파에서 일천인씩을 싸움에 보낼찌니라 하매"
+      ],
+      "raw_text_hashes": [
+        "c02fe89b730f73286e556fb86c5a6ff5c78f27e4861dad9c032c614a0c47614a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:5",
+      "sequence": 4670,
+      "chapter_label": "NUM 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "So there were delivered, out of the thousands of Israel, a thousand from every tribe, twelve thousand armed for war.",
+      "ko": "매 지파에서 일천인씩 이스라엘 천만인 중에서 일만 이천인을 택하여 무장을 시킨지라",
+      "source_text_hash": "2b9c7f6189211a1b60b1cf1fab5b9d86aaf16a41279f1d803686b919f8c475fe",
+      "translation_text_hash": "ef10b882c40153f7c15a19f6c39fe188dbc242f1d396c616e2b8e5f22261b167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 지파에서 일천인씩 이스라엘 천만인 중에서 일만 이천인을 택하여 무장을 시킨지라"
+      ],
+      "raw_text_hashes": [
+        "ef10b882c40153f7c15a19f6c39fe188dbc242f1d396c616e2b8e5f22261b167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:6",
+      "sequence": 4671,
+      "chapter_label": "NUM 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "Moses sent them, one thousand of every tribe, to the war with Phinehas the son of Eleazar the priest, to the war, with the vessels of the sanctuary and the trumpets for the alarm in his hand.",
+      "ko": "모세가 매 지파에 일천인씩 싸움에 보내되 제사장 엘르아살의 아들 비느하스에게 성소의 기구와 신호 나팔을 들려서 그들과 함께 싸움에 보내매",
+      "source_text_hash": "a7bda30ab2a01f329bdebfeb299325a5aa964e3878176f9a40d714191525f0a7",
+      "translation_text_hash": "352d3ab478151426099904ceabecfeee4f19f4eb747ed219a8cabdf7a6514708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 매 지파에 일천인씩 싸움에 보내되 제사장 엘르아살의 아들 비느하스에게 성소의 기구와 신호 나팔을 들려서 그들과 함께 싸움에 보내매"
+      ],
+      "raw_text_hashes": [
+        "352d3ab478151426099904ceabecfeee4f19f4eb747ed219a8cabdf7a6514708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:7",
+      "sequence": 4672,
+      "chapter_label": "NUM 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "They fought against Midian, as the LORD commanded Moses. They killed every male.",
+      "ko": "그들이 여호와께서 모세에게 명하신 대로 미디안을 쳐서 그 남자를 다 죽였고",
+      "source_text_hash": "6dd57879f3220ad8b01cc065ecf0680c1c959c0a947683fc4d0df4953cb97068",
+      "translation_text_hash": "45abb83ac1fbb2bfe0499e72d89015b9c7b95016590e5ced27c56c40fc0a9c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와께서 모세에게 명하신 대로 미디안을 쳐서 그 남자를 다 죽였고"
+      ],
+      "raw_text_hashes": [
+        "45abb83ac1fbb2bfe0499e72d89015b9c7b95016590e5ced27c56c40fc0a9c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:8",
+      "sequence": 4673,
+      "chapter_label": "NUM 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "They killed the kings of Midian with the rest of their slain: Evi, Rekem, Zur, Hur, and Reba, the five kings of Midian. They also killed Balaam the son of Beor with the sword.",
+      "ko": "그 죽인 자 외에 미디안의 다섯 왕을 죽였으니 미디안의 왕들은 에위와 레겜과 수르와 후르와 레바이며 또 브올의 아들 발람을 칼로 죽였더라",
+      "source_text_hash": "2bfdc72fef475b381af13735e80bf68466495d00cb41197bb9b8e4d7dea5fc85",
+      "translation_text_hash": "5f1f62180635cd8e15c069f13402bf8218ebca30a849ad7db524d56edb07d1a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죽인 자 외에 미디안의 다섯 왕을 죽였으니 미디안의 왕들은 에위와 레겜과 수르와 후르와 레바이며 또 브올의 아들 발람을 칼로 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "5f1f62180635cd8e15c069f13402bf8218ebca30a849ad7db524d56edb07d1a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:9",
+      "sequence": 4674,
+      "chapter_label": "NUM 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Israel took the women of Midian captive with their little ones; and all their livestock, all their flocks, and all their goods, they took as plunder.",
+      "ko": "이스라엘 자손이 미디안의 부녀들과 그 아이들을 사로잡고 그 가축과 양떼와 재물을 다 탈취하고",
+      "source_text_hash": "81753cc948b58398230cb0a88b9797531b3fe6abf32a63b849241f0240d5049f",
+      "translation_text_hash": "22368489cfef75e4beac2f0a7d306c1d6317c8a1e1ce0d909c3f1d2602c82a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 미디안의 부녀들과 그 아이들을 사로잡고 그 가축과 양떼와 재물을 다 탈취하고"
+      ],
+      "raw_text_hashes": [
+        "22368489cfef75e4beac2f0a7d306c1d6317c8a1e1ce0d909c3f1d2602c82a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:10",
+      "sequence": 4675,
+      "chapter_label": "NUM 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "All their cities in the places in which they lived, and all their encampments, they burned with fire.",
+      "ko": "그 거처하는 성읍들과 촌락을 다 불사르고",
+      "source_text_hash": "2e0da992817de2cdd3214ec0087942fa6aea9e597dc5a3f74d0ea3f6d04de709",
+      "translation_text_hash": "03de8aca0f54822de9cb7c4a78111439976283f1770c4453b22617007d1b5e37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 거처하는 성읍들과 촌락을 다 불사르고"
+      ],
+      "raw_text_hashes": [
+        "03de8aca0f54822de9cb7c4a78111439976283f1770c4453b22617007d1b5e37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:11",
+      "sequence": 4676,
+      "chapter_label": "NUM 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "They took all the captives, and all the plunder, both of man and of animal.",
+      "ko": "탈취한것, 노략한것, 사람과 짐승을 다 취하니라",
+      "source_text_hash": "b52d925eac2a1b17fd8ef6d8cca52ef9a4265ee5b7a690be83e2b6bce7fa6a62",
+      "translation_text_hash": "01a9bb06830514d503b24e5c67868b1559aba58270c34effe4ee10c7be51cdbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "탈취한것, 노략한것, 사람과 짐승을 다 취하니라"
+      ],
+      "raw_text_hashes": [
+        "01a9bb06830514d503b24e5c67868b1559aba58270c34effe4ee10c7be51cdbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:12",
+      "sequence": 4677,
+      "chapter_label": "NUM 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "They brought the captives with the prey and the plunder, to Moses, and to Eleazar the priest, and to the congregation of the children of Israel, to the camp at the plains of Moab, which are by the Jordan at Jericho.",
+      "ko": "그들이 사로잡은 자와 노략한 것과 탈취한 것을 가지고 여리고 맞은편 요단 가 모압 평지의 진에 이르러 모세와 제사장 엘르아살과 이스라엘 자손의 회중에게로 나아오니라",
+      "source_text_hash": "28bfc2c5f90f3802ea450d7381b2872605673a823ad358232c092dc3c4265c1e",
+      "translation_text_hash": "4baab22f140afca4e222b2f31e7a8e5deb50bb5374541de43aa674b4e97ff837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 사로잡은 자와 노략한 것과 탈취한 것을 가지고 여리고 맞은편 요단 가 모압 평지의 진에 이르러 모세와 제사장 엘르아살과 이스라엘 자손의 회중에게로 나아오니라"
+      ],
+      "raw_text_hashes": [
+        "4baab22f140afca4e222b2f31e7a8e5deb50bb5374541de43aa674b4e97ff837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:13",
+      "sequence": 4678,
+      "chapter_label": "NUM 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "Moses and Eleazar the priest, with all the princes of the congregation, went out to meet them outside of the camp.",
+      "ko": "모세와 제사장 엘르아살과 회중의 족장들이 다 진 밖에 나가서 영접하다가",
+      "source_text_hash": "a5fdaf4d48cace097643623533bbd07c0481d7d659169248fbb8bfe13dddca96",
+      "translation_text_hash": "54bca6e79b96db40920e4a34a46438a1975657e2d13348b16e1b55db6172ec46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 엘르아살과 회중의 족장들이 다 진 밖에 나가서 영접하다가"
+      ],
+      "raw_text_hashes": [
+        "54bca6e79b96db40920e4a34a46438a1975657e2d13348b16e1b55db6172ec46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:14",
+      "sequence": 4679,
+      "chapter_label": "NUM 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "Moses was angry with the officers of the army, the captains of thousands and the captains of hundreds, who came from the service of the war.",
+      "ko": "모세가 군대의 장관 곧 싸움에서 돌아온 천부장들과 백부장들에게 노하니라",
+      "source_text_hash": "7a501b5e5ad76d043c7a45ca8a6ee12338c4c29ba60cb4d8d178deb9b62ee330",
+      "translation_text_hash": "4e63677f4c1af5c17e56912a5e629f6b1277ea80ee6a178420ca30deecd45fee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 군대의 장관 곧 싸움에서 돌아온 천부장들과 백부장들에게 노하니라"
+      ],
+      "raw_text_hashes": [
+        "4e63677f4c1af5c17e56912a5e629f6b1277ea80ee6a178420ca30deecd45fee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:15",
+      "sequence": 4680,
+      "chapter_label": "NUM 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "Moses said to them, “Have you saved all the women alive?",
+      "ko": "모세가 그들에게 이르되 너희가 여자들을 다 살려두었느냐",
+      "source_text_hash": "204da0f0b4aa2158e8d7eb7e1a1bd6b814d99fea9e94a1e2d1858d1c151c7bef",
+      "translation_text_hash": "b97f1dbf1168a0f7e584cc247c444aa534f4acab4afa82a3ca47d32f531cde4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 너희가 여자들을 다 살려두었느냐"
+      ],
+      "raw_text_hashes": [
+        "b97f1dbf1168a0f7e584cc247c444aa534f4acab4afa82a3ca47d32f531cde4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:16",
+      "sequence": 4681,
+      "chapter_label": "NUM 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "Behold, these caused the children of Israel, through the counsel of Balaam, to commit trespass against the LORD in the matter of Peor, and so the plague was among the congregation of the LORD.",
+      "ko": "보라 이들이 발람의 꾀를 좇아 이스라엘 자손으로 브올의 사건에 여호와 앞에 범죄케하여 여호와의 회중에 염병이 일어나게 하였느니라",
+      "source_text_hash": "4c55459a8cf008fd3d2c3184420608d64980e5867ebe956261641b3604926a75",
+      "translation_text_hash": "fde96d62b8b2a761c845b79161051d91f72da6888699275ea05ba61caf76a002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이들이 발람의 꾀를 좇아 이스라엘 자손으로 브올의 사건에 여호와 앞에 범죄케하여 여호와의 회중에 염병이 일어나게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "fde96d62b8b2a761c845b79161051d91f72da6888699275ea05ba61caf76a002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:17",
+      "sequence": 4682,
+      "chapter_label": "NUM 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "Now therefore kill every male among the little ones, and kill every woman who has known man by lying with him.",
+      "ko": "그러므로 아이들 중에 남자는 다 죽이고 남자와 동침하여 사내를 안 여자는 다 죽이고",
+      "source_text_hash": "66a6e36769bb8ffe243ea25145c26197a4ac6e4d4062faeef49ea87f24d75b81",
+      "translation_text_hash": "fac95817a18694ab7f44c2c859c64f3dfa8e1d43a7b48cfc78d54f637e2b5b27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 아이들 중에 남자는 다 죽이고 남자와 동침하여 사내를 안 여자는 다 죽이고"
+      ],
+      "raw_text_hashes": [
+        "fac95817a18694ab7f44c2c859c64f3dfa8e1d43a7b48cfc78d54f637e2b5b27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:18",
+      "sequence": 4683,
+      "chapter_label": "NUM 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "But all the girls, who have not known man by lying with him, keep alive for yourselves.",
+      "ko": "남자와 동침하지 아니하여 사내를 알지 못하는 여자들은 다 너희를 위하여 살려 둘것이니라",
+      "source_text_hash": "046ac7a5456f9400c1b3920caa1796ac6e42b7b4232e50343209d29ec6e47370",
+      "translation_text_hash": "4a3dc7f8de3187a89b8d115898bee5b0d6645777adedeb38f224bd1d9d3e2915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자와 동침하지 아니하여 사내를 알지 못하는 여자들은 다 너희를 위하여 살려 둘것이니라"
+      ],
+      "raw_text_hashes": [
+        "4a3dc7f8de3187a89b8d115898bee5b0d6645777adedeb38f224bd1d9d3e2915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:19",
+      "sequence": 4684,
+      "chapter_label": "NUM 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "“Encamp outside of the camp for seven days. Whoever has killed any person, and whoever has touched any slain, purify yourselves on the third day and on the seventh day, you and your captives.",
+      "ko": "너희는 칠일 동안 진 밖에 주둔하라 무릇 살인자나 죽임을 당한 시체를 만진 자나 제 삼일과 제 칠일에 몸을 깨끗케 하고 너희의 포로도 깨끗케 할 것이며",
+      "source_text_hash": "25e5a6bdf4d4e83137b9fc87fa4351515a5c18ee8f82537ded4c64b26a052069",
+      "translation_text_hash": "b0ecd0e1c07686c3b2364739d43f457c09d5571be1c991be21a01d03ee45c928",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칠일 동안 진 밖에 주둔하라 무릇 살인자나 죽임을 당한 시체를 만진 자나 제 삼일과 제 칠일에 몸을 깨끗케 하고 너희의 포로도 깨끗케 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "b0ecd0e1c07686c3b2364739d43f457c09d5571be1c991be21a01d03ee45c928"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:20",
+      "sequence": 4685,
+      "chapter_label": "NUM 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "You shall purify every garment, and all that is made of skin, and all work of goats’ hair, and all things made of wood.”",
+      "ko": "무릇 의복과 무릇 가죽으로 만든 것과 무릇 염소털로 만든 것과 무릇 나무로 만든 것을 다 깨끗케 할찌니라",
+      "source_text_hash": "7c797a7da2c5b3fe157985d2249ac3ca8b836af177c1ee9c906247bd095ed1b1",
+      "translation_text_hash": "ddd4655e3e1e542fe2f593d9d699af2bc9702864b93ca121e6a59cc69f2b01d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 의복과 무릇 가죽으로 만든 것과 무릇 염소털로 만든 것과 무릇 나무로 만든 것을 다 깨끗케 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ddd4655e3e1e542fe2f593d9d699af2bc9702864b93ca121e6a59cc69f2b01d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:21",
+      "sequence": 4686,
+      "chapter_label": "NUM 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "Eleazar the priest said to the men of war who went to the battle, “This is the statute of the law which the LORD has commanded Moses.",
+      "ko": "제사장 엘르아살이 싸움에 나갔던 군인들에게 이르되 이는 여호와께서 모세에게 명하신 법률이니라",
+      "source_text_hash": "769f65c9b3d53c6276debc21f3df8a9ff6cb2d39a0dad33dba1910ff776d0c7a",
+      "translation_text_hash": "be5f97c504cc1ff711f78ecf71e255c3e42c034d2d93eec8bbbed531d930c9f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살이 싸움에 나갔던 군인들에게 이르되 이는 여호와께서 모세에게 명하신 법률이니라"
+      ],
+      "raw_text_hashes": [
+        "be5f97c504cc1ff711f78ecf71e255c3e42c034d2d93eec8bbbed531d930c9f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:22",
+      "sequence": 4687,
+      "chapter_label": "NUM 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "However the gold, and the silver, the bronze, the iron, the tin, and the lead,",
+      "ko": "금, 은, 동, 철과 상납과 납의",
+      "source_text_hash": "da9796d9ea2b002ffc861aaab2b16a8a6aaeff4c1bb03cc875ed0218e7ae3a2c",
+      "translation_text_hash": "8eee9ca9aadb6b805bd1f5166126dfd2de1aefd6756232912b22a90f0a116daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금, 은, 동, 철과 상납과 납의"
+      ],
+      "raw_text_hashes": [
+        "8eee9ca9aadb6b805bd1f5166126dfd2de1aefd6756232912b22a90f0a116daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:23",
+      "sequence": 4688,
+      "chapter_label": "NUM 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "everything that may withstand the fire, you shall make to go through the fire, and it shall be clean; nevertheless it shall be purified with the water for impurity. All that doesn’t withstand the fire you shall make to go through the water.",
+      "ko": "무릇 불에 견딜만한 물건은 불을 지나게 하라 그리하면 깨끗하려니와 오히려 정결케 하는 물로 그것을 깨끗케 할 것이며 무릇 불에 견디지 못할 모든 것은 물을 지나게 할 것이니라",
+      "source_text_hash": "d16ed7b579266c3054946bca8e153bb1276eb7bc49d557ab50938d3b21bb6802",
+      "translation_text_hash": "af1fabcfcea7e9c12b72914632efc66ec5fe548c5233281522b00b3c9b8d9cd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 불에 견딜만한 물건은 불을 지나게 하라 그리하면 깨끗하려니와 오히려 정결케 하는 물로 그것을 깨끗케 할 것이며 무릇 불에 견디지 못할 모든 것은 물을 지나게 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "af1fabcfcea7e9c12b72914632efc66ec5fe548c5233281522b00b3c9b8d9cd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:24",
+      "sequence": 4689,
+      "chapter_label": "NUM 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "You shall wash your clothes on the seventh day, and you shall be clean. Afterward you shall come into the camp.”",
+      "ko": "너희는 제 칠일에 옷을 빨아서 깨끗케 한 후에 진에 들어올찌니라",
+      "source_text_hash": "2eb95fcd615e9b628a9f658143d50a5bee571e7250e72ad1259608697368ded1",
+      "translation_text_hash": "674afb3dce9197986c2e6a58fdcffdd61558e0edcc4bb3dc944c4a810510cf8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 제 칠일에 옷을 빨아서 깨끗케 한 후에 진에 들어올찌니라"
+      ],
+      "raw_text_hashes": [
+        "674afb3dce9197986c2e6a58fdcffdd61558e0edcc4bb3dc944c4a810510cf8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:25",
+      "sequence": 4690,
+      "chapter_label": "NUM 31",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:26",
+      "sequence": 4691,
+      "chapter_label": "NUM 31",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 26
+        }
+      ],
+      "en": "“Count the plunder that was taken, both of man and of animal, you, and Eleazar the priest, and the heads of the fathers’ households of the congregation;",
+      "ko": "너는 제사장 엘르아살과 회중의 족장들로 더불어 이 탈취한 사람과 짐승을 계수하고",
+      "source_text_hash": "92830bad2f31e3a5f53040dcaae0767c0cf9ed590127ca674523967821814120",
+      "translation_text_hash": "a68abf5249530274945f992be221567aaa98aa42887ebf9a6a7d74c377fa1262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 제사장 엘르아살과 회중의 족장들로 더불어 이 탈취한 사람과 짐승을 계수하고"
+      ],
+      "raw_text_hashes": [
+        "a68abf5249530274945f992be221567aaa98aa42887ebf9a6a7d74c377fa1262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:27",
+      "sequence": 4692,
+      "chapter_label": "NUM 31",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 27
+        }
+      ],
+      "en": "and divide the plunder into two parts: between the men skilled in war, who went out to battle, and all the congregation.",
+      "ko": "그 얻은 물건을 반분하여 그 절반은 싸움에 나갔던 군인들에게 주고 절반은 회중에게 주고",
+      "source_text_hash": "bbf3ddcf85b65baf265fcdae888ad6042523281ca52548e6fa68c220407d6753",
+      "translation_text_hash": "f53336051b5e5bdc0d9a522b046363a51b853edccdf5c6ff3afb376f915c8a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 얻은 물건을 반분하여 그 절반은 싸움에 나갔던 군인들에게 주고 절반은 회중에게 주고"
+      ],
+      "raw_text_hashes": [
+        "f53336051b5e5bdc0d9a522b046363a51b853edccdf5c6ff3afb376f915c8a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:28",
+      "sequence": 4693,
+      "chapter_label": "NUM 31",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 28
+        }
+      ],
+      "en": "Levy a tribute to the LORD of the men of war who went out to battle: one soul of five hundred; of the persons, of the cattle, of the donkeys, and of the flocks.",
+      "ko": "싸움에 나갔던 군인들로는 사람이나 소나 나귀나 양떼의 오백분지 일을 여호와께 드리게 하되",
+      "source_text_hash": "2f96b9a2f6c5f7ea2ac3962eddff6c4901bfc48fe90fbbc6b5ac6dfb0fc09a2b",
+      "translation_text_hash": "8f407fa05af4e61c8861e3900bdce43b4224bd2e4f1c26be32d4790dc37b41ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싸움에 나갔던 군인들로는 사람이나 소나 나귀나 양떼의 오백분지 일을 여호와께 드리게 하되"
+      ],
+      "raw_text_hashes": [
+        "8f407fa05af4e61c8861e3900bdce43b4224bd2e4f1c26be32d4790dc37b41ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:29",
+      "sequence": 4694,
+      "chapter_label": "NUM 31",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 29
+        }
+      ],
+      "en": "Take it from their half, and give it to Eleazar the priest, for the LORD’s wave offering.",
+      "ko": "곧 이를 그들의 절반에서 취하여 여호와의 거제로 제사장 엘르아살에게 주고",
+      "source_text_hash": "4c0f12274c27845e7a888c3bd9f832671faf16981844640812141c7da5b951ca",
+      "translation_text_hash": "d6c2189d8c1b42935e23403cdf010fd4a03b0fd59c900e9dd4169005d89e1a53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이를 그들의 절반에서 취하여 여호와의 거제로 제사장 엘르아살에게 주고"
+      ],
+      "raw_text_hashes": [
+        "d6c2189d8c1b42935e23403cdf010fd4a03b0fd59c900e9dd4169005d89e1a53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:30",
+      "sequence": 4695,
+      "chapter_label": "NUM 31",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 30
+        }
+      ],
+      "en": "Of the children of Israel’s half, you shall take one drawn out of every fifty, of the persons, of the cattle, of the donkeys, and of the flocks, of all the livestock, and give them to the Levites, who perform the duty of the LORD’s tabernacle.”",
+      "ko": "또 이스라엘 자손의 얻은 절반에서는 사람이나 소나 나귀나 양떼나 각종 짐승을 오십분지 일을 취하여 여호와의 성막을 맡은 레위인에게 주라",
+      "source_text_hash": "07796e917872295ded13da293be21dc4f7bf1d6748005d873a1d6fa7f5a0650d",
+      "translation_text_hash": "614a079ebed04dcc5509489881d0b43ba81378ac143f3464de86a7b160db95fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이스라엘 자손의 얻은 절반에서는 사람이나 소나 나귀나 양떼나 각종 짐승을 오십분지 일을 취하여 여호와의 성막을 맡은 레위인에게 주라"
+      ],
+      "raw_text_hashes": [
+        "614a079ebed04dcc5509489881d0b43ba81378ac143f3464de86a7b160db95fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:31",
+      "sequence": 4696,
+      "chapter_label": "NUM 31",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 31
+        }
+      ],
+      "en": "Moses and Eleazar the priest did as the LORD commanded Moses.",
+      "ko": "모세와 제사장 엘르아살이 여호와께서 모세에게 명하신대로 하니라",
+      "source_text_hash": "ac1702411e121064679e008f0185fb001ecd749b0c3585a0e31acf0dd669777b",
+      "translation_text_hash": "506177ba5e50664660512299206a59ef41346f43e4444fcaf5e164f36d738e71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 엘르아살이 여호와께서 모세에게 명하신대로 하니라"
+      ],
+      "raw_text_hashes": [
+        "506177ba5e50664660512299206a59ef41346f43e4444fcaf5e164f36d738e71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:32",
+      "sequence": 4697,
+      "chapter_label": "NUM 31",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 32
+        }
+      ],
+      "en": "Now the plunder, over and above the booty which the men of war took, was six hundred seventy-five thousand sheep,",
+      "ko": "그 탈취물 곧 군인들의 다른 탈취물 외에 양이 육십 칠만 오천이요",
+      "source_text_hash": "087a76bfd16a57fc4dc0000b41475adb26e77c9f615419f3bfdbeab52b07e689",
+      "translation_text_hash": "6cfc6e2e1832f92e6ab0fe3de2ea0d95e7ec2732bb546eb7884bf2336fc10050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 탈취물 곧 군인들의 다른 탈취물 외에 양이 육십 칠만 오천이요"
+      ],
+      "raw_text_hashes": [
+        "6cfc6e2e1832f92e6ab0fe3de2ea0d95e7ec2732bb546eb7884bf2336fc10050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:33",
+      "sequence": 4698,
+      "chapter_label": "NUM 31",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 33
+        }
+      ],
+      "en": "seventy-two thousand head of cattle,",
+      "ko": "소가 칠만 이천이요",
+      "source_text_hash": "0639c994a7cd38bbeaca688ba6633d13085a3dbe6b1428f028f199a85b83b7ed",
+      "translation_text_hash": "022f73e58695e53988ecd1610d50733e859f61edc125300d57d663077a96cab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소가 칠만 이천이요"
+      ],
+      "raw_text_hashes": [
+        "022f73e58695e53988ecd1610d50733e859f61edc125300d57d663077a96cab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:34",
+      "sequence": 4699,
+      "chapter_label": "NUM 31",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 34
+        }
+      ],
+      "en": "sixty-one thousand donkeys,",
+      "ko": "나귀가 육만 일천이요",
+      "source_text_hash": "491fdcc798fa07ebd736d4c17a6ba7d47a9e2b9978af73b436dfa70de6687ef5",
+      "translation_text_hash": "69f337371d55fbfec41ad85e8a0ed43c1e5487e13d98620908c3c0ff266da405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 육만 일천이요"
+      ],
+      "raw_text_hashes": [
+        "69f337371d55fbfec41ad85e8a0ed43c1e5487e13d98620908c3c0ff266da405"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:35",
+      "sequence": 4700,
+      "chapter_label": "NUM 31",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 35
+        }
+      ],
+      "en": "and thirty-two thousand persons in all, of the women who had not known man by lying with him.",
+      "ko": "사람은 남자와 동침하지 아니하여서 사내를 알지 못하는 여자가 도합 삼만 이천이니",
+      "source_text_hash": "47fd5560f6d082e58f6249a8806f6eb1aabf4e6b9a47584b7c073c7f5dab5b5c",
+      "translation_text_hash": "637cd1df7d1a24fee4ceab8ae1de6b7f9a30659535d8fd7c750318fa7aa3947f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 남자와 동침하지 아니하여서 사내를 알지 못하는 여자가 도합 삼만 이천이니"
+      ],
+      "raw_text_hashes": [
+        "637cd1df7d1a24fee4ceab8ae1de6b7f9a30659535d8fd7c750318fa7aa3947f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:36",
+      "sequence": 4701,
+      "chapter_label": "NUM 31",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 36
+        }
+      ],
+      "en": "The half, which was the portion of those who went out to war, was in number three hundred thirty-seven thousand five hundred sheep;",
+      "ko": "그 절반 곧 싸움에 나갔던 자들의 소유가 양이 삼십 삼만 칠천 오백이라",
+      "source_text_hash": "66f1bc883da09eb61d20215fd1c0d3cd417584d3403cc0a039c0ef647f821927",
+      "translation_text_hash": "2d7ffa82f973470c3d111dde6a9b10e1c45feaef0966f526dfa230621df63f1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 절반 곧 싸움에 나갔던 자들의 소유가 양이 삼십 삼만 칠천 오백이라"
+      ],
+      "raw_text_hashes": [
+        "2d7ffa82f973470c3d111dde6a9b10e1c45feaef0966f526dfa230621df63f1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:37",
+      "sequence": 4702,
+      "chapter_label": "NUM 31",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 37
+        }
+      ],
+      "en": "and the LORD’s tribute of the sheep was six hundred seventy-five.",
+      "ko": "여호와께 세로 드린 양이 육백 칠십 오요",
+      "source_text_hash": "ea9f846c11a8abe70c402c4fa9675fa286278cedfd935b3575f61023edeedfc3",
+      "translation_text_hash": "b25c295ee3236e069e8a08ddc97921182e5a8e05f88f57d9825cf2321f48d4ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 세로 드린 양이 육백 칠십 오요"
+      ],
+      "raw_text_hashes": [
+        "b25c295ee3236e069e8a08ddc97921182e5a8e05f88f57d9825cf2321f48d4ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:38",
+      "sequence": 4703,
+      "chapter_label": "NUM 31",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 38
+        }
+      ],
+      "en": "The cattle were thirty-six thousand, of which the LORD’s tribute was seventy-two.",
+      "ko": "소가 삼만 육천이라 그 중에서 여호와께 세로 드린 것이 칠십 이두요",
+      "source_text_hash": "b708c231b75144338e07c098a40d8f1e6ce4183fefd73b82c638589a69b533dc",
+      "translation_text_hash": "00c8a2930ebc90148005758bdbe54fae0ca46bdf3b3c238225e432c0de4fdd25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소가 삼만 육천이라 그 중에서 여호와께 세로 드린 것이 칠십 이두요"
+      ],
+      "raw_text_hashes": [
+        "00c8a2930ebc90148005758bdbe54fae0ca46bdf3b3c238225e432c0de4fdd25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:39",
+      "sequence": 4704,
+      "chapter_label": "NUM 31",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 39
+        }
+      ],
+      "en": "The donkeys were thirty thousand five hundred, of which the LORD’s tribute was sixty-one.",
+      "ko": "나귀가 삼만 오백이라 그 중에서 여호와께 세로 드린 것이 육십 일이요",
+      "source_text_hash": "15bcbc9d864ab7eaa30129d9d85bdd1b72d6b8a80ed4aa34041ba93550bc88df",
+      "translation_text_hash": "dc194161060253775f593700a7246670a766e6c1f4f797462256e2da61b0d403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 삼만 오백이라 그 중에서 여호와께 세로 드린 것이 육십 일이요"
+      ],
+      "raw_text_hashes": [
+        "dc194161060253775f593700a7246670a766e6c1f4f797462256e2da61b0d403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:40",
+      "sequence": 4705,
+      "chapter_label": "NUM 31",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 40
+        }
+      ],
+      "en": "The persons were sixteen thousand, of whom the LORD’s tribute was thirty-two persons.",
+      "ko": "사람이 일만 육천이라 그 중에서 여호와께 세로 드리운 자가 삼십 이명이니",
+      "source_text_hash": "60b6eb3ee83f5e540a406ec22b24dc45e2783ca10df3ac65753a319d32cc5d13",
+      "translation_text_hash": "18cbe3177f1a154e3c24d3434f665233cc3a845fa34187d67ee5a0637d35b2e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 일만 육천이라 그 중에서 여호와께 세로 드리운 자가 삼십 이명이니"
+      ],
+      "raw_text_hashes": [
+        "18cbe3177f1a154e3c24d3434f665233cc3a845fa34187d67ee5a0637d35b2e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:41",
+      "sequence": 4706,
+      "chapter_label": "NUM 31",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 41
+        }
+      ],
+      "en": "Moses gave the tribute, which was the LORD’s wave offering, to Eleazar the priest, as the LORD commanded Moses.",
+      "ko": "여호와께 거제의 세로 드린 것을 모세가 제사장 엘르아살에게 주었으니 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "a5a1f12fcd6e82cc6d9e7e14763420aff813ecc88a5c7dbed28745dfca40cf54",
+      "translation_text_hash": "9f157fee7ede10f52eb1d2792a7a7e801f94c9e962a33015207ef4577c4cfe30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 거제의 세로 드린 것을 모세가 제사장 엘르아살에게 주었으니 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "9f157fee7ede10f52eb1d2792a7a7e801f94c9e962a33015207ef4577c4cfe30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:42",
+      "sequence": 4707,
+      "chapter_label": "NUM 31",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 42
+        }
+      ],
+      "en": "Of the children of Israel’s half, which Moses divided off from the men who fought",
+      "ko": "모세가 싸움에 나갔던 자에게서 나누어 취하여 이스라엘 자손에게 준 절반",
+      "source_text_hash": "68e3c37936548f5a84eea13342f3a11a8ddcec4b5c8263aad7bbacb710882fb2",
+      "translation_text_hash": "d5d971832705154c58559c7380022adaa140b76f4dc8346b7723110c6b26e4ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 싸움에 나갔던 자에게서 나누어 취하여 이스라엘 자손에게 준 절반"
+      ],
+      "raw_text_hashes": [
+        "d5d971832705154c58559c7380022adaa140b76f4dc8346b7723110c6b26e4ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:43",
+      "sequence": 4708,
+      "chapter_label": "NUM 31",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 43
+        }
+      ],
+      "en": "(now the congregation’s half was three hundred thirty-seven thousand five hundred sheep,",
+      "ko": "곧 회중의 얻은 절반은 양이 삼십 삼만 칠천 오백이요",
+      "source_text_hash": "14997f7f0e53ff8499cee31b56f390ef92a1bd6cf3d4b147e765637bb39ce886",
+      "translation_text_hash": "4575e5dcb1e725b728394160dcfadf7e84708a890c76b9a4dd35a50d6e11b8c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 회중의 얻은 절반은 양이 삼십 삼만 칠천 오백이요"
+      ],
+      "raw_text_hashes": [
+        "4575e5dcb1e725b728394160dcfadf7e84708a890c76b9a4dd35a50d6e11b8c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:44",
+      "sequence": 4709,
+      "chapter_label": "NUM 31",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 44
+        }
+      ],
+      "en": "thirty-six thousand head of cattle,",
+      "ko": "소가 삼만 육천이요",
+      "source_text_hash": "8a50b22f9a6be6d21c7dcc4c2fd5f06f115d4a16f92f22cf105a51dc1c92d540",
+      "translation_text_hash": "a01de958a70b302adcf04c348797ebdc652a06d0198eedb88a36b2ba2f8adaa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소가 삼만 육천이요"
+      ],
+      "raw_text_hashes": [
+        "a01de958a70b302adcf04c348797ebdc652a06d0198eedb88a36b2ba2f8adaa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:45",
+      "sequence": 4710,
+      "chapter_label": "NUM 31",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 45
+        }
+      ],
+      "en": "thirty thousand five hundred donkeys,",
+      "ko": "나귀가 삼만 오백이요",
+      "source_text_hash": "e72076f708bc0e5f73ac80471947a2546d7716be550456a03e44cad9565cbd97",
+      "translation_text_hash": "edb8e048b221aa9d28a3bf5a6b2e3f4abd278d798cb1730df3bf4ac38b181e8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀가 삼만 오백이요"
+      ],
+      "raw_text_hashes": [
+        "edb8e048b221aa9d28a3bf5a6b2e3f4abd278d798cb1730df3bf4ac38b181e8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:46",
+      "sequence": 4711,
+      "chapter_label": "NUM 31",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 46
+        }
+      ],
+      "en": "and sixteen thousand persons),",
+      "ko": "사람이 일만 육천이라",
+      "source_text_hash": "a5eca912849891bf9051bdd1a95976b75133afbcc20aa98134e21db058bbdc21",
+      "translation_text_hash": "b1ec318d4ce28ad76c737265efa741f1bb4939d3d9247d491c928db80af5cd48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 일만 육천이라"
+      ],
+      "raw_text_hashes": [
+        "b1ec318d4ce28ad76c737265efa741f1bb4939d3d9247d491c928db80af5cd48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:47",
+      "sequence": 4712,
+      "chapter_label": "NUM 31",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 47
+        }
+      ],
+      "en": "even of the children of Israel’s half, Moses took one drawn out of every fifty, both of man and of animal, and gave them to the Levites, who performed the duty of the LORD’s tabernacle, as the LORD commanded Moses.",
+      "ko": "이스라엘 자손의 그 절반에서 모세가 사람이나 짐승의 오십분지 일을 취하여 여호와의 장막을 맡은 레위인에게 주었으니 여호와께서 모세에게 명하심과 같았더라",
+      "source_text_hash": "3ea6b579515ca4cf138f0b8b79121e927429ac833fb6e80ddf08e39d5454c8b8",
+      "translation_text_hash": "253d8334bd77604c13f2ba82a7d3f1c4c2dce8613612d75c93aa7c15c48709ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 그 절반에서 모세가 사람이나 짐승의 오십분지 일을 취하여 여호와의 장막을 맡은 레위인에게 주었으니 여호와께서 모세에게 명하심과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "253d8334bd77604c13f2ba82a7d3f1c4c2dce8613612d75c93aa7c15c48709ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:48",
+      "sequence": 4713,
+      "chapter_label": "NUM 31",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 48
+        }
+      ],
+      "en": "The officers who were over the thousands of the army, the captains of thousands, and the captains of hundreds, came near to Moses.",
+      "ko": "군대의 장관들 곧 천부장과 백부장들이 모세에게 나아와서",
+      "source_text_hash": "75d7308b8432b72751d90a647f366e5ee498ad54970d5f80f72aa4c7dc32ff8f",
+      "translation_text_hash": "0175d7f609640b852ce430409196e5320bedde8dd2149dae3c06865478696a9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군대의 장관들 곧 천부장과 백부장들이 모세에게 나아와서"
+      ],
+      "raw_text_hashes": [
+        "0175d7f609640b852ce430409196e5320bedde8dd2149dae3c06865478696a9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:49",
+      "sequence": 4714,
+      "chapter_label": "NUM 31",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 49
+        }
+      ],
+      "en": "They said to Moses, “Your servants have taken the sum of the men of war who are under our command, and there lacks not one man of us.",
+      "ko": "그에게 고하되 당신의 종들의 영솔한 군인을 계수한즉 우리중 한 사람도 축나지 아니하였기로",
+      "source_text_hash": "953118630dbfcd431fa114c40d0ae09138367f50ce9f8f8721619039012ee94e",
+      "translation_text_hash": "9389f953643c703157dda81e83f333c7640d7108b027a009bfdfab6686bfbeac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 고하되 당신의 종들의 영솔한 군인을 계수한즉 우리중 한 사람도 축나지 아니하였기로"
+      ],
+      "raw_text_hashes": [
+        "9389f953643c703157dda81e83f333c7640d7108b027a009bfdfab6686bfbeac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:50",
+      "sequence": 4715,
+      "chapter_label": "NUM 31",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 50
+        }
+      ],
+      "en": "We have brought the LORD’s offering, what every man found: gold ornaments, armlets, bracelets, signet rings, earrings, and necklaces, to make atonement for our souls before the LORD.”",
+      "ko": "우리 각 사람의 얻은바 금 패물 곧 발목고리, 손목고리, 인장반지, 귀고리, 팔고리들을 여호와의 예물로 우리의 생명을 위하여 여호와 앞에 속죄하려고 가져왔나이다",
+      "source_text_hash": "c81ffd5800ec7fe391730de5ec7f7561af69825e509cac2ba461bc7280d23773",
+      "translation_text_hash": "03b8906c4af9f4ed7e612780a09c4cf7c255486efb51a582d60290c9247b14c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 각 사람의 얻은바 금 패물 곧 발목고리, 손목고리, 인장반지, 귀고리, 팔고리들을 여호와의 예물로 우리의 생명을 위하여 여호와 앞에 속죄하려고 가져왔나이다"
+      ],
+      "raw_text_hashes": [
+        "03b8906c4af9f4ed7e612780a09c4cf7c255486efb51a582d60290c9247b14c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:51",
+      "sequence": 4716,
+      "chapter_label": "NUM 31",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 51
+        }
+      ],
+      "en": "Moses and Eleazar the priest took their gold, even all worked jewels.",
+      "ko": "모세와 제사장 엘르아살이 그들에게서 그 금으로 만든 모든 패물을 취한즉",
+      "source_text_hash": "0cf5c9f733f99ae81e0bd4bbb702ea61ae5d61e3bf64ad8303eb8e8be33291f3",
+      "translation_text_hash": "66ee6ae0a789f1c75ddb121e571e7159a50a3722a75f9ca32a45a0a7491b5ae1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 엘르아살이 그들에게서 그 금으로 만든 모든 패물을 취한즉"
+      ],
+      "raw_text_hashes": [
+        "66ee6ae0a789f1c75ddb121e571e7159a50a3722a75f9ca32a45a0a7491b5ae1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:52",
+      "sequence": 4717,
+      "chapter_label": "NUM 31",
+      "verse_label": "52",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 52
+        }
+      ],
+      "en": "All the gold of the wave offering that they offered up to the LORD, of the captains of thousands, and of the captains of hundreds, was sixteen thousand seven hundred fifty shekels.",
+      "ko": "천부장과 백부장들이 여호와께 드린 거제의 금의 도합이 일만 육천 칠백 오십 세겔이니",
+      "source_text_hash": "20c5c06b343f298e48896265c082275b508cdbbde7c2896d93e2f2167c4ca0b2",
+      "translation_text_hash": "0d1b2602a48fc125dc8e340cfa60169cc91c961a88ce8e5a0e19de059bbb9dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장과 백부장들이 여호와께 드린 거제의 금의 도합이 일만 육천 칠백 오십 세겔이니"
+      ],
+      "raw_text_hashes": [
+        "0d1b2602a48fc125dc8e340cfa60169cc91c961a88ce8e5a0e19de059bbb9dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:53",
+      "sequence": 4718,
+      "chapter_label": "NUM 31",
+      "verse_label": "53",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 53
+        }
+      ],
+      "en": "The men of war had taken booty, every man for himself.",
+      "ko": "군인들이 각기 자기를 위하여 탈취한 것이니라",
+      "source_text_hash": "22718c9f93956893cb4878d062612c78435fff6a8e9bdf255318e43c05eb7a0a",
+      "translation_text_hash": "c86970cd0964f891ba4fccceb8ae6778d462f17220d4901200404c22e3a8cba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군인들이 각기 자기를 위하여 탈취한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c86970cd0964f891ba4fccceb8ae6778d462f17220d4901200404c22e3a8cba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:31:54",
+      "sequence": 4719,
+      "chapter_label": "NUM 31",
+      "verse_label": "54",
+      "locator": {
+        "book": "NUM",
+        "chapter": 31,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 31,
+          "verse": 54
+        }
+      ],
+      "en": "Moses and Eleazar the priest took the gold of the captains of thousands and of hundreds, and brought it into the Tent of Meeting for a memorial for the children of Israel before the LORD.",
+      "ko": "모세와 제사장 엘르아살이 천부장과 백부장들에게서 금을 취하여 회막에 들여서 여호와 앞에 이스라엘 자손의 기념을 삼았더라",
+      "source_text_hash": "0a7b563f6fdfcc07eef393fe6570623f4bd56b90dbe57dd9ad6f390c8039ab2a",
+      "translation_text_hash": "423713ce941608d19c024f2fda6a1da35faa1a86f89d639b8b33159a8e178717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 엘르아살이 천부장과 백부장들에게서 금을 취하여 회막에 들여서 여호와 앞에 이스라엘 자손의 기념을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "423713ce941608d19c024f2fda6a1da35faa1a86f89d639b8b33159a8e178717"
+      ]
+    }
+  ]
+}

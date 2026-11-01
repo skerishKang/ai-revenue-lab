@@ -1,0 +1,109 @@
+/* StoryMemory B61 #1844 — Library first screen repair.
+   Quieter global chrome (TODAY + ··· only), library-local Books/Sources,
+   passive reading summary, primary selected-book CTA, reduced background-shelf weight.
+   Restore-only: no shelf structure, asset, or layout redesign. */
+
+/* 1. Shelf visual weight: selected book stays focal, side/back books recede. */
+#shelfTrack .book-rig:not(.selected):not(.motion-echo){
+  transform:translateX(var(--x)) translateZ(calc(var(--z) - 70px)) rotateY(var(--ry)) scale(calc(var(--s) * .9));
+  opacity:.74;
+  filter:saturate(.62) brightness(.6);
+}
+
+/* 2. Global top-right primary chrome: TODAY + overflow only. */
+#library .today-entry{right:74px}
+#libOverflow{
+  position:absolute;top:28px;right:28px;z-index:96;
+  width:32px;height:32px;padding:0;border-radius:999px;
+  border:1px solid rgba(239,226,210,.14);background:rgba(21,23,31,.70);
+  backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.14);
+  color:rgba(248,240,230,.72);font:700 13px/1 var(--sans);letter-spacing:.06em;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+#libOverflow:hover{color:#f4ecdf;border-color:rgba(239,226,210,.3)}
+.lib-overflow-menu{
+  position:absolute;top:68px;right:28px;z-index:95;
+  display:none;flex-direction:column;align-items:stretch;gap:8px;
+  width:218px;padding:12px;
+  border:1px solid rgba(239,226,210,.14);border-radius:14px;
+  background:rgba(25,28,36,.96);backdrop-filter:blur(14px);
+  box-shadow:0 18px 42px rgba(0,0,0,.34);
+}
+.lib-overflow-menu.open{display:flex}
+.lib-overflow-menu .overflow-label{
+  font:600 7px var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(248,240,230,.4);margin-top:2px;
+}
+.lib-overflow-menu .motion-control{position:static;z-index:auto}
+.lib-overflow-menu .motion-toggle{width:100%}
+.lib-overflow-menu .motion-popover{right:auto;left:0;top:calc(100% + 6px)}
+.lib-overflow-menu .library-order-toggle{width:100%;justify-content:center}
+
+/* 3. Books / Sources / + become library-local in a dedicated shelf toolbar.
+   Keep the toolbar outside .shelf-wrap so it remains available in SOURCES mode,
+   where the shelf itself is intentionally hidden. */
+#library .library-shelf-toolbar{
+  position:absolute;right:48px;bottom:126px;z-index:54;display:flex;align-items:center;
+}
+#library .library-shelf-toolbar > .source-mode-switch{
+  position:static;top:auto;right:auto;bottom:auto;transform:none;z-index:auto;
+}
+#library .library-shelf-toolbar::before{
+  content:"LIBRARY VIEW";margin-right:9px;
+  font:600 6px var(--sans);letter-spacing:.14em;color:rgba(247,242,234,.28);white-space:nowrap;pointer-events:none;
+}
+
+/* 4. Reading state becomes a passive summary; ORDER action lives in ···. */
+#library .library-order-control{
+  position:absolute;top:auto;right:48px;bottom:16px;z-index:38;
+  border:0;background:transparent;backdrop-filter:none;padding:0;gap:0;
+}
+#library .library-order-control small{display:none}
+#library .library-order-control:empty{display:none}
+#library .library-reading-summary{
+  border:0;background:transparent;box-shadow:none;padding:0;
+  font:500 9px var(--sans);letter-spacing:.12em;text-transform:none;
+  color:rgba(247,242,234,.42);
+}
+
+/* 5. Selected-book CTA is the strongest control on the first screen. */
+#library .open-btn{
+  height:52px;padding:0 30px;font-size:12px;font-weight:800;letter-spacing:.1em;
+  background:#f4ecdf;color:#1e1b18;border-color:transparent;
+  box-shadow:0 12px 32px rgba(0,0,0,.3);
+}
+#library .open-btn:hover{background:#fff;transform:translateY(-2px)}
+#library .lib-actions .round{
+  width:40px;height:40px;font-size:15px;
+  background:transparent;border-color:rgba(255,255,255,.12);color:rgba(247,242,234,.5);
+}
+
+@media(max-width:900px){
+  /* --- Top-right chrome stays reachable on touch: TODAY + ··· --- */
+  #library .today-entry{
+    display:flex!important;opacity:1!important;pointer-events:auto!important;
+    top:28px!important;left:auto!important;right:74px!important;
+  }
+  #libOverflow{display:flex}
+  .lib-overflow-menu .motion-control{display:block!important}
+  /* The overflow panel opens downward, clear of TODAY. */
+  .lib-overflow-menu{top:68px}
+
+  /* --- Hero block drops below the top-right controls --- */
+  #library .lib-head{margin-top:44px}
+
+  /* --- Books / Sources / ＋ lives in the band below the hero title.
+         212px clears the tallest hero state (≈199px bottom at 900px). --- */
+  #library .library-shelf-toolbar{top:212px;right:16px;bottom:auto}
+
+  /* --- Passive reading summary returns as quiet lower-right info --- */
+  #library .library-order-control{top:auto;right:48px;bottom:16px;transform:none}
+  #library .library-reading-summary{display:inline-block!important}
+
+  /* --- Touch labels: ≥9px, stronger contrast on the secondary state --- */
+  #library .source-mode-switch button{
+    font-size:9px;letter-spacing:.1em;padding:9px 12px;
+  }
+  #library .source-mode-switch button:not(.on){color:rgba(248,240,230,.86)}
+  #library .source-mode-switch button.on{color:#2d2823}
+}

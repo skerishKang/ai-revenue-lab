@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:026",
+  "unit_ordinal": 393,
+  "unit_label": "2CH 26",
+  "book_code": "2CH",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:26:1",
+      "sequence": 11734,
+      "chapter_label": "2CH 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "All the people of Judah took Uzziah, who was sixteen years old, and made him king in the place of his father Amaziah.",
+      "ko": "유다 온 백성이 웃시야로 그 부친 아마샤를 대신하여 왕을 삼으니 때에 나이 십륙세라",
+      "source_text_hash": "2dc659324eba2904df6823066d058dcb3772824233f05dd33e46d66e314ee581",
+      "translation_text_hash": "44dc209e4ca1054c2150782800ebf7c03a83466fdfb5185c0e06d0d49d17ed55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 온 백성이 웃시야로 그 부친 아마샤를 대신하여 왕을 삼으니 때에 나이 십륙세라"
+      ],
+      "raw_text_hashes": [
+        "44dc209e4ca1054c2150782800ebf7c03a83466fdfb5185c0e06d0d49d17ed55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:2",
+      "sequence": 11735,
+      "chapter_label": "2CH 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "He built Eloth and restored it to Judah. After that the king slept with his fathers.",
+      "ko": "왕이 그 열조와 함께 잔 후에 웃시야가 엘롯을 건축하여 유다에 돌렸더라",
+      "source_text_hash": "fc594d84e561bb7ea10322cb22ebe2576e00887b159a6f0d81d16573c219fad2",
+      "translation_text_hash": "8985b99280ab9bd8a60f5c7021d4fab486a0dc2a183aea6cf202d86aa2d53510",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 열조와 함께 잔 후에 웃시야가 엘롯을 건축하여 유다에 돌렸더라"
+      ],
+      "raw_text_hashes": [
+        "8985b99280ab9bd8a60f5c7021d4fab486a0dc2a183aea6cf202d86aa2d53510"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:3",
+      "sequence": 11736,
+      "chapter_label": "2CH 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Uzziah was sixteen years old when he began to reign; and he reigned fifty-two years in Jerusalem. His mother’s name was Jechiliah, of Jerusalem.",
+      "ko": "웃시야가 위에 나아갈 때에 나이 십륙세라 예루살렘에서 오십 이년을 치리하니라 그 모친의 이름은 여골리아라 예루살렘 사람이더라",
+      "source_text_hash": "2d7034ccac99abd830b9d23bf1811ef555b701caaa5b1ac9e21d1ef6c9ddac36",
+      "translation_text_hash": "41a40bc92e98b5a29a3d123082423cbeb0f69265d9c5d1c2fe1f876350fe60f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 위에 나아갈 때에 나이 십륙세라 예루살렘에서 오십 이년을 치리하니라 그 모친의 이름은 여골리아라 예루살렘 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "41a40bc92e98b5a29a3d123082423cbeb0f69265d9c5d1c2fe1f876350fe60f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:4",
+      "sequence": 11737,
+      "chapter_label": "2CH 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, according to all that his father Amaziah had done.",
+      "ko": "웃시야가 그 부친 아마샤의 모든 행위대로 여호와 보시기에 정직히 행하며",
+      "source_text_hash": "bc25ea7363ddc6b972ae521a5af665bd16841ed5e5bdf61f7b97e8a3ed796035",
+      "translation_text_hash": "f2cee63ed4df477734aaa4b915ea81c07fe93cc8899f7e8d9ad763d3c838ff82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 그 부친 아마샤의 모든 행위대로 여호와 보시기에 정직히 행하며"
+      ],
+      "raw_text_hashes": [
+        "f2cee63ed4df477734aaa4b915ea81c07fe93cc8899f7e8d9ad763d3c838ff82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:5",
+      "sequence": 11738,
+      "chapter_label": "2CH 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "He set himself to seek God in the days of Zechariah, who had understanding in the vision of God; and as long as he sought the LORD, God made him prosper.",
+      "ko": "하나님의 묵시를 밝히 아는 스가랴의 사는 날에 하나님을 구하였고 저가 여호와를 구할 동안에는 하나님이 형통케 하셨더라",
+      "source_text_hash": "f0e445bb5555ee85f7d85102f411f09206797de6c9ce32225ea7c4a37bf0a0b1",
+      "translation_text_hash": "4d81644df2fa6781fa9005b6578ec0baa23a84bddc96a800ccc8fd835a781fa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 묵시를 밝히 아는 스가랴의 사는 날에 하나님을 구하였고 저가 여호와를 구할 동안에는 하나님이 형통케 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "4d81644df2fa6781fa9005b6578ec0baa23a84bddc96a800ccc8fd835a781fa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:6",
+      "sequence": 11739,
+      "chapter_label": "2CH 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "He went out and fought against the Philistines, and broke down the wall of Gath, the wall of Jabneh, and the wall of Ashdod; and he built cities in the country of Ashdod, and among the Philistines.",
+      "ko": "웃시야가 나가서 블레셋 사람과 싸우고 가드성과 야브네성과 아스돗성을 헐고 아스돗 땅과 블레셋 사람 가운데 성읍들을 건축하매",
+      "source_text_hash": "9d59cdb3949b4ae626fa7d62ad389b52434a5f8228fde759fe5694f1eee4e1ae",
+      "translation_text_hash": "8ca9b82b19f595e38d85f53f416973c9bb01cc70503ace4f3fcab184b468aeaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 나가서 블레셋 사람과 싸우고 가드성과 야브네성과 아스돗성을 헐고 아스돗 땅과 블레셋 사람 가운데 성읍들을 건축하매"
+      ],
+      "raw_text_hashes": [
+        "8ca9b82b19f595e38d85f53f416973c9bb01cc70503ace4f3fcab184b468aeaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:7",
+      "sequence": 11740,
+      "chapter_label": "2CH 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "God helped him against the Philistines, and against the Arabians who lived in Gur Baal, and the Meunim.",
+      "ko": "하나님이 도우사 블레셋 사람과 구르바알에 거한 아라비아 사람과 마온 사람을 치게 하신지라",
+      "source_text_hash": "6436fa465638ab380d868ce37d5d1c71f77aebffc47af97cb50f345e3323e61b",
+      "translation_text_hash": "793a9fbd3b11032564836b0029c5e5f0c477161e12e25abb4c71419a2bb74f22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 도우사 블레셋 사람과 구르바알에 거한 아라비아 사람과 마온 사람을 치게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "793a9fbd3b11032564836b0029c5e5f0c477161e12e25abb4c71419a2bb74f22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:8",
+      "sequence": 11741,
+      "chapter_label": "2CH 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "The Ammonites gave tribute to Uzziah. His name spread abroad even to the entrance of Egypt, for he grew exceedingly strong.",
+      "ko": "암몬 사람이 웃시야에게 조공을 바치매 웃시야가 심히 강성하여 이름이 애굽 변방까지 퍼졌더라",
+      "source_text_hash": "ae9c2f8095b066080d1bd16124b07ea5b34f59a0ba74ad558ff6082c19bce549",
+      "translation_text_hash": "96bf1bd59ed16d033d955bad790725713c872cf963151f1f8965634ae440245c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람이 웃시야에게 조공을 바치매 웃시야가 심히 강성하여 이름이 애굽 변방까지 퍼졌더라"
+      ],
+      "raw_text_hashes": [
+        "96bf1bd59ed16d033d955bad790725713c872cf963151f1f8965634ae440245c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:9",
+      "sequence": 11742,
+      "chapter_label": "2CH 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Moreover Uzziah built towers in Jerusalem at the corner gate, at the valley gate, and at the turning of the wall, and fortified them.",
+      "ko": "웃시야가 예루살렘에서 성 모퉁이 문과 골짜기 문과 성굽이에 망대를 세워 견고하게 하고",
+      "source_text_hash": "b3c60fd16cb86c2a58a1a185d1b2ccbac98003ce9c5d34175a97badfc965067a",
+      "translation_text_hash": "0dc0b9fcede357c263ee8fde870db5390268619afc23feca7daac296d5c72a14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 예루살렘에서 성 모퉁이 문과 골짜기 문과 성굽이에 망대를 세워 견고하게 하고"
+      ],
+      "raw_text_hashes": [
+        "0dc0b9fcede357c263ee8fde870db5390268619afc23feca7daac296d5c72a14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:10",
+      "sequence": 11743,
+      "chapter_label": "2CH 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "He built towers in the wilderness, and dug out many cisterns, for he had much livestock, both in the lowlands and in the plains. He had farmers and vineyard keepers in the mountains and in the fruitful fields, for he loved farming.",
+      "ko": "또 거친 땅에 망대를 세우고 물웅덩이를 많이 팠으니 평야와 평지에 육축을 많이 기름이며 또 여러 산과 좋은 밭에 농부와 포도원을 다스리는 자를 두었으니 농사를 좋아함이더라",
+      "source_text_hash": "88ecab99ee311ef138cc5fc9e8b85318febe67907f65a90207c07da356079dcb",
+      "translation_text_hash": "6eecce375fd5b17e1f38ba8ddb15344e56d017b709d48da3a8448e978e33b65f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거친 땅에 망대를 세우고 물웅덩이를 많이 팠으니 평야와 평지에 육축을 많이 기름이며 또 여러 산과 좋은 밭에 농부와 포도원을 다스리는 자를 두었으니 농사를 좋아함이더라"
+      ],
+      "raw_text_hashes": [
+        "6eecce375fd5b17e1f38ba8ddb15344e56d017b709d48da3a8448e978e33b65f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:11",
+      "sequence": 11744,
+      "chapter_label": "2CH 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover Uzziah had an army of fighting men who went out to war by bands, according to the number of their reckoning made by Jeiel the scribe and Maaseiah the officer, under the hand of Hananiah, one of the king’s captains.",
+      "ko": "웃시야에게 또 싸우는 군사가 있으니 서기관 여이엘과 영장 마아세야의 조사한 수효대로 왕의 장관 하나냐의 수하에 속하여 떼를 지어 나가서 싸우는 자라",
+      "source_text_hash": "73e42c69f20bfa4902ea0e3a9d53b9bdaa9f82f1370d3f048abc2bfe1ab3a8ba",
+      "translation_text_hash": "765888f239fb2d046c9f6e57d6580caf6d1a845a308955aab22ae115d48909ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야에게 또 싸우는 군사가 있으니 서기관 여이엘과 영장 마아세야의 조사한 수효대로 왕의 장관 하나냐의 수하에 속하여 떼를 지어 나가서 싸우는 자라"
+      ],
+      "raw_text_hashes": [
+        "765888f239fb2d046c9f6e57d6580caf6d1a845a308955aab22ae115d48909ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:12",
+      "sequence": 11745,
+      "chapter_label": "2CH 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "The whole number of the heads of fathers’ households, even the mighty men of valor, was two thousand six hundred.",
+      "ko": "족장의 총수가 이천 육백명이니 모두 큰 용사요",
+      "source_text_hash": "23d28e5decc337274313269ffccd74effd0c2a91d14baf9487bd6ac6b19d25c2",
+      "translation_text_hash": "3bc80f17f0007cc33a9bb13a56af88ecb3e82a2d6a02184f23bb7b7021f4f521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "족장의 총수가 이천 육백명이니 모두 큰 용사요"
+      ],
+      "raw_text_hashes": [
+        "3bc80f17f0007cc33a9bb13a56af88ecb3e82a2d6a02184f23bb7b7021f4f521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:13",
+      "sequence": 11746,
+      "chapter_label": "2CH 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "Under their hand was an army, three hundred seven thousand five hundred, who made war with mighty power, to help the king against the enemy.",
+      "ko": "그 수하의 군대가 삼십만 칠천 오백명이라 건장하고 싸움에 능하여 왕을 도와 대적을 치는 자며",
+      "source_text_hash": "d366d6727ed6d113d1dc4da9f97c7b520372c2ee82788affda0fe74e48f57d0f",
+      "translation_text_hash": "7dd67a31a87c212f88457685562d0858e9452790a23468def53f7f8d77cc2024",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수하의 군대가 삼십만 칠천 오백명이라 건장하고 싸움에 능하여 왕을 도와 대적을 치는 자며"
+      ],
+      "raw_text_hashes": [
+        "7dd67a31a87c212f88457685562d0858e9452790a23468def53f7f8d77cc2024"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:14",
+      "sequence": 11747,
+      "chapter_label": "2CH 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "Uzziah prepared for them, even for all the army, shields, spears, helmets, coats of mail, bows, and stones for slinging.",
+      "ko": "웃시야가 그 온 군대를 위하여 방패와 창과 투구와 갑옷과 활과 물매 돌을 예비하고",
+      "source_text_hash": "1b597aa9b8d7174cd3ee6f91f2abba06b12e0c8503085552d00c6887f8394e7e",
+      "translation_text_hash": "0b82d8325757c88e312957e6a12d11888464eab96be1118d6337ec5282457374",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 그 온 군대를 위하여 방패와 창과 투구와 갑옷과 활과 물매 돌을 예비하고"
+      ],
+      "raw_text_hashes": [
+        "0b82d8325757c88e312957e6a12d11888464eab96be1118d6337ec5282457374"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:15",
+      "sequence": 11748,
+      "chapter_label": "2CH 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "In Jerusalem, he made devices, invented by skillful men, to be on the towers and on the battlements, with which to shoot arrows and great stones. His name spread far abroad, because he was marvelously helped until he was strong.",
+      "ko": "또 예루살렘에서 공교한 공장으로 기계를 창작하여 망대와 성곽 위에 두어 살과 큰 돌을 발하게 하였으니 그 이름이 원방에 퍼짐은 기이한 도우심을 얻어 강성하여짐이더라",
+      "source_text_hash": "6a4a8ca17bafd91a72a65ad7a16f7e5b586147d23eb7f08d68fc5cef675071a8",
+      "translation_text_hash": "8d9b3483bc8119db1f1318f751d8d1b666635443b5d4f1fc2792dbc37fec0112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예루살렘에서 공교한 공장으로 기계를 창작하여 망대와 성곽 위에 두어 살과 큰 돌을 발하게 하였으니 그 이름이 원방에 퍼짐은 기이한 도우심을 얻어 강성하여짐이더라"
+      ],
+      "raw_text_hashes": [
+        "8d9b3483bc8119db1f1318f751d8d1b666635443b5d4f1fc2792dbc37fec0112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:16",
+      "sequence": 11749,
+      "chapter_label": "2CH 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "But when he was strong, his heart was lifted up, so that he did corruptly and he trespassed against the LORD his God, for he went into the LORD’s temple to burn incense on the altar of incense.",
+      "ko": "저가 강성하여지매 그 마음이 교만하여 악을 행하여 그 하나님 여호와께 범죄하되 곧 여호와의 전에 들어가서 향단에 분향하려 한지라",
+      "source_text_hash": "11036472545a6a5dc43f9396e4d68831d7e7732b88dfa15ff94ff0bb9255562a",
+      "translation_text_hash": "9f268400577c4b7be1bc6685245333d496894e43d3258c6298e49480e3476ff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 강성하여지매 그 마음이 교만하여 악을 행하여 그 하나님 여호와께 범죄하되 곧 여호와의 전에 들어가서 향단에 분향하려 한지라"
+      ],
+      "raw_text_hashes": [
+        "9f268400577c4b7be1bc6685245333d496894e43d3258c6298e49480e3476ff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:17",
+      "sequence": 11750,
+      "chapter_label": "2CH 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Azariah the priest went in after him, and with him eighty priests of the LORD, who were valiant men.",
+      "ko": "제사장 아사랴가 여호와의 제사장 용맹한 자 팔십인을 데리고 그 뒤를 따라 들어가서",
+      "source_text_hash": "ac848402a0023ce9d7f3f12e88e95321c45dd73443091c560cd1d8e3832ab6f7",
+      "translation_text_hash": "a85eb8cafa2321691b6ca57d84644525a32602617d553b4adaf822b65745ab1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아사랴가 여호와의 제사장 용맹한 자 팔십인을 데리고 그 뒤를 따라 들어가서"
+      ],
+      "raw_text_hashes": [
+        "a85eb8cafa2321691b6ca57d84644525a32602617d553b4adaf822b65745ab1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:18",
+      "sequence": 11751,
+      "chapter_label": "2CH 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "They resisted Uzziah the king, and said to him, “It isn’t for you, Uzziah, to burn incense to the LORD, but for the priests the sons of Aaron, who are consecrated to burn incense. Go out of the sanctuary, for you have trespassed. It will not be for your honor from the LORD God.”",
+      "ko": "웃시야왕을 막아 가로되 웃시야여 여호와께 분향하는 일이 왕의 할바가 아니요 오직 분향하기 위하여 구별함을 받은 아론의 자손 제사장의 할바니 성소에서 나가소서 왕이 범죄하였으니 하나님 여호와께 영광을 얻지 못하리이다",
+      "source_text_hash": "87168819ad6f48e29a59fbd6b05fc48240b36227a37b0f91ffa87ee7fbbaad66",
+      "translation_text_hash": "a7ba8fef2a9cc1889df5977fe2566f78d45bdbe9ed203158605e518dcd3d8b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야왕을 막아 가로되 웃시야여 여호와께 분향하는 일이 왕의 할바가 아니요 오직 분향하기 위하여 구별함을 받은 아론의 자손 제사장의 할바니 성소에서 나가소서 왕이 범죄하였으니 하나님 여호와께 영광을 얻지 못하리이다"
+      ],
+      "raw_text_hashes": [
+        "a7ba8fef2a9cc1889df5977fe2566f78d45bdbe9ed203158605e518dcd3d8b2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:19",
+      "sequence": 11752,
+      "chapter_label": "2CH 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "Then Uzziah was angry. He had a censer in his hand to burn incense, and while he was angry with the priests, the leprosy broke out on his forehead before the priests in the LORD’s house, beside the altar of incense.",
+      "ko": "웃시야가 손으로 향로를 잡고 분향하려 하다가 노를 발하니 저가 제사장에게 노할 때에 여호와의 전 안 향단 곁 제사장 앞에서 그 이마에 문둥병이 발한지라",
+      "source_text_hash": "eca6c4852feeb9eac76aaf2ccefb6dfdc344bf7a3784a4f2a2311e91e341716c",
+      "translation_text_hash": "b82a407568aed581e556e2d9c4739a51159c6bcdce6e9c05170952bff8e19dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 손으로 향로를 잡고 분향하려 하다가 노를 발하니 저가 제사장에게 노할 때에 여호와의 전 안 향단 곁 제사장 앞에서 그 이마에 문둥병이 발한지라"
+      ],
+      "raw_text_hashes": [
+        "b82a407568aed581e556e2d9c4739a51159c6bcdce6e9c05170952bff8e19dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:20",
+      "sequence": 11753,
+      "chapter_label": "2CH 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Azariah the chief priest and all the priests looked at him, and behold, he was leprous in his forehead; and they thrust him out quickly from there. Indeed, he himself also hurried to go out, because the LORD had struck him.",
+      "ko": "대제사장 아사랴와 모든 제사장이 왕의 이마에 문둥병이 발하였음을 보고 전에서 급히 쫓아내고 여호와께서 치시므로 왕도 속히 나가니라",
+      "source_text_hash": "96313f3e9ada814189a52683fea8855a90e311e222ba46bb706e848d7f4a98c4",
+      "translation_text_hash": "2f6fedbdd47469528a6eec5a68459dcae1005b354a57daa97c5d0c63a32bcdce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 아사랴와 모든 제사장이 왕의 이마에 문둥병이 발하였음을 보고 전에서 급히 쫓아내고 여호와께서 치시므로 왕도 속히 나가니라"
+      ],
+      "raw_text_hashes": [
+        "2f6fedbdd47469528a6eec5a68459dcae1005b354a57daa97c5d0c63a32bcdce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:21",
+      "sequence": 11754,
+      "chapter_label": "2CH 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "Uzziah the king was a leper to the day of his death, and lived in a separate house, being a leper; for he was cut off from the LORD’s house. Jotham his son was over the king’s house, judging the people of the land.",
+      "ko": "웃시야왕이 죽는 날까지 문둥이가 되었고 문둥이가 되매 여호와의 전에서 끊어졌고 별궁에 홀로 거하였으므로 그 아들 요담이 왕궁을 관리하며 국민을 치리하였더라",
+      "source_text_hash": "acab665577bdac8f427533e517bb6e5268ad53d97fa66f89d93661202d8729da",
+      "translation_text_hash": "87c9d012e3dacfd074b7017df105979a8b4c2cbd7e65ad10b45e737a29f479e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야왕이 죽는 날까지 문둥이가 되었고 문둥이가 되매 여호와의 전에서 끊어졌고 별궁에 홀로 거하였으므로 그 아들 요담이 왕궁을 관리하며 국민을 치리하였더라"
+      ],
+      "raw_text_hashes": [
+        "87c9d012e3dacfd074b7017df105979a8b4c2cbd7e65ad10b45e737a29f479e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:22",
+      "sequence": 11755,
+      "chapter_label": "2CH 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "Now the rest of the acts of Uzziah, first and last, Isaiah the prophet, the son of Amoz, wrote.",
+      "ko": "이 외에 웃시야의 시종 행적은 아모스의 아들 선지자 이사야가 기록하였더라",
+      "source_text_hash": "f797bf7b58bd8dac2aa77cf123f28486d3c70af0ef0f2fd3667b038fc413a2af",
+      "translation_text_hash": "f2b0af1d945d20b28e29a03c1e4819cc8ed3d099bc83f7ecd1af899a2efe14dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 외에 웃시야의 시종 행적은 아모스의 아들 선지자 이사야가 기록하였더라"
+      ],
+      "raw_text_hashes": [
+        "f2b0af1d945d20b28e29a03c1e4819cc8ed3d099bc83f7ecd1af899a2efe14dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:26:23",
+      "sequence": 11756,
+      "chapter_label": "2CH 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "So Uzziah slept with his fathers; and they buried him with his fathers in the field of burial which belonged to the kings, for they said, “He is a leper.” Jotham his son reigned in his place.",
+      "ko": "웃시야가 그 열조와 함께 자매 저는 문둥이라 하여 열왕의 묘실에 접한 땅 곧 그 열조의 곁에 장사하니라 그 아들 요담이 대신하여 왕이 되니라",
+      "source_text_hash": "d58fd8afa75e516dbeb8ab291aa4fdda6e3f3864e2dd60a39ef16533db0eced7",
+      "translation_text_hash": "65f5682495f23ac14e065df9c2d48ddd6365d9f0b3be1a7f22c1790e9300c7c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야가 그 열조와 함께 자매 저는 문둥이라 하여 열왕의 묘실에 접한 땅 곧 그 열조의 곁에 장사하니라 그 아들 요담이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "65f5682495f23ac14e065df9c2d48ddd6365d9f0b3be1a7f22c1790e9300c7c1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:COL:chapter:003",
+  "unit_ordinal": 1110,
+  "unit_label": "COL 3",
+  "book_code": "COL",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:COL:3:1",
+      "sequence": 29515,
+      "chapter_label": "COL 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "If then you were raised together with Christ, seek the things that are above, where Christ is, seated on the right hand of God.",
+      "ko": "그러므로 너희가 그리스도와 함께 다시 살리심을 받았으면 위엣 것을 찾으라 거기는 그리스도께서 하나님 우편에 앉아 계시느니라",
+      "source_text_hash": "a87421b8aec536355d73d46b9107fa4869579947d8005a3ad2ab8cee5a901fd7",
+      "translation_text_hash": "385d5e4c8c4d9e00cb8b7f7e77af110b3c66d49d0bb8d7626251d15f88a663de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 그리스도와 함께 다시 살리심을 받았으면 위엣 것을 찾으라 거기는 그리스도께서 하나님 우편에 앉아 계시느니라"
+      ],
+      "raw_text_hashes": [
+        "385d5e4c8c4d9e00cb8b7f7e77af110b3c66d49d0bb8d7626251d15f88a663de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:2",
+      "sequence": 29516,
+      "chapter_label": "COL 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Set your mind on the things that are above, not on the things that are on the earth.",
+      "ko": "위엣 것을 생각하고 땅엣 것을 생각지 말라",
+      "source_text_hash": "26b300778a36406017fd6726a9ab45a612d324263dda64b691dc1d370b800dff",
+      "translation_text_hash": "a89caee1734410ad8fde777e75850c4f9cdc013e4cc24ac0bb07e00f4a9a7343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위엣 것을 생각하고 땅엣 것을 생각지 말라"
+      ],
+      "raw_text_hashes": [
+        "a89caee1734410ad8fde777e75850c4f9cdc013e4cc24ac0bb07e00f4a9a7343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:3",
+      "sequence": 29517,
+      "chapter_label": "COL 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For you died, and your life is hidden with Christ in God.",
+      "ko": "이는 너희가 죽었고 너희 생명이 그리스도와 함께 하나님 안에 감취었음이니라",
+      "source_text_hash": "d665dfedcef7bc1f76bd0a022e03b6a0a3eb9ff603f764a9280594e300574b98",
+      "translation_text_hash": "deefc8baf20645dcb8bef45d01825f5800764fb4626413de70fbbe47dc32c924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 죽었고 너희 생명이 그리스도와 함께 하나님 안에 감취었음이니라"
+      ],
+      "raw_text_hashes": [
+        "deefc8baf20645dcb8bef45d01825f5800764fb4626413de70fbbe47dc32c924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:4",
+      "sequence": 29518,
+      "chapter_label": "COL 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "When Christ, our life, is revealed, then you will also be revealed with him in glory.",
+      "ko": "우리 생명이신 그리스도께서 나타나실 그 때에 너희도 그와 함께 영광 중에 나타나리라",
+      "source_text_hash": "dec96e5df4c8a7cc8e2bcdb33408d47dc6f6a95cdb145a438ab92e3f477cea33",
+      "translation_text_hash": "4220d23587ca1a8e51739cffa1d40990d69fbdc0dab2b97c8c4526f9909e702d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 생명이신 그리스도께서 나타나실 그 때에 너희도 그와 함께 영광 중에 나타나리라"
+      ],
+      "raw_text_hashes": [
+        "4220d23587ca1a8e51739cffa1d40990d69fbdc0dab2b97c8c4526f9909e702d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:5",
+      "sequence": 29519,
+      "chapter_label": "COL 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Put to death therefore your members which are on the earth: sexual immorality, uncleanness, depraved passion, evil desire, and covetousness, which is idolatry.",
+      "ko": "그러므로 땅에 있는 지체를 죽이라 곧 음란과 부정과 사욕과 악한 정욕과 탐심이니 탐심은 우상 숭배니라",
+      "source_text_hash": "52c3745844deb6d066819e48e616446d8991f89a5f82a95ef55c86ca58840c8a",
+      "translation_text_hash": "1c8d7e1b917010704ad4cab6a4695ecdf2d53ec5d5287ee5d4bc9aa611f05be5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 땅에 있는 지체를 죽이라 곧 음란과 부정과 사욕과 악한 정욕과 탐심이니 탐심은 우상 숭배니라"
+      ],
+      "raw_text_hashes": [
+        "1c8d7e1b917010704ad4cab6a4695ecdf2d53ec5d5287ee5d4bc9aa611f05be5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:6",
+      "sequence": 29520,
+      "chapter_label": "COL 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "For these things’ sake the wrath of God comes on the children of disobedience.",
+      "ko": "이것들을 인하여 하나님의 진노가 임하느니라",
+      "source_text_hash": "7abadd732692e2c5d333fdee7d4bc3e8dc225d94c4c568077caed4d5d89e6967",
+      "translation_text_hash": "963011e7e7b1c797674d7fb93b0015ece36498d2a838ff403d9f90d73974e9fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들을 인하여 하나님의 진노가 임하느니라"
+      ],
+      "raw_text_hashes": [
+        "963011e7e7b1c797674d7fb93b0015ece36498d2a838ff403d9f90d73974e9fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:7",
+      "sequence": 29521,
+      "chapter_label": "COL 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "You also once walked in those, when you lived in them,",
+      "ko": "너희도 전에 그 가운데 살 때에는 그 가운데서 행하였으나",
+      "source_text_hash": "c3c360b8d81caf5840e92baadf8cf79c41caefbcb53e39f80e039c245dfb5281",
+      "translation_text_hash": "19a5b327073280f98a76c3bbfc51b3b3667f5633eda526be0d2f7227e7bf0f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 전에 그 가운데 살 때에는 그 가운데서 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "19a5b327073280f98a76c3bbfc51b3b3667f5633eda526be0d2f7227e7bf0f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:8",
+      "sequence": 29522,
+      "chapter_label": "COL 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "but now you must put them all away: anger, wrath, malice, slander, and shameful speaking out of your mouth.",
+      "ko": "이제는 너희가 이 모든 것을 벗어버리라 곧 분과 악의와 훼방과 너희 입의 부끄러운 말이라",
+      "source_text_hash": "b76252e7b53640f28c72592d90a4637d8ba07a321fb557ea484ddfa5cb7eb8c2",
+      "translation_text_hash": "d30935606c7c269ad05c515e2a92e0f950ff94993348055adb7fe5925ee31494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 너희가 이 모든 것을 벗어버리라 곧 분과 악의와 훼방과 너희 입의 부끄러운 말이라"
+      ],
+      "raw_text_hashes": [
+        "d30935606c7c269ad05c515e2a92e0f950ff94993348055adb7fe5925ee31494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:9",
+      "sequence": 29523,
+      "chapter_label": "COL 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t lie to one another, seeing that you have put off the old man with his doings,",
+      "ko": "너희가 서로 거짓말을 말라 옛 사람과 그 행위를 벗어버리고",
+      "source_text_hash": "1faa93a5b05155188acb4dfb7dd54612276fbf476f593e5a211261baedd856c6",
+      "translation_text_hash": "f0367afccfc05702aecdd76422168f3787f04c0958bd4e2a78b3f702c37f6231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 서로 거짓말을 말라 옛 사람과 그 행위를 벗어버리고"
+      ],
+      "raw_text_hashes": [
+        "f0367afccfc05702aecdd76422168f3787f04c0958bd4e2a78b3f702c37f6231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:10",
+      "sequence": 29524,
+      "chapter_label": "COL 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "and have put on the new man, who is being renewed in knowledge after the image of his Creator,",
+      "ko": "새 사람을 입었으니 이는 자기를 창조하신 자의 형상을 좇아 지식에까지 새롭게 하심을 받는 자니라",
+      "source_text_hash": "8eb4c5146524d0b9307f9902f214db8329e7d22ae65a9c0ec982c006ab2691cf",
+      "translation_text_hash": "4a71f2106a12f7d1d76e3385fd6134029b9b3bffd13d38efb929816ecd43c405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 사람을 입었으니 이는 자기를 창조하신 자의 형상을 좇아 지식에까지 새롭게 하심을 받는 자니라"
+      ],
+      "raw_text_hashes": [
+        "4a71f2106a12f7d1d76e3385fd6134029b9b3bffd13d38efb929816ecd43c405"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:11",
+      "sequence": 29525,
+      "chapter_label": "COL 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "where there can’t be Greek and Jew, circumcision and uncircumcision, barbarian, Scythian, bondservant, or free person; but Christ is all, and in all.",
+      "ko": "거기는 헬라인과 유대인이나 할례당과 무할례당이나 야인이나 스구디아인이나 종이나 자유인이 분별이 있을 수 없나니 오직 그리스도는 만유시요 만유 안에 계시니라",
+      "source_text_hash": "63e77de7801f838f2c548f8ac3968c088f7fb29da8db47a45a95c33aa051cd58",
+      "translation_text_hash": "01b71ed61009f3bafd672f272d25f5085deed2dcebc147d5f8af274c814d63c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 헬라인과 유대인이나 할례당과 무할례당이나 야인이나 스구디아인이나 종이나 자유인이 분별이 있을 수 없나니 오직 그리스도는 만유시요 만유 안에 계시니라"
+      ],
+      "raw_text_hashes": [
+        "01b71ed61009f3bafd672f272d25f5085deed2dcebc147d5f8af274c814d63c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:12",
+      "sequence": 29526,
+      "chapter_label": "COL 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Put on therefore, as God’s chosen ones, holy and beloved, a heart of compassion, kindness, lowliness, humility, and perseverance;",
+      "ko": "그러므로 너희는 하나님의 택하신 거룩하고 사랑하신 자처럼 긍휼과 자비와 겸손과 온유와 오래 참음을 옷입고",
+      "source_text_hash": "2ff528412f29c22e90e0b760438ba2a875e68c783a8e01116688acb9d9c3436a",
+      "translation_text_hash": "e20257d51c40c0e97cf4ad081a6899a6624b1824dd1534aaded7e9280fb3678d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 하나님의 택하신 거룩하고 사랑하신 자처럼 긍휼과 자비와 겸손과 온유와 오래 참음을 옷입고"
+      ],
+      "raw_text_hashes": [
+        "e20257d51c40c0e97cf4ad081a6899a6624b1824dd1534aaded7e9280fb3678d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:13",
+      "sequence": 29527,
+      "chapter_label": "COL 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "bearing with one another, and forgiving each other, if any man has a complaint against any; even as Christ forgave you, so you also do.",
+      "ko": "누가 뉘게 혐의가 있거든 서로 용납하여 피차 용서하되 주께서 너희를 용서하신 것과 같이 너희도 그리하고",
+      "source_text_hash": "51494ccda2b439b670e4e210c918f43b7d029c15a76fbd0effb9c599b5911d1a",
+      "translation_text_hash": "6bec7d74647dcff117933e31881205f38f9124ffa8b4cd1b86988457cf95d33d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 뉘게 혐의가 있거든 서로 용납하여 피차 용서하되 주께서 너희를 용서하신 것과 같이 너희도 그리하고"
+      ],
+      "raw_text_hashes": [
+        "6bec7d74647dcff117933e31881205f38f9124ffa8b4cd1b86988457cf95d33d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:14",
+      "sequence": 29528,
+      "chapter_label": "COL 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Above all these things, walk in love, which is the bond of perfection.",
+      "ko": "이 모든 것 위에 사랑을 더하라 이는 온전하게 매는 띠니라",
+      "source_text_hash": "5a49892ff23fa0a533059d755d28bfa0b70686af16ba59941a10afe19679e750",
+      "translation_text_hash": "557ea963104970f669ab95e184a13feac31fe822e52df47c8caa3123512ac1c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 것 위에 사랑을 더하라 이는 온전하게 매는 띠니라"
+      ],
+      "raw_text_hashes": [
+        "557ea963104970f669ab95e184a13feac31fe822e52df47c8caa3123512ac1c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:15",
+      "sequence": 29529,
+      "chapter_label": "COL 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "And let the peace of God rule in your hearts, to which also you were called in one body, and be thankful.",
+      "ko": "그리스도의 평강이 너희 마음을 주장하게 하라 평강을 위하여 너희가 한 몸으로 부르심을 받았나니 또한 너희는 감사하는 자가 되라",
+      "source_text_hash": "93bbeeb4e9c162d07ab4ad7acf5b048990a944f46183485c6518c2de0dd4ced0",
+      "translation_text_hash": "72d158e3bcb29a3cf7d9898f00815b481bad8ad113d58e95fcfcc41216cbf359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도의 평강이 너희 마음을 주장하게 하라 평강을 위하여 너희가 한 몸으로 부르심을 받았나니 또한 너희는 감사하는 자가 되라"
+      ],
+      "raw_text_hashes": [
+        "72d158e3bcb29a3cf7d9898f00815b481bad8ad113d58e95fcfcc41216cbf359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:16",
+      "sequence": 29530,
+      "chapter_label": "COL 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Let the word of Christ dwell in you richly; in all wisdom teaching and admonishing one another with psalms, hymns, and spiritual songs, singing with grace in your heart to the Lord.",
+      "ko": "그리스도의 말씀이 너희 속에 풍성히 거하여 모든 지혜로 피차 가르치며 권면하고 시와 찬미와 신령한 노래를 부르며 마음에 감사함으로 하나님을 찬양하고",
+      "source_text_hash": "90f369bdf6305aa824255d8f511a448f67d294ad3548c23664d2b67b3d406d9d",
+      "translation_text_hash": "7d7d808288a4351bf431954f578a2fc0fde3531ec4558d2643d73fe0b161f7dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도의 말씀이 너희 속에 풍성히 거하여 모든 지혜로 피차 가르치며 권면하고 시와 찬미와 신령한 노래를 부르며 마음에 감사함으로 하나님을 찬양하고"
+      ],
+      "raw_text_hashes": [
+        "7d7d808288a4351bf431954f578a2fc0fde3531ec4558d2643d73fe0b161f7dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:17",
+      "sequence": 29531,
+      "chapter_label": "COL 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Whatever you do, in word or in deed, do all in the name of the Lord Jesus, giving thanks to God the Father through him.",
+      "ko": "또 무엇을 하든지 말에나 일에나 다 주 예수의 이름으로 하고 그를 힘입어 하나님 아버지께 감사하라",
+      "source_text_hash": "842d5c93237c2f5d0e9dda6c3627d86f7b232b25be9b85d3b6de828505a4f8e5",
+      "translation_text_hash": "d00466fe2174831243068044a79054a1efb190a62a2281c1be69294d0e382f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무엇을 하든지 말에나 일에나 다 주 예수의 이름으로 하고 그를 힘입어 하나님 아버지께 감사하라"
+      ],
+      "raw_text_hashes": [
+        "d00466fe2174831243068044a79054a1efb190a62a2281c1be69294d0e382f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:18",
+      "sequence": 29532,
+      "chapter_label": "COL 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Wives, be in subjection to your husbands, as is fitting in the Lord.",
+      "ko": "아내들아 남편에게 복종하라 이는 주 안에서 마땅하니라",
+      "source_text_hash": "935cbfaea38e98e3b5d635bc98df7e7e2f65a864616008f47167e4956d8ed780",
+      "translation_text_hash": "f1a2e5438c57e2468d0d767e5b876d0358a9b79234386ffb54c429e2cf135349",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내들아 남편에게 복종하라 이는 주 안에서 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "f1a2e5438c57e2468d0d767e5b876d0358a9b79234386ffb54c429e2cf135349"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:19",
+      "sequence": 29533,
+      "chapter_label": "COL 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Husbands, love your wives, and don’t be bitter against them.",
+      "ko": "남편들아 아내를 사랑하며 괴롭게 하지 말라",
+      "source_text_hash": "de390bc0ba4d24542d44607add0c549511cc5fc20922c743cd85584fa152cc1f",
+      "translation_text_hash": "77c1e4514629cd06f52e7adf0d847fcdc2dea61131152d358815ec2835e3165e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편들아 아내를 사랑하며 괴롭게 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "77c1e4514629cd06f52e7adf0d847fcdc2dea61131152d358815ec2835e3165e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:20",
+      "sequence": 29534,
+      "chapter_label": "COL 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Children, obey your parents in all things, for this pleases the Lord.",
+      "ko": "자녀들아 모든 일에 부모에게 순종하라 이는 주 안에서 기쁘게 하는 것이니라",
+      "source_text_hash": "f4562df98bc6e4b567b0c01e349ca284ff32b2f8fa7da9dd571168277bf6514e",
+      "translation_text_hash": "7fa104d9f1291f00b45a803eb3dd7f2cef9513b6e22044828fb25f72ab56aa82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 모든 일에 부모에게 순종하라 이는 주 안에서 기쁘게 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7fa104d9f1291f00b45a803eb3dd7f2cef9513b6e22044828fb25f72ab56aa82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:21",
+      "sequence": 29535,
+      "chapter_label": "COL 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Fathers, don’t provoke your children, so that they won’t be discouraged.",
+      "ko": "아비들아 너희 자녀를 격노케 말찌니 낙심할까 함이라",
+      "source_text_hash": "4d0bcfeab61e4bf32c00196ca78b1bcfec1b1299c824ad9ca4d9cbd38a09736b",
+      "translation_text_hash": "2f2b3af75089203e1a3e0192c3da5019a8cee1a700e19b4cb3323b7258223ed5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비들아 너희 자녀를 격노케 말찌니 낙심할까 함이라"
+      ],
+      "raw_text_hashes": [
+        "2f2b3af75089203e1a3e0192c3da5019a8cee1a700e19b4cb3323b7258223ed5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:22",
+      "sequence": 29536,
+      "chapter_label": "COL 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Servants, obey in all things those who are your masters according to the flesh, not just when they are looking, as men pleasers, but in singleness of heart, fearing God.",
+      "ko": "종들아 모든 일에 육신의 상전들에게 순종하되 사람을 기쁘게 하는 자와 같이 눈가림만 하지 말고 오직 주를 두려워하여 성실한 마음으로 하라",
+      "source_text_hash": "174259eb4c7306e24c77c6a6cae47b8d67082cd04c81e552eb7c6530201fba3a",
+      "translation_text_hash": "43139a58c3bb42243aef901974c0a74e01c32259f4228829d36378334431a4a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들아 모든 일에 육신의 상전들에게 순종하되 사람을 기쁘게 하는 자와 같이 눈가림만 하지 말고 오직 주를 두려워하여 성실한 마음으로 하라"
+      ],
+      "raw_text_hashes": [
+        "43139a58c3bb42243aef901974c0a74e01c32259f4228829d36378334431a4a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:23",
+      "sequence": 29537,
+      "chapter_label": "COL 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "And whatever you do, work heartily, as for the Lord and not for men,",
+      "ko": "무슨 일을 하든지 마음을 다하여 주께 하듯하고 사람에게 하듯하지 말라",
+      "source_text_hash": "874ab540eaed44f31b55eae70a049e7765b9406cbe6e7f7a0719bc76111fa32d",
+      "translation_text_hash": "cd092ba9c4f92be2ce4b1fbfe36352be6259fe69fbc8d3dcbea6dd7048c4d135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무슨 일을 하든지 마음을 다하여 주께 하듯하고 사람에게 하듯하지 말라"
+      ],
+      "raw_text_hashes": [
+        "cd092ba9c4f92be2ce4b1fbfe36352be6259fe69fbc8d3dcbea6dd7048c4d135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:24",
+      "sequence": 29538,
+      "chapter_label": "COL 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "knowing that from the Lord you will receive the reward of the inheritance; for you serve the Lord Christ.",
+      "ko": "이는 유업의 상을 주께 받을줄 앎이니 너희는 주 그리스도를 섬기느니라",
+      "source_text_hash": "bd2496ffa1ba9ffb0c6aee33e66e6bbb9862647ab989cdd91c35eaaa185af767",
+      "translation_text_hash": "307d968e5776f952d09af5dc6ee3e2724cd8b56e366674b6572b6568c91a70ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 유업의 상을 주께 받을줄 앎이니 너희는 주 그리스도를 섬기느니라"
+      ],
+      "raw_text_hashes": [
+        "307d968e5776f952d09af5dc6ee3e2724cd8b56e366674b6572b6568c91a70ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:3:25",
+      "sequence": 29539,
+      "chapter_label": "COL 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "COL",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "But he who does wrong will receive again for the wrong that he has done, and there is no partiality.",
+      "ko": "불의를 행하는 자는 불의의 보응을 받으리니 주는 외모로 사람을 취하심이 없느니라",
+      "source_text_hash": "3abeb650cf3bba6857344e65ebf40b3d8124a7e7500be50e01ab865bbf2e6ba9",
+      "translation_text_hash": "1ab02e915b1eacca97c90baeb17b1684c2c513f6e2568d28bdbcb63cf943bebc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의를 행하는 자는 불의의 보응을 받으리니 주는 외모로 사람을 취하심이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "1ab02e915b1eacca97c90baeb17b1684c2c513f6e2568d28bdbcb63cf943bebc"
+      ]
+    }
+  ]
+}

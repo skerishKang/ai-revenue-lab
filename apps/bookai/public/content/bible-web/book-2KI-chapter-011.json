@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:011",
+  "unit_ordinal": 324,
+  "unit_label": "2KI 11",
+  "book_code": "2KI",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:11:1",
+      "sequence": 9831,
+      "chapter_label": "2KI 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Now when Athaliah the mother of Ahaziah saw that her son was dead, she arose and destroyed all the royal offspring.",
+      "ko": "아하시야의 모친 아달랴가 그 아들의 죽은 것을 보고 일어나 왕의 씨를 진멸하였으나",
+      "source_text_hash": "b5d67d8be950fb4c73e0b339fa82d3a3677d3f4eb4d16bf7dee5f502632e4dda",
+      "translation_text_hash": "6c5181bac15e85efa828615ef6a92669c0c45cc1f2da1e15b20114ed850e2521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하시야의 모친 아달랴가 그 아들의 죽은 것을 보고 일어나 왕의 씨를 진멸하였으나"
+      ],
+      "raw_text_hashes": [
+        "6c5181bac15e85efa828615ef6a92669c0c45cc1f2da1e15b20114ed850e2521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:2",
+      "sequence": 9832,
+      "chapter_label": "2KI 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "But Jehosheba, the daughter of King Joram, sister of Ahaziah, took Joash the son of Ahaziah, and stole him away from among the king’s sons who were slain, even him and his nurse, and put them in the bedroom; and they hid him from Athaliah, so that he was not slain.",
+      "ko": "요람왕의 딸 아하시야의 누이 여호세바가 아하시야의 아들 요아스를 왕자들의 죽임을 당하는 중에서 도적하여 내고 저와 그 유모를 침실에 숨겨 아달랴를 피하여 죽임을 당치 않게 한지라",
+      "source_text_hash": "eb096d2285b20e7934094fa42e7683ca105d0ea36dc0b56eae46fc90b9aed1e9",
+      "translation_text_hash": "f6f9673a821bd32d48827b30647b3d1a03f17ad503e67323f3d7ca1b86600bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요람왕의 딸 아하시야의 누이 여호세바가 아하시야의 아들 요아스를 왕자들의 죽임을 당하는 중에서 도적하여 내고 저와 그 유모를 침실에 숨겨 아달랴를 피하여 죽임을 당치 않게 한지라"
+      ],
+      "raw_text_hashes": [
+        "f6f9673a821bd32d48827b30647b3d1a03f17ad503e67323f3d7ca1b86600bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:3",
+      "sequence": 9833,
+      "chapter_label": "2KI 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "He was with her hidden in the LORD’s house six years while Athaliah reigned over the land.",
+      "ko": "요아스가 저와 함께 여호와의 전에 육년을 숨어 있는 동안에 아달랴가 나라를 다스렸더라",
+      "source_text_hash": "46c216c4217d37c9a5aff785549029b1313c19fcd2aade2f3c7ef9fd523d33c4",
+      "translation_text_hash": "4c07f0d1d3e50594b938acd5b440ceb1b78961945ee6047a1baa814dcacc4813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 저와 함께 여호와의 전에 육년을 숨어 있는 동안에 아달랴가 나라를 다스렸더라"
+      ],
+      "raw_text_hashes": [
+        "4c07f0d1d3e50594b938acd5b440ceb1b78961945ee6047a1baa814dcacc4813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:4",
+      "sequence": 9834,
+      "chapter_label": "2KI 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "In the seventh year Jehoiada sent and fetched the captains over hundreds of the Carites and of the guard, and brought them to him into the LORD’s house; and he made a covenant with them, and made a covenant with them in the LORD’s house, and showed them the king’s son.",
+      "ko": "제 칠년에 여호야다가 보내어 가리 사람의 백부장들과 호위병의 백부장들을 불러 데리고 여호와의 전으로 들어가서 저희와 언약을 세우고 저희로 여호와의 전에서 맹세케 한 후에 왕자를 보이고",
+      "source_text_hash": "645152ba317af55fb31ab31318e885a80065666757bee85b332eee2c20d6de9f",
+      "translation_text_hash": "8a5bedd4e7463869b3932e25b08c35a2554153dca921590d58bf354bfdaea28d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠년에 여호야다가 보내어 가리 사람의 백부장들과 호위병의 백부장들을 불러 데리고 여호와의 전으로 들어가서 저희와 언약을 세우고 저희로 여호와의 전에서 맹세케 한 후에 왕자를 보이고"
+      ],
+      "raw_text_hashes": [
+        "8a5bedd4e7463869b3932e25b08c35a2554153dca921590d58bf354bfdaea28d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:5",
+      "sequence": 9835,
+      "chapter_label": "2KI 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "He commanded them, saying, “This is what you must do: a third of you, who come in on the Sabbath, shall be keepers of the watch of the king’s house;",
+      "ko": "명하여 가로되 너희의 행할 것이 이러하니 안식일에 입번한 너희 중 삼분 일은 왕궁을 주의하여 지키고",
+      "source_text_hash": "6d031c6724a129ab48c03eb0737882314b70fc8874b75bbc5f66f52dbe7f5f94",
+      "translation_text_hash": "1eff5f7d20e1af357472b16959f9190bf83f43a0bacb418da647c40080a3396e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 가로되 너희의 행할 것이 이러하니 안식일에 입번한 너희 중 삼분 일은 왕궁을 주의하여 지키고"
+      ],
+      "raw_text_hashes": [
+        "1eff5f7d20e1af357472b16959f9190bf83f43a0bacb418da647c40080a3396e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:6",
+      "sequence": 9836,
+      "chapter_label": "2KI 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "a third of you shall be at the gate Sur; and a third of you at the gate behind the guard. So you shall keep the watch of the house, and be a barrier.",
+      "ko": "삼분 일은 수르문에 있고 삼분 일은 호위대 뒤에 있는 문에 있어서 이와 같이 왕궁을 주의하여 지켜 방어하고",
+      "source_text_hash": "9564fe0f9afe68938aa0b59a350b587fdb4af2b9c631eacf70cc43edb3426f78",
+      "translation_text_hash": "1a1296f4360febe4b29f8aeaf0ee308d8741423f1a1a115256c9d29ae62c20b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼분 일은 수르문에 있고 삼분 일은 호위대 뒤에 있는 문에 있어서 이와 같이 왕궁을 주의하여 지켜 방어하고"
+      ],
+      "raw_text_hashes": [
+        "1a1296f4360febe4b29f8aeaf0ee308d8741423f1a1a115256c9d29ae62c20b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:7",
+      "sequence": 9837,
+      "chapter_label": "2KI 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "The two companies of you, even all who go out on the Sabbath, shall keep the watch of the LORD’s house around the king.",
+      "ko": "안식일에 출번하는 너희 중 두 대는 여호와의 전을 주의하여 지켜 왕을 호위하되",
+      "source_text_hash": "f792f2388005d133294fa165f9fd42ed020b45cf8ffb7a80507c4f5eb2996cdf",
+      "translation_text_hash": "4d9db12a397049ffe0b916790e535835fa56372f649cc2b81c4bcb1b54c1c7b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 출번하는 너희 중 두 대는 여호와의 전을 주의하여 지켜 왕을 호위하되"
+      ],
+      "raw_text_hashes": [
+        "4d9db12a397049ffe0b916790e535835fa56372f649cc2b81c4bcb1b54c1c7b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:8",
+      "sequence": 9838,
+      "chapter_label": "2KI 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "You shall surround the king, every man with his weapons in his hand; and he who comes within the ranks, let him be slain. Be with the king when he goes out, and when he comes in.”",
+      "ko": "너희는 각각 손에 병기를 잡고 왕을 호위하며 무릇 너희 반열을 침범하는 자는 죽이고 왕의 출입할 때에 시위할찌니라",
+      "source_text_hash": "b117a125830f8bb37b313579c9226c27e422958c9dc231a9454257faf4b2e98e",
+      "translation_text_hash": "5f5c936d3d2e9a384f3c54df999f3de03ab84df9e65f53f800c78a0ee58f3e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 각각 손에 병기를 잡고 왕을 호위하며 무릇 너희 반열을 침범하는 자는 죽이고 왕의 출입할 때에 시위할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5f5c936d3d2e9a384f3c54df999f3de03ab84df9e65f53f800c78a0ee58f3e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:9",
+      "sequence": 9839,
+      "chapter_label": "2KI 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "The captains over hundreds did according to all that Jehoiada the priest commanded; and they each took his men, those who were to come in on the Sabbath with those who were to go out on the Sabbath, and came to Jehoiada the priest.",
+      "ko": "백부장들이 이에 제사장 여호야다의 모든 명대로 행하여 각기 관할하는바 안식일에 입번할 자와 출번할 자를 거느리고 제사장 여호야다에게 나아오매",
+      "source_text_hash": "1c6dfb2bbdeca55635b78852b807fa77a549869f88aa3fad18afe0b81a8985dd",
+      "translation_text_hash": "7c2d90bb0a67ea3d84157d6edc4a97e220f39f201d9e36366f0b2436acd5708e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장들이 이에 제사장 여호야다의 모든 명대로 행하여 각기 관할하는바 안식일에 입번할 자와 출번할 자를 거느리고 제사장 여호야다에게 나아오매"
+      ],
+      "raw_text_hashes": [
+        "7c2d90bb0a67ea3d84157d6edc4a97e220f39f201d9e36366f0b2436acd5708e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:10",
+      "sequence": 9840,
+      "chapter_label": "2KI 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "The priest delivered to the captains over hundreds the spears and shields that had been King David’s, which were in the LORD’s house.",
+      "ko": "제사장이 여호와의 전에 있는 다윗왕의 창과 방패를 백부장들에게 주니",
+      "source_text_hash": "20fd96fe6a2fa7c5e1df279a005cc7be11355d2db510d6061d38e6a6d8f5fe97",
+      "translation_text_hash": "4a1b64e38012e77a1af022dca2a656879836b6445faa38a7f57be561be40379f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 여호와의 전에 있는 다윗왕의 창과 방패를 백부장들에게 주니"
+      ],
+      "raw_text_hashes": [
+        "4a1b64e38012e77a1af022dca2a656879836b6445faa38a7f57be561be40379f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:11",
+      "sequence": 9841,
+      "chapter_label": "2KI 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "The guard stood, every man with his weapons in his hand, from the right side of the house to the left side of the house, along by the altar and the house, around the king.",
+      "ko": "호위병이 각각 손에 병기를 잡고 왕을 호위하되 전 우편에서부터 전 좌편까지 단과 전 곁에 서고",
+      "source_text_hash": "211c4630e67fabd616ca0e287d34ece18ae99fd6b9ca39d6094b1a86736400ab",
+      "translation_text_hash": "109c14d1e0bed5ecdc1d4e412d0dcbc87a89992330359916c6d0956b76049c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호위병이 각각 손에 병기를 잡고 왕을 호위하되 전 우편에서부터 전 좌편까지 단과 전 곁에 서고"
+      ],
+      "raw_text_hashes": [
+        "109c14d1e0bed5ecdc1d4e412d0dcbc87a89992330359916c6d0956b76049c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:12",
+      "sequence": 9842,
+      "chapter_label": "2KI 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Then he brought out the king’s son, and put the crown on him, and gave him the covenant; and they made him king and anointed him; and they clapped their hands, and said, “Long live the king!”",
+      "ko": "여호야다가 왕자를 인도하여 내어 면류관을 씌우며 율법 책을 주고 기름을 부어 왕을 삼으매 무리가 박수하며 왕의 만세를 부르니라",
+      "source_text_hash": "8f9505c1a09279baa5c6e3dcfb01515b396b5827eb467ae7a4f6873da3d5a503",
+      "translation_text_hash": "66cf55190d5bfa753feb505a68fd10a4176c91c17337d7767b488a02a3f83326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다가 왕자를 인도하여 내어 면류관을 씌우며 율법 책을 주고 기름을 부어 왕을 삼으매 무리가 박수하며 왕의 만세를 부르니라"
+      ],
+      "raw_text_hashes": [
+        "66cf55190d5bfa753feb505a68fd10a4176c91c17337d7767b488a02a3f83326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:13",
+      "sequence": 9843,
+      "chapter_label": "2KI 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "When Athaliah heard the noise of the guard and of the people, she came to the people into the LORD’s house;",
+      "ko": "아달랴가 호위병과 백성의 소리를 듣고 여호와의 전에 들어가서 백성에게 이르러",
+      "source_text_hash": "05b3ecb200e232b47e07e048d0f8ca93ee621543ea0076fb60a330134eebf8b9",
+      "translation_text_hash": "3389044cf28580c5fb5839b5cd291944849b3cad0c9820da4a16627e9b472fc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아달랴가 호위병과 백성의 소리를 듣고 여호와의 전에 들어가서 백성에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "3389044cf28580c5fb5839b5cd291944849b3cad0c9820da4a16627e9b472fc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:14",
+      "sequence": 9844,
+      "chapter_label": "2KI 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "and she looked, and behold, the king stood by the pillar, as the tradition was, with the captains and the trumpets by the king; and all the people of the land rejoiced, and blew trumpets. Then Athaliah tore her clothes and cried, “Treason! Treason!”",
+      "ko": "보매 왕이 규례대로 대 위에 섰고 장관들과 나팔수가 왕의 곁에 모셨으며 온 국민이 즐거워하여 나팔을 부는지라 아달랴가 옷을 찢으며 외치되 반역이로다 반역이로다 하매",
+      "source_text_hash": "8f1952c438a1d2f8c45ec7be7a26687e6085858ce67a3d22ced2b0e42c0d641a",
+      "translation_text_hash": "67e7483311dbdfdf51d4f1a2d4a50adcab5de0928b4ce914075420e06176bebb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보매 왕이 규례대로 대 위에 섰고 장관들과 나팔수가 왕의 곁에 모셨으며 온 국민이 즐거워하여 나팔을 부는지라 아달랴가 옷을 찢으며 외치되 반역이로다 반역이로다 하매"
+      ],
+      "raw_text_hashes": [
+        "67e7483311dbdfdf51d4f1a2d4a50adcab5de0928b4ce914075420e06176bebb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:15",
+      "sequence": 9845,
+      "chapter_label": "2KI 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "Jehoiada the priest commanded the captains of hundreds who were set over the army, and said to them, “Bring her out between the ranks. Kill anyone who follows her with the sword.” For the priest said, “Don’t let her be slain in the LORD’s house.”",
+      "ko": "제사장 여호야다가 군대를 거느린 백부장들에게 명하여 가로되 반열 밖으로 몰아내라 무릇 저를 따르는 자는 칼로 죽이라 하니 제사장의 이 말은 여호와의 전에서는 저를 죽이지 말라 함이라",
+      "source_text_hash": "3ca3f60c35593e184390ad0cd908804c41b82c8b3d15bc71d5bb741ae875a72d",
+      "translation_text_hash": "d8493642fd769687eb766ac67a96c6eb0699c44a3575beeec059f6ddb9119960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 여호야다가 군대를 거느린 백부장들에게 명하여 가로되 반열 밖으로 몰아내라 무릇 저를 따르는 자는 칼로 죽이라 하니 제사장의 이 말은 여호와의 전에서는 저를 죽이지 말라 함이라"
+      ],
+      "raw_text_hashes": [
+        "d8493642fd769687eb766ac67a96c6eb0699c44a3575beeec059f6ddb9119960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:16",
+      "sequence": 9846,
+      "chapter_label": "2KI 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "So they seized her; and she went by the way of the horses’ entry to the king’s house, and she was slain there.",
+      "ko": "이에 저의 길을 열어주매 저가 왕궁 말 다니는 길로 통과하다가 거기서 죽임을 당하였더라",
+      "source_text_hash": "154606267112189557aafb3b8d85a597e19760df0518b52344695745745fb219",
+      "translation_text_hash": "f4c098a7485b5cb53cba5943d7405b5e3626d7bf450aed8ef19225ad5c8ad8e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저의 길을 열어주매 저가 왕궁 말 다니는 길로 통과하다가 거기서 죽임을 당하였더라"
+      ],
+      "raw_text_hashes": [
+        "f4c098a7485b5cb53cba5943d7405b5e3626d7bf450aed8ef19225ad5c8ad8e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:17",
+      "sequence": 9847,
+      "chapter_label": "2KI 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "Jehoiada made a covenant between the LORD and the king and the people, that they should be the LORD’s people; also between the king and the people.",
+      "ko": "여호야다가 왕과 백성으로 여호와와 언약을 세워 여호와의 백성이 되게 하고 왕과 백성 사이에도 언약을 세우게 하매",
+      "source_text_hash": "431330ccea0135fa37f8205421c6251a886b58d6e332640e4e4bea6c64c74334",
+      "translation_text_hash": "3e73ceb1f991cac1cbc698998d3efedc71b8d5aaca3bd7f8675e7907d71dd5b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다가 왕과 백성으로 여호와와 언약을 세워 여호와의 백성이 되게 하고 왕과 백성 사이에도 언약을 세우게 하매"
+      ],
+      "raw_text_hashes": [
+        "3e73ceb1f991cac1cbc698998d3efedc71b8d5aaca3bd7f8675e7907d71dd5b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:18",
+      "sequence": 9848,
+      "chapter_label": "2KI 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "All the people of the land went to the house of Baal, and broke it down. They broke his altars and his images in pieces thoroughly, and killed Mattan the priest of Baal before the altars. The priest appointed officers over the LORD’s house.",
+      "ko": "온 국민이 바알의 당으로 가서 그 당을 훼파하고 그 단들과 우상들을 깨뜨리고 그 단 앞에서 바알의 제사장 맛단을 죽이니라 제사장이 관리들을 세워 여호와의 전을 수직하게 하고",
+      "source_text_hash": "b835530bfb718b132ff28f62ebcfea0f1cc0149936598bf6878518cd0fbf952e",
+      "translation_text_hash": "a787abda62611c4cf5c3e4c6a5dc0b848526c97cd8976eb178ce3bad0ed20724",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 국민이 바알의 당으로 가서 그 당을 훼파하고 그 단들과 우상들을 깨뜨리고 그 단 앞에서 바알의 제사장 맛단을 죽이니라 제사장이 관리들을 세워 여호와의 전을 수직하게 하고"
+      ],
+      "raw_text_hashes": [
+        "a787abda62611c4cf5c3e4c6a5dc0b848526c97cd8976eb178ce3bad0ed20724"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:19",
+      "sequence": 9849,
+      "chapter_label": "2KI 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "He took the captains over hundreds, and the Carites, and the guard, and all the people of the land; and they brought down the king from the LORD’s house, and came by the way of the gate of the guard to the king’s house. He sat on the throne of the kings.",
+      "ko": "또 백부장들과 가리 사람과 호위병과 온 국민을 거느리고 왕을 인도하여 여호와의 전에서 내려와서 호위병의 문 길로 말미암아 왕궁에 이르매 저가 왕의 보좌에 앉으니",
+      "source_text_hash": "84c8b4e59268bbd095964cd8f517fcb0eba9919a8dd959a86595df2b6974f4cd",
+      "translation_text_hash": "0de77f64cce16e9100d2f6a3be2689bfaaa1a14b48e93fcf3c3518d468b48c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백부장들과 가리 사람과 호위병과 온 국민을 거느리고 왕을 인도하여 여호와의 전에서 내려와서 호위병의 문 길로 말미암아 왕궁에 이르매 저가 왕의 보좌에 앉으니"
+      ],
+      "raw_text_hashes": [
+        "0de77f64cce16e9100d2f6a3be2689bfaaa1a14b48e93fcf3c3518d468b48c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:20",
+      "sequence": 9850,
+      "chapter_label": "2KI 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "So all the people of the land rejoiced, and the city was quiet. They had slain Athaliah with the sword at the king’s house.",
+      "ko": "온 국민이 즐거워하고 성중이 평온하더라 아달랴를 무리가 왕궁에서 칼로 죽였었더라",
+      "source_text_hash": "4f75cb48b265092992167fd06b54ec1e25486320d477632a1e6c0861db8c95e0",
+      "translation_text_hash": "5100ba332bcf46f7c7ddb9cc822892084e56acf4beb3dcfa5e282b684d30011d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 국민이 즐거워하고 성중이 평온하더라 아달랴를 무리가 왕궁에서 칼로 죽였었더라"
+      ],
+      "raw_text_hashes": [
+        "5100ba332bcf46f7c7ddb9cc822892084e56acf4beb3dcfa5e282b684d30011d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:11:21",
+      "sequence": 9851,
+      "chapter_label": "2KI 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Jehoash was seven years old when he began to reign.",
+      "ko": "요아스가 위에 나아갈 때에 나이 칠세였더라",
+      "source_text_hash": "e75cca69defe41a39dbe065feecffd75255039c8406a6c414e4a81a48641c01b",
+      "translation_text_hash": "1213f80d45552e7d48524064a7ace02f5d839d2a47d92a98575399c9f30cbbed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 위에 나아갈 때에 나이 칠세였더라"
+      ],
+      "raw_text_hashes": [
+        "1213f80d45552e7d48524064a7ace02f5d839d2a47d92a98575399c9f30cbbed"
+      ]
+    }
+  ]
+}

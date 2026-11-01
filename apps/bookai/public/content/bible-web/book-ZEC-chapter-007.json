@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:007",
+  "unit_ordinal": 918,
+  "unit_label": "ZEC 7",
+  "book_code": "ZEC",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:7:1",
+      "sequence": 22964,
+      "chapter_label": "ZEC 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "In the fourth year of King Darius, the LORD’s word came to Zechariah in the fourth day of the ninth month, the month of Chislev.",
+      "ko": "다리오왕 사년 구월 곧 기슬래월 사일에 여호와의 말씀이 스가랴에게 임하니라",
+      "source_text_hash": "7261a4ccebf03ecef09187a9c6d9edc7229d60ba79e6ccf5926b048c632e6277",
+      "translation_text_hash": "76d2bbe481e57e4fedffb09a65ec1e696f6ad6c8d38778d2474393bb5ac34bbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오왕 사년 구월 곧 기슬래월 사일에 여호와의 말씀이 스가랴에게 임하니라"
+      ],
+      "raw_text_hashes": [
+        "76d2bbe481e57e4fedffb09a65ec1e696f6ad6c8d38778d2474393bb5ac34bbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:2",
+      "sequence": 22965,
+      "chapter_label": "ZEC 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "The people of Bethel sent Sharezer and Regem Melech and their men to entreat the LORD’s favor,",
+      "ko": "때에 벧엘 사람이 사레셀과 레겜멜렉과 그 종자를 보내어 여호와께 은혜를 구하고",
+      "source_text_hash": "0d024f5bfd459c6f67450e23f926def5be465f50b63240aa74fcb8b55b420d2f",
+      "translation_text_hash": "01a9470a58399fab868b0ffcd17850f56fa45d6887a1a2bb1d40a32f9352a2ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 벧엘 사람이 사레셀과 레겜멜렉과 그 종자를 보내어 여호와께 은혜를 구하고"
+      ],
+      "raw_text_hashes": [
+        "01a9470a58399fab868b0ffcd17850f56fa45d6887a1a2bb1d40a32f9352a2ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:3",
+      "sequence": 22966,
+      "chapter_label": "ZEC 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "and to speak to the priests of the house of the LORD of Armies and to the prophets, saying, “Should I weep in the fifth month, separating myself, as I have done these so many years?”",
+      "ko": "만군의 여호와의 전에 있는 제사장들과 선지자들에게 물어 가로되 우리가 여러 해 동안에 행한대로 오월간에 울며 재계하리이까 하매",
+      "source_text_hash": "d7f876a46249bbb50a172d68f39a518b47b860d52f57f47893a8d84f2f72ad53",
+      "translation_text_hash": "e11ba87cd785d578e5a589f73a6adb82acefdfbbed8ee32a09b8ecc22aba173d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 전에 있는 제사장들과 선지자들에게 물어 가로되 우리가 여러 해 동안에 행한대로 오월간에 울며 재계하리이까 하매"
+      ],
+      "raw_text_hashes": [
+        "e11ba87cd785d578e5a589f73a6adb82acefdfbbed8ee32a09b8ecc22aba173d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:4",
+      "sequence": 22967,
+      "chapter_label": "ZEC 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Then the word of the LORD of Armies came to me, saying,",
+      "ko": "만군의 여호와의 말씀이 내게 임하여 이르시되",
+      "source_text_hash": "28fd16955fd39d4fbbafd71c0b22d82ed2bf3122aa4483f47c6d68721d228915",
+      "translation_text_hash": "721706a954be51c9a3dcfde8c52873896ac880988937f461a02f74b4aa93c9ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 말씀이 내게 임하여 이르시되"
+      ],
+      "raw_text_hashes": [
+        "721706a954be51c9a3dcfde8c52873896ac880988937f461a02f74b4aa93c9ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:5",
+      "sequence": 22968,
+      "chapter_label": "ZEC 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "“Speak to all the people of the land and to the priests, saying, ‘When you fasted and mourned in the fifth and in the seventh month for these seventy years, did you at all fast to me, really to me?",
+      "ko": "온 땅의 백성과 제사장들에게 이르라 너희가 칠십년 동안 오월과 칠월에 금식하고 애통하였거니와 그 금식이 나를 위하여, 나를 위하여 한 것이냐",
+      "source_text_hash": "00ffcf8470f9f1d56fae1baa6805297e6965f71bf4660599591318920ab34241",
+      "translation_text_hash": "0d78e365ebc9335677624be1e4b4f44087fbb04197e178ec4bb12a1cbc64c565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅의 백성과 제사장들에게 이르라 너희가 칠십년 동안 오월과 칠월에 금식하고 애통하였거니와 그 금식이 나를 위하여, 나를 위하여 한 것이냐"
+      ],
+      "raw_text_hashes": [
+        "0d78e365ebc9335677624be1e4b4f44087fbb04197e178ec4bb12a1cbc64c565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:6",
+      "sequence": 22969,
+      "chapter_label": "ZEC 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "When you eat and when you drink, don’t you eat for yourselves and drink for yourselves?",
+      "ko": "너희의 먹으며 마심이 전혀 자기를 위하여 먹으며 자기를 위하여 마심이 아니냐",
+      "source_text_hash": "242c3b9bbb7f053cb6f9f13162eacf1b61e8960f312569ac607b91c585f47acb",
+      "translation_text_hash": "106615536355dc57ef71a00b2ee547f83a4d822e0821b9c56ca596c6c14f48fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 먹으며 마심이 전혀 자기를 위하여 먹으며 자기를 위하여 마심이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "106615536355dc57ef71a00b2ee547f83a4d822e0821b9c56ca596c6c14f48fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:7",
+      "sequence": 22970,
+      "chapter_label": "ZEC 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Aren’t these the words which the LORD proclaimed by the former prophets when Jerusalem was inhabited and in prosperity, and its cities around her, and the South and the lowland were inhabited?’”",
+      "ko": "여호와가 이전 선지자로 외친 말을 너희가 청종할 것이 아니냐 그 때에는 예루살렘과 사면 읍에 백성이 거하여 형통하였고 남방과 평원에도 사람이 거하였었느니라",
+      "source_text_hash": "db2be212a331c3d0980eea463993fe33a1afe32615783ef72102654107c44ff0",
+      "translation_text_hash": "5bc9f1bc3d83b3ebf2e21406e4835c97ef55e66e36b4e6ac9f8a89afdbed5007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 이전 선지자로 외친 말을 너희가 청종할 것이 아니냐 그 때에는 예루살렘과 사면 읍에 백성이 거하여 형통하였고 남방과 평원에도 사람이 거하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "5bc9f1bc3d83b3ebf2e21406e4835c97ef55e66e36b4e6ac9f8a89afdbed5007"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:8",
+      "sequence": 22971,
+      "chapter_label": "ZEC 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD’s word came to Zechariah, saying,",
+      "ko": "여호와의 말씀이 스가랴에게 임하여 이르시되",
+      "source_text_hash": "082575a87d038932ea4a8504e2e23a1c7c56e033ebedb50a369d5461482f3f50",
+      "translation_text_hash": "2482838e06702127cfaef2c2526b982b2ae6175106d8da42a16b39d04b019b2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 스가랴에게 임하여 이르시되"
+      ],
+      "raw_text_hashes": [
+        "2482838e06702127cfaef2c2526b982b2ae6175106d8da42a16b39d04b019b2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:9",
+      "sequence": 22972,
+      "chapter_label": "ZEC 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "“Thus has the LORD of Armies spoken, saying, ‘Execute true judgment, and show kindness and compassion every man to his brother.",
+      "ko": "만군의 여호와가 이미 말하여 이르기를 너희는 진실한 재판을 행하며 피차에 인애와 긍휼을 베풀며",
+      "source_text_hash": "15ec94d054d4fbc8539aaf15cc9e2c585e0992b6065009423ccfa95364040aea",
+      "translation_text_hash": "2e107e612db46b4022e7f2ffb7ee293526a9f8e9bc796f039cda8020d5092fd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이미 말하여 이르기를 너희는 진실한 재판을 행하며 피차에 인애와 긍휼을 베풀며"
+      ],
+      "raw_text_hashes": [
+        "2e107e612db46b4022e7f2ffb7ee293526a9f8e9bc796f039cda8020d5092fd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:10",
+      "sequence": 22973,
+      "chapter_label": "ZEC 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t oppress the widow, the fatherless, the foreigner, nor the poor; and let none of you devise evil against his brother in your heart.’",
+      "ko": "과부와 고아와 나그네와 궁핍한 자를 압제하지 말며 남을 해하려하여 심중에 도모하지 말라 하였으나",
+      "source_text_hash": "4e239644c5b7ec348f337a2cc117a89cd4135652cc9ffaedb4ae8beb9f7d8f82",
+      "translation_text_hash": "07e355af3e3cd66c0dc345df6dd2a60b3a82dff78063711664952203d7cc9919",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부와 고아와 나그네와 궁핍한 자를 압제하지 말며 남을 해하려하여 심중에 도모하지 말라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "07e355af3e3cd66c0dc345df6dd2a60b3a82dff78063711664952203d7cc9919"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:11",
+      "sequence": 22974,
+      "chapter_label": "ZEC 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "But they refused to listen, and turned their backs, and stopped their ears, that they might not hear.",
+      "ko": "그들이 청종하기를 싫어하여 등으로 향하며 듣지 아니하려고 귀를 막으며",
+      "source_text_hash": "1b06b9f0c9ddb24f7cf7860e2ea530d47db0e93401b5825de865b8960b82008a",
+      "translation_text_hash": "0d2aef8b02d2fe9e1fa98bd72861d57fb98e7afe3f90c499c39467c5d0010031",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 청종하기를 싫어하여 등으로 향하며 듣지 아니하려고 귀를 막으며"
+      ],
+      "raw_text_hashes": [
+        "0d2aef8b02d2fe9e1fa98bd72861d57fb98e7afe3f90c499c39467c5d0010031"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:12",
+      "sequence": 22975,
+      "chapter_label": "ZEC 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Yes, they made their hearts as hard as flint, lest they might hear the law and the words which the LORD of Armies had sent by his Spirit by the former prophets. Therefore great wrath came from the LORD of Armies.",
+      "ko": "그 마음을 금강석 같게 하여 율법과 만군의 여호와가 신으로 이전 선지자를 빙자하여 전한 말을 듣지 아니하므로 큰 노가 나 만군의 여호와께로서 나왔도다",
+      "source_text_hash": "8dd3ef2aec05d343d4a765eaa25856c5dc4b9b891fd251edd197bac299217fde",
+      "translation_text_hash": "127e8dd19289c0b19efbbf8d04d8093398f10bfcf33e8ec6e12db1c249643665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음을 금강석 같게 하여 율법과 만군의 여호와가 신으로 이전 선지자를 빙자하여 전한 말을 듣지 아니하므로 큰 노가 나 만군의 여호와께로서 나왔도다"
+      ],
+      "raw_text_hashes": [
+        "127e8dd19289c0b19efbbf8d04d8093398f10bfcf33e8ec6e12db1c249643665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:13",
+      "sequence": 22976,
+      "chapter_label": "ZEC 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "It has come to pass that, as he called and they refused to listen, so they will call and I will not listen,” said the LORD of Armies;",
+      "ko": "만군의 여호와가 말하였었노라 내가 불러도 그들이 듣지 아니하였은즉 그들이 불러도 내가 듣지 아니하고",
+      "source_text_hash": "b29aa60e2e6cc8ec33ffaec48af41ce0438e8222057f581af44dbcfdc1a59cf8",
+      "translation_text_hash": "6569a521975e10a540877fc1fc509bcfab1fc05991e07170860fa2c560fa6861",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하였었노라 내가 불러도 그들이 듣지 아니하였은즉 그들이 불러도 내가 듣지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "6569a521975e10a540877fc1fc509bcfab1fc05991e07170860fa2c560fa6861"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:7:14",
+      "sequence": 22977,
+      "chapter_label": "ZEC 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "“but I will scatter them with a whirlwind among all the nations which they have not known. Thus the land was desolate after them, so that no man passed through nor returned; for they made the pleasant land desolate.”",
+      "ko": "회리바람으로 그들을 그 알지 못하던 모든 열국에 헤치리라 한 후로 이 땅이 황무하여 왕래하는 사람이 없었나니 이는 그들이 아름다운 땅으로 황무하게 하였음이니라 하시니라",
+      "source_text_hash": "fb61392dd1216c46925b1608ec44c728865975313c2208361299c8f18536779c",
+      "translation_text_hash": "23dc26e486ff927da8da2ebeea54b09bc7e3b73ede144c2429bd92e355ace4f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회리바람으로 그들을 그 알지 못하던 모든 열국에 헤치리라 한 후로 이 땅이 황무하여 왕래하는 사람이 없었나니 이는 그들이 아름다운 땅으로 황무하게 하였음이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "23dc26e486ff927da8da2ebeea54b09bc7e3b73ede144c2429bd92e355ace4f5"
+      ]
+    }
+  ]
+}

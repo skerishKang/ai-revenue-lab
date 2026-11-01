@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:030",
+  "unit_ordinal": 183,
+  "unit_label": "DEU 30",
+  "book_code": "DEU",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:30:1",
+      "sequence": 5710,
+      "chapter_label": "DEU 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "It shall happen, when all these things have come on you, the blessing and the curse, which I have set before you, and you shall call them to mind among all the nations where the LORD your God has driven you,",
+      "ko": "내가 네게 진술한 모든 복과 저주가 네게 임하므로 네가 네 하나님 여호와께 쫓겨간 모든 나라 가운데서 이 일이 마음에서 기억이 나거든",
+      "source_text_hash": "8cdcbea97054719e1ed202000dcaa5969cbaddf724de82f13ec9d823b82d639e",
+      "translation_text_hash": "4990a261be540df9b31b51e5a8a8f371355ed7bf5d0cc5205ceca91d9d0e4164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 진술한 모든 복과 저주가 네게 임하므로 네가 네 하나님 여호와께 쫓겨간 모든 나라 가운데서 이 일이 마음에서 기억이 나거든"
+      ],
+      "raw_text_hashes": [
+        "4990a261be540df9b31b51e5a8a8f371355ed7bf5d0cc5205ceca91d9d0e4164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:2",
+      "sequence": 5711,
+      "chapter_label": "DEU 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "and return to the LORD your God and obey his voice according to all that I command you today, you and your children, with all your heart and with all your soul,",
+      "ko": "너와 네 자손이 네 하나님 여호와께로 돌아와 내가 오늘날 네게 명한 것을 온전히 따라서 마음을 다하고 성품을 다하여 여호와의 말씀을 순종하면",
+      "source_text_hash": "cf70aac6ab3f330a1aa20d0bbe0949da86c5d0ad8f96ed76280faf1a4844afbc",
+      "translation_text_hash": "1703985f86908c2756b40255ff20d2cc49d2c98e9a8199de97a7f83546959457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 자손이 네 하나님 여호와께로 돌아와 내가 오늘날 네게 명한 것을 온전히 따라서 마음을 다하고 성품을 다하여 여호와의 말씀을 순종하면"
+      ],
+      "raw_text_hashes": [
+        "1703985f86908c2756b40255ff20d2cc49d2c98e9a8199de97a7f83546959457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:3",
+      "sequence": 5712,
+      "chapter_label": "DEU 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "that then the LORD your God will release you from captivity, have compassion on you, and will return and gather you from all the peoples where the LORD your God has scattered you.",
+      "ko": "네 하나님 여호와께서 마음을 돌이키시고 너를 긍휼히 여기사 네 포로를 돌리시되 네 하나님 여호와께서 너를 흩으신 그 모든 백성 중에서 너를 모으시리니",
+      "source_text_hash": "c5f285b77d638cf87a6da5fd22460379e2f24ea4b4f32e88081f5b502cdd42e8",
+      "translation_text_hash": "6f19053572bb12b39f3d62b246798be65a7f43f7e63a64408fb1a09fb1535a8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 마음을 돌이키시고 너를 긍휼히 여기사 네 포로를 돌리시되 네 하나님 여호와께서 너를 흩으신 그 모든 백성 중에서 너를 모으시리니"
+      ],
+      "raw_text_hashes": [
+        "6f19053572bb12b39f3d62b246798be65a7f43f7e63a64408fb1a09fb1535a8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:4",
+      "sequence": 5713,
+      "chapter_label": "DEU 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "If your outcasts are in the uttermost parts of the heavens, from there the LORD your God will gather you, and from there he will bring you back.",
+      "ko": "너의 쫓겨간 자들이 하늘 가에 있을찌라도 네 하나님 여호와께서 거기서 너를 모으실 것이며 거기서부터 너를 이끄실 것이라",
+      "source_text_hash": "757c2118648b875a1a810c6f5a0ba8404ded47839e224410779b45a52290e787",
+      "translation_text_hash": "04c7be3fff027db438f473d8d73a26c9e2445baabf71e2f267be6df0e421b89c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 쫓겨간 자들이 하늘 가에 있을찌라도 네 하나님 여호와께서 거기서 너를 모으실 것이며 거기서부터 너를 이끄실 것이라"
+      ],
+      "raw_text_hashes": [
+        "04c7be3fff027db438f473d8d73a26c9e2445baabf71e2f267be6df0e421b89c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:5",
+      "sequence": 5714,
+      "chapter_label": "DEU 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD your God will bring you into the land which your fathers possessed, and you will possess it. He will do you good, and increase your numbers more than your fathers.",
+      "ko": "네 하나님 여호와께서 너를 네 열조가 얻은 땅으로 돌아오게 하사 너로 다시 그것을 얻게 하실 것이며 여호와께서 또 네게 선을 행하사 너로 네 열조보다 더 번성케 하실 것이며",
+      "source_text_hash": "d70a31463e96fb599b04bc32a060b41c3998c2685493f4c1ada635b620b75c34",
+      "translation_text_hash": "11eca6b6ec9d78f1cbfac6f5bfccbd1e8e329f90866235e53efc6a259744e68a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너를 네 열조가 얻은 땅으로 돌아오게 하사 너로 다시 그것을 얻게 하실 것이며 여호와께서 또 네게 선을 행하사 너로 네 열조보다 더 번성케 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "11eca6b6ec9d78f1cbfac6f5bfccbd1e8e329f90866235e53efc6a259744e68a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:6",
+      "sequence": 5715,
+      "chapter_label": "DEU 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD your God will circumcise your heart, and the heart of your offspring, to love the LORD your God with all your heart and with all your soul, that you may live.",
+      "ko": "네 하나님 여호와께서 네 마음과 네 자손의 마음에 할례를 베푸사 너로 마음을 다하며 성품을 다하여 네 하나님 여호와를 사랑하게 하사 너로 생명을 얻게 하실 것이며",
+      "source_text_hash": "ba61be917026ff20932c0e05bea7e227361ad812b87fb5ae8767ce576c044069",
+      "translation_text_hash": "f2fd0c23885d1753c8bfd98271d45c454ad36a40a8321012078f74f5ed90251f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네 마음과 네 자손의 마음에 할례를 베푸사 너로 마음을 다하며 성품을 다하여 네 하나님 여호와를 사랑하게 하사 너로 생명을 얻게 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "f2fd0c23885d1753c8bfd98271d45c454ad36a40a8321012078f74f5ed90251f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:7",
+      "sequence": 5716,
+      "chapter_label": "DEU 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD your God will put all these curses on your enemies and on those who hate you, who persecuted you.",
+      "ko": "네 하나님 여호와께서 네 대적과 너를 미워하고 핍박하던 자에게 이 모든 저주로 임하게 하시리니",
+      "source_text_hash": "b788ce72b01f158b41bc519f9e3133da75c8f9a8fb13836da7e8c232d45c21d5",
+      "translation_text_hash": "30abe8580af3493f66d68b65cf5f1d4db1a4abb25100e329f2a08d7111a19c13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네 대적과 너를 미워하고 핍박하던 자에게 이 모든 저주로 임하게 하시리니"
+      ],
+      "raw_text_hashes": [
+        "30abe8580af3493f66d68b65cf5f1d4db1a4abb25100e329f2a08d7111a19c13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:8",
+      "sequence": 5717,
+      "chapter_label": "DEU 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "You shall return and obey the LORD’s voice, and do all his commandments which I command you today.",
+      "ko": "너는 돌아와 다시 여호와의 말씀을 순종하고 내가 오늘날 네게 명한 그 모든 명령을 행할 것이라",
+      "source_text_hash": "3992f8569c3a6a1c8e9af4c3af780b5680888656b408ded16aa6188376c01744",
+      "translation_text_hash": "8d69b1de82e62fb643b29048a58eec15393578f3985282a270eae6dc86b6e790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 돌아와 다시 여호와의 말씀을 순종하고 내가 오늘날 네게 명한 그 모든 명령을 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8d69b1de82e62fb643b29048a58eec15393578f3985282a270eae6dc86b6e790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:9",
+      "sequence": 5718,
+      "chapter_label": "DEU 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD your God will make you prosperous in all the work of your hand, in the fruit of your body, in the fruit of your livestock, and in the fruit of your ground, for good; for the LORD will again rejoice over you for good, as he rejoiced over your fathers,",
+      "ko": "네가 네 하나님 여호와의 말씀을 순종하여 이 율법 책에 기록된 그 명령과 규례를 지키고 네 마음을 다하며 성품을 다하여 여호와 네 하나님께 돌아오면 네 하나님 여호와께서 네 손으로 하는 모든 일과 네 몸의 소생과 네 육축의 새끼와 네 토지 소산을 많게 하시고 네게 복을 주시되 곧 여호와께서 네 열조를 기뻐하신 것과 같이 너를 다시 기뻐하사 네게 복을 주시리라",
+      "source_text_hash": "9df7ad4af3a9ba264f35b9276882ddaca2b9b77d12ad6500fecf62cd3f1f27f6",
+      "translation_text_hash": "2088a3fd9df8519c33f816b1d96cfdad01de41044f77959fc9ae2b49885584fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 하나님 여호와의 말씀을 순종하여 이 율법 책에 기록된 그 명령과 규례를 지키고 네 마음을 다하며 성품을 다하여 여호와 네 하나님께 돌아오면 네 하나님 여호와께서 네 손으로 하는 모든 일과 네 몸의 소생과 네 육축의 새끼와 네 토지 소산을 많게 하시고 네게 복을 주시되 곧 여호와께서 네 열조를 기뻐하신 것과 같이 너를 다시 기뻐하사 네게 복을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "2088a3fd9df8519c33f816b1d96cfdad01de41044f77959fc9ae2b49885584fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:10",
+      "sequence": 5719,
+      "chapter_label": "DEU 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "if you will obey the LORD your God’s voice, to keep his commandments and his statutes which are written in this book of the law, if you turn to the LORD your God with all your heart and with all your soul.",
+      "ko": "(9절에 포함되어 있음)",
+      "source_text_hash": "865cbd2f089398381aa966b36a89a62f5f2c552a36e96703bae96c3b4d471858",
+      "translation_text_hash": "d6102cbd284ed98997dd534c98278fd7717161db9af5d85c57374354062f14db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(9절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "d6102cbd284ed98997dd534c98278fd7717161db9af5d85c57374354062f14db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:11",
+      "sequence": 5720,
+      "chapter_label": "DEU 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "For this commandment which I command you today is not too hard for you or too distant.",
+      "ko": "내가 오늘날 네게 명한 이 명령은 네게 어려운 것도 아니요 먼 것도 아니라",
+      "source_text_hash": "682520ff90df988634fc59bcf8b62516416548453ead06213fe5844f88dc595a",
+      "translation_text_hash": "dd90771b095062b23b85bd66be58bb51f0079e733df700bd721bd6c026abc46e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 네게 명한 이 명령은 네게 어려운 것도 아니요 먼 것도 아니라"
+      ],
+      "raw_text_hashes": [
+        "dd90771b095062b23b85bd66be58bb51f0079e733df700bd721bd6c026abc46e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:12",
+      "sequence": 5721,
+      "chapter_label": "DEU 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "It is not in heaven, that you should say, “Who will go up for us to heaven, bring it to us, and proclaim it to us, that we may do it?”",
+      "ko": "하늘에 있는 것이 아니니 네가 이르기를 누가 우리를 위하여 하늘에 올라가서 그 명령을 우리에게로 가지고 와서 우리에게 들려 행하게 할꼬 할것이 아니요",
+      "source_text_hash": "76975a4936496d48115f67e68507548ef20550f6fd92a0f0be4b6b3435a0864f",
+      "translation_text_hash": "6787281f5fc11c4e8de6bc54b8d711534144123e50e0e52df309ce98cbdb5689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 있는 것이 아니니 네가 이르기를 누가 우리를 위하여 하늘에 올라가서 그 명령을 우리에게로 가지고 와서 우리에게 들려 행하게 할꼬 할것이 아니요"
+      ],
+      "raw_text_hashes": [
+        "6787281f5fc11c4e8de6bc54b8d711534144123e50e0e52df309ce98cbdb5689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:13",
+      "sequence": 5722,
+      "chapter_label": "DEU 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "Neither is it beyond the sea, that you should say, “Who will go over the sea for us, bring it to us, and proclaim it to us, that we may do it?”",
+      "ko": "이것이 바다 밖에 있는 것이 아니니 네가 이르기를 누가 우리를 위하여 바다를 건너가서 그 명령을 우리에게로 가지고 와서 우리에게 들려 행하게 할꼬 할것도 아니라",
+      "source_text_hash": "7dc06e0d800364382131cb96fc8ff39ac790cf2d84090a0b11af08462399f33e",
+      "translation_text_hash": "41d1fe1146375347ae6e3e2b5f23866d85e8272e9366133b6c0f805731a05226",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 바다 밖에 있는 것이 아니니 네가 이르기를 누가 우리를 위하여 바다를 건너가서 그 명령을 우리에게로 가지고 와서 우리에게 들려 행하게 할꼬 할것도 아니라"
+      ],
+      "raw_text_hashes": [
+        "41d1fe1146375347ae6e3e2b5f23866d85e8272e9366133b6c0f805731a05226"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:14",
+      "sequence": 5723,
+      "chapter_label": "DEU 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "But the word is very near to you, in your mouth and in your heart, that you may do it.",
+      "ko": "오직 그 말씀이 네게 심히 가까와서 네 입에 있으며 네 마음에 있은즉 네가 이를 행할 수 있느니라",
+      "source_text_hash": "3d837d74c3e70540b72b3a0dd1838f2e1bfb49275c63ed681155889fea21a12e",
+      "translation_text_hash": "4360e0360b79cab90b32639c38f079f9a9cba4218dc2d2ce0c019f0f0fd4d96a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 말씀이 네게 심히 가까와서 네 입에 있으며 네 마음에 있은즉 네가 이를 행할 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "4360e0360b79cab90b32639c38f079f9a9cba4218dc2d2ce0c019f0f0fd4d96a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:15",
+      "sequence": 5724,
+      "chapter_label": "DEU 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, I have set before you today life and prosperity, and death and evil.",
+      "ko": "보라 내가 오늘날 생명과 복과 사망과 화를 네 앞에 두었나니",
+      "source_text_hash": "8c448e5a77ab2c8c505838aef633e341918450aa25c4bad9a02e4fad8509f2b3",
+      "translation_text_hash": "49291e132237f1ae43e055c6aabee23ebc021ae33b32125d6daeee64769ee34c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 오늘날 생명과 복과 사망과 화를 네 앞에 두었나니"
+      ],
+      "raw_text_hashes": [
+        "49291e132237f1ae43e055c6aabee23ebc021ae33b32125d6daeee64769ee34c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:16",
+      "sequence": 5725,
+      "chapter_label": "DEU 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "For I command you today to love the LORD your God, to walk in his ways and to keep his commandments, his statutes, and his ordinances, that you may live and multiply, and that the LORD your God may bless you in the land where you go in to possess it.",
+      "ko": "곧 내가 오늘날 너를 명하여 네 하나님 여호와를 사랑하고 그 모든 길로 행하며 그 명령과 규례와 법도를 지키라 하는 것이라 그리하면 네가 생존하며 번성할 것이요 또 네 하나님 여호와께서 네가 가서 얻을 땅에서 네게 복을 주실 것임이니라",
+      "source_text_hash": "eb1ed77866e8232aee5c08e3dcfca000c13c5826f608990edf0bcbfc709b3855",
+      "translation_text_hash": "9460ff61e2a662eed00f1d23edf6b426ecd12dfdb01fc30dd0ad45667ed9f0cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내가 오늘날 너를 명하여 네 하나님 여호와를 사랑하고 그 모든 길로 행하며 그 명령과 규례와 법도를 지키라 하는 것이라 그리하면 네가 생존하며 번성할 것이요 또 네 하나님 여호와께서 네가 가서 얻을 땅에서 네게 복을 주실 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "9460ff61e2a662eed00f1d23edf6b426ecd12dfdb01fc30dd0ad45667ed9f0cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:17",
+      "sequence": 5726,
+      "chapter_label": "DEU 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "But if your heart turns away, and you will not hear, but are drawn away and worship other gods, and serve them,",
+      "ko": "그러나 네가 만일 마음을 돌이켜 듣지 아니하고 유혹을 받아서 다른 신들에게 절하고 그를 섬기면",
+      "source_text_hash": "feeef00ec542ee0605af9b8b2dd8a151c80132187bd78cf4faddc2d8033bcafb",
+      "translation_text_hash": "e44b66aaa759188b569e74fff8bc7019e8b5dae4f48b622a6e731744772279cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 만일 마음을 돌이켜 듣지 아니하고 유혹을 받아서 다른 신들에게 절하고 그를 섬기면"
+      ],
+      "raw_text_hashes": [
+        "e44b66aaa759188b569e74fff8bc7019e8b5dae4f48b622a6e731744772279cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:18",
+      "sequence": 5727,
+      "chapter_label": "DEU 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "I declare to you today that you will surely perish. You will not prolong your days in the land where you pass over the Jordan to go in to possess it.",
+      "ko": "내가 오늘날 너희에게 선언하노니 너희가 반드시 망할 것이라 너희가 요단을 건너가서 얻을 땅에서 너희의 날이 장구치 못할 것이니라",
+      "source_text_hash": "51352516c90ce8d0410a6a39a828159d63187e72ebf88c91ba5540c0cde64e9e",
+      "translation_text_hash": "86940996e4be081c3e8cc6c41857565a9496858f180eabf1481d6c20ec5ddb57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 너희에게 선언하노니 너희가 반드시 망할 것이라 너희가 요단을 건너가서 얻을 땅에서 너희의 날이 장구치 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "86940996e4be081c3e8cc6c41857565a9496858f180eabf1481d6c20ec5ddb57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:19",
+      "sequence": 5728,
+      "chapter_label": "DEU 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "I call heaven and earth to witness against you today that I have set before you life and death, the blessing and the curse. Therefore choose life, that you may live, you and your descendants,",
+      "ko": "내가 오늘날 천지를 불러서 너희에게 증거를 삼노라 내가 생명과 사망과 복과 저주를 네 앞에 두었은즉 너와 네 자손이 살기 위하여 생명을 택하고",
+      "source_text_hash": "57d8e391e5e05a915879636402cd3fb32102f92323887a9161d41a124aeb28c7",
+      "translation_text_hash": "bddeefa91b25274bb36656b71618ab4ed0d8821140924029d1af895058081ae8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 천지를 불러서 너희에게 증거를 삼노라 내가 생명과 사망과 복과 저주를 네 앞에 두었은즉 너와 네 자손이 살기 위하여 생명을 택하고"
+      ],
+      "raw_text_hashes": [
+        "bddeefa91b25274bb36656b71618ab4ed0d8821140924029d1af895058081ae8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:30:20",
+      "sequence": 5729,
+      "chapter_label": "DEU 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "to love the LORD your God, to obey his voice, and to cling to him; for he is your life, and the length of your days, that you may dwell in the land which the LORD swore to your fathers, to Abraham, to Isaac, and to Jacob, to give them.",
+      "ko": "네 하나님 여호와를 사랑하고 그 말씀을 순종하며 또 그에게 부종하라 그는 네 생명이시요 네 장수시니 여호와께서 네 열조 아브라함과 이삭과 야곱에게 주리라고 맹세하신 땅에 네가 거하리라",
+      "source_text_hash": "868f4388286bde706ca90dddbb2899390279928096e70fd760aeeed1cbe0f4a7",
+      "translation_text_hash": "d88cb34d479405e298e1e3876f2006bac0de090748c56d2154429ee05ffbe9a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와를 사랑하고 그 말씀을 순종하며 또 그에게 부종하라 그는 네 생명이시요 네 장수시니 여호와께서 네 열조 아브라함과 이삭과 야곱에게 주리라고 맹세하신 땅에 네가 거하리라"
+      ],
+      "raw_text_hashes": [
+        "d88cb34d479405e298e1e3876f2006bac0de090748c56d2154429ee05ffbe9a5"
+      ]
+    }
+  ]
+}

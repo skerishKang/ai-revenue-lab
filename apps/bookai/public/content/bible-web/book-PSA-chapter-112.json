@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:112",
+  "unit_ordinal": 590,
+  "unit_label": "PSA 112",
+  "book_code": "PSA",
+  "chapter_number": 112,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:112:1",
+      "sequence": 15805,
+      "chapter_label": "PSA 112",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Blessed is the man who fears the LORD, who delights greatly in his commandments.",
+      "ko": "할렐루야, 여호와를 경외하며 그 계명을 크게 즐거워하는 자는 복이 있도다",
+      "source_text_hash": "c62d70351af037d188820e24dc0268590e3d27e693c2f10e688267a349e87467",
+      "translation_text_hash": "ed753bef8e0f8b2a81c5f088c5410dfd31bf1e6ec4f71312d14a61cdbd18d39c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야, 여호와를 경외하며 그 계명을 크게 즐거워하는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "ed753bef8e0f8b2a81c5f088c5410dfd31bf1e6ec4f71312d14a61cdbd18d39c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:2",
+      "sequence": 15806,
+      "chapter_label": "PSA 112",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 2
+        }
+      ],
+      "en": "His offspring will be mighty in the land. The generation of the upright will be blessed.",
+      "ko": "그 후손이 땅에서 강성함이여 정직자의 후대가 복이 있으리로다",
+      "source_text_hash": "f820b476bf12c1c21531d1edcd45ebc5d9695da64d361b66f8a438557a52f526",
+      "translation_text_hash": "64986c0c6daead7c6c1d06bfb690bfd4ce1e29a32157515078e2bf9e49b7aad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후손이 땅에서 강성함이여 정직자의 후대가 복이 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "64986c0c6daead7c6c1d06bfb690bfd4ce1e29a32157515078e2bf9e49b7aad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:3",
+      "sequence": 15807,
+      "chapter_label": "PSA 112",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 3
+        }
+      ],
+      "en": "Wealth and riches are in his house. His righteousness endures forever.",
+      "ko": "부요와 재물이 그 집에 있음이여 그 의가 영원히 있으리로다",
+      "source_text_hash": "3620a3bac65391dee1000bc807df4da4b71f7dc0d21e83043c766e190119918a",
+      "translation_text_hash": "aa74f8fabb7e893e28b82db6b884cc13d0420167e971a4f354865985442fda50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부요와 재물이 그 집에 있음이여 그 의가 영원히 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "aa74f8fabb7e893e28b82db6b884cc13d0420167e971a4f354865985442fda50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:4",
+      "sequence": 15808,
+      "chapter_label": "PSA 112",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 4
+        }
+      ],
+      "en": "Light dawns in the darkness for the upright, gracious, merciful, and righteous.",
+      "ko": "정직한 자에게는 흑암 중에 빛이 일어나나니 그는 어질고 자비하고 의로운 자로다",
+      "source_text_hash": "8958a5e43692a9cf8ce8d9db8f9d5a696eccf529e0b74aed36142029726c8f81",
+      "translation_text_hash": "c9710d9c99aab6dae2320857bd8d6f3fb5f9a5b13381bdf9917cce354cf9ae1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정직한 자에게는 흑암 중에 빛이 일어나나니 그는 어질고 자비하고 의로운 자로다"
+      ],
+      "raw_text_hashes": [
+        "c9710d9c99aab6dae2320857bd8d6f3fb5f9a5b13381bdf9917cce354cf9ae1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:5",
+      "sequence": 15809,
+      "chapter_label": "PSA 112",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 5
+        }
+      ],
+      "en": "It is well with the man who deals graciously and lends. He will maintain his cause in judgment.",
+      "ko": "은혜를 베풀며 꾸이는 자는 잘 되나니 그 일을 공의로 하리로다",
+      "source_text_hash": "d41d77a2f31494c6ea5a9e81f334fe19ad2109a176c5056e6b1bbdd8d2ce6fc6",
+      "translation_text_hash": "475ca5eddb1ca028ad8d275252bf390ef5c50ba11962b9fd7c3df90f8e08f47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은혜를 베풀며 꾸이는 자는 잘 되나니 그 일을 공의로 하리로다"
+      ],
+      "raw_text_hashes": [
+        "475ca5eddb1ca028ad8d275252bf390ef5c50ba11962b9fd7c3df90f8e08f47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:6",
+      "sequence": 15810,
+      "chapter_label": "PSA 112",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 6
+        }
+      ],
+      "en": "For he will never be shaken. The righteous will be remembered forever.",
+      "ko": "저가 영영히 요동치 아니함이여 의인은 영원히 기념하게 되리로다",
+      "source_text_hash": "9546e503f2bb105bca395fc866be86e998ea2997ff6b6da6a1acead6ee04a35f",
+      "translation_text_hash": "5b8605113592b9cf49142130166dbee520801d3236072e2687d5c1ceecf61a05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 영영히 요동치 아니함이여 의인은 영원히 기념하게 되리로다"
+      ],
+      "raw_text_hashes": [
+        "5b8605113592b9cf49142130166dbee520801d3236072e2687d5c1ceecf61a05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:7",
+      "sequence": 15811,
+      "chapter_label": "PSA 112",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 7
+        }
+      ],
+      "en": "He will not be afraid of evil news. His heart is steadfast, trusting in the LORD.",
+      "ko": "그는 흉한 소식을 두려워 아니함이여 여호와를 의뢰하고 그 마음을 굳게 정하였도다",
+      "source_text_hash": "b490c0f03d010a3a97bf392e7bbad851a430d94c2ccedfd6109aff8aa1c2f768",
+      "translation_text_hash": "489b793de10d6cb974038f6e19d4a8e30b9a0098b4ece99ccac097b4e79a6d86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 흉한 소식을 두려워 아니함이여 여호와를 의뢰하고 그 마음을 굳게 정하였도다"
+      ],
+      "raw_text_hashes": [
+        "489b793de10d6cb974038f6e19d4a8e30b9a0098b4ece99ccac097b4e79a6d86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:8",
+      "sequence": 15812,
+      "chapter_label": "PSA 112",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 8
+        }
+      ],
+      "en": "His heart is established. He will not be afraid in the end when he sees his adversaries.",
+      "ko": "그 마음이 견고하여 두려워 아니할 것이라 그 대적의 받는 보응을 필경 보리로다",
+      "source_text_hash": "521b10b6606522444d193e5e6d1368c6d6787d53426fe1662a842657eca3c31a",
+      "translation_text_hash": "35edf033e2ae01b7e91f34731d64dbc67200bf0aa0af47af8430752d595105e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음이 견고하여 두려워 아니할 것이라 그 대적의 받는 보응을 필경 보리로다"
+      ],
+      "raw_text_hashes": [
+        "35edf033e2ae01b7e91f34731d64dbc67200bf0aa0af47af8430752d595105e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:9",
+      "sequence": 15813,
+      "chapter_label": "PSA 112",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 9
+        }
+      ],
+      "en": "He has dispersed, he has given to the poor. His righteousness endures forever. His horn will be exalted with honor.",
+      "ko": "저가 재물을 흩어 빈궁한 자에게 주었으니 그 의가 영원히 있고 그 뿔이 영화로이 들리리로다",
+      "source_text_hash": "bd42617f4e501b32fb9607bf64937a5c9ac36466b0e7fdbc5fe3deba5c16fdea",
+      "translation_text_hash": "d4a2facad60622050ec1749a519e7dc347335205291aab921827026755a560df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 재물을 흩어 빈궁한 자에게 주었으니 그 의가 영원히 있고 그 뿔이 영화로이 들리리로다"
+      ],
+      "raw_text_hashes": [
+        "d4a2facad60622050ec1749a519e7dc347335205291aab921827026755a560df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:112:10",
+      "sequence": 15814,
+      "chapter_label": "PSA 112",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 112,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 112,
+          "verse": 10
+        }
+      ],
+      "en": "The wicked will see it, and be grieved. He shall gnash with his teeth, and melt away. The desire of the wicked will perish.",
+      "ko": "악인은 이를 보고 한하여 이를 갈면서 소멸하리니 악인의 소욕은 멸망하리로다",
+      "source_text_hash": "8f75eec296baa2cf9ecf384fd6dde2390e5859d4e9b9eefe8cabbf001036ad4a",
+      "translation_text_hash": "45609b4c1f43949e6eeb397b7971a56b434007529d7a2fe94da23e623c130e38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 이를 보고 한하여 이를 갈면서 소멸하리니 악인의 소욕은 멸망하리로다"
+      ],
+      "raw_text_hashes": [
+        "45609b4c1f43949e6eeb397b7971a56b434007529d7a2fe94da23e623c130e38"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2317 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:014",
+  "unit_ordinal": 971,
+  "unit_label": "MRK 14",
+  "book_code": "MRK",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:14:1",
+      "sequence": 24756,
+      "chapter_label": "MRK 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "It was now two days before the Passover and the Feast of Unleavened Bread, and the chief priests and the scribes sought how they might seize him by deception and kill him.",
+      "ko": "이틀을 지나면 유월절과 무교절이라 대제사장들과 서기관들이 예수를 궤계로 잡아 죽일 방책을 구하며",
+      "source_text_hash": "022271134efe7a49afbfcabf42b2d50bf7f5379b9215b5809ecdf1c90818ea3a",
+      "translation_text_hash": "e4d2ac5034906b7326efa6237cb9fc07a979303ef9e99b5d8ef0e2bc614c840a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이틀을 지나면 유월절과 무교절이라 대제사장들과 서기관들이 예수를 궤계로 잡아 죽일 방책을 구하며"
+      ],
+      "raw_text_hashes": [
+        "e4d2ac5034906b7326efa6237cb9fc07a979303ef9e99b5d8ef0e2bc614c840a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:2",
+      "sequence": 24757,
+      "chapter_label": "MRK 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "For they said, “Not during the feast, because there might be a riot among the people.”",
+      "ko": "가로되 민요가 날까 하노니 명절에는 말자 하더라",
+      "source_text_hash": "09f739002a883b84db591b1117a0dcf187e79e9ade2874e9c5430e47e6ac41a9",
+      "translation_text_hash": "bbf02fcb1270755fb24b1c4ff40df3a47e27920be74be94764531704f51ed4b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 민요가 날까 하노니 명절에는 말자 하더라"
+      ],
+      "raw_text_hashes": [
+        "bbf02fcb1270755fb24b1c4ff40df3a47e27920be74be94764531704f51ed4b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:3",
+      "sequence": 24758,
+      "chapter_label": "MRK 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "While he was at Bethany, in the house of Simon the leper, as he sat at the table, a woman came having an alabaster jar of ointment of pure nard—very costly. She broke the jar and poured it over his head.",
+      "ko": "예수께서 베다니 문둥이 시몬의 집에서 식사하실 때에 한 여자가 매우 값진 향유 곧 순전한 나드 한 옥합을 가지고 와서 그 옥합을 깨뜨리고 예수의 머리에 부으니",
+      "source_text_hash": "614a4aa76a2693ef15badd21757c0ed7f07ce8f04f5857a297ff86a51a1d7e67",
+      "translation_text_hash": "abb8a5dc56c521d7a9fc983d5c7f82f53c83f556c519b5ae6cd3e6f65c490a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 베다니 문둥이 시몬의 집에서 식사하실 때에 한 여자가 매우 값진 향유 곧 순전한 나드 한 옥합을 가지고 와서 그 옥합을 깨뜨리고 예수의 머리에 부으니"
+      ],
+      "raw_text_hashes": [
+        "abb8a5dc56c521d7a9fc983d5c7f82f53c83f556c519b5ae6cd3e6f65c490a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:4",
+      "sequence": 24759,
+      "chapter_label": "MRK 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "But there were some who were indignant among themselves, saying, “Why has this ointment been wasted?",
+      "ko": "어떤 사람들이 분내어 서로 말하되 무슨 의사로 이 향유를 허비하였는가",
+      "source_text_hash": "2d388aabf83c59c92c0fc7da7704d435a9457b03a41ace99eb58e6cb703ed683",
+      "translation_text_hash": "8cf8430defb638281c1555f6aaca4f1cb7bfc864ed53131973d39385df7f3a5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들이 분내어 서로 말하되 무슨 의사로 이 향유를 허비하였는가"
+      ],
+      "raw_text_hashes": [
+        "8cf8430defb638281c1555f6aaca4f1cb7bfc864ed53131973d39385df7f3a5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:5",
+      "sequence": 24760,
+      "chapter_label": "MRK 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "For this might have been sold for more than three hundred denarii and given to the poor.” So they grumbled against her.",
+      "ko": "이 향유를 삼백 데나리온 이상에 팔아 가난한 자들에게 줄 수 있었겠도다 하며 그 여자를 책망하는지라",
+      "source_text_hash": "8a16317d7408ab128ced020d492c4d54f9de76264d5012d8630d28c267f73edf",
+      "translation_text_hash": "9025cba737480ff7738e256314e27c8445c810b1d0a233afe5abe21a98d83d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 향유를 삼백 데나리온 이상에 팔아 가난한 자들에게 줄 수 있었겠도다 하며 그 여자를 책망하는지라"
+      ],
+      "raw_text_hashes": [
+        "9025cba737480ff7738e256314e27c8445c810b1d0a233afe5abe21a98d83d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:6",
+      "sequence": 24761,
+      "chapter_label": "MRK 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "But Jesus said, “Leave her alone. Why do you trouble her? She has done a good work for me.",
+      "ko": "예수께서 가라사대 가만 두어라 너희가 어찌하여 저를 괴롭게 하느냐 저가 내게 좋은 일을 하였느니라",
+      "source_text_hash": "8f948e095f8a63e92b93ec9c4d7205ab68bfdc949da8b268f402328fe6778b0b",
+      "translation_text_hash": "5fca375f8ff345470597cb2fd62cffb9b86cc41cdd9e0425bcbeb20464c30a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 가만 두어라 너희가 어찌하여 저를 괴롭게 하느냐 저가 내게 좋은 일을 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5fca375f8ff345470597cb2fd62cffb9b86cc41cdd9e0425bcbeb20464c30a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:7",
+      "sequence": 24762,
+      "chapter_label": "MRK 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "For you always have the poor with you, and whenever you want to, you can do them good; but you will not always have me.",
+      "ko": "가난한 자들은 항상 너희와 함께 있으니 아무 때라도 원하는대로 도울 수 있거니와 나는 너희와 항상 함께 있지 아니하리라",
+      "source_text_hash": "3e32fad3d9aea981bfc560edac8e399a809a99c0577bee521951f78933943cc0",
+      "translation_text_hash": "35cb0ee54591742353540f7a83f7be0c7b299dce28b3fced1e143420adff6474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자들은 항상 너희와 함께 있으니 아무 때라도 원하는대로 도울 수 있거니와 나는 너희와 항상 함께 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "35cb0ee54591742353540f7a83f7be0c7b299dce28b3fced1e143420adff6474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:8",
+      "sequence": 24763,
+      "chapter_label": "MRK 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "She has done what she could. She has anointed my body beforehand for the burying.",
+      "ko": "저가 힘을 다하여 내 몸에 향유를 부어 내 장사를 미리 준비하였느니라",
+      "source_text_hash": "d1d3d5889599222813587375d0c9bda15b8ecb1c7bfb8229a34ea223b48569e0",
+      "translation_text_hash": "816d0ccce2b8a53132ffc7809a2b3944cdf9aecb49fb08ccb5be1e50b89424b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 힘을 다하여 내 몸에 향유를 부어 내 장사를 미리 준비하였느니라"
+      ],
+      "raw_text_hashes": [
+        "816d0ccce2b8a53132ffc7809a2b3944cdf9aecb49fb08ccb5be1e50b89424b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:9",
+      "sequence": 24764,
+      "chapter_label": "MRK 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Most certainly I tell you, wherever this Good News may be preached throughout the whole world, that which this woman has done will also be spoken of for a memorial of her.”",
+      "ko": "내가 진실로 너희에게 이르노니 온 천하에 어디서든지 복음이 전파되는 곳에는 이 여자의 행한 일도 말하여 저를 기념하리라 하시니라",
+      "source_text_hash": "8c40f560920e561dad5085d12dc8afa6340c1b1619cae089116742be506a3120",
+      "translation_text_hash": "5021a18742b5376011b64bc7405af693f8ebb3e50673436df735b42e08bda7ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 온 천하에 어디서든지 복음이 전파되는 곳에는 이 여자의 행한 일도 말하여 저를 기념하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "5021a18742b5376011b64bc7405af693f8ebb3e50673436df735b42e08bda7ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:10",
+      "sequence": 24765,
+      "chapter_label": "MRK 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "Judas Iscariot, who was one of the twelve, went away to the chief priests, that he might deliver him to them.",
+      "ko": "열 둘 중에 하나인 가룟 유다가 예수를 넘겨 주려고 대제사장들에게 가매",
+      "source_text_hash": "aab7000d7b4e5bd33319192f6cfb94df07f1f53be9bf37a37e0cd607b159b3a6",
+      "translation_text_hash": "850d9d20fee3344e93d6d1ec5e8dae7101750dfaa7d64c5afa0078fb1e8d31be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 둘 중에 하나인 가룟 유다가 예수를 넘겨 주려고 대제사장들에게 가매"
+      ],
+      "raw_text_hashes": [
+        "850d9d20fee3344e93d6d1ec5e8dae7101750dfaa7d64c5afa0078fb1e8d31be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:11",
+      "sequence": 24766,
+      "chapter_label": "MRK 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "They, when they heard it, were glad, and promised to give him money. He sought how he might conveniently deliver him.",
+      "ko": "저희가 듣고 기뻐하여 돈을 주기로 약속하니 유다가 예수를 어떻게 넘겨 줄 기회를 찾더라",
+      "source_text_hash": "35541c5440ede4cc7cf1b4faad76a0b4f99eb306b21158f0a01b0967b8ac9cf5",
+      "translation_text_hash": "983a505e31e7b7d5da69fd7e28ce75b64200b857eca6cb0d6b61a9482bd62871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 기뻐하여 돈을 주기로 약속하니 유다가 예수를 어떻게 넘겨 줄 기회를 찾더라"
+      ],
+      "raw_text_hashes": [
+        "983a505e31e7b7d5da69fd7e28ce75b64200b857eca6cb0d6b61a9482bd62871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:12",
+      "sequence": 24767,
+      "chapter_label": "MRK 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "On the first day of unleavened bread, when they sacrificed the Passover, his disciples asked him, “Where do you want us to go and prepare that you may eat the Passover?”",
+      "ko": "무교절의 첫날 곧 유월절 양 잡는 날에 제자들이 예수께 여짜오되 우리가 어디로 가서 선생님으로 유월절을 잡수시게 예비하기를 원하시나이까 하매",
+      "source_text_hash": "9278c559e03a6ffb8b6b3d13840f7c3d9d56657fae9c28815c6e12139acdfd94",
+      "translation_text_hash": "891855f31cad1c6d52e59dd18d21e65d7bde59316587a4fbdf949fceb6cc8cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무교절의 첫날 곧 유월절 양 잡는 날에 제자들이 예수께 여짜오되 우리가 어디로 가서 선생님으로 유월절을 잡수시게 예비하기를 원하시나이까 하매"
+      ],
+      "raw_text_hashes": [
+        "891855f31cad1c6d52e59dd18d21e65d7bde59316587a4fbdf949fceb6cc8cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:13",
+      "sequence": 24768,
+      "chapter_label": "MRK 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "He sent two of his disciples and said to them, “Go into the city, and there a man carrying a pitcher of water will meet you. Follow him,",
+      "ko": "예수께서 제자 중에 둘을 보내시며 가라사대 성내로 들어가라 그리하면 물 한 동이를 가지고 가는 사람을 만나리니 그를 따라가서",
+      "source_text_hash": "489a7dc6f138736e93f5d5d15934d953834be618849b7f6da2c8b982694dec6b",
+      "translation_text_hash": "9b2ddc35787844e5b27c0ac1ee158951082a2dfdc93e1b21f737ce6699e25da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자 중에 둘을 보내시며 가라사대 성내로 들어가라 그리하면 물 한 동이를 가지고 가는 사람을 만나리니 그를 따라가서"
+      ],
+      "raw_text_hashes": [
+        "9b2ddc35787844e5b27c0ac1ee158951082a2dfdc93e1b21f737ce6699e25da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:14",
+      "sequence": 24769,
+      "chapter_label": "MRK 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "and wherever he enters in, tell the master of the house, ‘The Teacher says, “Where is the guest room, where I may eat the Passover with my disciples?”’",
+      "ko": "어디든지 그의 들어가는 그 집 주인에게 이르되 선생님의 말씀이 내가 내 제자들과 함께 유월절을 먹을 나의 객실이 어디 있느뇨 하시더라 하라",
+      "source_text_hash": "2b92736bcc48de369b4bf17bbce63c97265541b2489ef5534275beae65236791",
+      "translation_text_hash": "769997dbc137f3200892cc3d35256c7b337ed6fa31aacbcc43bedd6cf20b6b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어디든지 그의 들어가는 그 집 주인에게 이르되 선생님의 말씀이 내가 내 제자들과 함께 유월절을 먹을 나의 객실이 어디 있느뇨 하시더라 하라"
+      ],
+      "raw_text_hashes": [
+        "769997dbc137f3200892cc3d35256c7b337ed6fa31aacbcc43bedd6cf20b6b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:15",
+      "sequence": 24770,
+      "chapter_label": "MRK 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "He will himself show you a large upper room furnished and ready. Get ready for us there.”",
+      "ko": "그리하면 자리를 베풀고 예비된 큰 다락방을 보이리니 거기서 우리를 위하여 예비하라 하신대",
+      "source_text_hash": "f2cb04aea9854edb29355a0a0cbec6a68ffd3382c9a8d7bd02de2c7b1676e93e",
+      "translation_text_hash": "a1937e844ff04a1ccd709b151037ff2530bfe2634eea0279377d975e842684a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 자리를 베풀고 예비된 큰 다락방을 보이리니 거기서 우리를 위하여 예비하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "a1937e844ff04a1ccd709b151037ff2530bfe2634eea0279377d975e842684a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:16",
+      "sequence": 24771,
+      "chapter_label": "MRK 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "His disciples went out, and came into the city, and found things as he had said to them, and they prepared the Passover.",
+      "ko": "제자들이 나가 성내로 들어가서 예수의 하시던 말씀대로 만나 유월절을 예비하니라",
+      "source_text_hash": "dea0baa1eef5bf63ca7a272f849190182fe3e6b6f3cf96a23ea8cd07086cf485",
+      "translation_text_hash": "2515b2013b14c8715b11302e3cf8b1efa7b8b89d2597a5dcdcbdb33ca9a0c6bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 나가 성내로 들어가서 예수의 하시던 말씀대로 만나 유월절을 예비하니라"
+      ],
+      "raw_text_hashes": [
+        "2515b2013b14c8715b11302e3cf8b1efa7b8b89d2597a5dcdcbdb33ca9a0c6bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:17",
+      "sequence": 24772,
+      "chapter_label": "MRK 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "When it was evening he came with the twelve.",
+      "ko": "저물매 그 열 둘을 데리시고 와서",
+      "source_text_hash": "6b3adadbe557f91ec37b116cdf707f4a0ebeaf6fb6bc7b4f82a0837473297ced",
+      "translation_text_hash": "270330aee0f7698ae2740d3a96304f6ba3792331d5c3be57c06b6b7e226db88d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물매 그 열 둘을 데리시고 와서"
+      ],
+      "raw_text_hashes": [
+        "270330aee0f7698ae2740d3a96304f6ba3792331d5c3be57c06b6b7e226db88d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:18",
+      "sequence": 24773,
+      "chapter_label": "MRK 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "As they sat and were eating, Jesus said, “Most certainly I tell you, one of you will betray me—he who eats with me.”",
+      "ko": "다 앉아 먹을 때에 예수께서 가라사대 내가 진실로 너희에게 이르노니 너희 중에 한 사람 곧 나와 함께 먹는 자가 나를 팔리라 하신대",
+      "source_text_hash": "0dbf59db141e903d83549328f5a873db472c8ce2eef75df0d1a3cb4edc0c09ef",
+      "translation_text_hash": "6a8fc096c2cdee0fb84fabfb45bdf0d0aa56e6e1560a22642cf0900123c368cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 앉아 먹을 때에 예수께서 가라사대 내가 진실로 너희에게 이르노니 너희 중에 한 사람 곧 나와 함께 먹는 자가 나를 팔리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "6a8fc096c2cdee0fb84fabfb45bdf0d0aa56e6e1560a22642cf0900123c368cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:19",
+      "sequence": 24774,
+      "chapter_label": "MRK 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "They began to be sorrowful, and to ask him one by one, “Surely not I?” And another said, “Surely not I?”",
+      "ko": "저희가 근심하여 하나씩 하나씩 여짜오되 내니이까",
+      "source_text_hash": "133729f4ab32463ebbba27fd84d978eb8093c13031286213ecd9e1738666524c",
+      "translation_text_hash": "ce353780ff54cf55ac65392759824e0c48ffac50021db716733e752a4514360d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 근심하여 하나씩 하나씩 여짜오되 내니이까"
+      ],
+      "raw_text_hashes": [
+        "ce353780ff54cf55ac65392759824e0c48ffac50021db716733e752a4514360d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:20",
+      "sequence": 24775,
+      "chapter_label": "MRK 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "He answered them, “It is one of the twelve, he who dips with me in the dish.",
+      "ko": "이르시되 열 둘 중 하나 곧 나와 함께 그릇에 손을 넣는 자니라",
+      "source_text_hash": "f94605600b4e3f61ae7aa6566ba0a388e125298f817496c1efb522f5d0440456",
+      "translation_text_hash": "15a17553b245f546961828e499540ab2a0be99139ec7545652de2660e1ab36f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 열 둘 중 하나 곧 나와 함께 그릇에 손을 넣는 자니라"
+      ],
+      "raw_text_hashes": [
+        "15a17553b245f546961828e499540ab2a0be99139ec7545652de2660e1ab36f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:21",
+      "sequence": 24776,
+      "chapter_label": "MRK 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "For the Son of Man goes as it is written about him, but woe to that man by whom the Son of Man is betrayed! It would be better for that man if he had not been born.”",
+      "ko": "인자는 자기에게 대하여 기록된대로 가거니와 인자를 파는 그 사람에게는 화가 있으리로다 그 사람은 차라리 나지 아니하였더면 제게 좋을뻔하였느니라 하시니라",
+      "source_text_hash": "a7dd07688615aec5c7526037f0351efdac381c2ff2a5f35c9904deb7254d1858",
+      "translation_text_hash": "222566c38d45f9918f027a99cf35f22c14ebb4dc474db067ffd3aa9a90a14725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 자기에게 대하여 기록된대로 가거니와 인자를 파는 그 사람에게는 화가 있으리로다 그 사람은 차라리 나지 아니하였더면 제게 좋을뻔하였느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "222566c38d45f9918f027a99cf35f22c14ebb4dc474db067ffd3aa9a90a14725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:22",
+      "sequence": 24777,
+      "chapter_label": "MRK 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "As they were eating, Jesus took bread, and when he had blessed it, he broke it and gave to them, and said, “Take, eat. This is my body.”",
+      "ko": "저희가 먹을 때에 예수께서 떡을 가지사 축복하시고 떼어 제자들에게 주시며 가라사대 받으라 이것이 내 몸이니라 하시고",
+      "source_text_hash": "5aeb16075cd7768e5185a5f7681f5b0393a9c2b26d80f1951e271e440ff8152b",
+      "translation_text_hash": "6e4772627ccb20d8297f7d8516947393d6a5b6281260cf1b1ee01a3d54b8d25f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹을 때에 예수께서 떡을 가지사 축복하시고 떼어 제자들에게 주시며 가라사대 받으라 이것이 내 몸이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "6e4772627ccb20d8297f7d8516947393d6a5b6281260cf1b1ee01a3d54b8d25f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:23",
+      "sequence": 24778,
+      "chapter_label": "MRK 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "He took the cup, and when he had given thanks, he gave to them. They all drank of it.",
+      "ko": "또 잔을 가지사 사례하시고 저희에게 주시니 다 이를 마시매",
+      "source_text_hash": "610967b2ec2b7b7f0b0cf01a4833771816fcdac3721ef7fcb9bb074d72abe2fe",
+      "translation_text_hash": "a4f62cfc72d1ccd9e8e579f9563859c8d203ab3d70189ee770bf38d7086cd3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 잔을 가지사 사례하시고 저희에게 주시니 다 이를 마시매"
+      ],
+      "raw_text_hashes": [
+        "a4f62cfc72d1ccd9e8e579f9563859c8d203ab3d70189ee770bf38d7086cd3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:24",
+      "sequence": 24779,
+      "chapter_label": "MRK 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "He said to them, “This is my blood of the new covenant, which is poured out for many.",
+      "ko": "가라사대 이것은 많은 사람을 위하여 흘리는바 나의 피 곧 언약의 피니라",
+      "source_text_hash": "04a0e338392d98aae789d51666c70915e792c24bb37e470b2333e3966fe40885",
+      "translation_text_hash": "99cc5f1f7b5a0b58ebab0ddf6689d69fc3c482b5f863d56a5fbed7e1753a20cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 이것은 많은 사람을 위하여 흘리는바 나의 피 곧 언약의 피니라"
+      ],
+      "raw_text_hashes": [
+        "99cc5f1f7b5a0b58ebab0ddf6689d69fc3c482b5f863d56a5fbed7e1753a20cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:25",
+      "sequence": 24780,
+      "chapter_label": "MRK 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "Most certainly I tell you, I will no more drink of the fruit of the vine until that day when I drink it anew in God’s Kingdom.”",
+      "ko": "진실로 너희에게 이르노니 내가 포도나무에서 난 것을 하나님 나라에서 새것으로 마시는 날까지 다시 마시지 아니하리라 하시니라",
+      "source_text_hash": "176ea4aa39d6b833cbd052a51c771b9c102922eadc6347b619eb7e5cdf9f2f31",
+      "translation_text_hash": "12ab6e3cf7bddb2be87d3c13b237b54ddf8d9ee23131a67554e2677c99ab37ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 너희에게 이르노니 내가 포도나무에서 난 것을 하나님 나라에서 새것으로 마시는 날까지 다시 마시지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "12ab6e3cf7bddb2be87d3c13b237b54ddf8d9ee23131a67554e2677c99ab37ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:26",
+      "sequence": 24781,
+      "chapter_label": "MRK 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "When they had sung a hymn, they went out to the Mount of Olives.",
+      "ko": "이에 저희가 찬미하고 감람산으로 나가니라",
+      "source_text_hash": "5c3f29bec87b127bea8af374ed30a6acf65ae18dec3d9b3dbf3e84f2f22dd74e",
+      "translation_text_hash": "0c0e2b817a9c799b3ad2764357c22c506f784e004b25c46c1e0d0db6e060a359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 찬미하고 감람산으로 나가니라"
+      ],
+      "raw_text_hashes": [
+        "0c0e2b817a9c799b3ad2764357c22c506f784e004b25c46c1e0d0db6e060a359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:27",
+      "sequence": 24782,
+      "chapter_label": "MRK 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "Jesus said to them, “All of you will be made to stumble because of me tonight, for it is written, ‘I will strike the shepherd, and the sheep will be scattered.’",
+      "ko": "예수께서 제자들에게 이르시되 너희가 다 나를 버리리라 이는 기록된바 내가 목자를 치리니 양들이 흩어지리라 하였느니라",
+      "source_text_hash": "a36a85d1df86abb5a477c4730bc8aa5a7a164de25aed591a121cbc83bb1bdcdd",
+      "translation_text_hash": "6ed78a3f4b3382ecb509e96766ff56155a0947ebc33b3bcfa42713e1527c66f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들에게 이르시되 너희가 다 나를 버리리라 이는 기록된바 내가 목자를 치리니 양들이 흩어지리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "6ed78a3f4b3382ecb509e96766ff56155a0947ebc33b3bcfa42713e1527c66f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:28",
+      "sequence": 24783,
+      "chapter_label": "MRK 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "However, after I am raised up, I will go before you into Galilee.”",
+      "ko": "그러나 내가 살아난 후에 너희보다 먼저 갈릴리로 가리라",
+      "source_text_hash": "2127aaa143074911da5b6b8c45c517a4f8acfa7b38813f8ddc2a36e49756cdb9",
+      "translation_text_hash": "ba62fb41a09c409b390ebdd1a787f94c727ab2e8637ddf9ac8518ea54466d54e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 살아난 후에 너희보다 먼저 갈릴리로 가리라"
+      ],
+      "raw_text_hashes": [
+        "ba62fb41a09c409b390ebdd1a787f94c727ab2e8637ddf9ac8518ea54466d54e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:29",
+      "sequence": 24784,
+      "chapter_label": "MRK 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "But Peter said to him, “Although all will be offended, yet I will not.”",
+      "ko": "베드로가 여짜오되 다 버릴찌라도 나는 그렇지 않겠나이다",
+      "source_text_hash": "1918252ad9d28c897500156847869b688fb6abae2ef764f6aea6eb0f05dc18c1",
+      "translation_text_hash": "88e4366b1ef20b9e60a2262077e0de3462ba7ad51afcfc00691cebec393725cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 여짜오되 다 버릴찌라도 나는 그렇지 않겠나이다"
+      ],
+      "raw_text_hashes": [
+        "88e4366b1ef20b9e60a2262077e0de3462ba7ad51afcfc00691cebec393725cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:30",
+      "sequence": 24785,
+      "chapter_label": "MRK 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "Jesus said to him, “Most certainly I tell you that you today, even this night, before the rooster crows twice, you will deny me three times.”",
+      "ko": "예수께서 가라사대 내가 진실로 네게 이르노니 오늘 이밤 닭이 두번 울기 전에 네가 세번 나를 부인하리라",
+      "source_text_hash": "0bfc8bcf0d53e534666e8ad4e6789943d9af6d90b363e3bab3641da055b657da",
+      "translation_text_hash": "945c7c4ab22ae5f91b3e68f19c5415e4bd17fcb39b804b7713923cb8ffe333b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 진실로 네게 이르노니 오늘 이밤 닭이 두번 울기 전에 네가 세번 나를 부인하리라"
+      ],
+      "raw_text_hashes": [
+        "945c7c4ab22ae5f91b3e68f19c5415e4bd17fcb39b804b7713923cb8ffe333b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:31",
+      "sequence": 24786,
+      "chapter_label": "MRK 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "But he spoke all the more, “If I must die with you, I will not deny you.” They all said the same thing.",
+      "ko": "베드로가 힘있게 말하되 내가 주와 함께 죽을찌언정 주를 부인하지 않겠나이다 하고 모든 제자도 이와 같이 말하니라",
+      "source_text_hash": "6758562e394b752d3b689cc965e2df68d37c5846c775d9b890c1b61c3178fe3c",
+      "translation_text_hash": "e4df3e9be6e85509b7ae8764c087c5d73c59621b947d56b7bf1346c30e3970d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 힘있게 말하되 내가 주와 함께 죽을찌언정 주를 부인하지 않겠나이다 하고 모든 제자도 이와 같이 말하니라"
+      ],
+      "raw_text_hashes": [
+        "e4df3e9be6e85509b7ae8764c087c5d73c59621b947d56b7bf1346c30e3970d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:32",
+      "sequence": 24787,
+      "chapter_label": "MRK 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "They came to a place which was named Gethsemane. He said to his disciples, “Sit here while I pray.”",
+      "ko": "저희가 겟세마네라 하는 곳에 이르매 예수께서 제자들에게 이르시되 나의 기도할 동안에 너희는 여기 앉았으라 하시고",
+      "source_text_hash": "2c24d817ecc3071656fd3985c6c3c0b309afc18a708012b47f67e21fc8280b99",
+      "translation_text_hash": "df5ecefcf2a0d132d2e98e85d145558f37f0c11cd2debbf33640787aedb83325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 겟세마네라 하는 곳에 이르매 예수께서 제자들에게 이르시되 나의 기도할 동안에 너희는 여기 앉았으라 하시고"
+      ],
+      "raw_text_hashes": [
+        "df5ecefcf2a0d132d2e98e85d145558f37f0c11cd2debbf33640787aedb83325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:33",
+      "sequence": 24788,
+      "chapter_label": "MRK 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "He took with him Peter, James, and John, and began to be greatly troubled and distressed.",
+      "ko": "베드로와 야고보와 요한을 데리고 가실쌔 심히 놀라시며 슬퍼하사",
+      "source_text_hash": "3c4a098d8da56130ef0d24b1758bd7ddbae0eb013495325482709ab2a253ff2d",
+      "translation_text_hash": "1e1069d387f0914900138ebe5172122c635ca54fd703fbb489e59c827db61a22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 야고보와 요한을 데리고 가실쌔 심히 놀라시며 슬퍼하사"
+      ],
+      "raw_text_hashes": [
+        "1e1069d387f0914900138ebe5172122c635ca54fd703fbb489e59c827db61a22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:34",
+      "sequence": 24789,
+      "chapter_label": "MRK 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "He said to them, “My soul is exceedingly sorrowful, even to death. Stay here and watch.”",
+      "ko": "말씀하시되 내 마음이 심히 고민하여 죽게 되었으니 너희는 여기 머물러 깨어 있으라 하시고",
+      "source_text_hash": "253dedc992a02b28675b2fe8d6e7b2276c916d8bbae2ac0e8df473f1be89aac6",
+      "translation_text_hash": "279064ea86c3aaec41c9f247b1f79771baabd8ee5b2de68c8bcda5cd9bccba6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하시되 내 마음이 심히 고민하여 죽게 되었으니 너희는 여기 머물러 깨어 있으라 하시고"
+      ],
+      "raw_text_hashes": [
+        "279064ea86c3aaec41c9f247b1f79771baabd8ee5b2de68c8bcda5cd9bccba6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:35",
+      "sequence": 24790,
+      "chapter_label": "MRK 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "He went forward a little, and fell on the ground, and prayed that if it were possible, the hour might pass away from him.",
+      "ko": "조금 나아가사 땅에 엎드리어 될 수 있는 대로 이 때가 자기에게서 지나가기를 구하여",
+      "source_text_hash": "be3581bffeb020eeca4a8a63507c2cdf562f39ad975c71edae0f30084d0f7595",
+      "translation_text_hash": "938be1c2d3e19e22f2c2193536e5efa6dec1c20c9f2a019a19d47b4b85728767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 나아가사 땅에 엎드리어 될 수 있는 대로 이 때가 자기에게서 지나가기를 구하여"
+      ],
+      "raw_text_hashes": [
+        "938be1c2d3e19e22f2c2193536e5efa6dec1c20c9f2a019a19d47b4b85728767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:36",
+      "sequence": 24791,
+      "chapter_label": "MRK 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "He said, “Abba,Father, all things are possible to you. Please remove this cup from me. However, not what I desire, but what you desire.”",
+      "ko": "가라사대 아바 아버지여 아버지께는 모든 것이 가능하오니 이 잔을 내게서 옮기시옵소서 그러나 나의 원대로 마옵시고 아버지의 원대로 하옵소서 하시고",
+      "source_text_hash": "15f0e74bd96a45ab93d73281c514ff3f3b427c73ebba641d12b8a55b739e950f",
+      "translation_text_hash": "50c11a0c7fcff5b74a56b103e74ac333f484081f73d8e73cd7e29bc6b38cb6d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 아바 아버지여 아버지께는 모든 것이 가능하오니 이 잔을 내게서 옮기시옵소서 그러나 나의 원대로 마옵시고 아버지의 원대로 하옵소서 하시고"
+      ],
+      "raw_text_hashes": [
+        "50c11a0c7fcff5b74a56b103e74ac333f484081f73d8e73cd7e29bc6b38cb6d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:37",
+      "sequence": 24792,
+      "chapter_label": "MRK 14",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 37
+        }
+      ],
+      "en": "He came and found them sleeping, and said to Peter, “Simon, are you sleeping? Couldn’t you watch one hour?",
+      "ko": "돌아오사 제자들의 자는 것을 보시고 베드로에게 말씀하시되 시몬아 자느냐 네가 한시 동안도 깨어 있을 수 없더냐",
+      "source_text_hash": "6e46ce5bd3d3614429c5af8b4edf722f9373b70cbf788dfbfbb34de4c2f10660",
+      "translation_text_hash": "8601edd450f130202776dcea841a1b9bd8097ba62a0944b5b367f3b8ce2b6aba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아오사 제자들의 자는 것을 보시고 베드로에게 말씀하시되 시몬아 자느냐 네가 한시 동안도 깨어 있을 수 없더냐"
+      ],
+      "raw_text_hashes": [
+        "8601edd450f130202776dcea841a1b9bd8097ba62a0944b5b367f3b8ce2b6aba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:38",
+      "sequence": 24793,
+      "chapter_label": "MRK 14",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 38
+        }
+      ],
+      "en": "Watch and pray, that you may not enter into temptation. The spirit indeed is willing, but the flesh is weak.”",
+      "ko": "시험에 들지 않게 깨어 있어 기도하라 마음에는 원이로되 육신이 약하도다 하시고",
+      "source_text_hash": "9d63de0b08598c81e8578094f853232c9febc07c0e7a3476120789c8372d9159",
+      "translation_text_hash": "9b592937a5e487d0b86fa148f33a806f71f6f1d26d336e5a3fb19bcc3247f8df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시험에 들지 않게 깨어 있어 기도하라 마음에는 원이로되 육신이 약하도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "9b592937a5e487d0b86fa148f33a806f71f6f1d26d336e5a3fb19bcc3247f8df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:39",
+      "sequence": 24794,
+      "chapter_label": "MRK 14",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 39
+        }
+      ],
+      "en": "Again he went away and prayed, saying the same words.",
+      "ko": "다시 나아가 동일한 말씀으로 기도하시고",
+      "source_text_hash": "a6aba163c678c7a582fa03eea33acc6fd66c466bd9e940b57e4af4ea1ee82d93",
+      "translation_text_hash": "a34fbf44c5582a705a2a3492fc8c2a95d29f9e8789fa4ece72b40e5910b87ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 나아가 동일한 말씀으로 기도하시고"
+      ],
+      "raw_text_hashes": [
+        "a34fbf44c5582a705a2a3492fc8c2a95d29f9e8789fa4ece72b40e5910b87ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:40",
+      "sequence": 24795,
+      "chapter_label": "MRK 14",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 40
+        }
+      ],
+      "en": "Again he returned and found them sleeping, for their eyes were very heavy; and they didn’t know what to answer him.",
+      "ko": "다시 오사 보신즉 저희가 자니 이는 저희 눈이 심히 피곤함이라 저희가 예수께 무엇으로 대답할 줄을 알지 못하더라",
+      "source_text_hash": "8e1c8ac2c0fa705b9bbb8775d7bfec7cb2ca02a9a1b282f37fa395b65fab63ba",
+      "translation_text_hash": "057da7d86a97239547aca749312abf2fd683a57e3ac7772f07c79d7fc237ae93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 오사 보신즉 저희가 자니 이는 저희 눈이 심히 피곤함이라 저희가 예수께 무엇으로 대답할 줄을 알지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "057da7d86a97239547aca749312abf2fd683a57e3ac7772f07c79d7fc237ae93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:41",
+      "sequence": 24796,
+      "chapter_label": "MRK 14",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 41
+        }
+      ],
+      "en": "He came the third time and said to them, “Sleep on now, and take your rest. It is enough. The hour has come. Behold, the Son of Man is betrayed into the hands of sinners.",
+      "ko": "세번째 오사 저희에게 이르시되 이제는 자고 쉬라 그만이다 때가 왔도다 보라 인자가 죄인의 손에 팔리우느니라",
+      "source_text_hash": "1597ba677573071280327d4e0166f0138af9c9e51fef134ea6bb20b03de2eba5",
+      "translation_text_hash": "e5694c322fa511dc8a77af47325f7597a50078054f5eaf5a8834937c126581d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세번째 오사 저희에게 이르시되 이제는 자고 쉬라 그만이다 때가 왔도다 보라 인자가 죄인의 손에 팔리우느니라"
+      ],
+      "raw_text_hashes": [
+        "e5694c322fa511dc8a77af47325f7597a50078054f5eaf5a8834937c126581d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:42",
+      "sequence": 24797,
+      "chapter_label": "MRK 14",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 42
+        }
+      ],
+      "en": "Arise! Let’s get going. Behold, he who betrays me is at hand.”",
+      "ko": "일어나라 함께 가자 보라 나를 파는 자가 가까이 왔느니라",
+      "source_text_hash": "10266c7bdb75c258fc0d782451e6975bddf27930e2e6cb13803bd1218baf428d",
+      "translation_text_hash": "e859fa5283a031889b1b57de43f88cb94a387908ef7891b2adf94a0308b5b76e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나라 함께 가자 보라 나를 파는 자가 가까이 왔느니라"
+      ],
+      "raw_text_hashes": [
+        "e859fa5283a031889b1b57de43f88cb94a387908ef7891b2adf94a0308b5b76e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:43",
+      "sequence": 24798,
+      "chapter_label": "MRK 14",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 43
+        }
+      ],
+      "en": "Immediately, while he was still speaking, Judas, one of the twelve, came—and with him a multitude with swords and clubs, from the chief priests, the scribes, and the elders.",
+      "ko": "말씀하실 때에 곧 열 둘 중의 하나인 유다가 왔는데 대제사장들과 서기관들과 장로들에게서 파송된 무리가 검과 몽치를 가지고 그와 함께 하였더라",
+      "source_text_hash": "2e61b8dd50ac8dbf8393525c823485f37f0fdb3babc9ad7d9ca281efca1a1a19",
+      "translation_text_hash": "db953af26a8d3e30344c3bd8c3b9ca4284a744393c370dc9c384b635cfb03081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하실 때에 곧 열 둘 중의 하나인 유다가 왔는데 대제사장들과 서기관들과 장로들에게서 파송된 무리가 검과 몽치를 가지고 그와 함께 하였더라"
+      ],
+      "raw_text_hashes": [
+        "db953af26a8d3e30344c3bd8c3b9ca4284a744393c370dc9c384b635cfb03081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:44",
+      "sequence": 24799,
+      "chapter_label": "MRK 14",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 44
+        }
+      ],
+      "en": "Now he who betrayed him had given them a sign, saying, “Whomever I will kiss, that is he. Seize him, and lead him away safely.”",
+      "ko": "예수를 파는 자가 이미 그들과 군호를 짜 가로되 내가 입맞추는 자가 그이니 그를 잡아 단단히 끌어가라 하였는지라",
+      "source_text_hash": "0af66000c42f7d60f989d115501cc9b6f455499781824d257488cb9d8f46b638",
+      "translation_text_hash": "7b240e709c882ac455b9fe83afb6d07536d1e19b775625cb86f726f73a3cafca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 파는 자가 이미 그들과 군호를 짜 가로되 내가 입맞추는 자가 그이니 그를 잡아 단단히 끌어가라 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "7b240e709c882ac455b9fe83afb6d07536d1e19b775625cb86f726f73a3cafca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:45",
+      "sequence": 24800,
+      "chapter_label": "MRK 14",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 45
+        }
+      ],
+      "en": "When he had come, immediately he came to him and said, “Rabbi! Rabbi!” and kissed him.",
+      "ko": "이에 와서 곧 예수께 나아와 랍비여 하고 입을 맞추니",
+      "source_text_hash": "33df9d2ef54088d142ab6070da8f0ccbe27081f7894e3e909cefcaf2e4229056",
+      "translation_text_hash": "cb9b3ecef8d0e30f71528dff8d7e1e62eea3cdc8b00fbcbb742f3e865af645e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 와서 곧 예수께 나아와 랍비여 하고 입을 맞추니"
+      ],
+      "raw_text_hashes": [
+        "cb9b3ecef8d0e30f71528dff8d7e1e62eea3cdc8b00fbcbb742f3e865af645e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:46",
+      "sequence": 24801,
+      "chapter_label": "MRK 14",
+      "verse_label": "46",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 46
+        }
+      ],
+      "en": "They laid their hands on him and seized him.",
+      "ko": "저희가 예수께 손을 대어 잡거늘",
+      "source_text_hash": "1ff616d328a752eda90be5144d19486ab6305b1d45ebc53dbbf86bbad2536d77",
+      "translation_text_hash": "d4b886a65f1592948ea568abdac25f097bbd63679791f3aa9451efc354aa589f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수께 손을 대어 잡거늘"
+      ],
+      "raw_text_hashes": [
+        "d4b886a65f1592948ea568abdac25f097bbd63679791f3aa9451efc354aa589f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:47",
+      "sequence": 24802,
+      "chapter_label": "MRK 14",
+      "verse_label": "47",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 47
+        }
+      ],
+      "en": "But a certain one of those who stood by drew his sword and struck the servant of the high priest, and cut off his ear.",
+      "ko": "곁에 섰는 자 중에 한 사람이 검을 빼어 대제사장의 종을 쳐 그 귀를 떨어뜨리니라",
+      "source_text_hash": "5ea6fa8ca42e520f2ba3bed803ea200deb62db48af630e885e68fcb0da1d4398",
+      "translation_text_hash": "ca6a992bcc70aad2daaf45e7babf77254a3929eda049b614f65827e850ab26e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곁에 섰는 자 중에 한 사람이 검을 빼어 대제사장의 종을 쳐 그 귀를 떨어뜨리니라"
+      ],
+      "raw_text_hashes": [
+        "ca6a992bcc70aad2daaf45e7babf77254a3929eda049b614f65827e850ab26e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:48",
+      "sequence": 24803,
+      "chapter_label": "MRK 14",
+      "verse_label": "48",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 48
+        }
+      ],
+      "en": "Jesus answered them, “Have you come out, as against a robber, with swords and clubs to seize me?",
+      "ko": "예수께서 무리에게 말씀하여 가라사대 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나를 잡으러 나왔느냐",
+      "source_text_hash": "1b2e223c1f4e82e6341332cf89ccaf9bae4ccde5d854206ca0d51241d4ed957c",
+      "translation_text_hash": "fc40257b535d89663efc4eee25d083b59679c0f1018c6397550835a57836f422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리에게 말씀하여 가라사대 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나를 잡으러 나왔느냐"
+      ],
+      "raw_text_hashes": [
+        "fc40257b535d89663efc4eee25d083b59679c0f1018c6397550835a57836f422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:49",
+      "sequence": 24804,
+      "chapter_label": "MRK 14",
+      "verse_label": "49",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 49
+        }
+      ],
+      "en": "I was daily with you in the temple teaching, and you didn’t arrest me. But this is so that the Scriptures might be fulfilled.”",
+      "ko": "내가 날마다 너희와 함께 성전에 있어서 가르쳤으되 너희가 나를 잡지 아니하였도다 그러나 이는 성경을 이루려 함이니라 하시더라",
+      "source_text_hash": "eab4603cdf3a54612e90d2e04c0cae1aa44e5a3ce714d52c8b25b4049f6808b0",
+      "translation_text_hash": "4f8ac4748ef50cb774228e850f6d4ddb3f1d40d297f3e0fcde98ed3d928384c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 날마다 너희와 함께 성전에 있어서 가르쳤으되 너희가 나를 잡지 아니하였도다 그러나 이는 성경을 이루려 함이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "4f8ac4748ef50cb774228e850f6d4ddb3f1d40d297f3e0fcde98ed3d928384c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:50",
+      "sequence": 24805,
+      "chapter_label": "MRK 14",
+      "verse_label": "50",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 50
+        }
+      ],
+      "en": "They all left him, and fled.",
+      "ko": "제자들이 다 예수를 버리고 도망하니라",
+      "source_text_hash": "739f44894d2e1086c5ecee700bfbec573d23c0afae09fd853d71ec5049438af0",
+      "translation_text_hash": "46d61053c2786cad69c14ad19d8e739fa985dc8d59db9e35acfa4110cdf0b003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 다 예수를 버리고 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "46d61053c2786cad69c14ad19d8e739fa985dc8d59db9e35acfa4110cdf0b003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:51",
+      "sequence": 24806,
+      "chapter_label": "MRK 14",
+      "verse_label": "51",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 51
+        }
+      ],
+      "en": "A certain young man followed him, having a linen cloth thrown around himself over his naked body. The young men grabbed him,",
+      "ko": "한 청년이 벗은 몸에 베 홑이불을 두르고 예수를 따라오다가 무리에게 잡히매",
+      "source_text_hash": "697cb58f7f111f5a6d73662b2130e02b6690f8aef5ad6b003126184b528d4a42",
+      "translation_text_hash": "9d120b22af35bf7118fe88ec097295ac11c1e38f061930162d9f997323b54be0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 청년이 벗은 몸에 베 홑이불을 두르고 예수를 따라오다가 무리에게 잡히매"
+      ],
+      "raw_text_hashes": [
+        "9d120b22af35bf7118fe88ec097295ac11c1e38f061930162d9f997323b54be0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:52",
+      "sequence": 24807,
+      "chapter_label": "MRK 14",
+      "verse_label": "52",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 52
+        }
+      ],
+      "en": "but he left the linen cloth and fled from them naked.",
+      "ko": "베 홑이불을 버리고 벗은 몸으로 도망하니라",
+      "source_text_hash": "54cfb99ea3b5f6aaa64270c2b27ac93bda72df1a30a9ead4a365e5806a5a85f0",
+      "translation_text_hash": "d4660135d8fe9671091936272c3d08b01096b64ef290681f31dbf0956bc9a9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베 홑이불을 버리고 벗은 몸으로 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "d4660135d8fe9671091936272c3d08b01096b64ef290681f31dbf0956bc9a9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:53",
+      "sequence": 24808,
+      "chapter_label": "MRK 14",
+      "verse_label": "53",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 53
+        }
+      ],
+      "en": "They led Jesus away to the high priest. All the chief priests, the elders, and the scribes came together with him.",
+      "ko": "저희가 예수를 끌고 대제사장에게로 가니 대제사장들과 장로들과 서기관들이 다 모이더라",
+      "source_text_hash": "9638f24501b7b41dd5bd4465bbe41f81282ad6ac5737ae814ba69949ef5d6709",
+      "translation_text_hash": "2e3a461d2ce457616b818eef8e0ca35858bfa2c7cc85b48aad69f300bbf4d116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 끌고 대제사장에게로 가니 대제사장들과 장로들과 서기관들이 다 모이더라"
+      ],
+      "raw_text_hashes": [
+        "2e3a461d2ce457616b818eef8e0ca35858bfa2c7cc85b48aad69f300bbf4d116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:54",
+      "sequence": 24809,
+      "chapter_label": "MRK 14",
+      "verse_label": "54",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 54
+        }
+      ],
+      "en": "Peter had followed him from a distance, until he came into the court of the high priest. He was sitting with the officers, and warming himself in the light of the fire.",
+      "ko": "베드로가 예수를 멀찍이 좇아 대제사장의 집 뜰안까지 들어가서 하속들과 함께 앉아 불을 쬐더라",
+      "source_text_hash": "d145ae5e8960cc3ec1883ab49656222a7262ad3d02fb33b57c5397d486254a68",
+      "translation_text_hash": "c5e455dbdeab8110f81a157c372694a40a1505512433feca1538c62a89a9a68e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 예수를 멀찍이 좇아 대제사장의 집 뜰안까지 들어가서 하속들과 함께 앉아 불을 쬐더라"
+      ],
+      "raw_text_hashes": [
+        "c5e455dbdeab8110f81a157c372694a40a1505512433feca1538c62a89a9a68e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:55",
+      "sequence": 24810,
+      "chapter_label": "MRK 14",
+      "verse_label": "55",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 55
+        }
+      ],
+      "en": "Now the chief priests and the whole council sought witnesses against Jesus to put him to death, and found none.",
+      "ko": "대제사장들과 온 공회가 예수를 죽이려고 그를 칠 증거를 찾되 얻지 못하니",
+      "source_text_hash": "6d9a84d9e51d3219596b76e3909068d2e2b9ebc8e016296aaf83f75a785d8c1b",
+      "translation_text_hash": "60d56a8293b2bf5179032dc0048abcdce8a3699bf6d1e841aa8d7989994ef9f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 온 공회가 예수를 죽이려고 그를 칠 증거를 찾되 얻지 못하니"
+      ],
+      "raw_text_hashes": [
+        "60d56a8293b2bf5179032dc0048abcdce8a3699bf6d1e841aa8d7989994ef9f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:56",
+      "sequence": 24811,
+      "chapter_label": "MRK 14",
+      "verse_label": "56",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 56
+        }
+      ],
+      "en": "For many gave false testimony against him, and their testimony didn’t agree with each other.",
+      "ko": "이는 예수를 쳐서 거짓 증거하는 자가 많으나 그 증거가 서로 합하지 못함이라",
+      "source_text_hash": "8c47545008e161856bdd5a35bc16d9b0e610a4cca094a5b082574f7d6a95b2f0",
+      "translation_text_hash": "32a0cf5ee7fb9fe802e30266c76ab47470a3ee78d6a7678c207b372cff66c762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 예수를 쳐서 거짓 증거하는 자가 많으나 그 증거가 서로 합하지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "32a0cf5ee7fb9fe802e30266c76ab47470a3ee78d6a7678c207b372cff66c762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:57",
+      "sequence": 24812,
+      "chapter_label": "MRK 14",
+      "verse_label": "57",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 57
+        }
+      ],
+      "en": "Some stood up and gave false testimony against him, saying,",
+      "ko": "어떤 사람들이 일어나 예수를 쳐서 거짓 증거하여 가로되",
+      "source_text_hash": "6d5b0b12d157cc775c563412bd9a618d317dba34a3e423e6c9a4e2e6b79ee988",
+      "translation_text_hash": "5717bf89fad66d6738e7d18ff998972adc9064d3f2aa0684e38a3d3bdc905720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들이 일어나 예수를 쳐서 거짓 증거하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "5717bf89fad66d6738e7d18ff998972adc9064d3f2aa0684e38a3d3bdc905720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:58",
+      "sequence": 24813,
+      "chapter_label": "MRK 14",
+      "verse_label": "58",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 58
+        }
+      ],
+      "en": "“We heard him say, ‘I will destroy this temple that is made with hands, and in three days I will build another made without hands.’”",
+      "ko": "우리가 그의 말을 들으니 손으로 지은 이 성전을 내가 헐고 손으로 짓지 아니한 다른 성전을 사흘에 지으리라 하더라 하되",
+      "source_text_hash": "1152c829e8c0d81463b11b59dbff544ec585f4b2df29d06787b514be3f8d536d",
+      "translation_text_hash": "cd07536ea8457fe35757615c0addba096915cf9b172ad4fe04d90fba28a69b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그의 말을 들으니 손으로 지은 이 성전을 내가 헐고 손으로 짓지 아니한 다른 성전을 사흘에 지으리라 하더라 하되"
+      ],
+      "raw_text_hashes": [
+        "cd07536ea8457fe35757615c0addba096915cf9b172ad4fe04d90fba28a69b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:59",
+      "sequence": 24814,
+      "chapter_label": "MRK 14",
+      "verse_label": "59",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 59
+        }
+      ],
+      "en": "Even so, their testimony didn’t agree.",
+      "ko": "오히려 그 증거도 서로 합하지 않더라",
+      "source_text_hash": "0686b5e7b27346b7956c830134e646bf4769f58621adde0e600585114b9225a1",
+      "translation_text_hash": "02f12548881fec3c1d70a58d183a03ca532abd5490cb883254c5bfb72f5ebb7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오히려 그 증거도 서로 합하지 않더라"
+      ],
+      "raw_text_hashes": [
+        "02f12548881fec3c1d70a58d183a03ca532abd5490cb883254c5bfb72f5ebb7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:60",
+      "sequence": 24815,
+      "chapter_label": "MRK 14",
+      "verse_label": "60",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 60
+        }
+      ],
+      "en": "The high priest stood up in the middle, and asked Jesus, “Have you no answer? What is it which these testify against you?”",
+      "ko": "대제사장이 가운데 일어서서 예수에게 물어 가로되 너는 아무 대답도 없느냐 이 사람들의 너를 치는 증거가 어떠하냐 하되",
+      "source_text_hash": "b9722fb6b90c2794404aa798aad5187b8c33f7eafc4e854006a2077fbb49e86c",
+      "translation_text_hash": "27b7ae4f9d229b5274bc9c9e320ba455e1e204c5744daa956b3609019d42a040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장이 가운데 일어서서 예수에게 물어 가로되 너는 아무 대답도 없느냐 이 사람들의 너를 치는 증거가 어떠하냐 하되"
+      ],
+      "raw_text_hashes": [
+        "27b7ae4f9d229b5274bc9c9e320ba455e1e204c5744daa956b3609019d42a040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:61",
+      "sequence": 24816,
+      "chapter_label": "MRK 14",
+      "verse_label": "61",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 61
+        }
+      ],
+      "en": "But he stayed quiet, and answered nothing. Again the high priest asked him, “Are you the Christ, the Son of the Blessed?”",
+      "ko": "잠잠하고 아무 대답도 아니하시거늘 대제사장이 다시 물어 가로되 네가 찬송 받을 자의 아들 그리스도냐",
+      "source_text_hash": "7832245581f29efd5a8804b6ffc9538b323936f2acc6c00286c665e3b7a3fa42",
+      "translation_text_hash": "4885af914ca58473dc139b180f88d8115fef57ed235c7685186c78f58dbf55f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잠잠하고 아무 대답도 아니하시거늘 대제사장이 다시 물어 가로되 네가 찬송 받을 자의 아들 그리스도냐"
+      ],
+      "raw_text_hashes": [
+        "4885af914ca58473dc139b180f88d8115fef57ed235c7685186c78f58dbf55f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:62",
+      "sequence": 24817,
+      "chapter_label": "MRK 14",
+      "verse_label": "62",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 62
+        }
+      ],
+      "en": "Jesus said, “I am. You will see the Son of Man sitting at the right hand of Power, and coming with the clouds of the sky.”",
+      "ko": "예수께서 이르시되 내가 그니라 인자가 권능자의 우편에 앉은 것과 하늘 구름을 타고 오는 것을 너희가 보리라 하시니",
+      "source_text_hash": "6c3f9be26f3db3112e04400253741005db49d7f00fef670edf449f03849b5c85",
+      "translation_text_hash": "571f9b3cd473fb002a843bbeeda9a9a2869338a7a6cf14b494434c330023e27c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 그니라 인자가 권능자의 우편에 앉은 것과 하늘 구름을 타고 오는 것을 너희가 보리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "571f9b3cd473fb002a843bbeeda9a9a2869338a7a6cf14b494434c330023e27c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:63",
+      "sequence": 24818,
+      "chapter_label": "MRK 14",
+      "verse_label": "63",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 63
+        }
+      ],
+      "en": "The high priest tore his clothes and said, “What further need have we of witnesses?",
+      "ko": "대제사장이 자기 옷을 찢으며 가로되 우리가 어찌 더 증인을 요구하리요",
+      "source_text_hash": "411d12d7282a195cee2259af3678daee15f7f6ee7a0660c47fa8116a51111f40",
+      "translation_text_hash": "287f114d7f6f6eabc14d89d7ef4e5b0466b16faf8ffe1b4073f2a3923b5fc16c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장이 자기 옷을 찢으며 가로되 우리가 어찌 더 증인을 요구하리요"
+      ],
+      "raw_text_hashes": [
+        "287f114d7f6f6eabc14d89d7ef4e5b0466b16faf8ffe1b4073f2a3923b5fc16c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:64",
+      "sequence": 24819,
+      "chapter_label": "MRK 14",
+      "verse_label": "64",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 64
+        }
+      ],
+      "en": "You have heard the blasphemy! What do you think?” They all condemned him to be worthy of death.",
+      "ko": "그 참람한 말을 너희가 들었도다 너희는 어떻게 생각하느뇨 하니 저희가 다 예수를 사형에 해당한 자로 정죄하고",
+      "source_text_hash": "5aa3c058e206c624f2556e48b87a6690b5db0e59bbaf5c80f5d3465ea5d7c124",
+      "translation_text_hash": "170f1cbe0448a4d44840196b8ebb2ffc49d15a7c63c01ac4628ffaf8ce980333",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 참람한 말을 너희가 들었도다 너희는 어떻게 생각하느뇨 하니 저희가 다 예수를 사형에 해당한 자로 정죄하고"
+      ],
+      "raw_text_hashes": [
+        "170f1cbe0448a4d44840196b8ebb2ffc49d15a7c63c01ac4628ffaf8ce980333"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:65",
+      "sequence": 24820,
+      "chapter_label": "MRK 14",
+      "verse_label": "65",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 65
+        }
+      ],
+      "en": "Some began to spit on him, and to cover his face, and to beat him with fists, and to tell him, “Prophesy!” The officers struck him with the palms of their hands.",
+      "ko": "혹은 그에게 침을 뱉으며 그의 얼굴을 가리우고 주먹으로 치며 가로되 선지자 노릇을 하라 하고 하속들은 손바닥으로 치더라",
+      "source_text_hash": "958754abe8c9e208d561fd407230af70c1513a26a5d032b253f0ac64461ef0b6",
+      "translation_text_hash": "e8ed74e14b3c1112cb4b6ae1ac6f2da1322eaf54ca9d8903dca473b27b96123e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 그에게 침을 뱉으며 그의 얼굴을 가리우고 주먹으로 치며 가로되 선지자 노릇을 하라 하고 하속들은 손바닥으로 치더라"
+      ],
+      "raw_text_hashes": [
+        "e8ed74e14b3c1112cb4b6ae1ac6f2da1322eaf54ca9d8903dca473b27b96123e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:66",
+      "sequence": 24821,
+      "chapter_label": "MRK 14",
+      "verse_label": "66",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 66
+        }
+      ],
+      "en": "As Peter was in the courtyard below, one of the maids of the high priest came,",
+      "ko": "베드로는 아래 뜰에 있더니 대제사장의 비자 하나가 와서",
+      "source_text_hash": "1842b54aeaa5f2eaf9577e8e0d24be4e7ec3c953d0aa33c316270f5c17b5e03f",
+      "translation_text_hash": "9d398885355845a1c2518c89ee97fda8f0e3002b994389c58a64ebd646c2e5c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로는 아래 뜰에 있더니 대제사장의 비자 하나가 와서"
+      ],
+      "raw_text_hashes": [
+        "9d398885355845a1c2518c89ee97fda8f0e3002b994389c58a64ebd646c2e5c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:67",
+      "sequence": 24822,
+      "chapter_label": "MRK 14",
+      "verse_label": "67",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 67
+        }
+      ],
+      "en": "and seeing Peter warming himself, she looked at him and said, “You were also with the Nazarene, Jesus!”",
+      "ko": "베드로의 불 쬠을 보고 주목하여 가로되 너도 나사렛 예수와 함께 있었도다 하거늘",
+      "source_text_hash": "8305333a9830118ef2a22a7f1acc1dd9cb8ce67556449ddf69d3c1989c477587",
+      "translation_text_hash": "e3cafc5a4ce486eea700d7287c6256ea65e721b2428cecf74797276d7fa5e7c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로의 불 쬠을 보고 주목하여 가로되 너도 나사렛 예수와 함께 있었도다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "e3cafc5a4ce486eea700d7287c6256ea65e721b2428cecf74797276d7fa5e7c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:68",
+      "sequence": 24823,
+      "chapter_label": "MRK 14",
+      "verse_label": "68",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 68
+        }
+      ],
+      "en": "But he denied it, saying, “I neither know nor understand what you are saying.” He went out on the porch, and the rooster crowed.",
+      "ko": "베드로가 부인하여 가로되 나는 네 말하는 것이 무엇인지 알지도 못하고 깨닫지도 못하겠노라 하며 앞뜰로 나갈쌔",
+      "source_text_hash": "13b8e6d7afc5581aca1b5e77a28e91838689b7b715cb627582a1cb21e0e8a1a6",
+      "translation_text_hash": "0f1ea0d157290bcc32e64c5328db972dbdb7591e96c5002a56acc68c9520a869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 부인하여 가로되 나는 네 말하는 것이 무엇인지 알지도 못하고 깨닫지도 못하겠노라 하며 앞뜰로 나갈쌔"
+      ],
+      "raw_text_hashes": [
+        "0f1ea0d157290bcc32e64c5328db972dbdb7591e96c5002a56acc68c9520a869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:69",
+      "sequence": 24824,
+      "chapter_label": "MRK 14",
+      "verse_label": "69",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 69
+        }
+      ],
+      "en": "The maid saw him and began again to tell those who stood by, “This is one of them.”",
+      "ko": "비자가 그를 보고 곁에 서 있는 자들에게 다시 이르되 이 사람은 그 당이라 하되",
+      "source_text_hash": "581f6335593471925d127cf6e5ec55d14eab6ec6bb7982e96ef7f69a49b9352c",
+      "translation_text_hash": "bcb1c5b91663021525e4fb63c9164b47a2577a78ea0d5680bd66bd0ab2c4163f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비자가 그를 보고 곁에 서 있는 자들에게 다시 이르되 이 사람은 그 당이라 하되"
+      ],
+      "raw_text_hashes": [
+        "bcb1c5b91663021525e4fb63c9164b47a2577a78ea0d5680bd66bd0ab2c4163f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:70",
+      "sequence": 24825,
+      "chapter_label": "MRK 14",
+      "verse_label": "70",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 70
+        }
+      ],
+      "en": "But he again denied it. After a little while again those who stood by said to Peter, “You truly are one of them, for you are a Galilean, and your speech shows it.”",
+      "ko": "또 부인하더라 조금 후에 곁에 서 있는 사람들이 다시 베드로에게 말하되 너는 갈릴리 사람이니 참으로 그 당이니라",
+      "source_text_hash": "9afbd0f65dd63c4efc3a4ead23dbca0441685e7007498c2e58cd2a4e31688fb9",
+      "translation_text_hash": "f85b8df42aa796a1eca119b3a97e936f151fcb453f44530f4b8041c695ab5d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 부인하더라 조금 후에 곁에 서 있는 사람들이 다시 베드로에게 말하되 너는 갈릴리 사람이니 참으로 그 당이니라"
+      ],
+      "raw_text_hashes": [
+        "f85b8df42aa796a1eca119b3a97e936f151fcb453f44530f4b8041c695ab5d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:71",
+      "sequence": 24826,
+      "chapter_label": "MRK 14",
+      "verse_label": "71",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 71
+        }
+      ],
+      "en": "But he began to curse and to swear, “I don’t know this man of whom you speak!”",
+      "ko": "베드로가 저주하며 맹세하되 나는 너희의 말하는 이 사람을 알지 못하노라 하니",
+      "source_text_hash": "95e2ad1095ceb6f81c856a0a8a240a3a19715d2150f93ae0a65359e37adab564",
+      "translation_text_hash": "a93d7ceff6f75e0c151aab98d69c5fe7fdcd419db35694ca6159b24fce2862a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 저주하며 맹세하되 나는 너희의 말하는 이 사람을 알지 못하노라 하니"
+      ],
+      "raw_text_hashes": [
+        "a93d7ceff6f75e0c151aab98d69c5fe7fdcd419db35694ca6159b24fce2862a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:14:72",
+      "sequence": 24827,
+      "chapter_label": "MRK 14",
+      "verse_label": "72",
+      "locator": {
+        "book": "MRK",
+        "chapter": 14,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 14,
+          "verse": 72
+        }
+      ],
+      "en": "The rooster crowed the second time. Peter remembered the words that Jesus said to him, “Before the rooster crows twice, you will deny me three times.”When he thought about that, he wept.",
+      "ko": "닭이 곧 두번째 울더라 이에 베드로가 예수께서 자기에게 하신 말씀 곧 닭이 두번 울기 전에 네가 세번 나를 부인하리라 하심이 기억되어 생각하고 울었더라",
+      "source_text_hash": "f3a0192af488d2bcacb3bf791f6be5b04a32b52b479e75a7476f462dbce4c5aa",
+      "translation_text_hash": "f3bd3bab63a78ef5487297381a4a771e649485f8f0f0610f9613b6a36497f3d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "닭이 곧 두번째 울더라 이에 베드로가 예수께서 자기에게 하신 말씀 곧 닭이 두번 울기 전에 네가 세번 나를 부인하리라 하심이 기억되어 생각하고 울었더라"
+      ],
+      "raw_text_hashes": [
+        "f3bd3bab63a78ef5487297381a4a771e649485f8f0f0610f9613b6a36497f3d4"
+      ]
+    }
+  ]
+}

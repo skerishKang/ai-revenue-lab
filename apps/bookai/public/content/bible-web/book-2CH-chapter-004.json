@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:004",
+  "unit_ordinal": 371,
+  "unit_label": "2CH 4",
+  "book_code": "2CH",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:4:1",
+      "sequence": 11248,
+      "chapter_label": "2CH 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Then he made an altar of bronze, twenty cubits long, twenty cubits wide, and ten cubits high.",
+      "ko": "솔로몬이 또 놋으로 단을 만들었으니 장이 이십 규빗이요 광이 이십 규빗이요 고가 십 규빗이며",
+      "source_text_hash": "17a94a6ad3b6790de285ae55548b02f093beaea5cbbe1db9bf91bab032fbaa09",
+      "translation_text_hash": "b637826a6c6712b299e86e4524895ec747ea4d84770ef5f30f8c4c4cf9c3c91c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 또 놋으로 단을 만들었으니 장이 이십 규빗이요 광이 이십 규빗이요 고가 십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "b637826a6c6712b299e86e4524895ec747ea4d84770ef5f30f8c4c4cf9c3c91c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:2",
+      "sequence": 11249,
+      "chapter_label": "2CH 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Also he made the molten sea of ten cubits from brim to brim. It was round, five cubits high, and thirty cubits in circumference.",
+      "ko": "또 바다를 부어 만들었으니 직경이 십 규빗이요 그 모양이 둥글며 그 고는 다섯 규빗이요 주위는 삼십 규빗 줄을 두를만하며",
+      "source_text_hash": "45713482b3356ec02ea1b3a4e4935a95d6786d9196efba600521351972971deb",
+      "translation_text_hash": "2a1a4b961cd4cb75100a29a21e420eab29f81aa5c4aedbbcb88f7b28b8a9e316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바다를 부어 만들었으니 직경이 십 규빗이요 그 모양이 둥글며 그 고는 다섯 규빗이요 주위는 삼십 규빗 줄을 두를만하며"
+      ],
+      "raw_text_hashes": [
+        "2a1a4b961cd4cb75100a29a21e420eab29f81aa5c4aedbbcb88f7b28b8a9e316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:3",
+      "sequence": 11250,
+      "chapter_label": "2CH 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Under it was the likeness of oxen, which encircled it, for ten cubits, encircling the sea. The oxen were in two rows, cast when it was cast.",
+      "ko": "그 가장자리 아래에는 돌아가며 소 형상이 있는데 매 규빗에 소가 열씩 있어서 바다 주위에 둘렸으니 그 소는 바다를 부어 만들 때에 두 줄로 부어 만들었으며",
+      "source_text_hash": "c73ef960b29175967004b91408ac9090d9224601fc0b5bb755582fba86560607",
+      "translation_text_hash": "808ab68bd28327f47b010cd53b3c6f771279c8e10e38413143671bdfd9945fc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가장자리 아래에는 돌아가며 소 형상이 있는데 매 규빗에 소가 열씩 있어서 바다 주위에 둘렸으니 그 소는 바다를 부어 만들 때에 두 줄로 부어 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "808ab68bd28327f47b010cd53b3c6f771279c8e10e38413143671bdfd9945fc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:4",
+      "sequence": 11251,
+      "chapter_label": "2CH 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "It stood on twelve oxen, three looking toward the north, three looking toward the west, three looking toward the south, and three looking toward the east; and the sea was set on them above, and all their hindquarters were inward.",
+      "ko": "그 바다를 열 두 소가 받쳤으니 셋은 북을 향하였고 셋은 서를 향하였고 셋은 남을 향하였고 셋은 동을 향하였으며 바다를 그 위에 놓았고 소의 뒤는 다 안으로 두었으며",
+      "source_text_hash": "81663348a99e804528d07480cb12526ada35bd4411651f842b0038330bfb5f5b",
+      "translation_text_hash": "4f7f4724484d4597956651d296c4e0361eb69a32c60f7d1d208cf5050770491e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 바다를 열 두 소가 받쳤으니 셋은 북을 향하였고 셋은 서를 향하였고 셋은 남을 향하였고 셋은 동을 향하였으며 바다를 그 위에 놓았고 소의 뒤는 다 안으로 두었으며"
+      ],
+      "raw_text_hashes": [
+        "4f7f4724484d4597956651d296c4e0361eb69a32c60f7d1d208cf5050770491e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:5",
+      "sequence": 11252,
+      "chapter_label": "2CH 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "It was a handbreadth thick. Its brim was made like the brim of a cup, like the flower of a lily. It received and held three thousand baths.",
+      "ko": "바다의 두께는 한 손넓이만하고 그 가는 백합화의 식양으로 잔 가와 같이 만들었으니 그 바다에는 삼천 밧을 담겠으며",
+      "source_text_hash": "377882f4ecdedf78f47593c0649ca304fa05a3295704f6f69b8e9b1ded0f80a1",
+      "translation_text_hash": "c09e68268c20536f485e779711036995f2c1962f7d033b624a314390ce7ea85f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다의 두께는 한 손넓이만하고 그 가는 백합화의 식양으로 잔 가와 같이 만들었으니 그 바다에는 삼천 밧을 담겠으며"
+      ],
+      "raw_text_hashes": [
+        "c09e68268c20536f485e779711036995f2c1962f7d033b624a314390ce7ea85f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:6",
+      "sequence": 11253,
+      "chapter_label": "2CH 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "He also made ten basins, and put five on the right hand and five on the left, to wash in them. The things that belonged to the burnt offering were washed in them, but the sea was for the priests to wash in.",
+      "ko": "또 물두멍 열을 만들어 다섯은 우편에 두고 다섯은 좌편에 두어 씻게 하되 번제에 속한 물건을 거기 씻게 하였으며 그 바다는 제사장들의 씻기를 위한 것이더라",
+      "source_text_hash": "dcf47465babf46af621b38ce7ae2f0da20ff6695c065c154a34ced9774f9d16c",
+      "translation_text_hash": "dc024703d878e33be2e6d1a71b3c62ca7f5b38594d9ab5639b6baa0e69e48bf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 물두멍 열을 만들어 다섯은 우편에 두고 다섯은 좌편에 두어 씻게 하되 번제에 속한 물건을 거기 씻게 하였으며 그 바다는 제사장들의 씻기를 위한 것이더라"
+      ],
+      "raw_text_hashes": [
+        "dc024703d878e33be2e6d1a71b3c62ca7f5b38594d9ab5639b6baa0e69e48bf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:7",
+      "sequence": 11254,
+      "chapter_label": "2CH 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "He made the ten lamp stands of gold according to the ordinance concerning them; and he set them in the temple, five on the right hand and five on the left.",
+      "ko": "또 정식을 따라 금으로 등대 열을 만들어 외소 안에 두었으니 좌편에 다섯이요 우편에 다섯이며",
+      "source_text_hash": "274fd8ecd903eab0ed21098ae760d02b65c0168f9733021342e4514b2fd4bc3b",
+      "translation_text_hash": "cac6e770a29ebb0c0afa271cb33cd8b6d8c34be802d957355578499e76318a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 정식을 따라 금으로 등대 열을 만들어 외소 안에 두었으니 좌편에 다섯이요 우편에 다섯이며"
+      ],
+      "raw_text_hashes": [
+        "cac6e770a29ebb0c0afa271cb33cd8b6d8c34be802d957355578499e76318a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:8",
+      "sequence": 11255,
+      "chapter_label": "2CH 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "He made also ten tables, and placed them in the temple, five on the right side and five on the left. He made one hundred basins of gold.",
+      "ko": "또 상 열을 만들어 외소 안에 두었으니 좌편에 다섯이요 우편에 다섯이며 또 금으로 대접 일백을 만들었고",
+      "source_text_hash": "847aa3c4fda97d5703468fe049fa30af04a8d6cf0f01892e8d2041b65d0a85d2",
+      "translation_text_hash": "28e99fc5002f69482e9cf3028f3f2f47815c634be6608346ee26e9f31afc458b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 상 열을 만들어 외소 안에 두었으니 좌편에 다섯이요 우편에 다섯이며 또 금으로 대접 일백을 만들었고"
+      ],
+      "raw_text_hashes": [
+        "28e99fc5002f69482e9cf3028f3f2f47815c634be6608346ee26e9f31afc458b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:9",
+      "sequence": 11256,
+      "chapter_label": "2CH 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Furthermore he made the court of the priests, the great court, and doors for the court, and overlaid their doors with bronze.",
+      "ko": "또 제사장의 뜰과 큰 뜰과 뜰 문을 만들고 놋으로 그 문짝에 입혔고",
+      "source_text_hash": "25630e8c04473ab0851723e9349f5f70ff1c3684d6a6aa763f16e83e703df081",
+      "translation_text_hash": "4c9dd139f8025328a441143bf181dbb42eca61bff1c15d2fac9ac81afe2aaff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제사장의 뜰과 큰 뜰과 뜰 문을 만들고 놋으로 그 문짝에 입혔고"
+      ],
+      "raw_text_hashes": [
+        "4c9dd139f8025328a441143bf181dbb42eca61bff1c15d2fac9ac81afe2aaff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:10",
+      "sequence": 11257,
+      "chapter_label": "2CH 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "He set the sea on the right side of the house eastward, toward the south.",
+      "ko": "그 바다는 전 우편 동남방에 두었더라",
+      "source_text_hash": "6377dacacf4f482eca245f3053cc90019f32737ff069230bf7aa00d84c9e2acc",
+      "translation_text_hash": "a7aef5d5144b982b6b81e81ea57333ddc914ca6f7e6f710861311710ab5ffde3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 바다는 전 우편 동남방에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "a7aef5d5144b982b6b81e81ea57333ddc914ca6f7e6f710861311710ab5ffde3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:11",
+      "sequence": 11258,
+      "chapter_label": "2CH 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Huram made the pots, the shovels, and the basins. So Huram finished doing the work that he did for King Solomon in God’s house:",
+      "ko": "후람이 또 솥과 부삽과 대접을 만들었더라 이와 같이 후람이 솔로몬왕을 위하여 하나님의 전에서 하는 일을 마쳤으니",
+      "source_text_hash": "ba7dafaaed0b257e9999f2bfecf2c39d7ec0aa7969555314d39c1a7ac4c2fe2b",
+      "translation_text_hash": "66115b9beb80e3b1e75167c84d5424766b62fc3d3802480dbdd68ad29a897d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후람이 또 솥과 부삽과 대접을 만들었더라 이와 같이 후람이 솔로몬왕을 위하여 하나님의 전에서 하는 일을 마쳤으니"
+      ],
+      "raw_text_hashes": [
+        "66115b9beb80e3b1e75167c84d5424766b62fc3d3802480dbdd68ad29a897d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:12",
+      "sequence": 11259,
+      "chapter_label": "2CH 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "the two pillars, the bowls, the two capitals which were on the top of the pillars, the two networks to cover the two bowls of the capitals that were on the top of the pillars,",
+      "ko": "곧 기둥 둘과 그 기둥 꼭대기의 공 같은 머리 둘과 또 기둥 꼭대기의 공 같은 기둥 머리를 가리우는 그물 둘과",
+      "source_text_hash": "7e3418855fc9c3d56e029acb0dac1ee972b01d08036773095dbc2fc75ee4601f",
+      "translation_text_hash": "ca66f4c2b25a53ca5f12ddd81600752075993cd0e66be7430072453af74b2fc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 기둥 둘과 그 기둥 꼭대기의 공 같은 머리 둘과 또 기둥 꼭대기의 공 같은 기둥 머리를 가리우는 그물 둘과"
+      ],
+      "raw_text_hashes": [
+        "ca66f4c2b25a53ca5f12ddd81600752075993cd0e66be7430072453af74b2fc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:13",
+      "sequence": 11260,
+      "chapter_label": "2CH 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "and the four hundred pomegranates for the two networks—two rows of pomegranates for each network, to cover the two bowls of the capitals that were on the pillars.",
+      "ko": "또 그 그물들을 위하여 만든바 매 그물에 두 줄씩으로 기둥 위의 공 같은 두 머리를 가리우게 한 사백 석류와",
+      "source_text_hash": "641ff1e9b520bcb648e185f86cf9f4879a563a3750e19919308c2c2916e34674",
+      "translation_text_hash": "918c9d7651bd5ce11ace357b912325d899db8a88d30968b2c8ef15baabdac2f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 그물들을 위하여 만든바 매 그물에 두 줄씩으로 기둥 위의 공 같은 두 머리를 가리우게 한 사백 석류와"
+      ],
+      "raw_text_hashes": [
+        "918c9d7651bd5ce11ace357b912325d899db8a88d30968b2c8ef15baabdac2f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:14",
+      "sequence": 11261,
+      "chapter_label": "2CH 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "He also made the bases, and he made the basins on the bases—",
+      "ko": "또 받침과 받침 위의 물두멍과",
+      "source_text_hash": "235ce21a3a1836b8c07dda22bb9568d1ec6945024e18460159d9005df3b5ac53",
+      "translation_text_hash": "8edf85694467566f49817f037471b1590756f5bf5a1a7afbafc608929b23a3b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 받침과 받침 위의 물두멍과"
+      ],
+      "raw_text_hashes": [
+        "8edf85694467566f49817f037471b1590756f5bf5a1a7afbafc608929b23a3b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:15",
+      "sequence": 11262,
+      "chapter_label": "2CH 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "one sea, and the twelve oxen under it.",
+      "ko": "한 바다와 그 바다 아래 열 두 소와",
+      "source_text_hash": "13f57617bfc4df4490dd65eee646b1580aff12d4d6a76f68cba58108917e94b8",
+      "translation_text_hash": "b84c3253349c5505f9e9e6be2e6828b6a048141ad628ac5369ba95e15350053f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 바다와 그 바다 아래 열 두 소와"
+      ],
+      "raw_text_hashes": [
+        "b84c3253349c5505f9e9e6be2e6828b6a048141ad628ac5369ba95e15350053f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:16",
+      "sequence": 11263,
+      "chapter_label": "2CH 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Huram-abi also made the pots, the shovels, the forks, and all its vessels for King Solomon, for the LORD’s house, of bright bronze.",
+      "ko": "솥과 부삽과 고기 갈고리와 여호와의 전의 모든 그릇들이라 후람의 아비가 솔로몬왕을 위하여 빛난 놋으로 만들 때에",
+      "source_text_hash": "9f327c5c61b6e810013aa4627c5601bc79e325a202311007df156bb26eba294e",
+      "translation_text_hash": "0c823b6d144b79937e2799cd32a660823d319badd64410fe4b0ec7714975cb70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솥과 부삽과 고기 갈고리와 여호와의 전의 모든 그릇들이라 후람의 아비가 솔로몬왕을 위하여 빛난 놋으로 만들 때에"
+      ],
+      "raw_text_hashes": [
+        "0c823b6d144b79937e2799cd32a660823d319badd64410fe4b0ec7714975cb70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:17",
+      "sequence": 11264,
+      "chapter_label": "2CH 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The king cast them in the plain of the Jordan, in the clay ground between Succoth and Zeredah.",
+      "ko": "왕이 요단 평지에서 숙곳과 스레다 사이의 차진 흙에 그것들을 부어 내었더라",
+      "source_text_hash": "4ad5eb88d7d541aa4c7dcc0f242e157dd7247b897e272856d0aca3f79bde3bdc",
+      "translation_text_hash": "72fe713d47e0092f5e7578ddf6e03db5ba6917e5aa1da42c9cfde4284209ceee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 요단 평지에서 숙곳과 스레다 사이의 차진 흙에 그것들을 부어 내었더라"
+      ],
+      "raw_text_hashes": [
+        "72fe713d47e0092f5e7578ddf6e03db5ba6917e5aa1da42c9cfde4284209ceee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:18",
+      "sequence": 11265,
+      "chapter_label": "2CH 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Thus Solomon made all these vessels in great abundance, so that the weight of the bronze could not be determined.",
+      "ko": "이와 같이 솔로몬이 이 모든 기구를 심히 많이 만들었으므로 그 놋 중수를 능히 측량할 수 없었더라",
+      "source_text_hash": "c069f31f046e8c2994888621a3c15e9cd0f78875878acbcdee7ff8668efc8695",
+      "translation_text_hash": "2335f601cfaceb544f7cbf57c05f42c850657ee60ebe3591a8e682686b37d750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 솔로몬이 이 모든 기구를 심히 많이 만들었으므로 그 놋 중수를 능히 측량할 수 없었더라"
+      ],
+      "raw_text_hashes": [
+        "2335f601cfaceb544f7cbf57c05f42c850657ee60ebe3591a8e682686b37d750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:19",
+      "sequence": 11266,
+      "chapter_label": "2CH 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Solomon made all the vessels that were in God’s house: the golden altar, the tables with the show bread on them,",
+      "ko": "솔로몬이 또 하나님의 전의 모든 기구를 만들었으니 곧 금단과 진설병 상들과",
+      "source_text_hash": "05a22582c8bd4d921e9fa95c3b465c89829d04c145ffd0cdeed952c0a168f3eb",
+      "translation_text_hash": "eec9629eb5c8f23d7bd00952f2266d7f674e7d06deda1685e8c8f194188089c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 또 하나님의 전의 모든 기구를 만들었으니 곧 금단과 진설병 상들과"
+      ],
+      "raw_text_hashes": [
+        "eec9629eb5c8f23d7bd00952f2266d7f674e7d06deda1685e8c8f194188089c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:20",
+      "sequence": 11267,
+      "chapter_label": "2CH 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "and the lamp stands with their lamps to burn according to the ordinance before the inner sanctuary, of pure gold;",
+      "ko": "내소 앞에서 규례대로 불을 켤 정금 등대와 그 등잔이며",
+      "source_text_hash": "569cd94df6eeea2f6d49d496f49d2a934fef9111b647191f4e5cc0fcdc50a3d3",
+      "translation_text_hash": "a9a7dbdd52d52bb33e3d6673fbb870ebbca70de65b8b3c6b47a8a426d504c791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내소 앞에서 규례대로 불을 켤 정금 등대와 그 등잔이며"
+      ],
+      "raw_text_hashes": [
+        "a9a7dbdd52d52bb33e3d6673fbb870ebbca70de65b8b3c6b47a8a426d504c791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:21",
+      "sequence": 11268,
+      "chapter_label": "2CH 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "and the flowers, the lamps, and the tongs of gold that was purest gold;",
+      "ko": "또 순정한 금으로 만든 꽃과 등잔과 화젓가락이며",
+      "source_text_hash": "facc54208d254e9489c9d8a7a298b76dacf2fb528a0197a2c153db33ca757160",
+      "translation_text_hash": "cca92caf0cd6f428242ae3b27688cbc8d5c60049aa2ec676c8174f934be5d8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 순정한 금으로 만든 꽃과 등잔과 화젓가락이며"
+      ],
+      "raw_text_hashes": [
+        "cca92caf0cd6f428242ae3b27688cbc8d5c60049aa2ec676c8174f934be5d8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:4:22",
+      "sequence": 11269,
+      "chapter_label": "2CH 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "and the snuffers, the basins, the spoons, and the fire pans of pure gold. As for the entry of the house, its inner doors for the most holy place and the doors of the main hall of the temple were of gold.",
+      "ko": "또 정금으로 만든 불집게와 주발과 숟가락과 불 옮기는 그릇이며 또 전 문 곧 지성소의 문과 외소의 문을 금으로 입혔더라",
+      "source_text_hash": "6491ee4333c61d6f9f338d8e463ac9423d8494fc9ba1f55646cb40736768689a",
+      "translation_text_hash": "a5e49a71a520026dd6d5d39e621a5253e234be6c6a842ad5ed2eb288444554fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 정금으로 만든 불집게와 주발과 숟가락과 불 옮기는 그릇이며 또 전 문 곧 지성소의 문과 외소의 문을 금으로 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "a5e49a71a520026dd6d5d39e621a5253e234be6c6a842ad5ed2eb288444554fb"
+      ]
+    }
+  ]
+}

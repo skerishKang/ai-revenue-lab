@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:005",
+  "unit_ordinal": 122,
+  "unit_label": "NUM 5",
+  "book_code": "NUM",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:5:1",
+      "sequence": 3794,
+      "chapter_label": "NUM 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:2",
+      "sequence": 3795,
+      "chapter_label": "NUM 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "“Command the children of Israel that they put out of the camp every leper, everyone who has a discharge, and whoever is unclean by a corpse.",
+      "ko": "이스라엘 자손에게 명하여 모든 문둥병 환자와 유출병이 있는 자와 주검으로 부정케 된 자를 다 진밖으로 내어 보내되",
+      "source_text_hash": "762e7bd420c3bfcdf805133c8d5ff65d156eecb4f65f771e769da6526f0a25a1",
+      "translation_text_hash": "b271ec43cde7c51a573b7e3831963f94c2a409d46d1d9eaf203bdc9352cf882d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 명하여 모든 문둥병 환자와 유출병이 있는 자와 주검으로 부정케 된 자를 다 진밖으로 내어 보내되"
+      ],
+      "raw_text_hashes": [
+        "b271ec43cde7c51a573b7e3831963f94c2a409d46d1d9eaf203bdc9352cf882d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:3",
+      "sequence": 3796,
+      "chapter_label": "NUM 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "You shall put both male and female outside of the camp so that they don’t defile their camp, in the midst of which I dwell.”",
+      "ko": "무론남녀하고 다 진 밖으로 내어 보내어 그들로 진을 더럽히게 말라 내가 그 진 가운데 거하느니라 하시매",
+      "source_text_hash": "e852f6faf406b195152d2802b563d05f792b07c02da326e00af82cbc76b63636",
+      "translation_text_hash": "745fc89c82ec4a3c1006decc21aeda06d4f03fbef6908642ed1bd13856d0c7d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무론남녀하고 다 진 밖으로 내어 보내어 그들로 진을 더럽히게 말라 내가 그 진 가운데 거하느니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "745fc89c82ec4a3c1006decc21aeda06d4f03fbef6908642ed1bd13856d0c7d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:4",
+      "sequence": 3797,
+      "chapter_label": "NUM 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "The children of Israel did so, and put them outside of the camp; as the LORD spoke to Moses, so the children of Israel did.",
+      "ko": "이스라엘 자손이 그같이 행하여 그들을 진 밖으로 내어 보내었으니 곧 여호와께서 모세에게 이르신대로 이스라엘 자손이 행하였더라",
+      "source_text_hash": "87996ee529c00715abc52a40b8952945032f0c0ebb012f7e7f543f85ca349a24",
+      "translation_text_hash": "ccb29bfe23613c401cc8f413487bdf7ce4c581b720000cf04c49ce9ec954050c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그같이 행하여 그들을 진 밖으로 내어 보내었으니 곧 여호와께서 모세에게 이르신대로 이스라엘 자손이 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "ccb29bfe23613c401cc8f413487bdf7ce4c581b720000cf04c49ce9ec954050c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:5",
+      "sequence": 3798,
+      "chapter_label": "NUM 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:6",
+      "sequence": 3799,
+      "chapter_label": "NUM 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "“Speak to the children of Israel: ‘When a man or woman commits any sin that men commit, so as to trespass against the LORD, and that soul is guilty,",
+      "ko": "이스라엘 자손에게 이르라 남자나 여자나 사람들이 범하는 죄를 범하여 여호와께 패역하여 그 몸에 죄를 얻거든",
+      "source_text_hash": "b70de869e3821571c6bfa44bec82af39bf2fa39f98d65d62c6d8417d7a0c41a1",
+      "translation_text_hash": "6cecd7a8c28a22b83b0f761a99ad51e423d418baa48273927a78b17f2c099530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 이르라 남자나 여자나 사람들이 범하는 죄를 범하여 여호와께 패역하여 그 몸에 죄를 얻거든"
+      ],
+      "raw_text_hashes": [
+        "6cecd7a8c28a22b83b0f761a99ad51e423d418baa48273927a78b17f2c099530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:7",
+      "sequence": 3800,
+      "chapter_label": "NUM 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "then he shall confess his sin which he has done; and he shall make restitution for his guilt in full, add to it the fifth part of it, and give it to him in respect of whom he has been guilty.",
+      "ko": "그 지은 죄를 자복하고 그 죄 값을 온전히 갚되 오분지 일을 더하여 그가 죄를 얻었던 그 본주에게 돌려 줄 것이요",
+      "source_text_hash": "a0e2f2be7e0a6c4cb54e744f060a4e85dd63fc493a59561f1e8279b146336d75",
+      "translation_text_hash": "83dbfb9431c54c9aaef9e4422d47b8f255fab69a51a54fb270ff19780d14c7a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지은 죄를 자복하고 그 죄 값을 온전히 갚되 오분지 일을 더하여 그가 죄를 얻었던 그 본주에게 돌려 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "83dbfb9431c54c9aaef9e4422d47b8f255fab69a51a54fb270ff19780d14c7a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:8",
+      "sequence": 3801,
+      "chapter_label": "NUM 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "But if the man has no kinsman to whom restitution may be made for the guilt, the restitution for guilt which is made to the LORD shall be the priest’s, in addition to the ram of the atonement, by which atonement shall be made for him.",
+      "ko": "만일 죄 값을 받을만한 친족이 없거든 그 죄 값을 여호와께 드려 제사장에게로 돌릴 것이니 이는 그를 위하여 속죄할 속죄의 수양 외에 돌릴 것이니라",
+      "source_text_hash": "d5cf1efed1e6ce1cc1f5424594dfd3bd0fe0baf261569e3aa06d3909078e79ac",
+      "translation_text_hash": "339246974ffef34af81bb488f88ffcd64c3ef887358f01233078976d4a8eabd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 죄 값을 받을만한 친족이 없거든 그 죄 값을 여호와께 드려 제사장에게로 돌릴 것이니 이는 그를 위하여 속죄할 속죄의 수양 외에 돌릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "339246974ffef34af81bb488f88ffcd64c3ef887358f01233078976d4a8eabd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:9",
+      "sequence": 3802,
+      "chapter_label": "NUM 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Every heave offering of all the holy things of the children of Israel, which they present to the priest, shall be his.",
+      "ko": "이스라엘 자손의 거제로 제사장에게 가져 오는 모든 성물은 그의 것이 될 것이라",
+      "source_text_hash": "384a02dd1173aec0420e7792a148384dc8eab0bc268118aa8368296123eb2c7b",
+      "translation_text_hash": "34bfa642451d1eb8f8b8f869fcc4e703086f736bdbb26e632c64b612b0bbb975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 거제로 제사장에게 가져 오는 모든 성물은 그의 것이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "34bfa642451d1eb8f8b8f869fcc4e703086f736bdbb26e632c64b612b0bbb975"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:10",
+      "sequence": 3803,
+      "chapter_label": "NUM 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Every man’s holy things shall be his; whatever any man gives the priest, it shall be his.’”",
+      "ko": "각 사람의 구별한 물건은 그의 것이 되나니 누구든지 제사장에게 주는 것은 그의 것이 되느니라",
+      "source_text_hash": "03799d7745af644f10853e308dc050274a59c115ba6182328d4c449f520c4615",
+      "translation_text_hash": "af71d2fdb47821bf95abeee2edb2103d5ce727216aab85b26517c0899c69e7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람의 구별한 물건은 그의 것이 되나니 누구든지 제사장에게 주는 것은 그의 것이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "af71d2fdb47821bf95abeee2edb2103d5ce727216aab85b26517c0899c69e7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:11",
+      "sequence": 3804,
+      "chapter_label": "NUM 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:12",
+      "sequence": 3805,
+      "chapter_label": "NUM 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them: ‘If any man’s wife goes astray and is unfaithful to him,",
+      "ko": "이스라엘 자손에게 고하여 그들에게 이르라 만일 어떤 사람의 아내가 실행하여 남편에게 범죄하여",
+      "source_text_hash": "a26140521eeb00cbdbd9c92ff4274d364c1e0fb5811f84e74951994e823e8301",
+      "translation_text_hash": "9c14d379fc2f0de89e18157608894e2c50aeac317aad8500b37fc3ecd607ca7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 그들에게 이르라 만일 어떤 사람의 아내가 실행하여 남편에게 범죄하여"
+      ],
+      "raw_text_hashes": [
+        "9c14d379fc2f0de89e18157608894e2c50aeac317aad8500b37fc3ecd607ca7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:13",
+      "sequence": 3806,
+      "chapter_label": "NUM 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "and a man lies with her carnally, and it is hidden from the eyes of her husband and this is kept concealed, and she is defiled, there is no witness against her, and she isn’t taken in the act;",
+      "ko": "타인과 정교를 하였으나 그 남편의 눈에 숨겨 드러나지 아니하였고 그 여자의 더러워진 일에 증인도 없고 그가 잡히지도 아니하였어도",
+      "source_text_hash": "aa2b3e46bc876ed874daf8d9cea075c4a5691d800377519595f213126061f854",
+      "translation_text_hash": "0a2d629a0cbf4277d38e24b6924dcbcb5d8c5969d7313a84294aa086dd62e5d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타인과 정교를 하였으나 그 남편의 눈에 숨겨 드러나지 아니하였고 그 여자의 더러워진 일에 증인도 없고 그가 잡히지도 아니하였어도"
+      ],
+      "raw_text_hashes": [
+        "0a2d629a0cbf4277d38e24b6924dcbcb5d8c5969d7313a84294aa086dd62e5d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:14",
+      "sequence": 3807,
+      "chapter_label": "NUM 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "and the spirit of jealousy comes on him, and he is jealous of his wife and she is defiled; or if the spirit of jealousy comes on him, and he is jealous of his wife and she isn’t defiled;",
+      "ko": "그 더러워짐을 인하여 남편이 의심이 생겨서 그 아내를 의심하든지 또는 아내가 더럽히지 아니하였어도 그 남편이 의심이 생겨서 그 아내를 의심하거든",
+      "source_text_hash": "d71f02229db7c3f4935dd22badc4fc808e2983dd750694a37c4cbdf4056cb101",
+      "translation_text_hash": "e770ba5f7718c3de66dd2aab5c9457316b96b3fc9a8fbd11d5e83e63b9e4d9de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 더러워짐을 인하여 남편이 의심이 생겨서 그 아내를 의심하든지 또는 아내가 더럽히지 아니하였어도 그 남편이 의심이 생겨서 그 아내를 의심하거든"
+      ],
+      "raw_text_hashes": [
+        "e770ba5f7718c3de66dd2aab5c9457316b96b3fc9a8fbd11d5e83e63b9e4d9de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:15",
+      "sequence": 3808,
+      "chapter_label": "NUM 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "then the man shall bring his wife to the priest, and shall bring her offering for her: one tenth of an ephah of barley meal. He shall pour no oil on it, nor put frankincense on it, for it is a meal offering of jealousy, a meal offering of memorial, bringing iniquity to memory.",
+      "ko": "그 아내를 데리고 제사장에게로 가서 그를 위하여 보리 가루 에바 십분지 일을 예물로 드리되 그것에 기름도 붓지 말고 유향도 두지 말라 이는 의심의 소제요 생각하게 하는 소제니 곧 죄악을 생각하게 하는 것이니라",
+      "source_text_hash": "20a6547b37a53e781f9ca37f826faee2e634f6f4b19bcda3bcfec604dc57f435",
+      "translation_text_hash": "405f4f5816ebc8f7d29bb26746032e4e28605a29ecf924cd54dbcde8d02effe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내를 데리고 제사장에게로 가서 그를 위하여 보리 가루 에바 십분지 일을 예물로 드리되 그것에 기름도 붓지 말고 유향도 두지 말라 이는 의심의 소제요 생각하게 하는 소제니 곧 죄악을 생각하게 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "405f4f5816ebc8f7d29bb26746032e4e28605a29ecf924cd54dbcde8d02effe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:16",
+      "sequence": 3809,
+      "chapter_label": "NUM 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "The priest shall bring her near, and set her before the LORD.",
+      "ko": "제사장은 그 여인으로 가까이 오게 하여 여호와 앞에 세우고",
+      "source_text_hash": "6dbd0eaa9d066ae5b815bfb706a074f1154dc36d5c4ac495630d5097e68a5330",
+      "translation_text_hash": "2cbb991e4f344661b5c22d46772c8fff6f532000f7be3910d76680c32e1d9833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 여인으로 가까이 오게 하여 여호와 앞에 세우고"
+      ],
+      "raw_text_hashes": [
+        "2cbb991e4f344661b5c22d46772c8fff6f532000f7be3910d76680c32e1d9833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:17",
+      "sequence": 3810,
+      "chapter_label": "NUM 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "The priest shall take holy water in an earthen vessel; and the priest shall take some of the dust that is on the floor of the tabernacle and put it into the water.",
+      "ko": "토기에 거룩한 물을 담고 성막 바닥의 티끌을 취하여 물에 넣고",
+      "source_text_hash": "c065191358016c6d2b21993825bd36867db5c9b271cafd90919349467dfc703c",
+      "translation_text_hash": "0e6a76d20c54c284199f7315ddd109e21df07411fc727815287f48524c392546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토기에 거룩한 물을 담고 성막 바닥의 티끌을 취하여 물에 넣고"
+      ],
+      "raw_text_hashes": [
+        "0e6a76d20c54c284199f7315ddd109e21df07411fc727815287f48524c392546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:18",
+      "sequence": 3811,
+      "chapter_label": "NUM 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "The priest shall set the woman before the LORD, and let the hair of the woman’s head go loose, and put the meal offering of memorial in her hands, which is the meal offering of jealousy. The priest shall have in his hand the water of bitterness that brings a curse.",
+      "ko": "여인을 여호와 앞에 세우고 그 머리를 풀게 하고 생각하게 하는 소제물 곧 의심의 소제물을 그 두 손에 두고 제사장은 저주가 되게 할 쓴 물을 자기 손에 들고",
+      "source_text_hash": "edf28b29cbe37048f3a558e4a5f2725e5c08e6330f845c419ae279a05a8818fe",
+      "translation_text_hash": "f9cb1833e7090b93492aa86717e4ec0a8da89a21929628d929f49ea4831b8534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인을 여호와 앞에 세우고 그 머리를 풀게 하고 생각하게 하는 소제물 곧 의심의 소제물을 그 두 손에 두고 제사장은 저주가 되게 할 쓴 물을 자기 손에 들고"
+      ],
+      "raw_text_hashes": [
+        "f9cb1833e7090b93492aa86717e4ec0a8da89a21929628d929f49ea4831b8534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:19",
+      "sequence": 3812,
+      "chapter_label": "NUM 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "The priest shall cause her to take an oath and shall tell the woman, “If no man has lain with you, and if you haven’t gone aside to uncleanness, being under your husband’s authority, be free from this water of bitterness that brings a curse.",
+      "ko": "여인에게 맹세시켜 그에게 이르기를 네가 네 남편을 두고 실행하여 사람과 동침하여 더럽힌 일이 없으면 저주가 되게 하는 이 쓴 물의 해독을 면하리라",
+      "source_text_hash": "d3a2df36256816742df958bc9aa31506edfbe7f2f333b731c552606936948c4e",
+      "translation_text_hash": "f0fe42858fc62f8b525d059c6e572cf1a5d16d30709f44449a03fc7a607a3454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인에게 맹세시켜 그에게 이르기를 네가 네 남편을 두고 실행하여 사람과 동침하여 더럽힌 일이 없으면 저주가 되게 하는 이 쓴 물의 해독을 면하리라"
+      ],
+      "raw_text_hashes": [
+        "f0fe42858fc62f8b525d059c6e572cf1a5d16d30709f44449a03fc7a607a3454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:20",
+      "sequence": 3813,
+      "chapter_label": "NUM 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "But if you have gone astray, being under your husband’s authority, and if you are defiled, and some man has lain with you besides your husband—”",
+      "ko": "그러나 네가 네 남편을 두고 실행하여 더럽혀서 네 남편 아닌 사람과 동침하였으면",
+      "source_text_hash": "74ee4a87c8698cd57ccbb2e0f5142b0aafd27b2a55195ccc3fd06dbd7d4d1952",
+      "translation_text_hash": "1ca7f292d8d8704458c6541c443658e377d34ee2d82bd3b83b721ec0eaeb4de4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 네 남편을 두고 실행하여 더럽혀서 네 남편 아닌 사람과 동침하였으면"
+      ],
+      "raw_text_hashes": [
+        "1ca7f292d8d8704458c6541c443658e377d34ee2d82bd3b83b721ec0eaeb4de4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:21",
+      "sequence": 3814,
+      "chapter_label": "NUM 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "then the priest shall cause the woman to swear with the oath of cursing, and the priest shall tell the woman, “May the LORD make you a curse and an oath among your people, when the LORD allows your thigh to fall away, and your body to swell;",
+      "ko": "(제사장이 그 여인으로 저주의 맹세를 하게 하고 그 여인에게 말할찌니라) 여호와께서 네 넓적다리로 떨어지고 네 배로 부어서 너로 네 백성 중에 저줏거리, 맹셋거리가 되게 하실찌라",
+      "source_text_hash": "81073e5d700dcc9e038eae87b5240bd7266bccd17d820094d00a5bf414840990",
+      "translation_text_hash": "d5f6373222dcb41c745e1fe80eb0e760be65103ce6e86b49509d3883428782d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(제사장이 그 여인으로 저주의 맹세를 하게 하고 그 여인에게 말할찌니라) 여호와께서 네 넓적다리로 떨어지고 네 배로 부어서 너로 네 백성 중에 저줏거리, 맹셋거리가 되게 하실찌라"
+      ],
+      "raw_text_hashes": [
+        "d5f6373222dcb41c745e1fe80eb0e760be65103ce6e86b49509d3883428782d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:22",
+      "sequence": 3815,
+      "chapter_label": "NUM 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "and this water that brings a curse will go into your bowels, and make your body swell, and your thigh fall away.” The woman shall say, “Amen, Amen.”",
+      "ko": "이 저주가 되게 하는 이 물이 네 창자에 들어가서 네 배로 붓게 하고 네 넓적다리로 떨어지게 하리라 할 것이요 여인은 아멘 아멘 할찌니라",
+      "source_text_hash": "5e5b95dc4005db8a0dc3c611ffac9fb798fa97c003eb3de165f8484e3d9437b2",
+      "translation_text_hash": "8b20bd93b238db115117d2db2b857a93d22fd495d736fbe0d5b844573be7aa6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 저주가 되게 하는 이 물이 네 창자에 들어가서 네 배로 붓게 하고 네 넓적다리로 떨어지게 하리라 할 것이요 여인은 아멘 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "8b20bd93b238db115117d2db2b857a93d22fd495d736fbe0d5b844573be7aa6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:23",
+      "sequence": 3816,
+      "chapter_label": "NUM 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "“‘The priest shall write these curses in a book, and he shall wipe them into the water of bitterness.",
+      "ko": "제사장이 저주의 말을 두루마리에 써서 그 글자를 그 쓴 물에 빨아 넣고",
+      "source_text_hash": "16b3611dadf26a35b8bcdedc9c59a47ca0ecfa87f84bf781b1152c672827c257",
+      "translation_text_hash": "8931d8faa4c2edc61797f4caf14e1cb9a6beb97e85e796cb64428e21f4ed036e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 저주의 말을 두루마리에 써서 그 글자를 그 쓴 물에 빨아 넣고"
+      ],
+      "raw_text_hashes": [
+        "8931d8faa4c2edc61797f4caf14e1cb9a6beb97e85e796cb64428e21f4ed036e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:24",
+      "sequence": 3817,
+      "chapter_label": "NUM 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "He shall make the woman drink the water of bitterness that causes the curse; and the water that causes the curse shall enter into her and become bitter.",
+      "ko": "여인으로 그 저주가 되게 하는 쓴 물을 마시게 할찌니 그 저주가 되게 하는 물이 그의 속에 들어 가서 쓰리라",
+      "source_text_hash": "0aa2f719bd186adf753d307eb232cae63bd42b42804130e438b356d901707606",
+      "translation_text_hash": "ec6aca6e1662085b11c4ecaf11fdd5d0f2fb2c943d6f869fa88d586b5093a157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인으로 그 저주가 되게 하는 쓴 물을 마시게 할찌니 그 저주가 되게 하는 물이 그의 속에 들어 가서 쓰리라"
+      ],
+      "raw_text_hashes": [
+        "ec6aca6e1662085b11c4ecaf11fdd5d0f2fb2c943d6f869fa88d586b5093a157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:25",
+      "sequence": 3818,
+      "chapter_label": "NUM 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "The priest shall take the meal offering of jealousy out of the woman’s hand, and shall wave the meal offering before the LORD, and bring it to the altar.",
+      "ko": "제사장이 먼저 그 여인의 손에서 의심의 소제물을 취하여 그 소제물을 여호와 앞에 흔들고 가지고 단으로 가서",
+      "source_text_hash": "d02e0fff3aa2671cde1f2f9fdd0d68c6e62b0db6a1228fe4fcdb633f80b20806",
+      "translation_text_hash": "46b5af72a2ac4ed03eb64a2921fb7c401a9c6732fb99fff731e3a26ae7f5e123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 먼저 그 여인의 손에서 의심의 소제물을 취하여 그 소제물을 여호와 앞에 흔들고 가지고 단으로 가서"
+      ],
+      "raw_text_hashes": [
+        "46b5af72a2ac4ed03eb64a2921fb7c401a9c6732fb99fff731e3a26ae7f5e123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:26",
+      "sequence": 3819,
+      "chapter_label": "NUM 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "The priest shall take a handful of the meal offering, as its memorial portion, and burn it on the altar, and afterward shall make the woman drink the water.",
+      "ko": "그 소제물 중에서 기념으로 한 움큼을 취하여 단 위에 소화하고 그 후에 여인에게 그 물을 마시울찌라",
+      "source_text_hash": "bc64163973241f1dede0d83cc3fb20caf383ff96e8bf5e00e91578c5d7320fd1",
+      "translation_text_hash": "0a06cdf00ac4c5475f10941f6954297099af5639183e0dc2fa17c1b94a5c8a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제물 중에서 기념으로 한 움큼을 취하여 단 위에 소화하고 그 후에 여인에게 그 물을 마시울찌라"
+      ],
+      "raw_text_hashes": [
+        "0a06cdf00ac4c5475f10941f6954297099af5639183e0dc2fa17c1b94a5c8a55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:27",
+      "sequence": 3820,
+      "chapter_label": "NUM 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "When he has made her drink the water, then it shall happen, if she is defiled and has committed a trespass against her husband, that the water that causes the curse will enter into her and become bitter, and her body will swell, and her thigh will fall away; and the woman will be a curse among her people.",
+      "ko": "그 물을 마시운 후에 만일 여인이 몸을 더럽혀서 그 남편에게 범죄하였으면 그 저주가 되게 하는 물이 그의 속에 들어가서 쓰게 되어 그 배가 부으며 그 넓적다리가 떨어지리니 그 여인이 그 백성 중에서 저줏거리가 될 것이니라",
+      "source_text_hash": "5e5be371fdfdd552913b5976a65c4926c9d82ccae7be73091e8c4aa9bbf19fd2",
+      "translation_text_hash": "500d1c10b7f46aa83340f147da54a254c62f118d8637a1f4e8fe108aefd84d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 물을 마시운 후에 만일 여인이 몸을 더럽혀서 그 남편에게 범죄하였으면 그 저주가 되게 하는 물이 그의 속에 들어가서 쓰게 되어 그 배가 부으며 그 넓적다리가 떨어지리니 그 여인이 그 백성 중에서 저줏거리가 될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "500d1c10b7f46aa83340f147da54a254c62f118d8637a1f4e8fe108aefd84d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:28",
+      "sequence": 3821,
+      "chapter_label": "NUM 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "If the woman isn’t defiled, but is clean; then she shall be free, and shall conceive offspring.",
+      "ko": "그러나 여인이 더럽힌 일이 없고 정결하면 해를 받지 않고 잉태하리라",
+      "source_text_hash": "81c2300d7448d7ea04d18fbbae0ccdff85d0b6207f29ee9a10e93bcc11746567",
+      "translation_text_hash": "6de5413ff0f1710892008062b6acb881286de92da5caeb0dd999bd2dd58f0c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여인이 더럽힌 일이 없고 정결하면 해를 받지 않고 잉태하리라"
+      ],
+      "raw_text_hashes": [
+        "6de5413ff0f1710892008062b6acb881286de92da5caeb0dd999bd2dd58f0c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:29",
+      "sequence": 3822,
+      "chapter_label": "NUM 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "“‘This is the law of jealousy, when a wife, being under her husband, goes astray, and is defiled,",
+      "ko": "이는 의심의 법이니 아내가 그 남편을 두고 실행하여 더럽힌 때나",
+      "source_text_hash": "a05ca963635b304b38196f91297a5cf3305a5063b7e78e0e8d20aacc17598856",
+      "translation_text_hash": "0383682078ef7a8767a94197d4c7f1205b7043dd031ce6722dc04e974fbf8c90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 의심의 법이니 아내가 그 남편을 두고 실행하여 더럽힌 때나"
+      ],
+      "raw_text_hashes": [
+        "0383682078ef7a8767a94197d4c7f1205b7043dd031ce6722dc04e974fbf8c90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:30",
+      "sequence": 3823,
+      "chapter_label": "NUM 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "or when the spirit of jealousy comes on a man, and he is jealous of his wife; then he shall set the woman before the LORD, and the priest shall execute on her all this law.",
+      "ko": "또는 그 남편이 의심이 생겨서 그 아내를 의심할 때에 그 여인을 여호와 앞에 두고 제사장이 이 법대로 행할 것이라",
+      "source_text_hash": "b003e64c24272a6ed1d599e98739b14620950876e948fb9b56983977a5ecc2f0",
+      "translation_text_hash": "6b13816d5fcea3ef81590c136a868e5483b39bcfdd5cde20740428246333bb0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또는 그 남편이 의심이 생겨서 그 아내를 의심할 때에 그 여인을 여호와 앞에 두고 제사장이 이 법대로 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "6b13816d5fcea3ef81590c136a868e5483b39bcfdd5cde20740428246333bb0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:5:31",
+      "sequence": 3824,
+      "chapter_label": "NUM 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "The man shall be free from iniquity, and that woman shall bear her iniquity.’”",
+      "ko": "남편은 무죄할 것이요 여인은 죄가 있으면 당하리라",
+      "source_text_hash": "70c083db8235695b31261bb6b5a708841a112574ed3c31bc738e35904effedb4",
+      "translation_text_hash": "30d656ebc4721d1ef87701af4b201c2c470c01fe88e656e229990edf5a24b64b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편은 무죄할 것이요 여인은 죄가 있으면 당하리라"
+      ],
+      "raw_text_hashes": [
+        "30d656ebc4721d1ef87701af4b201c2c470c01fe88e656e229990edf5a24b64b"
+      ]
+    }
+  ]
+}

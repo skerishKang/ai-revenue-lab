@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:005",
+  "unit_ordinal": 1051,
+  "unit_label": "ROM 5",
+  "book_code": "ROM",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:5:1",
+      "sequence": 28045,
+      "chapter_label": "ROM 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Being therefore justified by faith, we have peace with God through our Lord Jesus Christ;",
+      "ko": "그러므로 우리가 믿음으로 의롭다 하심을 얻었은즉 우리 주 예수 그리스도로 말미암아 하나님으로 더불어 화평을 누리자",
+      "source_text_hash": "10839c80d7f46c2d181b156f8b0ee0ab3fd231c807cc991a9e41865c1cbb791e",
+      "translation_text_hash": "f5f64b3101caa2d5e3d3a6718a9a03b0727d29532af3ec33e1a347faec6bbf08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 믿음으로 의롭다 하심을 얻었은즉 우리 주 예수 그리스도로 말미암아 하나님으로 더불어 화평을 누리자"
+      ],
+      "raw_text_hashes": [
+        "f5f64b3101caa2d5e3d3a6718a9a03b0727d29532af3ec33e1a347faec6bbf08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:2",
+      "sequence": 28046,
+      "chapter_label": "ROM 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "through whom we also have our access by faith into this grace in which we stand. We rejoice in hope of the glory of God.",
+      "ko": "또한 그로 말미암아 우리가 믿음으로 서 있는 이 은혜에 들어감을 얻었으며 하나님의 영광을 바라고 즐거워하느니라",
+      "source_text_hash": "8e7004e80642fee6453527762718f5630547f8ba577648ea708e2931fd573c09",
+      "translation_text_hash": "ceabdc35bc8def576632d6a085a34a63b5264ff19f33d058348cc55b86d41e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 그로 말미암아 우리가 믿음으로 서 있는 이 은혜에 들어감을 얻었으며 하나님의 영광을 바라고 즐거워하느니라"
+      ],
+      "raw_text_hashes": [
+        "ceabdc35bc8def576632d6a085a34a63b5264ff19f33d058348cc55b86d41e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:3",
+      "sequence": 28047,
+      "chapter_label": "ROM 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Not only this, but we also rejoice in our sufferings, knowing that suffering produces perseverance;",
+      "ko": "다만 이뿐 아니라 우리가 환난 중에도 즐거워하나니 이는 환난은 인내를,",
+      "source_text_hash": "bde8d4a30a6215c0d357cb4d52e28af452be3c8271815a22c3f339b43bd26a73",
+      "translation_text_hash": "b8479490f87ef41df964253375b41cf4c8245d04f667a801b8769db73d65868c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 이뿐 아니라 우리가 환난 중에도 즐거워하나니 이는 환난은 인내를,"
+      ],
+      "raw_text_hashes": [
+        "b8479490f87ef41df964253375b41cf4c8245d04f667a801b8769db73d65868c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:4",
+      "sequence": 28048,
+      "chapter_label": "ROM 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "and perseverance, proven character; and proven character, hope;",
+      "ko": "인내는 연단을, 연단은 소망을 이루는 줄 앎이로다",
+      "source_text_hash": "e721851c9bedbcbdfebc824ec2e06686715157e60186b8b45e9dc07846eaa6d7",
+      "translation_text_hash": "da4c2b970ae8a117aa1161266d259706b588fa4f1d5375b226fc14ca35d0b512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인내는 연단을, 연단은 소망을 이루는 줄 앎이로다"
+      ],
+      "raw_text_hashes": [
+        "da4c2b970ae8a117aa1161266d259706b588fa4f1d5375b226fc14ca35d0b512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:5",
+      "sequence": 28049,
+      "chapter_label": "ROM 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "and hope doesn’t disappoint us, because God’s love has been poured into our hearts through the Holy Spirit who was given to us.",
+      "ko": "소망이 부끄럽게 아니함은 우리에게 주신 성령으로 말미암아 하나님의 사랑이 우리 마음에 부은바 됨이니",
+      "source_text_hash": "299813afda7ddd43260e998aee98e702cf08041bb41d2be7651092526d82d1dd",
+      "translation_text_hash": "e44663679eccfcccc7f07dc63dfc6e1669fa7882ab5305a7e1506f639a47efbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소망이 부끄럽게 아니함은 우리에게 주신 성령으로 말미암아 하나님의 사랑이 우리 마음에 부은바 됨이니"
+      ],
+      "raw_text_hashes": [
+        "e44663679eccfcccc7f07dc63dfc6e1669fa7882ab5305a7e1506f639a47efbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:6",
+      "sequence": 28050,
+      "chapter_label": "ROM 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "For while we were yet weak, at the right time Christ died for the ungodly.",
+      "ko": "우리가 아직 연약할 때에 기약대로 그리스도께서 경건치 않은 자를 위하여 죽으셨도다",
+      "source_text_hash": "a5f0a3e177592f5324e5a77f48e8a1c26ac9b6ff20eff5fe39c1df858d109f62",
+      "translation_text_hash": "e2d362616f7c18f6f9eaf8be30dd4b57b7bf1b1ff23890c80dcdd354d2028816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 아직 연약할 때에 기약대로 그리스도께서 경건치 않은 자를 위하여 죽으셨도다"
+      ],
+      "raw_text_hashes": [
+        "e2d362616f7c18f6f9eaf8be30dd4b57b7bf1b1ff23890c80dcdd354d2028816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:7",
+      "sequence": 28051,
+      "chapter_label": "ROM 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "For one will hardly die for a righteous man. Yet perhaps for a good person someone would even dare to die.",
+      "ko": "의인을 위하여 죽는 자가 쉽지 않고 선인을 위하여 용감히 죽는 자가 혹 있거니와",
+      "source_text_hash": "81ffeae4ab9e859f9424a79d2567412c08d634898ad8fd035f16d56a25841cb2",
+      "translation_text_hash": "24c76de3ffa19624507cdddda4fdf4255c4a9cefe33232968ea55ea7eaef893a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인을 위하여 죽는 자가 쉽지 않고 선인을 위하여 용감히 죽는 자가 혹 있거니와"
+      ],
+      "raw_text_hashes": [
+        "24c76de3ffa19624507cdddda4fdf4255c4a9cefe33232968ea55ea7eaef893a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:8",
+      "sequence": 28052,
+      "chapter_label": "ROM 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "But God commends his own love toward us, in that while we were yet sinners, Christ died for us.",
+      "ko": "우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에게 대한 자기의 사랑을 확증하셨느니라",
+      "source_text_hash": "39b8e3e40e6cb7b97f5b8fdde1193a3036211c7faad273c3af8b323dc1a0ee79",
+      "translation_text_hash": "ff38d25eb10f6833386d7c86597bf9a821605358e3a0c4a40cb2461143211913",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에게 대한 자기의 사랑을 확증하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "ff38d25eb10f6833386d7c86597bf9a821605358e3a0c4a40cb2461143211913"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:9",
+      "sequence": 28053,
+      "chapter_label": "ROM 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Much more then, being now justified by his blood, we will be saved from God’s wrath through him.",
+      "ko": "그러면 이제 우리가 그 피를 인하여 의롭다 하심을 얻었은즉 더욱 그로 말미암아 진노하심에서 구원을 얻을 것이니",
+      "source_text_hash": "5a05dc508c161b7a6603af7b02c75ffb895546b698208346164cb8926daa2ba3",
+      "translation_text_hash": "7894e4ec9ef2bad119415f80ebdf5e287e50245ce2a82eee1d746e96f8ff8bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 이제 우리가 그 피를 인하여 의롭다 하심을 얻었은즉 더욱 그로 말미암아 진노하심에서 구원을 얻을 것이니"
+      ],
+      "raw_text_hashes": [
+        "7894e4ec9ef2bad119415f80ebdf5e287e50245ce2a82eee1d746e96f8ff8bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:10",
+      "sequence": 28054,
+      "chapter_label": "ROM 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "For if while we were enemies, we were reconciled to God through the death of his Son, much more, being reconciled, we will be saved by his life.",
+      "ko": "곧 우리가 원수 되었을 때에 그 아들의 죽으심으로 말미암아 하나님으로 더불어 화목되었은즉 화목된 자로서는 더욱 그의 살으심을 인하여 구원을 얻을 것이니라",
+      "source_text_hash": "2f158313b4a9735968d3c7ddfb8b2afb27e32c826d75668f6c9c247b30572031",
+      "translation_text_hash": "7eb50ace18fbb796360f67fbcb4f9a060fd63e7714cd74d3b19ef53dc7f18aa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 우리가 원수 되었을 때에 그 아들의 죽으심으로 말미암아 하나님으로 더불어 화목되었은즉 화목된 자로서는 더욱 그의 살으심을 인하여 구원을 얻을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7eb50ace18fbb796360f67fbcb4f9a060fd63e7714cd74d3b19ef53dc7f18aa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:11",
+      "sequence": 28055,
+      "chapter_label": "ROM 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Not only so, but we also rejoice in God through our Lord Jesus Christ, through whom we have now received the reconciliation.",
+      "ko": "이뿐 아니라 이제 우리로 화목을 얻게 하신 우리 주 예수 그리스도로 말미암아 하나님 안에서 또한 즐거워하느니라",
+      "source_text_hash": "46fd294fb33c333a96d15594135acbd7b2ee1be7f23919e0d4f5702452b43da9",
+      "translation_text_hash": "e1ac9a357611f089f62b35f6701bac19a984ed39eeb2e6a360dc3869fdcfd7af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 이제 우리로 화목을 얻게 하신 우리 주 예수 그리스도로 말미암아 하나님 안에서 또한 즐거워하느니라"
+      ],
+      "raw_text_hashes": [
+        "e1ac9a357611f089f62b35f6701bac19a984ed39eeb2e6a360dc3869fdcfd7af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:12",
+      "sequence": 28056,
+      "chapter_label": "ROM 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore, as sin entered into the world through one man, and death through sin, so death passed to all men because all sinned.",
+      "ko": "이러므로 한 사람으로 말미암아 죄가 세상에 들어오고 죄로 말미암아 사망이 왔나니 이와 같이 모든 사람이 죄를 지었으므로 사망이 모든 사람에게 이르렀느니라",
+      "source_text_hash": "980687577164ec48f447fc1509e44fb3e35a41177eda7f118d742da1c1229dc6",
+      "translation_text_hash": "40d23cce2692a6beac9348f46ed70c4de2513bf1131a83ce223ac271e147ad44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 한 사람으로 말미암아 죄가 세상에 들어오고 죄로 말미암아 사망이 왔나니 이와 같이 모든 사람이 죄를 지었으므로 사망이 모든 사람에게 이르렀느니라"
+      ],
+      "raw_text_hashes": [
+        "40d23cce2692a6beac9348f46ed70c4de2513bf1131a83ce223ac271e147ad44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:13",
+      "sequence": 28057,
+      "chapter_label": "ROM 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "For until the law, sin was in the world; but sin is not charged when there is no law.",
+      "ko": "죄가 율법 있기 전에도 세상에 있었으나 율법이 없을 때에는 죄를 죄로 여기지 아니하느니라",
+      "source_text_hash": "4d70b75dfd8b5a50e14ec5c8b660d5f983dcd4e416484a976c5335316bcaa8d4",
+      "translation_text_hash": "eb0cfb4f4c0fe751fec96cc8dc957cb75c13e7fc906eff31921cafef0abd5554",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄가 율법 있기 전에도 세상에 있었으나 율법이 없을 때에는 죄를 죄로 여기지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "eb0cfb4f4c0fe751fec96cc8dc957cb75c13e7fc906eff31921cafef0abd5554"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:14",
+      "sequence": 28058,
+      "chapter_label": "ROM 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Nevertheless death reigned from Adam until Moses, even over those whose sins weren’t like Adam’s disobedience, who is a foreshadowing of him who was to come.",
+      "ko": "그러나 아담으로부터 모세까지 아담의 범죄와 같은 죄를 짓지 아니한 자들 위에도 사망이 왕노릇하였나니 아담은 오실 자의 표상이라",
+      "source_text_hash": "f01c28441636548eabd5e00c35bbc374c7f0296dae40e602ca245b1e1e81d0c7",
+      "translation_text_hash": "87053370227bcce69c46e81926c21f718489f3bcf3928b93eb177133df299c37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 아담으로부터 모세까지 아담의 범죄와 같은 죄를 짓지 아니한 자들 위에도 사망이 왕노릇하였나니 아담은 오실 자의 표상이라"
+      ],
+      "raw_text_hashes": [
+        "87053370227bcce69c46e81926c21f718489f3bcf3928b93eb177133df299c37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:15",
+      "sequence": 28059,
+      "chapter_label": "ROM 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "But the free gift isn’t like the trespass. For if by the trespass of the one the many died, much more did the grace of God and the gift by the grace of the one man, Jesus Christ, abound to the many.",
+      "ko": "그러나 이 은사는 그 범죄와 같지 아니하니 곧 한 사람의 범죄를 인하여 많은 사람이 죽었은즉 더욱 하나님의 은혜와 또는 한 사람 예수 그리스도의 은혜로 말미암은 선물이 많은 사람에게 넘쳤으리라",
+      "source_text_hash": "671c6f37f52a1b4c8de95765f21d87f5a38c5acc11d3467373f5c3ac963a6fb6",
+      "translation_text_hash": "e6c00367b1bbf8d401e0c7c8b26f71f4dde81a446e4b606d0a0b024a47a52d23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 은사는 그 범죄와 같지 아니하니 곧 한 사람의 범죄를 인하여 많은 사람이 죽었은즉 더욱 하나님의 은혜와 또는 한 사람 예수 그리스도의 은혜로 말미암은 선물이 많은 사람에게 넘쳤으리라"
+      ],
+      "raw_text_hashes": [
+        "e6c00367b1bbf8d401e0c7c8b26f71f4dde81a446e4b606d0a0b024a47a52d23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:16",
+      "sequence": 28060,
+      "chapter_label": "ROM 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "The gift is not as through one who sinned; for the judgment came by one to condemnation, but the free gift followed many trespasses to justification.",
+      "ko": "또 이 선물은 범죄한 한 사람으로 말미암은 것과 같지 아니하니 심판은 한 사람을 인하여 정죄에 이르렀으나 은사는 많은 범죄를 인하여 의롭다 하심에 이름이니라",
+      "source_text_hash": "3c140f16a6c0f72d6efde8d8d32744a4def2eff8ba3f406f25d604b7b3e74742",
+      "translation_text_hash": "c9224a23539597d09c55ecf502ecbe561f873769a78d8be52737bc26e5f88b50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 선물은 범죄한 한 사람으로 말미암은 것과 같지 아니하니 심판은 한 사람을 인하여 정죄에 이르렀으나 은사는 많은 범죄를 인하여 의롭다 하심에 이름이니라"
+      ],
+      "raw_text_hashes": [
+        "c9224a23539597d09c55ecf502ecbe561f873769a78d8be52737bc26e5f88b50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:17",
+      "sequence": 28061,
+      "chapter_label": "ROM 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "For if by the trespass of the one, death reigned through the one; so much more will those who receive the abundance of grace and of the gift of righteousness reign in life through the one, Jesus Christ.",
+      "ko": "한 사람의 범죄를 인하여 사망이 그 한 사람으로 말미암아 왕노릇 하였은즉 더욱 은혜와 의의 선물을 넘치게 받는 자들이 한 분 예수 그리스도로 말미암아 생명 안에서 왕노릇 하리로다",
+      "source_text_hash": "dc9a23227c4815134fa9e5af2a66d502a0bff562686c2c79d85f68ad0a859386",
+      "translation_text_hash": "fe567012e94e4f107ded449136162d63e2d5357d142384324c87fc65d110a370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람의 범죄를 인하여 사망이 그 한 사람으로 말미암아 왕노릇 하였은즉 더욱 은혜와 의의 선물을 넘치게 받는 자들이 한 분 예수 그리스도로 말미암아 생명 안에서 왕노릇 하리로다"
+      ],
+      "raw_text_hashes": [
+        "fe567012e94e4f107ded449136162d63e2d5357d142384324c87fc65d110a370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:18",
+      "sequence": 28062,
+      "chapter_label": "ROM 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "So then as through one trespass, all men were condemned; even so through one act of righteousness, all men were justified to life.",
+      "ko": "그런즉 한 범죄로 많은 사람이 정죄에 이른것 같이 의의 한 행동으로 말미암아 많은 사람이 의롭다 하심을 받아 생명에 이르렀느니라",
+      "source_text_hash": "09ae25573021b34ea3613fde110a22c33c43850a3166766358ebaea93e6ae75c",
+      "translation_text_hash": "e85dd0c70fa6d84a81132fb0006114411671cea0836b0036b153bce6b497dca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 한 범죄로 많은 사람이 정죄에 이른것 같이 의의 한 행동으로 말미암아 많은 사람이 의롭다 하심을 받아 생명에 이르렀느니라"
+      ],
+      "raw_text_hashes": [
+        "e85dd0c70fa6d84a81132fb0006114411671cea0836b0036b153bce6b497dca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:19",
+      "sequence": 28063,
+      "chapter_label": "ROM 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "For as through the one man’s disobedience many were made sinners, even so through the obedience of the one, many will be made righteous.",
+      "ko": "한 사람의 순종치 아니함으로 많은 사람이 죄인 된것 같이 한 사람의 순종하심으로 많은 사람이 의인이 되리라",
+      "source_text_hash": "30d841e74dfe85000fea9e0a1360cde5f1037e0e9af51c97a5364a6bcdb30e39",
+      "translation_text_hash": "e0a0a80dc02e6c797f21520b9eccb6b77934987f937fde50d4bdd459c4f5c849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람의 순종치 아니함으로 많은 사람이 죄인 된것 같이 한 사람의 순종하심으로 많은 사람이 의인이 되리라"
+      ],
+      "raw_text_hashes": [
+        "e0a0a80dc02e6c797f21520b9eccb6b77934987f937fde50d4bdd459c4f5c849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:20",
+      "sequence": 28064,
+      "chapter_label": "ROM 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "The law came in that the trespass might abound; but where sin abounded, grace abounded more exceedingly,",
+      "ko": "율법이 가입한 것은 범죄를 더하게 하려 함이라 그러나 죄가 더한 곳에 은혜가 더욱 넘쳤나니",
+      "source_text_hash": "e632e2bd2fd2645f921559d7bcd800e9902daa4f9fda567ba16a535f01ceda71",
+      "translation_text_hash": "558b488fc8099e13b9bf8742fafe1d4a12d66ba9af520120ca26ae281023544f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법이 가입한 것은 범죄를 더하게 하려 함이라 그러나 죄가 더한 곳에 은혜가 더욱 넘쳤나니"
+      ],
+      "raw_text_hashes": [
+        "558b488fc8099e13b9bf8742fafe1d4a12d66ba9af520120ca26ae281023544f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:5:21",
+      "sequence": 28065,
+      "chapter_label": "ROM 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "that as sin reigned in death, even so grace might reign through righteousness to eternal life through Jesus Christ our Lord.",
+      "ko": "이는 죄가 사망 안에서 왕노릇 한 것 같이 은혜도 또한 의로 말미암아 왕노릇 하여 우리 주 예수 그리스도로 말미암아 영생에 이르게 하려 함이니라",
+      "source_text_hash": "89aabe9f55cc5213bcc53557f38b25cbc2aec217aa17b761e07f5c5f21be7268",
+      "translation_text_hash": "a5a4b2b69ce6a3e80d59e9ca8d320a43b234efab24f2eec63631ef090a20b2ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 죄가 사망 안에서 왕노릇 한 것 같이 은혜도 또한 의로 말미암아 왕노릇 하여 우리 주 예수 그리스도로 말미암아 영생에 이르게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "a5a4b2b69ce6a3e80d59e9ca8d320a43b234efab24f2eec63631ef090a20b2ce"
+      ]
+    }
+  ]
+}

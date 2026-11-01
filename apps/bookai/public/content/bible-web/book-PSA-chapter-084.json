@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:084",
+  "unit_ordinal": 562,
+  "unit_label": "PSA 84",
+  "book_code": "PSA",
+  "chapter_number": 84,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:84:1",
+      "sequence": 15261,
+      "chapter_label": "PSA 84",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 1
+        }
+      ],
+      "en": "How lovely are your dwellings, LORD of Armies!",
+      "ko": "만군의 여호와여 주의 장막이 어찌 그리 사랑스러운지요",
+      "source_text_hash": "6522dd3a172bd47168eb93c52c9ed481c10c645b97005ed1f178d6e9c6826b79",
+      "translation_text_hash": "96fe18d7952f540ea6d30e4738a021163286b2cfdb6655ab6621e17fc3a2d90c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와여 주의 장막이 어찌 그리 사랑스러운지요"
+      ],
+      "raw_text_hashes": [
+        "96fe18d7952f540ea6d30e4738a021163286b2cfdb6655ab6621e17fc3a2d90c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:2",
+      "sequence": 15262,
+      "chapter_label": "PSA 84",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 2
+        }
+      ],
+      "en": "My soul longs, and even faints for the courts of the LORD. My heart and my flesh cry out for the living God.",
+      "ko": "내 영혼이 여호와의 궁정을 사모하여 쇠약함이여 내 마음과 육체가 생존하시는 하나님께 부르짖나이다",
+      "source_text_hash": "7b0cd91a57c91dd1e117014e9c1d07bf4da011a4b1444acf1d6a1f85c25564a2",
+      "translation_text_hash": "e722b721b67a7b55942ebf636cc5ef52be1cc7c9db434dd02e07ba27b5497847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 여호와의 궁정을 사모하여 쇠약함이여 내 마음과 육체가 생존하시는 하나님께 부르짖나이다"
+      ],
+      "raw_text_hashes": [
+        "e722b721b67a7b55942ebf636cc5ef52be1cc7c9db434dd02e07ba27b5497847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:3",
+      "sequence": 15263,
+      "chapter_label": "PSA 84",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, the sparrow has found a home, and the swallow a nest for herself, where she may have her young, near your altars, LORD of Armies, my King, and my God.",
+      "ko": "나의 왕, 나의 하나님, 만군의 여호와여 주의 제단에서 참새도 제 집을 얻고 제비도 새끼 둘 보금자리를 얻었나이다",
+      "source_text_hash": "9f8144948872d0175947865e1c790c4368e2d44d1e8088ce1526abd79db6263b",
+      "translation_text_hash": "6e34e6a4953e92161107c5a2b128790aad87ecbb29d8b32a5cdc9f4731e90a78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 왕, 나의 하나님, 만군의 여호와여 주의 제단에서 참새도 제 집을 얻고 제비도 새끼 둘 보금자리를 얻었나이다"
+      ],
+      "raw_text_hashes": [
+        "6e34e6a4953e92161107c5a2b128790aad87ecbb29d8b32a5cdc9f4731e90a78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:4",
+      "sequence": 15264,
+      "chapter_label": "PSA 84",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 4
+        }
+      ],
+      "en": "Blessed are those who dwell in your house. They are always praising you. Selah.",
+      "ko": "주의 집에 거하는 자가 복이 있나이다 저희가 항상 주를 찬송하리이다(셀라)",
+      "source_text_hash": "66e03327a30bc9ef32f17ac44826fee9037be0808032f300cbd4592ad4b92926",
+      "translation_text_hash": "e09c073a9d7672f8c8dd5efd9e00eba7d98123550fd0e5486c8ea7501fb6ebd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 집에 거하는 자가 복이 있나이다 저희가 항상 주를 찬송하리이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "e09c073a9d7672f8c8dd5efd9e00eba7d98123550fd0e5486c8ea7501fb6ebd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:5",
+      "sequence": 15265,
+      "chapter_label": "PSA 84",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 5
+        }
+      ],
+      "en": "Blessed are those whose strength is in you, who have set their hearts on a pilgrimage.",
+      "ko": "주께 힘을 얻고 그 마음에 시온의 대로가 있는 자는 복이 있나이다",
+      "source_text_hash": "c2f4db0dc7b9e09dffc5b983d5ff7b4cb628a9b78c120080545cf9d739281fa1",
+      "translation_text_hash": "708c161a288b8ae80f01d8c500f7de1313bb81a0363e9c9c7099c48ae7981b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께 힘을 얻고 그 마음에 시온의 대로가 있는 자는 복이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "708c161a288b8ae80f01d8c500f7de1313bb81a0363e9c9c7099c48ae7981b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:6",
+      "sequence": 15266,
+      "chapter_label": "PSA 84",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 6
+        }
+      ],
+      "en": "Passing through the valley of Weeping, they make it a place of springs. Yes, the autumn rain covers it with blessings.",
+      "ko": "저희는 눈물 골짜기로 통행할 때에 그곳으로 많은 샘의 곳이 되게 하며 이른 비도 은택을 입히나이다",
+      "source_text_hash": "f232cc5d4a9c542355db2fa286346756ed4dd7ad4f13ea1e7ca047a03acc5a5f",
+      "translation_text_hash": "31ad71ba24e13ac5061b583c9c8f75b1c5d34848819144748babc058c1334e94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 눈물 골짜기로 통행할 때에 그곳으로 많은 샘의 곳이 되게 하며 이른 비도 은택을 입히나이다"
+      ],
+      "raw_text_hashes": [
+        "31ad71ba24e13ac5061b583c9c8f75b1c5d34848819144748babc058c1334e94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:7",
+      "sequence": 15267,
+      "chapter_label": "PSA 84",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 7
+        }
+      ],
+      "en": "They go from strength to strength. Every one of them appears before God in Zion.",
+      "ko": "저희는 힘을 얻고 더 얻어 나아가 시온에서 하나님 앞에 각기 나타나리이다",
+      "source_text_hash": "86e595a5709c5f6a878b273cd459ffcb2bbc5d8f5d30636e55383b0b140f9190",
+      "translation_text_hash": "836f29a4973773b20b312adb48c2b9cd205bf65b545b9c4d5e3caf5ab3c33116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 힘을 얻고 더 얻어 나아가 시온에서 하나님 앞에 각기 나타나리이다"
+      ],
+      "raw_text_hashes": [
+        "836f29a4973773b20b312adb48c2b9cd205bf65b545b9c4d5e3caf5ab3c33116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:8",
+      "sequence": 15268,
+      "chapter_label": "PSA 84",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 8
+        }
+      ],
+      "en": "LORD, God of Armies, hear my prayer. Listen, God of Jacob. Selah.",
+      "ko": "만군의 하나님 여호와여 내 기도를 들으소서 야곱의 하나님이여 귀를 기울이소서(셀라)",
+      "source_text_hash": "bd08a7ba89f4c9a68e2d9cb538f5fe9d554688ab306a86f8e4fd626ca6e89330",
+      "translation_text_hash": "03891dd151478bcd269f8e6e7024cfee72a16b1beeb2f9f7a5e4254cf5a6f07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 하나님 여호와여 내 기도를 들으소서 야곱의 하나님이여 귀를 기울이소서(셀라)"
+      ],
+      "raw_text_hashes": [
+        "03891dd151478bcd269f8e6e7024cfee72a16b1beeb2f9f7a5e4254cf5a6f07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:9",
+      "sequence": 15269,
+      "chapter_label": "PSA 84",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, God our shield, look at the face of your anointed.",
+      "ko": "우리 방패이신 하나님이여 주의 기름 부으신 자의 얼굴을 살펴보옵소서",
+      "source_text_hash": "d476369ed72b1a171696ff52484e09af9bc9ae2d88a4b314ad992216cbfd599c",
+      "translation_text_hash": "d49fb0b7e662d5d220ba2b8f0927ceb3e4705221ae91c569aad1bcc58e3f9a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 방패이신 하나님이여 주의 기름 부으신 자의 얼굴을 살펴보옵소서"
+      ],
+      "raw_text_hashes": [
+        "d49fb0b7e662d5d220ba2b8f0927ceb3e4705221ae91c569aad1bcc58e3f9a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:10",
+      "sequence": 15270,
+      "chapter_label": "PSA 84",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 10
+        }
+      ],
+      "en": "For a day in your courts is better than a thousand. I would rather be a doorkeeper in the house of my God, than to dwell in the tents of wickedness.",
+      "ko": "주의 궁정에서 한 날이 다른 곳에서 천날보다 나은즉 악인의 장막에 거함보다 내 하나님 문지기로 있는 것이 좋사오니",
+      "source_text_hash": "1b2ee27f411f0f86d5737af50b4daf7cd476fdb2db0a9cd0c23987f405a83daf",
+      "translation_text_hash": "54745749717661283b9751265bea35d22438a3f980602685d4c396098a1f258b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 궁정에서 한 날이 다른 곳에서 천날보다 나은즉 악인의 장막에 거함보다 내 하나님 문지기로 있는 것이 좋사오니"
+      ],
+      "raw_text_hashes": [
+        "54745749717661283b9751265bea35d22438a3f980602685d4c396098a1f258b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:11",
+      "sequence": 15271,
+      "chapter_label": "PSA 84",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 11
+        }
+      ],
+      "en": "For the LORD God is a sun and a shield. The LORD will give grace and glory. He withholds no good thing from those who walk blamelessly.",
+      "ko": "여호와 하나님은 해요 방패시라 여호와께서 은혜와 영화를 주시며 정직히 행하는 자에게 좋은 것을 아끼지 아니하실 것임이니이다",
+      "source_text_hash": "c794e32ba060c93a846764e9b61d1d5e280d8da09aaf29bfe0708c64076bee58",
+      "translation_text_hash": "7fb1deb6f7b8afea6122d6748fec52000ec02a188f76ce2984a5b513bb973ae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님은 해요 방패시라 여호와께서 은혜와 영화를 주시며 정직히 행하는 자에게 좋은 것을 아끼지 아니하실 것임이니이다"
+      ],
+      "raw_text_hashes": [
+        "7fb1deb6f7b8afea6122d6748fec52000ec02a188f76ce2984a5b513bb973ae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:84:12",
+      "sequence": 15272,
+      "chapter_label": "PSA 84",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 84,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 84,
+          "verse": 12
+        }
+      ],
+      "en": "LORD of Armies, blessed is the man who trusts in you.",
+      "ko": "만군의 여호와여 주께 의지하는 자는 복이 있나이다",
+      "source_text_hash": "a95d78c5d8b9d86c58601caaba29521092e4a2688458b549c5ca4dbd46141622",
+      "translation_text_hash": "2c902832c2316da028f7b1b2b39c8fda4e82933cde1b36cf370526e32d29e886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와여 주께 의지하는 자는 복이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "2c902832c2316da028f7b1b2b39c8fda4e82933cde1b36cf370526e32d29e886"
+      ]
+    }
+  ]
+}

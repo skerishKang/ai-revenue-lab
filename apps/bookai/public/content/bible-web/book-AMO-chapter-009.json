@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:009",
+  "unit_ordinal": 888,
+  "unit_label": "AMO 9",
+  "book_code": "AMO",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:9:1",
+      "sequence": 22497,
+      "chapter_label": "AMO 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "I saw the Lord standing beside the altar, and he said, “Strike the tops of the pillars, that the thresholds may shake. Break them in pieces on the head of all of them. I will kill the last of them with the sword. Not one of them will flee away. Not one of them will escape.",
+      "ko": "내가 보니 주께서 단 곁에 서서 이르시되 기둥 머리를 쳐서 문지방이 움직이게 하며 그것으로 부숴져서 무리의 머리에 떨어지게 하라 내가 그 남은 자를 칼로 살륙하리니 그 중에서 하나도 도망하지 못하며 그 중에서 하나도 피하지 못하리라",
+      "source_text_hash": "b4f35318c29668589e69a36cb2af23cea65d77f4b96a544eba82328a99bff57f",
+      "translation_text_hash": "866eab9f590c06d211f2fa0c31c4ce22d47b45a6d411c437e407391b927b1085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 주께서 단 곁에 서서 이르시되 기둥 머리를 쳐서 문지방이 움직이게 하며 그것으로 부숴져서 무리의 머리에 떨어지게 하라 내가 그 남은 자를 칼로 살륙하리니 그 중에서 하나도 도망하지 못하며 그 중에서 하나도 피하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "866eab9f590c06d211f2fa0c31c4ce22d47b45a6d411c437e407391b927b1085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:2",
+      "sequence": 22498,
+      "chapter_label": "AMO 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "Though they dig into Sheol, there my hand will take them; and though they climb up to heaven, there I will bring them down.",
+      "ko": "저희가 파고 음부로 들어갈찌라도 내 손이 거기서 취하여 낼 것이요 하늘로 올라갈찌라도 내가 거기서 취하여 내리울 것이며",
+      "source_text_hash": "d4267cc1e5b501cf0eb268bb4895968676a49adf3355e22eb70494e802fd3d37",
+      "translation_text_hash": "5d74a8288550a6d67f237b5de49fd09e203383f36c2faac070e3caed49cacc69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 파고 음부로 들어갈찌라도 내 손이 거기서 취하여 낼 것이요 하늘로 올라갈찌라도 내가 거기서 취하여 내리울 것이며"
+      ],
+      "raw_text_hashes": [
+        "5d74a8288550a6d67f237b5de49fd09e203383f36c2faac070e3caed49cacc69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:3",
+      "sequence": 22499,
+      "chapter_label": "AMO 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Though they hide themselves in the top of Carmel, I will search and take them out from there; and though they be hidden from my sight in the bottom of the sea, there I will command the serpent, and it will bite them.",
+      "ko": "갈멜산 꼭대기에 숨을찌라도 내가 거기서 찾아낼 것이요 내 눈을 피하여 바다 밑에 숨을찌라도 내가 거기서 뱀을 명하여 물게 할 것이요",
+      "source_text_hash": "8821d77ccdc55e7699733a942e54e5e33ecba5c6e63a056503c06f2166ad0e1a",
+      "translation_text_hash": "d6e683a4c265aa5c0e525757f6d6c127ec70f4da19fe4ed5422cfa300328e07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈멜산 꼭대기에 숨을찌라도 내가 거기서 찾아낼 것이요 내 눈을 피하여 바다 밑에 숨을찌라도 내가 거기서 뱀을 명하여 물게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "d6e683a4c265aa5c0e525757f6d6c127ec70f4da19fe4ed5422cfa300328e07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:4",
+      "sequence": 22500,
+      "chapter_label": "AMO 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Though they go into captivity before their enemies, there I will command the sword, and it will kill them. I will set my eyes on them for evil, and not for good.",
+      "ko": "그 원수 앞에 사로잡혀 갈찌라도 내가 거기서 칼을 명하여 살륙하게 할 것이라 내가 저희에게 주목하여 화를 내리고 복을 내리지 아니하리라 하시니라",
+      "source_text_hash": "12614bdc9a772b179f76a9d9102114e5107a70c37936ce35874956d53d4a0aef",
+      "translation_text_hash": "ee115cb78b3468c75a4d7421fae078448d0d03ebcc05c2c3227435a2ada86ed0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 원수 앞에 사로잡혀 갈찌라도 내가 거기서 칼을 명하여 살륙하게 할 것이라 내가 저희에게 주목하여 화를 내리고 복을 내리지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ee115cb78b3468c75a4d7421fae078448d0d03ebcc05c2c3227435a2ada86ed0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:5",
+      "sequence": 22501,
+      "chapter_label": "AMO 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "For the Lord, the GOD of Armies, is he who touches the land and it melts, and all who dwell in it will mourn; and it will rise up wholly like the River, and will sink again, like the River of Egypt.",
+      "ko": "주 만군의 여호와는 땅을 만져 녹게 하사 무릇 거기 거한 자로 애통하게 하시며 그 온 땅으로 하수의 넘침 같이 솟아오르며 애굽 강 같이 낮아지게 하시는 자요",
+      "source_text_hash": "536175e7aca03d64640845a0c906bc0c2f3a723e4ccaeb8fd3f05dda45593abb",
+      "translation_text_hash": "03ff00d49e0039e99d6607866d3b2987ba3ef632b0dcc5ef9a426759d9d9c3a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 만군의 여호와는 땅을 만져 녹게 하사 무릇 거기 거한 자로 애통하게 하시며 그 온 땅으로 하수의 넘침 같이 솟아오르며 애굽 강 같이 낮아지게 하시는 자요"
+      ],
+      "raw_text_hashes": [
+        "03ff00d49e0039e99d6607866d3b2987ba3ef632b0dcc5ef9a426759d9d9c3a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:6",
+      "sequence": 22502,
+      "chapter_label": "AMO 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "It is he who builds his rooms in the heavens, and has founded his vault on the earth; he who calls for the waters of the sea, and pours them out on the surface of the earth—the LORD is his name.",
+      "ko": "그 전을 하늘에 세우시며 그 궁창의 기초를 땅에 두시며 바다 물을 불러 지면에 쏟으시는 자니 그 이름은 여호와시니라",
+      "source_text_hash": "ceb7dba8c77d982129c19aa3eb006af0c44d081d00f36a5d8266779a9d5e74b1",
+      "translation_text_hash": "0a0f654c48d34c3657d8b6ec60ed2ad0b0bbd42f076c990df03dfa5785ca98c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전을 하늘에 세우시며 그 궁창의 기초를 땅에 두시며 바다 물을 불러 지면에 쏟으시는 자니 그 이름은 여호와시니라"
+      ],
+      "raw_text_hashes": [
+        "0a0f654c48d34c3657d8b6ec60ed2ad0b0bbd42f076c990df03dfa5785ca98c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:7",
+      "sequence": 22503,
+      "chapter_label": "AMO 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Are you not like the children of the Ethiopians to me, children of Israel?” says the LORD. “Haven’t I brought up Israel out of the land of Egypt, and the Philistines from Caphtor, and the Syrians from Kir?",
+      "ko": "여호와께서 가라사대 이스라엘 자손들아 너희는 내게 구스 족속 같지 아니하냐 내가 이스라엘을 애굽 땅에서, 블레셋 사람을 갑돌에서, 아람 사람을 길에서 올라 오게 하지 아니하였느냐",
+      "source_text_hash": "d4ed47b882d6c6e153c575a3842dc7679aa213f4773ea5da08c2a7c72d40f1e0",
+      "translation_text_hash": "2c200b687a379cdac3cc38710aa15c81e088c9fc305ccd7f26324a3d86e5ad09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 이스라엘 자손들아 너희는 내게 구스 족속 같지 아니하냐 내가 이스라엘을 애굽 땅에서, 블레셋 사람을 갑돌에서, 아람 사람을 길에서 올라 오게 하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "2c200b687a379cdac3cc38710aa15c81e088c9fc305ccd7f26324a3d86e5ad09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:8",
+      "sequence": 22504,
+      "chapter_label": "AMO 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, the eyes of the Lord GOD are on the sinful kingdom, and I will destroy it from off the surface of the earth, except that I will not utterly destroy the house of Jacob,” says the LORD.",
+      "ko": "보라 주 여호와 내가 범죄한 나라에 주목하여 지면에서 멸하리라 그러나 야곱의 집은 온전히 멸하지는 아니하리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "33fe5b9e0690aa7d2f763f33838c2f10251e63e5d1f679e49f7eedeb52e308ef",
+      "translation_text_hash": "67753959a3905014e39f3e7648add0a31b501cd43ce5c7afb4f812c58fe5fd41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 주 여호와 내가 범죄한 나라에 주목하여 지면에서 멸하리라 그러나 야곱의 집은 온전히 멸하지는 아니하리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "67753959a3905014e39f3e7648add0a31b501cd43ce5c7afb4f812c58fe5fd41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:9",
+      "sequence": 22505,
+      "chapter_label": "AMO 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "“For behold, I will command, and I will sift the house of Israel among all the nations as grain is sifted in a sieve, yet not the least kernel will fall on the earth.",
+      "ko": "내가 명령하여 이스라엘 족속을 만국 중에 체질하기를 곡식을 체질함 같이 하려니와 그 한 알갱이도 땅에 떨어지지 아니하리라",
+      "source_text_hash": "819009ade695031277a228b2ab9b541241a317abc34d52ab718d162dc4d75adc",
+      "translation_text_hash": "770daac27fc9c099d5a183ba059e2d5e0a4475d0b8862323ec60b34895472ca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 명령하여 이스라엘 족속을 만국 중에 체질하기를 곡식을 체질함 같이 하려니와 그 한 알갱이도 땅에 떨어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "770daac27fc9c099d5a183ba059e2d5e0a4475d0b8862323ec60b34895472ca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:10",
+      "sequence": 22506,
+      "chapter_label": "AMO 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "All the sinners of my people will die by the sword, who say, ‘Evil won’t overtake nor meet us.’",
+      "ko": "내 백성 중에서 말하기를 화가 우리에게 미치지 아니하며 임하지 아니하리라 하는 모든 죄인은 칼에 죽으리라",
+      "source_text_hash": "f68dabaa46b60e1a1333c096305a1dee8f3f73dbade1e7e19e269d5c6b8c1826",
+      "translation_text_hash": "f57b4a8ec2b295a2d27b67c46e20e769d7a67e3e550cbf3e1224fbcb2f3043f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성 중에서 말하기를 화가 우리에게 미치지 아니하며 임하지 아니하리라 하는 모든 죄인은 칼에 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "f57b4a8ec2b295a2d27b67c46e20e769d7a67e3e550cbf3e1224fbcb2f3043f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:11",
+      "sequence": 22507,
+      "chapter_label": "AMO 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "In that day I will raise up the tent of David who is fallen and close up its breaches, and I will raise up its ruins, and I will build it as in the days of old,",
+      "ko": "그 날에 내가 다윗의 무너진 천막을 일으키고 그 틈을 막으며 그 퇴락한 것을 일으켜서 옛적과 같이 세우고",
+      "source_text_hash": "c12c9075b3aae58af778ae5249f7256bc43945af0dab5882630e9d66d5c38667",
+      "translation_text_hash": "698060fcffb164c65617b28a660e84dde6d9032bdbe83242e95783e75f95d3bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 다윗의 무너진 천막을 일으키고 그 틈을 막으며 그 퇴락한 것을 일으켜서 옛적과 같이 세우고"
+      ],
+      "raw_text_hashes": [
+        "698060fcffb164c65617b28a660e84dde6d9032bdbe83242e95783e75f95d3bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:12",
+      "sequence": 22508,
+      "chapter_label": "AMO 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "that they may possess the remnant of Edom and all the nations who are called by my name,” says the LORD who does this.",
+      "ko": "저희로 에돔의 남은 자와 내 이름으로 일컫는 만국을 기업으로 얻게 하리라 이는 이를 행하시는 여호와의 말씀이니라",
+      "source_text_hash": "4342dbc7336f5142d7d0b1a38691428581ec36f9fba63504e9a306e90250a900",
+      "translation_text_hash": "78a1654454793bb6fcd597dd810ca27190ea4c41f740f1ddae3e9d8bb9be0681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 에돔의 남은 자와 내 이름으로 일컫는 만국을 기업으로 얻게 하리라 이는 이를 행하시는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "78a1654454793bb6fcd597dd810ca27190ea4c41f740f1ddae3e9d8bb9be0681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:13",
+      "sequence": 22509,
+      "chapter_label": "AMO 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that the plowman shall overtake the reaper, and the one treading grapes him who sows seed; and sweet wine will drip from the mountains, and flow from the hills.",
+      "ko": "여호와께서 가라사대 보라 날이 이를찌라 그 때에 밭 가는 자가 곡식 베는 자의 뒤를 이으며 포도를 밟는 자가 씨 뿌리는 자의 뒤를 이으며 산들은 단 포도주를 흘리며 작은 산들은 녹으리라",
+      "source_text_hash": "ff9b3da7c821a97273eddf92a63324777326f9a3aefc118cd3dc1454244fed8b",
+      "translation_text_hash": "7714178091999f6e58e05b776d3ac3695ceebfac1a3d9aee3b9a2a91aa694d6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 날이 이를찌라 그 때에 밭 가는 자가 곡식 베는 자의 뒤를 이으며 포도를 밟는 자가 씨 뿌리는 자의 뒤를 이으며 산들은 단 포도주를 흘리며 작은 산들은 녹으리라"
+      ],
+      "raw_text_hashes": [
+        "7714178091999f6e58e05b776d3ac3695ceebfac1a3d9aee3b9a2a91aa694d6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:14",
+      "sequence": 22510,
+      "chapter_label": "AMO 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "I will bring my people Israel back from captivity, and they will rebuild the ruined cities, and inhabit them; and they will plant vineyards, and drink wine from them. They shall also make gardens, and eat their fruit.",
+      "ko": "내가 내 백성 이스라엘의 사로잡힌 것을 돌이키리니 저희가 황무한 성읍을 건축하고 거하며 포도원들을 심고 그 포도주를 마시며 과원들을 만들고 그 과실을 먹으리라",
+      "source_text_hash": "91bd8e7909fce2e7bb6e49903255745a2ded9aef424792b87b270024a35aedca",
+      "translation_text_hash": "1a11d17bd1af1ee814fa03481072dad309c7026fd033bb5f123fe59336b36348",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 백성 이스라엘의 사로잡힌 것을 돌이키리니 저희가 황무한 성읍을 건축하고 거하며 포도원들을 심고 그 포도주를 마시며 과원들을 만들고 그 과실을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "1a11d17bd1af1ee814fa03481072dad309c7026fd033bb5f123fe59336b36348"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:9:15",
+      "sequence": 22511,
+      "chapter_label": "AMO 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "AMO",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "I will plant them on their land, and they will no more be plucked up out of their land which I have given them,” says the LORD your God.",
+      "ko": "내가 저희를 그 본토에 심으리니 저희가 나의 준 땅에서 다시 뽑히지 아니하리라 이는 네 하나님 여호와의 말씀이니라",
+      "source_text_hash": "65e42c78902d3f8d7ec1f0d080c1f4fc6aa15f6601fa588670f504ebc02e77d2",
+      "translation_text_hash": "9fdccc9fd1c6e8201ef131635d03a42f269eb6f0e0776d6bb2ca2d39afc12b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 그 본토에 심으리니 저희가 나의 준 땅에서 다시 뽑히지 아니하리라 이는 네 하나님 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "9fdccc9fd1c6e8201ef131635d03a42f269eb6f0e0776d6bb2ca2d39afc12b52"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:013",
+  "unit_ordinal": 13,
+  "unit_label": "GEN 13",
+  "book_code": "GEN",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:13:1",
+      "sequence": 320,
+      "chapter_label": "GEN 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Abram went up out of Egypt—he, his wife, all that he had, and Lot with him—into the South.",
+      "ko": "아브람이 애굽에서 나올새 그와 그 아내와 모든 소유며 롯도 함께하여 남방으로 올라가니",
+      "source_text_hash": "13205b55e126aea5aadfdb17799086536fddeba93968d5a2d2b24ee72ae37970",
+      "translation_text_hash": "9f0280e697b8b407dd70c49a8b5cca0e0bcacd6508574345dc9b89adb5ff6956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 애굽에서 나올새 그와 그 아내와 모든 소유며 롯도 함께하여 남방으로 올라가니"
+      ],
+      "raw_text_hashes": [
+        "9f0280e697b8b407dd70c49a8b5cca0e0bcacd6508574345dc9b89adb5ff6956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:2",
+      "sequence": 321,
+      "chapter_label": "GEN 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Abram was very rich in livestock, in silver, and in gold.",
+      "ko": "아브람에게 육축과 은금이 풍부하였더라",
+      "source_text_hash": "cb5ed1315ad7f9603f20fd38a4238e50d94d03f08ac47199c76140c8980b8b0e",
+      "translation_text_hash": "b268d791fc15452305de23319b11b5ccad592668fe02f7bd59ac7fccd9d6d9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람에게 육축과 은금이 풍부하였더라"
+      ],
+      "raw_text_hashes": [
+        "b268d791fc15452305de23319b11b5ccad592668fe02f7bd59ac7fccd9d6d9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:3",
+      "sequence": 322,
+      "chapter_label": "GEN 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "He went on his journeys from the South as far as Bethel, to the place where his tent had been at the beginning, between Bethel and Ai,",
+      "ko": "그가 남방에서부터 발행하여 벧엘에 이르며 벧엘과 아이 사이 전에 장막 쳤던 곳에 이르니",
+      "source_text_hash": "85a7f31eb51064505ac9fb0511500c956d989c1353b375057015ef02284be64e",
+      "translation_text_hash": "4f0a9c3a7b51432a0dadd4fac642d85e237608b5493f37100a74d20a4d00cbb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 남방에서부터 발행하여 벧엘에 이르며 벧엘과 아이 사이 전에 장막 쳤던 곳에 이르니"
+      ],
+      "raw_text_hashes": [
+        "4f0a9c3a7b51432a0dadd4fac642d85e237608b5493f37100a74d20a4d00cbb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:4",
+      "sequence": 323,
+      "chapter_label": "GEN 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "to the place of the altar, which he had made there at the first. There Abram called on the LORD’s name.",
+      "ko": "그가 처음으로 단을 쌓은 곳이라 그가 거기서 여호와의 이름을 불렀더라",
+      "source_text_hash": "01701ad71a9e456a9b5f6348dbfec43b4f606491dffd840d7bc8b0a393645d25",
+      "translation_text_hash": "e64e8edef72ab2e1d639041ff98d5f47db2918e4cf25fa982f19fa0c4bea3ae8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 처음으로 단을 쌓은 곳이라 그가 거기서 여호와의 이름을 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "e64e8edef72ab2e1d639041ff98d5f47db2918e4cf25fa982f19fa0c4bea3ae8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:5",
+      "sequence": 324,
+      "chapter_label": "GEN 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Lot also, who went with Abram, had flocks, herds, and tents.",
+      "ko": "아브람의 일행 롯도 양과 소와 장막이 있으므로",
+      "source_text_hash": "64370e82cbf68316053d1374dcb00f5bf2e9df11aa9305232e5ed09cebf53c11",
+      "translation_text_hash": "0b2c7fa671580dd4bb025a6a2cb4a84e18d787fa6c399d2e11a73a85d836212a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람의 일행 롯도 양과 소와 장막이 있으므로"
+      ],
+      "raw_text_hashes": [
+        "0b2c7fa671580dd4bb025a6a2cb4a84e18d787fa6c399d2e11a73a85d836212a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:6",
+      "sequence": 325,
+      "chapter_label": "GEN 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "The land was not able to bear them, that they might live together; for their possessions were so great that they couldn’t live together.",
+      "ko": "그 땅이 그들의 동거함을 용납지 못하였으니 곧 그들의 소유가 많아서 동거할 수 없었음이라",
+      "source_text_hash": "a4f8880d214661ddc86dafa559d4b155cb954d6d693558e43f2473cfb5c1b808",
+      "translation_text_hash": "9f4a84da285b1845f28b55486a31a1dd7aa086ec2cc33dff7b4eed9d24ca5d8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅이 그들의 동거함을 용납지 못하였으니 곧 그들의 소유가 많아서 동거할 수 없었음이라"
+      ],
+      "raw_text_hashes": [
+        "9f4a84da285b1845f28b55486a31a1dd7aa086ec2cc33dff7b4eed9d24ca5d8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:7",
+      "sequence": 326,
+      "chapter_label": "GEN 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "There was strife between the herdsmen of Abram’s livestock and the herdsmen of Lot’s livestock. The Canaanites and the Perizzites lived in the land at that time.",
+      "ko": "그러므로 아브람의 가축의 목자와 롯의 가축의 목자가 서로 다투고 또 가나안 사람과 브리스 사람도 그 땅에 거하였는지라",
+      "source_text_hash": "f7e1c1beedbf9468b4ed3da12a6e4018c4ebfb9719af5c6f04ee742be803f636",
+      "translation_text_hash": "74c4e2357417b13f3d9d505fe05a01d9632335797a57b8491aae976fd0a0e966",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 아브람의 가축의 목자와 롯의 가축의 목자가 서로 다투고 또 가나안 사람과 브리스 사람도 그 땅에 거하였는지라"
+      ],
+      "raw_text_hashes": [
+        "74c4e2357417b13f3d9d505fe05a01d9632335797a57b8491aae976fd0a0e966"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:8",
+      "sequence": 327,
+      "chapter_label": "GEN 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Abram said to Lot, “Please, let there be no strife between you and me, and between your herdsmen and my herdsmen; for we are relatives.",
+      "ko": "아브람이 롯에게 이르되 우리는 한 골육이라 나나 너나 내 목자나 네 목자나 서로 다투게 말자",
+      "source_text_hash": "c0060830396b116ce95ee9d0c5085d83a7b08d94a5574ecf59748ced508a81fb",
+      "translation_text_hash": "6dc88098250a07fcdc9380ff66001cbff1559ec541e5cb44e0fff62d27d52adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 롯에게 이르되 우리는 한 골육이라 나나 너나 내 목자나 네 목자나 서로 다투게 말자"
+      ],
+      "raw_text_hashes": [
+        "6dc88098250a07fcdc9380ff66001cbff1559ec541e5cb44e0fff62d27d52adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:9",
+      "sequence": 328,
+      "chapter_label": "GEN 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Isn’t the whole land before you? Please separate yourself from me. If you go to the left hand, then I will go to the right. Or if you go to the right hand, then I will go to the left.”",
+      "ko": "네 앞에 온 땅이 있지 아니하냐 나를 떠나라 네가 좌하면 나는 우하고 네가 우하면 나는 좌하리라",
+      "source_text_hash": "df4f2813b1a75b4eed5579c17c36fed09244f5eda21a984673f1cf402836a3cf",
+      "translation_text_hash": "d5a886eb47eda23d1977854d1461310eb2f8af1d7c2318bbe17608891e7c7e79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 앞에 온 땅이 있지 아니하냐 나를 떠나라 네가 좌하면 나는 우하고 네가 우하면 나는 좌하리라"
+      ],
+      "raw_text_hashes": [
+        "d5a886eb47eda23d1977854d1461310eb2f8af1d7c2318bbe17608891e7c7e79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:10",
+      "sequence": 329,
+      "chapter_label": "GEN 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Lot lifted up his eyes, and saw all the plain of the Jordan, that it was well-watered everywhere, before the LORD destroyed Sodom and Gomorrah, like the garden of the LORD, like the land of Egypt, as you go to Zoar.",
+      "ko": "이에 롯이 눈을 들어 요단 들을 바라본즉 소알까지 온 땅에 물이 넉넉하니 여호와께서 소돔과 고모라를 멸하시기 전이었는고로 여호와의 동산 같고 애굽 땅과 같았더라",
+      "source_text_hash": "eea67203056c032b0912a77ce5acf66beb527bf564dc193eb83c8e10d95f831a",
+      "translation_text_hash": "744bb3a78145d6a0cda0adb1fb98bc64fff1042af20e947cb6bc5bd13a339379",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 롯이 눈을 들어 요단 들을 바라본즉 소알까지 온 땅에 물이 넉넉하니 여호와께서 소돔과 고모라를 멸하시기 전이었는고로 여호와의 동산 같고 애굽 땅과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "744bb3a78145d6a0cda0adb1fb98bc64fff1042af20e947cb6bc5bd13a339379"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:11",
+      "sequence": 330,
+      "chapter_label": "GEN 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "So Lot chose the Plain of the Jordan for himself. Lot traveled east, and they separated themselves from one another.",
+      "ko": "그러므로 롯이 요단 온 들을 택하고 동으로 옮기니 그들이 서로 떠난지라",
+      "source_text_hash": "a8e3dc2a97285a7413b1f43888715a14305021d22bce41d7bea847ab0a5d7915",
+      "translation_text_hash": "2ef2495c35fe9e524cc1d0845ca2cc6f878e933d24b8170d2288f038d6578da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 롯이 요단 온 들을 택하고 동으로 옮기니 그들이 서로 떠난지라"
+      ],
+      "raw_text_hashes": [
+        "2ef2495c35fe9e524cc1d0845ca2cc6f878e933d24b8170d2288f038d6578da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:12",
+      "sequence": 331,
+      "chapter_label": "GEN 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Abram lived in the land of Canaan, and Lot lived in the cities of the plain, and moved his tent as far as Sodom.",
+      "ko": "아브람은 가나안 땅에 거하였고 롯은 평지 성읍들에 머무르며 그 장막을 옮겨 소돔까지 이르렀더라",
+      "source_text_hash": "16df1f117fb317e626ecc7b0e9225c4be2db051b04a0abc67f8800232f20b5f8",
+      "translation_text_hash": "545db04c5c2bc9aae0d239704567f10a7574c317af503ac5826046f1b2b125c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람은 가나안 땅에 거하였고 롯은 평지 성읍들에 머무르며 그 장막을 옮겨 소돔까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "545db04c5c2bc9aae0d239704567f10a7574c317af503ac5826046f1b2b125c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:13",
+      "sequence": 332,
+      "chapter_label": "GEN 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Now the men of Sodom were exceedingly wicked and sinners against the LORD.",
+      "ko": "소돔 사람은 악하여 여호와 앞에 큰 죄인이었더라",
+      "source_text_hash": "1b5b358842595abb290d642af6155b784e531eb955f80ab79e11333043d8bce0",
+      "translation_text_hash": "9d3505a5e3fabd9e847233bc0cf9af6c419459e991a8993bf653b2f1b1d42bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔 사람은 악하여 여호와 앞에 큰 죄인이었더라"
+      ],
+      "raw_text_hashes": [
+        "9d3505a5e3fabd9e847233bc0cf9af6c419459e991a8993bf653b2f1b1d42bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:14",
+      "sequence": 333,
+      "chapter_label": "GEN 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD said to Abram, after Lot was separated from him, “Now, lift up your eyes, and look from the place where you are, northward and southward and eastward and westward,",
+      "ko": "롯이 아브람을 떠난 후에 여호와께서 아브람에게 이르시되 너는 눈을 들어 너 있는 곳에서 동서남북을 바라보라",
+      "source_text_hash": "90a333ec31ee966eff261b37e84b27e247d1482fae6ee23bf908c7a298291dde",
+      "translation_text_hash": "91528ed70771c6603e2e7a87060f52bb7c030f06576cb44a6f8d2a95eb52d770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 아브람을 떠난 후에 여호와께서 아브람에게 이르시되 너는 눈을 들어 너 있는 곳에서 동서남북을 바라보라"
+      ],
+      "raw_text_hashes": [
+        "91528ed70771c6603e2e7a87060f52bb7c030f06576cb44a6f8d2a95eb52d770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:15",
+      "sequence": 334,
+      "chapter_label": "GEN 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "for I will give all the land which you see to you and to your offspring forever.",
+      "ko": "보이는 땅을 내가 너와 네 자손에게 주리니 영원히 이르리라",
+      "source_text_hash": "7a83c6e2ab0157d751a8542f3ec4abd60a59a872fbddfa32e951b7769c1782ce",
+      "translation_text_hash": "a2e5527c923da17f0d9d4ff216f07b5a8ebdd96240b773a5a1da7ec6538eec71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보이는 땅을 내가 너와 네 자손에게 주리니 영원히 이르리라"
+      ],
+      "raw_text_hashes": [
+        "a2e5527c923da17f0d9d4ff216f07b5a8ebdd96240b773a5a1da7ec6538eec71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:16",
+      "sequence": 335,
+      "chapter_label": "GEN 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "I will make your offspring as the dust of the earth, so that if a man can count the dust of the earth, then your offspring may also be counted.",
+      "ko": "내가 네 자손으로 땅의 티끌 같게 하리니 사람이 땅의 티끌을 능히 셀 수 있을찐대 네 자손도 세리라",
+      "source_text_hash": "efd7db4399afb17b44aa422519c219258e7da47ba429e79b16980c6cfcad57fa",
+      "translation_text_hash": "4afc0ded1764551a11419c65c63356656ad6168655c5e1d8e5b9f38ab4eb04b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 자손으로 땅의 티끌 같게 하리니 사람이 땅의 티끌을 능히 셀 수 있을찐대 네 자손도 세리라"
+      ],
+      "raw_text_hashes": [
+        "4afc0ded1764551a11419c65c63356656ad6168655c5e1d8e5b9f38ab4eb04b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:17",
+      "sequence": 336,
+      "chapter_label": "GEN 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Arise, walk through the land in its length and in its width; for I will give it to you.”",
+      "ko": "너는 일어나 그 땅을 종과 횡으로 행하여 보라 내가 그것을 네게 주리라",
+      "source_text_hash": "4d94b90b5b5dee4b25c00d2bb8915fe6559f4bbf62260410b5d5d76ac2628e33",
+      "translation_text_hash": "a75ee6ea40ffa03f5ad8978294c5f1cf145790932168e124904bbb63409e4391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 그 땅을 종과 횡으로 행하여 보라 내가 그것을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "a75ee6ea40ffa03f5ad8978294c5f1cf145790932168e124904bbb63409e4391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:13:18",
+      "sequence": 337,
+      "chapter_label": "GEN 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Abram moved his tent, and came and lived by the oaks of Mamre, which are in Hebron, and built an altar there to the LORD.",
+      "ko": "이에 아브람이 장막을 옮겨 헤브론에 있는 마므레 상수리 수풀에 이르러 거하며 거기서 여호와를 위하여 단을 쌓았더라",
+      "source_text_hash": "cea1a99288712126858ea7131c7a54c616b3177ffb84ce3ac126fc99a92770d5",
+      "translation_text_hash": "6dcad7259905e3c67ecd185e067b5222d398400c6cac29ff07dd38eede1336f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아브람이 장막을 옮겨 헤브론에 있는 마므레 상수리 수풀에 이르러 거하며 거기서 여호와를 위하여 단을 쌓았더라"
+      ],
+      "raw_text_hashes": [
+        "6dcad7259905e3c67ecd185e067b5222d398400c6cac29ff07dd38eede1336f9"
+      ]
+    }
+  ]
+}

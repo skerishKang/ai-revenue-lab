@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:007",
+  "unit_ordinal": 274,
+  "unit_label": "2SA 7",
+  "book_code": "2SA",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:7:1",
+      "sequence": 8182,
+      "chapter_label": "2SA 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "When the king lived in his house, and the LORD had given him rest from all his enemies all around,",
+      "ko": "여호와께서 사방의 모든 대적을 파하사 왕으로 궁에 평안히 거하게 하신 때에",
+      "source_text_hash": "0c8373c54f5e36816ea377d24ef0858dd0ac647d7f8cf0907b8a976d4f5012b1",
+      "translation_text_hash": "0411455f93a14bdac507da83a0b64d4be7aa239da431165ca06e09a068fa1cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사방의 모든 대적을 파하사 왕으로 궁에 평안히 거하게 하신 때에"
+      ],
+      "raw_text_hashes": [
+        "0411455f93a14bdac507da83a0b64d4be7aa239da431165ca06e09a068fa1cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:2",
+      "sequence": 8183,
+      "chapter_label": "2SA 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "the king said to Nathan the prophet, “See now, I dwell in a house of cedar, but God’s ark dwells within curtains.”",
+      "ko": "왕이 선지자 나단에게 이르되 볼찌어다 나는 백향목 궁에 거하거늘 하나님의 궤는 휘장 가운데 있도다",
+      "source_text_hash": "cf6fbb03cf3218a750fb2146fa1c4ff4afd23e7bce613b27de13b451a6d5ec7b",
+      "translation_text_hash": "ed122015f68ed439a83ac2988c45b31fef843c2a13f0365d741c0fa46b4c6393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 선지자 나단에게 이르되 볼찌어다 나는 백향목 궁에 거하거늘 하나님의 궤는 휘장 가운데 있도다"
+      ],
+      "raw_text_hashes": [
+        "ed122015f68ed439a83ac2988c45b31fef843c2a13f0365d741c0fa46b4c6393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:3",
+      "sequence": 8184,
+      "chapter_label": "2SA 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Nathan said to the king, “Go, do all that is in your heart, for the LORD is with you.”",
+      "ko": "나단이 왕께 고하되 여호와께서 왕과 함께 계시니 무릇 마음에 있는 바를 행하소서",
+      "source_text_hash": "99443a104d509f8a28ad7ee9dff922ddd5bdc4a07c3f0cf590f503198c6ca904",
+      "translation_text_hash": "752739b4222e164edb68d38bfea505e8b0e8aa5535c90a9825e23f64047a0143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단이 왕께 고하되 여호와께서 왕과 함께 계시니 무릇 마음에 있는 바를 행하소서"
+      ],
+      "raw_text_hashes": [
+        "752739b4222e164edb68d38bfea505e8b0e8aa5535c90a9825e23f64047a0143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:4",
+      "sequence": 8185,
+      "chapter_label": "2SA 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "That same night, the LORD’s word came to Nathan, saying,",
+      "ko": "그 밤에 여호와의 말씀이 나단에게 임하여 가라사대",
+      "source_text_hash": "85cd993f6411d363964748afe2f38479849f4e05a9594901131d4baea7bbb47e",
+      "translation_text_hash": "b8931a57c61fda31ba1640d5fc8c00ecd6ae6f0bb34be86ae057466d6f2467af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 여호와의 말씀이 나단에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "b8931a57c61fda31ba1640d5fc8c00ecd6ae6f0bb34be86ae057466d6f2467af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:5",
+      "sequence": 8186,
+      "chapter_label": "2SA 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "“Go and tell my servant David, ‘The LORD says, “Should you build me a house for me to dwell in?",
+      "ko": "가서 내 종 다윗에게 말하기를 여호와의 말씀이 네가 나를 위하여 나의 거할 집을 건축하겠느냐",
+      "source_text_hash": "0da4df426a4dec03325d0951d082659b89d8a606f42f6484372b9e1348b2ec93",
+      "translation_text_hash": "85702a85e16b699ddf2bccd286633a279f40aa5cc2bb7dbcd2e008308a16760e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 내 종 다윗에게 말하기를 여호와의 말씀이 네가 나를 위하여 나의 거할 집을 건축하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "85702a85e16b699ddf2bccd286633a279f40aa5cc2bb7dbcd2e008308a16760e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:6",
+      "sequence": 8187,
+      "chapter_label": "2SA 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For I have not lived in a house since the day that I brought the children of Israel up out of Egypt, even to this day, but have moved around in a tent and in a tabernacle.",
+      "ko": "내가 이스라엘 자손을 애굽에서 인도하여 내던 날부터 오늘날까지 집에 거하지 아니하고 장막과 회막에 거하며 행하였나니",
+      "source_text_hash": "7c085bbc2a8df4513ec6fa12005af6704f6ce0e19b1ebf7a36b38edf51e64ff6",
+      "translation_text_hash": "1b762d628b1d906b5cf8a52fff5bdc2c36c83b4835340f8a1f9e570dab225268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손을 애굽에서 인도하여 내던 날부터 오늘날까지 집에 거하지 아니하고 장막과 회막에 거하며 행하였나니"
+      ],
+      "raw_text_hashes": [
+        "1b762d628b1d906b5cf8a52fff5bdc2c36c83b4835340f8a1f9e570dab225268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:7",
+      "sequence": 8188,
+      "chapter_label": "2SA 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "In all places in which I have walked with all the children of Israel, did I say a word to anyone from the tribes of Israel whom I commanded to be shepherd of my people Israel, saying, ‘Why have you not built me a house of cedar?’”’",
+      "ko": "무릇 이스라엘 자손으로 더불어 행하는 곳에서 내가 내 백성 이스라엘을 먹이라고 명한 이스라엘 어느 지파에게 내가 말하기를 너희가 어찌하여 나를 위하여 백향목 집을 건축하지 아니하였느냐고 말하였느냐",
+      "source_text_hash": "635bb312f7def4ba858f9b7455b1d97fbc8e6ff363aaf7bde729e43c441a9b33",
+      "translation_text_hash": "5f7b93ec8fa0678128188b22f1b0c40f44ff37b62fb8961944af3badd8026e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 자손으로 더불어 행하는 곳에서 내가 내 백성 이스라엘을 먹이라고 명한 이스라엘 어느 지파에게 내가 말하기를 너희가 어찌하여 나를 위하여 백향목 집을 건축하지 아니하였느냐고 말하였느냐"
+      ],
+      "raw_text_hashes": [
+        "5f7b93ec8fa0678128188b22f1b0c40f44ff37b62fb8961944af3badd8026e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:8",
+      "sequence": 8189,
+      "chapter_label": "2SA 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Now therefore tell my servant David this: ‘The LORD of Armies says, “I took you from the sheep pen, from following the sheep, to be prince over my people, over Israel.",
+      "ko": "그러므로 이제 내 종 다윗에게 이처럼 말하라 만군의 여호와께서 이처럼 말씀하시기를 내가 너를 목장 곧 양을 따르는데서 취하여 내 백성 이스라엘의 주권자를 삼고",
+      "source_text_hash": "72918aaf09dc9306a12c624478188d9b2f1b0cc0fd79ee1be174b896a6266d47",
+      "translation_text_hash": "d884358f58c5bbd2e636aa237bbbf16d4adccd448c237aec726610222066aae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 내 종 다윗에게 이처럼 말하라 만군의 여호와께서 이처럼 말씀하시기를 내가 너를 목장 곧 양을 따르는데서 취하여 내 백성 이스라엘의 주권자를 삼고"
+      ],
+      "raw_text_hashes": [
+        "d884358f58c5bbd2e636aa237bbbf16d4adccd448c237aec726610222066aae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:9",
+      "sequence": 8190,
+      "chapter_label": "2SA 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "I have been with you wherever you went, and have cut off all your enemies from before you. I will make you a great name, like the name of the great ones who are on the earth.",
+      "ko": "네가 어디를 가든지 내가 너와 함께 있어 네 모든 대적을 네 앞에서 멸하였은즉 세상에서 존귀한 자의 이름 같이 네 이름을 존귀케 만들어 주리라",
+      "source_text_hash": "fb7686137e33bab32f42b6e67305e9c465ec23baf8e8ee05372df44996a89980",
+      "translation_text_hash": "e8f86216624657727e61263374da0fb9be4cfaec05e234a32634012b92cddd77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어디를 가든지 내가 너와 함께 있어 네 모든 대적을 네 앞에서 멸하였은즉 세상에서 존귀한 자의 이름 같이 네 이름을 존귀케 만들어 주리라"
+      ],
+      "raw_text_hashes": [
+        "e8f86216624657727e61263374da0fb9be4cfaec05e234a32634012b92cddd77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:10",
+      "sequence": 8191,
+      "chapter_label": "2SA 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "I will appoint a place for my people Israel, and will plant them, that they may dwell in their own place and be moved no more. The children of wickedness will not afflict them any more, as at the first,",
+      "ko": "내가 또 내 백성 이스라엘을 위하여 한 곳을 정하여 저희를 심고 저희로 자기 곳에 거하여 다시 옮기지 않게 하며 악한 유로 전과 같이 저희를 해하지 못하게 하여",
+      "source_text_hash": "da13a297127160d2ca9d616a0dc9ca2611e0005da4a6f90eaf68854790bd70ee",
+      "translation_text_hash": "dce33d784abd86d93dd0ed0db9f5706d70962a2b1eb3284b52eb55a314713ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 내 백성 이스라엘을 위하여 한 곳을 정하여 저희를 심고 저희로 자기 곳에 거하여 다시 옮기지 않게 하며 악한 유로 전과 같이 저희를 해하지 못하게 하여"
+      ],
+      "raw_text_hashes": [
+        "dce33d784abd86d93dd0ed0db9f5706d70962a2b1eb3284b52eb55a314713ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:11",
+      "sequence": 8192,
+      "chapter_label": "2SA 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "and as from the day that I commanded judges to be over my people Israel. I will cause you to rest from all your enemies. Moreover the LORD tells you that the LORD will make you a house.",
+      "ko": "전에 내가 사사를 명하여 내 백성 이스라엘을 다스리던 때와 같지 않게 하고 너를 모든 대적에게서 벗어나 평안케 하리라 여호와가 또 네게 이르노니 여호와가 너를 위하여 집을 이루고",
+      "source_text_hash": "fc1b6982cf31b468dfa1d260108bad44b3620ffec1c73969defae7e3074273ae",
+      "translation_text_hash": "344ccb98235663714975853085fe9580c25af516add055d9e02eb31d351a6790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 내가 사사를 명하여 내 백성 이스라엘을 다스리던 때와 같지 않게 하고 너를 모든 대적에게서 벗어나 평안케 하리라 여호와가 또 네게 이르노니 여호와가 너를 위하여 집을 이루고"
+      ],
+      "raw_text_hashes": [
+        "344ccb98235663714975853085fe9580c25af516add055d9e02eb31d351a6790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:12",
+      "sequence": 8193,
+      "chapter_label": "2SA 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "When your days are fulfilled and you sleep with your fathers, I will set up your offspring after you, who will proceed out of your body, and I will establish his kingdom.",
+      "ko": "네 수한이 차서 네 조상들과 함께 잘 때에 내가 네 몸에서 날 자식을 네 뒤에 세워 그 나라를 견고케 하리라",
+      "source_text_hash": "d9f4de207467dc0ac164f17d20c91cfb23c07de402fc3b3df6e06e68be34aaa8",
+      "translation_text_hash": "9a94b7696faa6f91d34558a67e4a20d2c1491bf7fe2da766fd6136a1013638d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 수한이 차서 네 조상들과 함께 잘 때에 내가 네 몸에서 날 자식을 네 뒤에 세워 그 나라를 견고케 하리라"
+      ],
+      "raw_text_hashes": [
+        "9a94b7696faa6f91d34558a67e4a20d2c1491bf7fe2da766fd6136a1013638d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:13",
+      "sequence": 8194,
+      "chapter_label": "2SA 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "He will build a house for my name, and I will establish the throne of his kingdom forever.",
+      "ko": "저는 내 이름을 위하여 집을 건축할 것이요 나는 그 나라 위를 영원히 견고케 하리라",
+      "source_text_hash": "6f933b26a0c0c701e8bc9a57c3f570916984dbd938b45118e9b18679a28daa62",
+      "translation_text_hash": "eba0d755df9aa1ff9d74fb3a153c62d65b6808333a2bdb843265c7098ff01c26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 내 이름을 위하여 집을 건축할 것이요 나는 그 나라 위를 영원히 견고케 하리라"
+      ],
+      "raw_text_hashes": [
+        "eba0d755df9aa1ff9d74fb3a153c62d65b6808333a2bdb843265c7098ff01c26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:14",
+      "sequence": 8195,
+      "chapter_label": "2SA 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "I will be his father, and he will be my son. If he commits iniquity, I will chasten him with the rod of men and with the stripes of the children of men;",
+      "ko": "나는 그 아비가 되고 그는 내 아들이 되리니 저가 만일 죄를 범하면 내가 사람 막대기와 인생 채찍으로 징계하려니와",
+      "source_text_hash": "0709e80625aa056b3216f515106f3a2fdd89958b0b7063d2727dc1a816963aed",
+      "translation_text_hash": "b4d1efde167628e4f74d5077a8d974fa8e467c9dabc590675d9a9085f2c4e114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 그 아비가 되고 그는 내 아들이 되리니 저가 만일 죄를 범하면 내가 사람 막대기와 인생 채찍으로 징계하려니와"
+      ],
+      "raw_text_hashes": [
+        "b4d1efde167628e4f74d5077a8d974fa8e467c9dabc590675d9a9085f2c4e114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:15",
+      "sequence": 8196,
+      "chapter_label": "2SA 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "but my loving kindness will not depart from him, as I took it from Saul, whom I put away before you.",
+      "ko": "내가 네 앞에서 폐한 사울에게서 내 은총을 빼앗은것 같이 그에게서는 빼앗지 아니하리라",
+      "source_text_hash": "a20f40c2bada9abe96238b43bc59c5ae4ed1e3d4abb526d7e5e0a5708ee176ce",
+      "translation_text_hash": "e35a17fd4395d38c221f4913d70846984f91d7538afc6e33f0bafd03228a68b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 앞에서 폐한 사울에게서 내 은총을 빼앗은것 같이 그에게서는 빼앗지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "e35a17fd4395d38c221f4913d70846984f91d7538afc6e33f0bafd03228a68b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:16",
+      "sequence": 8197,
+      "chapter_label": "2SA 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Your house and your kingdom will be made sure forever before you. Your throne will be established forever.”’”",
+      "ko": "네 집과 네 나라가 내 앞에서 영원히 보전되고 네 위가 영원히 견고하리라 하셨다 하라",
+      "source_text_hash": "ce0f3d304dce7e3402ddc775a1c1503321792b83ebaaa211a413285709791043",
+      "translation_text_hash": "0826b39ac4c92c4f99dc8a1c25f9e15024ec5e2a843a226c916b0eae200834b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 집과 네 나라가 내 앞에서 영원히 보전되고 네 위가 영원히 견고하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "0826b39ac4c92c4f99dc8a1c25f9e15024ec5e2a843a226c916b0eae200834b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:17",
+      "sequence": 8198,
+      "chapter_label": "2SA 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Nathan spoke to David all these words, and according to all this vision.",
+      "ko": "나단이 이 모든 말씀과 이 모든 묵시대로 다윗에게 고하니라",
+      "source_text_hash": "6f9c98643b5083db3575d8a1ad0eaca09ae9ba815e617efe3fef975830757434",
+      "translation_text_hash": "4db8dfceaddea170a30d0958994ebea0d57de4efc41e5c3401554e70c9f7209f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단이 이 모든 말씀과 이 모든 묵시대로 다윗에게 고하니라"
+      ],
+      "raw_text_hashes": [
+        "4db8dfceaddea170a30d0958994ebea0d57de4efc41e5c3401554e70c9f7209f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:18",
+      "sequence": 8199,
+      "chapter_label": "2SA 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "Then David the king went in and sat before the LORD; and he said, “Who am I, Lord GOD, and what is my house, that you have brought me this far?",
+      "ko": "다윗왕이 여호와 앞에 들어가 앉아서 가로되 주 여호와여 나는 누구오며 내 집은 무엇이관대 나로 이에 이르게 하셨나이까",
+      "source_text_hash": "62192086f85690aaf5236084ef8173ddb05bc094104a1cae9481e03b891a0637",
+      "translation_text_hash": "cbd81ff3f07a03035ba3ea8ab57dd1da05c94c80bd36f07bc5bdb97779608b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 여호와 앞에 들어가 앉아서 가로되 주 여호와여 나는 누구오며 내 집은 무엇이관대 나로 이에 이르게 하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "cbd81ff3f07a03035ba3ea8ab57dd1da05c94c80bd36f07bc5bdb97779608b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:19",
+      "sequence": 8200,
+      "chapter_label": "2SA 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "This was yet a small thing in your eyes, Lord GOD, but you have spoken also of your servant’s house for a great while to come; and this among men, Lord GOD!",
+      "ko": "주 여호와여 주께서 이것을 오히려 적게 여기시고 또 종의 집에 영구히 이를 일을 말씀하실뿐 아니라 주 여호와여 인간의 규례대로 하셨나이다",
+      "source_text_hash": "2c6a67cf927a0d9fba1bf68cadbdb832f5eb7ab3bf472f2abe085d5c97612e2e",
+      "translation_text_hash": "81f19bdefae3fc0996bb9bf07d26e7721cc04b34e4e5d62a86f21bdc94d75b65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주께서 이것을 오히려 적게 여기시고 또 종의 집에 영구히 이를 일을 말씀하실뿐 아니라 주 여호와여 인간의 규례대로 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "81f19bdefae3fc0996bb9bf07d26e7721cc04b34e4e5d62a86f21bdc94d75b65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:20",
+      "sequence": 8201,
+      "chapter_label": "2SA 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "What more can David say to you? For you know your servant, Lord GOD.",
+      "ko": "주 여호와는 종을 아시오니 다윗이 다시 주께 무슨 말씀을 하오리이까",
+      "source_text_hash": "5fa04510b26ad8bec64c974c2d0036ecf31f0d237f3e745aa34088f32ea3e644",
+      "translation_text_hash": "eeda8ed926ccb332e73ab6f49893442dc5c186c8521cb17d6ee590ccd1927791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와는 종을 아시오니 다윗이 다시 주께 무슨 말씀을 하오리이까"
+      ],
+      "raw_text_hashes": [
+        "eeda8ed926ccb332e73ab6f49893442dc5c186c8521cb17d6ee590ccd1927791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:21",
+      "sequence": 8202,
+      "chapter_label": "2SA 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "For your word’s sake, and according to your own heart, you have worked all this greatness, to make your servant know it.",
+      "ko": "주의 말씀을 인하여 주의 뜻대로 이 모든 큰 일을 행하사 주의 종에게 알게 하셨나이다",
+      "source_text_hash": "8599b2f987ab2c277add36db017819d033dfcb54c869d33d54e24dc1907c8b5e",
+      "translation_text_hash": "0c17a18b8f43385715cd48a3a4261638b35f5879a60dd5bc6f43f5a9caabb75f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀을 인하여 주의 뜻대로 이 모든 큰 일을 행하사 주의 종에게 알게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0c17a18b8f43385715cd48a3a4261638b35f5879a60dd5bc6f43f5a9caabb75f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:22",
+      "sequence": 8203,
+      "chapter_label": "2SA 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore you are great, LORD God. For there is no one like you, neither is there any God besides you, according to all that we have heard with our ears.",
+      "ko": "여호와 하나님이여 이러므로 주는 광대하시니 이는 우리 귀로 들은대로는 주와 같은 이가 없고 주 외에는 참 신이 없음이니이다",
+      "source_text_hash": "37e952658b97cda01e7c1972ec3a8a74a7c11c9b364dd43241c9a48f4f236e0a",
+      "translation_text_hash": "bd1a5e3dfd39bb8c084e50cf669ed8b4e199e68704741027b33936a85bba27a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이여 이러므로 주는 광대하시니 이는 우리 귀로 들은대로는 주와 같은 이가 없고 주 외에는 참 신이 없음이니이다"
+      ],
+      "raw_text_hashes": [
+        "bd1a5e3dfd39bb8c084e50cf669ed8b4e199e68704741027b33936a85bba27a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:23",
+      "sequence": 8204,
+      "chapter_label": "2SA 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "What one nation on the earth is like your people, even like Israel, whom God went to redeem to himself for a people, and to make himself a name, and to do great things for you, and awesome things for your land, before your people, whom you redeemed to yourself out of Egypt, from the nations and their gods?",
+      "ko": "땅의 어느 한 나라가 주의 백성 이스라엘과 같으리이까 하나님이 가서 구속하사 자기 백성을 삼아 주의 명성을 내시며 저희를 위하여 큰 일을, 주의 땅을 위하여 두려운 일을 애굽과 열국과 그 신들에게서 구속하신 백성 앞에서 행하셨사오며",
+      "source_text_hash": "9fc441532a984091a6ff6103b12afe9c3c2c434f51f53a38d2b844e844732c4d",
+      "translation_text_hash": "0ab12ae758b48905b8de372bc693423ffd8adaf250449a09b016679af368f8b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 어느 한 나라가 주의 백성 이스라엘과 같으리이까 하나님이 가서 구속하사 자기 백성을 삼아 주의 명성을 내시며 저희를 위하여 큰 일을, 주의 땅을 위하여 두려운 일을 애굽과 열국과 그 신들에게서 구속하신 백성 앞에서 행하셨사오며"
+      ],
+      "raw_text_hashes": [
+        "0ab12ae758b48905b8de372bc693423ffd8adaf250449a09b016679af368f8b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:24",
+      "sequence": 8205,
+      "chapter_label": "2SA 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "You established for yourself your people Israel to be your people forever; and you, LORD, became their God.",
+      "ko": "주께서 주의 백성 이스라엘을 세우사 영원히 주의 백성을 삼으셨사오니 여호와여 주께서 저희 하나님이 되셨나이다",
+      "source_text_hash": "c47d26a1cc4644c0715cfee0822dbf9636271dee267d02e6dfb447e1ed46db62",
+      "translation_text_hash": "5a6df9f932e5c3a61078fa4996112755dfa0de17d1f9daa688a381cf3ce1c526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 백성 이스라엘을 세우사 영원히 주의 백성을 삼으셨사오니 여호와여 주께서 저희 하나님이 되셨나이다"
+      ],
+      "raw_text_hashes": [
+        "5a6df9f932e5c3a61078fa4996112755dfa0de17d1f9daa688a381cf3ce1c526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:25",
+      "sequence": 8206,
+      "chapter_label": "2SA 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "“Now, LORD God, the word that you have spoken concerning your servant, and concerning his house, confirm it forever, and do as you have spoken.",
+      "ko": "여호와 하나님이여 이제 주의 종과 종의 집에 대하여 말씀하신 것을 영원히 확실케 하옵시며 말씀하신대로 행하사",
+      "source_text_hash": "4a03a17dc4608473ff00fc0a530faec1b816ec8c898ea87742d7c9b7544a0a57",
+      "translation_text_hash": "599a5844c764d8c3ff5fe94f840f2d145ff87f6de8788358d3d55fa521825dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이여 이제 주의 종과 종의 집에 대하여 말씀하신 것을 영원히 확실케 하옵시며 말씀하신대로 행하사"
+      ],
+      "raw_text_hashes": [
+        "599a5844c764d8c3ff5fe94f840f2d145ff87f6de8788358d3d55fa521825dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:26",
+      "sequence": 8207,
+      "chapter_label": "2SA 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Let your name be magnified forever, saying, ‘The LORD of Armies is God over Israel; and the house of your servant David will be established before you.’",
+      "ko": "사람으로 영원히 주의 이름을 높여 이르기를 만군의 여호와는 이스라엘의 하나님이라 하게 하옵시며 주의 종 다윗의 집으로 주 앞에 견고하게 하옵소서",
+      "source_text_hash": "224b6a7529b65f2916e89a06e22902e63caeda72f87834fe8eaa4e771bab3a13",
+      "translation_text_hash": "654e31c76b83b23455f7443d3cc93ad8eff5e78d534721729a16c460a4cd6b4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람으로 영원히 주의 이름을 높여 이르기를 만군의 여호와는 이스라엘의 하나님이라 하게 하옵시며 주의 종 다윗의 집으로 주 앞에 견고하게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "654e31c76b83b23455f7443d3cc93ad8eff5e78d534721729a16c460a4cd6b4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:27",
+      "sequence": 8208,
+      "chapter_label": "2SA 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "For you, LORD of Armies, the God of Israel, have revealed to your servant, saying, ‘I will build you a house.’ Therefore your servant has found in his heart to pray this prayer to you.",
+      "ko": "만군의 여호와 이스라엘의 하나님이여 주의 종에게 알게 하여 이르시기를 내가 너를 위하여 집을 세우리라 하신고로 주의 종이 이 기도로 구할 마음이 생겼나이다",
+      "source_text_hash": "25f0fa962154f2024658a65f2fcfdfc702100d44c9d0147580e44322f1a31745",
+      "translation_text_hash": "39629edf8ba90b15bb07ea3d8fbca750d109cce07b250cb8008b9552055ab0a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이여 주의 종에게 알게 하여 이르시기를 내가 너를 위하여 집을 세우리라 하신고로 주의 종이 이 기도로 구할 마음이 생겼나이다"
+      ],
+      "raw_text_hashes": [
+        "39629edf8ba90b15bb07ea3d8fbca750d109cce07b250cb8008b9552055ab0a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:28",
+      "sequence": 8209,
+      "chapter_label": "2SA 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "“Now, O Lord GOD, you are God, and your words are truth, and you have promised this good thing to your servant.",
+      "ko": "주 여호와여 오직 주는 하나님이시며 말씀이 참되시니이다 주께서 이 좋은 것으로 종에게 허락하셨사오니",
+      "source_text_hash": "bc4f00003e58d6ee6edeaae0ca5b71bf84e2012ce0752d2feb814d273e65f640",
+      "translation_text_hash": "5f92791fcfcf3d0447c7d3570ea392648e28c2619da273d517db90dcc62df795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 오직 주는 하나님이시며 말씀이 참되시니이다 주께서 이 좋은 것으로 종에게 허락하셨사오니"
+      ],
+      "raw_text_hashes": [
+        "5f92791fcfcf3d0447c7d3570ea392648e28c2619da273d517db90dcc62df795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:7:29",
+      "sequence": 8210,
+      "chapter_label": "2SA 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "Now therefore, let it please you to bless the house of your servant, that it may continue forever before you; for you, Lord GOD, have spoken it. Let the house of your servant be blessed forever with your blessing.”",
+      "ko": "이제 청컨대 종의 집에 복을 주사 주 앞에 영원히 있게 하옵소서 주 여호와께서 말씀하셨사오니 주의 은혜로 종의 집이 영원히 복을 받게 하옵소서 하니라",
+      "source_text_hash": "9b5988eec7c36aba7156b94c3350deedc57f20c494699b35f6f8a6cb6a194cea",
+      "translation_text_hash": "5d0d76d454b12e0f7dab7f22ee460be3df9a37f91c9eed2ae476acf99abd5d86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 청컨대 종의 집에 복을 주사 주 앞에 영원히 있게 하옵소서 주 여호와께서 말씀하셨사오니 주의 은혜로 종의 집이 영원히 복을 받게 하옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "5d0d76d454b12e0f7dab7f22ee460be3df9a37f91c9eed2ae476acf99abd5d86"
+      ]
+    }
+  ]
+}

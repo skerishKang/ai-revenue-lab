@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:023",
+  "unit_ordinal": 336,
+  "unit_label": "2KI 23",
+  "book_code": "2KI",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:23:1",
+      "sequence": 10167,
+      "chapter_label": "2KI 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "The king sent, and they gathered to him all the elders of Judah and of Jerusalem.",
+      "ko": "왕이 보내어 유다와 예루살렘의 모든 장로를 자기에게로 모으고",
+      "source_text_hash": "fdc61e51732f36a03bdb44a863e50bfd8a46415e09af9a1da97febd3d812e95f",
+      "translation_text_hash": "405bb034a1bcbf556e37d67c1fe46e30382f977e9ec3adfdb51d03a8023e58df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 보내어 유다와 예루살렘의 모든 장로를 자기에게로 모으고"
+      ],
+      "raw_text_hashes": [
+        "405bb034a1bcbf556e37d67c1fe46e30382f977e9ec3adfdb51d03a8023e58df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:2",
+      "sequence": 10168,
+      "chapter_label": "2KI 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "The king went up to the LORD’s house, and all the men of Judah and all the inhabitants of Jerusalem with him—with the priests, the prophets, and all the people, both small and great; and he read in their hearing all the words of the book of the covenant which was found in the LORD’s house.",
+      "ko": "이에 여호와의 전에 올라가매 유다 모든 사람과 예루살렘 거민과 제사장들과 선지자들과 모든 백성이 무론 노소하고 다 왕과 함께한지라 왕이 여호와의 전 안에서 발견한 언약책의 모든 말씀을 읽어 무리의 귀에 들리고",
+      "source_text_hash": "2a4e677ec997aeca00cdb76be4ab470d335df9dd32aaedf2b3b0a6089b3c1879",
+      "translation_text_hash": "f24bcf16d87c48cf577ec0c6469ce7aba6ef28156b890361f67f28a2d835ceb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와의 전에 올라가매 유다 모든 사람과 예루살렘 거민과 제사장들과 선지자들과 모든 백성이 무론 노소하고 다 왕과 함께한지라 왕이 여호와의 전 안에서 발견한 언약책의 모든 말씀을 읽어 무리의 귀에 들리고"
+      ],
+      "raw_text_hashes": [
+        "f24bcf16d87c48cf577ec0c6469ce7aba6ef28156b890361f67f28a2d835ceb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:3",
+      "sequence": 10169,
+      "chapter_label": "2KI 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "The king stood by the pillar and made a covenant before the LORD to walk after the LORD and to keep his commandments, his testimonies, and his statutes with all his heart and all his soul, to confirm the words of this covenant that were written in this book; and all the people agreed to the covenant.",
+      "ko": "왕이 대 위에 서서 여호와 앞에서 언약을 세우되 마음을 다하고 성품을 다하여 여호와를 순종하고 그 계명과 법도와 율례를 지켜 이 책에 기록된 이 언약의 말씀을 이루게 하리라 하매 백성이 다 그 언약을 좇기로 하니라",
+      "source_text_hash": "d22ea27789898f796dc715bb327c2aa0ce433b58f92fac94ff416cfeab649bb4",
+      "translation_text_hash": "623c66d282040199a8cbd22b3afbbac26c1f47dd41af1d9b85d60393d5dca4de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대 위에 서서 여호와 앞에서 언약을 세우되 마음을 다하고 성품을 다하여 여호와를 순종하고 그 계명과 법도와 율례를 지켜 이 책에 기록된 이 언약의 말씀을 이루게 하리라 하매 백성이 다 그 언약을 좇기로 하니라"
+      ],
+      "raw_text_hashes": [
+        "623c66d282040199a8cbd22b3afbbac26c1f47dd41af1d9b85d60393d5dca4de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:4",
+      "sequence": 10170,
+      "chapter_label": "2KI 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "The king commanded Hilkiah the high priest, and the priests of the second order, and the keepers of the threshold, to bring out of the LORD’s temple all the vessels that were made for Baal, for the Asherah, and for all the army of the sky; and he burned them outside of Jerusalem in the fields of the Kidron, and carried their ashes to Bethel.",
+      "ko": "왕이 대제사장 힐기야와 모든 버금 제사장들과 문을 지킨 자들에게 명하여 바알과 아세라와 하늘의 일월 성신을 위하여 만든 모든 기명을 여호와의 전에서 내어다가 예루살렘 바깥 기드론 밭에서 불사르고 그 재를 벧엘로 가져가게 하고",
+      "source_text_hash": "e9ce95c6cde40820a027e8bf35433cf3fa4b9f20e0080c902d72276fc59fc782",
+      "translation_text_hash": "38c095ed805ee699b2a1da43a01ea87745ed86ae587cd5326791e45e8f5ef596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 대제사장 힐기야와 모든 버금 제사장들과 문을 지킨 자들에게 명하여 바알과 아세라와 하늘의 일월 성신을 위하여 만든 모든 기명을 여호와의 전에서 내어다가 예루살렘 바깥 기드론 밭에서 불사르고 그 재를 벧엘로 가져가게 하고"
+      ],
+      "raw_text_hashes": [
+        "38c095ed805ee699b2a1da43a01ea87745ed86ae587cd5326791e45e8f5ef596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:5",
+      "sequence": 10171,
+      "chapter_label": "2KI 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "He got rid of the idolatrous priests whom the kings of Judah had ordained to burn incense in the high places in the cities of Judah and in the places around Jerusalem; those also who burned incense to Baal, to the sun, to the moon, to the planets, and to all the army of the sky.",
+      "ko": "옛적에 유다 왕들이 세워서 유다 모든 고을과 예루살렘 사면 산당에서 분향하며 우상을 섬기게 한 제사장들을 폐하며 또 바알과 해와 달과 열두 궁성과 하늘의 모든 별에게 분향하는 자들을 폐하고",
+      "source_text_hash": "8d7749cf280a4b12553fbf66d8e1ae0a15b284ade00c36cf5dafe7b0e88c069e",
+      "translation_text_hash": "3b160a4711236c3cdfb2b50cc217ef5e32d32c9f39250c5c062cb05364c478f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 유다 왕들이 세워서 유다 모든 고을과 예루살렘 사면 산당에서 분향하며 우상을 섬기게 한 제사장들을 폐하며 또 바알과 해와 달과 열두 궁성과 하늘의 모든 별에게 분향하는 자들을 폐하고"
+      ],
+      "raw_text_hashes": [
+        "3b160a4711236c3cdfb2b50cc217ef5e32d32c9f39250c5c062cb05364c478f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:6",
+      "sequence": 10172,
+      "chapter_label": "2KI 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "He brought out the Asherah from the LORD’s house, outside of Jerusalem, to the brook Kidron, and burned it at the brook Kidron, and beat it to dust, and cast its dust on the graves of the common people.",
+      "ko": "또 여호와의 전에서 아세라 상을 내어 예루살렘 바깥 기드론 시내로 가져다가 거기서 불사르고 빻아서 가루를 만들어 그 가루를 평민의 묘지에 뿌리고",
+      "source_text_hash": "f264a60c01a18b543174ede85b5c0eafe386cd62d7263c6bde271a084c94d7db",
+      "translation_text_hash": "9da16cc4cabf56bebb7c80ce2f281d4370eb4b56bd49b77320697ae406b64eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 전에서 아세라 상을 내어 예루살렘 바깥 기드론 시내로 가져다가 거기서 불사르고 빻아서 가루를 만들어 그 가루를 평민의 묘지에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "9da16cc4cabf56bebb7c80ce2f281d4370eb4b56bd49b77320697ae406b64eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:7",
+      "sequence": 10173,
+      "chapter_label": "2KI 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "He broke down the houses of the male shrine prostitutes that were in the LORD’s house, where the women wove hangings for the Asherah.",
+      "ko": "또 여호와의 전 가운데 미동의 집을 헐었으니 그곳은 여인이 아세라를 위하여 휘장을 짜는 처소이었더라",
+      "source_text_hash": "d61743048ef90cb8d2dbc94e3daefcf4667cd7e3dc7d26044c77f53089a0d64d",
+      "translation_text_hash": "28898039742be6dd581f1cdabcfacaf20f65bfba85c1ffdd52a2f438b0497f5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 전 가운데 미동의 집을 헐었으니 그곳은 여인이 아세라를 위하여 휘장을 짜는 처소이었더라"
+      ],
+      "raw_text_hashes": [
+        "28898039742be6dd581f1cdabcfacaf20f65bfba85c1ffdd52a2f438b0497f5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:8",
+      "sequence": 10174,
+      "chapter_label": "2KI 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "He brought all the priests out of the cities of Judah, and defiled the high places where the priests had burned incense, from Geba to Beersheba; and he broke down the high places of the gates that were at the entrance of the gate of Joshua the governor of the city, which were on a man’s left hand at the gate of the city.",
+      "ko": "또 유다 각 성읍에서 모든 제사장을 불러오고 또 제사장이 분향하던 산당을 게바에서부터 브엘세바까지 더럽게 하고 또 성문의 산당들을 헐어버렸으니 이 산당들은 부윤 여호수아의 대문 어귀 곧 성문 왼편에 있었더라",
+      "source_text_hash": "9a97f070c5cc27385a2c3460e12b9f1ab3867c9a4a1a2be1e9a59ad7cf1bd47c",
+      "translation_text_hash": "53af13d3ed08c237bf52c0b1cd7c78cd63f3a1de05e93a73c1f80fb6d87d6a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유다 각 성읍에서 모든 제사장을 불러오고 또 제사장이 분향하던 산당을 게바에서부터 브엘세바까지 더럽게 하고 또 성문의 산당들을 헐어버렸으니 이 산당들은 부윤 여호수아의 대문 어귀 곧 성문 왼편에 있었더라"
+      ],
+      "raw_text_hashes": [
+        "53af13d3ed08c237bf52c0b1cd7c78cd63f3a1de05e93a73c1f80fb6d87d6a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:9",
+      "sequence": 10175,
+      "chapter_label": "2KI 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "Nevertheless the priests of the high places didn’t come up to the LORD’s altar in Jerusalem, but they ate unleavened bread among their brothers.",
+      "ko": "산당의 제사장들은 예루살렘 여호와의 단에 올라가지 못하고 다만 그 형제 중에서 무교병을 먹을 뿐이었더라",
+      "source_text_hash": "540d89721146df8b5abb028b69728a958af78b301ce8e167dd751ebe3ba5be24",
+      "translation_text_hash": "70c0f4f88a252cecefdaf5090d364974fcc739b5b667f405ade422bdfc306a0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산당의 제사장들은 예루살렘 여호와의 단에 올라가지 못하고 다만 그 형제 중에서 무교병을 먹을 뿐이었더라"
+      ],
+      "raw_text_hashes": [
+        "70c0f4f88a252cecefdaf5090d364974fcc739b5b667f405ade422bdfc306a0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:10",
+      "sequence": 10176,
+      "chapter_label": "2KI 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "He defiled Topheth, which is in the valley of the children of Hinnom, that no man might make his son or his daughter to pass through the fire to Molech.",
+      "ko": "왕이 또 힌놈의 아들 골짜기의 도벳을 더럽게 하여 사람으로 몰록에게 드리기 위하여 그 자녀를 불로 지나가게 하지 못하게 하고",
+      "source_text_hash": "09c6c5ccc5630f377f916c8445575655343eb1527f6dedd030d989ef1e0fdcec",
+      "translation_text_hash": "1da9634394a7678d1f1739e13fe5ac13d97eab62338e0ab085aea980d39f34d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 힌놈의 아들 골짜기의 도벳을 더럽게 하여 사람으로 몰록에게 드리기 위하여 그 자녀를 불로 지나가게 하지 못하게 하고"
+      ],
+      "raw_text_hashes": [
+        "1da9634394a7678d1f1739e13fe5ac13d97eab62338e0ab085aea980d39f34d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:11",
+      "sequence": 10177,
+      "chapter_label": "2KI 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "He took away the horses that the kings of Judah had dedicated to the sun, at the entrance of the LORD’s house, by the room of Nathan Melech the officer who was in the court; and he burned the chariots of the sun with fire.",
+      "ko": "또 유다 열왕이 태양을 위하여 드린 말들을 제하여 버렸으니 이 말들은 여호와의 전으로 들어가는 곳의 근처 시종 나단멜렉의 집 곁에 있던 것이며 또 태양 수레를 불사르고",
+      "source_text_hash": "e4eb0f0f1998df17f4f7bb753fabb02a299088ae33522e1649823314132b16d3",
+      "translation_text_hash": "ccf148ca096389d49df81906348bfc6ff1aae361414121a4ea29d1405c8d9347",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유다 열왕이 태양을 위하여 드린 말들을 제하여 버렸으니 이 말들은 여호와의 전으로 들어가는 곳의 근처 시종 나단멜렉의 집 곁에 있던 것이며 또 태양 수레를 불사르고"
+      ],
+      "raw_text_hashes": [
+        "ccf148ca096389d49df81906348bfc6ff1aae361414121a4ea29d1405c8d9347"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:12",
+      "sequence": 10178,
+      "chapter_label": "2KI 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "The king broke down the altars that were on the roof of the upper room of Ahaz, which the kings of Judah had made, and the altars which Manasseh had made in the two courts of the LORD’s house, and beat them down from there, and cast their dust into the brook Kidron.",
+      "ko": "유다 열왕이 아하스의 다락지붕에 세운 단들과 므낫세가 여호와의 전 두 마당에 세운 단들을 왕이 다 헐고 거기서 빻아내려서 그 가루를 기드론 시내에 쏟아버리고",
+      "source_text_hash": "217257dae2cd5387934cee4f81629441ee7add898ab5bf8280648d545aff98c5",
+      "translation_text_hash": "b86987580412827ab9fe9a482efe166f0083dd7e5c7bf74d8790a725b2b3582e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 열왕이 아하스의 다락지붕에 세운 단들과 므낫세가 여호와의 전 두 마당에 세운 단들을 왕이 다 헐고 거기서 빻아내려서 그 가루를 기드론 시내에 쏟아버리고"
+      ],
+      "raw_text_hashes": [
+        "b86987580412827ab9fe9a482efe166f0083dd7e5c7bf74d8790a725b2b3582e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:13",
+      "sequence": 10179,
+      "chapter_label": "2KI 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "The king defiled the high places that were before Jerusalem, which were on the right hand of the mountain of corruption, which Solomon the king of Israel had built for Ashtoreth the abomination of the Sidonians, and for Chemosh the abomination of Moab, and for Milcom the abomination of the children of Ammon.",
+      "ko": "또 예루살렘 앞 멸망산 우편에 세운 산당을 더럽게 하였으니 이는 옛적에 이스라엘 왕 솔로몬이 시돈 사람의 가증한 아스다롯과 모압 사람의 가증한 그모스와 암몬 자손의 가증한 밀곰을 위하여 세웠던 것이며",
+      "source_text_hash": "740872be15fe181eabcffefd651ea6450443756198de8a83bfdbbf496290d205",
+      "translation_text_hash": "03a9d5a878636d849c0cea7fcbafa9b08561c7c17b6eba29c9088e98a9be05a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예루살렘 앞 멸망산 우편에 세운 산당을 더럽게 하였으니 이는 옛적에 이스라엘 왕 솔로몬이 시돈 사람의 가증한 아스다롯과 모압 사람의 가증한 그모스와 암몬 자손의 가증한 밀곰을 위하여 세웠던 것이며"
+      ],
+      "raw_text_hashes": [
+        "03a9d5a878636d849c0cea7fcbafa9b08561c7c17b6eba29c9088e98a9be05a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:14",
+      "sequence": 10180,
+      "chapter_label": "2KI 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "He broke in pieces the pillars, cut down the Asherah poles, and filled their places with men’s bones.",
+      "ko": "왕이 또 석상들을 깨뜨리며 아세라 목상들을 찍고 사람의 해골로 그곳에 채웠더라",
+      "source_text_hash": "ee3c5ef3e197dfc9708fb26da29e63b3b16ccf44f08e25e103b935a14875e5a8",
+      "translation_text_hash": "574299ad6bd96738d51c6ac685463b5b8290b8244fb76a7682f31e1108ff101a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 석상들을 깨뜨리며 아세라 목상들을 찍고 사람의 해골로 그곳에 채웠더라"
+      ],
+      "raw_text_hashes": [
+        "574299ad6bd96738d51c6ac685463b5b8290b8244fb76a7682f31e1108ff101a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:15",
+      "sequence": 10181,
+      "chapter_label": "2KI 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Moreover the altar that was at Bethel and the high place which Jeroboam the son of Nebat, who made Israel to sin, had made, even that altar and the high place he broke down; and he burned the high place and beat it to dust, and burned the Asherah.",
+      "ko": "이스라엘로 범죄케 한 느밧의 아들 여로보암이 벧엘에 세운 단과 산당을 왕이 헐고 또 그 산당을 불사르고 빻아서 가루를 만들며 또 아세라 목상을 불살랐더라",
+      "source_text_hash": "f03cbef5413ed47117a60690546fd14ca70bbc01169fb00e195a091cb016d131",
+      "translation_text_hash": "f13a9f177ab7f1e1404a86b45084b7a7efec004036198771c0b08d76420e1944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘로 범죄케 한 느밧의 아들 여로보암이 벧엘에 세운 단과 산당을 왕이 헐고 또 그 산당을 불사르고 빻아서 가루를 만들며 또 아세라 목상을 불살랐더라"
+      ],
+      "raw_text_hashes": [
+        "f13a9f177ab7f1e1404a86b45084b7a7efec004036198771c0b08d76420e1944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:16",
+      "sequence": 10182,
+      "chapter_label": "2KI 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "As Josiah turned himself, he spied the tombs that were there in the mountain; and he sent, and took the bones out of the tombs, and burned them on the altar, and defiled it, according to the LORD’s word which the man of God proclaimed, who proclaimed these things.",
+      "ko": "요시야가 몸을 돌이켜 산에 있는 묘실들을 보고 보내어 그 묘실에서 해골을 취하여다가 단 위에 불살라 그 단을 더럽게 하니라 이 일을 하나님의 사람이 전하였더니 그 전한 여호와의 말씀대로 되었더라",
+      "source_text_hash": "87eb0508933e48952d583325c12cddb52fe9e7d77ce801262b7b6a1fdf6ba657",
+      "translation_text_hash": "4c19ae0c5f6a9745f3c929ee1062b3160c62596d20f8dacaf572d7523ffb4070",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 몸을 돌이켜 산에 있는 묘실들을 보고 보내어 그 묘실에서 해골을 취하여다가 단 위에 불살라 그 단을 더럽게 하니라 이 일을 하나님의 사람이 전하였더니 그 전한 여호와의 말씀대로 되었더라"
+      ],
+      "raw_text_hashes": [
+        "4c19ae0c5f6a9745f3c929ee1062b3160c62596d20f8dacaf572d7523ffb4070"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:17",
+      "sequence": 10183,
+      "chapter_label": "2KI 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Then he said, “What monument is that which I see?” The men of the city told him, “It is the tomb of the man of God who came from Judah and proclaimed these things that you have done against the altar of Bethel.”",
+      "ko": "요시야가 이르되 내게 보이는 저것은 무슨 비석이냐 성읍 사람들이 고하되 왕께서 벧엘의 단에 향하여 행하신 이 일을 전하러 유다에서 왔던 하나님의 사람의 묘실이니이다",
+      "source_text_hash": "02677a3bc9e0e31f78f4d557bd7fc45cb0bcc61c18587eb204eb702633a3b07c",
+      "translation_text_hash": "bec343d14ec55f7adf7d5d1f9d2b8898fb0f390da414bcf5f659b4c3e75fe353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 이르되 내게 보이는 저것은 무슨 비석이냐 성읍 사람들이 고하되 왕께서 벧엘의 단에 향하여 행하신 이 일을 전하러 유다에서 왔던 하나님의 사람의 묘실이니이다"
+      ],
+      "raw_text_hashes": [
+        "bec343d14ec55f7adf7d5d1f9d2b8898fb0f390da414bcf5f659b4c3e75fe353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:18",
+      "sequence": 10184,
+      "chapter_label": "2KI 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “Let him be! Let no one move his bones.” So they let his bones alone, with the bones of the prophet who came out of Samaria.",
+      "ko": "가로되 그대로 두고 그 뼈를 옮기지 말라 하매 무리가 그 뼈와 사마리아에서 온 선지자의 뼈는 그대로 두었더라",
+      "source_text_hash": "84fe7974c0b732cc162767d749cdc461c194ec07d831d890b702a63cf47cda4a",
+      "translation_text_hash": "5da8d8b60e8f427cd3cfbe7a4b752b134149d066f3d008500d1adcfd8e24bdc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그대로 두고 그 뼈를 옮기지 말라 하매 무리가 그 뼈와 사마리아에서 온 선지자의 뼈는 그대로 두었더라"
+      ],
+      "raw_text_hashes": [
+        "5da8d8b60e8f427cd3cfbe7a4b752b134149d066f3d008500d1adcfd8e24bdc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:19",
+      "sequence": 10185,
+      "chapter_label": "2KI 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "All the houses also of the high places that were in the cities of Samaria, which the kings of Israel had made to provoke the LORD to anger, Josiah took away, and did to them according to all the acts that he had done in Bethel.",
+      "ko": "전에 이스라엘 열왕이 사마리아 각 성읍에 지어서 여호와의 노를 격발한 산당을 요시야가 다 제하되 벧엘에서 행한 모든 일대로 행하고",
+      "source_text_hash": "9ff6d73cd650bd03232521ca221b34cab6fe706c62d8f4445ac6a03ce02bf175",
+      "translation_text_hash": "65ad37ab8a89bd75772fac8a57f8de6003bebdb02263f3729466714dffccbf10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 이스라엘 열왕이 사마리아 각 성읍에 지어서 여호와의 노를 격발한 산당을 요시야가 다 제하되 벧엘에서 행한 모든 일대로 행하고"
+      ],
+      "raw_text_hashes": [
+        "65ad37ab8a89bd75772fac8a57f8de6003bebdb02263f3729466714dffccbf10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:20",
+      "sequence": 10186,
+      "chapter_label": "2KI 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "He killed all the priests of the high places that were there, on the altars, and burned men’s bones on them; and he returned to Jerusalem.",
+      "ko": "또 거기 있는 산당의 제사장들을 다 단 위에서 죽이고 사람의 해골을 단 위에 불사르고 예루살렘으로 돌아왔더라",
+      "source_text_hash": "a38d3603a4d56e7df58daf5497f10ea791e4180e897a68f916aeea144c7932ec",
+      "translation_text_hash": "42533a8c887cb4b5d699699f23aef7044f30fa99114f077b61e93fd6127c8182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거기 있는 산당의 제사장들을 다 단 위에서 죽이고 사람의 해골을 단 위에 불사르고 예루살렘으로 돌아왔더라"
+      ],
+      "raw_text_hashes": [
+        "42533a8c887cb4b5d699699f23aef7044f30fa99114f077b61e93fd6127c8182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:21",
+      "sequence": 10187,
+      "chapter_label": "2KI 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "The king commanded all the people, saying, “Keep the Passover to the LORD your God, as it is written in this book of the covenant.”",
+      "ko": "왕이 뭇백성에게 명하여 가로되 이 언약책에 기록된대로 너희의 하나님 여호와를 위하여 유월절을 지키라 하매",
+      "source_text_hash": "a4690fea5e76e0659dadaae16496f52648ed8b100d8f006f83f4a5d55b175df7",
+      "translation_text_hash": "b7f3d667b38821390c6307206023d71d7fd1d45fb5258bda9780684f91fe2325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 뭇백성에게 명하여 가로되 이 언약책에 기록된대로 너희의 하나님 여호와를 위하여 유월절을 지키라 하매"
+      ],
+      "raw_text_hashes": [
+        "b7f3d667b38821390c6307206023d71d7fd1d45fb5258bda9780684f91fe2325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:22",
+      "sequence": 10188,
+      "chapter_label": "2KI 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "Surely there was not kept such a Passover from the days of the judges who judged Israel, nor in all the days of the kings of Israel, nor of the kings of Judah;",
+      "ko": "사사가 이스라엘을 다스리던 시대부터 이스라엘 열왕의 시대에든지 유다 열왕의 시대에든지 이렇게 유월절을 지킨 일이 없었더니",
+      "source_text_hash": "188600ffa1ca1ac34dd4fb094f54fa31104240a5203f525181e69cb2dccf9c86",
+      "translation_text_hash": "8c1c7f7b8077eefb5f96e314307e356931b9b7b24d46d27e9007a834595fd40f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사사가 이스라엘을 다스리던 시대부터 이스라엘 열왕의 시대에든지 유다 열왕의 시대에든지 이렇게 유월절을 지킨 일이 없었더니"
+      ],
+      "raw_text_hashes": [
+        "8c1c7f7b8077eefb5f96e314307e356931b9b7b24d46d27e9007a834595fd40f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:23",
+      "sequence": 10189,
+      "chapter_label": "2KI 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "but in the eighteenth year of King Josiah, this Passover was kept to the LORD in Jerusalem.",
+      "ko": "요시야왕 십 팔년에 예루살렘에서 여호와 앞에 이 유월절을 지켰더라",
+      "source_text_hash": "6711854d8f267056b85ee0add8d0c655cb00731aaa63c5094714fde0981e4dae",
+      "translation_text_hash": "f41d4c658f63ebe0fa5b1201f457fcb68e0cc0c773a5aa153f69db01fc5f6824",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야왕 십 팔년에 예루살렘에서 여호와 앞에 이 유월절을 지켰더라"
+      ],
+      "raw_text_hashes": [
+        "f41d4c658f63ebe0fa5b1201f457fcb68e0cc0c773a5aa153f69db01fc5f6824"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:24",
+      "sequence": 10190,
+      "chapter_label": "2KI 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "Moreover, Josiah removed those who had familiar spirits, the wizards, and the teraphim, and the idols, and all the abominations that were seen in the land of Judah and in Jerusalem, that he might confirm the words of the law which were written in the book that Hilkiah the priest found in the LORD’s house.",
+      "ko": "요시야가 또 유다 땅과 예루살렘에 보이는 신접한 자와 박수와 드라빔과 우상과 모든 가증한 것을 다 제하였으니 이는 대제사장 힐기야가 여호와의 전에서 발견한 책에 기록된 율법 말씀을 이루려 함이라",
+      "source_text_hash": "a4d1624d6dc9f400e5f6cbc1dfb14ebea59629f5612b305d04053e5b894d6ba8",
+      "translation_text_hash": "4935b2b80c3741cb781424e2cfdb7a8b8c42669413eb4c36892dbb84688d9e79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 또 유다 땅과 예루살렘에 보이는 신접한 자와 박수와 드라빔과 우상과 모든 가증한 것을 다 제하였으니 이는 대제사장 힐기야가 여호와의 전에서 발견한 책에 기록된 율법 말씀을 이루려 함이라"
+      ],
+      "raw_text_hashes": [
+        "4935b2b80c3741cb781424e2cfdb7a8b8c42669413eb4c36892dbb84688d9e79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:25",
+      "sequence": 10191,
+      "chapter_label": "2KI 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "There was no king like him before him, who turned to the LORD with all his heart, and with all his soul, and with all his might, according to all the law of Moses; and there was none like him who arose after him.",
+      "ko": "요시야와 같이 마음을 다하며 성품을 다하며 힘을 다하여 여호와를 향하여 모세의 모든 율법을 온전히 준행한 임금은 요시야 전에도 없었고 후에도 그와 같은 자가 없었더라",
+      "source_text_hash": "0f278b6185147a663237d7859d679ce08ecc1f4b58da054c882664e788e9dff6",
+      "translation_text_hash": "450988bd75f524d2b702cd9c71308050193d2ee8294bfedaedcd6eff6fe916a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야와 같이 마음을 다하며 성품을 다하며 힘을 다하여 여호와를 향하여 모세의 모든 율법을 온전히 준행한 임금은 요시야 전에도 없었고 후에도 그와 같은 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "450988bd75f524d2b702cd9c71308050193d2ee8294bfedaedcd6eff6fe916a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:26",
+      "sequence": 10192,
+      "chapter_label": "2KI 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "Notwithstanding, the LORD didn’t turn from the fierceness of his great wrath, with which his anger burned against Judah, because of all the provocation with which Manasseh had provoked him.",
+      "ko": "그러나 여호와께서 유다를 향하여 진노하신 그 크게 타오르는 진노를 돌이키지 아니하셨으니 이는 므낫세가 여호와를 격노케한 그 모든 격노를 인함이라",
+      "source_text_hash": "d79b1974a1ae8dc317c0d542d1ccb21308ed94f5f9db6eabd0ab83a2c983e1db",
+      "translation_text_hash": "c34bf220283a4c08ec269225382a9bfc6615f1b8606aa552a567be80b55260fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 유다를 향하여 진노하신 그 크게 타오르는 진노를 돌이키지 아니하셨으니 이는 므낫세가 여호와를 격노케한 그 모든 격노를 인함이라"
+      ],
+      "raw_text_hashes": [
+        "c34bf220283a4c08ec269225382a9bfc6615f1b8606aa552a567be80b55260fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:27",
+      "sequence": 10193,
+      "chapter_label": "2KI 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD said, “I will also remove Judah out of my sight, as I have removed Israel; and I will cast off this city which I have chosen, even Jerusalem, and the house of which I said, ‘My name shall be there.’”",
+      "ko": "여호와께서 가라사대 내가 이스라엘을 물리친 것 같이 유다도 내 앞에서 물리치며 내가 뺀 이 성 예루살렘과 내 이름을 거기 두리라 한 이 전을 버리리라 하셨더라",
+      "source_text_hash": "9d4ed28e36933954854f44154962f55738d63a07b78d0a38212f4770b5ef2d5e",
+      "translation_text_hash": "9ab1292904acdf64fa4c90004b20ada7dc1e4129d3d5b12d9d6951ca8babc52a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 이스라엘을 물리친 것 같이 유다도 내 앞에서 물리치며 내가 뺀 이 성 예루살렘과 내 이름을 거기 두리라 한 이 전을 버리리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "9ab1292904acdf64fa4c90004b20ada7dc1e4129d3d5b12d9d6951ca8babc52a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:28",
+      "sequence": 10194,
+      "chapter_label": "2KI 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Now the rest of the acts of Josiah, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "요시야의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "0b420624a5ed6c28916fa9f7f33df7cff6288f5ae5518f7369bbe20b2ede5e62",
+      "translation_text_hash": "011b3abdc73df53c2740172703803148e569866be8dc4357c2cd7a133c4e9979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "011b3abdc73df53c2740172703803148e569866be8dc4357c2cd7a133c4e9979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:29",
+      "sequence": 10195,
+      "chapter_label": "2KI 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "In his days Pharaoh Necoh king of Egypt went up against the king of Assyria to the river Euphrates; and King Josiah went against him, but Pharaoh Necoh killed him at Megiddo when he saw him.",
+      "ko": "요시야 당시에 애굽 왕 바로느고가 앗수르 왕을 치고자 하여 유브라데 하수로 올라가므로 요시야왕이 나가서 방비하더니 애굽 왕이 요시야를 므깃도에서 만나본 후에 죽인지라",
+      "source_text_hash": "f3da75592749933bcab3da99d026e1db9a7ccd264537b3d3c5b064b6edff3590",
+      "translation_text_hash": "0dd0212fc58180376ff7fac75d65a672b395a2c53cb26244fefb2653d984a681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야 당시에 애굽 왕 바로느고가 앗수르 왕을 치고자 하여 유브라데 하수로 올라가므로 요시야왕이 나가서 방비하더니 애굽 왕이 요시야를 므깃도에서 만나본 후에 죽인지라"
+      ],
+      "raw_text_hashes": [
+        "0dd0212fc58180376ff7fac75d65a672b395a2c53cb26244fefb2653d984a681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:30",
+      "sequence": 10196,
+      "chapter_label": "2KI 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "His servants carried him dead in a chariot from Megiddo, brought him to Jerusalem, and buried him in his own tomb. The people of the land took Jehoahaz the son of Josiah, and anointed him, and made him king in his father’s place.",
+      "ko": "신복들이 그 시체를 병거에 싣고 므깃도에서 예루살렘으로 돌아와서 그 묘실에 장사하니 국민이 요시야의 아들 여호아하스를 데려다가 저에게 기름을 붓고 그 부친을 대신하여 왕을 삼았더라",
+      "source_text_hash": "0e9f1df0e135330c1f5422df171270bfeb1d6630d417a62f303d791248887b5b",
+      "translation_text_hash": "280ccde7156c65a32bb64c8b0c7752786ea1c56e815bbe6a0f96dcb959697419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신복들이 그 시체를 병거에 싣고 므깃도에서 예루살렘으로 돌아와서 그 묘실에 장사하니 국민이 요시야의 아들 여호아하스를 데려다가 저에게 기름을 붓고 그 부친을 대신하여 왕을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "280ccde7156c65a32bb64c8b0c7752786ea1c56e815bbe6a0f96dcb959697419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:31",
+      "sequence": 10197,
+      "chapter_label": "2KI 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "Jehoahaz was twenty-three years old when he began to reign; and he reigned three months in Jerusalem. His mother’s name was Hamutal the daughter of Jeremiah of Libnah.",
+      "ko": "여호아하스가 위에 나아갈 때에 나이 이십 삼세라 예루살렘에서 석달을 치리하니라 그 모친의 이름은 하무달이라 립나 예레미야의 딸이더라",
+      "source_text_hash": "92e8cccf278ba784f578cb0737a5970a2c96107f3bb47efe3ef8fe3ce3f8f2f7",
+      "translation_text_hash": "5213d7e79fe1c6e0637675ab9d8d18be8d10964f1d21c1f1d19a410aba4d62f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호아하스가 위에 나아갈 때에 나이 이십 삼세라 예루살렘에서 석달을 치리하니라 그 모친의 이름은 하무달이라 립나 예레미야의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "5213d7e79fe1c6e0637675ab9d8d18be8d10964f1d21c1f1d19a410aba4d62f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:32",
+      "sequence": 10198,
+      "chapter_label": "2KI 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, according to all that his fathers had done.",
+      "ko": "여호아하스가 그 열조의 모든 행위대로 여호와 보시기에 악을 행하였더니",
+      "source_text_hash": "4d8aa09a0074432baba629ed89e3489a1784cde827403b2333f7e74599aaf627",
+      "translation_text_hash": "cdbbb9b7b501a6eb93f6b950c567d9fb17a50a8559b3cacb79583f7920d61d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호아하스가 그 열조의 모든 행위대로 여호와 보시기에 악을 행하였더니"
+      ],
+      "raw_text_hashes": [
+        "cdbbb9b7b501a6eb93f6b950c567d9fb17a50a8559b3cacb79583f7920d61d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:33",
+      "sequence": 10199,
+      "chapter_label": "2KI 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "Pharaoh Necoh put him in bonds at Riblah in the land of Hamath, that he might not reign in Jerusalem; and put the land to a tribute of one hundred talents of silver and a talent of gold.",
+      "ko": "바로느고가 저를 하맛 땅 립나에 가두어 예루살렘에서 왕이 되지 못하게 하고 또 그 나라로 은 일백 달란트와 금 한 달란트를 벌금으로 내게 하고",
+      "source_text_hash": "8ee702009974a35b2b4fd1fa9d0ba4cb8d375fcc1091915ed934b26b205a9676",
+      "translation_text_hash": "4e8e09f957f84667f5f4bb16621d02028c79c36ee500046a301faf19a5631d85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로느고가 저를 하맛 땅 립나에 가두어 예루살렘에서 왕이 되지 못하게 하고 또 그 나라로 은 일백 달란트와 금 한 달란트를 벌금으로 내게 하고"
+      ],
+      "raw_text_hashes": [
+        "4e8e09f957f84667f5f4bb16621d02028c79c36ee500046a301faf19a5631d85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:34",
+      "sequence": 10200,
+      "chapter_label": "2KI 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "Pharaoh Necoh made Eliakim the son of Josiah king in the place of Josiah his father, and changed his name to Jehoiakim; but he took Jehoahaz away, and he came to Egypt and died there.",
+      "ko": "바로느고가 요시야의 아들 엘리아김으로 그 아비 요시야를 대신하여 왕을 삼고 그 이름을 고쳐 여호야김이라 하고 여호아하스는 애굽으로 잡아갔더니 저가 거기서 죽으니라",
+      "source_text_hash": "0d908af00faa88cac47bee161f6561860f60f826e436bb551062a12c74682777",
+      "translation_text_hash": "cb0396010c8ba8db2c21f5f34ad280493bc2df0392376fa0cea7aae7b6f55fc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로느고가 요시야의 아들 엘리아김으로 그 아비 요시야를 대신하여 왕을 삼고 그 이름을 고쳐 여호야김이라 하고 여호아하스는 애굽으로 잡아갔더니 저가 거기서 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "cb0396010c8ba8db2c21f5f34ad280493bc2df0392376fa0cea7aae7b6f55fc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:35",
+      "sequence": 10201,
+      "chapter_label": "2KI 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "Jehoiakim gave the silver and the gold to Pharaoh; but he taxed the land to give the money according to the commandment of Pharaoh. He exacted the silver and the gold of the people of the land, from everyone according to his assessment, to give it to Pharaoh Necoh.",
+      "ko": "여호야김이 은과 금을 바로에게 주니라 저가 바로느고의 명령대로 그에게 그 돈을 주기 위하여 나라에 부과하되 국민 각 사람의 힘대로 액수를 정하고 은금을 늑봉하였더라",
+      "source_text_hash": "1e7eb31bd09fe46758455274791c1861f16c333e851aa4c4cd20549467536b78",
+      "translation_text_hash": "0ba32240dd40a14261848ec698a663d99cf16dbf13bce99883fedde904463bd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김이 은과 금을 바로에게 주니라 저가 바로느고의 명령대로 그에게 그 돈을 주기 위하여 나라에 부과하되 국민 각 사람의 힘대로 액수를 정하고 은금을 늑봉하였더라"
+      ],
+      "raw_text_hashes": [
+        "0ba32240dd40a14261848ec698a663d99cf16dbf13bce99883fedde904463bd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:36",
+      "sequence": 10202,
+      "chapter_label": "2KI 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "Jehoiakim was twenty-five years old when he began to reign, and he reigned eleven years in Jerusalem. His mother’s name was Zebidah the daughter of Pedaiah of Rumah.",
+      "ko": "여호야김이 왕이 될 때에 나이 이십 오세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 스비다라 루마 브다야의 딸이더라",
+      "source_text_hash": "6ca19f91395d4fd11b31e39fb55422d1607f8c9b9a2865d04181ea245afbb17e",
+      "translation_text_hash": "6bc1c2ff4ff65e9d1e9ea6a1df7d8134259212f571b90e2488e6ac3a419281a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김이 왕이 될 때에 나이 이십 오세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 스비다라 루마 브다야의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "6bc1c2ff4ff65e9d1e9ea6a1df7d8134259212f571b90e2488e6ac3a419281a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:23:37",
+      "sequence": 10203,
+      "chapter_label": "2KI 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, according to all that his fathers had done.",
+      "ko": "여호야김이 그 열조의 모든 행한 일을 본받아 여호와 보시기에 악을 행하였더라",
+      "source_text_hash": "4d8aa09a0074432baba629ed89e3489a1784cde827403b2333f7e74599aaf627",
+      "translation_text_hash": "364a72b4fb6193c966630ec9bb2192b7491bd31c471e483782270e6b37b9e7c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김이 그 열조의 모든 행한 일을 본받아 여호와 보시기에 악을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "364a72b4fb6193c966630ec9bb2192b7491bd31c471e483782270e6b37b9e7c5"
+      ]
+    }
+  ]
+}

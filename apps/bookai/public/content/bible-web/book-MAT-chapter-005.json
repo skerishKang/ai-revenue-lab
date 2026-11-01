@@ -1,0 +1,1549 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:005",
+  "unit_ordinal": 934,
+  "unit_label": "MAT 5",
+  "book_code": "MAT",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:5:1",
+      "sequence": 23236,
+      "chapter_label": "MAT 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Seeing the multitudes, he went up onto the mountain. When he had sat down, his disciples came to him.",
+      "ko": "예수께서 무리를 보시고 산에 올라가 앉으시니 제자들이 나아온지라",
+      "source_text_hash": "77e5e0f9bf1834b205f1207a6a1cb184f75e52aa7249abb8c5af75e5e3d64e10",
+      "translation_text_hash": "f4d7267682901c7295de5abb12b38e43894230c3b0b99acc4ab57a36f05f6dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리를 보시고 산에 올라가 앉으시니 제자들이 나아온지라"
+      ],
+      "raw_text_hashes": [
+        "f4d7267682901c7295de5abb12b38e43894230c3b0b99acc4ab57a36f05f6dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:2",
+      "sequence": 23237,
+      "chapter_label": "MAT 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "He opened his mouth and taught them, saying,",
+      "ko": "입을 열어 가르쳐 가라사대",
+      "source_text_hash": "55c7f2e12c8f9652ea8e102565fd98778b97391b520c4cb219864703c93f83b3",
+      "translation_text_hash": "e3248cbfb21321d8297ab192c78bb5651a76be7caf8e7eb9d08006f589831efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입을 열어 가르쳐 가라사대"
+      ],
+      "raw_text_hashes": [
+        "e3248cbfb21321d8297ab192c78bb5651a76be7caf8e7eb9d08006f589831efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:3",
+      "sequence": 23238,
+      "chapter_label": "MAT 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "“Blessed are the poor in spirit,for theirs is the Kingdom of Heaven.",
+      "ko": "심령이 가난한 자는 복이 있나니 천국이 저희 것임이요",
+      "source_text_hash": "c74d9832ecd87f577dc5d6961eeb608c4996609f214ded1fc5babecd24bc59b6",
+      "translation_text_hash": "66cd904f9a18128593737e265995251e134997f86f9ea0c6a58db1d7b1845410",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심령이 가난한 자는 복이 있나니 천국이 저희 것임이요"
+      ],
+      "raw_text_hashes": [
+        "66cd904f9a18128593737e265995251e134997f86f9ea0c6a58db1d7b1845410"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:4",
+      "sequence": 23239,
+      "chapter_label": "MAT 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Blessed are those who mourn,for they shall be comforted.",
+      "ko": "애통하는 자는 복이 있나니 저희가 위로를 받을 것임이요",
+      "source_text_hash": "2fcc65ba8d4bca7cc9165b1715eb0b96825f32a638cb186d5fe915f2d0b0b69a",
+      "translation_text_hash": "41dc538ce8c27259159dc5c79c40077d6e1d009f236e43f614ff9d5f6ad19259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애통하는 자는 복이 있나니 저희가 위로를 받을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "41dc538ce8c27259159dc5c79c40077d6e1d009f236e43f614ff9d5f6ad19259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:5",
+      "sequence": 23240,
+      "chapter_label": "MAT 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Blessed are the gentle,for they shall inherit the earth.",
+      "ko": "온유한 자는 복이 있나니 저희가 땅을 기업으로 받을 것임이요",
+      "source_text_hash": "9a4edcfeaa862fe98a4074b5a2a52dcced0eee91880deda8e22a90f49c589e80",
+      "translation_text_hash": "778591c331f8422f2137354613ee47b5a6f5372d8b5ff289879784a708e35df4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온유한 자는 복이 있나니 저희가 땅을 기업으로 받을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "778591c331f8422f2137354613ee47b5a6f5372d8b5ff289879784a708e35df4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:6",
+      "sequence": 23241,
+      "chapter_label": "MAT 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Blessed are those who hunger and thirst for righteousness, for they shall be filled.",
+      "ko": "의에 주리고 목마른 자는 복이 있나니 저희가 배부를 것임이요",
+      "source_text_hash": "4a75784206f12dbfe6b248ae0a153bc5cd5577a240cdc5c40d025dea7ba41db8",
+      "translation_text_hash": "10e6feb34273416b1172df208744c5b58fc92ba64909ffb2b1c66c8e5786c84a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의에 주리고 목마른 자는 복이 있나니 저희가 배부를 것임이요"
+      ],
+      "raw_text_hashes": [
+        "10e6feb34273416b1172df208744c5b58fc92ba64909ffb2b1c66c8e5786c84a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:7",
+      "sequence": 23242,
+      "chapter_label": "MAT 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Blessed are the merciful,for they shall obtain mercy.",
+      "ko": "긍휼히 여기는 자는 복이 있나니 저희가 긍휼히 여김을 받을 것임이요",
+      "source_text_hash": "2e83337a20e3b0479fdb8508e97d01877f0ed9e95da35edfd02aee2063284674",
+      "translation_text_hash": "b2e8d55492cf375adf8ebb9e5e36e455ea4e5bb41ce6cb8b9a20318c6d03e063",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긍휼히 여기는 자는 복이 있나니 저희가 긍휼히 여김을 받을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "b2e8d55492cf375adf8ebb9e5e36e455ea4e5bb41ce6cb8b9a20318c6d03e063"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:8",
+      "sequence": 23243,
+      "chapter_label": "MAT 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Blessed are the pure in heart,for they shall see God.",
+      "ko": "마음이 청결한 자는 복이 있나니 저희가 하나님을 볼 것임이요",
+      "source_text_hash": "5083d1cfb2c1fb474020668ce1928b6bd754cb90dbbfc2cc8b807d5071cb2664",
+      "translation_text_hash": "19cc39c3831fc8797b39992913e9749a96760bb8d5de10f1bf0efd1f188d7bd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 청결한 자는 복이 있나니 저희가 하나님을 볼 것임이요"
+      ],
+      "raw_text_hashes": [
+        "19cc39c3831fc8797b39992913e9749a96760bb8d5de10f1bf0efd1f188d7bd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:9",
+      "sequence": 23244,
+      "chapter_label": "MAT 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Blessed are the peacemakers,for they shall be called children of God.",
+      "ko": "화평케 하는 자는 복이 있나니 저희가 하나님의 아들이라 일컬음을 받을 것임이요",
+      "source_text_hash": "67c433eda383649c22fd1189462a976115e0d244d959336ea29a251bf9e40671",
+      "translation_text_hash": "4d059b4d887436f7bba938a55aa20ba786c2e87ce42a1e79f378c23e0ae26955",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화평케 하는 자는 복이 있나니 저희가 하나님의 아들이라 일컬음을 받을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "4d059b4d887436f7bba938a55aa20ba786c2e87ce42a1e79f378c23e0ae26955"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:10",
+      "sequence": 23245,
+      "chapter_label": "MAT 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Blessed are those who have been persecuted for righteousness’ sake, for theirs is the Kingdom of Heaven.",
+      "ko": "의를 위하여 핍박을 받은 자는 복이 있나니 천국이 저희 것임이라",
+      "source_text_hash": "56c8b517aac2bd722c633af006aaef8a682dd5a1bd335fa55fa4d72566187b80",
+      "translation_text_hash": "ff11bd6efaa9941ae3707566c3ec28347e07f9f1b3eecd22cf0c952b4710d49f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의를 위하여 핍박을 받은 자는 복이 있나니 천국이 저희 것임이라"
+      ],
+      "raw_text_hashes": [
+        "ff11bd6efaa9941ae3707566c3ec28347e07f9f1b3eecd22cf0c952b4710d49f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:11",
+      "sequence": 23246,
+      "chapter_label": "MAT 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "“Blessed are you when people reproach you, persecute you, and say all kinds of evil against you falsely, for my sake.",
+      "ko": "나를 인하여 너희를 욕하고 핍박하고 거짓으로 너희를 거스려 모든 악한 말을 할 때에는 너희에게 복이 있나니",
+      "source_text_hash": "f3e3b6ad11d3ab86aef9cb15a88ecdf6e81968a7c81880cd3a6d80ed3f3c64fb",
+      "translation_text_hash": "033dd0bbfa9070e12df137b4be286c8fe6e393f7d561f460054f6629fca7d82d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 인하여 너희를 욕하고 핍박하고 거짓으로 너희를 거스려 모든 악한 말을 할 때에는 너희에게 복이 있나니"
+      ],
+      "raw_text_hashes": [
+        "033dd0bbfa9070e12df137b4be286c8fe6e393f7d561f460054f6629fca7d82d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:12",
+      "sequence": 23247,
+      "chapter_label": "MAT 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Rejoice, and be exceedingly glad, for great is your reward in heaven. For that is how they persecuted the prophets who were before you.",
+      "ko": "기뻐하고 즐거워하라 하늘에서 너희의 상이 큼이라 너희 전에 있던 선지자들을 이같이 핍박하였느니라",
+      "source_text_hash": "8485d0807ab998bdf2ca5b9a01ff19a39218348325a31282c4d2ec83f58f171c",
+      "translation_text_hash": "54039658f9113eedda4fbfd651e68b1d0bd1a62b96815db8186e5ca3c8df48d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기뻐하고 즐거워하라 하늘에서 너희의 상이 큼이라 너희 전에 있던 선지자들을 이같이 핍박하였느니라"
+      ],
+      "raw_text_hashes": [
+        "54039658f9113eedda4fbfd651e68b1d0bd1a62b96815db8186e5ca3c8df48d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:13",
+      "sequence": 23248,
+      "chapter_label": "MAT 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "“You are the salt of the earth, but if the salt has lost its flavor, with what will it be salted? It is then good for nothing, but to be cast out and trodden under the feet of men.",
+      "ko": "너희는 세상의 소금이니 소금이 만일 그 맛을 잃으면 무엇으로 짜게 하리요 후에는 아무 쓸데 없어 다만 밖에 버리워 사람에게 밟힐 뿐이니라",
+      "source_text_hash": "13f050bfc42828ac26c1f33457dda8d17bd2277597920eed4ee66c41f8e2e5b1",
+      "translation_text_hash": "a91698d48fb41766724674879796a53a4fd28d3cb9043f67386111b648abed18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 세상의 소금이니 소금이 만일 그 맛을 잃으면 무엇으로 짜게 하리요 후에는 아무 쓸데 없어 다만 밖에 버리워 사람에게 밟힐 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "a91698d48fb41766724674879796a53a4fd28d3cb9043f67386111b648abed18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:14",
+      "sequence": 23249,
+      "chapter_label": "MAT 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "“You are the light of the world. A city located on a hill can’t be hidden.",
+      "ko": "너희는 세상의 빛이라 산위에 있는 동네가 숨기우지 못할 것이요",
+      "source_text_hash": "c90a138f61d2fe160d9257632627c85658814163096f805b8eecebf7d35ab4d3",
+      "translation_text_hash": "3fa5d983385627025f1cd9a22d49bc16232566138bc7d12014b1b7134358dd75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 세상의 빛이라 산위에 있는 동네가 숨기우지 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "3fa5d983385627025f1cd9a22d49bc16232566138bc7d12014b1b7134358dd75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:15",
+      "sequence": 23250,
+      "chapter_label": "MAT 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Neither do you light a lamp and put it under a measuring basket, but on a stand; and it shines to all who are in the house.",
+      "ko": "사람이 등불을 켜서 말 아래 두지 아니하고 등경 위에 두나니 이러므로 집안 모든 사람에게 비취느니라",
+      "source_text_hash": "9b58e89dc86541a568cf33bc2db175672146d266a247c2b7db3413178cc53169",
+      "translation_text_hash": "6918e6cd62a40f9be1169ba282f0f8663fb01d609891cda3edc81e48a9b4855b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 등불을 켜서 말 아래 두지 아니하고 등경 위에 두나니 이러므로 집안 모든 사람에게 비취느니라"
+      ],
+      "raw_text_hashes": [
+        "6918e6cd62a40f9be1169ba282f0f8663fb01d609891cda3edc81e48a9b4855b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:16",
+      "sequence": 23251,
+      "chapter_label": "MAT 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Even so, let your light shine before men, that they may see your good works and glorify your Father who is in heaven.",
+      "ko": "이같이 너희 빛을 사람 앞에 비취게 하여 저희로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라",
+      "source_text_hash": "6f4a17bd2f0857b9338e89ae328a8d019a75b0a66db3ac7ab4864da116ceb313",
+      "translation_text_hash": "2e2aa848cf2fef4239af27e4a4721ddc4f4ad635b0ebcfbf016245b14a69c94c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 너희 빛을 사람 앞에 비취게 하여 저희로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라"
+      ],
+      "raw_text_hashes": [
+        "2e2aa848cf2fef4239af27e4a4721ddc4f4ad635b0ebcfbf016245b14a69c94c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:17",
+      "sequence": 23252,
+      "chapter_label": "MAT 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "“Don’t think that I came to destroy the law or the prophets. I didn’t come to destroy, but to fulfill.",
+      "ko": "내가 율법이나 선지자나 폐하러 온 줄로 생각지 말라 폐하러 온 것이 아니요 완전케 하려 함이로라",
+      "source_text_hash": "08bda42c280ad5e8785007376eea3fecd8638d8afa7e987b33950ec40c29a0a3",
+      "translation_text_hash": "1120bb7adf1bc327e807804aa2003843809b7c887816adffea8ad4e8acd83b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 율법이나 선지자나 폐하러 온 줄로 생각지 말라 폐하러 온 것이 아니요 완전케 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "1120bb7adf1bc327e807804aa2003843809b7c887816adffea8ad4e8acd83b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:18",
+      "sequence": 23253,
+      "chapter_label": "MAT 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "For most certainly, I tell you, until heaven and earth pass away, not even one smallest letteror one tiny pen strokeshall in any way pass away from the law, until all things are accomplished.",
+      "ko": "진실로 너희에게 이르노니 천지가 없어지기 전에는 율법의 일점 일획이라도 반드시 없어지지 아니하고 다 이루리라",
+      "source_text_hash": "686be312334e1df01e712aa303ffe35b033a38b0903e77f86bcaa52bc979fcf6",
+      "translation_text_hash": "3ec9ca448a2658907270c580755b20900b40717fdbe73d24a1b0d2638b3d57a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 너희에게 이르노니 천지가 없어지기 전에는 율법의 일점 일획이라도 반드시 없어지지 아니하고 다 이루리라"
+      ],
+      "raw_text_hashes": [
+        "3ec9ca448a2658907270c580755b20900b40717fdbe73d24a1b0d2638b3d57a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:19",
+      "sequence": 23254,
+      "chapter_label": "MAT 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore, whoever shall break one of these least commandments and teach others to do so, shall be called least in the Kingdom of Heaven; but whoever shall do and teach them shall be called great in the Kingdom of Heaven.",
+      "ko": "그러므로 누구든지 이 계명 중에 지극히 작은 것 하나라도 버리고 또 그같이 사람을 가르치는 자는 천국에서 지극히 작다 일컬음을 받을 것이요 누구든지 이를 행하며 가르치는 자는 천국에서 크다 일컬음을 받으리라",
+      "source_text_hash": "a40060050f86170c82a5181dbcd0092d9c304e26dfee1b4b2dc80f1fc9d0508e",
+      "translation_text_hash": "0bcedb3b36f02cc14415d42987fb77fde8abc131c5b102acac135ad91c95831a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 이 계명 중에 지극히 작은 것 하나라도 버리고 또 그같이 사람을 가르치는 자는 천국에서 지극히 작다 일컬음을 받을 것이요 누구든지 이를 행하며 가르치는 자는 천국에서 크다 일컬음을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "0bcedb3b36f02cc14415d42987fb77fde8abc131c5b102acac135ad91c95831a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:20",
+      "sequence": 23255,
+      "chapter_label": "MAT 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "For I tell you that unless your righteousness exceeds that of the scribes and Pharisees, there is no way you will enter into the Kingdom of Heaven.",
+      "ko": "내가 너희에게 이르노니 너희 의가 서기관과 바리새인보다 더 낫지 못하면 결단코 천국에 들어가지 못하리라",
+      "source_text_hash": "423f84314b706e3646db431d8d69ba414029554645305998c7cf5f16c7abca02",
+      "translation_text_hash": "8013c63bb3eddb5b1a2a0167b1cf07f384efcb31ee8cc9fe3d50fc9968440dcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 너희 의가 서기관과 바리새인보다 더 낫지 못하면 결단코 천국에 들어가지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "8013c63bb3eddb5b1a2a0167b1cf07f384efcb31ee8cc9fe3d50fc9968440dcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:21",
+      "sequence": 23256,
+      "chapter_label": "MAT 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "“You have heard that it was said to the ancient ones, ‘You shall not murder;’and ‘Whoever murders will be in danger of the judgment.’",
+      "ko": "옛 사람에게 말한바 살인치 말라 누구든지 살인하면 심판을 받게 되리라 하였다는 것을 너희가 들었으나",
+      "source_text_hash": "f0765903bcb793665867a5f6d27a267d6844b023dc30ce56d506da1559bc3b5d",
+      "translation_text_hash": "8361cc59e43e314379a1c47689c58bd51235f4141caddebd74bc8fb4f25f13f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛 사람에게 말한바 살인치 말라 누구든지 살인하면 심판을 받게 되리라 하였다는 것을 너희가 들었으나"
+      ],
+      "raw_text_hashes": [
+        "8361cc59e43e314379a1c47689c58bd51235f4141caddebd74bc8fb4f25f13f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:22",
+      "sequence": 23257,
+      "chapter_label": "MAT 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "But I tell you that everyone who is angry with his brother without a cause will be in danger of the judgment. Whoever says to his brother, ‘Raca!’ will be in danger of the council. Whoever says, ‘You fool!’ will be in danger of the fire of Gehenna.",
+      "ko": "나는 너희에게 이르노니 형제에게 노하는 자마다 심판을 받게 되고 형제를 대하여 라가라 하는 자는 공회에 잡히게 되고 미련한 놈이라 하는 자는 지옥 불에 들어가게 되리라",
+      "source_text_hash": "5513ead7e60fac32fb25211d838d3b617be950776021f6f8bae461112fd7a7d9",
+      "translation_text_hash": "66cf1ab16e1dc063b07215c56663a99e74808e87a185a7f43aa589fb9d7fc8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 형제에게 노하는 자마다 심판을 받게 되고 형제를 대하여 라가라 하는 자는 공회에 잡히게 되고 미련한 놈이라 하는 자는 지옥 불에 들어가게 되리라"
+      ],
+      "raw_text_hashes": [
+        "66cf1ab16e1dc063b07215c56663a99e74808e87a185a7f43aa589fb9d7fc8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:23",
+      "sequence": 23258,
+      "chapter_label": "MAT 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "“If therefore you are offering your gift at the altar, and there remember that your brother has anything against you,",
+      "ko": "그러므로 예물을 제단에 드리다가 거기서 네 형제에게 원망 들을만한 일이 있는줄 생각나거든",
+      "source_text_hash": "14023aa5072c565ce9dbcfd476652a7c39d810ff4c4be2c4d6339cfbf60f89ca",
+      "translation_text_hash": "6535311f3613cdb3c6cf83c61f42ce0eb2705e5596ba1ba7f2772b0c467f2b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예물을 제단에 드리다가 거기서 네 형제에게 원망 들을만한 일이 있는줄 생각나거든"
+      ],
+      "raw_text_hashes": [
+        "6535311f3613cdb3c6cf83c61f42ce0eb2705e5596ba1ba7f2772b0c467f2b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:24",
+      "sequence": 23259,
+      "chapter_label": "MAT 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "leave your gift there before the altar, and go your way. First be reconciled to your brother, and then come and offer your gift.",
+      "ko": "예물을 제단 앞에 두고 먼저 가서 형제와 화목하고 그 후에 와서 예물을 드리라",
+      "source_text_hash": "0ad4a2a6a8833d96551937de834dfcbd7e59e79e9029e45b39f1775cb1caa4df",
+      "translation_text_hash": "dc718daa8b5cfd29335d17e2abb87dec94e190ed8b39f24bc327ca930d3cf8d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예물을 제단 앞에 두고 먼저 가서 형제와 화목하고 그 후에 와서 예물을 드리라"
+      ],
+      "raw_text_hashes": [
+        "dc718daa8b5cfd29335d17e2abb87dec94e190ed8b39f24bc327ca930d3cf8d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:25",
+      "sequence": 23260,
+      "chapter_label": "MAT 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Agree with your adversary quickly while you are with him on the way; lest perhaps the prosecutor deliver you to the judge, and the judge deliver you to the officer, and you be cast into prison.",
+      "ko": "너를 송사하는 자와 함께 길에 있을 때에 급히 사화하라 그 송사하는 자가 너를 재판관에게 내어주고 재판관이 관예에게 내어주어 옥에 가둘까 염려하라",
+      "source_text_hash": "81c168130b55634fd3ac43efafe9e196dff28ea619a1ba8c117dd5035ce17056",
+      "translation_text_hash": "8a27d832a481bc212831e95d61aab83fc56a25d5485588b562047b0e46ae54c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 송사하는 자와 함께 길에 있을 때에 급히 사화하라 그 송사하는 자가 너를 재판관에게 내어주고 재판관이 관예에게 내어주어 옥에 가둘까 염려하라"
+      ],
+      "raw_text_hashes": [
+        "8a27d832a481bc212831e95d61aab83fc56a25d5485588b562047b0e46ae54c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:26",
+      "sequence": 23261,
+      "chapter_label": "MAT 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "Most certainly I tell you, you shall by no means get out of there until you have paid the last penny.",
+      "ko": "진실로 네게 이르노니 네가 호리라도 남김이 없이 다 갚기 전에는 결단코 거기서 나오지 못하리라",
+      "source_text_hash": "e2f2bb87827e9f7e2e27e16e4159d027903b02118b212fb13fd1608a6d1c7c4c",
+      "translation_text_hash": "45eb4c29b0897f04702dc062449bbdf5fcf072f497bb6e1431f15f1ef9bb42ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 네게 이르노니 네가 호리라도 남김이 없이 다 갚기 전에는 결단코 거기서 나오지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "45eb4c29b0897f04702dc062449bbdf5fcf072f497bb6e1431f15f1ef9bb42ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:27",
+      "sequence": 23262,
+      "chapter_label": "MAT 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "“You have heard that it was said, ‘You shall not commit adultery;’",
+      "ko": "또 간음치 말라 하였다는 것을 너희가 들었으나",
+      "source_text_hash": "906f7add07ca75a525fa8d52ee95b53f27003ad69a0c6d4bebfb53ad07433c20",
+      "translation_text_hash": "9a48dff6f7dd634c5574900a48211e0dc68f21fa345a96faa25e243d1454bcca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 간음치 말라 하였다는 것을 너희가 들었으나"
+      ],
+      "raw_text_hashes": [
+        "9a48dff6f7dd634c5574900a48211e0dc68f21fa345a96faa25e243d1454bcca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:28",
+      "sequence": 23263,
+      "chapter_label": "MAT 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "but I tell you that everyone who gazes at a woman to lust after her has committed adultery with her already in his heart.",
+      "ko": "나는 너희에게 이르노니 여자를 보고 음욕을 품는 자마다 마음에 이미 간음하였느니라",
+      "source_text_hash": "799859e36929b14b46e49deefdb4770f6907aaade1f6cc8bad6148cc85756f39",
+      "translation_text_hash": "e10b71aae23f1a63288d83cdea70397ea3712ad66f481511be463b472e6343e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 여자를 보고 음욕을 품는 자마다 마음에 이미 간음하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e10b71aae23f1a63288d83cdea70397ea3712ad66f481511be463b472e6343e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:29",
+      "sequence": 23264,
+      "chapter_label": "MAT 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "If your right eye causes you to stumble, pluck it out and throw it away from you. For it is more profitable for you that one of your members should perish than for your whole body to be cast into Gehenna.",
+      "ko": "만일 네 오른눈이 너로 실족케 하거든 빼어 내버리라 네 백체 중 하나가 없어지고 온 몸이 지옥에 던지우지 않는 것이 유익하며",
+      "source_text_hash": "75e607908a1e2433577a8379a5d9f49b0517f81536b3ee64588737848c3e11d7",
+      "translation_text_hash": "91b1c38f66dd661cfbbb913e0e35f050cd620ead81ffdbbfe09e8556519091b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 오른눈이 너로 실족케 하거든 빼어 내버리라 네 백체 중 하나가 없어지고 온 몸이 지옥에 던지우지 않는 것이 유익하며"
+      ],
+      "raw_text_hashes": [
+        "91b1c38f66dd661cfbbb913e0e35f050cd620ead81ffdbbfe09e8556519091b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:30",
+      "sequence": 23265,
+      "chapter_label": "MAT 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "If your right hand causes you to stumble, cut it off, and throw it away from you. For it is more profitable for you that one of your members should perish, than for your whole body to be cast into Gehenna.",
+      "ko": "또한 만일 네 오른손이 너로 실족케 하거든 찍어 내버리라 네 백체 중 하나가 없어지고 온 몸이 지옥에 던지우지 않는 것이 유익하니라",
+      "source_text_hash": "66b512deb2a721dcae5982005086a2639cddbafe46f30911db2c412f5ec03e19",
+      "translation_text_hash": "444df1223dd6639b24337b0496f0a49471ea2cbb9c730406a7cfda2d911ed474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 만일 네 오른손이 너로 실족케 하거든 찍어 내버리라 네 백체 중 하나가 없어지고 온 몸이 지옥에 던지우지 않는 것이 유익하니라"
+      ],
+      "raw_text_hashes": [
+        "444df1223dd6639b24337b0496f0a49471ea2cbb9c730406a7cfda2d911ed474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:31",
+      "sequence": 23266,
+      "chapter_label": "MAT 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "“It was also said, ‘Whoever shall put away his wife, let him give her a writing of divorce,’",
+      "ko": "또 일렀으되 누구든지 아내를 버리거든 이혼 증서를 줄것이라 하였으나",
+      "source_text_hash": "3c283c90dd14704632e317b14f314b6cf5ad835822d8f758f5ef3b047d8599f4",
+      "translation_text_hash": "4e1fb09471228336700061a5ff7d4b0269050bd7dfaf05d785e6e7c55b8a4f03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 일렀으되 누구든지 아내를 버리거든 이혼 증서를 줄것이라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "4e1fb09471228336700061a5ff7d4b0269050bd7dfaf05d785e6e7c55b8a4f03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:32",
+      "sequence": 23267,
+      "chapter_label": "MAT 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "but I tell you that whoever puts away his wife, except for the cause of sexual immorality, makes her an adulteress; and whoever marries her when she is put away commits adultery.",
+      "ko": "나는 너희에게 이르노니 누구든지 음행한 연고 없이 아내를 버리면 이는 저로 간음하게 함이요 또 누구든지 버린 여자에게 장가드는 자도 간음함이니라",
+      "source_text_hash": "67cf958cc23e6cb27848086ba66fd228741045251d531433b87f5c8a78a581e9",
+      "translation_text_hash": "c836fb57a2081221bc9044a785c9f2759e29e1f91289222856b88ab5870be271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 누구든지 음행한 연고 없이 아내를 버리면 이는 저로 간음하게 함이요 또 누구든지 버린 여자에게 장가드는 자도 간음함이니라"
+      ],
+      "raw_text_hashes": [
+        "c836fb57a2081221bc9044a785c9f2759e29e1f91289222856b88ab5870be271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:33",
+      "sequence": 23268,
+      "chapter_label": "MAT 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "“Again you have heard that it was said to the ancient ones, ‘You shall not make false vows, but shall perform to the Lord your vows,’",
+      "ko": "또 옛 사람에게 말한바 헛 맹세를 하지 말고 네 맹세한 것을 주께 지키라 하였다는 것을 너희가 들었으나",
+      "source_text_hash": "c954b977e743cd5b63f6a17852dea1202e7c92296ef3f8062fee5a27a53f236d",
+      "translation_text_hash": "2584dc6851362617f2228d14f94e1d2b34765d5c4a9468070e6995f2b880f73d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 옛 사람에게 말한바 헛 맹세를 하지 말고 네 맹세한 것을 주께 지키라 하였다는 것을 너희가 들었으나"
+      ],
+      "raw_text_hashes": [
+        "2584dc6851362617f2228d14f94e1d2b34765d5c4a9468070e6995f2b880f73d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:34",
+      "sequence": 23269,
+      "chapter_label": "MAT 5",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 34
+        }
+      ],
+      "en": "but I tell you, don’t swear at all: neither by heaven, for it is the throne of God;",
+      "ko": "나는 너희에게 이르노니 도무지 맹세하지 말찌니 하늘로도 말라 이는 하나님의 보좌임이요",
+      "source_text_hash": "3bca48ea5de59e25fe59a1b6882d738a3f436807527b43ec63b67472ed335263",
+      "translation_text_hash": "d596cb01e01bd33c50982e42d78eb644bbfa8817f799712703dce6a81ea22380",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 도무지 맹세하지 말찌니 하늘로도 말라 이는 하나님의 보좌임이요"
+      ],
+      "raw_text_hashes": [
+        "d596cb01e01bd33c50982e42d78eb644bbfa8817f799712703dce6a81ea22380"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:35",
+      "sequence": 23270,
+      "chapter_label": "MAT 5",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 35
+        }
+      ],
+      "en": "nor by the earth, for it is the footstool of his feet; nor by Jerusalem, for it is the city of the great King.",
+      "ko": "땅으로도 말라 이는 하나님의 발등상임이요 예루살렘으로도 말라 이는 큰 임금의 성임이요",
+      "source_text_hash": "e917fab6ef50ac0830afc3025d81147683d9717028fc320ddb7fdd07ebac6a0a",
+      "translation_text_hash": "0a7f00d031fe00a47c3755583f689fe4412e15d6584daf33a52e612e505faf86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅으로도 말라 이는 하나님의 발등상임이요 예루살렘으로도 말라 이는 큰 임금의 성임이요"
+      ],
+      "raw_text_hashes": [
+        "0a7f00d031fe00a47c3755583f689fe4412e15d6584daf33a52e612e505faf86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:36",
+      "sequence": 23271,
+      "chapter_label": "MAT 5",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 36
+        }
+      ],
+      "en": "Neither shall you swear by your head, for you can’t make one hair white or black.",
+      "ko": "네 머리로도 말라 이는 네가 한 터럭도 희고 검게 할 수 없음이라",
+      "source_text_hash": "3acdabd5b5338f89406b88f8991fbe3b9b29d375dcc338ccfa960e2a1af9456d",
+      "translation_text_hash": "176cebdbb278e87f8209a2fea4136d4b8085d8a951081d7865eb698ccec18052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 머리로도 말라 이는 네가 한 터럭도 희고 검게 할 수 없음이라"
+      ],
+      "raw_text_hashes": [
+        "176cebdbb278e87f8209a2fea4136d4b8085d8a951081d7865eb698ccec18052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:37",
+      "sequence": 23272,
+      "chapter_label": "MAT 5",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 37
+        }
+      ],
+      "en": "But let your ‘Yes’ be ‘Yes’ and your ‘No’ be ‘No.’ Whatever is more than these is of the evil one.",
+      "ko": "오직 너희 말은 옳다 옳다, 아니라 아니라 하라 이에서 지나는 것은 악으로 좇아 나느니라",
+      "source_text_hash": "6fed87d9c3cc35c94e56bf6d0371126b3638ff42fff8be2fe9a34d618559a29b",
+      "translation_text_hash": "9fa06c63de91b766ea9ba71952b579c246cd523bb05d92f2554454715351dede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희 말은 옳다 옳다, 아니라 아니라 하라 이에서 지나는 것은 악으로 좇아 나느니라"
+      ],
+      "raw_text_hashes": [
+        "9fa06c63de91b766ea9ba71952b579c246cd523bb05d92f2554454715351dede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:38",
+      "sequence": 23273,
+      "chapter_label": "MAT 5",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 38
+        }
+      ],
+      "en": "“You have heard that it was said, ‘An eye for an eye, and a tooth for a tooth.’",
+      "ko": "또 눈은 눈으로, 이는 이로 갚으라 하였다는 것을 너희가 들었으나",
+      "source_text_hash": "9c9e0b974c9c42b7c38b8456c0bb1b921401430328269d199de097cd187afdcf",
+      "translation_text_hash": "314b70fd4902fcb726f1069102e4b98aae50afc86048d3ee50907b5e1feae098",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 눈은 눈으로, 이는 이로 갚으라 하였다는 것을 너희가 들었으나"
+      ],
+      "raw_text_hashes": [
+        "314b70fd4902fcb726f1069102e4b98aae50afc86048d3ee50907b5e1feae098"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:39",
+      "sequence": 23274,
+      "chapter_label": "MAT 5",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 39
+        }
+      ],
+      "en": "But I tell you, don’t resist him who is evil; but whoever strikes you on your right cheek, turn to him the other also.",
+      "ko": "나는 너희에게 이르노니 악한 자를 대적지 말라 누구든지 네 오른편 뺨을 치거든 왼편도 돌려 대며",
+      "source_text_hash": "60c75f050a762143b989d9a29e5256fb7939ef8a1a68f45f931a58af98b736ec",
+      "translation_text_hash": "941a370377f9e7ccb4e11168c0c441cb8ec0235ef3e96d3f5459cb45512583fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 악한 자를 대적지 말라 누구든지 네 오른편 뺨을 치거든 왼편도 돌려 대며"
+      ],
+      "raw_text_hashes": [
+        "941a370377f9e7ccb4e11168c0c441cb8ec0235ef3e96d3f5459cb45512583fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:40",
+      "sequence": 23275,
+      "chapter_label": "MAT 5",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 40
+        }
+      ],
+      "en": "If anyone sues you to take away your coat, let him have your cloak also.",
+      "ko": "또 너를 송사하여 속옷을 가지고자 하는 자에게 겉옷까지도 가지게 하며",
+      "source_text_hash": "f9d3ed94a1cbfea47b1e2e6badbcda77acbfc57ea0159b60f9349b0c7c56a141",
+      "translation_text_hash": "237c20abe9417041cefecf148f8305ddd83bf17d0cf82a7f3d87abf26b362e16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너를 송사하여 속옷을 가지고자 하는 자에게 겉옷까지도 가지게 하며"
+      ],
+      "raw_text_hashes": [
+        "237c20abe9417041cefecf148f8305ddd83bf17d0cf82a7f3d87abf26b362e16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:41",
+      "sequence": 23276,
+      "chapter_label": "MAT 5",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 41
+        }
+      ],
+      "en": "Whoever compels you to go one mile, go with him two.",
+      "ko": "또 누구든지 너로 억지로 오리를 가게 하거든 그 사람과 십리를 동행하고",
+      "source_text_hash": "1d466e666d7256b733790bb9dee0bee6d31d7e44a07e3f7ea319265ae60bfb6a",
+      "translation_text_hash": "a93311cc0cdbbf61e55432b1120b9341f27b94ea55f8a755bc6fc4305bdae34a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 누구든지 너로 억지로 오리를 가게 하거든 그 사람과 십리를 동행하고"
+      ],
+      "raw_text_hashes": [
+        "a93311cc0cdbbf61e55432b1120b9341f27b94ea55f8a755bc6fc4305bdae34a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:42",
+      "sequence": 23277,
+      "chapter_label": "MAT 5",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 42
+        }
+      ],
+      "en": "Give to him who asks you, and don’t turn away him who desires to borrow from you.",
+      "ko": "네게 구하는 자에게 주며 네게 꾸고자 하는 자에게 거절하지 말라",
+      "source_text_hash": "f24dab49729307dc2bef3e738900f9841abd9bd99a4c77e8fc99f349bdf29235",
+      "translation_text_hash": "7ff4fbb426081c01b89d50fd31451bef4a88ea9ed67d016d3d9c98d44c9e0f06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 구하는 자에게 주며 네게 꾸고자 하는 자에게 거절하지 말라"
+      ],
+      "raw_text_hashes": [
+        "7ff4fbb426081c01b89d50fd31451bef4a88ea9ed67d016d3d9c98d44c9e0f06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:43",
+      "sequence": 23278,
+      "chapter_label": "MAT 5",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 43
+        }
+      ],
+      "en": "“You have heard that it was said, ‘You shall love your neighbor and hate your enemy.’",
+      "ko": "또 네 이웃을 사랑하고 네 원수를 미워하라 하였다는 것을 너희가 들었으나",
+      "source_text_hash": "8ccdb055938e3b287017bc971c19215d3792e8d43aea1cdaf357061f1a9fd5db",
+      "translation_text_hash": "844d2ebc732642ba87233c8b537eff1a8a47ac4027edbd5e4b9b2df1ecd0cf96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 이웃을 사랑하고 네 원수를 미워하라 하였다는 것을 너희가 들었으나"
+      ],
+      "raw_text_hashes": [
+        "844d2ebc732642ba87233c8b537eff1a8a47ac4027edbd5e4b9b2df1ecd0cf96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:44",
+      "sequence": 23279,
+      "chapter_label": "MAT 5",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 44
+        }
+      ],
+      "en": "But I tell you, love your enemies, bless those who curse you, do good to those who hate you, and pray for those who mistreat you and persecute you,",
+      "ko": "나는 너희에게 이르노니 너희 원수를 사랑하며 너희를 핍박하는 자를 위하여 기도하라",
+      "source_text_hash": "b6a405e1c130f7115829e6f65a9fca708ea4692f8fe75ef974cdf76fe6692ca3",
+      "translation_text_hash": "17eaf40064fe8b7744681725e5219bab068f7d7439a9784fcddf1a8d6c956e40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희에게 이르노니 너희 원수를 사랑하며 너희를 핍박하는 자를 위하여 기도하라"
+      ],
+      "raw_text_hashes": [
+        "17eaf40064fe8b7744681725e5219bab068f7d7439a9784fcddf1a8d6c956e40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:45",
+      "sequence": 23280,
+      "chapter_label": "MAT 5",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 45
+        }
+      ],
+      "en": "that you may be children of your Father who is in heaven. For he makes his sun to rise on the evil and the good, and sends rain on the just and the unjust.",
+      "ko": "이같이 한즉 하늘에 계신 너희 아버지의 아들이 되리니 이는 하나님이 그 해를 악인과 선인에게 비취게 하시며 비를 의로운 자와 불의한 자에게 내리우심이니라",
+      "source_text_hash": "429faa8f59a550938b25316266587151e79dca7e18aa00b8407565a811f99d7d",
+      "translation_text_hash": "dbdfb5db766b0503b192b2c2d7378fa833bd8644efd6ef6133333dafd4033b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 한즉 하늘에 계신 너희 아버지의 아들이 되리니 이는 하나님이 그 해를 악인과 선인에게 비취게 하시며 비를 의로운 자와 불의한 자에게 내리우심이니라"
+      ],
+      "raw_text_hashes": [
+        "dbdfb5db766b0503b192b2c2d7378fa833bd8644efd6ef6133333dafd4033b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:46",
+      "sequence": 23281,
+      "chapter_label": "MAT 5",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 46
+        }
+      ],
+      "en": "For if you love those who love you, what reward do you have? Don’t even the tax collectors do the same?",
+      "ko": "너희가 너희를 사랑하는 자를 사랑하면 무슨 상이 있으리요 세리도 이같이 아니하느냐",
+      "source_text_hash": "0e967cb153bc38aa94a7baf9541616f56323a2494373b93e60489084f8a713bf",
+      "translation_text_hash": "8eb277dc6eef035c23a057d4b590ab546c8258b23d5a14c020b36c2355e7d21d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희를 사랑하는 자를 사랑하면 무슨 상이 있으리요 세리도 이같이 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "8eb277dc6eef035c23a057d4b590ab546c8258b23d5a14c020b36c2355e7d21d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:47",
+      "sequence": 23282,
+      "chapter_label": "MAT 5",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 47
+        }
+      ],
+      "en": "If you only greet your friends, what more do you do than others? Don’t even the tax collectorsdo the same?",
+      "ko": "또 너희가 너희 형제에게만 문안하면 남보다 더 하는 것이 무엇이냐 이방인들도 이같이 아니하느냐",
+      "source_text_hash": "22177ca62984777a89e716f875da6ea4cec1b5bfe50ab8552661c8fa4e15c207",
+      "translation_text_hash": "e3b4d60978c0019f01c80674882386ac8058dbba338b42cb1a41fd0353ebeec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 너희 형제에게만 문안하면 남보다 더 하는 것이 무엇이냐 이방인들도 이같이 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "e3b4d60978c0019f01c80674882386ac8058dbba338b42cb1a41fd0353ebeec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:5:48",
+      "sequence": 23283,
+      "chapter_label": "MAT 5",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 5,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 5,
+          "verse": 48
+        }
+      ],
+      "en": "Therefore you shall be perfect, just as your Father in heaven is perfect.",
+      "ko": "그러므로 하늘에 계신 너희 아버지의 온전하심과 같이 너희도 온전하라",
+      "source_text_hash": "bd62e01ecae53590b5f96f799a5e3e2b5846159eaec1a107d99a9a17ff9a9523",
+      "translation_text_hash": "3f8a1af485982914d8fb01db4a4dfb2266bfcf714255df5d3f476e9d62714960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하늘에 계신 너희 아버지의 온전하심과 같이 너희도 온전하라"
+      ],
+      "raw_text_hashes": [
+        "3f8a1af485982914d8fb01db4a4dfb2266bfcf714255df5d3f476e9d62714960"
+      ]
+    }
+  ]
+}

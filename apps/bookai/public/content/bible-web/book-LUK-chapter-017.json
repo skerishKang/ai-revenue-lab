@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:017",
+  "unit_ordinal": 990,
+  "unit_label": "LUK 17",
+  "book_code": "LUK",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:17:1",
+      "sequence": 25653,
+      "chapter_label": "LUK 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "He said to the disciples, “It is impossible that no occasions of stumbling should come, but woe to him through whom they come!",
+      "ko": "예수께서 제자들에게 이르시되 실족케 하는 것이 없을 수는 없으나 있게 하는 자에게는 화로다",
+      "source_text_hash": "c1f47f518b22508611f5d8ce7ca9e2c692a7e86d4e90a8acd11fe3d6a9717349",
+      "translation_text_hash": "c20422a2288b9caeb531120f6f2f8a452410cba346dcfee08719912eefdb573f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들에게 이르시되 실족케 하는 것이 없을 수는 없으나 있게 하는 자에게는 화로다"
+      ],
+      "raw_text_hashes": [
+        "c20422a2288b9caeb531120f6f2f8a452410cba346dcfee08719912eefdb573f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:2",
+      "sequence": 25654,
+      "chapter_label": "LUK 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "It would be better for him if a millstone were hung around his neck, and he were thrown into the sea, rather than that he should cause one of these little ones to stumble.",
+      "ko": "저가 이 작은 자 중에 하나를 실족케 할찐대 차라리 연자맷돌을 그 목에 매이우고 바다에 던지우는 것이 나으리라",
+      "source_text_hash": "72df8c12fb334b2145c75274708386dd6ace476d068158304982cb2bbfc588c3",
+      "translation_text_hash": "71388a2a09e3167419c8d3fc795fe29f74286ed05543227691d4ad8ce9e1da2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이 작은 자 중에 하나를 실족케 할찐대 차라리 연자맷돌을 그 목에 매이우고 바다에 던지우는 것이 나으리라"
+      ],
+      "raw_text_hashes": [
+        "71388a2a09e3167419c8d3fc795fe29f74286ed05543227691d4ad8ce9e1da2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:3",
+      "sequence": 25655,
+      "chapter_label": "LUK 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "Be careful. If your brother sins against you, rebuke him. If he repents, forgive him.",
+      "ko": "너희는 스스로 조심하라 만일 네 형제가 죄를 범하거든 경계하고 회개하거든 용서하라",
+      "source_text_hash": "6c39770a79775e889ade80d294108d1b3543dc7d89731d92e526a13b32963b03",
+      "translation_text_hash": "d71ec780323a4bbd616b217bfce96af15eca09867f3375537bbda369e5ef26ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 조심하라 만일 네 형제가 죄를 범하거든 경계하고 회개하거든 용서하라"
+      ],
+      "raw_text_hashes": [
+        "d71ec780323a4bbd616b217bfce96af15eca09867f3375537bbda369e5ef26ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:4",
+      "sequence": 25656,
+      "chapter_label": "LUK 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "If he sins against you seven times in the day, and seven times returns, saying, ‘I repent,’ you shall forgive him.”",
+      "ko": "만일 하루 일곱번이라도 네게 죄를 얻고 일곱번 네게 돌아와 내가 회개하노라 하거든 너는 용서하라 하시더라",
+      "source_text_hash": "8977201db6cb16a3d2a511bbf276824a71ce123b42693be9e9196d80cbcab110",
+      "translation_text_hash": "d10dc82fed48292218e5364458f5deb4ac630ba2ba4e9680fc8a4fbd3c0c9eb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 하루 일곱번이라도 네게 죄를 얻고 일곱번 네게 돌아와 내가 회개하노라 하거든 너는 용서하라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "d10dc82fed48292218e5364458f5deb4ac630ba2ba4e9680fc8a4fbd3c0c9eb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:5",
+      "sequence": 25657,
+      "chapter_label": "LUK 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "The apostles said to the Lord, “Increase our faith.”",
+      "ko": "사도들이 주께 여짜오되 우리에게 믿음을 더하소서 하니",
+      "source_text_hash": "58be6ce65e5057860abc647901e6fdc43684e22a153d7cc2540b5dd81c259e2d",
+      "translation_text_hash": "b1699ffbd54dc358bb8d3a3ddeccbd4773064725cf63068c450caec340dda846",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 주께 여짜오되 우리에게 믿음을 더하소서 하니"
+      ],
+      "raw_text_hashes": [
+        "b1699ffbd54dc358bb8d3a3ddeccbd4773064725cf63068c450caec340dda846"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:6",
+      "sequence": 25658,
+      "chapter_label": "LUK 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "The Lord said, “If you had faith like a grain of mustard seed, you would tell this sycamore tree, ‘Be uprooted and be planted in the sea,’ and it would obey you.",
+      "ko": "주께서 가라사대 너희에게 겨자씨 한알만한 믿음이 있었더면 이 뽕나무더러 뿌리가 뽑혀 바다에 심기우라 하였을 것이요 그것이 너희에게 순종하였으리라",
+      "source_text_hash": "f11e930a3471018193ced7c2882d897a9aff9fc9222929025e0d5195a59a6c4c",
+      "translation_text_hash": "7e846082cf1d53afdc23ab2845d99f1b2c03b4c6e08d28d5cc2fea7666a34d54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 가라사대 너희에게 겨자씨 한알만한 믿음이 있었더면 이 뽕나무더러 뿌리가 뽑혀 바다에 심기우라 하였을 것이요 그것이 너희에게 순종하였으리라"
+      ],
+      "raw_text_hashes": [
+        "7e846082cf1d53afdc23ab2845d99f1b2c03b4c6e08d28d5cc2fea7666a34d54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:7",
+      "sequence": 25659,
+      "chapter_label": "LUK 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "But who is there among you, having a servant plowing or keeping sheep, that will say when he comes in from the field, ‘Come immediately and sit down at the table’?",
+      "ko": "너희 중에 뉘게 밭을 갈거나 양을 치거나 하는 종이 있어 밭에서 돌아 오면 저더러 곧 와 앉아서 먹으라 할 자가 있느냐",
+      "source_text_hash": "b0929909933b8482b24db4b89319b77205347a60e45ee751f1078d3fdd4c4cd2",
+      "translation_text_hash": "f3adf8f7c09974343a07ebd832dc645fe03824fcc34e27f32662b42388b6042e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 뉘게 밭을 갈거나 양을 치거나 하는 종이 있어 밭에서 돌아 오면 저더러 곧 와 앉아서 먹으라 할 자가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "f3adf8f7c09974343a07ebd832dc645fe03824fcc34e27f32662b42388b6042e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:8",
+      "sequence": 25660,
+      "chapter_label": "LUK 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "Wouldn’t he rather tell him, ‘Prepare my supper, clothe yourself properly, and serve me while I eat and drink. Afterward you shall eat and drink’?",
+      "ko": "도리어 저더러 내 먹을 것을 예비하고 띠를 띠고 나의 먹고 마시는 동안에 수종들고 너는 그 후에 먹고 마시라 하지 않겠느냐",
+      "source_text_hash": "59c52921e28f76b6402421245f9a9e3010f6cc00c4238cecef435fa1df32450b",
+      "translation_text_hash": "517feef156078427ed4da21c55fb8cb224daef8430a8b69b682a3e87347a8b23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 저더러 내 먹을 것을 예비하고 띠를 띠고 나의 먹고 마시는 동안에 수종들고 너는 그 후에 먹고 마시라 하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "517feef156078427ed4da21c55fb8cb224daef8430a8b69b682a3e87347a8b23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:9",
+      "sequence": 25661,
+      "chapter_label": "LUK 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "Does he thank that servant because he did the things that were commanded? I think not.",
+      "ko": "명한대로 하였다고 종에게 사례하겠느냐",
+      "source_text_hash": "edd4b069b490dd42fcbf0dbabdac7750ed98d444698e2657472f6e2d2c606ba0",
+      "translation_text_hash": "808b80e93042763bf6658153cce08dfd0a4764be35eb3ae5f38043befb91271b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명한대로 하였다고 종에게 사례하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "808b80e93042763bf6658153cce08dfd0a4764be35eb3ae5f38043befb91271b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:10",
+      "sequence": 25662,
+      "chapter_label": "LUK 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "Even so you also, when you have done all the things that are commanded you, say, ‘We are unworthy servants. We have done our duty.’”",
+      "ko": "이와 같이 너희도 명령 받은 것을 다 행한 후에 이르기를 우리는 무익한 종이라 우리의 하여야 할 일을 한것 뿐이라 할찌니라",
+      "source_text_hash": "1552da868f8eaa522c4e106156cd0b009a3c5ba0fd748ad0d29f9093127f0999",
+      "translation_text_hash": "ec4a2ee49d40860aab5dc233828b5a1856bf6f5ef54f65c8ad1379b895c54777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 명령 받은 것을 다 행한 후에 이르기를 우리는 무익한 종이라 우리의 하여야 할 일을 한것 뿐이라 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ec4a2ee49d40860aab5dc233828b5a1856bf6f5ef54f65c8ad1379b895c54777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:11",
+      "sequence": 25663,
+      "chapter_label": "LUK 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "As he was on his way to Jerusalem, he was passing along the borders of Samaria and Galilee.",
+      "ko": "예수께서 예루살렘으로 가실 때에 사마리아와 갈릴리 사이로 지나가시다가",
+      "source_text_hash": "ce8d77f2f1828111f8eef2bf79d359515083cfddbfb215325ebd4d94a211fd0b",
+      "translation_text_hash": "cfb3f7c6ee646e10c45123c088d90d75ac18f732ccfe56c14bed80e0950525e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 예루살렘으로 가실 때에 사마리아와 갈릴리 사이로 지나가시다가"
+      ],
+      "raw_text_hashes": [
+        "cfb3f7c6ee646e10c45123c088d90d75ac18f732ccfe56c14bed80e0950525e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:12",
+      "sequence": 25664,
+      "chapter_label": "LUK 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "As he entered into a certain village, ten men who were lepers met him, who stood at a distance.",
+      "ko": "한 촌에 들어가시니 문둥병자 열 명이 예수를 만나 멀리 서서",
+      "source_text_hash": "12f8d936fd21ac8c963ffc22d512e6b4b0ba0df812b77216a7ff22f474b4ea72",
+      "translation_text_hash": "532584360bb9782f6fc8e8d80f5a95ff8226f71c07ddd851d612cc0aad6aaaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 촌에 들어가시니 문둥병자 열 명이 예수를 만나 멀리 서서"
+      ],
+      "raw_text_hashes": [
+        "532584360bb9782f6fc8e8d80f5a95ff8226f71c07ddd851d612cc0aad6aaaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:13",
+      "sequence": 25665,
+      "chapter_label": "LUK 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "They lifted up their voices, saying, “Jesus, Master, have mercy on us!”",
+      "ko": "소리를 높여 가로되 예수 선생님이여 우리를 긍휼히 여기소서 하거늘",
+      "source_text_hash": "c82c31a8b4caafcc0f269da4a1db4bf6ad04f0a00066e344db02ff0539666f53",
+      "translation_text_hash": "a28b6f5962578f754580539b026e08ad2a83d2fa57cd2a579830bb76589ea5d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소리를 높여 가로되 예수 선생님이여 우리를 긍휼히 여기소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "a28b6f5962578f754580539b026e08ad2a83d2fa57cd2a579830bb76589ea5d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:14",
+      "sequence": 25666,
+      "chapter_label": "LUK 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "When he saw them, he said to them, “Go and show yourselves to the priests.”As they went, they were cleansed.",
+      "ko": "보시고 가라사대 가서 제사장들에게 너희 몸을 보이라 하셨더니 저희가 가다가 깨끗함을 받은지라",
+      "source_text_hash": "c6c573b1a2c6576f77f0b522880be079b24c6543f491c0726095bdfe40d3f114",
+      "translation_text_hash": "d01d68e6224a96c09745e526cb3c23704c136ce575e3b8c5d4cbed4d8e7cfbf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보시고 가라사대 가서 제사장들에게 너희 몸을 보이라 하셨더니 저희가 가다가 깨끗함을 받은지라"
+      ],
+      "raw_text_hashes": [
+        "d01d68e6224a96c09745e526cb3c23704c136ce575e3b8c5d4cbed4d8e7cfbf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:15",
+      "sequence": 25667,
+      "chapter_label": "LUK 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "One of them, when he saw that he was healed, turned back, glorifying God with a loud voice.",
+      "ko": "그 중에 하나가 자기의 나은 것을 보고 큰 소리로 하나님께 영광을 돌리며 돌아와",
+      "source_text_hash": "fcf1721a7d89ad6608a62db06bb7a86e6fe28761ac694c6cd4cdbe2011931cb2",
+      "translation_text_hash": "e40999a269bebf91ee9587c3adc9d7b80a51ba0cf8a8dba07a93675c5078c098",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 하나가 자기의 나은 것을 보고 큰 소리로 하나님께 영광을 돌리며 돌아와"
+      ],
+      "raw_text_hashes": [
+        "e40999a269bebf91ee9587c3adc9d7b80a51ba0cf8a8dba07a93675c5078c098"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:16",
+      "sequence": 25668,
+      "chapter_label": "LUK 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "He fell on his face at Jesus’ feet, giving him thanks; and he was a Samaritan.",
+      "ko": "예수의 발아래 엎드리어 사례하니 저는 사마리아인이라",
+      "source_text_hash": "68a7e72f0c1337c505876672376f5b078012b2da30ad43e96f0028f45c0b2e12",
+      "translation_text_hash": "3a4a6b24211c82413c1f40ea877de09a2ce0060f813cc77990c3ff011fa89456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 발아래 엎드리어 사례하니 저는 사마리아인이라"
+      ],
+      "raw_text_hashes": [
+        "3a4a6b24211c82413c1f40ea877de09a2ce0060f813cc77990c3ff011fa89456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:17",
+      "sequence": 25669,
+      "chapter_label": "LUK 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus answered, “Weren’t the ten cleansed? But where are the nine?",
+      "ko": "예수께서 대답하여 가라사대 열 사람이 다 깨끗함을 받지 아니하였느냐 그 아홉은 어디 있느냐",
+      "source_text_hash": "da48311f18f34740f097e709029b708a85ac3d216d0af9d276af248a2b4f3284",
+      "translation_text_hash": "575b9779afaf971015cef637a0d8d60898cac2dd4ba0c2950cd7f93036218db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 열 사람이 다 깨끗함을 받지 아니하였느냐 그 아홉은 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "575b9779afaf971015cef637a0d8d60898cac2dd4ba0c2950cd7f93036218db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:18",
+      "sequence": 25670,
+      "chapter_label": "LUK 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "Were there none found who returned to give glory to God, except this foreigner?”",
+      "ko": "이 이방인 외에는 하나님께 영광을 돌리러 돌아온 자가 없느냐 하시고",
+      "source_text_hash": "4a014d8fd89c4cc15ac5729ad12c3852d305874f5c24ac69dc0507ba48521e11",
+      "translation_text_hash": "6e72d8f3334f61d7871d460573ee4c6def6848f61bffc68581ce54b43969c75a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 이방인 외에는 하나님께 영광을 돌리러 돌아온 자가 없느냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "6e72d8f3334f61d7871d460573ee4c6def6848f61bffc68581ce54b43969c75a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:19",
+      "sequence": 25671,
+      "chapter_label": "LUK 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "Then he said to him, “Get up, and go your way. Your faith has healed you.”",
+      "ko": "그에게 이르시되 일어나 가라 네 믿음이 너를 구원하였느니라 하시더라",
+      "source_text_hash": "1f17d0c80386c25d2b9bd8d6b728e899dc7274d6a1896ab6501f1089fe6c4a1b",
+      "translation_text_hash": "9c73aa1cda37c82a61ce6dead4da806bc89030fdfab62af7f3e93dd1424160ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르시되 일어나 가라 네 믿음이 너를 구원하였느니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "9c73aa1cda37c82a61ce6dead4da806bc89030fdfab62af7f3e93dd1424160ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:20",
+      "sequence": 25672,
+      "chapter_label": "LUK 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "Being asked by the Pharisees when God’s Kingdom would come, he answered them, “God’s Kingdom doesn’t come with observation;",
+      "ko": "바리새인들이 하나님의 나라가 어느 때에 임하나이까 묻거늘 예수께서 대답하여 가라사대 하나님의 나라는 볼 수 있게 임하는 것이 아니요",
+      "source_text_hash": "0be942923bfe137e23a77d72d7643013f042cc0d6bee3993317450fd50ae8cf2",
+      "translation_text_hash": "9d17cd62af13f50b8747dfc59041d430c62dcf2a76b00e7e409dc4fa7d029c80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 하나님의 나라가 어느 때에 임하나이까 묻거늘 예수께서 대답하여 가라사대 하나님의 나라는 볼 수 있게 임하는 것이 아니요"
+      ],
+      "raw_text_hashes": [
+        "9d17cd62af13f50b8747dfc59041d430c62dcf2a76b00e7e409dc4fa7d029c80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:21",
+      "sequence": 25673,
+      "chapter_label": "LUK 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "neither will they say, ‘Look, here!’ or, ‘Look, there!’ for behold, God’s Kingdom is within you.”",
+      "ko": "또 여기 있다 저기 있다고도 못하리니 하나님의 나라는 너희 안에 있느니라",
+      "source_text_hash": "4cf7e5b0c24435aa3bc49ce563a846b25bc7465df867c57cc3114aed0c50e7a4",
+      "translation_text_hash": "62f4ba4792bfa310df338ddd1e735110fc4d8a563ceac0c21c78b6860728f9b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여기 있다 저기 있다고도 못하리니 하나님의 나라는 너희 안에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "62f4ba4792bfa310df338ddd1e735110fc4d8a563ceac0c21c78b6860728f9b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:22",
+      "sequence": 25674,
+      "chapter_label": "LUK 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "He said to the disciples, “The days will come when you will desire to see one of the days of the Son of Man, and you will not see it.",
+      "ko": "또 제자들에게 이르시되 때가 이르리니 너희가 인자의 날 하루를 보고자 하되 보지 못하리라",
+      "source_text_hash": "f5e0a47fb3577db48e70499084b9f925d96d0a5d50433dd2caee3ed2262dc6b5",
+      "translation_text_hash": "51a6028e9f64990d74feb9298991ad894e2a40da678cd9581e22fa46c62f6613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제자들에게 이르시되 때가 이르리니 너희가 인자의 날 하루를 보고자 하되 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "51a6028e9f64990d74feb9298991ad894e2a40da678cd9581e22fa46c62f6613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:23",
+      "sequence": 25675,
+      "chapter_label": "LUK 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "They will tell you, ‘Look, here!’ or ‘Look, there!’ Don’t go away or follow after them,",
+      "ko": "사람이 너희에게 말하되 보라 저기 있다 보라 여기 있다 하리라 그러나 너희는 가지도 말고 좇지도 말라",
+      "source_text_hash": "9b408ade3aa0a35249b6cb0a67723906c6b5553c695d5dd382544eac582c6173",
+      "translation_text_hash": "f4d447e917f88c2e79015958914db302cbf76460e3c57d22ba040cd2923bb91e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 너희에게 말하되 보라 저기 있다 보라 여기 있다 하리라 그러나 너희는 가지도 말고 좇지도 말라"
+      ],
+      "raw_text_hashes": [
+        "f4d447e917f88c2e79015958914db302cbf76460e3c57d22ba040cd2923bb91e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:24",
+      "sequence": 25676,
+      "chapter_label": "LUK 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "for as the lightning, when it flashes out of one part under the sky, shines to another part under the sky, so will the Son of Man be in his day.",
+      "ko": "번개가 하늘 아래 이편에서 번뜻하여 하늘 아래 저편까지 비췸 같이 인자도 자기 날에 그러하리라",
+      "source_text_hash": "18fdc7022f1d09b9d7041c59d1d8d63881316df56fca5998077b8703b8347c2c",
+      "translation_text_hash": "0ad70681ea1323894398944af4df43df8a6ccf65248e10e6a986643148240975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번개가 하늘 아래 이편에서 번뜻하여 하늘 아래 저편까지 비췸 같이 인자도 자기 날에 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "0ad70681ea1323894398944af4df43df8a6ccf65248e10e6a986643148240975"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:25",
+      "sequence": 25677,
+      "chapter_label": "LUK 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "But first, he must suffer many things and be rejected by this generation.",
+      "ko": "그러나 그가 먼저 많은 고난을 받으며 이 세대에게 버린바 되어야 할찌니라",
+      "source_text_hash": "253be18d29fe9b3cc79500f957d42922b1703cb52ac4b8280892e331fce49537",
+      "translation_text_hash": "af8b3195f461deb47f4315990401963c0e8b52465b5c8ed6b0dd43d343c212f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그가 먼저 많은 고난을 받으며 이 세대에게 버린바 되어야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "af8b3195f461deb47f4315990401963c0e8b52465b5c8ed6b0dd43d343c212f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:26",
+      "sequence": 25678,
+      "chapter_label": "LUK 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "As it was in the days of Noah, even so it will also be in the days of the Son of Man.",
+      "ko": "노아의 때에 된 것과 같이 인자의 때에도 그러하리라",
+      "source_text_hash": "89432455685b4eca5532ea21299055e63f1376525e2180b1315a345718f2756d",
+      "translation_text_hash": "71fafa75a48da04cd67be23f9e9353ecc621fc21c9174a7a788b4cad0bc3bddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아의 때에 된 것과 같이 인자의 때에도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "71fafa75a48da04cd67be23f9e9353ecc621fc21c9174a7a788b4cad0bc3bddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:27",
+      "sequence": 25679,
+      "chapter_label": "LUK 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "They ate, they drank, they married, and they were given in marriage until the day that Noah entered into the ship, and the flood came and destroyed them all.",
+      "ko": "노아가 방주에 들어가던 날까지 사람들이 먹고 마시고 장가 들고 시집 가더니 홍수가 나서 저희를 다 멸하였으며",
+      "source_text_hash": "fa581f06c34bd7d3a9dbec978245128564b9ec73ba974cef9a36e4052152182a",
+      "translation_text_hash": "5669bee1b391e05b52ac438b34a3fc552c899424c274dcc746bce3da2933d176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 방주에 들어가던 날까지 사람들이 먹고 마시고 장가 들고 시집 가더니 홍수가 나서 저희를 다 멸하였으며"
+      ],
+      "raw_text_hashes": [
+        "5669bee1b391e05b52ac438b34a3fc552c899424c274dcc746bce3da2933d176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:28",
+      "sequence": 25680,
+      "chapter_label": "LUK 17",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 28
+        }
+      ],
+      "en": "Likewise, even as it was in the days of Lot: they ate, they drank, they bought, they sold, they planted, they built;",
+      "ko": "또 롯의 때와 같으리니 사람들이 먹고 마시고 사고 팔고 심고 집을 짓더니",
+      "source_text_hash": "49fb528c8949d4b7164894925d4ba958ab7d6b6c7ca0526b9fc18174dbccb5b9",
+      "translation_text_hash": "e6d80c87f1a7e4eb7144f1829b478caab2193dccd06637b74a6c4e3b88617bc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 롯의 때와 같으리니 사람들이 먹고 마시고 사고 팔고 심고 집을 짓더니"
+      ],
+      "raw_text_hashes": [
+        "e6d80c87f1a7e4eb7144f1829b478caab2193dccd06637b74a6c4e3b88617bc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:29",
+      "sequence": 25681,
+      "chapter_label": "LUK 17",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 29
+        }
+      ],
+      "en": "but in the day that Lot went out from Sodom, it rained fire and sulfur from the sky and destroyed them all.",
+      "ko": "롯이 소돔에서 나가던 날에 하늘로서 불과 유황이 비오듯하여 저희를 멸하였느니라",
+      "source_text_hash": "9a9fbc74dd7cbf88f1cafa82c3e16660abdad6a8de89102c510100cadc7a1ee6",
+      "translation_text_hash": "2be361bad7ae579c7ea4c7d138a208a4e7634c897de7febdd5a22752848d8bd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 소돔에서 나가던 날에 하늘로서 불과 유황이 비오듯하여 저희를 멸하였느니라"
+      ],
+      "raw_text_hashes": [
+        "2be361bad7ae579c7ea4c7d138a208a4e7634c897de7febdd5a22752848d8bd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:30",
+      "sequence": 25682,
+      "chapter_label": "LUK 17",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 30
+        }
+      ],
+      "en": "It will be the same way in the day that the Son of Man is revealed.",
+      "ko": "인자의 나타나는 날에도 이러하리라",
+      "source_text_hash": "3b463dc65a8620cf036023792072f9b190dccd37e86d610da0e1784dcab9e71c",
+      "translation_text_hash": "80289a3bbea4829ac24dd105c9d5eba514a6d4027a1500e06278efe5e25b9c97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자의 나타나는 날에도 이러하리라"
+      ],
+      "raw_text_hashes": [
+        "80289a3bbea4829ac24dd105c9d5eba514a6d4027a1500e06278efe5e25b9c97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:31",
+      "sequence": 25683,
+      "chapter_label": "LUK 17",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 31
+        }
+      ],
+      "en": "In that day, he who will be on the housetop and his goods in the house, let him not go down to take them away. Let him who is in the field likewise not turn back.",
+      "ko": "그 날에 만일 사람이 지붕 위에 있고 그 세간이 집 안에 있으면 그것을 가지러 내려오지 말 것이요 밭에 있는 자도 이와 같이 뒤로 돌이키지 말것이니라",
+      "source_text_hash": "4fe19f1843f80bb8a0cc1193696b89bc4ebe500eb54e3331258a5cb53fc02767",
+      "translation_text_hash": "74ae44e069b2c4e5cce85466a1d924268b7e7fad268c059b4d6eb35ddd017674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 만일 사람이 지붕 위에 있고 그 세간이 집 안에 있으면 그것을 가지러 내려오지 말 것이요 밭에 있는 자도 이와 같이 뒤로 돌이키지 말것이니라"
+      ],
+      "raw_text_hashes": [
+        "74ae44e069b2c4e5cce85466a1d924268b7e7fad268c059b4d6eb35ddd017674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:32",
+      "sequence": 25684,
+      "chapter_label": "LUK 17",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 32
+        }
+      ],
+      "en": "Remember Lot’s wife!",
+      "ko": "롯의 처를 생각하라",
+      "source_text_hash": "fb8439efee97cc4be44bfeac1d3762f9ffd7a0ed4242aad53799f10e917442a2",
+      "translation_text_hash": "a3ac273fcc797f33ea294fd0cade002c720138373d41728def2f8dda118e149a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯의 처를 생각하라"
+      ],
+      "raw_text_hashes": [
+        "a3ac273fcc797f33ea294fd0cade002c720138373d41728def2f8dda118e149a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:33",
+      "sequence": 25685,
+      "chapter_label": "LUK 17",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 33
+        }
+      ],
+      "en": "Whoever seeks to save his life loses it, but whoever loses his life preserves it.",
+      "ko": "무릇 자기 목숨을 보존하고자 하는 자는 잃을 것이요 잃는 자는 살리리라",
+      "source_text_hash": "673b2c9447501dae5511f12714b01de9ed2bc3377bb3c9ef16506b28407181e4",
+      "translation_text_hash": "a053c876406fc42459160d21c401287e7e7cac3deb9e46f85108d915a70b2110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 자기 목숨을 보존하고자 하는 자는 잃을 것이요 잃는 자는 살리리라"
+      ],
+      "raw_text_hashes": [
+        "a053c876406fc42459160d21c401287e7e7cac3deb9e46f85108d915a70b2110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:34",
+      "sequence": 25686,
+      "chapter_label": "LUK 17",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 34
+        }
+      ],
+      "en": "I tell you, in that night there will be two people in one bed. One will be taken and the other will be left.",
+      "ko": "내가 너희에게 이르노니 그 밤에 두 남자가 한 자리에 누워 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이요",
+      "source_text_hash": "519467a936ef0074ca60aedc6988cf15a861a801605c55e8c57a8c6744c73fd9",
+      "translation_text_hash": "d1034b1589d3ba04b7fee3d20c417066365240f02cbb0790bcf11547450b774d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 그 밤에 두 남자가 한 자리에 누워 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이요"
+      ],
+      "raw_text_hashes": [
+        "d1034b1589d3ba04b7fee3d20c417066365240f02cbb0790bcf11547450b774d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:35",
+      "sequence": 25687,
+      "chapter_label": "LUK 17",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 35
+        }
+      ],
+      "en": "There will be two grinding grain together. One will be taken and the other will be left.”",
+      "ko": "두 여자가 함께 매를 갈고 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이니라",
+      "source_text_hash": "108b5d9397ba64dcb787b72ce4a39e40790a0aef08a2f29a71fbcd669abea9d4",
+      "translation_text_hash": "ebdee9440785e96c36093e05f5565de3dfb09b780f02847c9d7f93780d1cc498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 여자가 함께 매를 갈고 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ebdee9440785e96c36093e05f5565de3dfb09b780f02847c9d7f93780d1cc498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:17:37",
+      "sequence": 25688,
+      "chapter_label": "LUK 17",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 17,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 17,
+          "verse": 37
+        }
+      ],
+      "en": "They, answering, asked him, “Where, Lord?” He said to them, “Where the body is, there the vultures will also be gathered together.”",
+      "ko": "저희가 대답하여 가로되 주여 어디오니이까 가라사대 주검 있는 곳에는 독수리가 모이느니라 하시니라",
+      "source_text_hash": "e7acbbe6c80159c0de0964c4a909fee915419e598c9d3781a190634f3442628e",
+      "translation_text_hash": "ec7f597f3c412fdd7c65d4b49281a92a8dc677aeda83f1a15619bdc9ffb132f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하여 가로되 주여 어디오니이까 가라사대 주검 있는 곳에는 독수리가 모이느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ec7f597f3c412fdd7c65d4b49281a92a8dc677aeda83f1a15619bdc9ffb132f7"
+      ]
+    }
+  ]
+}

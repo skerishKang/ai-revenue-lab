@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:023",
+  "unit_ordinal": 952,
+  "unit_label": "MAT 23",
+  "book_code": "MAT",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:23:1",
+      "sequence": 23920,
+      "chapter_label": "MAT 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Then Jesus spoke to the multitudes and to his disciples,",
+      "ko": "이에 예수께서 무리와 제자들에게 말씀하여 가라사대",
+      "source_text_hash": "3ab66ed0f8ac61047ee07d5fb2409174ef624fec0bf074314674a408a0487e47",
+      "translation_text_hash": "8a901b4534138ccd87d24f996860936e8fc3e78ac3fb26bdb72b25b53f5951bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 무리와 제자들에게 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "8a901b4534138ccd87d24f996860936e8fc3e78ac3fb26bdb72b25b53f5951bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:2",
+      "sequence": 23921,
+      "chapter_label": "MAT 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "saying, “The scribes and the Pharisees sit on Moses’ seat.",
+      "ko": "서기관들과 바리새인들이 모세의 자리에 앉았으니",
+      "source_text_hash": "16294933c099dd640451ff01dee2bd84a7a3948b6c875a87f085a1114bd91440",
+      "translation_text_hash": "78c005d48b2193810064ff1657fc89335812d13d95ab96a814aae604e5d0bb05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관들과 바리새인들이 모세의 자리에 앉았으니"
+      ],
+      "raw_text_hashes": [
+        "78c005d48b2193810064ff1657fc89335812d13d95ab96a814aae604e5d0bb05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:3",
+      "sequence": 23922,
+      "chapter_label": "MAT 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "All things therefore whatever they tell you to observe, observe and do, but don’t do their works; for they say, and don’t do.",
+      "ko": "그러므로 무엇이든지 저희의 말하는 바는 행하고 지키되 저희의 하는 행위는 본받지 말라 저희는 말만 하고 행치 아니하며",
+      "source_text_hash": "60d56ec8a6675f963e8bf65b50a582983e4ec7d93289dc75df1404a079c7bd4f",
+      "translation_text_hash": "eccfd5740a244402c682b3125f704fd33ee8193933479de1018d6b35e28c6c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 무엇이든지 저희의 말하는 바는 행하고 지키되 저희의 하는 행위는 본받지 말라 저희는 말만 하고 행치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "eccfd5740a244402c682b3125f704fd33ee8193933479de1018d6b35e28c6c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:4",
+      "sequence": 23923,
+      "chapter_label": "MAT 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "For they bind heavy burdens that are grievous to be borne, and lay them on men’s shoulders; but they themselves will not lift a finger to help them.",
+      "ko": "또 무거운 짐을 묶어 사람의 어깨에 지우되 자기는 이것을 한 손가락으로도 움직이려 하지 아니하며",
+      "source_text_hash": "8144451913bb46e6b11a41e491d14fe2b0582f88d71ac36865417a145bb7b248",
+      "translation_text_hash": "59eef513957724a10ad41f547a2a8d59b6262bd5891138f8d85c913aeeb04168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무거운 짐을 묶어 사람의 어깨에 지우되 자기는 이것을 한 손가락으로도 움직이려 하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "59eef513957724a10ad41f547a2a8d59b6262bd5891138f8d85c913aeeb04168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:5",
+      "sequence": 23924,
+      "chapter_label": "MAT 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "But they do all their works to be seen by men. They make their phylacteriesbroad and enlarge the fringesof their garments,",
+      "ko": "저희 모든 행위를 사람에게 보이고자 하여 하나니 곧 그 차는 경문을 넓게 하며 옷술을 크게 하고",
+      "source_text_hash": "f769162e3726e5fed98358ff9cc2d189e7b2a7c49de28042a7cdb1e06db873f8",
+      "translation_text_hash": "668c14ccf912deff50411edbd6ceb5683a0479f3f9cdd04a81f0b356d3338577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 모든 행위를 사람에게 보이고자 하여 하나니 곧 그 차는 경문을 넓게 하며 옷술을 크게 하고"
+      ],
+      "raw_text_hashes": [
+        "668c14ccf912deff50411edbd6ceb5683a0479f3f9cdd04a81f0b356d3338577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:6",
+      "sequence": 23925,
+      "chapter_label": "MAT 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "and love the place of honor at feasts, the best seats in the synagogues,",
+      "ko": "잔치의 상석과 회당의 상좌와",
+      "source_text_hash": "964e772fc0f7f76829a7e56a5d1e7fc8944feaa5753ea09d91100a5e55f20c47",
+      "translation_text_hash": "e4aa60d0b8e0cc30d09d9e360a95d20fcdea80757f6eef78b3acfff130b51c23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잔치의 상석과 회당의 상좌와"
+      ],
+      "raw_text_hashes": [
+        "e4aa60d0b8e0cc30d09d9e360a95d20fcdea80757f6eef78b3acfff130b51c23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:7",
+      "sequence": 23926,
+      "chapter_label": "MAT 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "the salutations in the marketplaces, and to be called ‘Rabbi, Rabbi’by men.",
+      "ko": "시장에서 문안 받는 것과 사람에게 랍비라 칭함을 받는 것을 좋아하느니라",
+      "source_text_hash": "2b222dc8dad9702b8d58b10960712c58e997b32f7ca8cb5a6e3d81b4a274e1ff",
+      "translation_text_hash": "4ca449943a68f5ebcfd9024a170617f688852b959ee886488dc758c42d67dfcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시장에서 문안 받는 것과 사람에게 랍비라 칭함을 받는 것을 좋아하느니라"
+      ],
+      "raw_text_hashes": [
+        "4ca449943a68f5ebcfd9024a170617f688852b959ee886488dc758c42d67dfcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:8",
+      "sequence": 23927,
+      "chapter_label": "MAT 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "But you are not to be called ‘Rabbi’, for one is your teacher, the Christ, and all of you are brothers.",
+      "ko": "그러나 너희는 랍비라 칭함을 받지 말라 너희 선생은 하나이요 너희는 다 형제니라",
+      "source_text_hash": "1d34a587d4813dc14a4b3df0b7f3593ee116bf451978b7e5575c77eed408f182",
+      "translation_text_hash": "47a688baebc022c6d79c25339420f08f4a20fd02f4e56e5a4c17ba379fc930f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희는 랍비라 칭함을 받지 말라 너희 선생은 하나이요 너희는 다 형제니라"
+      ],
+      "raw_text_hashes": [
+        "47a688baebc022c6d79c25339420f08f4a20fd02f4e56e5a4c17ba379fc930f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:9",
+      "sequence": 23928,
+      "chapter_label": "MAT 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "Call no man on the earth your father, for one is your Father, he who is in heaven.",
+      "ko": "땅에 있는 자를 아비라 하지 말라 너희 아버지는 하나이시니 곧 하늘에 계신 자시니라",
+      "source_text_hash": "e37576848f7c1a03c0b5e044936dec6db22b142988013b54c0488151dead8084",
+      "translation_text_hash": "e795394d900721a25be4de1642e81cace2b509a847e3a530d969a0459c1e6b83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 있는 자를 아비라 하지 말라 너희 아버지는 하나이시니 곧 하늘에 계신 자시니라"
+      ],
+      "raw_text_hashes": [
+        "e795394d900721a25be4de1642e81cace2b509a847e3a530d969a0459c1e6b83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:10",
+      "sequence": 23929,
+      "chapter_label": "MAT 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "Neither be called masters, for one is your master, the Christ.",
+      "ko": "또한 지도자라 칭함을 받지 말라 너희 지도자는 하나이니 곧 그리스도니라",
+      "source_text_hash": "4113ad9b4531d935662985b4695edc561edcf003190786f155b4b4de7179e2d9",
+      "translation_text_hash": "ad18342b1ba97fd6963d4ff658745dd820c87ca72b97faec7a4d5861a148f397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 지도자라 칭함을 받지 말라 너희 지도자는 하나이니 곧 그리스도니라"
+      ],
+      "raw_text_hashes": [
+        "ad18342b1ba97fd6963d4ff658745dd820c87ca72b97faec7a4d5861a148f397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:11",
+      "sequence": 23930,
+      "chapter_label": "MAT 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "But he who is greatest among you will be your servant.",
+      "ko": "너희 중에 큰 자는 너희를 섬기는 자가 되어야 하리라",
+      "source_text_hash": "8bf2f1bde298f8edd7e78dd8afbfaf695f62a60fde0125c57c1be8ead08b9430",
+      "translation_text_hash": "863cade77fbb12a7eb9ca3425a1af916d07f88a99b98b56a0d4f8934e1d3955b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 큰 자는 너희를 섬기는 자가 되어야 하리라"
+      ],
+      "raw_text_hashes": [
+        "863cade77fbb12a7eb9ca3425a1af916d07f88a99b98b56a0d4f8934e1d3955b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:12",
+      "sequence": 23931,
+      "chapter_label": "MAT 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Whoever exalts himself will be humbled, and whoever humbles himself will be exalted.",
+      "ko": "누구든지 자기를 높이는 자는 낮아지고 누구든지 자기를 낮추는 자는 높아지리라",
+      "source_text_hash": "57156e077d91e9c9574cc957535ba12c8d75e01a9044a217f3c1c122f5ea8354",
+      "translation_text_hash": "984a916cbd3b01a24f38d090e77bfdd4be4f4009af2f5fe32636b525012db30f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 자기를 높이는 자는 낮아지고 누구든지 자기를 낮추는 자는 높아지리라"
+      ],
+      "raw_text_hashes": [
+        "984a916cbd3b01a24f38d090e77bfdd4be4f4009af2f5fe32636b525012db30f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:13",
+      "sequence": 23932,
+      "chapter_label": "MAT 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "“Woe to you, scribes and Pharisees, hypocrites! For you devour widows’ houses, and as a pretense you make long prayers. Therefore you will receive greater condemnation.",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 천국 문을 사람들 앞에서 닫고 너희도 들어가지 않고 들어가려 하는 자도 들어가지 못하게 하는도다",
+      "source_text_hash": "fc32f505918fcc0713dcd96438c34817bfe39c2464394b0c04d57fa346910554",
+      "translation_text_hash": "27f7a65a391cfa7e7cc4182555033b04c93d3583bedcbac4fcece5dcb3fec56a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 천국 문을 사람들 앞에서 닫고 너희도 들어가지 않고 들어가려 하는 자도 들어가지 못하게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "27f7a65a391cfa7e7cc4182555033b04c93d3583bedcbac4fcece5dcb3fec56a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:14",
+      "sequence": 23933,
+      "chapter_label": "MAT 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "“But woe to you, scribes and Pharisees, hypocrites! Because you shut up the Kingdom of Heaven against men; for you don’t enter in yourselves, neither do you allow those who are entering in to enter.",
+      "ko": "(없음)",
+      "source_text_hash": "340971e139f14683001eaa0b520da372a2f8b7a2f71238e1eb92d703b3f8ec5f",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:15",
+      "sequence": 23934,
+      "chapter_label": "MAT 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Woe to you, scribes and Pharisees, hypocrites! For you travel around by sea and land to make one proselyte; and when he becomes one, you make him twice as much a son of Gehennaas yourselves.",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 교인 하나를 얻기 위하여 바다와 육지를 두루 다니다가 생기면 너희보다 배나 더 지옥 자식이 되게 하는도다",
+      "source_text_hash": "dc14c77a3fcd29bb497f3dcb7802b9381b820670bbbef65ad444f881fe4d4523",
+      "translation_text_hash": "d7c503c68f2ec088f6bd2b09907a7de9500bb00e6011cf49bd728aa0ff8cc3f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 교인 하나를 얻기 위하여 바다와 육지를 두루 다니다가 생기면 너희보다 배나 더 지옥 자식이 되게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "d7c503c68f2ec088f6bd2b09907a7de9500bb00e6011cf49bd728aa0ff8cc3f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:16",
+      "sequence": 23935,
+      "chapter_label": "MAT 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "“Woe to you, you blind guides, who say, ‘Whoever swears by the temple, it is nothing; but whoever swears by the gold of the temple, he is obligated.’",
+      "ko": "화 있을찐저 소경된 인도자여 너희가 말하되 누구든지 성전으로 맹세하면 아무 일 없거니와 성전의 금으로 맹세하면 지킬찌라 하는도다",
+      "source_text_hash": "3ce3a701629102f132a7fe99093fae5fafe56e434955cb26b859ad3fcd39becd",
+      "translation_text_hash": "c0cbf3b29b452774aedea0b404e9e49c80d27a3ec39795dacc2aceea19aa78bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 소경된 인도자여 너희가 말하되 누구든지 성전으로 맹세하면 아무 일 없거니와 성전의 금으로 맹세하면 지킬찌라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "c0cbf3b29b452774aedea0b404e9e49c80d27a3ec39795dacc2aceea19aa78bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:17",
+      "sequence": 23936,
+      "chapter_label": "MAT 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "You blind fools! For which is greater, the gold or the temple that sanctifies the gold?",
+      "ko": "우맹이요 소경들이여 어느 것이 크뇨 그 금이냐 금을 거룩하게 하는 성전이냐",
+      "source_text_hash": "e90c8f005b78d8e52366f9b27b3d774baef399da8c1e9a506a70dd440cfeca3f",
+      "translation_text_hash": "511dc21dd52a9fff03966a43e7a8154380628e950820b5d4bee111353f63318b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우맹이요 소경들이여 어느 것이 크뇨 그 금이냐 금을 거룩하게 하는 성전이냐"
+      ],
+      "raw_text_hashes": [
+        "511dc21dd52a9fff03966a43e7a8154380628e950820b5d4bee111353f63318b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:18",
+      "sequence": 23937,
+      "chapter_label": "MAT 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "And, ‘Whoever swears by the altar, it is nothing; but whoever swears by the gift that is on it, he is obligated.’",
+      "ko": "너희가 또 이르되 누구든지 제단으로 맹세하면 아무 일 없거니와 그 위에 있는 예물로 맹세하면 지킬찌라 하는도다",
+      "source_text_hash": "0270dacf95f3e467ca76be865fa5de284c16e663bbe19a14ad6da4a60d3d6e8d",
+      "translation_text_hash": "48e53d4483bed5e86658368236363cae6df2a99caf81562c6ed64567be81f267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 또 이르되 누구든지 제단으로 맹세하면 아무 일 없거니와 그 위에 있는 예물로 맹세하면 지킬찌라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "48e53d4483bed5e86658368236363cae6df2a99caf81562c6ed64567be81f267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:19",
+      "sequence": 23938,
+      "chapter_label": "MAT 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "You blind fools! For which is greater, the gift, or the altar that sanctifies the gift?",
+      "ko": "소경들이여 어느 것이 크뇨 그 예물이냐 예물을 거룩하게 하는 제단이냐",
+      "source_text_hash": "0acfbd5c0278f99ce0d45e078d306add9dc546e93bb60ce3f60bc38a2661bc35",
+      "translation_text_hash": "971ac552031c68ba6d86ea9dd08285d76520fe5a6e0936c16b6f242ed66d272c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경들이여 어느 것이 크뇨 그 예물이냐 예물을 거룩하게 하는 제단이냐"
+      ],
+      "raw_text_hashes": [
+        "971ac552031c68ba6d86ea9dd08285d76520fe5a6e0936c16b6f242ed66d272c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:20",
+      "sequence": 23939,
+      "chapter_label": "MAT 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "He therefore who swears by the altar, swears by it and by everything on it.",
+      "ko": "그러므로 제단으로 맹세하는 자는 제단과 그 위에 있는 모든 것으로 맹세함이요",
+      "source_text_hash": "fd85383f42e6ec33e50ac2afe6f383bc344b6451b17d7b44030b00662edcef84",
+      "translation_text_hash": "c26d853ad6014ae1d94c345d15f253046715ca5fed633eeb7e0fb6beef71f8d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 제단으로 맹세하는 자는 제단과 그 위에 있는 모든 것으로 맹세함이요"
+      ],
+      "raw_text_hashes": [
+        "c26d853ad6014ae1d94c345d15f253046715ca5fed633eeb7e0fb6beef71f8d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:21",
+      "sequence": 23940,
+      "chapter_label": "MAT 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "He who swears by the temple, swears by it and by him who has been livingin it.",
+      "ko": "또 성전으로 맹세하는 자는 성전과 그 안에 계신 이로 맹세함이요",
+      "source_text_hash": "69b018812a290c42cd3c003a1d746eab8902d0387560525ada80138f82cedee4",
+      "translation_text_hash": "63af0e0f89b430ea87dfdca89cd121baa594920e3cb7b44d5f920b27cb3fd995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성전으로 맹세하는 자는 성전과 그 안에 계신 이로 맹세함이요"
+      ],
+      "raw_text_hashes": [
+        "63af0e0f89b430ea87dfdca89cd121baa594920e3cb7b44d5f920b27cb3fd995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:22",
+      "sequence": 23941,
+      "chapter_label": "MAT 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "He who swears by heaven, swears by the throne of God and by him who sits on it.",
+      "ko": "또 하늘로 맹세하는 자는 하나님의 보좌와 그 위에 앉으신 이로 맹세함이니라",
+      "source_text_hash": "d926f3894fa5d8c8d23439cdf819177c8b0ff6038f9a59231bf457cc35649bec",
+      "translation_text_hash": "64c4838bd4a88c87bb487b6c170bc30e74a5ce1a896f05c171fe21e3eb98fadc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하늘로 맹세하는 자는 하나님의 보좌와 그 위에 앉으신 이로 맹세함이니라"
+      ],
+      "raw_text_hashes": [
+        "64c4838bd4a88c87bb487b6c170bc30e74a5ce1a896f05c171fe21e3eb98fadc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:23",
+      "sequence": 23942,
+      "chapter_label": "MAT 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "“Woe to you, scribes and Pharisees, hypocrites! For you tithe mint, dill, and cumin,and have left undone the weightier matters of the law: justice, mercy, and faith. But you ought to have done these, and not to have left the other undone.",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희가 박하와 회향과 근채의 십일조를 드리되 율법의 더 중한바 의와 인과 신은 버렸도다 그러나 이것도 행하고 저것도 버리지 말아야 할찌니라",
+      "source_text_hash": "ceb5b5d5630d7de56a998cfd2aca345836eaac9ca7f56d728fd4ccdabd6fa9b7",
+      "translation_text_hash": "7c3376d0be1313f800e2f84ba22f2d39c0e5135e95621aef07a7cbc6ef4b3e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희가 박하와 회향과 근채의 십일조를 드리되 율법의 더 중한바 의와 인과 신은 버렸도다 그러나 이것도 행하고 저것도 버리지 말아야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "7c3376d0be1313f800e2f84ba22f2d39c0e5135e95621aef07a7cbc6ef4b3e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:24",
+      "sequence": 23943,
+      "chapter_label": "MAT 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "You blind guides, who strain out a gnat, and swallow a camel!",
+      "ko": "소경된 인도자여 하루살이는 걸러 내고 약대는 삼키는도다",
+      "source_text_hash": "432ccce0d0155b822d0dc164bddb607a1cf793c20fe95b7d1ffaa1ff899bcfd4",
+      "translation_text_hash": "e40541a05a5c3f8c24704d3d5c20ed0ba0e26c531b2f5847baa00b0c6c470c78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경된 인도자여 하루살이는 걸러 내고 약대는 삼키는도다"
+      ],
+      "raw_text_hashes": [
+        "e40541a05a5c3f8c24704d3d5c20ed0ba0e26c531b2f5847baa00b0c6c470c78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:25",
+      "sequence": 23944,
+      "chapter_label": "MAT 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "“Woe to you, scribes and Pharisees, hypocrites! For you clean the outside of the cup and of the platter, but within they are full of extortion and unrighteousness.",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 잔과 대접의 겉은 깨끗이 하되 그 안에는 탐욕과 방탕으로 가득하게 하는도다",
+      "source_text_hash": "012fffb43df4dcef59bd8769a07a3dea0141adeecc208e7065dd83fde6042b2d",
+      "translation_text_hash": "aa3677acced296cae3d67e1828e36bd21d998c25165bba053f572a36e135865f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 잔과 대접의 겉은 깨끗이 하되 그 안에는 탐욕과 방탕으로 가득하게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "aa3677acced296cae3d67e1828e36bd21d998c25165bba053f572a36e135865f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:26",
+      "sequence": 23945,
+      "chapter_label": "MAT 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "You blind Pharisee, first clean the inside of the cup and of the platter, that its outside may become clean also.",
+      "ko": "소경된 바리새인아 너는 먼저 안을 깨끗이 하라 그리하면 겉도 깨끗하리라",
+      "source_text_hash": "75e07e6a493aa3d234d51b32d3c62e38891d1cdf38dd6ac504cde361b5510ab6",
+      "translation_text_hash": "99c77c5419e7e1aced3d9beebf619b71d77c041142b6c0d7ed3e629ab6fa0c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경된 바리새인아 너는 먼저 안을 깨끗이 하라 그리하면 겉도 깨끗하리라"
+      ],
+      "raw_text_hashes": [
+        "99c77c5419e7e1aced3d9beebf619b71d77c041142b6c0d7ed3e629ab6fa0c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:27",
+      "sequence": 23946,
+      "chapter_label": "MAT 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "“Woe to you, scribes and Pharisees, hypocrites! For you are like whitened tombs, which outwardly appear beautiful, but inwardly are full of dead men’s bones and of all uncleanness.",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 회칠한 무덤 같으니 겉으로는 아름답게 보이나 그 안에는 죽은 사람의 뼈와 모든 더러운 것이 가득하도다",
+      "source_text_hash": "35db81c14179d32f325399aa1a93c37d1edd01660bf05fbfff8c6c778fd7611b",
+      "translation_text_hash": "d45cac1d3cfa243e824cbf58ca3121e851a472a5730b09e27c2dbb331d46ca44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 회칠한 무덤 같으니 겉으로는 아름답게 보이나 그 안에는 죽은 사람의 뼈와 모든 더러운 것이 가득하도다"
+      ],
+      "raw_text_hashes": [
+        "d45cac1d3cfa243e824cbf58ca3121e851a472a5730b09e27c2dbb331d46ca44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:28",
+      "sequence": 23947,
+      "chapter_label": "MAT 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Even so you also outwardly appear righteous to men, but inwardly you are full of hypocrisy and iniquity.",
+      "ko": "이와 같이 너희도 겉으로는 사람에게 옳게 보이되 안으로는 외식과 불법이 가득하도다",
+      "source_text_hash": "c155e026305029306e03268b38cb70fdeb0fffd335c55081d2201523bfa74792",
+      "translation_text_hash": "730e5657ae27f6b608317372c1240d5e781f9ebdc91639d4dad22e0e1bd1d412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 겉으로는 사람에게 옳게 보이되 안으로는 외식과 불법이 가득하도다"
+      ],
+      "raw_text_hashes": [
+        "730e5657ae27f6b608317372c1240d5e781f9ebdc91639d4dad22e0e1bd1d412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:29",
+      "sequence": 23948,
+      "chapter_label": "MAT 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "“Woe to you, scribes and Pharisees, hypocrites! For you build the tombs of the prophets and decorate the tombs of the righteous,",
+      "ko": "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 선지자들의 무덤을 쌓고 의인들의 비석을 꾸미며 가로되",
+      "source_text_hash": "1594644cf92a4abf7fbef8bfae9e235dbd8cdb7d942cbe1191f0ffa54cfd8ee1",
+      "translation_text_hash": "25a83ad70e29822a1f6fd5b06a66b7c5f7c61802d2dd24565cfa61d9dbc32d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 외식하는 서기관들과 바리새인들이여 너희는 선지자들의 무덤을 쌓고 의인들의 비석을 꾸미며 가로되"
+      ],
+      "raw_text_hashes": [
+        "25a83ad70e29822a1f6fd5b06a66b7c5f7c61802d2dd24565cfa61d9dbc32d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:30",
+      "sequence": 23949,
+      "chapter_label": "MAT 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "and say, ‘If we had lived in the days of our fathers, we wouldn’t have been partakers with them in the blood of the prophets.’",
+      "ko": "만일 우리가 조상 때에 있었더면 우리는 저희가 선지자의 피를 흘리는데 참예하지 아니하였으리라 하니",
+      "source_text_hash": "5d60b64fc10ba6065424f06cf3d8a9ffa4d90f3b1ea8a2dcb581c551d23d58a0",
+      "translation_text_hash": "0c17ad5af35d885e2c998c699563d76bf597c2d03803a2f8d4b15956faa39450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 조상 때에 있었더면 우리는 저희가 선지자의 피를 흘리는데 참예하지 아니하였으리라 하니"
+      ],
+      "raw_text_hashes": [
+        "0c17ad5af35d885e2c998c699563d76bf597c2d03803a2f8d4b15956faa39450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:31",
+      "sequence": 23950,
+      "chapter_label": "MAT 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore you testify to yourselves that you are children of those who killed the prophets.",
+      "ko": "그러면 너희가 선지자를 죽인 자의 자손 됨을 스스로 증거함이로다",
+      "source_text_hash": "6e20f3034cb2e0e2c2fc9922891a24388c09ce1a2f8325565520f396f1656590",
+      "translation_text_hash": "7a97903fa52f36b4ebf9b8ad08df5bace99bb806aa651228988f51c8b155da34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 선지자를 죽인 자의 자손 됨을 스스로 증거함이로다"
+      ],
+      "raw_text_hashes": [
+        "7a97903fa52f36b4ebf9b8ad08df5bace99bb806aa651228988f51c8b155da34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:32",
+      "sequence": 23951,
+      "chapter_label": "MAT 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "Fill up, then, the measure of your fathers.",
+      "ko": "너희가 너희 조상의 양을 채우라",
+      "source_text_hash": "183cee06a32e3e416396b088970909b503e7e8292fefc09f20c0a3a1be629e96",
+      "translation_text_hash": "3dffd1ebfc3c5e41017aa03e08d5c54c59980f4cda4a4c922d7011086234ba1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희 조상의 양을 채우라"
+      ],
+      "raw_text_hashes": [
+        "3dffd1ebfc3c5e41017aa03e08d5c54c59980f4cda4a4c922d7011086234ba1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:33",
+      "sequence": 23952,
+      "chapter_label": "MAT 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "You serpents, you offspring of vipers, how will you escape the judgment of Gehenna?",
+      "ko": "뱀들아 독사의 새끼들아 너희가 어떻게 지옥의 판결을 피하겠느냐",
+      "source_text_hash": "6683ad99cdce5e65f4745917c17c1e437de04df4729db003723a3f7630a31392",
+      "translation_text_hash": "bba059dca28c967e5851cd90fa84e76205996dc867d9849f15de189f933ff8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뱀들아 독사의 새끼들아 너희가 어떻게 지옥의 판결을 피하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "bba059dca28c967e5851cd90fa84e76205996dc867d9849f15de189f933ff8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:34",
+      "sequence": 23953,
+      "chapter_label": "MAT 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "Therefore, behold, I send to you prophets, wise men, and scribes. Some of them you will kill and crucify; and some of them you will scourge in your synagogues and persecute from city to city,",
+      "ko": "그러므로 내가 너희에게 선지자들과 지혜 있는 자들과 서기관들을 보내매 너희가 그 중에서 더러는 죽이고 십자가에 못 박고 그 중에 더러는 너희 회당에서 채찍질하고 이 동네에서 저 동네로 구박하리라",
+      "source_text_hash": "7864293f8dcae1c72da230cbf95778926263a0494743579bef3941215577f6b6",
+      "translation_text_hash": "fe8a52ea746b030b987efe25582984ea35cddb0b0fe5b978d8a75df95ef00fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 선지자들과 지혜 있는 자들과 서기관들을 보내매 너희가 그 중에서 더러는 죽이고 십자가에 못 박고 그 중에 더러는 너희 회당에서 채찍질하고 이 동네에서 저 동네로 구박하리라"
+      ],
+      "raw_text_hashes": [
+        "fe8a52ea746b030b987efe25582984ea35cddb0b0fe5b978d8a75df95ef00fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:35",
+      "sequence": 23954,
+      "chapter_label": "MAT 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "that on you may come all the righteous blood shed on the earth, from the blood of righteous Abel to the blood of Zachariah son of Barachiah, whom you killed between the sanctuary and the altar.",
+      "ko": "그러므로 의인 아벨의 피로부터 성전과 제단 사이에서 너희가 죽인 바라갸의 아들 사가랴의 피까지 땅 위에서 흘린 의로운 피가 다 너희에게 돌아 가리라",
+      "source_text_hash": "4e60b092526543a15cfffc6e1b52f9947fb4b1a572726189c55ac0fbddbc03c1",
+      "translation_text_hash": "1794b4aebb16ade041f9005e74f91af7c745c10b0c966f2522937315e6f2b7fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 의인 아벨의 피로부터 성전과 제단 사이에서 너희가 죽인 바라갸의 아들 사가랴의 피까지 땅 위에서 흘린 의로운 피가 다 너희에게 돌아 가리라"
+      ],
+      "raw_text_hashes": [
+        "1794b4aebb16ade041f9005e74f91af7c745c10b0c966f2522937315e6f2b7fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:36",
+      "sequence": 23955,
+      "chapter_label": "MAT 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "Most certainly I tell you, all these things will come upon this generation.",
+      "ko": "내가 진실로 너희에게 이르노니 이것이 다 이 세대에게 돌아가리라",
+      "source_text_hash": "6465f8ef9a432f0c82756ce75900386d8eae283b405cdf3d4d6f1d4998ac0905",
+      "translation_text_hash": "de7d11a818fca8f6869e669aeba71fcc171e5b85f7f704b6617f61a291f6ba74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 이것이 다 이 세대에게 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "de7d11a818fca8f6869e669aeba71fcc171e5b85f7f704b6617f61a291f6ba74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:37",
+      "sequence": 23956,
+      "chapter_label": "MAT 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "“Jerusalem, Jerusalem, who kills the prophets and stones those who are sent to her! How often I would have gathered your children together, even as a hen gathers her chicks under her wings, and you would not!",
+      "ko": "예루살렘아 예루살렘아 선지자들을 죽이고 네게 파송된 자들을 돌로 치는 자여 암탉이 그 새끼를 날개 아래 모음 같이 내가 네 자녀를 모으려 한 일이 몇번이냐 그러나 너희가 원치 아니하였도다",
+      "source_text_hash": "0438d8b09727d9e41deaf609eacac07d9be25dcd3810906eb4ff93160692f28d",
+      "translation_text_hash": "c2e2cf4bf3d8f0d9cb29ca43a0f61e637bd36296815bfc4627a7f254876ebdb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 예루살렘아 선지자들을 죽이고 네게 파송된 자들을 돌로 치는 자여 암탉이 그 새끼를 날개 아래 모음 같이 내가 네 자녀를 모으려 한 일이 몇번이냐 그러나 너희가 원치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "c2e2cf4bf3d8f0d9cb29ca43a0f61e637bd36296815bfc4627a7f254876ebdb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:38",
+      "sequence": 23957,
+      "chapter_label": "MAT 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "Behold, your house is left to you desolate.",
+      "ko": "보라 너희 집이 황폐하여 버린바 되리라",
+      "source_text_hash": "9e6580183761995ef005c4773bc103eb815c09669f50d4a40d2ac6dc260b6ea9",
+      "translation_text_hash": "9778d72680250a39f1e5dbeddce15a719102f59ad5de4db43a3aa7a611af2607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희 집이 황폐하여 버린바 되리라"
+      ],
+      "raw_text_hashes": [
+        "9778d72680250a39f1e5dbeddce15a719102f59ad5de4db43a3aa7a611af2607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:23:39",
+      "sequence": 23958,
+      "chapter_label": "MAT 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "For I tell you, you will not see me from now on, until you say, ‘Blessed is he who comes in the name of the Lord!’”",
+      "ko": "내가 너희에게 이르노니 이제부터 너희는 찬송하리로다 주의 이름으로 오시는 이여 할 때까지 나를 보지 못하리라 하시니라",
+      "source_text_hash": "cc5cb5d76abbe805cc24c8adf5c97281a4fd620b261341f60f4bab6bf4c43d04",
+      "translation_text_hash": "fd722c297ba8fa09db9e1c6eb793a1fdb9c8221a8a8f0555969371750448acdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 이제부터 너희는 찬송하리로다 주의 이름으로 오시는 이여 할 때까지 나를 보지 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "fd722c297ba8fa09db9e1c6eb793a1fdb9c8221a8a8f0555969371750448acdc"
+      ]
+    }
+  ]
+}

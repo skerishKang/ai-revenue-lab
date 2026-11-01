@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LAM:chapter:002",
+  "unit_ordinal": 799,
+  "unit_label": "LAM 2",
+  "book_code": "LAM",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LAM:2:1",
+      "sequence": 20334,
+      "chapter_label": "LAM 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "How has the Lord covered the daughter of Zion with a cloud in his anger! He has cast the beauty of Israel down from heaven to the earth, and hasn’t remembered his footstool in the day of his anger.",
+      "ko": "슬프다 주께서 어찌 그리 진노하사 처녀 시온을 구름으로 덮으셨는고 이스라엘의 아름다운 것을 하늘에서 땅에 던지셨음이여 진노하신 날에 그 발등상을 기억지 아니하셨도다",
+      "source_text_hash": "5e3b4d864f455ef843c19cacababbc076d34eaf35d2e86cda47f9ba8ac4ad614",
+      "translation_text_hash": "ac5e4a22f17a7ac859239db4af076ffd3545fa05620a0b3f1168656d9e82a6bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 주께서 어찌 그리 진노하사 처녀 시온을 구름으로 덮으셨는고 이스라엘의 아름다운 것을 하늘에서 땅에 던지셨음이여 진노하신 날에 그 발등상을 기억지 아니하셨도다"
+      ],
+      "raw_text_hashes": [
+        "ac5e4a22f17a7ac859239db4af076ffd3545fa05620a0b3f1168656d9e82a6bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:2",
+      "sequence": 20335,
+      "chapter_label": "LAM 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The Lord has swallowed up all the dwellings of Jacob without pity. He has thrown down in his wrath the strongholds of the daughter of Judah. He has brought them down to the ground. He has profaned the kingdom and its princes.",
+      "ko": "주께서 야곱의 모든 거처를 삼키시고 긍휼히 여기지 아니하셨음이여 노하사 처녀 유다의 견고한 성을 헐어 땅에 엎으시고 나라와 방백으로 욕되게 하셨도다",
+      "source_text_hash": "6aabb196cdf65e874851e4168a054481f860cc7acbcfe7dc9e81ca51ceb8ae74",
+      "translation_text_hash": "34e670b3f4d7d10d07de4664f1bdb2d222ce0d802699bab0b2bb26a5159410ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 야곱의 모든 거처를 삼키시고 긍휼히 여기지 아니하셨음이여 노하사 처녀 유다의 견고한 성을 헐어 땅에 엎으시고 나라와 방백으로 욕되게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "34e670b3f4d7d10d07de4664f1bdb2d222ce0d802699bab0b2bb26a5159410ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:3",
+      "sequence": 20336,
+      "chapter_label": "LAM 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "He has cut off all the horn of Israel in fierce anger. He has drawn back his right hand from before the enemy. He has burned up Jacob like a flaming fire, which devours all around.",
+      "ko": "맹렬한 진노로 이스라엘 모든 뿔을 자르셨음이여 원수 앞에서 오른손을 거두시고 맹렬한 불이 사방으로 사름 같이 야곱을 사르셨도다",
+      "source_text_hash": "aaccbfa112fe29b0843c28cb252e973cd397037770755f54fb9810eacbb2a5c8",
+      "translation_text_hash": "5076dc39617bdda5dffedce89dc3a59c5e8f5caca66ae80bc0ebc90b6343927a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맹렬한 진노로 이스라엘 모든 뿔을 자르셨음이여 원수 앞에서 오른손을 거두시고 맹렬한 불이 사방으로 사름 같이 야곱을 사르셨도다"
+      ],
+      "raw_text_hashes": [
+        "5076dc39617bdda5dffedce89dc3a59c5e8f5caca66ae80bc0ebc90b6343927a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:4",
+      "sequence": 20337,
+      "chapter_label": "LAM 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "He has bent his bow like an enemy. He has stood with his right hand as an adversary. He has killed all that were pleasant to the eye. In the tent of the daughter of Zion, he has poured out his wrath like fire.",
+      "ko": "원수 같이 활을 당기고 대적처럼 오른손을 들고 서서 눈에 아름다운 모든 자를 살륙하셨음이여 처녀 시온의 장막에 노를 불처럼 쏟으셨도다",
+      "source_text_hash": "b2b791a9cc08724c116864206816e7878da8728e4d52992da2918ad6c64f238a",
+      "translation_text_hash": "af78480dd48107c2bd3988ffe3d3780a3a8741b57d7abc7a927cea9af3bbda2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수 같이 활을 당기고 대적처럼 오른손을 들고 서서 눈에 아름다운 모든 자를 살륙하셨음이여 처녀 시온의 장막에 노를 불처럼 쏟으셨도다"
+      ],
+      "raw_text_hashes": [
+        "af78480dd48107c2bd3988ffe3d3780a3a8741b57d7abc7a927cea9af3bbda2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:5",
+      "sequence": 20338,
+      "chapter_label": "LAM 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "The Lord has become as an enemy. He has swallowed up Israel. He has swallowed up all her palaces. He has destroyed his strongholds. He has multiplied mourning and lamentation in the daughter of Judah.",
+      "ko": "주께서 원수 같이 되어 이스라엘을 삼키셨음이여 모든 궁을 삼키셨고 견고한 성들을 훼파하사 처녀 유다에 근심과 애통을 더하셨도다",
+      "source_text_hash": "c401c48ffa33f7676512374819399fd97882499163ee26d99c32dbba863ddf1a",
+      "translation_text_hash": "8115ed6cfe4730b5dad6dde1c1511fa6892878c999acc32e756b76e0acd2c590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 원수 같이 되어 이스라엘을 삼키셨음이여 모든 궁을 삼키셨고 견고한 성들을 훼파하사 처녀 유다에 근심과 애통을 더하셨도다"
+      ],
+      "raw_text_hashes": [
+        "8115ed6cfe4730b5dad6dde1c1511fa6892878c999acc32e756b76e0acd2c590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:6",
+      "sequence": 20339,
+      "chapter_label": "LAM 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "He has violently taken away his tabernacle, as if it were a garden. He has destroyed his place of assembly. The LORD has caused solemn assembly and Sabbath to be forgotten in Zion. In the indignation of his anger, he has despised the king and the priest.",
+      "ko": "성막을 동산의 초막 같이 헐어 버리시며 공회 처소를 훼파하셨도다 여호와께서 시온 가운데서 절기와 안식일을 잊어버리게 하시며 진노하사 왕과 제사장을 멸시하셨도다",
+      "source_text_hash": "92c1fbc9accb30d90a38fecc58615f54abe6f9557782f0c1e8a38c9af476a6a5",
+      "translation_text_hash": "c38b4842a52cc39afa362a5dadb2c1af7ce238b1892c8472258240b4e9934ba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막을 동산의 초막 같이 헐어 버리시며 공회 처소를 훼파하셨도다 여호와께서 시온 가운데서 절기와 안식일을 잊어버리게 하시며 진노하사 왕과 제사장을 멸시하셨도다"
+      ],
+      "raw_text_hashes": [
+        "c38b4842a52cc39afa362a5dadb2c1af7ce238b1892c8472258240b4e9934ba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:7",
+      "sequence": 20340,
+      "chapter_label": "LAM 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The Lord has cast off his altar. He has abhorred his sanctuary. He has given the walls of her palaces into the hand of the enemy. They have made a noise in the LORD’s house, as in the day of a solemn assembly.",
+      "ko": "여호와께서 또 자기 제단을 버리시며 자기 성소를 미워하시며 궁장을 원수의 손에 붙이셨으매 저희가 여호와의 전에서 훤화하기를 절기날과 같이 하였도다",
+      "source_text_hash": "dd16a254a473073b2234ae13212ab97daa3c3265b732ce6d69647925c00b8fd9",
+      "translation_text_hash": "f47ace32d5bbcef4d3974d25a3a0f75f6281a25890fb6d8451de60801a99cf5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 자기 제단을 버리시며 자기 성소를 미워하시며 궁장을 원수의 손에 붙이셨으매 저희가 여호와의 전에서 훤화하기를 절기날과 같이 하였도다"
+      ],
+      "raw_text_hashes": [
+        "f47ace32d5bbcef4d3974d25a3a0f75f6281a25890fb6d8451de60801a99cf5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:8",
+      "sequence": 20341,
+      "chapter_label": "LAM 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD has purposed to destroy the wall of the daughter of Zion. He has stretched out the line. He has not withdrawn his hand from destroying; He has made the rampart and wall lament. They languish together.",
+      "ko": "여호와께서 처녀 시온의 성을 헐기로 결심하시고 줄을 띠고 훼파함에서 손을 거두지 아니하사 성과 곽으로 통곡하게 하셨으매 저희가 함께 쇠하였도다",
+      "source_text_hash": "b21a686c58aee78135e072b8d6f8dcbd0799cd58d4b8e2eb772190fb0b777da7",
+      "translation_text_hash": "6b728df5556969ffd24bf284287aef59cc47fe16fab4a0a806caef34e1a05569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 처녀 시온의 성을 헐기로 결심하시고 줄을 띠고 훼파함에서 손을 거두지 아니하사 성과 곽으로 통곡하게 하셨으매 저희가 함께 쇠하였도다"
+      ],
+      "raw_text_hashes": [
+        "6b728df5556969ffd24bf284287aef59cc47fe16fab4a0a806caef34e1a05569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:9",
+      "sequence": 20342,
+      "chapter_label": "LAM 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Her gates have sunk into the ground. He has destroyed and broken her bars. Her king and her princes are among the nations where the law is not. Yes, her prophets find no vision from the LORD.",
+      "ko": "성문이 땅에 묻히며 빗장이 꺾여 훼파되고 왕과 방백들이 율법 없는 열방 가운데 있으며 그 선지자들은 여호와의 묵시를 받지 못하는도다",
+      "source_text_hash": "e60be90287780eee02237fc6d8d5b0e8affa3a14967b8569160b6eb645847681",
+      "translation_text_hash": "04456e815fcf74712d465378849d3d00a02bfceae965768d4b905df6c01ca50d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문이 땅에 묻히며 빗장이 꺾여 훼파되고 왕과 방백들이 율법 없는 열방 가운데 있으며 그 선지자들은 여호와의 묵시를 받지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "04456e815fcf74712d465378849d3d00a02bfceae965768d4b905df6c01ca50d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:10",
+      "sequence": 20343,
+      "chapter_label": "LAM 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The elders of the daughter of Zion sit on the ground. They keep silence. They have cast up dust on their heads. They have clothed themselves with sackcloth. The virgins of Jerusalem hang down their heads to the ground.",
+      "ko": "처녀 시온의 장로들이 땅에 앉아 잠잠하고 티끌을 머리에 무릅쓰고 굵은 베를 허리에 둘렀음이여 예루살렘 처녀들은 머리를 땅에 숙였도다",
+      "source_text_hash": "b274996dcd3138e1d20f07978d1a1d3cc39dc903a582a0ecb357f80ea104a24c",
+      "translation_text_hash": "2d77086bf78de93636a639e3b7862c36349b9e9e7a192131d209beca07d44a66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 시온의 장로들이 땅에 앉아 잠잠하고 티끌을 머리에 무릅쓰고 굵은 베를 허리에 둘렀음이여 예루살렘 처녀들은 머리를 땅에 숙였도다"
+      ],
+      "raw_text_hashes": [
+        "2d77086bf78de93636a639e3b7862c36349b9e9e7a192131d209beca07d44a66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:11",
+      "sequence": 20344,
+      "chapter_label": "LAM 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "My eyes fail with tears. My heart is troubled. My bile is poured on the earth, because of the destruction of the daughter of my people, because the young children and the infants swoon in the streets of the city.",
+      "ko": "내 눈이 눈물에 상하며 내 창자가 끓으며 내 간이 땅에 쏟아졌으니 이는 처녀 내 백성이 패망하여 어린 자녀와 젖먹는 아이들이 성읍 길거리에 혼미함이로다",
+      "source_text_hash": "f0209b8ceb50b7f12a1997226ccb98a04a59fe5e33892f4aae30bcf4bbb9b22e",
+      "translation_text_hash": "7f6d11b5ba3570418fb07fc6ef621c7c6dadf8bd3b459155429cbe72f6be5fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈이 눈물에 상하며 내 창자가 끓으며 내 간이 땅에 쏟아졌으니 이는 처녀 내 백성이 패망하여 어린 자녀와 젖먹는 아이들이 성읍 길거리에 혼미함이로다"
+      ],
+      "raw_text_hashes": [
+        "7f6d11b5ba3570418fb07fc6ef621c7c6dadf8bd3b459155429cbe72f6be5fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:12",
+      "sequence": 20345,
+      "chapter_label": "LAM 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "They ask their mothers, “Where is grain and wine?” when they swoon as the wounded in the streets of the city, when their soul is poured out into their mothers’ bosom.",
+      "ko": "저희가 성읍 길거리에서 상한 자처럼 혼미하여 그 어미의 품에서 혼이 떠날 때에 어미에게 이르기를 곡식과 포도주가 어디 있느뇨 하도다",
+      "source_text_hash": "a2ba1bd025c3ea8aabc1544aa7f1dff74873cdda919292bfb0552ca86ba5e6b1",
+      "translation_text_hash": "b8a1d5456a51650fee32698034cb680ad485d903597d5d13686732e2e7915b2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 성읍 길거리에서 상한 자처럼 혼미하여 그 어미의 품에서 혼이 떠날 때에 어미에게 이르기를 곡식과 포도주가 어디 있느뇨 하도다"
+      ],
+      "raw_text_hashes": [
+        "b8a1d5456a51650fee32698034cb680ad485d903597d5d13686732e2e7915b2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:13",
+      "sequence": 20346,
+      "chapter_label": "LAM 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "What shall I testify to you? What shall I liken to you, daughter of Jerusalem? What shall I compare to you, that I may comfort you, virgin daughter of Zion? For your breach is as big as the sea. Who can heal you?",
+      "ko": "처녀 예루살렘이여 내가 무엇으로 네게 증거하며 무엇으로 네게 비유할꼬 처녀 시온이여 내가 무엇으로 네게 비교하여 너를 위로할꼬 너의 파괴됨이 바다 같이 크니 누가 너를 고칠소냐",
+      "source_text_hash": "f97e2b30add679872a97873eefd6d1403f546f233603bfdaf0c72e21d432c8d7",
+      "translation_text_hash": "f6e09206d02e20b5c9da5dc32473ebe45dbff693827ee8820f53a2ceaf3735b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 예루살렘이여 내가 무엇으로 네게 증거하며 무엇으로 네게 비유할꼬 처녀 시온이여 내가 무엇으로 네게 비교하여 너를 위로할꼬 너의 파괴됨이 바다 같이 크니 누가 너를 고칠소냐"
+      ],
+      "raw_text_hashes": [
+        "f6e09206d02e20b5c9da5dc32473ebe45dbff693827ee8820f53a2ceaf3735b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:14",
+      "sequence": 20347,
+      "chapter_label": "LAM 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Your prophets have seen false and foolish visions for you. They have not uncovered your iniquity, to reverse your captivity, but have seen for you false revelations and causes of banishment.",
+      "ko": "네 선지자들이 네게 대하여 헛되고 어리석은 묵시를 보았으므로 네 죄악을 드러내어서 네 사로잡힌 것을 돌이키지 못하였도다 저희가 거짓 경고와 미혹케 할 것만 보았도다",
+      "source_text_hash": "e60905a8fa8142d743458a9c0b2ccdac34a13cb40a05aeab5e7756e4feba5b73",
+      "translation_text_hash": "02a0002dd5b40d420f7d537822f5659997a75015ada6687e9483e041cf122289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 선지자들이 네게 대하여 헛되고 어리석은 묵시를 보았으므로 네 죄악을 드러내어서 네 사로잡힌 것을 돌이키지 못하였도다 저희가 거짓 경고와 미혹케 할 것만 보았도다"
+      ],
+      "raw_text_hashes": [
+        "02a0002dd5b40d420f7d537822f5659997a75015ada6687e9483e041cf122289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:15",
+      "sequence": 20348,
+      "chapter_label": "LAM 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "All that pass by clap their hands at you. They hiss and wag their head at the daughter of Jerusalem, saying, “Is this the city that men called ‘The perfection of beauty, the joy of the whole earth’?”",
+      "ko": "무릇 지나가는 자는 다 너를 향하여 박장하며 처녀 예루살렘을 향하여 비소하고 머리를 흔들며 말하기를 온전한 영광이라, 천하의 희락이라 일컫던 성이 이 성이냐 하며",
+      "source_text_hash": "86a55886e12d0fa948f83da10c62e50449a552106d4cd358037c1d9f22b6c488",
+      "translation_text_hash": "7a927d918d388cca1266954e8acea01a11121d835943c2c7d2e2ad32f9262500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 지나가는 자는 다 너를 향하여 박장하며 처녀 예루살렘을 향하여 비소하고 머리를 흔들며 말하기를 온전한 영광이라, 천하의 희락이라 일컫던 성이 이 성이냐 하며"
+      ],
+      "raw_text_hashes": [
+        "7a927d918d388cca1266954e8acea01a11121d835943c2c7d2e2ad32f9262500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:16",
+      "sequence": 20349,
+      "chapter_label": "LAM 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "All your enemies have opened their mouth wide against you. They hiss and gnash their teeth. They say, “We have swallowed her up. Certainly this is the day that we looked for. We have found it. We have seen it.”",
+      "ko": "너의 모든 원수는 너를 향하여 입을 벌리며 비소하고 이를 갈며 말하기를 우리가 저를 삼켰도다 우리가 바라던 날이 과연 이 날이라 우리가 얻기도 하고 보기도 하였다 하도다",
+      "source_text_hash": "15b17efa5c3b1d9eb89e11401131fee3a3439159e935b9e44351fc173b2e248a",
+      "translation_text_hash": "fa4dcbcaf0a74c079a3c10581db0a8ddd38d41303658f69d8594aaf75177ec0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 모든 원수는 너를 향하여 입을 벌리며 비소하고 이를 갈며 말하기를 우리가 저를 삼켰도다 우리가 바라던 날이 과연 이 날이라 우리가 얻기도 하고 보기도 하였다 하도다"
+      ],
+      "raw_text_hashes": [
+        "fa4dcbcaf0a74c079a3c10581db0a8ddd38d41303658f69d8594aaf75177ec0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:17",
+      "sequence": 20350,
+      "chapter_label": "LAM 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD has done that which he planned. He has fulfilled his word that he commanded in the days of old. He has thrown down, and has not pitied. He has caused the enemy to rejoice over you. He has exalted the horn of your adversaries.",
+      "ko": "여호와께서 이미 정하신 일을 행하시고 옛날에 명하신 말씀을 다 이루셨음이여 긍휼히 여기지 아니하시고 훼파하사 원수로 너를 인하여 즐거워하게 하며 너의 대적의 뿔로 높이 들리게 하셨도다",
+      "source_text_hash": "424b269687ba5c854ff91f5d661c2dbd4a0b9843d286b0fa41176a1958eb5ea0",
+      "translation_text_hash": "7816b1b186ccabf37d78a731976f7da07b879a4fb73d3294b821dcfa1e6f8f1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이미 정하신 일을 행하시고 옛날에 명하신 말씀을 다 이루셨음이여 긍휼히 여기지 아니하시고 훼파하사 원수로 너를 인하여 즐거워하게 하며 너의 대적의 뿔로 높이 들리게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "7816b1b186ccabf37d78a731976f7da07b879a4fb73d3294b821dcfa1e6f8f1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:18",
+      "sequence": 20351,
+      "chapter_label": "LAM 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Their heart cried to the Lord. O wall of the daughter of Zion, let tears run down like a river day and night. Give yourself no relief. Don’t let your eyes rest.",
+      "ko": "저희 마음이 주를 향하여 부르짖기를 처녀 시온의 성곽아 너는 밤낮으로 눈물을 강처럼 흘릴찌어다 스스로 쉬지 말고 네 눈동자로 쉬게 하지 말찌어다",
+      "source_text_hash": "a2a7c547e6615d619c902c3798bd0f0ce056d02e5cf193164c03cc432c9e2c53",
+      "translation_text_hash": "430f6440cd060d80f55c44df4627215dd6ba8156b53213a03b99296fa28dd935",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 마음이 주를 향하여 부르짖기를 처녀 시온의 성곽아 너는 밤낮으로 눈물을 강처럼 흘릴찌어다 스스로 쉬지 말고 네 눈동자로 쉬게 하지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "430f6440cd060d80f55c44df4627215dd6ba8156b53213a03b99296fa28dd935"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:19",
+      "sequence": 20352,
+      "chapter_label": "LAM 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Arise, cry out in the night, at the beginning of the watches! Pour out your heart like water before the face of the Lord. Lift up your hands toward him for the life of your young children, who faint for hunger at the head of every street.",
+      "ko": "밤 초경에 일어나 부르짖을찌어다 네 마음을 주의 얼굴 앞에 물 쏟듯 할찌어다 각 길머리에서 주려 혼미한 네 어린 자녀의 생명을 위하여 주를 향하여 손을 들찌어다 하였도다",
+      "source_text_hash": "1a9122bc7ffc80b4b006165e458b846ca2015ecf4acab7390cf5bf6631a86e10",
+      "translation_text_hash": "0867a28ddc6b694d2dd7e49f932c4449696e967b655a0812ad9282a98db4d361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤 초경에 일어나 부르짖을찌어다 네 마음을 주의 얼굴 앞에 물 쏟듯 할찌어다 각 길머리에서 주려 혼미한 네 어린 자녀의 생명을 위하여 주를 향하여 손을 들찌어다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "0867a28ddc6b694d2dd7e49f932c4449696e967b655a0812ad9282a98db4d361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:20",
+      "sequence": 20353,
+      "chapter_label": "LAM 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "“Look, LORD, and see to whom you have done thus! Should the women eat their offspring, the children that they held and bounced on their knees? Should the priest and the prophet be killed in the sanctuary of the Lord?",
+      "ko": "여호와여 감찰하소서 뉘게 이같이 행하셨는지요 여인들이 어찌 자기 열매 곧 손에 받든 아이를 먹으오며 제사장들과 선지자들이 어찌 주의 성소에서 살륙을 당하오리이까",
+      "source_text_hash": "f3feee420533b80313625958783a850cb04c05de58287fbfb9ae781bdf63cf15",
+      "translation_text_hash": "404183c7f4f6a7ddd33adccb106aad804fa773b468862a57f510ef6c38e2fc31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 감찰하소서 뉘게 이같이 행하셨는지요 여인들이 어찌 자기 열매 곧 손에 받든 아이를 먹으오며 제사장들과 선지자들이 어찌 주의 성소에서 살륙을 당하오리이까"
+      ],
+      "raw_text_hashes": [
+        "404183c7f4f6a7ddd33adccb106aad804fa773b468862a57f510ef6c38e2fc31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:21",
+      "sequence": 20354,
+      "chapter_label": "LAM 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "“The youth and the old man lie on the ground in the streets. My virgins and my young men have fallen by the sword. You have killed them in the day of your anger. You have slaughtered, and not pitied.",
+      "ko": "노유는 다 길바닥에 엎드러졌사오며 내 처녀들과 소년들이 칼에 죽었나이다 주께서 진노하신 날에 죽이시되 긍휼히 여기지 아니하시고 살륙하셨나이다",
+      "source_text_hash": "b23b4fe86424fdfebcceb069baa5ecdd2f80104c936c7d7918d119355c58e506",
+      "translation_text_hash": "dd123c01adf854e556c9a9b00d7f42675f869bae55897835c17a15097467fda5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노유는 다 길바닥에 엎드러졌사오며 내 처녀들과 소년들이 칼에 죽었나이다 주께서 진노하신 날에 죽이시되 긍휼히 여기지 아니하시고 살륙하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "dd123c01adf854e556c9a9b00d7f42675f869bae55897835c17a15097467fda5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:2:22",
+      "sequence": 20355,
+      "chapter_label": "LAM 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "LAM",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "“You have called, as in the day of a solemn assembly, my terrors on every side. There was no one that escaped or remained in the day of the LORD’s anger. My enemy has consumed those whom I have cared for and brought up.",
+      "ko": "주께서 내 두려운 일을 사방에서 부르시기를 절기에 무리를 부름 같이 하셨나이다 여호와께서 진노하신 날에 피하거나 남은 자가 없었나이다 내 손에 받들어 기르는 자를 내 원수가 다 멸하였나이다",
+      "source_text_hash": "969ea4738b0e67dba2c25798215c20f500b9442b1686684f7237798306d1eaee",
+      "translation_text_hash": "2ff07648e11f3f8e4cbe89226de53843fb13f59ef24ac316324e3985f1d0caa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 두려운 일을 사방에서 부르시기를 절기에 무리를 부름 같이 하셨나이다 여호와께서 진노하신 날에 피하거나 남은 자가 없었나이다 내 손에 받들어 기르는 자를 내 원수가 다 멸하였나이다"
+      ],
+      "raw_text_hashes": [
+        "2ff07648e11f3f8e4cbe89226de53843fb13f59ef24ac316324e3985f1d0caa0"
+      ]
+    }
+  ]
+}

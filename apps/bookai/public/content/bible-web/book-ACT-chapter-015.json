@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:015",
+  "unit_ordinal": 1033,
+  "unit_label": "ACT 15",
+  "book_code": "ACT",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:15:1",
+      "sequence": 27442,
+      "chapter_label": "ACT 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Some men came down from Judea and taught the brothers, “Unless you are circumcised after the custom of Moses, you can’t be saved.”",
+      "ko": "어떤 사람들이 유대로부터 내려와서 형제들을 가르치되 너희가 모세의 법대로 할례를 받지 아니하면 능히 구원을 얻지 못하리라 하니",
+      "source_text_hash": "dae9483b33a485b440078bc6146ffb7e4e8b228099f4b7dd7bd147d76c5e8847",
+      "translation_text_hash": "3cb6c06981874e61e15997ea921d051337dc83540ef42a929473e7e7c187314a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들이 유대로부터 내려와서 형제들을 가르치되 너희가 모세의 법대로 할례를 받지 아니하면 능히 구원을 얻지 못하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "3cb6c06981874e61e15997ea921d051337dc83540ef42a929473e7e7c187314a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:2",
+      "sequence": 27443,
+      "chapter_label": "ACT 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore when Paul and Barnabas had no small discord and discussion with them, they appointed Paul, Barnabas, and some others of them to go up to Jerusalem to the apostles and elders about this question.",
+      "ko": "바울과 바나바와 저희 사이에 적지 아니한 다툼과 변론이 일어난지라 형제들이 이 문제에 대하여 바울과 바나바와 및 그 중에 몇 사람을 예루살렘에 있는 사도와 장로들에게 보내기로 작정하니라",
+      "source_text_hash": "b7d5b01d05a1d3b3668bf5efe8f0469d48e949ec6b31d5fe9a8f2a6bc0779af4",
+      "translation_text_hash": "c14b701918f5e0e0d321f57551d0fddd5fb08d66e447926248e00aa84c4a6bb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 바나바와 저희 사이에 적지 아니한 다툼과 변론이 일어난지라 형제들이 이 문제에 대하여 바울과 바나바와 및 그 중에 몇 사람을 예루살렘에 있는 사도와 장로들에게 보내기로 작정하니라"
+      ],
+      "raw_text_hashes": [
+        "c14b701918f5e0e0d321f57551d0fddd5fb08d66e447926248e00aa84c4a6bb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:3",
+      "sequence": 27444,
+      "chapter_label": "ACT 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "They, being sent on their way by the assembly, passed through both Phoenicia and Samaria, declaring the conversion of the Gentiles. They caused great joy to all the brothers.",
+      "ko": "저희가 교회의 전송을 받고 베니게와 사마리아로 다녀가며 이방인들의 주께 돌아온 일을 말하여 형제들을 다 크게 기쁘게 하더라",
+      "source_text_hash": "99380edba7d0605ae4a314c0e46d714ccb0512bbab07b6f4b5f02806339749f9",
+      "translation_text_hash": "a0909bf4554cb354c0d3a2075dd1163955d08b8e653f004d92253c28fbe0dc8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 교회의 전송을 받고 베니게와 사마리아로 다녀가며 이방인들의 주께 돌아온 일을 말하여 형제들을 다 크게 기쁘게 하더라"
+      ],
+      "raw_text_hashes": [
+        "a0909bf4554cb354c0d3a2075dd1163955d08b8e653f004d92253c28fbe0dc8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:4",
+      "sequence": 27445,
+      "chapter_label": "ACT 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "When they had come to Jerusalem, they were received by the assembly and the apostles and the elders, and they reported everything that God had done with them.",
+      "ko": "예루살렘에 이르러 교회와 사도와 장로들에게 영접을 받고 하나님이 자기들과 함께 계셔 행하신 모든 일을 말하매",
+      "source_text_hash": "ec1244171a2e28c55fc25f415e1ee3d8be602c12c668635ea31e62c06354628f",
+      "translation_text_hash": "98fb0022dfdc44946fded0c61ea1d578e5f5ed534156cdbade48c915e670b4e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 이르러 교회와 사도와 장로들에게 영접을 받고 하나님이 자기들과 함께 계셔 행하신 모든 일을 말하매"
+      ],
+      "raw_text_hashes": [
+        "98fb0022dfdc44946fded0c61ea1d578e5f5ed534156cdbade48c915e670b4e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:5",
+      "sequence": 27446,
+      "chapter_label": "ACT 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "But some of the sect of the Pharisees who believed rose up, saying, “It is necessary to circumcise them, and to command them to keep the law of Moses.”",
+      "ko": "바리새파 중에 믿는 어떤 사람들이 일어나 말하되 이방인에게 할례 주고 모세의 율법을 지키라 명하는 것이 마땅하다 하니라",
+      "source_text_hash": "6cad3237e07c51d1f0811eee03722f4ba67d7791069f9d7ba73cc33bb59800e1",
+      "translation_text_hash": "89c64dc98b15410cd14540ad096ba3069444ba8872911be589ef6e204e70d340",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새파 중에 믿는 어떤 사람들이 일어나 말하되 이방인에게 할례 주고 모세의 율법을 지키라 명하는 것이 마땅하다 하니라"
+      ],
+      "raw_text_hashes": [
+        "89c64dc98b15410cd14540ad096ba3069444ba8872911be589ef6e204e70d340"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:6",
+      "sequence": 27447,
+      "chapter_label": "ACT 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "The apostles and the elders were gathered together to see about this matter.",
+      "ko": "사도와 장로들이 이 일을 의논하러 모여",
+      "source_text_hash": "57b2bfe4f512fb193238671e660afdb364b215fb382fcfadb8e8345793e042cf",
+      "translation_text_hash": "0e67537f661afd8506e09a81901bbf38d8b0b19118f2c1c78a48d806026f4ded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도와 장로들이 이 일을 의논하러 모여"
+      ],
+      "raw_text_hashes": [
+        "0e67537f661afd8506e09a81901bbf38d8b0b19118f2c1c78a48d806026f4ded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:7",
+      "sequence": 27448,
+      "chapter_label": "ACT 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "When there had been much discussion, Peter rose up and said to them, “Brothers, you know that a good while ago God made a choice among you that by my mouth the nations should hear the word of the Good News and believe.",
+      "ko": "많은 변론이 있은 후에 베드로가 일어나 말하되 형제들아 너희도 알거니와 하나님이 이방인들로 내 입에서 복음의 말씀을 들어 믿게 하시려고 오래 전부터 너희 가운데서 나를 택하시고",
+      "source_text_hash": "415fcf28311c218d7226bda0cb5dafc7ca98815e0fdeec1214e2919f260f204b",
+      "translation_text_hash": "f164a77b73599147b340ef5f8c2385027089a63357c0cb69afb64b09dac9c724",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 변론이 있은 후에 베드로가 일어나 말하되 형제들아 너희도 알거니와 하나님이 이방인들로 내 입에서 복음의 말씀을 들어 믿게 하시려고 오래 전부터 너희 가운데서 나를 택하시고"
+      ],
+      "raw_text_hashes": [
+        "f164a77b73599147b340ef5f8c2385027089a63357c0cb69afb64b09dac9c724"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:8",
+      "sequence": 27449,
+      "chapter_label": "ACT 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "God, who knows the heart, testified about them, giving them the Holy Spirit, just like he did to us.",
+      "ko": "또 마음을 아시는 하나님이 우리에게와 같이 저희에게도 성령을 주어 증거하시고",
+      "source_text_hash": "a1b1ab71b3120868f36d5bcaeaeaf55e9ff23869900004714847b6198541207d",
+      "translation_text_hash": "e95e87f53ff90930dfc67cbe041bbd5305c337e14eeff39b98117f58af1395cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 마음을 아시는 하나님이 우리에게와 같이 저희에게도 성령을 주어 증거하시고"
+      ],
+      "raw_text_hashes": [
+        "e95e87f53ff90930dfc67cbe041bbd5305c337e14eeff39b98117f58af1395cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:9",
+      "sequence": 27450,
+      "chapter_label": "ACT 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "He made no distinction between us and them, cleansing their hearts by faith.",
+      "ko": "믿음으로 저희 마음을 깨끗이 하사 저희나 우리나 분간치 아니하셨느니라",
+      "source_text_hash": "5d06d79a3369dfb21756a3317216dbc3354840608f596cfa80f8572e66b702a1",
+      "translation_text_hash": "f277a1a18ce75a1cbf8e1c92f02ed2ec3c9458b045efe7ac98443222ef0c4ce1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 저희 마음을 깨끗이 하사 저희나 우리나 분간치 아니하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f277a1a18ce75a1cbf8e1c92f02ed2ec3c9458b045efe7ac98443222ef0c4ce1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:10",
+      "sequence": 27451,
+      "chapter_label": "ACT 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Now therefore why do you tempt God, that you should put a yoke on the neck of the disciples which neither our fathers nor we were able to bear?",
+      "ko": "그런데 지금 너희가 어찌하여 하나님을 시험하여 우리 조상과 우리도 능히 메지 못하던 멍에를 제자들의 목에 두려느냐",
+      "source_text_hash": "0da22dcd8a0fe556c0a3e3cc435b35bc4ac9541b3abaf26d0f20efc39ab63e1c",
+      "translation_text_hash": "e0a7f7d0dca6612da84c34faf6884b097f562933a8e5fcf5b38ff856a4b3c1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 지금 너희가 어찌하여 하나님을 시험하여 우리 조상과 우리도 능히 메지 못하던 멍에를 제자들의 목에 두려느냐"
+      ],
+      "raw_text_hashes": [
+        "e0a7f7d0dca6612da84c34faf6884b097f562933a8e5fcf5b38ff856a4b3c1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:11",
+      "sequence": 27452,
+      "chapter_label": "ACT 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "But we believe that we are saved through the grace of the Lord Jesus, just as they are.”",
+      "ko": "우리가 저희와 동일하게 주 예수의 은혜로 구원 받는 줄을 믿노라 하니라",
+      "source_text_hash": "b95b9163c93ebecd5d956ac486110c8789465603bef1bd8b2401406136990659",
+      "translation_text_hash": "0f447fe905e258d1acc7336df561b3d08154466d9b6a9874c98d9ab32060f1e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 저희와 동일하게 주 예수의 은혜로 구원 받는 줄을 믿노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "0f447fe905e258d1acc7336df561b3d08154466d9b6a9874c98d9ab32060f1e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:12",
+      "sequence": 27453,
+      "chapter_label": "ACT 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "All the multitude kept silence, and they listened to Barnabas and Paul reporting what signs and wonders God had done among the nations through them.",
+      "ko": "온 무리가 가만히 있어 바나바와 바울이 하나님이 자기들로 말미암아 이방인 중에서 행하신 표적과 기사 고하는 것을 듣더니",
+      "source_text_hash": "d0287da5898efcc9dd8e21a96ac990dabfe03e4a9b9980aeefd3ea4968cd22d5",
+      "translation_text_hash": "fea03d17a6379b7d9b496827f2251105cdfbf296b75a9c488402e32e9278e44a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 무리가 가만히 있어 바나바와 바울이 하나님이 자기들로 말미암아 이방인 중에서 행하신 표적과 기사 고하는 것을 듣더니"
+      ],
+      "raw_text_hashes": [
+        "fea03d17a6379b7d9b496827f2251105cdfbf296b75a9c488402e32e9278e44a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:13",
+      "sequence": 27454,
+      "chapter_label": "ACT 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "After they were silent, James answered, “Brothers, listen to me.",
+      "ko": "말을 마치매 야고보가 대답하여 가로되 형제들아 내 말을 들으라",
+      "source_text_hash": "bfffdda5f4d7e31daa0c973fd9ad3bb074798c1f53b31b8213980200eba0c94f",
+      "translation_text_hash": "78e4ff953d432ba69165c5238f4b8ee32ef9507c560145b70e1bb0443633b2f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말을 마치매 야고보가 대답하여 가로되 형제들아 내 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "78e4ff953d432ba69165c5238f4b8ee32ef9507c560145b70e1bb0443633b2f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:14",
+      "sequence": 27455,
+      "chapter_label": "ACT 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Simeon has reported how God first visited the nations to take out of them a people for his name.",
+      "ko": "하나님이 처음으로 이방인 중에서 자기 이름을 위할 백성을 취하시려고 저희를 권고하신 것을 시므온이 고하였으니",
+      "source_text_hash": "103326df45271b7ea3a50b62e329f780966b4ab5265b7d9566930338c1892ec0",
+      "translation_text_hash": "62b237ddabb5d2c42ed827aac6f3c72b8cb3009f9f4a5b99f3fed495294506c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 처음으로 이방인 중에서 자기 이름을 위할 백성을 취하시려고 저희를 권고하신 것을 시므온이 고하였으니"
+      ],
+      "raw_text_hashes": [
+        "62b237ddabb5d2c42ed827aac6f3c72b8cb3009f9f4a5b99f3fed495294506c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:15",
+      "sequence": 27456,
+      "chapter_label": "ACT 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "This agrees with the words of the prophets. As it is written,",
+      "ko": "선지자들의 말씀이 이와 합하도다 기록된바",
+      "source_text_hash": "eb9ecf990792bfe21f0a858bbe6e74458bbe488b4bb6390dbb617fbdce80ff58",
+      "translation_text_hash": "48eaf53815b07a36edd461520e5bdef6eb91944adf4990a38425961f5b7e8961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들의 말씀이 이와 합하도다 기록된바"
+      ],
+      "raw_text_hashes": [
+        "48eaf53815b07a36edd461520e5bdef6eb91944adf4990a38425961f5b7e8961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:16",
+      "sequence": 27457,
+      "chapter_label": "ACT 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "‘After these things I will return. I will again build the tabernacle of David, which has fallen. I will again build its ruins. I will set it up",
+      "ko": "이 후에 내가 돌아와서 다윗의 무너진 장막을 다시 지으며 또 그 퇴락한 것을 다시 지어 일으키리니",
+      "source_text_hash": "c178725d7f623bd63ad094022b3dbf80e34383e5220339d3021cb526b5d1c5bd",
+      "translation_text_hash": "c88879a5a3b523f4c8382896c5a89f8d32fe042156765c02051a9a443b12f3c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 내가 돌아와서 다윗의 무너진 장막을 다시 지으며 또 그 퇴락한 것을 다시 지어 일으키리니"
+      ],
+      "raw_text_hashes": [
+        "c88879a5a3b523f4c8382896c5a89f8d32fe042156765c02051a9a443b12f3c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:17",
+      "sequence": 27458,
+      "chapter_label": "ACT 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "that the rest of men may seek after the Lord: all the Gentiles who are called by my name, says the Lord, who does all these things.’",
+      "ko": "이는 그 남은 사람들과 내 이름으로 일컬음을 받는 모든 이방인들로 주를 찾게 하려 함이라 하셨으니",
+      "source_text_hash": "0d2f1c9b3ed91e1119310bc16c7fb82316d0424a41639e26c6b40fa1abe52528",
+      "translation_text_hash": "925d2273fd09f28e00cae3fe34161611a5ebd556fbe3a3943249de1eac705662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 남은 사람들과 내 이름으로 일컬음을 받는 모든 이방인들로 주를 찾게 하려 함이라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "925d2273fd09f28e00cae3fe34161611a5ebd556fbe3a3943249de1eac705662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:18",
+      "sequence": 27459,
+      "chapter_label": "ACT 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "“All of God’s works are known to him from eternity.",
+      "ko": "즉 예로부터 이것을 알게 하시는 주의 말씀이라 함과 같으니라",
+      "source_text_hash": "9235ecec445bf056e43393c55b201834e51210396f401ea4a7e33377bb67ed8a",
+      "translation_text_hash": "b7a51fa840058e5d1a9b0db7b874d5c42cdf9d070448a8a4ccca6d5b14632a86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "즉 예로부터 이것을 알게 하시는 주의 말씀이라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "b7a51fa840058e5d1a9b0db7b874d5c42cdf9d070448a8a4ccca6d5b14632a86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:19",
+      "sequence": 27460,
+      "chapter_label": "ACT 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore my judgment is that we don’t trouble those from among the Gentiles who turn to God,",
+      "ko": "그러므로 내 의견에는 이방인 중에서 하나님께로 돌아 오는 자들을 괴롭게 말고",
+      "source_text_hash": "0b6d0ea942262f9151f6e9ccb61cab2cca32a46469bdd67fdbeae4eeb00eb208",
+      "translation_text_hash": "796139b2e93aac83f57e74af21c64faea6f6508758dc9e71b465c6f04b1272a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 의견에는 이방인 중에서 하나님께로 돌아 오는 자들을 괴롭게 말고"
+      ],
+      "raw_text_hashes": [
+        "796139b2e93aac83f57e74af21c64faea6f6508758dc9e71b465c6f04b1272a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:20",
+      "sequence": 27461,
+      "chapter_label": "ACT 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "but that we write to them that they abstain from the pollution of idols, from sexual immorality, from what is strangled, and from blood.",
+      "ko": "다만 우상의 더러운 것과 음행과 목매어 죽인 것과 피를 멀리 하라고 편지하는 것이 가하니",
+      "source_text_hash": "3390fdd66016b94b7fc1fc6efd4c4ce5e6c24f3e2adb4bf67d634357bbc35001",
+      "translation_text_hash": "df45995e59675ec7c335b0a267f8b089fe10782af5718050add4fc0dd539194d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 우상의 더러운 것과 음행과 목매어 죽인 것과 피를 멀리 하라고 편지하는 것이 가하니"
+      ],
+      "raw_text_hashes": [
+        "df45995e59675ec7c335b0a267f8b089fe10782af5718050add4fc0dd539194d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:21",
+      "sequence": 27462,
+      "chapter_label": "ACT 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "For Moses from generations of old has in every city those who preach him, being read in the synagogues every Sabbath.”",
+      "ko": "이는 예로부터 각 성에서 모세를 전하는 자가 있어 안식일마다 회당에서 그 글을 읽음이니라 하더라",
+      "source_text_hash": "f840aa7d907d3c56d186b1c60c36d763c3ac350b9ff80f16074bbeac66e322f8",
+      "translation_text_hash": "fb4752ec37d0f72f59fe6d0d2709ba039a2d636f0964123c9d5619729db94b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 예로부터 각 성에서 모세를 전하는 자가 있어 안식일마다 회당에서 그 글을 읽음이니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "fb4752ec37d0f72f59fe6d0d2709ba039a2d636f0964123c9d5619729db94b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:22",
+      "sequence": 27463,
+      "chapter_label": "ACT 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Then it seemed good to the apostles and the elders, with the whole assembly, to choose men out of their company, and send them to Antioch with Paul and Barnabas: Judas called Barsabbas, and Silas, chief men among the brothers.",
+      "ko": "이에 사도와 장로와 온 교회가 그 중에서 사람을 택하여 바울과 바나바와 함께 안디옥으로 보내기를 가결하니 곧 형제 중에 인도자인 바사바라 하는 유다와 실라더라",
+      "source_text_hash": "e740083c549ee5b48893677cf4a71f1fd7e7ebe6c42a8b8fbc8f367513acc9d9",
+      "translation_text_hash": "3d6fb4cb9f8ea6b7bc54d5b9b304014475b83c20b8fbae56179cf9c7b4153bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사도와 장로와 온 교회가 그 중에서 사람을 택하여 바울과 바나바와 함께 안디옥으로 보내기를 가결하니 곧 형제 중에 인도자인 바사바라 하는 유다와 실라더라"
+      ],
+      "raw_text_hashes": [
+        "3d6fb4cb9f8ea6b7bc54d5b9b304014475b83c20b8fbae56179cf9c7b4153bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:23",
+      "sequence": 27464,
+      "chapter_label": "ACT 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "They wrote these things by their hand: “The apostles, the elders, and the brothers, to the brothers who are of the Gentiles in Antioch, Syria, and Cilicia: greetings.",
+      "ko": "그 편에 편지를 부쳐 이르되 사도와 장로된 형제들은 안디옥과 수리아와 길리기아에 있는 이방인 형제들에게 문안하노라",
+      "source_text_hash": "58485bf036d72d957ad65ada27a6fcaea305391779a7f632dab2ddd4950e5a60",
+      "translation_text_hash": "674a64a40eaf9583f263dee12ad344c7d1a7054cdbe0455c0b1389be3437ea8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 편에 편지를 부쳐 이르되 사도와 장로된 형제들은 안디옥과 수리아와 길리기아에 있는 이방인 형제들에게 문안하노라"
+      ],
+      "raw_text_hashes": [
+        "674a64a40eaf9583f263dee12ad344c7d1a7054cdbe0455c0b1389be3437ea8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:24",
+      "sequence": 27465,
+      "chapter_label": "ACT 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Because we have heard that some who went out from us have troubled you with words, unsettling your souls, saying, ‘You must be circumcised and keep the law,’ to whom we gave no commandment;",
+      "ko": "들은즉 우리 가운데서 어떤 사람들이 우리의 시킨 것도 없이 나가서 말로 너희를 괴롭게 하고 마음을 혹하게 한다 하기로",
+      "source_text_hash": "d51e44dc9a1f01ee5ae2905589917e086ab40fc5001a849d5f3d33e3ebf5690c",
+      "translation_text_hash": "59d17fa9667e0f18029b762875f6dc35eaa988700030be12f428212f08a04140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들은즉 우리 가운데서 어떤 사람들이 우리의 시킨 것도 없이 나가서 말로 너희를 괴롭게 하고 마음을 혹하게 한다 하기로"
+      ],
+      "raw_text_hashes": [
+        "59d17fa9667e0f18029b762875f6dc35eaa988700030be12f428212f08a04140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:25",
+      "sequence": 27466,
+      "chapter_label": "ACT 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "it seemed good to us, having come to one accord, to choose out men and send them to you with our beloved Barnabas and Paul,",
+      "ko": "사람을 택하여 우리 주 예수 그리스도의 이름을 위하여 생명을 아끼지 아니하는 자인 우리의 사랑하는 바나바와 바울과 함께 너희에게 보내기를 일치 가결하였노라",
+      "source_text_hash": "77a76c93bb599a0adf9f189349687462b84025f2ddc7fa83b3f7aeb467b5562e",
+      "translation_text_hash": "d3333f1d36b85c1b175d46238123e0a8929d05a32cd181bd1400f205230a8bd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 택하여 우리 주 예수 그리스도의 이름을 위하여 생명을 아끼지 아니하는 자인 우리의 사랑하는 바나바와 바울과 함께 너희에게 보내기를 일치 가결하였노라"
+      ],
+      "raw_text_hashes": [
+        "d3333f1d36b85c1b175d46238123e0a8929d05a32cd181bd1400f205230a8bd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:26",
+      "sequence": 27467,
+      "chapter_label": "ACT 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "men who have risked their lives for the name of our Lord Jesus Christ.",
+      "ko": "(25절에 포함되어 있음)",
+      "source_text_hash": "b64a135ea8dc9fcd8360f103909b9b8dd9524d598c16343b64fc66bd29e8ad57",
+      "translation_text_hash": "d9724bd1bce5f091bd595d61904baced2f2325221681b5063008069042df435d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(25절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "d9724bd1bce5f091bd595d61904baced2f2325221681b5063008069042df435d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:27",
+      "sequence": 27468,
+      "chapter_label": "ACT 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "We have sent therefore Judas and Silas, who themselves will also tell you the same things by word of mouth.",
+      "ko": "그리하여 유다와 실라를 보내니 저희도 이 일을 말로 전하리라",
+      "source_text_hash": "f5ba5951aba903ecb8a02ec9eea0d9e0938eab2d558c64c3af63b51c18a638d6",
+      "translation_text_hash": "94261d2294a54066a3772a70177b09adc747995660542d168e61119bc4e992e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하여 유다와 실라를 보내니 저희도 이 일을 말로 전하리라"
+      ],
+      "raw_text_hashes": [
+        "94261d2294a54066a3772a70177b09adc747995660542d168e61119bc4e992e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:28",
+      "sequence": 27469,
+      "chapter_label": "ACT 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "For it seemed good to the Holy Spirit, and to us, to lay no greater burden on you than these necessary things:",
+      "ko": "성령과 우리는 이 요긴한 것들 외에 아무 짐도 너희에게 지우지 아니하는 것이 가한줄 알았노니",
+      "source_text_hash": "93019c98b51ce63a5a75eae9c17c5ce57ddf82c9dba808e8ddee8239ad6ca958",
+      "translation_text_hash": "6fdd002640c1a1e40d8f98a37775f4e4060a6b2272264404e22b451b4034eb71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령과 우리는 이 요긴한 것들 외에 아무 짐도 너희에게 지우지 아니하는 것이 가한줄 알았노니"
+      ],
+      "raw_text_hashes": [
+        "6fdd002640c1a1e40d8f98a37775f4e4060a6b2272264404e22b451b4034eb71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:29",
+      "sequence": 27470,
+      "chapter_label": "ACT 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "that you abstain from things sacrificed to idols, from blood, from things strangled, and from sexual immorality, from which if you keep yourselves, it will be well with you. Farewell.”",
+      "ko": "우상의 제물과 피와 목매어 죽인 것과 음행을 멀리 할찌니라 이에 스스로 삼가면 잘 되리라 평안함을 원하노라 하였더라",
+      "source_text_hash": "d9611bd89cb63de03b9a3645a43c2156ff6f74e8700172f85ec507b284b4a2f2",
+      "translation_text_hash": "36790180987250485d3ef59c5ef4bca9aacfbe7a8ba1758126b50815a2fff5a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상의 제물과 피와 목매어 죽인 것과 음행을 멀리 할찌니라 이에 스스로 삼가면 잘 되리라 평안함을 원하노라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "36790180987250485d3ef59c5ef4bca9aacfbe7a8ba1758126b50815a2fff5a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:30",
+      "sequence": 27471,
+      "chapter_label": "ACT 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "So, when they were sent off, they came to Antioch. Having gathered the multitude together, they delivered the letter.",
+      "ko": "저희가 작별하고 안디옥에 내려가 무리를 모은 후에 편지를 전하니",
+      "source_text_hash": "ed5eb196ad9842081d08aa22f3b2edc3bd6d27cd4b3fe5b950cde70697ed1439",
+      "translation_text_hash": "c81014e8d918b759783002b5bfa1462d2fe5529c06081b5ae4d9c91699194555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 작별하고 안디옥에 내려가 무리를 모은 후에 편지를 전하니"
+      ],
+      "raw_text_hashes": [
+        "c81014e8d918b759783002b5bfa1462d2fe5529c06081b5ae4d9c91699194555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:31",
+      "sequence": 27472,
+      "chapter_label": "ACT 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "When they had read it, they rejoiced over the encouragement.",
+      "ko": "읽고 그 위로한 말을 기뻐하더라",
+      "source_text_hash": "a4a24b6192d6d13ea7153c042f3c76caca908d8fbe47c026f8075ae48c3853b4",
+      "translation_text_hash": "d0b1fac01958da4a7c5e94224839228e3c195ecb40d24500d081ea567f6eb933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "읽고 그 위로한 말을 기뻐하더라"
+      ],
+      "raw_text_hashes": [
+        "d0b1fac01958da4a7c5e94224839228e3c195ecb40d24500d081ea567f6eb933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:32",
+      "sequence": 27473,
+      "chapter_label": "ACT 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "Judas and Silas, also being prophets themselves, encouraged the brothers with many words and strengthened them.",
+      "ko": "유다와 실라도 선지자라 여러 말로 형제를 권면하여 굳게 하고",
+      "source_text_hash": "e44f34670a3b6bc85b1ce18dd08ed184a0cb75edecafb4f6a375b25a54c69c25",
+      "translation_text_hash": "10eafa7eff5ceaba744cae445992429a6942ccc00105b73d0e691bf241fc1894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 실라도 선지자라 여러 말로 형제를 권면하여 굳게 하고"
+      ],
+      "raw_text_hashes": [
+        "10eafa7eff5ceaba744cae445992429a6942ccc00105b73d0e691bf241fc1894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:33",
+      "sequence": 27474,
+      "chapter_label": "ACT 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "After they had spent some time there, they were dismissed in peace from the brothers to the apostles.",
+      "ko": "얼마 있다가 평안히 가라는 전송을 형제들에게 받고 자기를 보내던 사람들에게로 돌아가되",
+      "source_text_hash": "53e1967399bfbc50b85c12ee6915915ca15f62e82a24b53056335470ca3949a4",
+      "translation_text_hash": "39228a95e7481745166c03219f0b6366282c61fe1b2cf13d8ca63f99e39a59e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼마 있다가 평안히 가라는 전송을 형제들에게 받고 자기를 보내던 사람들에게로 돌아가되"
+      ],
+      "raw_text_hashes": [
+        "39228a95e7481745166c03219f0b6366282c61fe1b2cf13d8ca63f99e39a59e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:35",
+      "sequence": 27475,
+      "chapter_label": "ACT 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "But Paul and Barnabas stayed in Antioch, teaching and preaching the word of the Lord, with many others also.",
+      "ko": "바울과 바나바는 안디옥에서 유하며 다수한 다른 사람들과 함께 주의 말씀을 가르치며 전파하니라",
+      "source_text_hash": "443b65b9c81b528209f6efbc274f2a018f57ac66e8f0b9eccc3223d408a3b947",
+      "translation_text_hash": "380a8bd747a39e2992aba9c1039dbc85fd6bdf1d9cf964708221603618080c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 바나바는 안디옥에서 유하며 다수한 다른 사람들과 함께 주의 말씀을 가르치며 전파하니라"
+      ],
+      "raw_text_hashes": [
+        "380a8bd747a39e2992aba9c1039dbc85fd6bdf1d9cf964708221603618080c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:36",
+      "sequence": 27476,
+      "chapter_label": "ACT 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "After some days Paul said to Barnabas, “Let’s return now and visit our brothers in every city in which we proclaimed the word of the Lord, to see how they are doing.”",
+      "ko": "수일 후에 바울이 바나바더러 말하되 우리가 주의 말씀을 전한 각 성으로 다시 가서 형제들이 어떠한가 방문하자 하니",
+      "source_text_hash": "d4db45dc7f6141bd7c0f130bab39d1b904af838dc12cd5fb6faa2f1af9c22f01",
+      "translation_text_hash": "6bd15c5093995f4968a804ebde9f52d12143090752db9e34f751aedc80643e98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수일 후에 바울이 바나바더러 말하되 우리가 주의 말씀을 전한 각 성으로 다시 가서 형제들이 어떠한가 방문하자 하니"
+      ],
+      "raw_text_hashes": [
+        "6bd15c5093995f4968a804ebde9f52d12143090752db9e34f751aedc80643e98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:37",
+      "sequence": 27477,
+      "chapter_label": "ACT 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "Barnabas planned to take John, who was called Mark, with them also.",
+      "ko": "바나바는 마가라 하는 요한도 데리고 가고자 하나",
+      "source_text_hash": "e1fbeb70ba44499940e50b407ad38fed3d64401916f072cbcf8087a6fa02a8cb",
+      "translation_text_hash": "168fb28d2742c586448cc211fdc2d026871e32bbbbb80a65527cb27b7d8795cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바나바는 마가라 하는 요한도 데리고 가고자 하나"
+      ],
+      "raw_text_hashes": [
+        "168fb28d2742c586448cc211fdc2d026871e32bbbbb80a65527cb27b7d8795cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:38",
+      "sequence": 27478,
+      "chapter_label": "ACT 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "But Paul didn’t think that it was a good idea to take with them someone who had withdrawn from them in Pamphylia, and didn’t go with them to do the work.",
+      "ko": "바울은 밤빌리아에서 자기들을 떠나 한가지로 일하러 가지 아니한 자를 데리고 가는 것이 옳지 않다 하여",
+      "source_text_hash": "fa9ddf9c62359bf9376770497e605d37f00751127c6e5f263a42f3ee28100756",
+      "translation_text_hash": "becb8bf70d0c13cfb57dae17db5e50504dba0880e1016e55e0c2787852a776ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울은 밤빌리아에서 자기들을 떠나 한가지로 일하러 가지 아니한 자를 데리고 가는 것이 옳지 않다 하여"
+      ],
+      "raw_text_hashes": [
+        "becb8bf70d0c13cfb57dae17db5e50504dba0880e1016e55e0c2787852a776ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:39",
+      "sequence": 27479,
+      "chapter_label": "ACT 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "Then the contention grew so sharp that they separated from each other. Barnabas took Mark with him and sailed away to Cyprus,",
+      "ko": "서로 심히 다투어 피차 갈라 서니 바나바는 마가를 데리고 배 타고 구브로로 가고",
+      "source_text_hash": "02be0f9473377cd3b1992e4bcdb61e716f279761dd89d7f1e5b4f6a1048613f1",
+      "translation_text_hash": "5db4c1476c23b770ff9a703d5949cde8bb4443a9da03ca592e35871c46971e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 심히 다투어 피차 갈라 서니 바나바는 마가를 데리고 배 타고 구브로로 가고"
+      ],
+      "raw_text_hashes": [
+        "5db4c1476c23b770ff9a703d5949cde8bb4443a9da03ca592e35871c46971e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:40",
+      "sequence": 27480,
+      "chapter_label": "ACT 15",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 40
+        }
+      ],
+      "en": "but Paul chose Silas and went out, being commended by the brothers to the grace of God.",
+      "ko": "바울은 실라를 택한 후에 형제들에게 주의 은혜에 부탁함을 받고 떠나",
+      "source_text_hash": "742e24dd576863fcea5adf6539a555e96462d76ea8a267d0edf015ea160d1452",
+      "translation_text_hash": "a49af2cfd5b4f73f0578f7448804130ad93bd19bd9b0fb23506cf8c0fc087139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울은 실라를 택한 후에 형제들에게 주의 은혜에 부탁함을 받고 떠나"
+      ],
+      "raw_text_hashes": [
+        "a49af2cfd5b4f73f0578f7448804130ad93bd19bd9b0fb23506cf8c0fc087139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:15:41",
+      "sequence": 27481,
+      "chapter_label": "ACT 15",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 15,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 15,
+          "verse": 41
+        }
+      ],
+      "en": "He went through Syria and Cilicia, strengthening the assemblies.",
+      "ko": "수리아와 길리기아로 다녀가며 교회들을 굳게 하니라",
+      "source_text_hash": "53ddd8061526d7e7958c9526183699f815fb4a59c6661a1660d29da6455e120b",
+      "translation_text_hash": "284dc583267e311996acf976e6d454904fe827cb008a7528bc62060b9214d0cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수리아와 길리기아로 다녀가며 교회들을 굳게 하니라"
+      ],
+      "raw_text_hashes": [
+        "284dc583267e311996acf976e6d454904fe827cb008a7528bc62060b9214d0cc"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:016",
+  "unit_ordinal": 494,
+  "unit_label": "PSA 16",
+  "book_code": "PSA",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:16:1",
+      "sequence": 14094,
+      "chapter_label": "PSA 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Preserve me, God, for I take refuge in you.",
+      "ko": "하나님이여 나를 보호하소서 내가 주께 피하나이다",
+      "source_text_hash": "0e753453db70fc30d6a7568c7d31951519c3399c2eea20faf89af626e7ed9b81",
+      "translation_text_hash": "ea6edff3da0ff0f0551fe548f99f062dc542ff37e3a355632246d09c3df27540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 보호하소서 내가 주께 피하나이다"
+      ],
+      "raw_text_hashes": [
+        "ea6edff3da0ff0f0551fe548f99f062dc542ff37e3a355632246d09c3df27540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:2",
+      "sequence": 14095,
+      "chapter_label": "PSA 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "My soul, you have said to the LORD, “You are my Lord. Apart from you I have no good thing.”",
+      "ko": "내가 여호와께 아뢰되 주는 나의 주시오니 주 밖에는 나의 복이 없다 하였나이다",
+      "source_text_hash": "068afb2ad559a92491016128d076dfa62fe109708765443edd9f8fa5f322eaef",
+      "translation_text_hash": "85ccb0cd0c169fdcc6330a0c0aaba7cff834f555c4a96b3e9ab4c4e829f465a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 아뢰되 주는 나의 주시오니 주 밖에는 나의 복이 없다 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "85ccb0cd0c169fdcc6330a0c0aaba7cff834f555c4a96b3e9ab4c4e829f465a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:3",
+      "sequence": 14096,
+      "chapter_label": "PSA 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "As for the saints who are on the earth, they are the excellent ones in whom is all my delight.",
+      "ko": "땅에 있는 성도는 존귀한 자니 나의 모든 즐거움이 저희에게 있도다",
+      "source_text_hash": "37a0de83d52b989be687d07d8295925642b954a17c4c4f2ea32e2ef338d21d5a",
+      "translation_text_hash": "b7de18a0bf6e631a087203246209616904a7d46aaae0e8a2a77b063c4de54153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 있는 성도는 존귀한 자니 나의 모든 즐거움이 저희에게 있도다"
+      ],
+      "raw_text_hashes": [
+        "b7de18a0bf6e631a087203246209616904a7d46aaae0e8a2a77b063c4de54153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:4",
+      "sequence": 14097,
+      "chapter_label": "PSA 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "Their sorrows shall be multiplied who give gifts to another god. Their drink offerings of blood I will not offer, nor take their names on my lips.",
+      "ko": "다른 신에게 예물을 드리는 자는 괴로움이 더할 것이라 나는 저희가 드리는 피의 전제를 드리지 아니하며 내 입술로 그 이름도 부르지 아니하리로다",
+      "source_text_hash": "b5df4801b538585bbdf15816ca20baa87b5c899af23c9c6b0387cb7dbcb42903",
+      "translation_text_hash": "bb2b61a6a0ca1d29226308064c9d36da955a478874ed6c7852d9764e6012b6b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 신에게 예물을 드리는 자는 괴로움이 더할 것이라 나는 저희가 드리는 피의 전제를 드리지 아니하며 내 입술로 그 이름도 부르지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "bb2b61a6a0ca1d29226308064c9d36da955a478874ed6c7852d9764e6012b6b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:5",
+      "sequence": 14098,
+      "chapter_label": "PSA 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD assigned my portion and my cup. You made my lot secure.",
+      "ko": "여호와는 나의 산업과 나의 잔의 소득이시니 나의 분깃을 지키시나이다",
+      "source_text_hash": "105e9c712999f5f5ab64315eb347534fcddbebdd98b3ac76a1d11fce23b9c05d",
+      "translation_text_hash": "87e41ea69d804b0ea4560c64cf2ad43521eb616fadfb9b678104af0483998161",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 산업과 나의 잔의 소득이시니 나의 분깃을 지키시나이다"
+      ],
+      "raw_text_hashes": [
+        "87e41ea69d804b0ea4560c64cf2ad43521eb616fadfb9b678104af0483998161"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:6",
+      "sequence": 14099,
+      "chapter_label": "PSA 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "The lines have fallen to me in pleasant places. Yes, I have a good inheritance.",
+      "ko": "내게 줄로 재어 준 구역은 아름다운 곳에 있음이여 나의 기업이 실로 아름답도다",
+      "source_text_hash": "eebdfdc53c6eafa9b698672ccc8f641ff226fffa34bb561af9bb85386e1d3d56",
+      "translation_text_hash": "9ee38b6d34ff181a33eca45efe39b2bbe64cf70ca55456a8bb3a6fbe455d845f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 줄로 재어 준 구역은 아름다운 곳에 있음이여 나의 기업이 실로 아름답도다"
+      ],
+      "raw_text_hashes": [
+        "9ee38b6d34ff181a33eca45efe39b2bbe64cf70ca55456a8bb3a6fbe455d845f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:7",
+      "sequence": 14100,
+      "chapter_label": "PSA 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "I will bless the LORD, who has given me counsel. Yes, my heart instructs me in the night seasons.",
+      "ko": "나를 훈계하신 여호와를 송축할찌라 밤마다 내 심장이 나를 교훈하도다",
+      "source_text_hash": "5181dde7c15bfbea62971832585747ae34a73aed15c1697d3eb5be6a96a31d46",
+      "translation_text_hash": "908c159ab3cda1af133ffeafbc8f0ef0de4b9c18c086344418e826f748fd8989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 훈계하신 여호와를 송축할찌라 밤마다 내 심장이 나를 교훈하도다"
+      ],
+      "raw_text_hashes": [
+        "908c159ab3cda1af133ffeafbc8f0ef0de4b9c18c086344418e826f748fd8989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:8",
+      "sequence": 14101,
+      "chapter_label": "PSA 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "I have set the LORD always before me. Because he is at my right hand, I shall not be moved.",
+      "ko": "내가 여호와를 항상 내 앞에 모심이여 그가 내 우편에 계시므로 내가 요동치 아니하리로다",
+      "source_text_hash": "09bb80a7e50ffa5597f7e40fce5cee1fd884dc2aa823eda04dfe6c64594a6ab4",
+      "translation_text_hash": "e5345b14756472e869d01ec44b5ce6f7b630dec3ad931eb87d866ee6dcd7cfd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와를 항상 내 앞에 모심이여 그가 내 우편에 계시므로 내가 요동치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "e5345b14756472e869d01ec44b5ce6f7b630dec3ad931eb87d866ee6dcd7cfd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:9",
+      "sequence": 14102,
+      "chapter_label": "PSA 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore my heart is glad, and my tongue rejoices. My body shall also dwell in safety.",
+      "ko": "이러므로 내 마음이 기쁘고 내 영광도 즐거워하며 내 육체도 안전히 거하리니",
+      "source_text_hash": "8421418d8a7d7eda206819d1dda59ed3cf933abc3c55dc7470e825cc111760ad",
+      "translation_text_hash": "c822bf192e69c0ff9743c8a4948ee96bd3a5504c4d7d12cdccc9a8c8904a6138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내 마음이 기쁘고 내 영광도 즐거워하며 내 육체도 안전히 거하리니"
+      ],
+      "raw_text_hashes": [
+        "c822bf192e69c0ff9743c8a4948ee96bd3a5504c4d7d12cdccc9a8c8904a6138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:10",
+      "sequence": 14103,
+      "chapter_label": "PSA 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "For you will not leave my soul in Sheol, neither will you allow your holy one to see corruption.",
+      "ko": "이는 내 영혼을 음부에 버리지 아니하시며 주의 거룩한 자로 썩지 않게 하실 것임이니이다",
+      "source_text_hash": "fde818881cbc3dcdc6850a69737ea4a686d930e3fbb37e027d645ae189557b3f",
+      "translation_text_hash": "031d31914d54f9468eb99fcc35182a823581bada8a0f437a93424f407e5bab7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 영혼을 음부에 버리지 아니하시며 주의 거룩한 자로 썩지 않게 하실 것임이니이다"
+      ],
+      "raw_text_hashes": [
+        "031d31914d54f9468eb99fcc35182a823581bada8a0f437a93424f407e5bab7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:16:11",
+      "sequence": 14104,
+      "chapter_label": "PSA 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "You will show me the path of life. In your presence is fullness of joy. In your right hand there are pleasures forever more.",
+      "ko": "주께서 생명의 길로 내게 보이시리니 주의 앞에는 기쁨이 충만하고 주의 우편에는 영원한 즐거움이 있나이다",
+      "source_text_hash": "221b6dca8bf49f5d4cd5c5015ff472a35a62316fcec03799745a907c8b0ff6fd",
+      "translation_text_hash": "ab1aee020b52973202878ec8eccdd96cf99f8efe3b7caf2afaca27c4d84184f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 생명의 길로 내게 보이시리니 주의 앞에는 기쁨이 충만하고 주의 우편에는 영원한 즐거움이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "ab1aee020b52973202878ec8eccdd96cf99f8efe3b7caf2afaca27c4d84184f4"
+      ]
+    }
+  ]
+}

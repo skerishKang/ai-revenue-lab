@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:016",
+  "unit_ordinal": 106,
+  "unit_label": "LEV 16",
+  "book_code": "LEV",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:16:1",
+      "sequence": 3203,
+      "chapter_label": "LEV 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses after the death of the two sons of Aaron, when they came near before the LORD, and died;",
+      "ko": "아론의 두 아들이 여호와 앞에 나아가다가 죽은 후에 여호와께서 모세에게 말씀하시니라",
+      "source_text_hash": "28945f07e7810aca106f0be388d1cec544147448daaf7810e2af9c6163f85262",
+      "translation_text_hash": "3c56fa97251f1fd585af94e383273f8d62372a550853aa38e284935eaa7c25fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 두 아들이 여호와 앞에 나아가다가 죽은 후에 여호와께서 모세에게 말씀하시니라"
+      ],
+      "raw_text_hashes": [
+        "3c56fa97251f1fd585af94e383273f8d62372a550853aa38e284935eaa7c25fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:2",
+      "sequence": 3204,
+      "chapter_label": "LEV 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "and the LORD said to Moses, “Tell Aaron your brother not to come at just any time into the Most Holy Place within the veil, before the mercy seat which is on the ark; lest he die; for I will appear in the cloud on the mercy seat.",
+      "ko": "여호와께서 모세에게 이르시되 네 형 아론에게 이르라 성소의 장안 법궤 위 속죄소 앞에 무시로 들어오지 말아서 사망을 면하라 내가 구름 가운데서 속죄소 위에 나타남이니라",
+      "source_text_hash": "71f5adfaaca575d4a570b127d2c22703c4fef0f1c26f32cde16137e931f9cf51",
+      "translation_text_hash": "eb6022781496baac36946070d2c1b7b2dc9454a54fd81461e249022bda656cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 네 형 아론에게 이르라 성소의 장안 법궤 위 속죄소 앞에 무시로 들어오지 말아서 사망을 면하라 내가 구름 가운데서 속죄소 위에 나타남이니라"
+      ],
+      "raw_text_hashes": [
+        "eb6022781496baac36946070d2c1b7b2dc9454a54fd81461e249022bda656cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:3",
+      "sequence": 3205,
+      "chapter_label": "LEV 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "“Aaron shall come into the sanctuary with a young bull for a sin offering, and a ram for a burnt offering.",
+      "ko": "아론이 성소에 들어오려면 수송아지로 속죄 제물을 삼고 수양으로 번제물을 삼고",
+      "source_text_hash": "64e1449185b1c479d2945a267c491da2652e95ab35ec55bf4d3e42efa06a92c0",
+      "translation_text_hash": "b7790491e449a990bad594e7da75ed60197907173e17813f314bf7caee221bae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 성소에 들어오려면 수송아지로 속죄 제물을 삼고 수양으로 번제물을 삼고"
+      ],
+      "raw_text_hashes": [
+        "b7790491e449a990bad594e7da75ed60197907173e17813f314bf7caee221bae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:4",
+      "sequence": 3206,
+      "chapter_label": "LEV 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "He shall put on the holy linen tunic. He shall have the linen trousers on his body, and shall put on the linen sash, and he shall be clothed with the linen turban. They are the holy garments. He shall bathe his body in water, and put them on.",
+      "ko": "거룩한 세마포 속옷을 입으며 세마포 고의를 살에 입고 세마포 띠를 띠며 세마포 관을 쓸찌니 이것들은 거룩한 옷이라 물로 몸을 씻고 입을 것이며",
+      "source_text_hash": "174663f2e067fc35d449e2024a8dbac3274f25c23ff80c3452e866f0057742aa",
+      "translation_text_hash": "82240323a0a91828fb6f01256f586b8db0be72a4d9a6c3cf06e652196b66d9cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 세마포 속옷을 입으며 세마포 고의를 살에 입고 세마포 띠를 띠며 세마포 관을 쓸찌니 이것들은 거룩한 옷이라 물로 몸을 씻고 입을 것이며"
+      ],
+      "raw_text_hashes": [
+        "82240323a0a91828fb6f01256f586b8db0be72a4d9a6c3cf06e652196b66d9cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:5",
+      "sequence": 3207,
+      "chapter_label": "LEV 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "He shall take from the congregation of the children of Israel two male goats for a sin offering, and one ram for a burnt offering.",
+      "ko": "이스라엘 자손의 회중에게서 속죄 제물을 위하여 수염소 둘과 번제물을 위하여 수양 하나를 취할찌니라",
+      "source_text_hash": "cde236a9340ed026acd1a984b148658e6385d5dfe6c76c86b4148c7f80b25a5c",
+      "translation_text_hash": "3c3b3614bd190e24a60ab10f34747245034da84916108b6483dc563f6a80eb8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 회중에게서 속죄 제물을 위하여 수염소 둘과 번제물을 위하여 수양 하나를 취할찌니라"
+      ],
+      "raw_text_hashes": [
+        "3c3b3614bd190e24a60ab10f34747245034da84916108b6483dc563f6a80eb8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:6",
+      "sequence": 3208,
+      "chapter_label": "LEV 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "“Aaron shall offer the bull of the sin offering, which is for himself, and make atonement for himself and for his house.",
+      "ko": "아론은 자기를 위한 속죄제의 수송아지를 드리되 자기와 권속을 위하여 속죄하고",
+      "source_text_hash": "5366604950de0f90a12cbeba3827adad17992d5baa8d5407089457836e4da4ff",
+      "translation_text_hash": "1e0cc1628b3ef23f096ac28385bc3ab465da1f7c66a51c7260f613cb563591f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 자기를 위한 속죄제의 수송아지를 드리되 자기와 권속을 위하여 속죄하고"
+      ],
+      "raw_text_hashes": [
+        "1e0cc1628b3ef23f096ac28385bc3ab465da1f7c66a51c7260f613cb563591f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:7",
+      "sequence": 3209,
+      "chapter_label": "LEV 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "He shall take the two goats, and set them before the LORD at the door of the Tent of Meeting.",
+      "ko": "또 그 두 염소를 취하여 회막문 여호와 앞에 두고",
+      "source_text_hash": "e55331b0221a5379af11b5955e7ac0bcddc2efb8d3d8a655bb7525d18e4e3a19",
+      "translation_text_hash": "f0ee9f7379496bd75772cdf497af729f76aafb1b9d9d63a421e83a102bf8e75e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 두 염소를 취하여 회막문 여호와 앞에 두고"
+      ],
+      "raw_text_hashes": [
+        "f0ee9f7379496bd75772cdf497af729f76aafb1b9d9d63a421e83a102bf8e75e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:8",
+      "sequence": 3210,
+      "chapter_label": "LEV 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Aaron shall cast lots for the two goats: one lot for the LORD, and the other lot for the scapegoat.",
+      "ko": "두 염소를 위하여 제비뽑되 한 제비는 여호와를 위하고 한 제비는 아사셀을 위하여 할찌며",
+      "source_text_hash": "bcbde73f07b76596de7614be0297a56a136f79e4377784c8d5025323dcd846a7",
+      "translation_text_hash": "f65b25c83e5aabd4366eb1851e946192537bc01c7f042016bc51b9fd9462feb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 염소를 위하여 제비뽑되 한 제비는 여호와를 위하고 한 제비는 아사셀을 위하여 할찌며"
+      ],
+      "raw_text_hashes": [
+        "f65b25c83e5aabd4366eb1851e946192537bc01c7f042016bc51b9fd9462feb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:9",
+      "sequence": 3211,
+      "chapter_label": "LEV 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Aaron shall present the goat on which the lot fell for the LORD, and offer him for a sin offering.",
+      "ko": "아론은 여호와를 위하여 제비 뽑은 염소를 속죄제로 드리고",
+      "source_text_hash": "73f939f0d17f07115a071a52867c5e476159e1b995fbb0071c65a55b5a46faec",
+      "translation_text_hash": "0a2895c85610541907d21d236a115756075a7104b1e6023afc0d5c02bfba4a77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 여호와를 위하여 제비 뽑은 염소를 속죄제로 드리고"
+      ],
+      "raw_text_hashes": [
+        "0a2895c85610541907d21d236a115756075a7104b1e6023afc0d5c02bfba4a77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:10",
+      "sequence": 3212,
+      "chapter_label": "LEV 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "But the goat on which the lot fell for the scapegoat shall be presented alive before the LORD, to make atonement for him, to send him away as the scapegoat into the wilderness.",
+      "ko": "아사셀을 위하여 제비 뽑은 염소는 산대로 여호와 앞에 두었다가 그것으로 속죄하고 아사셀을 위하여 광야로 보낼찌니라",
+      "source_text_hash": "6338fafab3af0c32840c1da2269444f1bfe90b11f60f7c9d64f518a8f0ae0d80",
+      "translation_text_hash": "c6c74e41e2bf9232493548ff53bee512f586c25f5cee8836ad71c437232c1b41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사셀을 위하여 제비 뽑은 염소는 산대로 여호와 앞에 두었다가 그것으로 속죄하고 아사셀을 위하여 광야로 보낼찌니라"
+      ],
+      "raw_text_hashes": [
+        "c6c74e41e2bf9232493548ff53bee512f586c25f5cee8836ad71c437232c1b41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:11",
+      "sequence": 3213,
+      "chapter_label": "LEV 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "“Aaron shall present the bull of the sin offering, which is for himself, and shall make atonement for himself and for his house, and shall kill the bull of the sin offering which is for himself.",
+      "ko": "아론은 자기를 위한 속죄제의 수송아지를 드리되 자기와 권속을 위하여 속죄하고 자기를 위한 그 속죄제 수송아지를 잡고",
+      "source_text_hash": "0c62d922759efd11247e5e1f5f6452806834748a195e7dd5bb2e8668a3689ab2",
+      "translation_text_hash": "d9d8645f6ab7212d53c0214c149e5637cf5fe2275c129fab91f425a1d4dcdb87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 자기를 위한 속죄제의 수송아지를 드리되 자기와 권속을 위하여 속죄하고 자기를 위한 그 속죄제 수송아지를 잡고"
+      ],
+      "raw_text_hashes": [
+        "d9d8645f6ab7212d53c0214c149e5637cf5fe2275c129fab91f425a1d4dcdb87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:12",
+      "sequence": 3214,
+      "chapter_label": "LEV 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "He shall take a censer full of coals of fire from off the altar before the LORD, and two handfuls of sweet incense beaten small, and bring it within the veil.",
+      "ko": "향로를 취하여 여호와 앞 단 위에서 피운 불을 그것에 채우고 또 두 손에 곱게 간 향기로운 향을 채워 가지고 장 안에 들어가서",
+      "source_text_hash": "a6b12979f02d317b77193e2fafb8eaa4867e45053699932e65b1ea950504b709",
+      "translation_text_hash": "a3183903f8956fc51c4e3462576979a57ce95b3810daa54a41f7ae125f954a4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "향로를 취하여 여호와 앞 단 위에서 피운 불을 그것에 채우고 또 두 손에 곱게 간 향기로운 향을 채워 가지고 장 안에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "a3183903f8956fc51c4e3462576979a57ce95b3810daa54a41f7ae125f954a4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:13",
+      "sequence": 3215,
+      "chapter_label": "LEV 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "He shall put the incense on the fire before the LORD, that the cloud of the incense may cover the mercy seat that is on the covenant, so that he will not die.",
+      "ko": "여호와 앞에서 분향하여 향연으로 증거궤 위 속죄소를 가리우게 할찌니 그리하면 그가 죽음을 면할 것이며",
+      "source_text_hash": "02c7e69ed2cb663bc6de66b754b53e53bf94e8761049cd14cc40bc04c49018f2",
+      "translation_text_hash": "fdf7f307f8f0dfead23ffb12b348a8075966b7c75f2125bcac3ab0d55f217112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에서 분향하여 향연으로 증거궤 위 속죄소를 가리우게 할찌니 그리하면 그가 죽음을 면할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fdf7f307f8f0dfead23ffb12b348a8075966b7c75f2125bcac3ab0d55f217112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:14",
+      "sequence": 3216,
+      "chapter_label": "LEV 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "He shall take some of the blood of the bull, and sprinkle it with his finger on the mercy seat on the east; and before the mercy seat he shall sprinkle some of the blood with his finger seven times.",
+      "ko": "그는 또 수송아지의 피를 취하여 손가락으로 속죄소 동편에 뿌리고 또 손가락으로 그 피를 속죄소 앞에 일곱번 뿌릴 것이며",
+      "source_text_hash": "378c70e75599ee604e55fe8d451bf075674290adbdddad1c128ba9658f574c60",
+      "translation_text_hash": "1e7310bbbee6ee388cced06a3100e47a34f82b6de30300beaddcdd5baa17af4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 또 수송아지의 피를 취하여 손가락으로 속죄소 동편에 뿌리고 또 손가락으로 그 피를 속죄소 앞에 일곱번 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "1e7310bbbee6ee388cced06a3100e47a34f82b6de30300beaddcdd5baa17af4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:15",
+      "sequence": 3217,
+      "chapter_label": "LEV 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "“Then he shall kill the goat of the sin offering that is for the people, and bring his blood within the veil, and do with his blood as he did with the blood of the bull, and sprinkle it on the mercy seat and before the mercy seat.",
+      "ko": "또 백성을 위한 속죄제 염소를 잡아 그 피를 가지고 장 안에 들어가서 그 수송아지 피로 행함 같이 그 피로 행하여 속죄소 위와 속죄소 앞에 뿌릴찌니",
+      "source_text_hash": "d08ca000018623f0c74299ba1edf2712dc3a82ec6d2c5b6c9a4ad387716ee38d",
+      "translation_text_hash": "b5f7af58899a6571434f5e553a57046053cf312b6602b4f868a3cddbc5e1d830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성을 위한 속죄제 염소를 잡아 그 피를 가지고 장 안에 들어가서 그 수송아지 피로 행함 같이 그 피로 행하여 속죄소 위와 속죄소 앞에 뿌릴찌니"
+      ],
+      "raw_text_hashes": [
+        "b5f7af58899a6571434f5e553a57046053cf312b6602b4f868a3cddbc5e1d830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:16",
+      "sequence": 3218,
+      "chapter_label": "LEV 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "He shall make atonement for the Holy Place, because of the uncleanness of the children of Israel, and because of their transgressions, even all their sins; and so he shall do for the Tent of Meeting that dwells with them in the middle of their uncleanness.",
+      "ko": "곧 이스라엘 자손의 부정과 그 범한 모든 죄를 인하여 지성소를 위하여 속죄하고 또 그들의 부정한 중에 있는 회막을 위하여 그같이 할 것이요",
+      "source_text_hash": "fec8d7d7961d08f8385f841b0caea40737876c98a90783e28c55918cdf973f56",
+      "translation_text_hash": "6ff7c55c78fcca834ecc2d1a98b9c12b0a55917f6411e6b515c8916f1d004b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이스라엘 자손의 부정과 그 범한 모든 죄를 인하여 지성소를 위하여 속죄하고 또 그들의 부정한 중에 있는 회막을 위하여 그같이 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "6ff7c55c78fcca834ecc2d1a98b9c12b0a55917f6411e6b515c8916f1d004b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:17",
+      "sequence": 3219,
+      "chapter_label": "LEV 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "No one shall be in the Tent of Meeting when he enters to make atonement in the Holy Place, until he comes out, and has made atonement for himself and for his household, and for all the assembly of Israel.",
+      "ko": "그가 지성소에 속죄하러 들어가서 자기와 그 권속과 이스라엘 온 회중을 위하여 속죄하고 나오기까지는 누구든지 회막에 있지 못할 것이며",
+      "source_text_hash": "53661cb978b79205f545003f40f5b2e7b5a1b6828b558aba1145dd67f7851040",
+      "translation_text_hash": "fb20bc892e8caf86e93d83b0c37fd0d366148f07ed7dcfd5823563fe84390c4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 지성소에 속죄하러 들어가서 자기와 그 권속과 이스라엘 온 회중을 위하여 속죄하고 나오기까지는 누구든지 회막에 있지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fb20bc892e8caf86e93d83b0c37fd0d366148f07ed7dcfd5823563fe84390c4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:18",
+      "sequence": 3220,
+      "chapter_label": "LEV 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "“He shall go out to the altar that is before the LORD and make atonement for it, and shall take some of the bull’s blood, and some of the goat’s blood, and put it around on the horns of the altar.",
+      "ko": "그는 여호와 앞 단으로 나와서 그것을 위하여 속죄할찌니 곧 그 수송아지의 피와 염소의 피를 취하여 단 귀퉁이 뿔들에 바르고",
+      "source_text_hash": "8e75c13130ba7d289d9457fa6d983feb048d0111042a84414ef9248bfcc6e796",
+      "translation_text_hash": "f95d1987e5771876fe0ebd57f443aa9e9b3b63336ab41946e0709320dd3afcf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 여호와 앞 단으로 나와서 그것을 위하여 속죄할찌니 곧 그 수송아지의 피와 염소의 피를 취하여 단 귀퉁이 뿔들에 바르고"
+      ],
+      "raw_text_hashes": [
+        "f95d1987e5771876fe0ebd57f443aa9e9b3b63336ab41946e0709320dd3afcf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:19",
+      "sequence": 3221,
+      "chapter_label": "LEV 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "He shall sprinkle some of the blood on it with his finger seven times, and cleanse it, and make it holy from the uncleanness of the children of Israel.",
+      "ko": "또 손가락으로 그 피를 그 위에 일곱번 뿌려 이스라엘 자손의 부정에서 단을 성결케 할 것이요",
+      "source_text_hash": "28750858f9c1ad587c2bb5c74f05f15349b7f22941a967fdb62e177147c54e94",
+      "translation_text_hash": "6c398428451125529a80105d257fb38dbd5cf9c555a9ab701d1fee4d28fd532c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 손가락으로 그 피를 그 위에 일곱번 뿌려 이스라엘 자손의 부정에서 단을 성결케 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "6c398428451125529a80105d257fb38dbd5cf9c555a9ab701d1fee4d28fd532c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:20",
+      "sequence": 3222,
+      "chapter_label": "LEV 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "“When he has finished atoning for the Holy Place, the Tent of Meeting, and the altar, he shall present the live goat.",
+      "ko": "그 지성소와 회막과 단을 위하여 속죄하기를 마친 후에 산 염소를 드리되",
+      "source_text_hash": "c9fda601fd67cfedbb84b3d84a228e4f36aeb5722e368a09589ddf86bf5c9836",
+      "translation_text_hash": "8ef986c93be37e33686238dce988cbf2d07c7c85ddeb4ac50aa81c9db8aa63ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지성소와 회막과 단을 위하여 속죄하기를 마친 후에 산 염소를 드리되"
+      ],
+      "raw_text_hashes": [
+        "8ef986c93be37e33686238dce988cbf2d07c7c85ddeb4ac50aa81c9db8aa63ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:21",
+      "sequence": 3223,
+      "chapter_label": "LEV 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "Aaron shall lay both his hands on the head of the live goat, and confess over him all the iniquities of the children of Israel, and all their transgressions, even all their sins; and he shall put them on the head of the goat, and shall send him away into the wilderness by the hand of a man who is ready.",
+      "ko": "아론은 두 손으로 산 염소의 머리에 안수하여 이스라엘 자손의 모든 불의와 그 범한 모든 죄를 고하고 그 죄를 염소의 머리에 두어 미리 정한 사람에게 맡겨 광야로 보낼찌니",
+      "source_text_hash": "359f1699ed41319978897247a890afad81c41a53142efc53b65f0b079d0a4f59",
+      "translation_text_hash": "782b214b0f4abb8c50ebb5eab8104e7a121366c8ddddb6a580c714e5c4f27417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 두 손으로 산 염소의 머리에 안수하여 이스라엘 자손의 모든 불의와 그 범한 모든 죄를 고하고 그 죄를 염소의 머리에 두어 미리 정한 사람에게 맡겨 광야로 보낼찌니"
+      ],
+      "raw_text_hashes": [
+        "782b214b0f4abb8c50ebb5eab8104e7a121366c8ddddb6a580c714e5c4f27417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:22",
+      "sequence": 3224,
+      "chapter_label": "LEV 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "The goat shall carry all their iniquities on himself to a solitary land, and he shall release the goat in the wilderness.",
+      "ko": "염소가 그들의 모든 불의를 지고 무인지경에 이르거든 그는 그 염소를 광야에 놓을찌니라",
+      "source_text_hash": "0157ca98b22dd2c7400debf23fbc25ce257d9b0528cf6e0909808a8b70b498bc",
+      "translation_text_hash": "46db42c23b902d2275411c9b5b5d82424a506e2511b23baa7a284731a569f8aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염소가 그들의 모든 불의를 지고 무인지경에 이르거든 그는 그 염소를 광야에 놓을찌니라"
+      ],
+      "raw_text_hashes": [
+        "46db42c23b902d2275411c9b5b5d82424a506e2511b23baa7a284731a569f8aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:23",
+      "sequence": 3225,
+      "chapter_label": "LEV 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "“Aaron shall come into the Tent of Meeting, and shall take off the linen garments which he put on when he went into the Holy Place, and shall leave them there.",
+      "ko": "아론은 회막에 들어가서 지성소에 들어갈 때에 입었던 세마포 옷을 벗어 거기 두고",
+      "source_text_hash": "3171cf73a34dab19da2065d0dda3e6bb896005badbd9764c3d6be3d2f45f1a97",
+      "translation_text_hash": "e7a33da36be59303d3e8098d49527f3ee16d4ea1d2f5faf629371ad1b295ab8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 회막에 들어가서 지성소에 들어갈 때에 입었던 세마포 옷을 벗어 거기 두고"
+      ],
+      "raw_text_hashes": [
+        "e7a33da36be59303d3e8098d49527f3ee16d4ea1d2f5faf629371ad1b295ab8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:24",
+      "sequence": 3226,
+      "chapter_label": "LEV 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "Then he shall bathe himself in water in a holy place, put on his garments, and come out and offer his burnt offering and the burnt offering of the people, and make atonement for himself and for the people.",
+      "ko": "거룩한 곳에서 물로 몸을 씻고 자기 옷을 입고 나와서 자기의 번제와 백성의 번제를 드려 자기와 백성을 위하여 속죄하고",
+      "source_text_hash": "ea4c54c2f27bd029f1164fe36548aaa0315c7158e49417084c68231c0061266c",
+      "translation_text_hash": "748688d8faa850be2a31b60bac7da27ffced39e1a3b4557d13133e71dd9d6e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 곳에서 물로 몸을 씻고 자기 옷을 입고 나와서 자기의 번제와 백성의 번제를 드려 자기와 백성을 위하여 속죄하고"
+      ],
+      "raw_text_hashes": [
+        "748688d8faa850be2a31b60bac7da27ffced39e1a3b4557d13133e71dd9d6e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:25",
+      "sequence": 3227,
+      "chapter_label": "LEV 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "The fat of the sin offering he shall burn on the altar.",
+      "ko": "속죄제 희생의 기름을 단에 불사를 것이요",
+      "source_text_hash": "c9ed3e48ca2ec4bde7260496eb4ec288e6326a53c927776d053d948658d0bdad",
+      "translation_text_hash": "49db68f6292285b836a5f7a858eee6e04d93a23a86a4e5192abeb869d4f33368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제 희생의 기름을 단에 불사를 것이요"
+      ],
+      "raw_text_hashes": [
+        "49db68f6292285b836a5f7a858eee6e04d93a23a86a4e5192abeb869d4f33368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:26",
+      "sequence": 3228,
+      "chapter_label": "LEV 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "“He who lets the goat go as the scapegoat shall wash his clothes, and bathe his flesh in water, and afterward he shall come into the camp.",
+      "ko": "염소를 아사셀에게 보낸 자는 옷을 빨고 물로 몸을 씻은 후에 진에 들어올 것이며",
+      "source_text_hash": "996bcf72ec4115fa52367d09aa6758ade975e0cd4e39f8b8b939523495601945",
+      "translation_text_hash": "2c528844d23b678eb08960e66d34d06bb2ebc6e6c7509f8adcdd683decf4e529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염소를 아사셀에게 보낸 자는 옷을 빨고 물로 몸을 씻은 후에 진에 들어올 것이며"
+      ],
+      "raw_text_hashes": [
+        "2c528844d23b678eb08960e66d34d06bb2ebc6e6c7509f8adcdd683decf4e529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:27",
+      "sequence": 3229,
+      "chapter_label": "LEV 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "The bull for the sin offering, and the goat for the sin offering, whose blood was brought in to make atonement in the Holy Place, shall be carried outside the camp; and they shall burn their skins, their flesh, and their dung with fire.",
+      "ko": "속죄제 수송아지와 속죄제 염소의 피를 성소로 들여다가 속죄하였은즉 그 가죽과 고기와 똥을 밖으로 내어다가 불사를 것이요",
+      "source_text_hash": "4354b9079d73860588793054fb996afcd15c6b20ad9577436155d71debe91c9f",
+      "translation_text_hash": "3c14d4f11763b7b7440cee84a5344fa8294b9e24c9e03ee827f925057ee5589b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제 수송아지와 속죄제 염소의 피를 성소로 들여다가 속죄하였은즉 그 가죽과 고기와 똥을 밖으로 내어다가 불사를 것이요"
+      ],
+      "raw_text_hashes": [
+        "3c14d4f11763b7b7440cee84a5344fa8294b9e24c9e03ee827f925057ee5589b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:28",
+      "sequence": 3230,
+      "chapter_label": "LEV 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "He who burns them shall wash his clothes, and bathe his flesh in water, and afterward he shall come into the camp.",
+      "ko": "불사른 자는 옷을 빨고 물로 몸을 씻은 후에 진에 들어올지니라",
+      "source_text_hash": "09b4636b33fe9242132ea25d706503218be5071e9a289553d09f81ecfd1b8397",
+      "translation_text_hash": "758b45b26ab6331f24ffcdbfc15f192a0678ec677888d8d6326a996ca4b46a85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불사른 자는 옷을 빨고 물로 몸을 씻은 후에 진에 들어올지니라"
+      ],
+      "raw_text_hashes": [
+        "758b45b26ab6331f24ffcdbfc15f192a0678ec677888d8d6326a996ca4b46a85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:29",
+      "sequence": 3231,
+      "chapter_label": "LEV 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "“It shall be a statute to you forever: in the seventh month, on the tenth day of the month, you shall afflict your souls, and shall do no kind of work, whether native-born or a stranger who lives as a foreigner among you;",
+      "ko": "너희는 영원히 이 규례를 지킬지니라 칠월 곧 그 달 십일에 너희는 스스로 괴롭게 하고 아무 일도 하지 말되 본토인이든지 너희 중에 우거하는 객이든지 그리하라",
+      "source_text_hash": "b38d1e7277215144bcad6b6c894ef54aad5113f771a3711b6dadbb92d818207c",
+      "translation_text_hash": "3843e09423802a7bf2990f9964fc47e3e70675bc2ad62ffc682ab1fd88fc43e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 영원히 이 규례를 지킬지니라 칠월 곧 그 달 십일에 너희는 스스로 괴롭게 하고 아무 일도 하지 말되 본토인이든지 너희 중에 우거하는 객이든지 그리하라"
+      ],
+      "raw_text_hashes": [
+        "3843e09423802a7bf2990f9964fc47e3e70675bc2ad62ffc682ab1fd88fc43e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:30",
+      "sequence": 3232,
+      "chapter_label": "LEV 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "for on this day shall atonement be made for you, to cleanse you. You shall be clean from all your sins before the LORD.",
+      "ko": "이 날에 너희를 위하여 속죄하여 너희로 정결케 하리니 너희 모든 죄에서 너희가 여호와 앞에 정결하리라",
+      "source_text_hash": "0730f412de1bdaca01f1818b26bd1c1c84b5da397e67dc59b7e7984cc143871c",
+      "translation_text_hash": "e19ba14453d0b5ec1920861ae92cd29cb4639c11ba541c307cdca4c34d485d20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 너희를 위하여 속죄하여 너희로 정결케 하리니 너희 모든 죄에서 너희가 여호와 앞에 정결하리라"
+      ],
+      "raw_text_hashes": [
+        "e19ba14453d0b5ec1920861ae92cd29cb4639c11ba541c307cdca4c34d485d20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:31",
+      "sequence": 3233,
+      "chapter_label": "LEV 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "It is a Sabbath of solemn rest to you, and you shall afflict your souls. It is a statute forever.",
+      "ko": "이는 너희에게 큰 안식일인즉 너희는 스스로 괴롭게 할지니 영원히 지킬 규례라",
+      "source_text_hash": "56fcb26aae7c98240ae433babe7fcd3561a5d5a330d16874e3623aef44d4c8da",
+      "translation_text_hash": "23f08319e8b9b1535a12c1ef852fc51d9ff5e0c784aabcb3617fb678d9cc6570",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희에게 큰 안식일인즉 너희는 스스로 괴롭게 할지니 영원히 지킬 규례라"
+      ],
+      "raw_text_hashes": [
+        "23f08319e8b9b1535a12c1ef852fc51d9ff5e0c784aabcb3617fb678d9cc6570"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:32",
+      "sequence": 3234,
+      "chapter_label": "LEV 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "The priest, who is anointed and who is consecrated to be priest in his father’s place, shall make the atonement, and shall put on the linen garments, even the holy garments.",
+      "ko": "그 기름 부음을 받고 위임되어 그 아비를 대신하여 제사장의 직분을 행하는 제사장은 속죄하되 세마포 옷 곧 성의를 입고",
+      "source_text_hash": "363e5aa974072b95e79170eda51a0ce2da06a6375856d279d81863195f969158",
+      "translation_text_hash": "3dc3637795feac9d28193deeb5ace8082d0160322c988c45bc03c1d3b2c0dfb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기름 부음을 받고 위임되어 그 아비를 대신하여 제사장의 직분을 행하는 제사장은 속죄하되 세마포 옷 곧 성의를 입고"
+      ],
+      "raw_text_hashes": [
+        "3dc3637795feac9d28193deeb5ace8082d0160322c988c45bc03c1d3b2c0dfb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:33",
+      "sequence": 3235,
+      "chapter_label": "LEV 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "Then he shall make atonement for the Holy Sanctuary; and he shall make atonement for the Tent of Meeting and for the altar; and he shall make atonement for the priests and for all the people of the assembly.",
+      "ko": "지성소를 위하여 속죄하며 회막과 단을 위하여 속죄하고 또 제사장들과 백성의 회중을 위하여 속죄할지니",
+      "source_text_hash": "42dd88c211bb25471b4ba68956613f8053ad88e66e8c802f129271937226e569",
+      "translation_text_hash": "f8b53ac3e8df78feff18c8aab1891895972716e865b163f7f1841c871fb65c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지성소를 위하여 속죄하며 회막과 단을 위하여 속죄하고 또 제사장들과 백성의 회중을 위하여 속죄할지니"
+      ],
+      "raw_text_hashes": [
+        "f8b53ac3e8df78feff18c8aab1891895972716e865b163f7f1841c871fb65c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:16:34",
+      "sequence": 3236,
+      "chapter_label": "LEV 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "“This shall be an everlasting statute for you, to make atonement for the children of Israel once in the year because of all their sins.” It was done as the LORD commanded Moses.",
+      "ko": "이는 너희의 영원히 지킬 규례라 이스라엘 자손의 모든 죄를 위하여 일년 일차 속죄할 것이니라 아론이 여호와께서 모세에게 명하신대로 행하니라",
+      "source_text_hash": "502b6b60246a48863d6c8b4b3a9b0e48a01ad4d046e38b7f57b72f465e84e1cc",
+      "translation_text_hash": "5475a5c1556cc4c95d74a5cb038df900ddda15669f2c25124cd94da4e57b298a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희의 영원히 지킬 규례라 이스라엘 자손의 모든 죄를 위하여 일년 일차 속죄할 것이니라 아론이 여호와께서 모세에게 명하신대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "5475a5c1556cc4c95d74a5cb038df900ddda15669f2c25124cd94da4e57b298a"
+      ]
+    }
+  ]
+}

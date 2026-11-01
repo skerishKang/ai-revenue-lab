@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:013",
+  "unit_ordinal": 875,
+  "unit_label": "HOS 13",
+  "book_code": "HOS",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:13:1",
+      "sequence": 22268,
+      "chapter_label": "HOS 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "When Ephraim spoke, there was trembling. He exalted himself in Israel, but when he became guilty through Baal, he died.",
+      "ko": "에브라임이 말을 발하면 사람이 떨었도다 저가 이스라엘 중에서 자기를 높이더니 바알로 인하여 범죄하므로 망하였거늘",
+      "source_text_hash": "01674fc372ea1bc242a09b23d692a0f169a3ffea979e299e066bf34ec89d805f",
+      "translation_text_hash": "cae964db25e8d3ec9f445735e04b0f07650b8de3a3378b8ce1f5690dacee3d8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 말을 발하면 사람이 떨었도다 저가 이스라엘 중에서 자기를 높이더니 바알로 인하여 범죄하므로 망하였거늘"
+      ],
+      "raw_text_hashes": [
+        "cae964db25e8d3ec9f445735e04b0f07650b8de3a3378b8ce1f5690dacee3d8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:2",
+      "sequence": 22269,
+      "chapter_label": "HOS 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Now they sin more and more, and have made themselves molten images of their silver, even idols according to their own understanding, all of them the work of the craftsmen. They say of them, ‘They offer human sacrifice and kiss the calves.’",
+      "ko": "이제도 저희가 더욱 범죄하여 그 은으로 자기를 위하여 우상을 부어 만들되 자기의 공교함을 따라 우상을 만들었으며 그것은 다 장색이 만든 것이어늘 저희가 그것에 대하여 말하기를 제사를 드리는 자는 송아지의 입을 맞출 것이라 하도다",
+      "source_text_hash": "0d863103bd9d271fd3357e1459bcbbb22ab52af547be71d04bec1f3679469571",
+      "translation_text_hash": "8936f71f62eb5876e63ef3fe09aec6612fcab6a555e6b60ce6c708d68d4e263f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제도 저희가 더욱 범죄하여 그 은으로 자기를 위하여 우상을 부어 만들되 자기의 공교함을 따라 우상을 만들었으며 그것은 다 장색이 만든 것이어늘 저희가 그것에 대하여 말하기를 제사를 드리는 자는 송아지의 입을 맞출 것이라 하도다"
+      ],
+      "raw_text_hashes": [
+        "8936f71f62eb5876e63ef3fe09aec6612fcab6a555e6b60ce6c708d68d4e263f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:3",
+      "sequence": 22270,
+      "chapter_label": "HOS 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore they will be like the morning mist, like the dew that passes away early, like the chaff that is driven with the whirlwind out of the threshing floor, and like the smoke out of the chimney.",
+      "ko": "이러므로 저희는 아침 구름 같으며 쉽게 사라지는 이슬 같으며 타작 마당에서 광풍에 날리우는 쭉정이 같으며 굴뚝에서 나가는 연기 같으리라",
+      "source_text_hash": "9d0cb06942783d7528c427ffbddf09028f5522f73792676e830fe44772f4072f",
+      "translation_text_hash": "fd52ce86b978252b6440fe88881c8555f91ab34343acb48200e9ac5fd9c90d3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 저희는 아침 구름 같으며 쉽게 사라지는 이슬 같으며 타작 마당에서 광풍에 날리우는 쭉정이 같으며 굴뚝에서 나가는 연기 같으리라"
+      ],
+      "raw_text_hashes": [
+        "fd52ce86b978252b6440fe88881c8555f91ab34343acb48200e9ac5fd9c90d3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:4",
+      "sequence": 22271,
+      "chapter_label": "HOS 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "“Yet I am the LORD your God from the land of Egypt; and you shall acknowledge no god but me, and besides me there is no savior.",
+      "ko": "그러나 네가 애굽 땅에서 나옴으로부터 나는 네 하나님 여호와라 나 밖에 네가 다른 신을 알지 말것이라 나 외에는 구원자가 없느니라",
+      "source_text_hash": "e4cb533efcec8be085e86a117b4c433019aaea41fb5d74aa0d374af0141c63f6",
+      "translation_text_hash": "a15cee1ccc1b77ba3d8e741358cc61b39c4c753f2ddc299749cab2f2150da001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 애굽 땅에서 나옴으로부터 나는 네 하나님 여호와라 나 밖에 네가 다른 신을 알지 말것이라 나 외에는 구원자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "a15cee1ccc1b77ba3d8e741358cc61b39c4c753f2ddc299749cab2f2150da001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:5",
+      "sequence": 22272,
+      "chapter_label": "HOS 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "I knew you in the wilderness, in the land of great drought.",
+      "ko": "내가 광야 마른 땅에서 너를 권고하였거늘",
+      "source_text_hash": "7f762b99e2558833c3414a7a1122fa74d6eb0f304d90205f1b1cee70fa6a5861",
+      "translation_text_hash": "21f295e2bc9b3345f301809fa57710f4bcc594b1a3f37a416a46cc8c255a7dd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 광야 마른 땅에서 너를 권고하였거늘"
+      ],
+      "raw_text_hashes": [
+        "21f295e2bc9b3345f301809fa57710f4bcc594b1a3f37a416a46cc8c255a7dd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:6",
+      "sequence": 22273,
+      "chapter_label": "HOS 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "According to their pasture, so were they filled; they were filled, and their heart was exalted. Therefore they have forgotten me.",
+      "ko": "저희가 먹이운대로 배부르며 배부름으로 마음이 교만하며 이로 인하여 나를 잊었느니라",
+      "source_text_hash": "78b14fe6e78115ba95768343c264b6680d3e699c30beba34bce404c83c2daf7d",
+      "translation_text_hash": "0b47a2331bf379e8eea2f9b6f3fb07cf677b27f28d2bddd420dd5db818e06649",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹이운대로 배부르며 배부름으로 마음이 교만하며 이로 인하여 나를 잊었느니라"
+      ],
+      "raw_text_hashes": [
+        "0b47a2331bf379e8eea2f9b6f3fb07cf677b27f28d2bddd420dd5db818e06649"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:7",
+      "sequence": 22274,
+      "chapter_label": "HOS 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore I am like a lion to them. Like a leopard, I will lurk by the path.",
+      "ko": "그러므로 내가 저희에게 사자 같고 길 가에서 기다리는 표범 같으니라",
+      "source_text_hash": "492161f7038458c11595031c1083b39622790d6f06dd84b60bf360ba45dbee3a",
+      "translation_text_hash": "a5f6de617c8941aec977c0efc778b538977ac3a24ae6dce75b1c4fbba940d6cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 저희에게 사자 같고 길 가에서 기다리는 표범 같으니라"
+      ],
+      "raw_text_hashes": [
+        "a5f6de617c8941aec977c0efc778b538977ac3a24ae6dce75b1c4fbba940d6cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:8",
+      "sequence": 22275,
+      "chapter_label": "HOS 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "I will meet them like a bear that is bereaved of her cubs, and will tear the covering of their heart. There I will devour them like a lioness. The wild animal will tear them.",
+      "ko": "내가 새끼 잃은 곰 같이 저희를 만나 그 염통 꺼풀을 찢고 거기서 암사자 같이 저희를 삼키리라 들짐승이 저희를 찢으리라",
+      "source_text_hash": "ec3792d740d9ca6a3cf9a88d59922b0a41919eb7b99ddeaf7639669e1b890aba",
+      "translation_text_hash": "5d864569ce469c1c61265fd6890743943e3df8fa1421fa205405bc9524701f55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 새끼 잃은 곰 같이 저희를 만나 그 염통 꺼풀을 찢고 거기서 암사자 같이 저희를 삼키리라 들짐승이 저희를 찢으리라"
+      ],
+      "raw_text_hashes": [
+        "5d864569ce469c1c61265fd6890743943e3df8fa1421fa205405bc9524701f55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:9",
+      "sequence": 22276,
+      "chapter_label": "HOS 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "You are destroyed, Israel, because you are against me, against your helper.",
+      "ko": "이스라엘아 네가 패망하였나니 이는 너를 도와주는 나를 대적함이니라",
+      "source_text_hash": "e38731263b60d1f4a1d5cd92ae53926e9275ea1bf05f5e0ab1bf564525edf628",
+      "translation_text_hash": "8297f3c023592f9c9c88c2d1c4f835cacecf8f18308ded40f06c31af95bdbdc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 네가 패망하였나니 이는 너를 도와주는 나를 대적함이니라"
+      ],
+      "raw_text_hashes": [
+        "8297f3c023592f9c9c88c2d1c4f835cacecf8f18308ded40f06c31af95bdbdc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:10",
+      "sequence": 22277,
+      "chapter_label": "HOS 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Where is your king now, that he may save you in all your cities? And your judges, of whom you said, ‘Give me a king and princes’?",
+      "ko": "전에 네가 이르기를 내게 왕과 방백들을 주소서 하였느니라 네 모든 성읍에서 너를 구원할 자 네 왕이 이제 어디 있으며 네 재판장들이 어디 있느냐",
+      "source_text_hash": "043f432a5d681bb8ac2a3691cbff1ff37c783c23411330c5d762d9d80e97817b",
+      "translation_text_hash": "ecb1b603755bd0f54f4f2d16e38cef350f02d715d2199fdf90f32b5f1426583a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 네가 이르기를 내게 왕과 방백들을 주소서 하였느니라 네 모든 성읍에서 너를 구원할 자 네 왕이 이제 어디 있으며 네 재판장들이 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "ecb1b603755bd0f54f4f2d16e38cef350f02d715d2199fdf90f32b5f1426583a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:11",
+      "sequence": 22278,
+      "chapter_label": "HOS 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "I have given you a king in my anger, and have taken him away in my wrath.",
+      "ko": "내가 분노하므로 네게 왕을 주고 진노하므로 폐하였노라",
+      "source_text_hash": "c50679626b12239723fc7cf5c70eeb74037b6c8adb7a983a978788785e019077",
+      "translation_text_hash": "9f76da5fa40e466e72292263117ebfb9c4335e8f7c8ffd1d3a002f019e0a2131",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 분노하므로 네게 왕을 주고 진노하므로 폐하였노라"
+      ],
+      "raw_text_hashes": [
+        "9f76da5fa40e466e72292263117ebfb9c4335e8f7c8ffd1d3a002f019e0a2131"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:12",
+      "sequence": 22279,
+      "chapter_label": "HOS 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "The guilt of Ephraim is stored up. His sin is stored up.",
+      "ko": "에브라임의 불의가 봉함되었고 그 죄가 저장되었나니",
+      "source_text_hash": "c16b0f9b5a294511e9f574bb8124381afc8fe00e7d0399b16845fad89a1812ff",
+      "translation_text_hash": "b7c3a8ece144f9dfe1daca15756781c3aa89f9300095aeb655fce2ec9a2ea26d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 불의가 봉함되었고 그 죄가 저장되었나니"
+      ],
+      "raw_text_hashes": [
+        "b7c3a8ece144f9dfe1daca15756781c3aa89f9300095aeb655fce2ec9a2ea26d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:13",
+      "sequence": 22280,
+      "chapter_label": "HOS 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "The sorrows of a travailing woman will come on him. He is an unwise son, for when it is time, he doesn’t come to the opening of the womb.",
+      "ko": "해산하는 여인의 어려움이 저에게 임하리라 저는 어리석은 자식이로다 때가 임하였나니 산문에서 지체할 것이 아니니라",
+      "source_text_hash": "94c89112d7cd75ffbdf577e0bb8eb033e16feea7b9a2267e9570ac2e13a599d1",
+      "translation_text_hash": "3cf3f8dce4bc5dc7cbd6f09844412d1d5000ff9b0a25b4a60020360ca9b598d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해산하는 여인의 어려움이 저에게 임하리라 저는 어리석은 자식이로다 때가 임하였나니 산문에서 지체할 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "3cf3f8dce4bc5dc7cbd6f09844412d1d5000ff9b0a25b4a60020360ca9b598d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:14",
+      "sequence": 22281,
+      "chapter_label": "HOS 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "I will ransom them from the power of Sheol. I will redeem them from death! Death, where are your plagues? Sheol, where is your destruction? “Compassion will be hidden from my eyes.",
+      "ko": "내가 저희를 음부의 권세에서 속량하며 사망에서 구속하리니 사망아 네 재앙이 어디 있느냐 음부야 네 멸망이 어디 있느냐 뉘우침이 내 목전에 숨으리라",
+      "source_text_hash": "9d178cd62c74da5930009d8f3d68398090dc5caf3c1923dcb201bd6ad3557844",
+      "translation_text_hash": "0bacb23665996c7074f9599d01a12c22a338525e9e5d0ec5a1af4d56d8c3fa8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 음부의 권세에서 속량하며 사망에서 구속하리니 사망아 네 재앙이 어디 있느냐 음부야 네 멸망이 어디 있느냐 뉘우침이 내 목전에 숨으리라"
+      ],
+      "raw_text_hashes": [
+        "0bacb23665996c7074f9599d01a12c22a338525e9e5d0ec5a1af4d56d8c3fa8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:15",
+      "sequence": 22282,
+      "chapter_label": "HOS 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Though he is fruitful among his brothers, an east wind will come, the breath of the LORD coming up from the wilderness; and his spring will become dry, and his fountain will be dried up. He will plunder the storehouse of treasure.",
+      "ko": "저가 비록 형제 중에서 결실하나 동풍이 오리니 곧 광야에서 일어나는 여호와의 바람이라 그 근원이 마르며 그 샘이 마르고 그 적축한바 모든 보배의 그릇이 약탈되리로다",
+      "source_text_hash": "56ebc629ef9688846c3a00c8a6e52e27e350f0020e978716f67a7bd2ac6918de",
+      "translation_text_hash": "08681cd442e3d8e72ae06fc7a459de8a8dd927c43b00516e750729230839ac75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 비록 형제 중에서 결실하나 동풍이 오리니 곧 광야에서 일어나는 여호와의 바람이라 그 근원이 마르며 그 샘이 마르고 그 적축한바 모든 보배의 그릇이 약탈되리로다"
+      ],
+      "raw_text_hashes": [
+        "08681cd442e3d8e72ae06fc7a459de8a8dd927c43b00516e750729230839ac75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:13:16",
+      "sequence": 22283,
+      "chapter_label": "HOS 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "HOS",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Samaria will bear her guilt, for she has rebelled against her God. They will fall by the sword. Their infants will be dashed in pieces, and their pregnant women will be ripped open.”",
+      "ko": "사마리아가 그 하나님을 배반하였으므로 형벌을 당하여 칼에 엎드러질 것이요 그 어린 아이는 부숴뜨리우며 그 아이 밴 여인은 배가 갈리우리라",
+      "source_text_hash": "a6cf5aed737cb8a988613187f845c970224776a28ce2aecac0759e881e456472",
+      "translation_text_hash": "acee26cfbf56ce0ead38d2a699b635b9353559f20c163a868c6af7f4af6b35c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아가 그 하나님을 배반하였으므로 형벌을 당하여 칼에 엎드러질 것이요 그 어린 아이는 부숴뜨리우며 그 아이 밴 여인은 배가 갈리우리라"
+      ],
+      "raw_text_hashes": [
+        "acee26cfbf56ce0ead38d2a699b635b9353559f20c163a868c6af7f4af6b35c0"
+      ]
+    }
+  ]
+}
