@@ -42,7 +42,7 @@ SEND·외부 서비스 기록 변경은 폴더 위임에서 제외한다.
 
 ## 반영과 검증
 
-운영 반영 레인은 `081_pc_delegations.sql` 적용과 Chat·P01 코드 반영이 필요하다.
+운영 반영 레인은 `084_pc_delegations.sql` 적용과 Chat·P01 코드 반영이 필요하다.
 이 작업에서는 마이그레이션 실행·배포·PR 생성을 하지 않았다.
 `d1_sqlite.py`와 `local_cpython.py`는 수정하지 않았다.
 
@@ -83,7 +83,7 @@ UI는 실제 JavaScript DOM harness로 저장·목록·끄기·로그인 전환�
 - `apps/padiem-chat/app/orchestration_routes.py`
 - `apps/padiem-chat/app/pc_delegation_routes.py`
 - `apps/padiem-chat/app/pc_delegation_store.py`
-- `apps/padiem-chat/migrations/081_pc_delegations.sql`
+- `apps/padiem-chat/migrations/084_pc_delegations.sql`
 - `apps/padiem-chat/static/index.html`
 - `apps/padiem-chat/static/locale.js`
 - `apps/padiem-chat/static/pc-delegation-settings.css`

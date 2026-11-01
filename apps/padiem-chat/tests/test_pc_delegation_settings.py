@@ -14,7 +14,7 @@ from app.pc_delegation_store import D1PcDelegationStore, PcDelegationStoreError
 from test_5222_account_model_selection import build_app, client_for, seed_db, session, BASE
 
 
-MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "081_pc_delegations.sql"
+MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "084_pc_delegations.sql"
 RULE = {"id": "rule-a", "device_id": "node/pc-a", "folder": "C:/Documents",
         "actions": ["write", "move"], "mode": "allow", "enabled": True}
 POLICY = {"version": 1, "rules": [RULE]}
