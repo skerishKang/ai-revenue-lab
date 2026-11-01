@@ -150,8 +150,8 @@ def test_responses_never_contain_the_sync_secret(api):
 
 
 def test_deeply_nested_payload_is_bounded_not_a_crash(api):
-    """JSON 깊이 폭탄: RecursionError가 미처리되면 500(결함 — xfail strict로
-    관측, 수정은 CTO 배정). 부분 쓰기는 어느 쪽이든 없다."""
+    """JSON 깊이 폭탄: RecursionError도 400 invalid_records로 거절한다(D2 수정).
+    부분 쓰기는 없다."""
     client, connection = api
     depth = 100_000
     body = (b'{"records":[{"record_id":"deep","book_id":"b","locator":"A.1",'
@@ -164,15 +164,7 @@ def test_deeply_nested_payload_is_bounded_not_a_crash(api):
                                   db_binding=SqliteD1(connection), clock=lambda: NOW)
     with TestClient(app, raise_server_exceptions=False) as client:
         response = client.post(RECORDS_PATH, content=body, headers=headers)
-    assert response.status_code == 400, response.status_code  # 결함: 실제 500
+    assert response.status_code == 400, response.status_code
     assert connection.execute("SELECT count(*) FROM bookai_records").fetchone()[0] == 0
 
 
-test_deeply_nested_payload_is_bounded_not_a_crash = pytest.mark.xfail(
-    reason=(
-        "결함 D2(낮음): 깊은 중첩 payload의 json.loads가 RecursionError를 던지고 "
-        "bookai_records.py:42의 except (ValueError, UnicodeError)가 이를 놓쳐 미처리 "
-        "500이 된다(부분 쓰기는 없다). 올바른 계약은 400 invalid_records. 위치: "
-        " apps/padiem-chat/app/bookai_records.py:42(json.loads 호출부의 예외 범위). "
-        " 수정은 CTO가 다른 레인에 배정."
-    ), strict=True)(test_deeply_nested_payload_is_bounded_not_a_crash)
