@@ -486,6 +486,26 @@ async def health(request: Request) -> JSONResponse:
     })
 
 
+class CachedStaticFiles(StaticFiles):
+    """Static answers carry a short fresh window plus background revalidation.
+
+    The static URLs are not content-versioned, so a long immutable lifetime
+    would pin a stale UI after a deploy. 300s keeps a session's repeat
+    navigations off the network (the ~150-request first-load spike) while
+    stale-while-revalidate serves the last good copy instantly and refreshes
+    it in the background. HTML is never cached: it must pick up a new deploy.
+    """
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        content_type = response.headers.get("content-type", "")
+        if response.status_code == 200 and "text/html" not in content_type:
+            response.headers["cache-control"] = (
+                "private, max-age=300, stale-while-revalidate=604800"
+            )
+        return response
+
+
 def create_app(
     settings: Settings | None = None,
     transport=None,
@@ -1013,7 +1033,14 @@ def create_app(
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
         Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
         Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"]),
-        Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
+        # Static answers carry a short fresh window plus background
+        # revalidation: the static URLs are not content-versioned, so a long
+        # immutable lifetime would pin a stale UI after a deploy. 300s keeps a
+        # session's repeat navigations off the network (the ~150-request
+        # first-load spike) while stale-while-revalidate serves the last good
+        # copy instantly and refreshes it in the background. HTML is never
+        # cached: it must pick up a new deploy.
+        Mount("/", app=CachedStaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all
     # StaticFiles Mount, solely when the server provided canonical private
