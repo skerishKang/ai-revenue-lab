@@ -1657,6 +1657,7 @@ class Default(WorkerEntrypoint):
         # queue declares - dispatch, pairing directory, presence receipts. The
         # conversation rows, projects and R2 originals stay exactly here.
         queue_client = build_queue_client(self.env)
+        worker_app.state.queue_client = queue_client
         if queue_client is not None:
             worker_app.state.pc_device_pairing_store = (
                 QueueBackedPairingStore(queue_client))

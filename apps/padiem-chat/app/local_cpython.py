@@ -375,6 +375,9 @@ def build_app():
     app.state.pdfmd_com2_ready = host_flag and importlib.util.find_spec("pypdf") is not None
 
     queue_client = build_queue_client(_queue_env())
+    # #6460 step 2: the desktop lane deposits a one-shot typed value through
+    # this same declared store door, so the value never enters the row.
+    app.state.queue_client = queue_client
     if queue_client is not None:
         # #6617: the queue client is pooled for the life of the host.
         app.router.on_shutdown.append(queue_client.aclose)
