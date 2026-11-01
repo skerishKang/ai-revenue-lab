@@ -297,6 +297,31 @@ def build_app():
                                   link_ttl_seconds=link_seconds) if cache_seconds else None
     )
 
+    # #5441 / B66 alerts: the transactional-mail channel on the CPython host.
+    # The Worker resolves these names from trusted bindings; here they come from
+    # systemd's EnvironmentFile (app/mail_channel_env.py keeps the same
+    # reuse-first order). An absent credential stays absent: the reset route
+    # answers 503 and signup alerts stay queued, exactly as before this wiring.
+    from .mail_channel_env import resolve_b66_channel, resolve_mail_channel
+    from .password_reset_delivery import build_email_delivery
+
+    mail_api_key, mail_from = resolve_mail_channel(os.environ)
+    app.state.password_reset_delivery = build_email_delivery(
+        resend_api_key=mail_api_key,
+        email_from=mail_from,
+    )
+    b66_member_store = getattr(app.state, "b66_member_admin_store", None)
+    if b66_member_store is not None:
+        from .b66_signup_notifications import B66SignupNotifier
+
+        b66_notifier = B66SignupNotifier(
+            b66_member_store,
+            resend_api_key=mail_api_key,
+            email_from=mail_from,
+            **resolve_b66_channel(os.environ),
+        )
+        app.state.b66_signup_notifier = b66_notifier if b66_notifier.channels else None
+
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.
     # Caching (2026-11-01, Owner-approved): the entry answers no-cache so the
