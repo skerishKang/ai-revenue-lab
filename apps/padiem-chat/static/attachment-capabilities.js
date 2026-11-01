@@ -50,6 +50,8 @@
       format.mediaTypes.forEach((value) => acceptedTokens.push(value));
       format.extensions.forEach((value) => acceptedTokens.push(value));
     });
+    // Let an older HWP be selected so the user receives the HWPX guidance.
+    acceptedTokens.push(".hwp");
     return Array.from(new Set(acceptedTokens)).join(",");
   }
 

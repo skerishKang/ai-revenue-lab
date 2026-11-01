@@ -41,6 +41,8 @@
         // Attachment validation currently shares invalid_request. Match only
         // known fixed messages and return local text, never arbitrary server text.
         switch (data?.error?.message) {
+          case "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요.":
+            return "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요.";
           case "암호화된 DOCX는 현재 첨부할 수 없습니다.":
             return "암호화된 DOCX는 현재 첨부할 수 없습니다.";
           case "암호화된 PDF는 현재 첨부할 수 없습니다.":

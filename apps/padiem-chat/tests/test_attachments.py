@@ -269,3 +269,53 @@ def test_phase1_styles_remain_byte_equal_and_attachment_css_is_additive():
     html = (root / "static/index.html").read_text(encoding="utf-8")
     assert '<link rel="stylesheet" href="./attachments.css" />' in html
     assert '<link rel="stylesheet" href="./documents.css" />' in html
+
+
+
+def test_hwp_upload_guidance_is_shown_by_real_document_selection():
+    import subprocess
+    source = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+    start = source.index("  async function readDocumentFile(file) {")
+    end = source.index("  async function selectImage(file)", start)
+    fn = source[start:end]
+    script = """
+const assert = require('node:assert/strict');
+const extensionOf = name => String(name || '').toLowerCase().slice(String(name || '').lastIndexOf('.'));
+const documentMediaType = () => null;
+const attachmentCopy = () => ({unsupportedFormat:'unsupported'});
+""" + fn + """
+(async () => {
+  for (const name of ['old.hwp', 'OLD.HWP']) {
+    await assert.rejects(readDocumentFile({name}), e =>
+      e.message === '한글에서 HWPX로 저장한 뒤 올려 주세요.' && e.uiMessageSafe === true);
+  }
+  await assert.rejects(readDocumentFile({name:'other.xyz'}), /unsupported/);
+})().catch(e => { console.error(e); process.exit(1); });
+"""
+    result = subprocess.run(["node", "-e", script], capture_output=True, text=True, encoding="utf-8")
+    assert result.returncode == 0, result.stderr
+
+
+def test_visible_open_source_notice_links_renderer_source_and_agpl():
+    root = Path(__file__).resolve().parents[1]
+    index = (root / "static" / "index.html").read_text(encoding="utf-8")
+    page = (root / "static" / "third-party-licenses.html").read_text(encoding="utf-8")
+    notice = (root.parent / "b66-pdf-renderer" / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
+    assert 'href="./third-party-licenses.html"' in index
+    for token in ("PyMuPDF", "AGPL-3.0", "https://github.com/pymupdf/PyMuPDF",
+                  "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer"):
+        assert token in page
+    assert "/third-party-licenses.html" in notice
+
+
+
+def test_picker_accepts_legacy_hwp_only_to_offer_hwpx_guidance():
+    import subprocess
+    static = Path(__file__).resolve().parents[1] / "static"
+    script = "global.window=globalThis;\n" + (static / "attachment-capabilities.js").read_text(encoding="utf-8") + """
+const assert = require('node:assert/strict');
+assert(PadiemAttachmentCapabilities.accept.split(',').includes('.hwp'));
+assert(!PadiemAttachmentCapabilities.copy('ko').documentFormats.includes('HWP'));
+"""
+    result = subprocess.run(["node", "-e", script], capture_output=True, text=True, encoding="utf-8")
+    assert result.returncode == 0, result.stderr

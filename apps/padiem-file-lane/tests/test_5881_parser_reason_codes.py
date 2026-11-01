@@ -181,11 +181,11 @@ def test_chat_guidance_picks_the_encrypted_copy_for_the_real_core_code():
     assert refused.value.code == "ooxml_encrypted"
 
     translated = binary_documents._translate_binary_error(refused.value, DOCX_MIME)
-    assert str(translated) == "암호화된 DOCX는 현재 첨부할 수 없습니다."
+    assert str(translated) == "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요."
 
     with pytest.raises(DocumentNormalizationError) as locked:
         extract_binary_document(name="file.docx", media_type=DOCX_MIME,
                                 payload=_docx_local_header_encrypted())
     assert locked.value.code == "ooxml_encrypted"
     assert str(binary_documents._translate_binary_error(locked.value, DOCX_MIME)) == (
-        "암호화된 DOCX는 현재 첨부할 수 없습니다.")
+        "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요.")

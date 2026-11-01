@@ -545,3 +545,15 @@ def test_com2_pdfmd_missing_dependency_keeps_writes_closed(staging_host_env, mon
     app = build_app()
     assert app.state.pdfmd_com2_ready is False
     assert document_convert_routes.PDFMD_NEW_WORK_DISABLED is True
+
+
+
+def test_open_source_notice_is_reachable_from_chat(local_client):
+    index = local_client.get("/")
+    assert index.status_code == 200
+    assert 'href="./third-party-licenses.html"' in index.text
+    notice = local_client.get("/third-party-licenses.html")
+    assert notice.status_code == 200
+    assert "PyMuPDF" in notice.text
+    assert "AGPL-3.0" in notice.text
+    assert "https://github.com/pymupdf/PyMuPDF" in notice.text
