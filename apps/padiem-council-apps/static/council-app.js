@@ -29,11 +29,16 @@
  * three tools never reference each other, so each can ship as its own
  * product later; the entry page merely hosts all three.
  *
- * SNS photo storage: the #5728 composition contract (LOCAL 1) already
- * lives on main (PR #5924). This module deliberately does NOT copy it —
- * text drafts only. Connecting the stored-photo composition through an
- * adapter is separate follow-up work; the seam is this module's sns
- * builder plus the README boundary note.
+ * Storage (#A): every tool saves into ONE pinned project ("의원3종", created
+ * once when genuinely absent and never after a failed read), stamps the
+ * doc_kind its screen saved, and lists only its own kind. A name collision
+ * asks 새 이름/덮어쓰기 through the same project-file contract as the Chat
+ * util, and a save failure says the server's sentence.
+ *
+ * SNS photo storage follows the same #5728 composition contract: originals
+ * upload through the project-file channel after the browser shrinks them
+ * (static/photo-resize.js ships inside this app), and one version-2 roster
+ * JSON — updated in place — carries order, positions and the saved draft.
  */
 (() => {
   "use strict";
@@ -66,6 +71,31 @@
     return COUNTRY_INSTRUCTIONS[country] || "";
   }
 
+  // ── 생성 실패 문구 ────────────────────────────────────────────────────────
+  // Same local copy as util-menu.js (#5783/#6199): a generation failure is
+  // said in Korean, and the sentence names what the person can do next. The
+  // server's own free-text message is never echoed as if it were a product
+  // sentence.
+  const GEN_ERROR_COPY = Object.freeze({
+    401: "로그인이 필요합니다. 다시 로그인해 주세요.",
+    403: "이 계정에서는 할 수 없는 요청입니다. 로그인 상태를 확인해 주세요.",
+    429: "요청이 잠시 많습니다. 조금 뒤에 다시 시도해 주세요.",
+    500: "만드는 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.",
+    502: "서버 연결이 잠시 끊겼습니다. 잠시 후 다시 시도해 주세요.",
+    503: "서버가 잠시 과부하 상태입니다. 잠시 후 다시 시도해 주세요.",
+    504: "서버 응답이 늦어집니다. 잠시 후 다시 시도해 주세요.",
+  });
+  const GEN_ERROR_FALLBACK = "생성에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+  const GEN_OFFLINE_COPY = "인터넷 연결을 확인해 주세요.";
+  const GEN_TIMEOUT_MS = 120000;
+
+  function generationFailureText(error) {
+    if (error && error.emptyResult) return "생성 실패: 답을 받지 못했습니다. 다시 시도해 주세요.";
+    const known = error && error.status ? GEN_ERROR_COPY[error.status] : null;
+    const message = known || (error && error.message === GEN_OFFLINE_COPY ? GEN_OFFLINE_COPY : GEN_ERROR_FALLBACK);
+    return "생성 실패: " + message;
+  }
+
   async function apiChat(prompt, util) {
     // Same rule as util-menu.js apiChat / app.js selectedProductTier().
     // The util scope (PR #5916 contract) is the request's routing label:
@@ -79,56 +109,223 @@
     const content = prompt + countryInstruction(country);
     const payload = { messages: [{ role: "user", content: content }], tier };
     if (util) payload.util = util;
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      if (res.status === 401) markSessionLost();
-      const message = data?.error?.message;
-      throw new Error(typeof message === "string" && message ? message : "HTTP " + res.status);
+    // util-menu.js waits 120s and then aborts. A stalled upstream must end as
+    // one Korean sentence, not as a page that never answers.
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), GEN_TIMEOUT_MS) : null;
+    function emptyResult() {
+      const error = new Error("empty result");
+      error.emptyResult = true;
+      return error;
     }
-    const data = await res.json();
-    return (data && data.answer) ? data.answer : (data && data.message ? data.message : JSON.stringify(data));
+    try {
+      let res;
+      try {
+        res = await fetch("/api/chat", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          ...(controller ? { signal: controller.signal } : {}),
+        });
+      } catch (_) {
+        throw new Error(GEN_OFFLINE_COPY);
+      }
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        if (res.status === 401) markSessionLost();
+        const error = new Error(GEN_ERROR_COPY[res.status] || GEN_ERROR_FALLBACK);
+        error.status = res.status;
+        error.code = typeof data?.error?.code === "string" ? data.error.code : "";
+        if (error.code === "empty_upstream_answer") error.emptyResult = true;
+        throw error;
+      }
+      const data = await res.json().catch(() => null);
+      // An empty or non-string answer is a failed generation, never a field
+      // that shows the raw JSON body.
+      if (!data || typeof data.answer !== "string" || !data.answer.trim()) throw emptyResult();
+      return data.answer;
+    } finally {
+      if (timer !== null) clearTimeout(timer);
+    }
   }
+
+  // ── 저장 프로젝트: "의원3종" 하나 ────────────────────────────────────────
+  // The three tools share ONE project. A save must never land in whatever
+  // project happens to be first: the pinned name is looked up, created once
+  // when it is genuinely absent, and remembered. A read that failed is not
+  // "there are no projects", so no create follows it.
+  const COUNCIL_PROJECT_NAME = "의원3종";
 
   async function getProjects() {
-    const res = await fetch("/api/projects", { credentials: "include" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data && data.projects) ? data.projects : [];
+    let res;
+    try { res = await fetch("/api/projects", { credentials: "include" }); } catch (_) { return null; }
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && Array.isArray(data.projects) ? data.projects : null;
   }
 
-  async function ensureProject() {
-    const projects = await getProjects();
-    if (projects.length) return projects[0].id;
-    const res = await fetch("/api/projects", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "내 프로젝트" }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data && data.project ? data.project.id : null;
+  const councilProject = (() => {
+    let currentPid = null;
+    let pending = null;
+    async function resolve() {
+      const projects = await getProjects();
+      if (projects === null) return null;
+      const pinned = projects.find((p) => p && p.name === COUNCIL_PROJECT_NAME);
+      if (pinned && pinned.id) return pinned.id;
+      let res;
+      try {
+        res = await fetch("/api/projects", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: COUNCIL_PROJECT_NAME }),
+        });
+      } catch (_) { return null; }
+      if (!res.ok) return null;
+      const data = await res.json().catch(() => null);
+      return data && data.project && data.project.id ? data.project.id : null;
+    }
+    return {
+      get() { return currentPid; },
+      ensure() {
+        if (currentPid) return Promise.resolve(currentPid);
+        // One shared promise for all three tools: opening two panels must not
+        // race two GETs (or two creates) for the same project.
+        if (!pending) {
+          pending = resolve().then(
+            (pid) => { currentPid = pid || null; if (!pid) pending = null; return pid; },
+            () => { pending = null; return null; },
+          );
+        }
+        return pending;
+      },
+    };
+  })();
+
+  // ── 저장 결과: 성공·충돌·실패를 구분한다 ──────────────────────────────────
+  // The same shipped contract as util-menu.js (#5731): a stored writing
+  // carries the kind its screen saved it as, a name already used by the same
+  // kind comes back as 409 with the existing file, and the owner chooses
+  // between a new name (default) and an overwrite that keeps the displaced
+  // body as a version.
+  async function saveProjectFile(pid, name, text, mediaType, docKind) {
+    const body = { name: name, media_type: mediaType || "text/plain", text: text };
+    if (docKind) body.doc_kind = docKind;
+    if (currentCountry() !== "kr") body.country = currentCountry();
+    let res;
+    try {
+      res = await fetch("/api/projects/" + pid + "/files", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (_) {
+      return { failure: { status: 0 } };
+    }
+    if (res.status === 409) {
+      const body = await res.json().catch(() => null);
+      const existing = body && body.error && body.error.existing;
+      return existing && existing.id ? { conflict: existing } : { failure: { status: res.status } };
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      const message = body && body.error && typeof body.error.message === "string" ? body.error.message : "";
+      const size = res.status === 422 && !!(body && body.error && body.error.code === "project_file_limit");
+      return { failure: { status: res.status, size: size, message: message } };
+    }
+    const data = await res.json().catch(() => null);
+    return data && data.file ? { file: data.file } : { failure: { status: res.status } };
   }
 
-  async function saveProjectFile(pid, name, text, mediaType) {
-    const res = await fetch("/api/projects/" + pid + "/files", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.assign(
-        { name: name, media_type: mediaType || "text/plain", text: text },
-        currentCountry() === "kr" ? {} : { country: currentCountry() },
-      )),
+  async function overwriteProjectFile(pid, fileId, text, docKind) {
+    const body = { text: text };
+    if (docKind) body.doc_kind = docKind;
+    let res;
+    try {
+      res = await fetch(
+        "/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(fileId),
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
+    } catch (_) {
+      return { failure: { status: 0 } };
+    }
+    if (!res.ok) return { failure: { status: res.status } };
+    const data = await res.json().catch(() => null);
+    return data && data.file ? { file: data.file, previous: data.previous || null } : { failure: { status: res.status } };
+  }
+
+  /** `행사.txt` -> `행사 (2).txt`: the offered default is a NEW file, never a silent overwrite. */
+  function nextFreeName(name, taken) {
+    const used = new Set((taken || []).map((item) => String(item || "")));
+    if (!used.has(name)) return name;
+    const stem = name.replace(/\.[^.]+$/, "");
+    const ext = (name.match(/\.[^.]+$/) || [""])[0];
+    let n = 2;
+    while (used.has(stem + " (" + n + ")" + ext)) n += 1;
+    return stem + " (" + n + ")" + ext;
+  }
+
+  function askSaveChoice(anchor, name, suggested) {
+    return new Promise((resolve) => {
+      const box = el("div", "council-save-choice");
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", "같은 이름의 글이 이미 있습니다");
+      box.appendChild(el("p", "council-save-choice-text", "같은 이름의 글이 이미 있습니다: " + name));
+      const asNew = el("button", "council-save-as-new", "새 이름으로 저장 (" + suggested + ")");
+      asNew.type = "button";
+      const overwrite = el("button", "council-save-overwrite", "덮어쓰기 (이전 내용은 버전으로 남김)");
+      overwrite.type = "button";
+      const finish = (choice) => {
+        if (box.parentNode) box.parentNode.removeChild(box);
+        resolve(choice);
+      };
+      asNew.addEventListener("click", () => finish("new"));
+      overwrite.addEventListener("click", () => finish("overwrite"));
+      box.append(asNew, overwrite);
+      const hostNode = anchor && anchor.parentNode ? anchor.parentNode : anchor;
+      if (hostNode && typeof hostNode.appendChild === "function") hostNode.appendChild(box);
+      else resolve(null);
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data && data.file ? data.file : null;
+  }
+
+  function saveFailureText(failure) {
+    if (!failure) return "저장하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    // #5783: a server sentence about why nothing was stored is shown as-is
+    // only when the server actually said one; otherwise the local copy names
+    // the concrete condition.
+    if (failure.message) return "저장하지 못했습니다: " + failure.message;
+    if (failure.status === 401) return "로그인이 필요합니다. 다시 로그인해 주세요.";
+    if (failure.status === 403 || failure.status === 404) return "이 글을 저장할 권한이 없습니다.";
+    if (failure.size || failure.status === 413) return "파일이 너무 커서 저장하지 못했습니다.";
+    return "저장하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  }
+
+  async function saveCouncilText(options) {
+    if (!options.pid) return { none: true };
+    const first = await saveProjectFile(
+      options.pid, options.name, options.text, "text/plain", options.kind,
+    );
+    if (first.failure) return first;
+    if (!first.conflict) return { file: first.file };
+    const files = await listProjectFiles(options.pid);
+    const suggested = nextFreeName(options.name, files.map((f) => f.name));
+    const choice = await askSaveChoice(options.anchor, options.name, suggested);
+    if (choice === "overwrite") {
+      const replaced = await overwriteProjectFile(options.pid, first.conflict.id, options.text, options.kind);
+      return replaced.failure ? replaced : { file: replaced.file };
+    }
+    if (choice === "new") {
+      const second = await saveProjectFile(options.pid, suggested, options.text, "text/plain", options.kind);
+      return second.failure ? second : { file: second.file };
+    }
+    return { none: true };
   }
 
   async function listProjectFiles(pid) {
@@ -165,30 +362,20 @@
     return n;
   }
 
-  // Project id per tool module; each module keeps its own handle exactly like
-  // the original per-tool closures, so tools stay independent.
-  function projectHandle() {
-    let currentPid = null;
-    return {
-      get() { return currentPid; },
-      async ensure() { if (!currentPid) currentPid = await ensureProject(); return currentPid; },
-    };
-  }
-
   // #5728 binary photo upload — the SAME project-file channel as text
-  // drafts (original bytes, owner/project scoped). Ported from the merged
-  // #5924 contract so the council app's SNS composition stores real files,
-  // not copies of LOCAL 1 code paths.
-  async function uploadProjectImage(pid, file) {
+  // drafts (original bytes, owner/project scoped). The browser shrinks a big
+  // photo BEFORE this call (static/photo-resize.js), so the uploaded bytes
+  // keep the picture while staying inside the Worker's decode budget.
+  async function uploadProjectImage(pid, blob, name, type) {
     const res = await fetch("/api/projects/" + pid + "/files", {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/octet-stream",
-        "X-Padiem-Filename": encodeURIComponent(file.name),
-        "X-Padiem-Media-Type": file.type,
+        "X-Padiem-Filename": encodeURIComponent(name),
+        "X-Padiem-Media-Type": type || "application/octet-stream",
       },
-      body: file,
+      body: blob,
     });
     if (!res.ok) return null;
     const data = await res.json().catch(() => null);
@@ -244,12 +431,140 @@
     const name = storedName(file);
     return name.endsWith(".txt") && !isStoredBook(file) && !isSnsPostFile(file);
   }
+  // #5731: a stored writing carries the kind its screen saved it as, so each
+  // list asks for its own kind instead of reading every .txt in the project.
+  // Documents stored before a kind was recorded keep the name rule above.
+  function hasDocKind(file, kind) {
+    return String((file && file.doc_kind) || "") === kind;
+  }
+  function isSpeechFile(file) {
+    return hasDocKind(file, "speech") || (!(file && file.doc_kind) && isManuscriptFile(file));
+  }
+  function isMeetingFile(file) {
+    return hasDocKind(file, "meeting") || (!(file && file.doc_kind) && isManuscriptFile(file));
+  }
+  function isBookFile(file) {
+    return hasDocKind(file, "book") || (!(file && file.doc_kind) && isStoredBook(file));
+  }
   /** The book file name comes from the draft's own first line, so an edited
    *  title re-saves under the edited name; unsafe characters are dropped. */
   function bookFileName(text) {
     const firstLine = String(text || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
     const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
     return BOOK_PREFIX + (safe || "제목 미정") + ".txt";
+  }
+
+  // ── 한 줄 안내와 결과 상자 ────────────────────────────────────────────────
+  // "생성 중"과 실패 문구는 결과 본문이 아니라 그 위의 안내줄에 산다. A failure
+  // therefore never looks like a draft, and the save button is disabled while
+  // the line is not a success.
+  function noticeLine(id) {
+    const line = el("p", "council-tool-notice");
+    line.id = id;
+    line.hidden = true;
+    line.setAttribute("role", "status");
+    line.setAttribute("aria-live", "polite");
+    return line;
+  }
+  function setNotice(line, text, tone) {
+    if (!line) return;
+    line.textContent = text || "";
+    line.hidden = !text;
+    if (text && tone) line.dataset.tone = tone;
+    else if (line.dataset) delete line.dataset.tone;
+  }
+  // 복사(주 버튼)·저장·다운로드는 모두 결과 본문 바로 아래 한 줄이다.
+  function resultPanel(options) {
+    const result = el("div", "council-result");
+    result.id = options.id;
+    result.hidden = true;
+    const heading = options.titleNode || (options.title ? el("h3", null, options.title) : null);
+    if (heading) result.appendChild(heading);
+    const output = document.createElement("textarea");
+    output.id = options.outputId;
+    output.rows = options.rows || 12;
+    result.appendChild(output);
+    // The SNS preview sits between the draft and its action row.
+    if (options.afterOutput) result.appendChild(options.afterOutput);
+    const actions = el("div", "council-actions");
+    const copyBtn = el("button", "council-primary", "복사");
+    copyBtn.type = "button";
+    copyBtn.id = options.copyId;
+    const saveBtn = el("button", "council-save", options.saveLabel || "저장");
+    saveBtn.type = "button";
+    saveBtn.id = options.saveId;
+    const dlBtn = el("button", null, "텍스트 다운로드");
+    dlBtn.type = "button";
+    dlBtn.id = options.downloadId;
+    actions.append(copyBtn, saveBtn, dlBtn);
+    result.appendChild(actions);
+    return { result, output, copyBtn, saveBtn, dlBtn };
+  }
+
+  function wireCopy(button, output) {
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(output.value);
+        button.textContent = "복사됨";
+        setTimeout(() => { button.textContent = "복사"; }, 1500);
+      } catch (_) { /* clipboard refusal leaves the draft editable */ }
+    });
+  }
+
+  // ── 파일 이름과 사진 줄이기 ─────────────────────────────────────────────
+  function fileNamePart(value) {
+    return String(value || "").replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function todayStamp() {
+    const now = new Date();
+    const pad = (n) => (n < 10 ? "0" + n : String(n));
+    return now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+  }
+  /** 축사_행사명_날짜.txt — the event and date the form already carries. */
+  function speechFileName(form) {
+    const d = new FormData(form);
+    const event = fileNamePart(d.get("event")) || "행사";
+    const date = String(d.get("date") || "").trim() || todayStamp();
+    return "축사_" + event + "_" + date + ".txt";
+  }
+
+  // #5728: the browser does the shrinking (static/photo-resize.js in THIS app
+  // carries the Worker CPU reason). Loaded on first big photo, so a page that
+  // never adds one touches no extra script.
+  let photoResizeLoading = null;
+  function loadPhotoResize() {
+    if (window.PadiemPhotoResize) return Promise.resolve(window.PadiemPhotoResize);
+    if (photoResizeLoading) return photoResizeLoading;
+    photoResizeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      const script = document.createElement("script");
+      script.src = "./photo-resize.js";
+      script.addEventListener("load", () => {
+        if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
+        else reject(new Error("photo-resize-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("photo-resize-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return photoResizeLoading;
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const comma = String(dataUrl || "").indexOf(",");
+    if (comma < 0) return null;
+    const head = dataUrl.slice(0, comma);
+    const body = dataUrl.slice(comma + 1);
+    const isBase64 = head.indexOf(";base64") >= 0;
+    const mime = (head.match(/^data:([^;,]+)/) || [])[1] || "image/jpeg";
+    try {
+      if (!isBase64) return new Blob([decodeURIComponent(body)], { type: mime });
+      const binary = atob(body);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    } catch (_error) {
+      return null;
+    }
   }
 
   // ── speech module (prompt template ported verbatim from util-menu.js) ────
@@ -286,59 +601,66 @@
   }
 
   const speechModule = (() => {
-    const projects = projectHandle();
+    // #B8: only 행사명·참석 대상·직책과 이름·분량 face the writer first; the
+    // rest of the form folds under "더 자세히". The last 직책과 이름 is
+    // remembered on this host, so a repeat writer does not retype it.
+    const AUTHOR_KEY = "padiem-council-speech-author";
+
+    function field(name, label, type, required, placeholder, rows) {
+      const l = el("label", null, label + " ");
+      let input;
+      if (type === "textarea") {
+        input = document.createElement("textarea");
+        input.rows = rows || 3;
+      } else {
+        input = document.createElement("input");
+        input.type = type;
+      }
+      input.name = name;
+      if (required) input.required = true;
+      if (placeholder) input.placeholder = placeholder;
+      l.appendChild(input);
+      return l;
+    }
 
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilSpeechForm";
-      const fieldsets = [
-        ["기본 정보", [
-          ["event", "행사명", "text", true],
-          ["date", "행사 날짜", "date", false],
-          ["place", "장소", "text", false],
-          ["nature", "행사 성격", "text", false],
-          ["audience", "참석 대상", "text", false],
-          ["author", "작성자/직책", "text", false],
-        ]],
-        ["내용", [
-          ["message", "주요 메시지", "textarea", false],
-          ["emphasis", "강조 내용", "textarea", false],
-        ]],
-      ];
-      fieldsets.forEach(([legend, fields]) => {
-        const fs = el("fieldset", "council-fieldset");
-        fs.appendChild(el("legend", null, legend));
-        fields.forEach(([name, label, type, req]) => {
-          const l = el("label", null, label + " ");
-          let field;
-          if (type === "textarea") {
-            field = document.createElement("textarea");
-            field.name = name;
-            field.rows = name === "message" ? 3 : 2;
-          } else {
-            field = document.createElement("input");
-            field.name = name;
-            field.type = type;
-          }
-          if (req) field.required = true;
-          l.appendChild(field);
-          fs.appendChild(l);
-        });
-        form.appendChild(fs);
-      });
-      const fsTone = el("fieldset", "council-fieldset");
-      fsTone.appendChild(el("legend", null, "분량·말투·참고"));
+
+      const primary = el("fieldset", "council-fieldset");
+      primary.appendChild(el("legend", null, "행사 정보"));
+      primary.append(
+        field("event", "행사명", "text", true, "예: 제78주년 광복절 기념식"),
+        field("audience", "참석 대상", "text", false, "예: 지역 주민 200명"),
+        field("author", "직책과 이름", "text", false, "예: 지역구 국회의원 김의민"),
+      );
       const lengthLabel = el("label", null, "분량 ");
       const lengthSel = document.createElement("select");
       lengthSel.name = "length";
-      [["short", "짧게"], ["medium", "보통"], ["long", "길게"]].forEach(([v, t]) => {
+      [["short", "1분"], ["medium", "3분"], ["long", "5분"]].forEach(([v, t]) => {
         const o = document.createElement("option");
         o.value = v; o.textContent = t;
         if (v === "medium") o.selected = true;
         lengthSel.appendChild(o);
       });
       lengthLabel.appendChild(lengthSel);
-      fsTone.appendChild(lengthLabel);
+      primary.appendChild(lengthLabel);
+      form.appendChild(primary);
+
+      // The folded half keeps every field the prompt already read; folding is
+      // presentation, not a new form contract.
+      const more = document.createElement("details");
+      more.className = "council-more";
+      more.id = "councilSpeechMore";
+      more.appendChild(el("summary", null, "더 자세히 (날짜·장소·메시지·말투)"));
+      const moreBody = el("div", "council-more-body");
+      moreBody.append(
+        field("date", "행사 날짜", "date", false, ""),
+        field("place", "장소", "text", false, "예: 시청 대강당"),
+        field("nature", "행사 성격", "text", false, "예: 지역 행사"),
+        field("message", "주요 메시지", "textarea", false, "예: 함께 성장하는 지역사회"),
+        field("emphasis", "강조 내용", "textarea", false, "예: 상생과 배려", 2),
+      );
       const toneLabel = el("label", null, "말투 ");
       const toneSel = document.createElement("select");
       toneSel.name = "tone";
@@ -349,43 +671,45 @@
         toneSel.appendChild(o);
       });
       toneLabel.appendChild(toneSel);
-      fsTone.appendChild(toneLabel);
+      moreBody.appendChild(toneLabel);
       const styleLabel = el("label", null, "기존 축사 샘플 (말투 반영) ");
       const styleTa = document.createElement("textarea");
       styleTa.name = "style";
       styleTa.rows = 4;
       styleTa.placeholder = "기존 축사/인사말 원문 붙여넣기";
       styleLabel.appendChild(styleTa);
-      fsTone.appendChild(styleLabel);
-      form.appendChild(fsTone);
+      moreBody.appendChild(styleLabel);
+      more.appendChild(moreBody);
+      form.appendChild(more);
+
+      const authorField = form.querySelector("[name=author]");
+      try {
+        const saved = store() && store().getItem(AUTHOR_KEY);
+        if (saved && authorField) authorField.value = String(saved);
+      } catch (_) { /* storage refusal leaves the field empty */ }
+      if (authorField && authorField.addEventListener) {
+        authorField.addEventListener("change", () => {
+          try { if (store()) store().setItem(AUTHOR_KEY, String(authorField.value || "")); } catch (_) {}
+        });
+      }
 
       const formActions = el("div", "council-form-actions");
       const submitBtn = el("button", "council-generate", "초안 생성");
       submitBtn.type = "submit";
-      const saveBtn = el("button", "council-save", "저장");
-      saveBtn.type = "button";
-      saveBtn.id = "councilSpeechSave";
-      formActions.append(submitBtn, saveBtn);
+      submitBtn.id = "councilSpeechGenerate";
+      formActions.append(submitBtn);
       form.appendChild(formActions);
       host.appendChild(form);
 
-      const result = el("div", "council-result");
-      result.id = "councilSpeechResult";
-      result.hidden = true;
-      result.appendChild(el("h3", null, "생성 결과"));
-      const output = document.createElement("textarea");
-      output.id = "councilSpeechOutput";
-      output.rows = 12;
-      result.appendChild(output);
-      const actions = el("div", "council-actions");
-      const copyBtn = el("button", null, "복사");
-      copyBtn.type = "button";
-      copyBtn.id = "councilSpeechCopy";
-      const dlBtn = el("button", null, "TXT 다운로드");
-      dlBtn.type = "button";
-      dlBtn.id = "councilSpeechDownload";
-      actions.append(copyBtn, dlBtn);
-      result.appendChild(actions);
+      const notice = noticeLine("councilSpeechNotice");
+      host.appendChild(notice);
+
+      const panel = resultPanel({
+        id: "councilSpeechResult", outputId: "councilSpeechOutput", rows: 12,
+        title: "생성 결과", copyId: "councilSpeechCopy",
+        saveId: "councilSpeechSave", downloadId: "councilSpeechDownload",
+      });
+      const { result, output, copyBtn, saveBtn, dlBtn } = panel;
       host.appendChild(result);
 
       // #5731 contract: the stored speech history is listed on tool re-entry
@@ -397,11 +721,17 @@
       savedList.id = "councilSpeechSaved";
       host.appendChild(savedList);
 
+      let busy = false;
+      let failed = false;
+      function refreshSave() {
+        saveBtn.disabled = busy || failed || !String(output.value || "").trim();
+      }
+
       async function refreshSpeechList() {
-        const pid = await projects.ensure();
+        const pid = await councilProject.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
-         const speechFiles = files.filter(isManuscriptFile).filter(sameCountry);
+        const speechFiles = files.filter(isSpeechFile).filter(sameCountry);
         savedList.replaceChildren();
         savedList.appendChild(el("h3", null, "저장된 축사 원고"));
         if (!speechFiles.length) {
@@ -421,8 +751,11 @@
             if (typeof content === "string") {
               output.value = content;
               result.hidden = false;
+              failed = false;
+              setNotice(notice, "");
+              refreshSave();
             } else {
-              alert("저장된 축사의 본문을 읽을 수 없습니다.");
+              setNotice(notice, "저장된 축사의 본문을 읽을 수 없습니다.", "error");
             }
           });
           li.appendChild(btn);
@@ -433,13 +766,14 @@
           useAsRef.textContent = "참고로 선택";
           useAsRef.addEventListener("click", async () => {
             const styleField = form.querySelector("[name=style]");
-            if (!styleField) { alert("참고 원고 필드를 찾을 수 없습니다."); return; }
+            if (!styleField) { setNotice(notice, "참고 원고 필드를 찾을 수 없습니다.", "error"); return; }
             const res = await fetch("/api/projects/" + encodeURIComponent(pid) + "/files/" + encodeURIComponent(f.id), { credentials: "include" });
-            if (!res.ok) { alert("참고 원고를 불러오지 못했습니다."); return; }
+            if (!res.ok) { setNotice(notice, "참고 원고를 불러오지 못했습니다.", "error"); return; }
             const data = await res.json().catch(() => null);
             const content = data && data.file && (data.file.content || data.file.text);
-            if (typeof content !== "string" || !content.trim()) { alert("참고 원고의 본문을 읽을 수 없습니다."); return; }
+            if (typeof content !== "string" || !content.trim()) { setNotice(notice, "참고 원고의 본문을 읽을 수 없습니다.", "error"); return; }
             styleField.value = content;
+            setNotice(notice, "참고 원고를 말투 샘플에 넣었습니다.", "info");
           });
           li.appendChild(useAsRef);
           ul.appendChild(li);
@@ -449,30 +783,57 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        result.hidden = false;
-        output.value = "생성 중...";
-        try { output.value = await apiChat(buildSpeechPrompt(form), "speech"); }
-        catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
-      });
-      copyBtn.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(output.value); copyBtn.textContent = "복사됨"; setTimeout(() => { copyBtn.textContent = "복사"; }, 1500); } catch (_) {}
-      });
-      dlBtn.addEventListener("click", () => { downloadText(output.value, "speech.txt"); });
-      saveBtn.addEventListener("click", async () => {
-        const text = output.value.trim();
-        if (!text) return;
-        const pid = await projects.ensure();
-        if (!pid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-        const name = (form.querySelector("[name=event]")?.value || "축사").trim() + ".txt";
-        const file = await saveProjectFile(pid, name, text);
-        if (file) {
-          saveBtn.textContent = "저장됨";
-          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
-          await refreshSpeechList();
-        } else {
-          alert("저장 실패");
+        if (busy) return;
+        busy = true;
+        submitBtn.disabled = true;
+        refreshSave();
+        setNotice(notice, "생성 중…", "busy");
+        try {
+          const answer = await apiChat(buildSpeechPrompt(form), "speech");
+          output.value = answer;
+          result.hidden = false;
+          failed = false;
+          setNotice(notice, "");
+        } catch (err) {
+          failed = true;
+          setNotice(notice, generationFailureText(err), "error");
+          if (!String(output.value || "").trim()) result.hidden = true;
+        } finally {
+          busy = false;
+          submitBtn.disabled = false;
+          refreshSave();
         }
       });
+      wireCopy(copyBtn, output);
+      dlBtn.addEventListener("click", () => {
+        const text = String(output.value || "").trim();
+        if (text) downloadText(text, speechFileName(form));
+      });
+      saveBtn.addEventListener("click", async () => {
+        const text = output.value.trim();
+        if (!text || saveBtn.disabled) return;
+        const pid = await councilProject.ensure();
+        if (!pid) {
+          setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
+          return;
+        }
+        saveBtn.disabled = true;
+        saveBtn.textContent = "저장 중…";
+        const outcome = await saveCouncilText({
+          pid, name: speechFileName(form), text, kind: "speech", anchor: saveBtn,
+        });
+        saveBtn.textContent = "저장";
+        refreshSave();
+        if (outcome.file) {
+          saveBtn.textContent = "저장됨";
+          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          setNotice(notice, "");
+          await refreshSpeechList();
+        } else if (outcome.failure) {
+          setNotice(notice, saveFailureText(outcome.failure), "error");
+        }
+      });
+      refreshSave();
       // Re-entry lists the stored history too (#5731).
       refreshSpeechList();
       onCountryChange(refreshSpeechList);
@@ -522,19 +883,17 @@
   }
 
   const snsModule = (() => {
-    const projects = projectHandle();
-
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilSnsForm";
       const fields = [
-        ["event", "행사명", "text", true],
-        ["whenwhere", "날짜·장소", "text", false],
-        ["content", "주요 내용", "textarea", true],
-        ["memo", "메모", "textarea", false],
-        ["audience", "대상 독자", "text", false],
+        ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
+        ["whenwhere", "날짜·장소", "text", false, "예: 10월 30일 오후 2시, 구청 소회의실"],
+        ["content", "주요 내용", "textarea", true, "예: 정원 사업 신청 방법과 지원 금액 안내"],
+        ["memo", "메모", "textarea", false, "예: 참석자에게 강조할 한 가지"],
+        ["audience", "대상 독자", "text", false, "예: 구내 상인"],
       ];
-      fields.forEach(([name, label, type, req]) => {
+      fields.forEach(([name, label, type, req, placeholder]) => {
         const l = el("label", null, label + " ");
         let field;
         if (type === "textarea") {
@@ -547,6 +906,7 @@
           field.type = "text";
         }
         if (req) field.required = true;
+        if (placeholder) field.placeholder = placeholder;
         l.appendChild(field);
         form.appendChild(l);
       });
@@ -561,6 +921,10 @@
       });
       toneLabel.appendChild(toneSel);
       form.appendChild(toneLabel);
+
+      // 플랫폼 이름은 결과 제목과 다운로드 파일 이름이 함께 읽는다.
+      const title = el("h3", null, "블로그 게시글");
+      title.id = "councilSnsTitle";
 
       const tabDiv = el("div", "council-sns-tabs");
       const tabNames = { blog: "블로그", facebook: "페이스북", instagram: "인스타그램" };
@@ -587,7 +951,6 @@
       // between chosen paragraphs; facebook/instagram treat them as
       // separate post media. Photos survive platform switches.
       const photos = [];
-      let photoSeq = 0;
       const photoBox = el("div", "council-photos");
       photoBox.id = "councilSnsPhotoBox";
       const photoHead = el("div", "council-photos-head");
@@ -617,13 +980,37 @@
         return "페이스북은 사진을 본문과 구분된 게시물 미디어로 첨부합니다.";
       }
 
-      function readPhotoFile(file) {
+      function readImageDataUrl(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = () => resolve({ id: ++photoSeq, name: file.name, dataUrl: String(reader.result || ""), position: "auto" });
-          reader.onerror = () => resolve(null);
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => resolve("");
           reader.readAsDataURL(file);
         });
+      }
+
+      // #5728: shrink big photos BEFORE the upload. A resize that fails leaves
+      // the original bytes alone — the upload still happens, so a resize
+      // failure never costs the user their photo.
+      async function preparePhoto(file) {
+        const original = await readImageDataUrl(file);
+        if (!original) return null;
+        let type = file.type || "image/jpeg";
+        // Only a real browser can decode and re-encode an image; a DOM without
+        // Image (the Node harness) keeps the picked bytes and never waits.
+        const canDecode = typeof window === "object" && typeof window.Image === "function";
+        if (canDecode) {
+          try {
+            const shrink = await loadPhotoResize();
+            const out = await shrink.resizeDataUrl(original, shrink.MAX_EDGE, type);
+            if (out && out.resized && typeof out.dataUrl === "string") {
+              const mime = (out.dataUrl.match(/^data:([^;,]+)/) || [])[1];
+              if (mime) type = mime;
+              return { blob: dataUrlToBlob(out.dataUrl) || file, type: type, dataUrl: out.dataUrl };
+            }
+          } catch (_error) { /* the original bytes are still uploaded */ }
+        }
+        return { blob: file, type: type, dataUrl: original };
       }
 
       // #5728: the roster is one small JSON file that carries the whole
@@ -654,8 +1041,13 @@
           }
           const existing = await listProjectFiles(pid);
           const previous = existing.find((f) => f.name === PHOTO_ROSTER_NAME);
-          if (previous) await deleteProjectFile(pid, previous.id);
-          await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster), "application/json");
+          // The roster is one record that is updated in place. Rewriting it
+          // through PUT keeps its id and never leaves a second copy behind.
+          if (previous) {
+            await overwriteProjectFile(pid, previous.id, JSON.stringify(roster));
+          } else {
+            await saveProjectFile(pid, PHOTO_ROSTER_NAME, JSON.stringify(roster), "application/json");
+          }
         }).catch(() => { /* the composition keeps working; the roster stays last-known */ });
         return rosterWriteChain;
       }
@@ -680,7 +1072,7 @@
             const opts = [["auto", "자동"], ["0", "맨 앞"], ["end", "문단 끝"]];
             opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
              sel.value = item.position;
-             sel.addEventListener("change", async () => { item.position = sel.value; renderPreview(); await writePhotoRoster(projects.get()); });
+             sel.addEventListener("change", async () => { item.position = sel.value; renderPreview(); await writePhotoRoster(councilProject.get()); });
             posLabel.appendChild(sel);
             controls.appendChild(posLabel);
           }
@@ -707,7 +1099,7 @@
           const [moved] = photos.splice(index, 1);
           photos.splice(to, 0, moved);
         } else if (target.dataset.action === "remove") {
-          const pid = projects.get();
+          const pid = councilProject.get();
           if (photos[index].id && pid) {
             const gone = await deleteProjectFile(pid, photos[index].id);
             if (!gone) { alert("사진 삭제 실패: " + photos[index].name); return; }
@@ -721,7 +1113,7 @@
          // Every durable composition change (reorder and removal here,
          // insertion positions on the selects) rewrites the roster file, so
          // the order and the blog insertion positions outlive the session.
-         await writePhotoRoster(projects.get());
+         await writePhotoRoster(councilProject.get());
        });
 
       photoAdd.addEventListener("click", () => photoInput.click());
@@ -733,12 +1125,13 @@
           // A photo joins the composition only once the project-file upload
           // succeeded — the thumbnail and the stored original are the same
           // bytes, and a failed upload never looks "saved".
-          const pid = await projects.ensure();
+          const pid = await councilProject.ensure();
           if (!pid) { failed.push(file.name); continue; }
-          const stored = await uploadProjectImage(pid, file);
+          const prepared = await preparePhoto(file);
+          if (!prepared) { failed.push(file.name); continue; }
+          const stored = await uploadProjectImage(pid, prepared.blob, file.name, prepared.type);
           if (!stored) { failed.push(file.name); continue; }
-          const item = await readPhotoFile(file);
-          if (item) { item.id = stored.id; photos.push(item); }
+          photos.push({ id: stored.id, name: file.name, dataUrl: prepared.dataUrl, position: "auto" });
         }
         if (failed.length) alert("사진 저장 실패: " + failed.join(", "));
         photoInput.value = "";
@@ -746,7 +1139,7 @@
         renderPreview();
         // An added photo is part of the durable composition as soon as its
         // upload landed — the roster records it right away.
-        if (!failed.length) await writePhotoRoster(projects.get());
+        if (!failed.length) await writePhotoRoster(councilProject.get());
       });
 
       function blogParagraphs(text) {
@@ -796,34 +1189,22 @@
       const formActions = el("div", "council-form-actions");
       const submitBtn = el("button", "council-generate", "생성");
       submitBtn.type = "submit";
-      const saveBtn = el("button", "council-save", "저장");
-      saveBtn.type = "button";
-      saveBtn.id = "councilSnsSave";
-      formActions.append(submitBtn, saveBtn);
+      submitBtn.id = "councilSnsGenerate";
+      formActions.append(submitBtn);
       form.appendChild(formActions);
 
-      const result = el("div", "council-result");
-      result.id = "councilSnsResult";
-      result.hidden = true;
-      const title = el("h3", null, "블로그 게시글");
-      title.id = "councilSnsTitle";
-      const output = document.createElement("textarea");
-      output.id = "councilSnsOutput";
-      output.rows = 12;
+      const notice = noticeLine("councilSnsNotice");
       const previewBox = el("div", "council-sns-preview");
       previewBox.id = "councilSnsPreview";
       previewBox.hidden = true;
-      const actions = el("div", "council-actions");
-      const copyB = el("button", null, "복사");
-      copyB.type = "button";
-      copyB.id = "councilSnsCopy";
-      const dlB = el("button", null, "TXT 다운로드");
-      dlB.type = "button";
-      dlB.id = "councilSnsDownload";
-      actions.append(copyB, dlB);
-      result.append(title, output, previewBox, actions);
+      const panel = resultPanel({
+        id: "councilSnsResult", outputId: "councilSnsOutput", rows: 12,
+        titleNode: title, afterOutput: previewBox, copyId: "councilSnsCopy",
+        saveId: "councilSnsSave", downloadId: "councilSnsDownload",
+      });
+      const { result, output, copyBtn: copyB, saveBtn, dlBtn: dlB } = panel;
 
-      host.replaceChildren(form, result);
+      host.replaceChildren(form, notice, result);
 
       // #5728: re-entry restores the persisted composition ONCE, at build
       // time — before any interaction with the photo list. The stored image
@@ -835,7 +1216,7 @@
       // under.
       (async () => {
         try {
-          const pid = await projects.ensure();
+          const pid = await councilProject.ensure();
           if (!pid) return;
           const files = await listProjectFiles(pid);
           const imageFiles = files.filter((f) => f.media_type === "image/png"
@@ -867,28 +1248,24 @@
             result.hidden = false;
             output.value = savedDraft.text;
             previewBox.hidden = false;
+            failed = false;
+            refreshSave();
             if (savedDraft.platform && savedDraft.platform !== platform) {
               const targetTab = Array.from(tabDiv.querySelectorAll(".council-sns-tab")).find((t) => t.dataset.platform === savedDraft.platform);
               if (targetTab) targetTab.click();
               else { platform = savedDraft.platform; title.textContent = ({ blog: "블로그", facebook: "페이스북", instagram: "인스타그램" })[savedDraft.platform] + " 게시글"; }
             }
           }
-          if (photos.length || !imageFiles.length) {
-            if (savedDraft) renderPreview();
-            return;
-          }
+          if (savedDraft) renderPreview();
+          // Only the photos the roster names come back. A stale image file the
+          // owner removed from the composition never resurrects itself just
+          // because it is still stored in the project.
+          if (!order || !order.length) return;
           const ordered = [];
-          if (order && order.length) {
-            order.forEach((entry) => {
-              const meta = imageFiles.find((f) => f.id === (entry && entry.fileId));
-              if (meta) ordered.push({ meta: meta, position: entry && typeof entry.position === "string" && entry.position ? entry.position : "auto" });
-            });
-            imageFiles.forEach((meta) => {
-              if (!ordered.some((o) => o.meta.id === meta.id)) ordered.push({ meta: meta, position: "auto" });
-            });
-          } else {
-            imageFiles.forEach((meta) => ordered.push({ meta: meta, position: "auto" }));
-          }
+          order.forEach((entry) => {
+            const meta = imageFiles.find((f) => f.id === (entry && entry.fileId));
+            if (meta) ordered.push({ meta: meta, position: entry && typeof entry.position === "string" && entry.position ? entry.position : "auto" });
+          });
           for (const entry of ordered) {
             const dataUrl = await fetchOriginalDataUrl(pid, entry.meta.id);
             if (!dataUrl) continue;
@@ -899,37 +1276,73 @@
         } catch (_) { /* restore is best effort; an empty composition stays honest */ }
       })();
 
+      let busy = false;
+      let failed = false;
+      function refreshSave() {
+        saveBtn.disabled = busy || failed || !String(output.value || "").trim();
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        result.hidden = false;
-        output.value = "생성 중...";
-        try { output.value = await apiChat(buildSnsPrompt(form, platform, photos), "sns"); }
-        catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
-        previewBox.hidden = false;
-        renderPreview();
-      });
-      copyB.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
-      });
-      dlB.addEventListener("click", () => { downloadText(output.value, "sns-" + platform + ".txt"); });
-      saveBtn.addEventListener("click", async () => {
-        const text = output.value.trim();
-        if (!text) return;
-        const pid = await projects.ensure();
-        if (!pid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-        const name = (title.textContent || "sns").trim() + ".txt";
-        const file = await saveProjectFile(pid, name, text);
-        if (file) {
-          saveBtn.textContent = "저장됨";
-          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
-          // The saved draft rides in the roster so re-entry restores the
-          // text and its platform, not only the photos.
-           lastSavedDraft = { text: text, platform: platform };
-           await writePhotoRoster(pid, lastSavedDraft);
-        } else {
-          alert("저장 실패");
+        if (busy) return;
+        busy = true;
+        submitBtn.disabled = true;
+        refreshSave();
+        setNotice(notice, "생성 중…", "busy");
+        try {
+          const answer = await apiChat(buildSnsPrompt(form, platform, photos), "sns");
+          output.value = answer;
+          result.hidden = false;
+          previewBox.hidden = false;
+          failed = false;
+          setNotice(notice, "");
+          renderPreview();
+        } catch (err) {
+          failed = true;
+          setNotice(notice, generationFailureText(err), "error");
+          if (!String(output.value || "").trim()) {
+            result.hidden = true;
+            previewBox.hidden = true;
+          }
+        } finally {
+          busy = false;
+          submitBtn.disabled = false;
+          refreshSave();
         }
       });
+      wireCopy(copyB, output);
+      dlB.addEventListener("click", () => {
+        const text = String(output.value || "").trim();
+        if (text) downloadText(text, "SNS_" + (title.textContent || "게시글") + "_" + todayStamp() + ".txt");
+      });
+      saveBtn.addEventListener("click", async () => {
+        const text = output.value.trim();
+        if (!text || saveBtn.disabled) return;
+        const pid = await councilProject.ensure();
+        if (!pid) {
+          setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
+          return;
+        }
+        saveBtn.disabled = true;
+        saveBtn.textContent = "저장 중…";
+        const outcome = await saveCouncilText({
+          pid, name: (title.textContent || "SNS 게시글").trim() + ".txt", text, kind: "sns", anchor: saveBtn,
+        });
+        saveBtn.textContent = "저장";
+        refreshSave();
+        if (outcome.file) {
+          saveBtn.textContent = "저장됨";
+          setTimeout(() => { saveBtn.textContent = "저장"; }, 1500);
+          setNotice(notice, "");
+          // The saved draft rides in the roster so re-entry restores the
+          // text and its platform, not only the photos.
+          lastSavedDraft = { text: text, platform: platform };
+          await writePhotoRoster(pid, lastSavedDraft);
+        } else if (outcome.failure) {
+          setNotice(notice, saveFailureText(outcome.failure), "error");
+        }
+      });
+      refreshSave();
     }
 
     return { build(host) { buildForm(host); }, buildPrompt: buildSnsPrompt };
@@ -966,18 +1379,16 @@
   }
 
   const meetingModule = (() => {
-    const projects = projectHandle();
-
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilMeetingForm";
       const fields = [
-        ["title", "회의명", "text", true],
-        ["when", "회의 일시", "datetime-local", false],
-        ["attendees", "참석자", "text", false],
-        ["content", "회의 내용", "textarea", true],
+        ["title", "회의명", "text", true, "예: 10월 주민 민원 회의"],
+        ["when", "회의 일시", "datetime-local", false, ""],
+        ["attendees", "참석자", "text", false, "예: 비서실장, 지역 담당"],
+        ["content", "회의 내용", "textarea", true, "회의에서 오간 내용을 그대로 적어 주세요"],
       ];
-      fields.forEach(([name, label, type, req]) => {
+      fields.forEach(([name, label, type, req, placeholder]) => {
         const l = el("label", null, label + " ");
         let field;
         if (type === "textarea") {
@@ -990,6 +1401,7 @@
           field.type = type;
         }
         if (req) field.required = true;
+        if (placeholder) field.placeholder = placeholder;
         l.appendChild(field);
         form.appendChild(l);
       });
@@ -997,95 +1409,122 @@
       const formActions = el("div", "council-form-actions");
       const submitBtn = el("button", "council-generate", "요약 생성");
       submitBtn.type = "submit";
-      const formSaveB = el("button", "council-save", "저장");
-      formSaveB.type = "button";
-      formSaveB.id = "councilMeetingSave";
-      formActions.append(submitBtn, formSaveB);
+      submitBtn.id = "councilMeetingGenerate";
+      formActions.append(submitBtn);
       form.appendChild(formActions);
 
-      const result = el("div", "council-result");
-      result.id = "councilMeetingResult";
-      result.hidden = true;
-      result.appendChild(el("h3", null, "회의 요약"));
-      const output = document.createElement("textarea");
-      output.id = "councilMeetingOutput";
-      output.rows = 12;
-      result.appendChild(output);
-      const actions = el("div", "council-actions");
-      const copyB = el("button", null, "복사");
-      copyB.type = "button";
-      copyB.id = "councilMeetingCopy";
-      const dlB = el("button", null, "TXT 다운로드");
-      dlB.type = "button";
-      dlB.id = "councilMeetingDownload";
-      actions.append(copyB, dlB);
-      result.appendChild(actions);
+      const notice = noticeLine("councilMeetingNotice");
+      const panel = resultPanel({
+        id: "councilMeetingResult", outputId: "councilMeetingOutput", rows: 12,
+        title: "회의 요약", copyId: "councilMeetingCopy",
+        saveId: "councilMeetingSave", downloadId: "councilMeetingDownload",
+      });
+      const { result, output, copyBtn: copyB, saveBtn: formSaveB, dlBtn: dlB } = panel;
 
       const archive = el("div", "council-archive");
       archive.id = "councilMeetingArchive";
 
-      host.replaceChildren(form, result, archive);
+      host.replaceChildren(form, notice, result, archive);
+
+      let busy = false;
+      let failed = false;
+      function refreshSave() {
+        formSaveB.disabled = busy || failed || !String(output.value || "").trim();
+      }
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        result.hidden = false;
-        output.value = "생성 중...";
-        try { output.value = await apiChat(buildMeetingPrompt(form), "meeting"); }
-        catch (err) { output.value = "생성 실패: " + (err && err.message ? err.message : err); }
-      });
-      copyB.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(output.value); copyB.textContent = "복사됨"; setTimeout(() => { copyB.textContent = "복사"; }, 1500); } catch (_) {}
-      });
-      dlB.addEventListener("click", () => { downloadText(output.value, "meeting.txt"); });
-      formSaveB.addEventListener("click", async () => {
-        const text = output.value.trim();
-        if (!text) return;
-        const pid = await projects.ensure();
-        if (!pid) { alert("프로젝트를 찾을 수 없습니다."); return; }
-        const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
-        const when = (form.querySelector("[name=when]")?.value || "").trim();
-        const storedText = when ? "회의 일시: " + when + "\n\n" + text : text;
-        const file = await saveProjectFile(pid, name, storedText);
-        if (file) {
-          formSaveB.textContent = "저장됨";
-          setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
-          await refreshArchive(archive);
-        } else {
-          alert("저장 실패");
+        if (busy) return;
+        busy = true;
+        submitBtn.disabled = true;
+        refreshSave();
+        setNotice(notice, "생성 중…", "busy");
+        try {
+          const answer = await apiChat(buildMeetingPrompt(form), "meeting");
+          output.value = answer;
+          result.hidden = false;
+          failed = false;
+          setNotice(notice, "");
+        } catch (err) {
+          failed = true;
+          setNotice(notice, generationFailureText(err), "error");
+          if (!String(output.value || "").trim()) result.hidden = true;
+        } finally {
+          busy = false;
+          submitBtn.disabled = false;
+          refreshSave();
         }
       });
+      wireCopy(copyB, output);
+      dlB.addEventListener("click", () => {
+        const text = String(output.value || "").trim();
+        const titlePart = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
+        if (text) downloadText(text, "회의_" + titlePart + "_" + todayStamp() + ".txt");
+      });
+      formSaveB.addEventListener("click", async () => {
+        const text = output.value.trim();
+        if (!text || formSaveB.disabled) return;
+        const pid = await councilProject.ensure();
+        if (!pid) {
+          setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
+          return;
+        }
+        const name = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
+        const when = (form.querySelector("[name=when]")?.value || "").trim();
+        const storedText = when ? "회의 일시: " + when + "\n\n" + text : text;
+        formSaveB.disabled = true;
+        formSaveB.textContent = "저장 중…";
+        const outcome = await saveCouncilText({
+          pid, name: name + ".txt", text: storedText, kind: "meeting", anchor: formSaveB,
+        });
+        formSaveB.textContent = "저장";
+        refreshSave();
+        if (outcome.file) {
+          formSaveB.textContent = "저장됨";
+          setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
+          setNotice(notice, "");
+          await refreshArchive(archive);
+        } else if (outcome.failure) {
+          setNotice(notice, saveFailureText(outcome.failure), "error");
+        }
+      });
+      refreshSave();
 
       async function refreshArchive(arc) {
-        const pid = await projects.ensure();
+        const pid = await councilProject.ensure();
         if (!pid) return;
         const files = await listProjectFiles(pid);
         // A book is not one of its own source records, and an SNS draft or the
-        // photo roster never belongs here either.
-        const meetingFiles = files.filter(isManuscriptFile).filter(sameCountry);
-        const bookFiles = files.filter(isStoredBook);
+        // photo roster never belongs here either. The stored kind decides the
+        // family; documents from before kinds existed keep the name rule.
+        const meetingFiles = files.filter(isMeetingFile).filter(sameCountry);
+        const bookFiles = files.filter(isBookFile);
 
         // The book editor is built before the lists are drawn: a stored book has
         // to reopen into it even when no record exists in this project yet.
         const bookResult = el("div", "council-result");
         bookResult.id = "councilBookResult";
         bookResult.hidden = true;
-        bookResult.appendChild(el("h3", null, "책/활동집 초안"));
+        bookResult.appendChild(el("h3", null, "활동집 초안"));
         const bookOutput = document.createElement("textarea");
         bookOutput.id = "councilBookOutput";
         bookOutput.rows = 16;
         bookResult.appendChild(bookOutput);
+        const bookNotice = noticeLine("councilBookNotice");
         const bookActions = el("div", "council-actions");
-        const bookCopy = el("button", null, "복사");
+        const bookCopy = el("button", "council-primary", "복사");
         bookCopy.type = "button";
-        const bookDl = el("button", null, "TXT 다운로드");
-        bookDl.type = "button";
+        bookCopy.id = "councilBookCopy";
         const bookSave = el("button", "council-save", "활동집 저장");
         bookSave.type = "button";
         bookSave.id = "councilBookSave";
-        bookActions.append(bookCopy, bookDl, bookSave);
+        const bookDl = el("button", null, "텍스트 다운로드");
+        bookDl.type = "button";
+        bookDl.id = "councilBookDownload";
+        bookActions.append(bookCopy, bookSave, bookDl);
         bookResult.appendChild(bookActions);
 
-        const bookBtn = el("button", "council-generate", "선택 기록으로 책/활동집 초안 생성");
+        const bookBtn = el("button", "council-generate", "선택 기록으로 활동집 초안 생성");
         bookBtn.type = "button";
         bookBtn.id = "councilBookGenerate";
 
@@ -1122,7 +1561,7 @@
             cb.type = "checkbox";
             cb.value = f.id;
             cb.className = "council-book-check";
-            cb.setAttribute("aria-label", f.name + " 책/활동집에 포함");
+            cb.setAttribute("aria-label", f.name + " 활동집에 포함");
             /* 상자는 24px(#6075)로 두고, 그 주먹을 44×44 라벨로 감싼다. 라벨이 입력을
                감싸면 상자 밖을 눌러도 선택되므로 이름·본문 단추와 경쟁하지 않는다. */
             const check = document.createElement("label");
@@ -1144,8 +1583,11 @@
                   output.value = content;
                 }
                 result.hidden = false;
+                failed = false;
+                setNotice(notice, "");
+                refreshSave();
               } else {
-                alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
+                setNotice(notice, "저장된 회의 기록의 본문을 읽을 수 없습니다.", "error");
               }
             });
             li.appendChild(btn);
@@ -1180,13 +1622,23 @@
             }
           });
         }
+        arc.appendChild(bookNotice);
         arc.appendChild(bookResult);
+
+        let bookBusy = false;
+        let bookFailed = false;
+        function refreshBookSave() {
+          bookSave.disabled = bookBusy || bookFailed || !String(bookOutput.value || "").trim();
+        }
+        refreshBookSave();
 
         bookBtn.addEventListener("click", async () => {
           const checked = Array.from(document.querySelectorAll(".council-book-check:checked"));
           if (!checked.length) { alert("선택된 기록이 없습니다."); return; }
-          bookResult.hidden = false;
-          bookOutput.value = "선택한 회의 기록을 불러오는 중...";
+          if (bookBusy) return;
+          bookBusy = true;
+          bookBtn.disabled = true;
+          setNotice(bookNotice, "선택한 회의 기록을 불러오는 중…", "busy");
           try {
             const contents = [];
             for (const checkbox of checked) {
@@ -1200,16 +1652,29 @@
               }
               contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
-            bookOutput.value = "생성 중...";
-            bookOutput.value = await apiChat(buildBookPrompt(contents), "meeting");
+            setNotice(bookNotice, "활동집 초안을 만드는 중…", "busy");
+            const answer = await apiChat(buildBookPrompt(contents), "meeting");
+            bookOutput.value = answer;
+            bookResult.hidden = false;
+            bookFailed = false;
+            setNotice(bookNotice, "");
           } catch (e) {
-            bookOutput.value = "생성 실패: " + (e && e.message ? e.message : e);
+            // A record that could not be read is a concrete sentence; a
+            // generation failure uses the shared Korean copy.
+            bookFailed = true;
+            setNotice(bookNotice, e && e.status ? generationFailureText(e) : String(e && e.message ? e.message : e), "error");
+            if (!String(bookOutput.value || "").trim()) bookResult.hidden = true;
+          } finally {
+            bookBusy = false;
+            bookBtn.disabled = false;
+            refreshBookSave();
           }
         });
-        bookCopy.addEventListener("click", async () => {
-          try { await navigator.clipboard.writeText(bookOutput.value); bookCopy.textContent = "복사됨"; setTimeout(() => { bookCopy.textContent = "복사"; }, 1500); } catch (_) {}
+        wireCopy(bookCopy, bookOutput);
+        bookDl.addEventListener("click", () => {
+          const text = String(bookOutput.value || "").trim();
+          if (text) downloadText(text, bookFileName(text));
         });
-        bookDl.addEventListener("click", () => { downloadText(bookOutput.value, "book.txt"); });
 
         // The draft is a product, not scratch: it persists through the same
         // project-file channel under the book name rule. One press must never
@@ -1218,22 +1683,22 @@
         let bookSaving = false;
         bookSave.addEventListener("click", async () => {
           const text = bookOutput.value.trim();
-          if (!text || bookSaving) return;
+          if (!text || bookSaving || bookSave.disabled) return;
           bookSaving = true;
           bookSave.disabled = true;
           bookSave.textContent = "저장 중…";
-          let saved = null;
-          try {
-            saved = await saveProjectFile(pid, bookFileName(text), text);
-          } finally {
-            bookSaving = false;
-            bookSave.disabled = false;
-          }
-          if (!saved) {
-            bookSave.textContent = "활동집 저장";
-            alert("활동집 저장 실패");
+          const outcome = await saveCouncilText({
+            pid, name: bookFileName(text), text, kind: "book", anchor: bookSave,
+          });
+          bookSaving = false;
+          bookSave.textContent = "활동집 저장";
+          refreshBookSave();
+          if (!outcome.file) {
+            if (outcome.failure) setNotice(bookNotice, saveFailureText(outcome.failure), "error");
             return;
           }
+          const saved = outcome.file;
+          setNotice(bookNotice, "");
           // The list is refreshed from the server, which rebuilds the archive -
           // including this editor - so the draft the user just saved is written
           // back and the confirmation lands on the node that is actually on screen.
@@ -1247,7 +1712,8 @@
           }
           currentSave.textContent = "저장됨";
           setTimeout(() => { currentSave.textContent = "활동집 저장"; }, 1500);
-          const opened = (arc.querySelectorAll(".council-book-open") || [])
+          // querySelectorAll returns a NodeList, which has no .find.
+          const opened = Array.from(arc.querySelectorAll(".council-book-open"))
             .find((b) => String(b.textContent).indexOf(saved.name) === 0);
           if (opened) opened.setAttribute("aria-current", "true");
         });
@@ -1271,6 +1737,9 @@
               }
               bookResult.hidden = false;
               bookOutput.value = content;
+              bookFailed = false;
+              setNotice(bookNotice, "");
+              refreshBookSave();
               if (typeof bookOutput.focus === "function") bookOutput.focus();
             });
             li.appendChild(btn);
@@ -1310,7 +1779,15 @@
   function syncCountrySelect() {
     const select = host("councilCountry");
     if (!select) return;
-    const country = currentCountry();
+    // B10: the page offers Korean only. A host that still carries an older
+    // stored choice (uk/fr) must not save new documents under a language the
+    // screen cannot show: the selector's own options decide what is reachable.
+    const options = Array.from(select.options || select.children || []).map((o) => String(o.value));
+    const stored = currentCountry();
+    const country = options.length && options.indexOf(stored) < 0 ? "kr" : stored;
+    if (country !== stored) {
+      try { if (store()) store().setItem(COUNTRY_KEY, country); } catch (_) {}
+    }
     select.value = country;
     // init()(평소 로드)과 enterSignedIn()(로그인 후) 이 모두 부른다. 리스너는 한 번만 건다.
     if (session.countryBound) return;
@@ -1690,6 +2167,14 @@
     document.addEventListener("click", () => { if (theme.open) setThemePanel(false); });
     document.addEventListener("keydown", (event) => {
       if (!event || event.key !== "Escape") return;
+      // Escape inside a field belongs to the field (it leaves the field or
+      // closes the browser's own picker). It must never dismiss the editor and
+      // throw away what the writer is typing.
+      const target = event.target || document.activeElement || null;
+      const tag = target && target.tagName ? String(target.tagName).toUpperCase() : "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (target && target.isContentEditable)) {
+        return;
+      }
       // 정본의 순서: 팝오버가 먼저 닫히고, 그 다음에 작업실이 홈으로 물러난다.
       if (theme.open) { setThemePanel(false); return; }
       if (session.selected) leaveWorkspace();

@@ -45,7 +45,9 @@ def test_stored_books_stay_out_of_the_record_selection() -> None:
     # must never be offered as a source for another book.
     assert OBSERVATION["recordChecks"] == 1
     assert [label for label in OBSERVATION["recordLabels"] if label.startswith(BOOK_PREFIX)] == []
-    assert OBSERVATION["speechLabelsB"] and all(
+    # #A3: the meeting record carries doc_kind="meeting", so it no longer
+    # surfaces as a speech manuscript either. The book stays out of both lists.
+    assert all(
         not label.startswith(BOOK_PREFIX) for label in OBSERVATION["speechLabelsB"]
     ), "a book is not a speech manuscript"
 
@@ -76,7 +78,7 @@ def test_the_book_editor_keeps_copy_and_download_next_to_the_new_save() -> None:
     source = Path(__file__).resolve().parents[1].joinpath("static/council-app.js").read_text(
         encoding="utf-8"
     )
-    for control in ('"복사"', '"TXT 다운로드"', "활동집 저장"):
+    for control in ('"복사"', '"텍스트 다운로드"', "활동집 저장"):
         assert control in source, control
     # The naming rule is the Chat util's, so a book saved from either surface
     # lists in both instead of becoming a second, incompatible family.

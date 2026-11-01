@@ -226,7 +226,7 @@ body.council-body {
   grid-column: 1 / -1;
 }
 .council-card > h2 { margin: 2px 0 6px; font-size: clamp(17px, 1.39vw, 20px); font-weight: 700; letter-spacing: -0.02em; word-break: keep-all; }
-.council-card > p { margin: 0 0 12px; color: var(--council-muted); font-size: 14px; word-break: keep-all; overflow-wrap: anywhere; }
+.council-card > p { margin: 0 0 12px; color: var(--council-muted); font-size: 16px; word-break: keep-all; overflow-wrap: anywhere; }
 .council-card-select {
   font: inherit;
   display: inline-flex;
@@ -238,14 +238,15 @@ body.council-body {
   border: 1px solid var(--council-border);
   border-radius: var(--council-radius);
   background: var(--council-bg);
-  color: var(--council-accent);
-  font-size: 14px;
-  font-weight: 650;
+  color: var(--council-text);
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
 }
 .council-card-select:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
 .council-card-select.active { background: var(--council-accent); border-color: var(--council-accent); color: var(--council-accent-ink); }
-.council-card-body { grid-column: 1 / -1; margin-top: 14px; }
+.council-card-body { grid-column: 1 / -1; margin-top: 14px; min-width: 0; }
+.council-card-body > * { min-width: 0; }
 .council-card-body[hidden] { display: none; }
 .council-card:not(.active) .council-card-body { display: none; }
 
@@ -254,7 +255,7 @@ body.council-body {
   outline-offset: 2px;
 }
 
-.council-form { display: grid; gap: 12px; }
+.council-form { display: grid; gap: 12px; min-width: 0; }
 .council-fieldset {
   /* 시안 `.pa-meta`: 정보 묶음은 카드 위에 얹은 패널 하나다. */
   border: 1px solid var(--council-border);
@@ -262,20 +263,32 @@ body.council-body {
   padding: clamp(14px, 1.8vw, 20px);
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 .council-fieldset legend {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--council-muted);
   padding: 0 6px;
 }
-.council-form label { display: grid; gap: 5px; font-size: 12px; letter-spacing: .04em; color: var(--council-muted); }
+/* B9: 본문·입력 글씨는 16px 이상, 목록의 이름은 14px 이상. */
+.council-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: var(--council-text);
+  min-width: 0;
+}
 .council-form input,
 .council-form textarea,
 .council-form select {
   font: inherit;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: normal;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--council-border);
@@ -284,11 +297,31 @@ body.council-body {
   color: var(--council-text);
 }
 .council-form textarea { min-height: 92px; resize: vertical; }
+.council-more {
+  border: 1px solid var(--council-border);
+  border-radius: 14px;
+  padding: 0 clamp(14px, 1.8vw, 20px);
+  background: var(--council-surface);
+}
+.council-more > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--council-text);
+  text-decoration: underline;
+  text-decoration-color: var(--council-accent);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.council-more-body { display: grid; gap: 12px; padding: 4px 0 clamp(14px, 1.8vw, 20px); }
 .council-form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .council-generate,
 .council-login {
   /* 시안의 1차 동작(`.pa-draft`)은 알약형 채운 버튼이다. */
   font: inherit;
+  font-size: 16px;
   background: var(--council-accent);
   color: var(--council-accent-ink);
   border: 0;
@@ -299,24 +332,36 @@ body.council-body {
   cursor: pointer;
 }
 .council-generate:disabled,
-.council-login:disabled { opacity: 0.6; cursor: progress; }
+.council-login:disabled {
+  /* A disabled control still names itself and stays legible; only its
+     affordance goes away. */
+  background: var(--council-border);
+  color: var(--council-text);
+  opacity: 1;
+  cursor: progress;
+}
 .council-save {
+  /* 보조 버튼은 흰 바탕 + 진한 글씨다. 강조색 위의 강조 글씨(골드 온 크림)는
+     대비가 부족했다. */
   font: inherit;
-  background: var(--council-accent-soft);
-  color: var(--council-accent);
-  border: 1px solid var(--council-border);
+  font-size: 16px;
+  background: var(--council-surface);
+  color: var(--council-text);
+  border: 1.5px solid var(--council-accent);
   border-radius: 999px;
   min-height: 44px;
   padding: 10px 20px;
-  font-weight: 650;
+  font-weight: 700;
   cursor: pointer;
 }
-.council-save:hover { border-color: var(--council-accent); }
+.council-save:hover { background: var(--council-accent-soft); color: var(--council-text); }
+.council-save:disabled { border-color: var(--council-border); color: var(--council-muted); cursor: not-allowed; }
 .council-result {
   /* 시안 `.pa-paper`: 문서는 입력칸이 아니라 종이다. */
   margin-top: 14px;
   display: grid;
   gap: 10px;
+  min-width: 0;
   padding: clamp(16px, 2.4vw, 30px);
   border: 1px solid var(--council-border);
   border-radius: 18px;
@@ -339,9 +384,11 @@ body.council-body {
   resize: vertical;
 }
 .council-result textarea:focus-visible { outline: 0; }
+/* B7: 복사(주 버튼)·저장·다운로드는 결과 본문 바로 아래 한 줄이다. */
 .council-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .council-actions button {
   font: inherit;
+  font-size: 16px;
   min-height: 44px;
   padding: 9px 16px;
   border-radius: 999px;
@@ -352,6 +399,54 @@ body.council-body {
   cursor: pointer;
 }
 .council-actions button:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
+.council-actions .council-primary {
+  background: var(--council-accent);
+  border-color: var(--council-accent);
+  color: var(--council-accent-ink);
+  font-weight: 700;
+}
+.council-actions .council-primary:hover { background: var(--council-accent); border-color: var(--council-accent); color: var(--council-accent-ink); }
+.council-tool-notice {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--council-border);
+  background: var(--council-accent-soft);
+  color: var(--council-text);
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.council-tool-notice[hidden] { display: none; }
+.council-tool-notice[data-tone="error"] {
+  border-color: var(--council-danger);
+  color: var(--council-text);
+}
+.council-tool-notice[data-tone="busy"] { color: var(--council-muted); }
+.council-save-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--council-border);
+  border-radius: 14px;
+  background: var(--council-surface);
+}
+.council-save-choice-text { margin: 0; font-size: 15px; word-break: keep-all; }
+.council-save-choice button {
+  font: inherit;
+  font-size: 15px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--council-border);
+  background: var(--council-bg);
+  color: var(--council-text);
+  cursor: pointer;
+}
+.council-save-choice .council-save-as-new { border-color: var(--council-accent); font-weight: 700; }
 .council-archive {
   /* 시안에 목록이 없어 새 규칙으로 짓되, 시안의 표면 어휘를 쓴다: 항목을 테두리 박스로
      나열하지 않고 패널 하나 안에 헤어라인으로 구분한다(`.pa-strip li + li` 어휘). */
@@ -378,15 +473,55 @@ body.council-body {
   flex: 1;
   text-align: left;
   font: inherit;
+  font-size: 16px;
   padding: 8px 0;
   border: 0;
   background: transparent;
   color: var(--council-text);
   font-weight: 600;
   cursor: pointer;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
-.council-archive-item button:hover { color: var(--council-accent); }
+.council-archive-item button:hover { color: var(--council-text); text-decoration: underline; }
 .council-empty { color: var(--council-muted); font-size: 14px; }
+/* 날짜·선택 줄: 입력과 단추 모두 44px 이고 한 줄에서 감싼다. */
+.council-book-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+.council-book-period label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--council-text);
+}
+.council-book-period input {
+  font: inherit;
+  font-size: 16px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--council-border);
+  border-radius: 10px;
+  background: var(--council-bg);
+  color: var(--council-text);
+}
+.council-book-period button {
+  font: inherit;
+  font-size: 15px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--council-border);
+  background: var(--council-surface);
+  color: var(--council-text);
+  cursor: pointer;
+}
+.council-book-period p { flex: 1 0 100%; margin: 0; font-size: 14px; color: var(--council-muted); }
 
 .council-saved-list {
   margin-top: 16px;
@@ -402,14 +537,17 @@ body.council-body {
   flex: 1;
   text-align: left;
   font: inherit;
+  font-size: 16px;
   padding: 8px 0;
   border: 0;
   background: transparent;
   color: var(--council-text);
   font-weight: 600;
   cursor: pointer;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
-.council-saved-item .council-saved-open:hover { color: var(--council-accent); }
+.council-saved-item .council-saved-open:hover { color: var(--council-text); text-decoration: underline; }
 .council-saved-item .council-speech-use-ref {
   /* 반지름은 여기서 선언하지 않는다: 공유 44px 하한 블록이 10px 를 마지막에 선언한다. */
   font: inherit;
@@ -420,9 +558,9 @@ body.council-body {
   cursor: pointer;
 }
 
-.council-photos { border: 1px solid var(--council-border); border-radius: 14px; padding: clamp(14px, 1.8vw, 20px); display: grid; gap: 8px; }
-.council-photos-head { display: flex; align-items: center; gap: 10px; }
-.council-photos-title { font-weight: 700; font-size: 14px; }
+.council-photos { border: 1px solid var(--council-border); border-radius: 14px; padding: clamp(14px, 1.8vw, 20px); display: grid; gap: 8px; min-width: 0; }
+.council-photos-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-width: 0; }
+.council-photos-title { font-weight: 700; font-size: 16px; }
 .council-photo-add {
   font: inherit;
   padding: 6px 12px;
@@ -433,17 +571,19 @@ body.council-body {
   cursor: pointer;
 }
 .council-photos-count { color: var(--council-muted); font-size: 13px; }
-.council-photo-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.council-photo-item { display: flex; align-items: center; gap: 10px; }
+.council-photo-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.council-photo-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .council-photo-thumb {
   width: 64px;
   height: 48px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--council-border);
+  flex: 0 0 auto;
 }
-.council-photo-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.council-photo-controls { display: flex; align-items: center; gap: 6px; }
+/* B9: 이름표는 14px 이상. */
+.council-photo-name { flex: 1 1 0; min-width: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.council-photo-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
 .council-photo-controls button,
 .council-photo-pos select {
   font: inherit;
@@ -465,7 +605,7 @@ body.council-body {
   gap: 8px;
   background: var(--council-bg);
 }
-.council-preview-para { margin: 0; font-size: 14px; white-space: pre-wrap; }
+.council-preview-para { margin: 0; font-size: 16px; line-height: 1.7; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; }
 .council-preview-photo {
   max-width: 100%;
   max-height: 260px;
@@ -484,9 +624,10 @@ body.council-body {
 }
 .council-sns-media-grid.insta img { height: 160px; }
 
-.council-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.council-sns-tabs { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
 .council-sns-tab {
   font: inherit;
+  font-size: 16px;
   padding: 0 14px;
   min-height: 44px;
   display: inline-flex;
@@ -533,10 +674,12 @@ body.council-body {
   display: inline-flex;
   align-items: center;
   border-radius: var(--council-radius);
-  font-size: 14px;
+  font-size: 16px;
 }
+.council-photo-controls button,
+.council-photo-pos-select { font-size: 14px; }
 .council-photo-controls button { padding: 0 12px; }
-.council-result h3 { margin: 0; font-size: 15px; display: flex; align-items: center; }
+.council-result h3 { margin: 0; font-size: 18px; display: flex; align-items: center; }
 
 @media (min-width: 900px) {
   /* 시안 `.pa-editor-grid`는 정보(320)와 문서(나머지) 두 열이다. 문서 쪽에 내용이
@@ -584,6 +727,14 @@ body.council-body {
   .council-generate,
   .council-save { width: 100%; }
   .council-photo-thumb { width: 56px; height: 42px; }
+  /* 390 실측: 좁은 화면에서 축사 폼의 날짜·선택 줄과 사진 행이 카드 밖으로
+     잘렸다. 입력은 폭을 따르고, 날짜 줄은 한 열로 선다. */
+  .council-book-period { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .council-book-period label { display: grid; }
+  .council-book-period input { width: 100%; }
+  .council-photo-item { align-items: flex-start; }
+  .council-photo-controls { justify-content: flex-start; }
+  .council-actions button { flex: 1 1 auto; justify-content: center; }
 }
 
 @media (min-width: 1200px) {
@@ -1572,7 +1723,8 @@ html[data-style="light"] { --pa-sun-op: .82; }
   margin: 2px 0 0;
 }
 .council-card > p {
-  font-size: 13px;
+  /* B9: 카드 설명도 본문이다. */
+  font-size: 16px;
   line-height: 1.5;
   color: color-mix(in srgb, var(--work-ink) 92%, transparent);
   word-break: keep-all;
@@ -1735,7 +1887,16 @@ html.council-in-workspace .council-workspace-bar {
   cursor: pointer;
 }
 .council-back:hover { border-color: var(--accent); color: var(--accent); }
-.council-workspace-title { font-family: var(--font-label); font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.council-workspace-title {
+  font-family: var(--font-label);
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* 사진이 없는 화면에서 바는 흐름으로 돌아와 스스로 높이를 확보한다. 히어로에 얹을 이유가
    없는 상태에서 absolute 로 남으면 뒤의 컨트롤을 덮는다(시안과 같은 판단). */
@@ -1772,7 +1933,20 @@ html.council-in-workspace .council-card.active::after { content: none; }
 html.council-in-workspace .council-card.active > h2 { color: var(--text); }
 html.council-in-workspace .council-card.active > p { color: var(--muted); }
 html.council-in-workspace .council-card.active .council-card-icon svg { stroke: var(--text); }
-html.council-in-workspace .council-card.active .council-card-select { color: var(--accent); }
+/* B6: 열린 카드의 "닫기"는 패널 위의 강조색 글씨(골드 온 크림)라 읽기 어려웠다.
+   본문 잉크 + 테두리 알약으로 바꿔 대비를 확보한다. */
+html.council-in-workspace .council-card.active .council-card-select {
+  color: var(--text);
+  min-height: var(--pa-target);
+  padding: 0 14px;
+  border: var(--pa-hair) solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+}
+html.council-in-workspace .council-card.active .council-card-select:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
 html.council-in-workspace .council-card.active .council-card-select::after { content: none; }
 
 /* ── 하단 고지 ─────────────────────────────────────────────────────────── */
@@ -1807,6 +1981,9 @@ html.council-in-workspace .council-card.active .council-card-select::after { con
 }
 @media (max-width: 767px) {
   .council-topbar { position: absolute; flex-wrap: wrap; padding: 10px 20px; }
+  /* 390: 좁은 작업실 띠에서 '축사·인사말'이 두 줄로 쪼개졌다. 카드 제목이 같은
+     이름을 이미 보여 주므로 띠의 반복 라벨은 숨긴다. */
+  .council-workspace-title { display: none; }
   .council-brand { flex: 0 1 100%; }
   .council-theme { order: 5; }
   .council-hero { padding-top: 150px; min-height: 520px; }
@@ -1818,7 +1995,7 @@ html.council-in-workspace .council-card.active .council-card-select::after { con
   .council-works { margin-top: 0; }
 }
 @media (max-width: 390px) {
-  .council-body { font-size: 15px; }
+  .council-body { font-size: 16px; }
   .council-hero { padding-top: 158px; }
   /* MaruBuri 제목을 2줄에 앉히는 상한(실측 28px). */
   .council-hero .council-title { font-size: 28px; }

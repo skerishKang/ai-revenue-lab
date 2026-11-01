@@ -44,14 +44,16 @@ def test_the_field_group_is_the_designs_meta_panel():
     assert "border-radius: 14px" in meta, meta
     assert "padding: clamp(14px, 1.8vw, 20px)" in meta, meta
     assert "gap: 12px" in meta, meta
+    # B9: field labels are 14px in the body ink so the label and its value are
+    # both readable; the panel keeps the design's meta-panel shape.
     label = block(".council-form label")
-    assert "font-size: 12px" in label and "letter-spacing: .04em" in label, label
-    assert "var(--council-muted)" in label, label
+    assert "font-size: 14px" in label, label
+    assert "var(--council-text)" in label, label
 
 
 def test_the_fields_keep_the_touch_floor_at_the_design_size():
     fields = block(".council-form input,\n.council-form textarea,\n.council-form select")
-    for prop in ("min-height: 44px", "padding: 10px 12px", "border-radius: 14px", "font-size: 15px"):
+    for prop in ("min-height: 44px", "padding: 10px 12px", "border-radius: 14px", "font-size: 16px"):
         assert prop in fields, f"{prop} missing: {fields}"
     area = block(".council-form textarea")
     assert "min-height: 92px" in area and "resize: vertical" in area, area

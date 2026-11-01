@@ -85,8 +85,12 @@ def test_a_lapsed_session_returns_to_the_login_panel_and_keeps_the_selection() -
     assert lapsed["panelHidden"] is False
     assert lapsed["badge"] == "로그인 필요"
     assert lapsed["status"] == STATUS_EXPIRED_MESSAGE
-    # The server's own failure projection is what the user reads, not a silent reset.
-    assert lapsed["draftKept"].startswith("생성 실패: 로그인이 필요합니다.")
+    # The failure is said on the notice line, not painted into the draft area,
+    # and the save button is blocked until a generation succeeds.
+    assert lapsed["notice"] == "생성 실패: 로그인이 필요합니다. 다시 로그인해 주세요."
+    assert lapsed["noticeTone"] == "error"
+    assert lapsed["draftKept"] == ""
+    assert lapsed["saveDisabled"] is True
 
 
 def test_one_card_click_opens_exactly_one_tool_and_the_next_closes_it() -> None:

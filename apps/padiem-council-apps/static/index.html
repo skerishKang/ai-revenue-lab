@@ -48,20 +48,14 @@
           <span class="council-theme-group" role="radiogroup" aria-label="디자인 국가" id="councilCountryGroup">
             <span class="council-theme-legend">디자인 국가</span>
             <button type="button" role="radio" aria-checked="true" data-country="kr">한국</button>
-            <button type="button" role="radio" aria-checked="false" data-country="us">미국</button>
-            <button type="button" role="radio" aria-checked="false" data-country="uk">영국</button>
-            <button type="button" role="radio" aria-checked="false" data-country="fr">프랑스</button>
             <!--
-              국가의 유일한 권한은 이 <select> 다. #6046 의 저장·요청·필터가 모두 이것을 읽고,
-              위 4개 버튼은 그 거울이다(버튼 → select.value + change, select change → 버튼 갱신).
-              시안대로 알약 4개로 보이게 두고, 통제 권한은 기존 계약에 그대로 둔다.
+              B10: 이 앱의 결과물 언어는 한국어 하나다. 영어·프랑스어 국가 선택은
+              화면에서 숨긴다. 국가 값의 권한은 계속 이 <select> 이며(저장·요청·필터가
+              모두 이것을 읽는다), 위 알약은 그 거울이다.
             -->
             <label class="council-country" for="councilCountry">콘텐츠 언어
               <select id="councilCountry" name="country" aria-label="콘텐츠 언어(국가)" tabindex="-1">
                 <option value="kr">한국어</option>
-                <option value="us">English (US)</option>
-                <option value="uk">English (UK)</option>
-                <option value="fr">Français</option>
               </select>
             </label>
           </span>
@@ -73,7 +67,7 @@
             <button type="button" role="radio" aria-checked="true" data-style="light">라이트</button>
             <button type="button" role="radio" aria-checked="false" data-style="minimal">미니멀</button>
           </span>
-          <span class="council-theme-note">국가는 결과물 언어와 화면 재료를 함께 바꿉니다. 타일은 그 재료를 어디에 쓸지만 정합니다.</span>
+          <span class="council-theme-note">결과물은 한국어로 작성됩니다. 스타일은 화면 재료의 역할과 성격만 바꿉니다.</span>
         </span>
       </span>
     </div>
@@ -81,7 +75,7 @@
   <main id="councilMain">
     <!-- 작업실: 업무를 고르면 히어로와 스트립이 물러나고 이 막대가 헤더 아래 흐름으로 앉는다. -->
     <div class="council-workspace-bar" id="councilWorkspaceBar" hidden>
-      <button type="button" class="council-back" id="councilBack">&larr; 시네마틱 홈으로</button>
+      <button type="button" class="council-back" id="councilBack">&larr; 처음으로</button>
       <span class="council-workspace-title" id="councilWorkspaceTitle"></span>
     </div>
     <section class="council-home" id="councilHome">
@@ -92,10 +86,10 @@
         </span>
         <p class="council-hero-quote" aria-hidden="true">
           <span>&ldquo;기술이 만드는 더 나은 민주주의,<br />AI가 의원님의 오늘을 응원합니다.&rdquo;</span>
-          <small>PEOPLE &middot; DEMOCRACY &middot; A BETTER TOMORROW</small>
+          <small>국민 &middot; 민주주의 &middot; 더 나은 내일</small>
         </p>
         <div class="council-hero-copy">
-          <p class="council-eyebrow" id="councilHeroEyebrow">PARLIAMENTARY AI STUDIO</p>
+          <p class="council-eyebrow" id="councilHeroEyebrow">국회 AI 업무 스튜디오</p>
           <h1 class="council-title" id="councilHeroTitle">국민을 위한<br /><em>더 나은 의정활동</em>, AI와 함께</h1>
           <p class="council-hero-lead">
             말 한 마디가 더 멀리 닿고, 한 번의 기록이 더 큰 변화를 만듭니다.<br />
@@ -109,7 +103,7 @@
       <section class="council-works" aria-labelledby="councilWorksTitle">
         <div class="council-works-head">
           <div class="council-works-intro">
-            <p class="council-eyebrow">AI WORK TOOLS</p>
+            <p class="council-eyebrow">AI 업무 도구</p>
             <h2 id="councilWorksTitle">의원실 업무 도구 3종</h2>
           </div>
           <p class="council-works-side">AI가 만드는,<br />더 효율적인 의정활동</p>
@@ -212,7 +206,7 @@
         사진 출처: Farruk Ahmed Bhuiyan &middot; Wikimedia Commons &middot; CC BY-SA 4.0 (한국 의사당 석양)
       </p>
       <p class="council-footer-note">
-        국가 선택은 결과물의 언어와 화면 디자인을 바꿉니다. 문서의 법적·절차적 정확성은 의원실이 확인합니다.
+        결과물은 한국어로 작성됩니다. 문서의 법적·절차적 정확성은 의원실이 확인합니다.
       </p>
     </footer>
   </main>
