@@ -42,19 +42,27 @@ def test_the_pause_still_says_what_is_and_is_not_possible() -> None:
 
 
 def test_the_owner_pause_contract_is_untouched() -> None:
-    # #5711: the notice and the drop-zone call are pinned by
-    # test_5568_pdfmd_ui_p1.py. Removing them is a product decision, not a
-    # copy edit, so this pins that they are still here.
+    # #5711: the pause sentence and the drop-zone call stay. What moved is when
+    # they may be painted — the harness in test_5568_pdfmd_ui_p1.py now asserts
+    # them after a paused answer instead of on the first paint.
     assert '"서비스 준비 중 · 신규 업로드 및 변환 일시 중단"' in PDFMD
-    assert 'dropCta.textContent = "업로드 일시 중단";' in PDFMD
-    assert "업로드 일시 중단" in PDFMD
+    assert '"업로드 일시 중단"' in PDFMD
+    assert 'workState = "checking"' in PDFMD, "the first paint must start as unknown, not as paused"
 
 
 def test_the_real_gate_is_still_the_server_answer_not_the_copy() -> None:
-    # The client paints the pause until the list route answers, and the route
-    # answers from the app state that only the COM2 host with the reviewed
-    # dependency sets. The copy never decides whether work is open.
+    # The route answers from the app state that only the COM2 host with the
+    # reviewed dependency sets, and the panel repaints once from that answer.
     assert '"new_work_enabled": not _new_work_disabled(request)' in ROUTES
     assert "app.state.pdfmd_com2_ready = host_flag and importlib.util.find_spec(\"pypdf\") is not None" in CPYTHON
-    assert "if (PDFMD_NEW_WORK_DISABLED && data.new_work_enabled === true) {" in PDFMD
-    assert "window.initPdfMdUtility(panel, true);" in PDFMD
+    assert 'const answer = data.new_work_enabled === true ? "open" : "paused";' in PDFMD
+    assert "if (answer !== workState) {" in PDFMD
+    # No answer at all is the other case that may claim the pause.
+    assert 'if (PDFMD_CHECKING) {' in PDFMD
+    assert 'window.initPdfMdUtility(panel, "paused");' in PDFMD
+    # An unconfirmed state never performs an action, but only a confirmed pause
+    # says so on screen.
+    assert "const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_CHECKING;" in PDFMD
+    assert "modeSel.disabled = workBlocked;" in PDFMD
+    assert "fileInput.disabled = workBlocked;" in PDFMD
+    assert 'if (workBlocked) return false;' in PDFMD

@@ -256,6 +256,7 @@ async function fetch(url) {
   requests.push(target);
   if (target.indexOf("/api/document-conversions?limit=") !== -1) {
     if (historyMode === "unauthorized") return json({ error: { code: "unauthorized" } }, 401);
+    if (historyMode === "open") return json({ jobs: jobs, new_work_enabled: true });
     return json({ jobs: jobs });
   }
   if (/\/markdown\?display=inline$/.test(target)) {
@@ -303,10 +304,26 @@ function buttonByText(label) {
 
 (async () => {
   ctx.window.initPdfMdUtility(panel);
+
+  // 0a) #6597 follow-up: the first paint knows nothing yet, so it must not
+  // claim a pause. It says it is checking and refuses the action.
+  const firstStatus = root.findAll(".pdfmd-status").map(text);
+  if (!firstStatus.some((t) => t.includes("확인 중"))) fail("FIRST_PAINT_NOT_CHECKING", firstStatus.join(" / "));
+  if (firstStatus.some((t) => t.includes("일시 중단"))) fail("FIRST_PAINT_CLAIMS_PAUSE", firstStatus.join(" / "));
+  const firstDrop = root.findAll(".pdfmd-drop")[0];
+  if (!firstDrop) fail("DROP_ZONE_MISSING");
+  if (firstDrop.getAttribute("role") !== null) fail("FIRST_PAINT_DROP_STILL_BUTTON");
+  const firstCta = firstDrop.querySelector(".pdfmd-drop-cta");
+  if (!firstCta || !text(firstCta).includes("확인 중")) fail("FIRST_PAINT_DROP_CTA", firstCta && text(firstCta));
+  if (root.querySelector("#pdfmdMode").disabled !== true) fail("FIRST_PAINT_MODE_ENABLED");
+  if (root.querySelector(".pdfmd-pc-pick").disabled !== true) fail("FIRST_PAINT_PC_PICK_ENABLED");
+
   await flush();
   await flush();
 
-  // 0) #5711: new work is paused; the COM2 notice replaces the picker action.
+  // 0b) #5711, same purpose, new moment: the pause notice appears once the
+  // server has answered that new work is paused (this fixture answers without
+  // the flag, which is the paused answer).
   const noticeText = root.findAll(".pdfmd-status").map(text).join(" ");
   if (!noticeText.includes("서비스 준비 중 · 신규 업로드 및 변환 일시 중단")) fail("PAUSE_NOTICE_MISSING", noticeText);
   const drop = root.findAll(".pdfmd-drop")[0];
@@ -376,8 +393,27 @@ function buttonByText(label) {
   if (!historyText.includes("로그인하면 작업 이력을 볼 수 있습니다.")) fail("GUEST_STATE_MISSING", historyText);
   if (historyText.includes("unauthorized")) fail("RAW_UNAUTHORIZED_LEAKED", historyText);
 
+  // 7) #6597 follow-up: the opened answer paints a usable uploader, and no
+  // pause sentence is left anywhere on it.
+  historyMode = "open";
+  ctx.window.initPdfMdUtility(panel);
+  await flush();
+  await flush();
+  // The PC note shares the .pdfmd-status class, so the check is on the words.
+  const openNotices = root.findAll(".pdfmd-status").map(text).join(" ");
+  if (openNotices.includes("확인 중") || openNotices.includes("일시 중단")) fail("OPEN_STATE_HAS_NOTICE", openNotices);
+  const openDrop = root.findAll(".pdfmd-drop")[0];
+  if (openDrop.getAttribute("role") !== "button") fail("OPEN_DROP_NOT_BUTTON", openDrop.getAttribute("role"));
+  if (root.querySelector("#pdfmdMode").disabled !== false) fail("OPEN_MODE_DISABLED");
+  const openPick = root.querySelector(".pdfmd-pc-pick");
+  if (openPick.disabled !== false) fail("OPEN_PC_PICK_DISABLED");
+  if (text(openPick).includes("확인 중") || text(openPick).includes("준비 중")) fail("OPEN_PC_PICK_LABEL", text(openPick));
+  if (root.findAll(".pdfmd-history-item").length !== 5) fail("OPEN_HISTORY_NOT_RENDERED");
+  if (text(panel.querySelector(".pdfmd-desc")).includes("시작할 수 없습니다")) fail("OPEN_STATE_CLAIMS_PAUSE");
+
   console.log(JSON.stringify({
     ok: true,
+    openStateOk: true,
     historyRows: rows.length,
     chips: chipPairs,
     meta: meta[0],
@@ -444,6 +480,11 @@ def test_item_cards_show_friendly_errors_and_correct_actions() -> None:
     assert "신규 업로드 및 변환 일시 중단" in payload["pauseNotice"]
     assert "업로드 일시 중단" in payload["dropCta"]
     assert payload["newJobHidden"] is True
+
+
+def test_the_opened_answer_paints_a_usable_uploader() -> None:
+    payload = _run_harness()
+    assert payload["openStateOk"] is True
 
 
 def test_preview_labels_markdown_and_guest_state() -> None:
