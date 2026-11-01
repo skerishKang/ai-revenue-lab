@@ -11,6 +11,7 @@ class AuthClientConfigTest(unittest.TestCase):
         self.assertEqual(set(client['redirect_uris']), {
             'https://lovetree-4-0.pages.dev/auth/callback',
             'https://ai-astra4-preview-auth-callb.lovetree-4-0.pages.dev/auth/callback',
+            'https://lovetree.padiem.net/auth/callback',
         })
         keys = client['jwks']['keys']
         self.assertEqual(len(keys), 2)
@@ -56,3 +57,14 @@ class AuthClientConfigTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class BookAiClientConfigTest(unittest.TestCase):
+    def test_b61_bookai_callback_and_public_key_only(self):
+        config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text(encoding='utf-8'))
+        client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b61']
+        self.assertEqual(client['redirect_uris'], ['https://bookai.padiem.net/auth/callback'])
+        keys = client['jwks']['keys']
+        self.assertEqual([key['kid'] for key in keys], ['b61-bookai-6affe050'])
+        self.assertTrue(all(key.get('kty') == 'EC' and key.get('crv') == 'P-256' and 'd' not in key for key in keys))
+
