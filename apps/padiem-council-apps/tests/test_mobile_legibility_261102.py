@@ -291,7 +291,9 @@ def test_the_desktop_keeps_its_measured_values(static_url):
     assert value["heroTitle"] == 44
     assert value["body"] == 16
     assert value["scrollWidth"] <= DESKTOP_WIDTH
-    assert value["skip"] == [87, 26]
+    # The skip link width depends on font rasterisation (87px locally, 88px on the
+    # CI runner); allow 2px, keep the height exact.
+    assert abs(value["skip"][0] - 87) <= 2 and value["skip"][1] == 26, value["skip"]
 
 
 def _archive_rows(url, width, height):
