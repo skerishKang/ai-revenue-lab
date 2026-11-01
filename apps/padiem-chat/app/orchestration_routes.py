@@ -347,12 +347,19 @@ async def api_orchestration(request: Request) -> JSONResponse:
             error = ChatPCDriveError("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.")
             error.__cause__ = exc
             return JSONResponse({"error": error.public_error()}, status_code=503)
+        from .pc_action_context import build_pc_action_context
+        action_context = build_pc_action_context(
+            stream_messages, user_text=user_text,
+            trusted_history=conversation_id is not None,
+            tool_results=(("web", grounding_context),),
+        ) if pc_context["pc_tools"] is not None else None
         stream = bridge.start_stream(
             user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=saved_id,
             pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
             session_id=pc_run_id, additional_system_context=grounding_context,
             product_identity=product_identity,
+            **({"pc_action_context": action_context} if action_context is not None else {}),
             **({"user_credential_ref": user_credential_ref,
                 "byok_selection": {"provider": custom.provider, "model": custom.model}}
                if user_credential_ref is not None else {}),

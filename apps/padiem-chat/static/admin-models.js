@@ -66,11 +66,18 @@
     return svg;
   }
 
-  function alertMessage(value, variant = "error") {
+  function appendErrorReference(target, code) {
+    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) {
+      target.appendChild(node("small", "참고 코드: " + code, "error-code"));
+    }
+  }
+
+  function alertMessage(value, variant = "error", code = "") {
     const notice = $("accessNotice");
     notice.hidden = !value;
     notice.className = "notice " + variant;
     notice.textContent = value || "";
+    appendErrorReference(notice, code);
   }
 
   function chosenAction() {
@@ -489,8 +496,9 @@
     } catch (err) {
       if (seq !== state.routeRequest) return;
       $("routeStatus").textContent = "사용 불가";
-      $("routeTable").replaceChildren(node("p",
-        "실행 경로 원장을 사용할 수 없습니다. (" + String(err.message) + ")", "placeholder"));
+      const warning = node("p", "실행 경로를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.", "placeholder");
+      appendErrorReference(warning, err?.message);
+      $("routeTable").replaceChildren(warning);
       $("routeEvents").replaceChildren(node("small", "이력 조회 불가"));
       updateModeBadge();
     }
@@ -562,7 +570,7 @@
       alertMessage("실행 경로 리비전 " + data.revision + " 저장 완료 · 다음 요청부터 적용됩니다", "success");
     } catch (err) {
       clearRoutePreview();
-      alertMessage("실행 경로 저장 실패: " + String(err.message));
+      alertMessage("실행 경로를 저장하지 못했습니다. 다시 시도해 주세요.", "error", err?.message);
     } finally {
       $("routeApplyBtn").disabled = false;
     }
@@ -718,7 +726,8 @@
       alertMessage(code === "authentication_required" ? "로그인 후 이용할 수 있습니다." :
         code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
         code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
-        "관리 데이터를 불러오지 못했습니다. (" + code + ")");
+        "관리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      appendErrorReference($("accessNotice"), code);
     }
   }
 
@@ -738,7 +747,9 @@
         root.append(row);
       }
     } catch (err) {
-      root.replaceChildren(node("small", "이력 조회 불가: " + String(err.message)));
+      const warning = node("p", "이력을 불러오지 못했습니다. 다시 시도해 주세요.");
+      appendErrorReference(warning, err?.message);
+      root.replaceChildren(warning);
     }
   }
 
@@ -759,7 +770,7 @@
       alertMessage("정책 리비전 " + data.revision + " 저장 완료 · 실제 제품 실행은 미적용", "success");
     } catch (err) {
       clearPreview();
-      alertMessage("정책 저장 실패: " + String(err.message));
+      alertMessage("정책을 저장하지 못했습니다. 다시 시도해 주세요.", "error", err?.message);
     } finally {
       $("applyBtn").disabled = false;
     }
@@ -780,7 +791,7 @@
       renderPreview(result);
       alertMessage("");
     } catch (err) {
-      alertMessage("롤백 미리보기 실패: " + String(err.message));
+      alertMessage("되돌릴 내용을 미리 볼 수 없습니다. 다시 시도해 주세요.", "error", err?.message);
     }
   }
 

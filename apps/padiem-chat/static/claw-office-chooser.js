@@ -32,17 +32,24 @@
     return candidates;
   }
 
+  function safeError(message, code) {
+    const error = new Error(message);
+    error.uiMessageSafe = true;
+    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
+    return error;
+  }
   async function readJson(url, init) {
     const response = await fetch(url, { credentials: "same-origin", cache: "no-store", ...init });
     const body = await response.json().catch(() => null);
     if (!response.ok || !body || body.ok !== true) {
       const code = body?.error?.code;
-      throw new Error(
+      throw safeError(
         code === "office_chooser_unconfigured"
           ? "PC 파일 선택 기능이 아직 연결되지 않았습니다."
           : code === "unauthorized"
             ? "로그인 후 다시 시도해 주세요."
-            : "승인된 파일 요청을 확인하지 못했습니다."
+            : "승인된 파일 요청을 확인하지 못했습니다.",
+        code
       );
     }
     return body;
@@ -71,6 +78,15 @@
       for (const button of [find, approve, deny, checkResult]) if (button) button.disabled = value;
     };
     const setMessage = (text) => { notice.textContent = text; };
+    const reportError = (error) => {
+      setMessage(error?.uiMessageSafe ? error.message : "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      if (typeof error?.code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(error.code)) {
+        const note = documentRoot.createElement("small");
+        note.className = "error-code";
+        note.textContent = "참고 코드: " + error.code;
+        notice.appendChild(note);
+      }
+    };
 
     function currentRun() {
       const model = window.__padiemClawLocalHandoff?.getViewModel?.();
@@ -99,7 +115,7 @@
       try {
         const body = await readJson("/api/claw/office/candidates?run_id=" + encodeURIComponent(runId));
         const candidates = parseCandidates(body, runId);
-        if (!candidates) throw new Error("파일 목록 응답을 검증할 수 없습니다.");
+        if (!candidates) throw safeError("파일 목록 응답을 검증할 수 없습니다.");
         active = { runId, candidates };
         for (const row of candidates) {
           const item = documentRoot.createElement("li");
@@ -116,7 +132,7 @@
           ? (candidates.length + "개 발견. 읽을 파일을 선택하면 별도의 승인을 요청합니다.")
           : "승인된 폴더에 지원하는 견적서가 없습니다.");
       } catch (error) {
-        setMessage(error.message);
+        reportError(error);
       } finally {
         setBusy(false);
       }
@@ -138,7 +154,7 @@
         if (body.run_id !== active.runId || body.status !== "awaiting_approval"
             || body.approval_required !== true || body.processing_started !== false
             || body.file_read_authorized !== false || typeof body.engine_run_id !== "string"
-            || !RUN.test(body.engine_run_id)) throw new Error("P01 승인 대기 상태를 확인하지 못했습니다.");
+            || !RUN.test(body.engine_run_id)) throw safeError("승인 대기 상태를 확인하지 못했습니다.");
         // B62 decision endpoint is keyed to the owner-scoped Hark run, NOT
         // the Engine-internal P01 run. Its durable handoff resolves P01 run
         // and canonical continuation server-side. Do not send Engine IDs.
@@ -148,7 +164,7 @@
         group.hidden = false;
         setMessage("승인 전에는 파일을 읽거나 실행하지 않습니다.");
       } catch (error) {
-        setMessage(error.message);
+        reportError(error);
       } finally {
         setBusy(false);
       }
@@ -166,7 +182,7 @@
           body: JSON.stringify({ run_id: submitted.runId, decision }),
         });
         if (body.result?.run_id !== submitted.runId) {
-          throw new Error("다른 실행의 승인 결과는 적용할 수 없습니다.");
+          throw safeError("다른 실행의 승인 결과는 적용할 수 없습니다.");
         }
         pending = null;
         group.hidden = true;
@@ -177,7 +193,7 @@
           ? "승인이 거절되었습니다. 파일을 읽지 않았습니다."
           : "Engine 승인 처리가 완료됐습니다. 실제 파일 처리 결과는 실행 이력에서 확인해 주세요.");
       } catch (error) {
-        setMessage(error.message);
+        reportError(error);
       } finally {
         setBusy(false);
       }
@@ -244,7 +260,7 @@
           ? "실행이 끝났고 결과 파일을 열 수 있습니다."
           : "실행은 끝났지만 지금 꺼낼 수 있는 결과 파일이 없습니다.");
       } catch (error) {
-        setMessage(error.message);
+        reportError(error);
       } finally {
         setBusy(false);
       }

@@ -74,7 +74,7 @@ EXIT_USAGE = 2
 POINTER_NAME = "current_generation.json"
 GENERATIONS_DIRNAME = "generations"
 DEFAULT_LABEL = "chat"
-#: ``apps/padiem-chat/migrations`` — the 001…079 set the local host applies.
+#: ``apps/padiem-chat/migrations`` — the 001…080 set the local host applies.
 DEFAULT_MIGRATIONS_DIR = (
     Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "migrations"
 )
@@ -261,7 +261,7 @@ def seed_local_ledger(
     """Mark exactly the export's applied migrations in the host's own ledger.
 
     The staging database is a *populated* copy, so the CPython host must not
-    replay 001…079 over it. Only names the export itself applied are recorded,
+    replay 001…080 over it. Only names the export itself applied are recorded,
     so a pending tail stays pending until it is really applied, while leaving
     wrangler's ``d1_migrations`` untouched for audit.
     """
@@ -639,7 +639,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--migrations-dir", default=str(DEFAULT_MIGRATIONS_DIR),
-        help="apps/padiem-chat/migrations for the 001…079 ledger check",
+        help="apps/padiem-chat/migrations for the 001…080 ledger check",
     )
     parser.add_argument(
         "--force", action="store_true",

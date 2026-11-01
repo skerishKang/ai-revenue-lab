@@ -61,7 +61,8 @@ LEDGER_TABLE = "d1_migrations"
 DESTRUCTIVE_TOKENS = ("DROP TABLE", "DROP COLUMN", "DROP INDEX")
 IDENTIFIER_RE = re.compile(r"\A[A-Za-z0-9_]+\Z")
 DATABASE_ID_RE = re.compile(r"\A[0-9a-fA-F-]{32,36}\Z")
-MIGRATION_FILE_RE = re.compile(r"\A(\d{3})_[A-Za-z0-9._-]+\.sql\Z")
+MIGRATION_FILE_RE = re.compile(r"\A(\d{3})[a-z]?_[A-Za-z0-9._-]+\.sql\Z")
+DATA_MIGRATIONS_REQUIRE_APPLY = frozenset({"080a_claw_document_metadata_user_id_backfill.sql"})
 READ_ONLY_RE = re.compile(r"\A(SELECT|PRAGMA)\b", re.IGNORECASE)
 
 APPS: dict[str, dict[str, Any]] = {
@@ -487,7 +488,9 @@ def classify(
             if state == "absent":
                 missing.append(name)
             continue
-        if state == "present":
+        if name in DATA_MIGRATIONS_REQUIRE_APPLY:
+            apply.append(name)
+        elif state == "present":
             seed.append(name)
         elif state == "unprovable" and baseline:
             # The first-run baseline records these because the earlier reviewed

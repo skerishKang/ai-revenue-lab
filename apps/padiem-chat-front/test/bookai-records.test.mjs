@@ -30,7 +30,7 @@ for(const method of ['GET','POST']) {
     const response=await handle(new Request('https://chat.padiem.net/api/bookai/records',
       {method,headers,body:method==='POST'?'{"records":[]}':undefined}),
       {...env,CHAT_WORKER:{fetch:async()=>{fallbackCalls++;return Response.json({records:[]});}}});
-    assert.equal(response.status,503);
+    assert.equal(response.status,502);
     assert.equal(fallbackCalls,0);
   });
 }

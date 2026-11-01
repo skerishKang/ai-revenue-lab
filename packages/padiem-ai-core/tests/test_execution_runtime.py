@@ -471,3 +471,19 @@ def test_model_policy_invalid_max_retries_fails_closed_before_b14(retries) -> No
 
     assert info.value.code == "invalid_execution_request"
     assert executor.calls == []
+
+
+@pytest.mark.parametrize(("raw", "expected"), [
+    ("<thought>private</thought>Answer", "Answer"),
+    ("<thinking>private</thinking>Answer", "Answer"),
+    ("Normal answer", "Normal answer"),
+])
+def test_thought_content_removed_from_final_answer(raw, expected):
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=FakeExecutor(result=B14ExecutionResult(answer=raw)))
+    assert run(runtime.run(request())).answer == expected
+
+
+def test_unclosed_thought_is_not_returned_as_answer():
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=FakeExecutor(result=B14ExecutionResult(answer="<thought>private")))
+    with pytest.raises(ValueError):
+        run(runtime.run(request()))

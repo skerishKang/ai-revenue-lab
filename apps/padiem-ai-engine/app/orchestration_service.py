@@ -463,6 +463,34 @@ def _validated_pc_declared_plan(payload: Any) -> str | None:
     return declared
 
 
+def _validated_pc_action_context(payload: Any) -> tuple[dict[str, Any], ...] | None:
+    """Validate the separate role/provenance record on the existing PC wire.
+
+    The field never enters ExecutionRequest or the model's messages. It is
+    accepted only on a canonical PC plan or native PC-tools request; a plain
+    orchestration caller cannot turn itself into a PC request with metadata.
+    """
+    if not isinstance(payload, Mapping) or "pc_action_context" not in payload:
+        return None
+    from app.pc_tools_turn import parse_pc_tools
+    from app.pc_action_harness import parse_pc_action_context
+
+    try:
+        plan = _parse_agent_plan(payload.get("agent_plan"))
+        if _canonical_pc_plan(payload.get("app_id"), plan) is None and parse_pc_tools(payload) is None:
+            raise ServiceContractError(
+                "invalid_pc_action_context", "PC action context requires a canonical PC request.",
+                status_code=422,
+            )
+        if payload["pc_action_context"] is None:
+            raise ValueError("An explicit context must contain records")
+        return parse_pc_action_context(payload["pc_action_context"])
+    except (TypeError, ValueError):
+        raise ServiceContractError(
+            "invalid_pc_action_context", "PC action context is invalid.", status_code=422,
+        ) from None
+
+
 def _validated_pc_tool_arguments(
     payload: Any,
 ) -> dict[str, dict[str, Any]] | None:
@@ -770,6 +798,7 @@ class OrchestrationEngineService:
         exec_req: ExecutionRequest,
         declared_plan: str | None = None,
         initial_decision: Mapping[str, Any] | None = None,
+        pc_action_context: Sequence[Mapping[str, Any]] | None = None,
     ) -> OrchestrationRequest | ServiceResponse:
         """Bind the owner-selected step driver to the exact product PC plan.
 
@@ -831,6 +860,14 @@ class OrchestrationEngineService:
         elif declared_plan is not None:
             return _service_error(
                 "pc_query_model_unavailable", "PC request scope admission is unavailable.",
+                status_code=503,
+            )
+        configure_action = getattr(driver, "configure_action_context", None)
+        if callable(configure_action):
+            configure_action(pc_action_context or ())
+        elif pc_action_context is not None:
+            return _service_error(
+                "pc_query_model_unavailable", "PC action evidence inspection is unavailable.",
                 status_code=503,
             )
         return replace(orch_req, agent_step_driver=driver)
@@ -1087,6 +1124,7 @@ class OrchestrationEngineService:
         }
         try:
             _validated_pc_declared_plan(payload)
+            _validated_pc_action_context(payload)
             from app.pc_tools_turn import parse_pc_tools
             parse_pc_tools(payload)
             _, exec_req, ctx = build_execution_request(exec_payload)
@@ -1187,6 +1225,7 @@ class OrchestrationEngineService:
         attached = self._attach_pc_query_step_driver(
             app_id=app_id, orch_req=orch_req, exec_req=exec_req,
             declared_plan=payload.get("declared_plan"),
+            pc_action_context=_validated_pc_action_context(payload),
         )
         if isinstance(attached, ServiceResponse):
             return attached
@@ -1796,6 +1835,7 @@ class OrchestrationEngineService:
             attached = self._attach_pc_query_step_driver(
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
                 declared_plan=payload.get("declared_plan"),
+                pc_action_context=_validated_pc_action_context(payload),
             )
             if isinstance(attached, ServiceResponse):
                 return attached
@@ -1820,9 +1860,9 @@ class OrchestrationEngineService:
         from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
 
         declared_identity_token = None
-        if "declared_plan" in payload:
+        if "declared_plan" in payload or "pc_action_context" in payload:
             # The stream task needs the same material replay identity as JSON.
-            # Leave the legacy context untouched when this field is absent.
+            # Leave legacy requests untouched when both fields are absent.
             from app.orchestration_idempotency_service import _initial_execution_fingerprint
             from app.idempotency_identity import (
                 set_canonical_idempotency_fingerprint,

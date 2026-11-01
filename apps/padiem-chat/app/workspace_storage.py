@@ -15,10 +15,36 @@ from padiem_ai_core.document_normalization import DocumentNormalizationError, va
 GENERATED_DOCUMENT_RETENTION_DAYS = 30
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-MAX_WEB_XLSX_BYTES = 1_048_576
+MAX_WEB_XLSX_BYTES = 1024 * 1024 * 1024
+#: Above this size the original is uploaded straight to the COM2 file lane and
+#: this store keeps only a reference; at or below it the bytes stay here. The
+#: file-lane attachment lane splits at the same point.
+WEB_XLSX_INLINE_MAX_BYTES = 10_000_000
+_WEB_XLSX_FILE_LANE_MARKER = "filelane:"
+_FILE_LANE_ID_RE = re.compile(r"^file_[0-9a-f]{32}$")
 WEB_XLSX_RETENTION = timedelta(days=1)
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def _web_xlsx_filename(filename: Any) -> str:
+    if (type(filename) is not str or not 1 <= len(filename) <= 155
+            or filename in (".", "..")
+            or filename != filename.strip()
+            or any(ord(ch) < 32 or ch in '<>:"/\\|?*' for ch in filename)
+            or not filename.lower().endswith(".xlsx")):
+        raise ValueError("bounded XLSX basename required")
+    return filename
+
+
+def web_xlsx_file_lane_id(metadata: ClawDocumentMetadata) -> str | None:
+    """The file-lane id behind one original, or None when the bytes are in R2."""
+
+    tail = metadata.object_key.rpartition("/")[2]
+    if not tail.startswith(_WEB_XLSX_FILE_LANE_MARKER):
+        return None
+    file_id = tail[len(_WEB_XLSX_FILE_LANE_MARKER):]
+    return file_id if _FILE_LANE_ID_RE.fullmatch(file_id) else None
 
 
 class WorkspaceStorageError(RuntimeError):
@@ -39,6 +65,9 @@ class ClawDocumentMetadata:
     byte_length: int
     created_at: datetime
     expires_at: datetime
+    # #6323: the product user who minted the document. None only for rows that
+    # predate 080_claw_document_metadata_user_id.sql, which are never readable.
+    user_id: str | None = None
 
     def public_projection(self) -> dict[str, object]:
         return {
@@ -107,6 +136,7 @@ def _parse_time(value: Any) -> datetime:
 
 def _metadata_from_row(row: dict[str, Any]) -> ClawDocumentMetadata:
     try:
+        owner = row.get("user_id")
         return ClawDocumentMetadata(
             document_id=str(row["document_id"]),
             tenant_id=str(row["tenant_id"]),
@@ -116,6 +146,9 @@ def _metadata_from_row(row: dict[str, Any]) -> ClawDocumentMetadata:
             byte_length=int(row["byte_length"]),
             created_at=_parse_time(row["created_at"]),
             expires_at=_parse_time(row["expires_at"]),
+            # A pre-migration row carries no owner. It stays None so every
+            # owner-bound read refuses it instead of attributing it.
+            user_id=str(owner) if isinstance(owner, str) and owner else None,
         )
     except (KeyError, TypeError, ValueError) as exc:
         raise WorkspaceStorageError("workspace document metadata is invalid") from exc
@@ -140,12 +173,16 @@ class D1ClawDocumentMetadataStore:
         return _row_to_dict(await stmt.first())
 
     async def insert(self, metadata: ClawDocumentMetadata) -> None:
+        # #6323: every new row names its owner. An ownerless insert is a
+        # programming error, not an unreadable document.
+        owner = _safe_identifier("user_id", metadata.user_id or "")
         await self._run(
             "INSERT INTO claw_document_metadata "
-            "(document_id, tenant_id, object_key, filename, media_type, byte_length, created_at, expires_at, deleted_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)",
+            "(document_id, tenant_id, user_id, object_key, filename, media_type, byte_length, created_at, expires_at, deleted_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)",
             metadata.document_id,
             metadata.tenant_id,
+            owner,
             metadata.object_key,
             metadata.filename,
             metadata.media_type,
@@ -156,9 +193,28 @@ class D1ClawDocumentMetadataStore:
 
     async def get_active(self, document_id: str) -> ClawDocumentMetadata | None:
         row = await self._first(
-            "SELECT document_id, tenant_id, object_key, filename, media_type, byte_length, created_at, expires_at "
+            "SELECT document_id, tenant_id, user_id, object_key, filename, media_type, byte_length, created_at, expires_at "
             "FROM claw_document_metadata WHERE document_id=? AND deleted_at IS NULL",
             document_id,
+        )
+        return _metadata_from_row(row) if row else None
+
+    async def get_active_owned(
+        self, document_id: str, user_id: str
+    ) -> ClawDocumentMetadata | None:
+        """The one active row this user minted; a foreign or ownerless row is None.
+
+        The requester is bound into the SQL, so an empty owner (pre-080 rows)
+        and a different user are the same answer.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        row = await self._first(
+            "SELECT document_id, tenant_id, user_id, object_key, filename, media_type, byte_length, created_at, expires_at "
+            "FROM claw_document_metadata WHERE document_id=? AND user_id=? AND deleted_at IS NULL",
+            document_id,
+            user_id,
         )
         return _metadata_from_row(row) if row else None
 
@@ -174,7 +230,7 @@ class D1ClawDocumentMetadataStore:
         if type(limit) is not int or not 1 <= limit <= 40:
             raise ValueError("bounded web office listing required")
         stmt = self.db.prepare(
-            "SELECT document_id, tenant_id, object_key, filename, media_type, byte_length, created_at, expires_at "
+            "SELECT document_id, tenant_id, user_id, object_key, filename, media_type, byte_length, created_at, expires_at "
             "FROM claw_document_metadata WHERE tenant_id=? AND deleted_at IS NULL "
             "AND substr(object_key, 1, length(?))=? AND expires_at>? "
             "ORDER BY created_at DESC, document_id DESC LIMIT ?"
@@ -235,11 +291,13 @@ class WorkspaceDocumentStore:
         self,
         *,
         tenant_id: str,
+        user_id: str,
         filename: str,
         body: bytes,
         now: datetime | None = None,
     ) -> ClawDocumentMetadata:
         tenant = _safe_identifier("tenant_id", tenant_id)
+        owner = _safe_identifier("user_id", user_id)
         if not isinstance(body, (bytes, bytearray, memoryview)):
             raise ValueError("document body must be bytes")
         payload = bytes(body)
@@ -259,6 +317,7 @@ class WorkspaceDocumentStore:
             byte_length=len(payload),
             created_at=created_at,
             expires_at=expires_at,
+            user_id=owner,
         )
         try:
             result = self.r2_bucket.put(
@@ -284,11 +343,15 @@ class WorkspaceDocumentStore:
         *,
         tenant_id: str,
         document_id: str,
+        user_id: str,
         now: datetime | None = None,
     ) -> tuple[ClawDocumentMetadata, bytes] | None:
         tenant = _safe_identifier("tenant_id", tenant_id)
         doc_id = _safe_identifier("document_id", document_id)
-        metadata = await self.metadata_store.get_active(doc_id)
+        owner = _safe_identifier("user_id", user_id)
+        # #6323: the row is selected by its owner, not only its tenant. A row
+        # with no recorded owner (pre-080) and a foreign row are both None.
+        metadata = await self.metadata_store.get_active_owned(doc_id, owner)
         if metadata is None:
             return None
         if metadata.tenant_id != tenant:
@@ -346,13 +409,14 @@ class WorkspaceDocumentStore:
     def _web_xlsx_projection(metadata: ClawDocumentMetadata, prefix: str) -> dict[str, Any]:
         relative = metadata.object_key.removeprefix(prefix)
         parts = relative.split("/")
+        lane_file_id = web_xlsx_file_lane_id(metadata)
         if (not metadata.object_key.startswith(prefix)
                 or len(parts) != 3 or parts[0] != metadata.document_id
                 or len(parts[1]) != 64 or not re.fullmatch(r"[0-9a-f]{64}", parts[1])
-                or parts[2] != metadata.filename
+                or (parts[2] != metadata.filename and lane_file_id is None)
                 or metadata.media_type != XLSX_MEDIA_TYPE):
             raise WorkspaceStorageError("web XLSX metadata scope invalid")
-        return {
+        projection = {
             "document_id": metadata.document_id,
             "filename": metadata.filename,
             "size_bytes": metadata.byte_length,
@@ -361,17 +425,17 @@ class WorkspaceDocumentStore:
             "original_immutable": True,
             "processing_authorized": False,
         }
+        if lane_file_id is not None:
+            # The bytes are the file lane's; the browser can only reach them
+            # through this owner-scoped download, never by naming the id alone.
+            projection["file_id"] = lane_file_id
+        return projection
 
     async def put_web_xlsx(self, *, tenant_id: str, owner_id: str,
                            workspace_id: str, filename: str, body: bytes,
                            now: datetime | None = None) -> dict[str, Any]:
         prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
-        if (type(filename) is not str or not 1 <= len(filename) <= 155
-                or filename in (".", "..")
-                or filename != filename.strip()
-                or any(ord(ch) < 32 or ch in '<>:"/\\|?*' for ch in filename)
-                or not filename.lower().endswith(".xlsx")):
-            raise ValueError("bounded XLSX basename required")
+        _web_xlsx_filename(filename)
         if not isinstance(body, bytes) or not 0 < len(body) <= MAX_WEB_XLSX_BYTES:
             raise ValueError("web Office XLSX exceeds upload limit")
         try:
@@ -396,6 +460,7 @@ class WorkspaceDocumentStore:
             filename=filename, media_type=XLSX_MEDIA_TYPE,
             byte_length=len(body), created_at=current,
             expires_at=current + WEB_XLSX_RETENTION,
+            user_id=_safe_identifier("owner_id", owner_id),
         )
         try:
             written = self.r2_bucket.put(
@@ -412,6 +477,43 @@ class WorkspaceDocumentStore:
             except Exception:
                 pass
             raise WorkspaceStorageError("web XLSX write failed") from exc
+        return self._web_xlsx_projection(metadata, prefix)
+
+    async def put_web_xlsx_reference(self, *, tenant_id: str, owner_id: str,
+                                     workspace_id: str, filename: str,
+                                     file_id: str, source_sha256: str,
+                                     size_bytes: int,
+                                     now: datetime | None = None) -> dict[str, Any]:
+        """Record one original the COM2 file lane already stored.
+
+        The bytes never enter this process: the row keeps the lane id beside the
+        owner, workspace and digest the selection and approval contracts read.
+        """
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        _web_xlsx_filename(filename)
+        if not isinstance(file_id, str) or not _FILE_LANE_ID_RE.fullmatch(file_id):
+            raise ValueError("file lane id required")
+        if (not isinstance(source_sha256, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", source_sha256)):
+            raise ValueError("source fingerprint required")
+        if type(size_bytes) is not int or not 0 < size_bytes <= MAX_WEB_XLSX_BYTES:
+            raise ValueError("web Office XLSX exceeds upload limit")
+        current = now or _utcnow()
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("aware timestamp required")
+        doc_id = _document_id()
+        key = f"{prefix}{doc_id}/{source_sha256}/{_WEB_XLSX_FILE_LANE_MARKER}{file_id}"
+        metadata = ClawDocumentMetadata(
+            document_id=doc_id, tenant_id=tenant_id, object_key=key,
+            filename=filename, media_type=XLSX_MEDIA_TYPE,
+            byte_length=size_bytes, created_at=current,
+            expires_at=current + WEB_XLSX_RETENTION,
+            user_id=_safe_identifier("owner_id", owner_id),
+        )
+        try:
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            raise WorkspaceStorageError("web XLSX reference write failed") from exc
         return self._web_xlsx_projection(metadata, prefix)
 
     async def list_web_xlsx(self, *, tenant_id: str, owner_id: str,
@@ -438,7 +540,7 @@ class WorkspaceDocumentStore:
         """
         prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
         doc_id = _safe_identifier("document_id", document_id)
-        metadata = await self.metadata_store.get_active(doc_id)
+        metadata = await self.metadata_store.get_active_owned(doc_id, owner_id)
         if metadata is None or metadata.tenant_id != tenant_id:
             return None
         if not metadata.object_key.startswith(prefix + doc_id + "/"):
@@ -453,15 +555,19 @@ class WorkspaceDocumentStore:
                            now: datetime | None = None) -> tuple[dict[str, Any], bytes] | None:
         prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
         doc_id = _safe_identifier("document_id", document_id)
-        metadata = await self.metadata_store.get_active(doc_id)
+        metadata = await self.metadata_store.get_active_owned(doc_id, owner_id)
         if metadata is None or metadata.tenant_id != tenant_id:
             return None
         # Check owner/workspace + immutable content digest BEFORE touching R2.
         if not metadata.object_key.startswith(prefix + doc_id + "/"):
             return None
+        if web_xlsx_file_lane_id(metadata) is not None:
+            # The lane owns these bytes; a caller that needs them must stream
+            # from the lane instead of materializing the whole body here.
+            raise WorkspaceStorageError("web XLSX source is served by the file lane")
         projection = self._web_xlsx_projection(metadata, prefix)
         result = await self.get_for_tenant(
-            tenant_id=tenant_id, document_id=doc_id, now=now,
+            tenant_id=tenant_id, document_id=doc_id, user_id=owner_id, now=now,
         )
         if result is None:
             return None
@@ -581,6 +687,7 @@ class WorkspaceDocumentStore:
             filename=verified["filename"], media_type=XLSX_MEDIA_TYPE,
             byte_length=len(payload), created_at=now,
             expires_at=min(source_expires, now + WEB_XLSX_RETENTION),
+            user_id=owner,
         )
         try:
             written = self.r2_bucket.put(
@@ -643,7 +750,7 @@ class WorkspaceDocumentStore:
             tenant_id=tenant, owner_id=owner, workspace_id=workspace,
             document_id=source_id,
         )
-        record = await self.metadata_store.get_active(copy_id)
+        record = await self.metadata_store.get_active_owned(copy_id, owner)
         prefix = (
             f"workspaces/{tenant}/claw/web-office-workcopies/"
             f"{owner}/{workspace}/{run}/{source_id}/{copy_id}/"
@@ -716,6 +823,7 @@ class WorkspaceDocumentStore:
             media_type=XLSX_MEDIA_TYPE,
             byte_length=len(revision.revised_xlsx), created_at=now,
             expires_at=min(record.expires_at, now + WEB_XLSX_RETENTION),
+            user_id=owner,
         )
         if metadata.expires_at <= now:
             raise WorkspaceStorageAccessError("approved workcopy expired")

@@ -68,7 +68,7 @@ class Com2ConversionWorker:
         for claim in await self._ledger.working_items():
             item, user_id = claim.item, claim.user_id
             markdown_key = markdown_object_key(user_id, item.job_id, item.id)
-            markdown = self._objects.get(markdown_key)
+            markdown = await asyncio.to_thread(self._objects.get, markdown_key)
             if markdown is not None:
                 await self._ledger.complete_item(
                     user_id,

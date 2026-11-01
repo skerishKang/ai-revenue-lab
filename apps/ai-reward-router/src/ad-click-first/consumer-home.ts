@@ -132,7 +132,7 @@ export function buildAdClickFirstConsumerHome(
     hero: Object.freeze({
       eyebrow: 'B64 AI Reward Router',
       title: '오늘의 추천 수익 기회',
-      description: '검증된 조건과 보상만 보여드립니다.',
+      description: '공개된 수익 기회와 확인된 참여 조건을 살펴보세요.',
     }),
     sections: Object.freeze([
       Object.freeze({

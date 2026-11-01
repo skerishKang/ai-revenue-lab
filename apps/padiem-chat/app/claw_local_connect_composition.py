@@ -38,6 +38,7 @@ Contract markers
 
 from __future__ import annotations
 
+import asyncio
 import json
 import urllib.error
 import urllib.request
@@ -111,6 +112,14 @@ class NonprodBrokerPairingConnectPort:
         self.allowed_owner_ids = frozenset(owners)
         self._now_factory = now_factory or (
             lambda: datetime.now(timezone.utc).replace(microsecond=0)
+        )
+
+    async def issue_pairing_challenge_async(self, *, owner_id, conversation_id, now):
+        # The loopback client uses urllib; keep its exact contract but do not
+        # wait for the broker while holding the ASGI event loop.
+        return await asyncio.to_thread(
+            self.issue_pairing_challenge,
+            owner_id=owner_id, conversation_id=conversation_id, now=now,
         )
 
     def issue_pairing_challenge(

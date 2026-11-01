@@ -69,7 +69,9 @@ def test_real_pdf_bytes_are_inline_only_after_owner_verified_read():
     assert resp.headers["cross-origin-resource-policy"] == "same-origin"
     assert resp.headers["x-frame-options"] == "SAMEORIGIN"
     assert "no-store" in resp.headers["cache-control"]
-    store.get_for_tenant.assert_awaited_once_with(tenant_id="tenant_a", document_id=ID)
+    store.get_for_tenant.assert_awaited_once_with(
+        tenant_id="tenant_a", document_id=ID, user_id="owner_a"
+    )
     resolver.assert_awaited_once()
 
 
@@ -150,7 +152,7 @@ def test_no_new_storage_authority_and_download_route_unchanged():
     preview = (root / "claw_artifact_preview_routes.py").read_text(encoding="utf-8")
     app = (root / "app_factory.py").read_text(encoding="utf-8")
     assert 'from .claw_routes import _owns_generated_document, _resolve_canonical_owner' in preview
-    assert 'store.get_for_tenant(tenant_id=tenant, document_id=document_id)' in preview
+    assert 'tenant_id=tenant, document_id=document_id, user_id=product_user_id' in preview
     assert 'Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact' in app
     assert 'claw_artifact_inline_preview' in app
     assert "put_generated_docx" not in preview

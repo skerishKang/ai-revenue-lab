@@ -190,6 +190,9 @@ class OrchestrationRequest:
     require_verification: bool = False
     recovery_policy: AgentRecoveryPolicy | None = None
     max_retries: int = 3
+    # Server-authored conversation provenance for the PC execution guard.
+    # Separate from model messages/additional_system_context; never a prompt.
+    pc_action_context: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.execution_request, ExecutionRequest):

@@ -129,7 +129,7 @@ async def test_reference_cannot_select_paths_or_origins(item):
 
 def test_browser_file_lane_routing_and_raw_file_upload():
     static = Path(__file__).resolve().parents[1] / "static"
-    source = (static / "file-lane.js").read_text()
+    source = (static / "file-lane.js").read_text(encoding="utf-8")
     script = 'global.window=globalThis;\n' + source + r'''
 const assert = require("node:assert/strict");
 (async()=>{
@@ -164,6 +164,14 @@ const assert = require("node:assert/strict");
   assert.equal(calls[2].options.body,file); // no FileReader/arrayBuffer/base64
   assert.equal(calls[2].options.credentials,"include");
   assert.equal(calls[1].options.body,JSON.stringify({size_bytes:10_000_000}));
+  global.fetch=async()=>({ok:false,json:async()=>({ok:false,error:{code:"invalid_request",message:"SECRET stack trace"}})});
+  await assert.rejects(api.upload(file), error =>
+    error.message === "첨부할 파일을 확인한 뒤 다시 시도해 주세요." &&
+    error.code === "invalid_request" && !error.message.includes("SECRET"));
+  global.fetch=async()=>({ok:false,json:async()=>({ok:false,error:{code:"unexpected_failure",message:"SECRET stack trace"}})});
+  await assert.rejects(api.upload(file), error =>
+    error.message === "파일 업로드를 준비하지 못했습니다. 다시 시도해 주세요." &&
+    error.code === "unexpected_failure" && !error.message.includes("SECRET"));
   console.log("PASS");
 })().catch(e=>{console.error(e);process.exit(1)});
 '''
