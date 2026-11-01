@@ -30,7 +30,11 @@ from starlette.responses import Response
 from .auth_routes import auth_ready, current_user_id
 from .claw_memory_routes import _resolve_memory_workspace
 from .tus_core import TusLane, error, tus_creation, tus_resource
-from .workspace_storage import MAX_WEB_XLSX_BYTES, XLSX_MEDIA_TYPE
+from .workspace_storage import (
+    MAX_WEB_XLSX_BYTES,
+    WEB_XLSX_INLINE_MAX_BYTES,
+    XLSX_MEDIA_TYPE,
+)
 
 LANE_NAME = "web_xlsx"
 WEB_XLSX_TUS_COLLECTION_PATH = "/api/claw/office/web-sources/tus"
@@ -86,6 +90,23 @@ async def _finalize_web_xlsx(request: Request, data_path: str, meta: dict) -> di
     if store is None:
         return _unavailable()
     scope = meta["scope"]
+    # The Owner's 10 MiB boundary. At or below it the existing in-memory store
+    # call is unchanged. Above it the archive is judged **from the file** and the
+    # store is handed the file itself, so a large original never becomes one
+    # `bytes` object on the way in.
+    if int(meta["length_bytes"]) > WEB_XLSX_INLINE_MAX_BYTES:
+        try:
+            file = await store.put_web_xlsx_from_path(
+                tenant_id=scope["workspace_id"], owner_id=scope["user_id"],
+                workspace_id=scope["workspace_id"],
+                filename=str(meta["filename"]), source_path=data_path,
+            )
+        except ValueError:
+            return {"status": 422, "body": {"ok": False,
+                                            "error": {"code": "invalid_web_xlsx_file"}}}
+        except Exception:
+            return _unavailable()
+        return _stored(file)
     try:
         with open(data_path, "rb") as data:
             body = data.read()
@@ -102,6 +123,11 @@ async def _finalize_web_xlsx(request: Request, data_path: str, meta: dict) -> di
                                         "error": {"code": "invalid_web_xlsx_file"}}}
     except Exception:
         return _unavailable()
+    return _stored(file)
+
+
+def _stored(file: object) -> dict:
+    """The one 201 shape both boundaries answer with."""
     return {
         "status": 201,
         "body": {

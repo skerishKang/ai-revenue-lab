@@ -479,6 +479,72 @@ class WorkspaceDocumentStore:
             raise WorkspaceStorageError("web XLSX write failed") from exc
         return self._web_xlsx_projection(metadata, prefix)
 
+    async def put_web_xlsx_from_path(self, *, tenant_id: str, owner_id: str,
+                                     workspace_id: str, filename: str,
+                                     source_path: Any,
+                                     now: datetime | None = None) -> dict[str, Any]:
+        """Store one original that is already a file on this machine.
+
+        Above ``WEB_XLSX_INLINE_MAX_BYTES`` the body must never be materialised
+        as one `bytes` object, so this judges the archive **from the file** with
+        ``validate_ooxml_archive_path`` (the same rules as the byte gate) and
+        hands the file itself to the object store's streaming write: a move when
+        the chunk file shares the filesystem, bounded blocks otherwise.
+        """
+        from pathlib import Path
+
+        from padiem_ai_core.document_normalization import validate_ooxml_archive_path
+
+        from .local_r2 import put_stream
+
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        _web_xlsx_filename(filename)
+        path = Path(source_path)
+        try:
+            size = path.stat().st_size
+        except OSError as exc:
+            raise ValueError("web Office XLSX source is missing") from exc
+        if not 0 < size <= MAX_WEB_XLSX_BYTES:
+            raise ValueError("web Office XLSX exceeds upload limit")
+        try:
+            validate_ooxml_archive_path(path)
+        except DocumentNormalizationError as exc:
+            raise ValueError("invalid or unsafe XLSX workbook") from exc
+        # The digest streams: a 1 GiB original is hashed in bounded blocks.
+        digest = hashlib.sha256()
+        with path.open("rb") as reader:
+            for block in iter(lambda: reader.read(1024 * 1024), b""):
+                digest.update(block)
+        current = now or _utcnow()
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("aware timestamp required")
+        doc_id = _document_id()
+        key = f"{prefix}{doc_id}/{digest.hexdigest()}/{filename}"
+        metadata = ClawDocumentMetadata(
+            document_id=doc_id, tenant_id=tenant_id, object_key=key,
+            filename=filename, media_type=XLSX_MEDIA_TYPE,
+            byte_length=size, created_at=current,
+            expires_at=current + WEB_XLSX_RETENTION,
+            user_id=_safe_identifier("owner_id", owner_id),
+        )
+        try:
+            written = put_stream(self.r2_bucket, key, path,
+                                 {"contentType": XLSX_MEDIA_TYPE})
+            if inspect.isawaitable(written):
+                await written
+        except NotImplementedError as exc:
+            # A store with no streaming write must fail closed, never pretend
+            # it stored a body it would have had to hold whole in memory.
+            raise WorkspaceStorageError(
+                "web XLSX streaming store unavailable") from exc
+        except Exception as exc:
+            raise WorkspaceStorageError("web XLSX stream write failed") from exc
+        try:
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            raise WorkspaceStorageError("web XLSX metadata write failed") from exc
+        return self._web_xlsx_projection(metadata, prefix)
+
     async def put_web_xlsx_reference(self, *, tenant_id: str, owner_id: str,
                                      workspace_id: str, filename: str,
                                      file_id: str, source_sha256: str,
