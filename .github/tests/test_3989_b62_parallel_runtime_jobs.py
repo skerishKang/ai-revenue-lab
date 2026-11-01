@@ -319,6 +319,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("os: [ubuntu-latest, windows-latest]", block)
         self.assertIn("uv run --locked python -m pytest ../../tests/e2e -q", block)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_main_aggregate_requires_full_success_without_changing_pr_lane_results(self):
         script = self.aggregate.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0]
         script = textwrap.dedent(script)
@@ -381,18 +382,31 @@ class ParallelB62JobsContract(unittest.TestCase):
             )
             fake_uv.chmod(0o755)
             env = os.environ.copy()
-            env["PATH"] = str(tmp) + os.pathsep + env.get("PATH", "")
             env["B62_TEST_MARKER"] = str(marker)
             env["B62_CI_IMPACT_SCOPE"] = scope
             env["B62_FAIL_TARGET"] = fail_target
             env["TMPDIR"] = str(tmp)
+            env["FAKE_UV_DIR"] = str(tmp)
+            # The bash one-liner invokes the script through $OVERLAP_SCRIPT;
+            # without this the job ran `bash ""` and no call was ever recorded
+            # (the Windows runner never saw it — the contract is POSIX-scoped).
+            env["OVERLAP_SCRIPT"] = str(script)
+            # The fake uv must win command lookup inside MSYS bash: resolve the
+            # dir natively in bash, grant the exec bit with bash's own chmod,
+            # then prepend it to PATH. A Python chmod and a drive-letter PATH
+            # entry do neither on Windows.
             result = subprocess.run(
-                ["bash", str(script)],
+                ["bash", "-c",
+                 'FAKE_BIN="$(cd "$FAKE_UV_DIR" && pwd)" || exit 9\n'
+                 'chmod +x "$FAKE_BIN/uv" 2>/dev/null || true\n'
+                 'export PATH="$FAKE_BIN:$PATH"\n'
+                 'bash "$OVERLAP_SCRIPT"'],
                 capture_output=True, text=True,
                 env=env, timeout=15, check=False,
             )
             return result, marker.read_text(encoding="utf-8").splitlines()
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_chat_and_core_full_scope_overlap_without_extra_runner(self):
         proc, lines = self._exercise_host_overlap("full")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -406,6 +420,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_CORE_PYTEST=PASS", proc.stdout)
         self.assertIn("B62_HOST_PYTEST_OVERLAP=PASS", proc.stdout)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_scope_preserves_original_core_skip_without_skipping_chat(self):
         for scope in ("chat_only", "static_only", "tests_only", "b14_only"):
             with self.subTest(scope=scope):
@@ -416,6 +431,7 @@ class ParallelB62JobsContract(unittest.TestCase):
                 self.assertIn("B62_CHAT_PYTEST=PASS", proc.stdout)
                 self.assertIn("B62_CORE_PYTEST=SKIPPED_PROVEN_UNCHANGED", proc.stdout)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_unknown_scope_fails_closed_to_both_suites(self):
         proc, lines = self._exercise_host_overlap("unknown")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -423,6 +439,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_HOST_PYTEST_SCOPE_UNCERTAIN=", proc.stderr)
         self.assertIn("B62_CORE_PYTEST=PASS", proc.stdout)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_either_suite_failure_propagates_after_other_finishes(self):
         for target in ("chat", "core"):
             with self.subTest(target=target):

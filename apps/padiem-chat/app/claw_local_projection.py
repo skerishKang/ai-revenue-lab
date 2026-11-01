@@ -21,6 +21,13 @@ Authority boundary
   It is a pure rename over an already-decided server fact, and it fails closed:
   a state this translation does not recognise becomes ``ACTION_REQUIRED`` and
   is never reported usable.
+* Connector-version compatibility (``kagent.connector_version_compat``) may add
+  one presentation variant to a genuinely usable CONNECTED device:
+  ``UPDATE_AVAILABLE`` renders the non-blocking "새 버전이 있어요" notice and
+  ``UPDATE_REQUIRED`` renders the existing "업데이트가 필요합니다" copy. The
+  variant never changes ``state`` or ``usable``; an unknown/unreported client
+  version carries no variant at all, which is exactly the pre-compatibility
+  behaviour. Non-CONNECTED devices never carry a variant.
 * The server never sends a raw ``CONNECTED`` claim: ``usable`` is true only for
   the canonical ``online`` state, which #3080 projects from server-owned
   binding + broker session + heartbeat evidence
@@ -44,6 +51,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Any, Mapping
 
+from kagent.connections_center import DeviceCompatibility
 from kagent.local_agent_pairing import DeviceLifecycle
 
 __all__ = [
@@ -86,7 +94,24 @@ WEB_LIFECYCLE_STATES: tuple[str, ...] = (
 
 # Presentation-only variants the Web module may render. Kept as a mirror so the
 # cross-contract test can prove this translation never invents one.
-WEB_PRESENTATION_VARIANTS: tuple[str, ...] = ("UPDATE_REQUIRED",)
+#   UPDATE_REQUIRED  — existing "업데이트가 필요합니다." presentation path.
+#   UPDATE_AVAILABLE — new non-blocking "새 버전이 있어요." notice.
+WEB_VARIANT_UPDATE_REQUIRED = "UPDATE_REQUIRED"
+WEB_VARIANT_UPDATE_AVAILABLE = "UPDATE_AVAILABLE"
+WEB_PRESENTATION_VARIANTS: tuple[str, ...] = (
+    WEB_VARIANT_UPDATE_REQUIRED,
+    WEB_VARIANT_UPDATE_AVAILABLE,
+)
+
+# DeviceCompatibility -> Web presentation variant. Judged once, upstream, by
+# kagent.connector_version_compat; an unknown/unreported version simply has no
+# entry and therefore produces no variant.
+_COMPATIBILITY_VARIANTS: Mapping[DeviceCompatibility, str] = MappingProxyType(
+    {
+        DeviceCompatibility.UPDATE_REQUIRED: WEB_VARIANT_UPDATE_REQUIRED,
+        DeviceCompatibility.UPDATE_AVAILABLE: WEB_VARIANT_UPDATE_AVAILABLE,
+    }
+)
 
 SAFE_FALLBACK_WEB_STATE = WEB_STATE_ACTION_REQUIRED
 
@@ -180,11 +205,25 @@ def web_state_for_canonical_state(state: object) -> str:
     return _CANONICAL_TO_WEB_STATE[canonical] if canonical else SAFE_FALLBACK_WEB_STATE
 
 
+def _compatibility_value(value: object) -> DeviceCompatibility | None:
+    """Read one compatibility judgment, or ``None`` when it is not one."""
+
+    if isinstance(value, DeviceCompatibility):
+        return value
+    if isinstance(value, str):
+        try:
+            return DeviceCompatibility(value.strip().lower())
+        except ValueError:
+            return None
+    return None
+
+
 def translate_device_lifecycle(
     state: object,
     *,
     device_name: object = None,
     platform: object = None,
+    compatibility: object = None,
 ) -> dict[str, Any]:
     """Translate one canonical device state into the #3084 Web device shape.
 
@@ -194,19 +233,29 @@ def translate_device_lifecycle(
 
     ``usable`` is true only for canonical ``online``, which #3080 projects from
     server-owned binding, broker session and heartbeat evidence. ``variant`` is
-    deliberately never claimed: an ``update_required`` device is not a usable
-    connected device, so it presents as ``ACTION_REQUIRED`` rather than dressing
-    a not-usable device up as merely needing an update.
+    produced only for a genuinely usable CONNECTED device whose connector
+    version was reported and judged (``compatibility``): ``UPDATE_REQUIRED``
+    keeps the existing "업데이트가 필요합니다." presentation, and
+    ``UPDATE_AVAILABLE`` adds the non-blocking "새 버전이 있어요." notice. An
+    unknown or unreported version — today's reality for every device, since no
+    wire in the repo carries ``client_version`` yet — leaves the variant
+    ``None`` unchanged, and a variant can never turn an unusable device into a
+    usable one.
     """
 
     canonical = _canonicalize(state)
     web_state = _CANONICAL_TO_WEB_STATE[canonical] if canonical else SAFE_FALLBACK_WEB_STATE
+    variant: str | None = None
+    if web_state == WEB_STATE_CONNECTED:
+        compatibility_value = _compatibility_value(compatibility)
+        if compatibility_value is not None:
+            variant = _COMPATIBILITY_VARIANTS.get(compatibility_value)
     return {
         "state": web_state,
         "usable": canonical == DeviceLifecycle.ONLINE.value,
         "expired": canonical in _EXPIRED_BEARING_CANONICAL_STATES,
         "revoked": canonical in _REVOKED_BEARING_CANONICAL_STATES,
-        "variant": None,
+        "variant": variant,
         "deviceName": _clean_label(device_name, 80),
         "platform": _clean_label(platform, 40),
         # Evidence-only fields. They exist so the cross-contract test and support

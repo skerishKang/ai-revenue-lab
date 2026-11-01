@@ -14,7 +14,7 @@ class B62AccessibilityTestDelegation(unittest.TestCase):
             "\n  auth-history-browser-qa:\n", 1
         )[0]
         self.assertIn("run: uv run --locked python -m pytest -q", chat)
-        self.assertIn("name: B62 tests", chat)
+        self.assertIn("name: B62 Padiem Chat CI", chat)
         self.assertIn("  pull_request:", chat)
         self.assertIn('      - "apps/padiem-chat/**"', chat)
         self.assertIn("apps/padiem-chat/**", (FOLDER.parent / "ci" / "b62_browser_qa_paths.json").read_text(encoding="utf-8"))

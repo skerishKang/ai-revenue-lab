@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+from dataclasses import replace
 from typing import Any
 
 from padiem_ai_core.document_normalization import (
@@ -56,6 +57,17 @@ _BINARY_ERROR_MESSAGES = {
     "isolated_parser_response_unbounded": "문서에서 뽑아낸 내용이 너무 많아 한 번에 처리할 수 없습니다. 문서를 나누어 올려 주세요.",
     "isolated_parser_internal_error": "문서 파서가 문서를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
 }
+
+# #6126 — a .hwp document is judged by its own first bytes, not its name. The
+# OLE2 compound signature is the older binary Hangul format (never converted;
+# one stable refusal code), and the ZIP local-header signatures mean a
+# mislabeled file that really is an HWPX package and keeps working as HWPX.
+# The Core document_normalization module is frozen, so this byte judge lives
+# here at the app's single binary-document parse authority instead.
+_HWPX_MEDIA_TYPE = "application/hwp+zip"
+_HWP_OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+_HWP_ZIP_LOCAL_MAGICS = (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08")
+_LEGACY_HWP_GUIDANCE = "한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요."
 _OOXML_CODES = {
     "ooxml_archive_size",
     "ooxml_unsafe_path",
@@ -103,6 +115,10 @@ def guidance_for_reason_code(code: str, media_type: Any) -> str | None:
     their answer here, so one code can never grow two different wordings.
     """
 
+    if code == "legacy_hwp_unsupported":
+        # #6126: the older binary Hangul format is not converted. This is an
+        # ordinary save-as instruction, never an error badge on the screen.
+        return _LEGACY_HWP_GUIDANCE
     if code == "ooxml_encrypted":
         return (
             _OOXML_ENCRYPTED_MESSAGES.get(media_type)
@@ -148,6 +164,76 @@ def _validated_item_payload(item: Any) -> tuple[Any, Any, bytes]:
     return item.get("name"), item.get("media_type"), payload
 
 
+def _hwp_head_family(payload: Any) -> str | None:
+    """'ole' / 'zip' / None from the document's own first bytes (#6126)."""
+
+    head = bytes(payload[:8]) if isinstance(payload, (bytes, bytearray)) else b""
+    if head == _HWP_OLE_MAGIC:
+        return "ole"
+    if head[:4] in _HWP_ZIP_LOCAL_MAGICS:
+        return "zip"
+    return None
+
+
+def _hwp_item_view(item: Any) -> Any:
+    """The #6126 byte judge for a .hwp-named document item.
+
+    The OLE2 compound signature is refused with the one legacy guidance code
+    before any parse; a ZIP local header marks a mislabeled real HWPX package,
+    presented to the frozen Core identity rules under its real HWPX
+    extension. Any other item passes through untouched.
+    """
+
+    if not isinstance(item, dict) or item.get("type") != "document":
+        return item
+    name = item.get("name")
+    if (item.get("media_type") != _HWPX_MEDIA_TYPE
+            or not isinstance(name, str) or not name.lower().endswith(".hwp")):
+        return item
+    raw = item.get("raw_bytes")
+    if not isinstance(raw, (bytes, bytearray)):
+        encoded = item.get("base64")
+        if not isinstance(encoded, str) or len(encoded) < 16:
+            return item
+        try:
+            raw = base64.b64decode(encoded[:16])
+        except (binascii.Error, ValueError):
+            return item
+    family = _hwp_head_family(raw)
+    if family == "ole":
+        raise BinaryDocumentValidationError(
+            guidance_for_reason_code("legacy_hwp_unsupported", _HWPX_MEDIA_TYPE)
+            or _LEGACY_HWP_GUIDANCE
+        )
+    if family == "zip":
+        return {**item, "name": name[:-4] + ".hwpx"}
+    return item
+
+
+def legacy_hwp_parse_name(name: Any, media_type: Any, payload: Any) -> Any:
+    """The #6126 parse identity for a .hwp-named binary document.
+
+    The OLE2 compound signature raises the one legacy refusal code before any
+    parse (the routes map it through ``guidance_for_reason_code``); a ZIP
+    local header returns the name re-suffixed to its real HWPX identity. Any
+    other name or media type — and any other head — comes back unchanged for
+    the usual checks.
+    """
+
+    if (media_type != _HWPX_MEDIA_TYPE or not isinstance(name, str)
+            or not name.lower().endswith(".hwp")):
+        return name
+    family = _hwp_head_family(payload)
+    if family == "ole":
+        raise DocumentNormalizationError(
+            "legacy_hwp_unsupported",
+            "Legacy binary HWP is not converted; save the document as HWPX.",
+        )
+    if family == "zip":
+        return name[:-4] + ".hwpx"
+    return name
+
+
 def _attachment_from_document(document: Any) -> DocumentAttachment:
     return DocumentAttachment(
         name=document.name,
@@ -159,7 +245,8 @@ def _attachment_from_document(document: Any) -> DocumentAttachment:
 
 
 def parse_binary_document_item(item: Any) -> DocumentAttachment:
-    name, media_type, payload = _validated_item_payload(item)
+    view = _hwp_item_view(item)
+    name, media_type, payload = _validated_item_payload(view)
     try:
         document = parse_binary_document_via_authority(
             name=name,
@@ -168,13 +255,19 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         )
     except DocumentNormalizationError as exc:
         raise _translate_binary_error(exc, media_type) from exc
-    return _attachment_from_document(document)
+    attachment = _attachment_from_document(document)
+    if view is not item:
+        # #6126: the mislabeled .hwp parsed under its real HWPX identity; the
+        # owner's original file name rides on the answer unchanged.
+        attachment = replace(attachment, name=str(item.get("name")))
+    return attachment
 
 
 async def parse_binary_document_item_async(item: Any) -> DocumentAttachment:
     """Worker request path: parse through the async isolated authority."""
 
-    name, media_type, payload = _validated_item_payload(item)
+    view = _hwp_item_view(item)
+    name, media_type, payload = _validated_item_payload(view)
     try:
         document = await parse_binary_document_via_authority_async(
             name=name,
@@ -183,4 +276,9 @@ async def parse_binary_document_item_async(item: Any) -> DocumentAttachment:
         )
     except DocumentNormalizationError as exc:
         raise _translate_binary_error(exc, media_type) from exc
-    return _attachment_from_document(document)
+    attachment = _attachment_from_document(document)
+    if view is not item:
+        # #6126: the mislabeled .hwp parsed under its real HWPX identity; the
+        # owner's original file name rides on the answer unchanged.
+        attachment = replace(attachment, name=str(item.get("name")))
+    return attachment

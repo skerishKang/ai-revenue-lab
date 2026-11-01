@@ -70,6 +70,10 @@ STAGED_PATHS = {
     # 2026-11-01: #6589 builds the 한글(HWPX)·워드(DOCX) downloads in the browser,
     # so the export module is a real app asset the entry loads on demand.
     f"{ENTRY_PREFIX}/static/document-export.js",
+    # 2026-11-02: #6620 — 축사·SNS 참고 글 'PC에서 가져오기'가 문서를 tus로 올리므로
+    # 의원 앱이 Chat과 같은 업로드 모듈 사본을 싣는다.
+    f"{ENTRY_PREFIX}/static/project-file-upload.js",
+    f"{ENTRY_PREFIX}/static/tus-upload.js",
     f"{ENTRY_PREFIX}/index.html",
 }
 

@@ -223,6 +223,10 @@
   let clawConversationLabelsRead = null;
   let projects = [];
   let projectsReady = false;
+  // #5882: next-page cursor from the server. When present a "load more" button is
+  // appended; on the last page there is none, so the list no longer stops silently at 50.
+  let projectsNextCursor = null;
+  let projectsLoadingMore = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
   let editingProjectId = null;
@@ -258,6 +262,11 @@
   function setNote(text, state = "normal") {
     runtimeNote.textContent = text;
     runtimeNote.dataset.state = state;
+  }
+  // #6126: the one legacy-HWP answer the screens show — an ordinary save-as
+  // instruction plus the three HWPX steps, never an error state.
+  function hwpLegacyGuidance() {
+    return uiT("hwp-legacy-guidance") + "\n" + uiT("hwp-legacy-steps");
   }
   // Short-lived overlay, not a new composer row.
   const composerInlineHint = document.getElementById("composerInlineHint");
@@ -845,7 +854,10 @@
   function attachmentTrayNote() {
     const valid = selectedAttachments.filter((item) => !item.invalid);
     if (!valid.length) return idleNote();
-    if (valid.some((item) => String(item.name || "").toLowerCase().endsWith(".hwpx"))) {
+    // #6126: a .hwp name whose bytes are a real HWPX (ZIP) package is read as
+    // HWPX, so the tray note follows the actual media type, not only the name.
+    if (valid.some((item) => item.mediaType === "application/hwp+zip"
+        || String(item.name || "").toLowerCase().endsWith(".hwpx"))) {
       return uiT("attachment-hwpx-note");
     }
     return valid.length === 1 && valid[0].type === "image"
@@ -869,6 +881,9 @@
       attachmentTray.hidden = true;
       return;
     }
+    // The chip row belongs to the multi-attachment tray: one entry per file,
+    // removal button included. Single-attachment thumbnail code (pre-#1727)
+    // is gone; per-file notes live in attachmentTrayNote().
     for (const item of selectedAttachments) {
       const chip = document.createElement("li");
       chip.className = "attachment-chip" + (item.invalid ? " attachment-chip-invalid" : "");
@@ -908,8 +923,12 @@
   }
   async function readDocumentFile(file) {
     if (extensionOf(file.name) === ".hwp") {
-      const error = new Error(uiT("hwp-save-hwpx"));
+      // #6126 backstop: selection-time callers refuse an OLE2 .hwp by its own
+      // bytes before reaching here; this guard keeps the same one code and
+      // wording for any future caller that skips the sniff.
+      const error = new Error(uiT("hwp-legacy-guidance"));
       error.uiMessageSafe = true;
+      error.code = "legacy_hwp_unsupported";
       throw error;
     }
     const mediaType = documentMediaType(file);
@@ -949,6 +968,14 @@
         if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
           throw new Error(uiT("claw-image-attachment-unsupported"));
         }
+        // #6126: an uploaded .hwp is judged by its own bytes, not its name.
+        // The older OLE2 binary Hangul format is refused with the save-as-
+        // HWPX guidance on this chip only; a mislabeled file whose bytes are
+        // a real HWPX (ZIP) package keeps working as HWPX below.
+        const hwpFamily = extensionOf(file.name) === ".hwp"
+          ? (await binaryDocuments?.headerFamily?.(file)) || null
+          : null;
+        if (hwpFamily === "ole") throw new Error(uiT("hwp-legacy-guidance"));
         const useFileLane = window.PadiemFileLane?.shouldUse(file);
         const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
         if (useFileLane && fileLaneAvailable) {
@@ -956,6 +983,7 @@
         } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
           throw new Error(uiT("file-lane-unavailable"));
         } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+        else if (hwpFamily === "zip" && binaryDocuments?.hwpxMedia) next = await binaryDocuments.read(file, { mediaType: binaryDocuments.hwpxMedia });
         else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
         else next = await readDocumentFile(file);
         // Photos and original documents read by the browser fit only one
@@ -1099,7 +1127,55 @@
       row.append(button, manage);
       projectsList.appendChild(row);
     });
+    if (projectsNextCursor && projectsReady) {
+      const moreRow = document.createElement("div");
+      moreRow.className = "project-row project-more-row";
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "recent-item project-more";
+      more.id = "projectsMore";
+      more.textContent = uiT("projects-more");
+      more.setAttribute("aria-label", uiT("projects-more-aria"));
+      more.disabled = projectsLoadingMore;
+      more.addEventListener("click", () => { void loadMoreProjects(); });
+      moreRow.appendChild(more);
+      projectsList.appendChild(moreRow);
+    }
     if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+  }
+  async function loadMoreProjects() {
+    if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
+    const epoch = authViewEpoch;
+    const cursor = projectsNextCursor;
+    projectsLoadingMore = true;
+    renderProjects();
+    try {
+      const response = await fetch(
+        `/api/projects?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (epoch !== authViewEpoch || !authState.authenticated || !response.ok || !data || !Array.isArray(data.projects)) {
+        // A cursor this server no longer accepts is answered 400. Refuse to loop:
+        // drop it and show what is already on screen with a plain Korean notice.
+        if (response.status === 400) {
+          projectsNextCursor = null;
+          setNote(uiT("projects-more-stale"));
+        }
+        return false;
+      }
+      const seen = new Set(projects.map((item) => item.id));
+      const fresh = data.projects.filter((item) => item && typeof item.id === "string"
+        && typeof item.name === "string" && !seen.has(item.id));
+      projects = projects.concat(fresh);
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      projectsLoadingMore = false;
+      if (epoch === authViewEpoch) renderProjects();
+    }
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
@@ -1118,6 +1194,7 @@
       if (epoch !== authViewEpoch || !authState.authenticated) return false;
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
       projectsReady = true;
       if (projectsNavButton) {
         projectsNavButton.disabled = false;
@@ -1280,9 +1357,27 @@
     // Clear any stale error so a successful retry never leaves the old message up.
     projectFormError.hidden = true;
     projectFormError.textContent = "";
+    // #6126: a project .hwp is judged by its own bytes. The older OLE2 binary
+    // Hangul format is never converted — the panel answers with the ordinary
+    // save-as-HWPX guidance as a status note (not the error row) — and a
+    // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
+    // as HWPX through the same binary upload the .hwpx extension uses.
+    const hwpFamily = extensionOf(file.name) === ".hwp"
+      ? (await binaryDocuments?.headerFamily?.(file)) || null
+      : null;
+    if (hwpFamily === "ole") {
+      if (projectFileStatus) {
+        projectFileStatus.textContent = hwpLegacyGuidance();
+        projectFileStatus.hidden = false;
+      }
+      return;
+    }
     setProjectFileBusy(true);
     try {
-      const projectBinary = projectBinaryMediaType(file);
+      let projectBinary = projectBinaryMediaType(file);
+      if (!projectBinary && hwpFamily === "zip" && binaryDocuments?.hwpxMedia) {
+        projectBinary = binaryDocuments.hwpxMedia;
+      }
       if (projectBinary) {
         // #6579: every binary goes through the shared tus module, which owns the
         // progress line, the resume policy and the first-party guidance copy.
@@ -3167,7 +3262,13 @@
       resolvedPcRuns.add(runId);
       return renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
     }
-    if (first.kind !== "pending") return false;
+    if (first.kind !== "pending") {
+      // A 404 means the server has no such result. Forget this run here and
+      // now, so a retry over the same handle skips the check and renders its
+      // own failure instead of reading a gone run again.
+      if (first.gone === true) resolvedPcRuns.add(runId);
+      return false;
+    }
     if (first.conversationId) {
       conversationState.setConversationId(first.conversationId, contextSnapshot.product);
     }
@@ -3192,6 +3293,7 @@
         window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
+      if (result.gone === true) resolvedPcRuns.add(runId);
       if (article.isConnected && !signal.aborted) {
         renderStreamError(article, uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
       }
@@ -3600,7 +3702,8 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord) {
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
+          && !error?.submissionRejected) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,
@@ -4382,7 +4485,15 @@
   // payload snapshot is stored, so a stale request cannot be replayed. Nothing
   // in this block submits on a timer; the ticker only re-renders copy and
   // control state. No auto-retry, no provider retry, no server policy change.
-  const CLAW_RETRY_AFTER_MAX_SECONDS = 900; // documented UI ceiling; larger server values clamp here
+  // The bound lives on the SERVER, not here (#5882 A-15). app/usage_gate.py is
+  // the only producer of Retry-After on these routes and it emits a fixed
+  // integer — 60s for the minute bucket — while quota_exhausted and
+  // service_limit_reached carry no header at all (claw_routes.py:270 guards the
+  // emission). A second 900s client re-clamp could therefore never bind; it only
+  // risked disagreeing with the server and blocking this form for a ceiling the
+  // server is not enforcing. The parsed seconds are used exactly as sent, and
+  // the closed parse below is what fails closed on malformed/negative/HTTP-date
+  // values instead of a ceiling.
 
   function clawRetryRemaining() {
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
@@ -4437,15 +4548,16 @@
     setClawButtonsBusy(clawInFlight);
   }
 
-  // Closed parse: integer seconds only, positive, clamped to one documented
-  // ceiling. Missing, non-integer, zero and negative values make no countdown claim.
+  // Closed parse: integer seconds only, positive. Missing, non-integer, zero,
+  // negative and HTTP-date (RFC 7231) values make no countdown claim — the copy
+  // then falls back to the safe rate-limit sentence with no fabricated number.
   function parseClawRetryAfter(value) {
     if (typeof value !== "string") return null;
     const raw = value.trim();
     if (!/^[0-9]+$/.test(raw)) return null;
     const seconds = Number.parseInt(raw, 10);
     if (!Number.isFinite(seconds) || seconds < 1) return null;
-    return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);
+    return seconds;
   }
 
   function clawRetryAfterFromResponse(response) {

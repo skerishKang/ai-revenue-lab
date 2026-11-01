@@ -91,7 +91,9 @@ def test_binary_reader_derives_formats_from_capabilities():
 def test_project_file_persistence_copy_remains_explicitly_distinct():
     assert "PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다." in INDEX_HTML
     assert "PPTX·XLSX는 미지원." in INDEX_HTML
-    assert 'application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx"' in INDEX_HTML
+    # #6126: .hwp joined the accept list so the picker can hand the file to
+    # the byte-sniffing judgment (OLE2 guidance / mislabeled HWPX as HWPX).
+    assert 'application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx,.hwp"' in INDEX_HTML
     assert "Project files are a distinct persistence capability." in README
     assert "validated UTF-8 text files only" in README
 

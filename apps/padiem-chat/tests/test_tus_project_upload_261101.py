@@ -15,12 +15,15 @@ import base64
 import hashlib
 import os
 import time
+import zipfile
+from io import BytesIO
 from types import SimpleNamespace
 
 import httpx
 import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
+from app.binary_documents import guidance_for_reason_code
 from app.config import Settings
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
@@ -486,5 +489,77 @@ async def test_250mb_dummy_disconnect_resume(monkeypatch, tmp_path):
         assert bucket.objects[key] == digest
         rows = await store.list_files(owner.id, project.id)
         assert len(rows) == 1 and rows[0].id == file_row["id"]
+    finally:
+        await client.aclose()
+
+
+OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+
+
+def _hwpx_zip(*paragraphs: str) -> bytes:
+    body = "".join(
+        f"<hp:p><hp:runs><hp:t>{text}</hp:t></hp:runs></hp:p>" for text in paragraphs
+    )
+    section = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+        'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">'
+        f"{body}</hs:sec>"
+    ).encode("utf-8")
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("mimetype", b"application/hwp+zip")
+        archive.writestr("Contents/section1.xml", section)
+    return output.getvalue()
+
+
+@pytest.mark.asyncio
+async def test_tus_completion_refuses_ole_legacy_hwp_with_one_guidance(monkeypatch, tmp_path):
+    """#6126 tus 완료 지점: OLE2 .hwp는 합치기 직후 한 문장 안내로 거절된다."""
+    app, history, store = make_app(monkeypatch, tmp_path, chunk_bytes=4096)
+    owner = await history.add_user("tus-legacy-hwp")
+    project = await history.create_project(owner.id, "구형한글", "")
+    client = await client_with_session(app, user_profile(owner.id))
+    try:
+        payload = OLE_MAGIC + b"\x00" * 64
+        created = await create_upload(client, project.id, name="작년 축사.hwp",
+                                      media_type="application/hwp+zip", length=len(payload))
+        upload_id = created.json()["upload_id"]
+        done = await patch_chunk(client, project.id, upload_id, 0, payload)
+        assert done.status_code == 204
+        pickup = await client.get(f"/api/projects/{project.id}/files/tus/{upload_id}")
+        assert pickup.status_code == 422, pickup.json()
+        body = pickup.json()["error"]
+        assert body["code"] == "invalid_document"
+        assert body["message"] == guidance_for_reason_code(
+            "legacy_hwp_unsupported", "application/hwp+zip")
+        assert await store.list_files(owner.id, project.id) == []
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_tus_completion_reads_a_mislabeled_real_hwpx_as_hwpx(monkeypatch, tmp_path):
+    """#6126 tus 완료 지점: ZIP 바이트의 .hwp는 HWPX로 읽히고 원래 이름을 유지한다."""
+    app, history, store = make_app(monkeypatch, tmp_path, chunk_bytes=4096)
+    owner = await history.add_user("tus-hwp-as-hwpx")
+    project = await history.create_project(owner.id, "위장HWPX", "")
+    client = await client_with_session(app, user_profile(owner.id))
+    try:
+        payload = _hwpx_zip("HWPX로 저장한 첫 문단", "둘째 문단")
+        created = await create_upload(client, project.id, name="보고서.hwp",
+                                      media_type="application/hwp+zip", length=len(payload))
+        upload_id = created.json()["upload_id"]
+        done = await patch_chunk(client, project.id, upload_id, 0, payload)
+        assert done.status_code == 204
+        pickup = await client.get(f"/api/projects/{project.id}/files/tus/{upload_id}")
+        assert pickup.status_code == 201, pickup.json()
+        file_row = pickup.json()["file"]
+        assert file_row["name"] == "보고서.hwp"
+        assert file_row["media_type"] == "extracted/hwpx"
+        rows = await store.list_files(owner.id, project.id)
+        assert len(rows) == 1
+        assert "HWPX로 저장한 첫 문단" in rows[0].content_text
+        assert "둘째 문단" in rows[0].content_text
     finally:
         await client.aclose()

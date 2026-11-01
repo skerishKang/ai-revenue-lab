@@ -9,6 +9,7 @@ untrusted model information inside quote text. Selection requires a distinct
 explicit model_id from the authenticated user; no implicit default or fallback.
 """
 
+import asyncio
 import json
 import re
 from dataclasses import replace
@@ -293,8 +294,22 @@ class B14FreeFirstQuoteModelResolver:
         if self._transport is None:
             raise B66ModelRouteError("selection_unconfigured")
         try:
-            registry = _parse_bounded_response(*await self._transport.get_json(_MODELS_PATH))
-            readiness = _parse_bounded_response(*await self._transport.get_json(_READINESS_PATH))
+            # The registry and readiness payloads are independent and only
+            # join in ``_qualified_routes`` below, so both GETs go out at once:
+            # the serial pair cost the Claw screen 1.2~1.5 s on every roster
+            # refresh (261102 first-load measurement). ``return_exceptions``
+            # keeps the second read's failure from surfacing unretrieved; the
+            # first failure still decides, exactly as the serial code did.
+            registry_payload, readiness_payload = await asyncio.gather(
+                self._transport.get_json(_MODELS_PATH),
+                self._transport.get_json(_READINESS_PATH),
+                return_exceptions=True,
+            )
+            for payload in (registry_payload, readiness_payload):
+                if isinstance(payload, BaseException):
+                    raise payload
+            registry = _parse_bounded_response(*registry_payload)
+            readiness = _parse_bounded_response(*readiness_payload)
             routes = _qualified_routes(registry, readiness, B66QuoteTaskRequirements())
         except B66ModelRouteError:
             raise

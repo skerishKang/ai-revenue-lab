@@ -125,6 +125,11 @@ def test_control_plane_must_not_perform_windows_local_execution() -> None:
     forbidden_modules = {"subprocess", "winreg", "msvcrt", "ctypes"}
 
     for py_file in CONTROL_PLANE_DIR.rglob("*.py"):
+        # b1b9a0cd9's WSS test harness runs Node Ed25519 through subprocess from
+        # tests/; the contract guards the runtime the edge serves, not the
+        # offline test harness.
+        if "tests" in py_file.relative_to(CONTROL_PLANE_DIR).parts:
+            continue
         tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):

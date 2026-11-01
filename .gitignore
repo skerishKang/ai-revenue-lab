@@ -66,3 +66,10 @@ scripts/pc_pairing/connect-exe/dist/
 # #5573 stage 2: the local CPython run's database, disk-R2 folder and its
 # generated dev session key. All three are machine-local run state, never source.
 apps/padiem-chat/local_dev_data/
+
+# The connector's build outputs (#4139 item 4). The reviewed artifact travels
+# as the Setup EXE the CTO publishes; a second copy in Git would only be one
+# that can drift. The onedir bundle is built beside the repo root and the
+# onefile setup lands in apps/claw-connect - both stay out of source.
+padiem-connector-standalone-*/
+apps/claw-connect/PADIEM-Connector-Setup-*.exe

@@ -39,10 +39,10 @@ def test_a_picked_text_becomes_a_reference_in_both_prompts() -> None:
     obs = run("pc")
     assert obs["importedB"]["reads"] == [{"file_id": "pc-doc-1"}]
     assert obs["importedB"]["preview"] == "예전 축사 원고입니다. 문체를 참고하세요."
-    assert "[참고 글 1: 예전 축사.hwp]" in obs["speechPrompt"]
+    assert "[참고 글 1: 예전 축사.txt]" in obs["speechPrompt"]
     assert "그대로 옮기지 마세요" in obs["speechPrompt"]
     assert "예전 축사 원고입니다." in obs["speechPrompt"]
-    assert "[참고 글 1: 예전 축사.hwp]" in obs["snsPrompt"]
+    assert "[참고 글 1: 예전 축사.txt]" in obs["snsPrompt"]
 
 
 def test_saving_to_the_pc_offers_a_new_dated_name_never_the_original() -> None:
@@ -82,7 +82,8 @@ def test_generation_is_streamed_from_the_stream_route() -> None:
 
 
 def test_the_timeout_and_error_copy_are_the_ones_6556_shipped() -> None:
-    assert "GEN_TIMEOUT_MS = 120000" in JS
+    # 타임아웃 값은 2026-11-02 한도 감사 4번으로 120초 → 300초 임시 완화(근본은 진행 표시 전환).
+    assert "GEN_TIMEOUT_MS = 300000" in JS
     assert "controller.abort()" in JS
     assert "signal: controller.signal" in JS
     assert 'GEN_ERROR_COPY' in JS

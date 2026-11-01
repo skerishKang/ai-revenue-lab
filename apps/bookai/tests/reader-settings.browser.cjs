@@ -7,7 +7,12 @@ const panel=p.locator('.srsg-panel');await panel.waitFor({state:'visible'});
 await panel.getByRole('button',{name:'한글만'}).click();assert.ok(await p.evaluate(()=>document.body.classList.contains('smr-en-hide')));
 await panel.getByRole('button',{name:'크게',exact:true}).click();assert.ok(await p.evaluate(()=>document.body.classList.contains('smr-fs-lg')));
 await panel.getByRole('button',{name:'넓게',exact:true}).click();assert.ok(await p.evaluate(()=>document.body.classList.contains('smr-lh-loose')));
-await p.reload({waitUntil:'load'});assert.ok(await p.evaluate(()=>document.body.classList.contains('smr-en-hide')&&document.body.classList.contains('smr-fs-lg')&&document.body.classList.contains('smr-lh-loose')));
+// Settings live in IndexedDB since #6547, so a click commits asynchronously: wait for the
+// durable commit, then for the restored classes instead of reading them the instant the load
+// event fires (the reader scripts are injected after it).
+await p.evaluate(()=>BookAILocalDB.flush());
+await p.reload({waitUntil:'load'});
+await p.waitForFunction(()=>document.body.classList.contains('smr-en-hide')&&document.body.classList.contains('smr-fs-lg')&&document.body.classList.contains('smr-lh-loose'),null,{timeout:15000});
 await p.close()}
 console.log('PASS: settings controls and persisted language, size, spacing at 390/1440');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
