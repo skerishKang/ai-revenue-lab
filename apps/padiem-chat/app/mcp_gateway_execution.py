@@ -10,6 +10,24 @@ from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
 
 
+# The interactive PC lane is resolved on first use (PEP 562), so importing
+# this module — and the app factory that owns it — never pulls that lane or its
+# browser-facing modules into the Worker import graph. The names stay module
+# attributes, so a caller may still patch them by name.
+_PC_LANE_NAMES = frozenset({
+    "ChatPCDriveError", "_resolve_chat_owner", "_check_mesh_grant",
+    "_tool_arguments_for_plan", "_new_lane_run_id", "_append_lane_notice",
+    "chat_pc_plan_for_tool",
+})
+
+
+def __getattr__(name):
+    if name in _PC_LANE_NAMES:
+        from . import chat_pc_drive
+        return getattr(chat_pc_drive, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 _TOOLS = {
     "pc_list": ("files_list", "claw.pc.list_files", {"path"}),
     "pc_search": ("files_list", "claw.pc.list_files", {"path", "query"}),
@@ -27,13 +45,25 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     The external request deliberately carries an empty user-evidence list.
     Delegation is loaded afresh for this owner on every call.
     """
-    # Imported at call time: the app factory must not pull the interactive PC
-    # lane (or its browser-facing modules) into the Worker import graph.
-    from .chat_pc_drive import (
-        ChatPCDriveError, _resolve_chat_owner, _check_mesh_grant,
-        _tool_arguments_for_plan, _new_lane_run_id, _append_lane_notice,
-        chat_pc_plan_for_tool,
-    )
+    # Resolve the interactive PC lane on first use. A name already patched on
+    # this module wins; otherwise it is loaded here, so the app factory import
+    # never pulls that lane into the Worker import graph.
+    _lane = globals()
+
+    def _pc(name):
+        value = _lane.get(name)
+        if value is None:
+            from . import chat_pc_drive
+            value = getattr(chat_pc_drive, name)
+        return value
+
+    ChatPCDriveError = _pc("ChatPCDriveError")
+    _resolve_chat_owner = _pc("_resolve_chat_owner")
+    _check_mesh_grant = _pc("_check_mesh_grant")
+    _tool_arguments_for_plan = _pc("_tool_arguments_for_plan")
+    _new_lane_run_id = _pc("_new_lane_run_id")
+    _append_lane_notice = _pc("_append_lane_notice")
+    chat_pc_plan_for_tool = _pc("chat_pc_plan_for_tool")
     if not isinstance(principal, Mapping):
         raise ValueError("A verified MCP principal is required")
     uid, device_id, token_id = (principal.get(key) for key in ("owner_id", "device_id", "token_id"))
