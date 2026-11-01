@@ -5,11 +5,6 @@ import uuid
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
-from .chat_pc_drive import (
-    ChatPCDriveError, _resolve_chat_owner, _check_mesh_grant,
-    _tool_arguments_for_plan, _new_lane_run_id, _append_lane_notice,
-    chat_pc_plan_for_tool,
-)
 from .orchestration_bridge import B62EngineOrchestrationBridge
 from .pc_delegation_routes import load_pc_delegation
 from .pc_work_context import resolve_pc_work_context
@@ -32,6 +27,13 @@ async def execute_mcp_pc_tool(request, principal, tool_name, arguments, *, appro
     The external request deliberately carries an empty user-evidence list.
     Delegation is loaded afresh for this owner on every call.
     """
+    # Imported at call time: the app factory must not pull the interactive PC
+    # lane (or its browser-facing modules) into the Worker import graph.
+    from .chat_pc_drive import (
+        ChatPCDriveError, _resolve_chat_owner, _check_mesh_grant,
+        _tool_arguments_for_plan, _new_lane_run_id, _append_lane_notice,
+        chat_pc_plan_for_tool,
+    )
     if not isinstance(principal, Mapping):
         raise ValueError("A verified MCP principal is required")
     uid, device_id, token_id = (principal.get(key) for key in ("owner_id", "device_id", "token_id"))
