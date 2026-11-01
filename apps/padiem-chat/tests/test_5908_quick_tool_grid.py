@@ -72,7 +72,10 @@ def test_pdfmd_card_carries_the_truthful_paused_note() -> None:
     assert "PDF → Markdown" in pdfmd
     assert "util-tool-note" in pdfmd
     assert "일시 중단" in pdfmd
-    assert "COM2" in pdfmd
+    assert "새 업로드는 잠시 멈춤" in pdfmd
+    # The note stays truthful without naming the deployment: the internal host
+    # name is not screen copy, and the move it referred to finished 2026-10-31.
+    assert "COM2" not in pdfmd
     assert _card_button_label("pdfmd") == "이력 열기"
 
 
