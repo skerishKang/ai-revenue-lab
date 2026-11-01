@@ -161,21 +161,7 @@ def test_the_stream_lane_has_no_policy_left_to_refuse_locally():
 
     client_methods = _Client.__dict__
     assert "stream" in client_methods
-    calls = 0
-
-    async def handler(http_request: httpx.Request) -> httpx.Response:
-        nonlocal calls
-        calls += 1
-        return httpx.Response(500)
-
-    client = B14StreamingClient(
-        B14ExecutionConfig(BASE_URL),
-        transport=httpx.MockTransport(handler),
-    )
-    with pytest.raises(B14ExecutionError) as exc:
-        collect(client, req)
-    assert exc.value.code == "streaming_request_unsupported"
-    assert calls == 0
+    assert "stream_auto" not in client_methods
 
 
 @pytest.mark.parametrize(

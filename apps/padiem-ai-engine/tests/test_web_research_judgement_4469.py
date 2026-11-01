@@ -113,7 +113,6 @@ def test_judgement_uses_the_request_validated_explicit_model():
     (None, 400, "invalid_request"),
     ({"model": ""}, 400, "invalid_request"),
     ({"model": "   "}, 400, "invalid_request"),
-    ({"model": "b14/auto"}, 422, "auto_routing_deferred"),
 ])
 def test_missing_or_auto_model_is_rejected_without_a_model_call(policy, status, code):
     engine, runtime = service(verdict(False, None, "stable_knowledge"))
@@ -126,6 +125,20 @@ def test_missing_or_auto_model_is_rejected_without_a_model_call(policy, status, 
     assert result.status_code == status
     assert result.body["error"]["code"] == code
     assert runtime.requests == []
+
+
+def test_the_retired_auto_id_is_forwarded_like_any_model():
+    """B7: no automatic route and no Engine-side special case — the retired id
+    travels to Business 14 like any model id, which owns the refusal."""
+    engine, runtime = service(verdict(False, None, "stable_knowledge"))
+    payload = request()
+    payload["agent"]["model_policy"] = {"model": "b14/auto"}
+
+    result = asyncio.run(engine.research_payload(payload))
+
+    assert result.status_code == 200
+    assert len(runtime.requests) == 1
+    assert runtime.requests[0].agent.model_policy["model"] == "b14/auto"
 
 
 # --- the three outcomes the product needs -----------------------------------

@@ -67,7 +67,7 @@ def test_factory_threads_one_exact_model_to_engine_request():
         assert bundle.orchestration_request.execution_request.agent.model_policy["model"] == model
 
 
-@pytest.mark.parametrize("value", ["", " ", "../bad", "b14/auto", "padiem-profile/plus-hold", "x;echo", None, 0, True, "x" * 130])
+@pytest.mark.parametrize("value", ["", " ", "../bad", "padiem-profile/plus-hold", "x;echo", None, 0, True, "x" * 130])
 def test_bad_or_implicit_ids_fail_closed(value):
     with pytest.raises(P01AdapterError) as error:
         validate_explicit_b14_model_id(value)
@@ -160,7 +160,7 @@ def test_claw_api_without_explicit_model_uses_grade_catjam():
     assert "selected_model_id" not in adapter.execute.await_args.kwargs
 
 
-@pytest.mark.parametrize("value", ["b14/auto", "padiem-profile/plus-hold", "../bad", 123])
+@pytest.mark.parametrize("value", ["padiem-profile/plus-hold", "../bad", 123])
 def test_claw_api_invalid_model_fails_before_quota_or_dispatch(value):
     adapter = _adapter()
     with _client(adapter) as client:
