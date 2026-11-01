@@ -5,8 +5,15 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-# Page size for one saved-output listing. This is a read shape, not a ceiling:
-# nothing refuses a save because the owner already has this many (#5895-C).
+from .history import (
+    ProjectCursorError as ListCursorError,
+    decode_project_cursor as decode_list_cursor,
+    encode_project_cursor as encode_list_cursor,
+)
+
+# 목록 한 페이지 크기. 전체 상한이 아니다 — 
+# 더 있으면 응답의 next_cursor 로 이어 받는다 (#5882 · #5895-C). 저장 개수는
+# 이 수와 무관하다.
 MAX_OUTPUT_LIST = 100
 # D1 row size 한계(약 2MB) — the storage engine's own physical bound, not a
 # PADIEM ceiling. The row also carries the id, title and timestamps, so a
@@ -45,6 +52,9 @@ class SavedOutputRecord:
 
 class SavedOutputStore(Protocol):
     async def list_outputs(self, user_id: str, limit: int = MAX_OUTPUT_LIST) -> list[SavedOutputRecord]: ...
+    async def list_outputs_page(
+        self, user_id: str, limit: int = MAX_OUTPUT_LIST, cursor: str | None = None,
+    ) -> tuple[list[SavedOutputRecord], str | None]: ...
     async def get_output(self, user_id: str, output_id: str) -> SavedOutputRecord | None: ...
     async def create_output(
         self,
@@ -176,13 +186,38 @@ class D1SavedOutputStore:
         return _rows_from_result(await statement.run())
 
     async def list_outputs(self, user_id: str, limit: int = MAX_OUTPUT_LIST) -> list[SavedOutputRecord]:
-        bounded = max(1, min(int(limit), MAX_OUTPUT_LIST))
+        """첫 페이지. 예전 호출자는 이대로 100건을 받는다."""
+
+        page, _ = await self.list_outputs_page(user_id, limit=limit)
+        return page
+
+    async def list_outputs_page(
+        self, user_id: str, limit: int = MAX_OUTPUT_LIST, cursor: str | None = None,
+    ) -> tuple[list[SavedOutputRecord], str | None]:
+        """최근 순 한 페이지와 다음 위치(없으면 None).
+
+        정렬은 지금 목록과 같은 최근 수정 시각 내림차순이고, 같은 시각은 id 로
+        동점을 끊는다. 계정 조건은 이어 받기에서도 똑같이 들어간다.
+        """
+
+        bounded = MAX_OUTPUT_LIST if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1 else min(limit, MAX_OUTPUT_LIST)
+        where = "user_id=?"
+        params: list[Any] = [user_id]
+        if cursor is not None:
+            updated_at, output_id = decode_list_cursor(cursor)
+            where += " AND (updated_at < ? OR (updated_at = ? AND id < ?))"
+            params.extend([updated_at, updated_at, output_id])
         rows = await self._all(
             "SELECT id, title, '' AS content_text, conversation_id, project_id, created_at, updated_at "
-            "FROM saved_outputs WHERE user_id=? ORDER BY updated_at DESC, id DESC LIMIT ?",
-            user_id, bounded,
+            f"FROM saved_outputs WHERE {where} ORDER BY updated_at DESC, id DESC LIMIT ?",
+            *params, bounded + 1,
         )
-        return [_from_row(row) for row in rows]
+        page = rows[:bounded]
+        next_cursor = None
+        if len(rows) > bounded and page:
+            last = page[-1]
+            next_cursor = encode_list_cursor(str(last["updated_at"]), str(last["id"]))
+        return [_from_row(row) for row in page], next_cursor
 
     async def get_output(self, user_id: str, output_id: str) -> SavedOutputRecord | None:
         row = await self._first(

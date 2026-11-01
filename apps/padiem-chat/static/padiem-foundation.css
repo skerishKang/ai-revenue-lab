@@ -186,7 +186,7 @@ a:focus-visible {
 }
 
 /* #5882: 목록 끝 "더 보기" — 손가락 기준 44px, 읽는 글씨 14px. */
-.project-more {
+:is(.project-more, .output-more, .memory-more) {
   min-height: 44px;
   font-size: 14px;
   justify-content: center;
