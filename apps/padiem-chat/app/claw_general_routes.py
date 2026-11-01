@@ -995,6 +995,92 @@ def _requested_read_only_screen_view(user_text: str) -> bool:
     return any(word in lowered for word in _SCREEN_CAPTURE_WORDS)
 
 
+#: #6460: the closed key combos the executor already reviewed (kagent
+#: ``_KEY_SEQUENCES``). Anything else stays on the explicit backtick grammar.
+_DESKTOP_KEY_PHRASES = (
+    (("엔터", "enter", "리턴"), "enter"),
+    (("이스케이프", "esc", "탈출"), "esc"),
+    (("탭 키", "탭키", "tab"), "tab"),
+    (("백스페이스", "backspace"), "backspace"),
+    (("delete 키", "딜리트", "삭제 키", "삭제키"), "delete"),
+    (("ctrl+s", "컨트롤 s", "저장 키", "저장키"), "ctrl+s"),
+    (("ctrl+c", "컨트롤 c", "복사 키", "복사키"), "ctrl+c"),
+    (("ctrl+v", "컨트롤 v", "붙여넣기"), "ctrl+v"),
+    (("ctrl+a", "컨트롤 a", "전체 선택"), "ctrl+a"),
+)
+#: Typing free text stays on the explicit backtick grammar: the audited
+#: dispatch row would otherwise persist what was typed (#6460).
+_DESKTOP_TYPING_WORDS = (
+    "입력", "타이핑", "type", "타이프",
+)
+
+#: A request that names one of these is not executed from this lane: the owner
+#: is asked first, in the conversation, exactly once.
+_DESKTOP_EXCEPTION_WORDS = (
+    "비밀번호", "패스워드", "password", "카드 번호", "카드번호", "otp", "인증번호",
+    "계정 변경", "계정 설정", "권한 변경", "관리자 권한",
+    "삭제", "포맷", "초기화", "되돌릴 수 없는",
+    "보내기", "보내 줘", "발송", "게시", "전송", "메일 보내", "메시지 보내",
+)
+_COORDINATE_RE = re.compile(r"(\d{1,5})\s*[,，]\s*(\d{1,5})")
+
+
+def _desktop_exception_question(user_text: str) -> str | None:
+    """The one conversational check the owner asked for (#6460).
+
+    Credential entry, account/permission changes, irreversible destruction and
+    anything that sends outside the PC are never started from a plain sentence.
+    Everything else runs on the pre-delegated authority without a button.
+    """
+    lowered = user_text.lower()
+    if not any(word in lowered for word in _DESKTOP_EXCEPTION_WORDS):
+        return None
+    return (
+        "이 작업은 비밀번호·계정 변경·되돌릴 수 없는 삭제·외부 발송 중 하나에 해당할 수 있어 "
+        "바로 실행하지 않았습니다. 정확히 무엇을 실행하면 될지 한 번만 알려 주세요."
+    )
+
+
+def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
+    """Plain-language single desktop action for the verified owner PC (#6460).
+
+    Only what the sentence itself fully determines: one reviewed key combo, or
+    one click at coordinates the owner wrote. An action that needs the screen
+    (``메모장 열고 …``) is not guessed here — it belongs to the model-driven
+    desktop lane. Typing free text is not opened by this lane: the audited
+    dispatch row would persist what was typed. Input verbs therefore fall
+    through, and the backtick grammar keeps its own path.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False, None
+    if "`" in user_text:
+        return False, None
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if any(word in lowered for word in _DESKTOP_TYPING_WORDS):
+        return False, None
+    if _requested_natural_pc_files(user_text) or _requested_local_txt_path(user_text)[0]:
+        return False, None
+    if _requested_natural_pc_query(user_text)[0]:
+        return False, None
+    from .pc_browser_intent import requested_pc_browser
+    if requested_pc_browser(user_text):
+        return False, None
+    if not any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS):
+        return False, None
+    wants_click = any(word in lowered for word in ("클릭", "click", "눌러"))
+    match = _COORDINATE_RE.search(user_text)
+    if wants_click and match is not None:
+        x, y = int(match.group(1)), int(match.group(2))
+        if not (0 <= x <= 65535 and 0 <= y <= 65535):
+            return False, None
+        return True, "desktop:click\n%d,%d" % (x, y)
+    for phrases, combo in _DESKTOP_KEY_PHRASES:
+        if any(phrase in lowered for phrase in phrases):
+            return True, "desktop:keys\n" + combo
+    return False, None
+
+
 def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
     """Explicit, delimited desktop op for the verified owner PC.
 
@@ -1038,12 +1124,12 @@ def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
 #: refusal the existing desktop dispatch already answers with.
 _SCREEN_VIEW_FAILURE_COPY = {
     401: "로그인이 필요합니다.",
-    403: "연결된 PC에서 화면을 가져올 권한이 없습니다. 컴퓨터 연결과 권한을 확인해 주세요.",
-    404: "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요.",
-    409: "PC 화면 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    413: "화면 캡처 요청이 허용 크기를 넘었습니다.",
-    422: "PC 화면 요청 형식이 올바르지 않습니다.",
-    503: "PC 화면 보기를 지금 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    403: "연결된 PC에서 요청한 작업을 실행할 권한이 없습니다. 컴퓨터 연결과 권한을 확인해 주세요.",
+    404: "PC 작업 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요.",
+    409: "PC 작업 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    413: "PC 작업 요청이 허용 크기를 넘었습니다.",
+    422: "PC 작업 요청 형식이 올바르지 않습니다.",
+    503: "PC 작업을 지금 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
 }
 
 
@@ -1058,18 +1144,18 @@ def _screen_view_failure_copy(dispatched: JSONResponse) -> str:
     except Exception:
         code = ""
     if code == "oracle_mesh_run_unavailable":
-        sentence = "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요."
+        sentence = "PC 작업 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요."
     else:
         sentence = _SCREEN_VIEW_FAILURE_COPY.get(
             dispatched.status_code,
-            "PC 화면을 가져오지 못했습니다. 컴퓨터가 연결되어 있는지 확인해 주세요.",
+            "요청한 PC 작업을 실행하지 못했습니다. 컴퓨터가 연결되어 있는지 확인해 주세요.",
         )
     return sentence + (" (" + code + ")" if code else "")
 
 
 async def _dispatch_user_desktop_request(
     request: Request, *, user_text: str, desktop_op: str, data: dict[str, Any],
-    pending_copy: str | None = None, screen_view: bool = False,
+    pending_copy: str | None = None, failure_guidance: bool = False,
 ) -> JSONResponse | Response:
     """Claw composer -> one desktop dispatch on the pinned PC.
 
@@ -1122,7 +1208,7 @@ async def _dispatch_user_desktop_request(
                 await mark_failed(uid, run.run_id, "failed")
             except Exception:
                 pass
-        if screen_view:
+        if failure_guidance:
             # A read-only view never leaves a raw error body in the composer:
             # the owner gets one Korean sentence explaining what to check.
             return _claw_general_sse(
@@ -1535,7 +1621,27 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return await _dispatch_user_desktop_request(
             request, user_text=user_text, desktop_op="desktop:capture", data=data,
             pending_copy="PC 화면을 한 장 가져오는 중입니다. 완료되면 이 대화에 표시됩니다.",
-            screen_view=True,
+            failure_guidance=True,
+        )
+
+    # #6460: a plain-language single desktop action. Pre-delegated: the server
+    # re-verifies owner, device and the command grant on every send, and no
+    # per-action button exists. The four exception families are asked once in
+    # the conversation and never start from this lane.
+    control_requested, control_op = _requested_desktop_control(user_text)
+    if control_requested and control_op is not None:
+        if attachment_conflict is not None:
+            return attachment_conflict
+        question = _desktop_exception_question(user_text)
+        if question is not None:
+            conversation_id, denial = await _resolve_intake_session_reference(request, data)
+            if denial is not None:
+                return denial
+            return _claw_general_sse(question, conversation_id=conversation_id)
+        return await _dispatch_user_desktop_request(
+            request, user_text=user_text, desktop_op=control_op, data=data,
+            pending_copy="요청한 PC 동작을 보내는 중입니다. 결과는 이 대화에 표시됩니다.",
+            failure_guidance=True,
         )
 
     # One owner-requested initial observation runs through P01/Engine ToolRuntime

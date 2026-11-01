@@ -236,7 +236,7 @@ def test_the_lane_opens_no_input_path():
     assert "desktop:click" not in names and "desktop:type" not in names
     # The dispatched op is the literal capture, not a parameter.
     route_source = general._dispatch_user_desktop_request.__code__
-    assert "screen_view" in general._dispatch_user_desktop_request.__code__.co_varnames
+    assert "failure_guidance" in general._dispatch_user_desktop_request.__code__.co_varnames
     assert route_source is not None
     wrapper = general.claw_general_execute.__code__.co_consts
     texts = [value for value in wrapper if isinstance(value, str)]
