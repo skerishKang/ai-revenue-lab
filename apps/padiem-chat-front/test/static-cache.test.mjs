@@ -33,12 +33,12 @@ test("a static script answer carries the session cache window", async () => {
   const response = await handle(new Request("https://chat.example.test/static/util-menu.js"), env);
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"),
-    "private, max-age=300, stale-while-revalidate=604800");
+    "private, max-age=300");
 });
 
 test("the html entry is never cached as static", async () => {
   const handle = createFront({ fetchImpl: async () => { throw new Error("no upstream in this test"); } });
   const home = await handle(new Request("https://chat.example.test/"), env);
   assert.notEqual(home.headers.get("cache-control"),
-    "private, max-age=300, stale-while-revalidate=604800");
+    "private, max-age=300");
 });

@@ -492,7 +492,7 @@ class CachedStaticFiles(StaticFiles):
     The static URLs are not content-versioned, so a long immutable lifetime
     would pin a stale UI after a deploy. 300s keeps a session's repeat
     navigations off the network (the ~150-request first-load spike) while
-    stale-while-revalidate serves the last good copy instantly and refreshes
+    (no stale-while-revalidate: unversioned URLs must not outlive a deploy past 5 minutes) refreshes
     it in the background. HTML is never cached: it must pick up a new deploy.
     """
 
@@ -501,7 +501,7 @@ class CachedStaticFiles(StaticFiles):
         content_type = response.headers.get("content-type", "")
         if response.status_code == 200 and "text/html" not in content_type:
             response.headers["cache-control"] = (
-                "private, max-age=300, stale-while-revalidate=604800"
+                "private, max-age=300"
             )
         return response
 

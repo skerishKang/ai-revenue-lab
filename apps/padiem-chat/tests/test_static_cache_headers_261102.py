@@ -32,7 +32,7 @@ def test_static_script_and_style_carry_the_session_cache_window():
         response = client.get(path)
         assert response.status_code == 200, (path, response.status_code)
         assert response.headers["cache-control"] == (
-            "private, max-age=300, stale-while-revalidate=604800"
+            "private, max-age=300"
         ), path
 
 
@@ -40,4 +40,4 @@ def test_the_html_entry_is_not_static_cached():
     client = _client()
     home = client.get("/")
     assert home.status_code == 200
-    assert "stale-while-revalidate=604800" not in home.headers.get("cache-control", "")
+    assert "max-age=300" not in home.headers.get("cache-control", "")

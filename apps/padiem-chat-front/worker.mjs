@@ -168,9 +168,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
   // The static URLs are not content-versioned, so a long immutable lifetime
   // would pin a stale UI after a deploy; 300s keeps a session's repeat
   // navigations off the network (the ~150-request first-load spike) while
-  // stale-while-revalidate serves the last good copy instantly and refreshes
+  // (no stale-while-revalidate: static URLs carry no version yet, so an old script must not outlive a deploy by more than the 5-minute window) refreshes
   // it in the background. HTML is never cached: it must pick up a new deploy.
-  const STATIC_CACHE_CONTROL = "private, max-age=300, stale-while-revalidate=604800";
+  const STATIC_CACHE_CONTROL = "private, max-age=300";
   function withStaticCache(response) {
     const type = response.headers.get("content-type") || "";
     if (!response.ok || type.includes("text/html")) return response;
