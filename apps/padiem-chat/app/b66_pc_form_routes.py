@@ -33,7 +33,7 @@ from .pc_file_exchange_routes import DISPATCH_ID, _dispatch_row, _stored_output
 
 PC_QUOTE_FORMS_PATH = "/api/b66/pc-quote/forms"
 MAX_FORM_REQUEST_BYTES = 4 * 1024
-_BODY_KEYS = frozenset({"file_id", "name"})
+_BODY_KEYS = frozenset({"file_id", "name", "mapping", "analyze_only"})
 _NAME_MAX = 80
 
 
@@ -112,6 +112,15 @@ async def pc_quote_form_register(request: Request) -> JSONResponse:
     if not isinstance(structure, dict) or not isinstance(structure.get("sheets"), list):
         return _error(502, "form_structure_failed")
 
+    if body.get("analyze_only") is True:
+        from .b66_quote_form_analysis import analyze_quote_form
+        return JSONResponse(
+            {"ok": True, "analysis": analyze_quote_form(structure)},
+            headers={"Cache-Control": "no-store, max-age=0"},
+        )
+    if "analyze_only" in body and body["analyze_only"] is not False:
+        return _error(400, "unsupported_field")
+
     workspace_id = await _resolve_memory_workspace(request, uid)
     if not isinstance(workspace_id, str) or not workspace_id:
         return _error(503, "workspace_unavailable")
@@ -126,6 +135,7 @@ async def pc_quote_form_register(request: Request) -> JSONResponse:
                 # The item-row pattern is learned later, on the first fill from
                 # this saved form; registration itself adds no rows.
                 "item_rows": [],
+                **({"mapping": body["mapping"]} if "mapping" in body else {}),
             },
             approved_at=datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         )

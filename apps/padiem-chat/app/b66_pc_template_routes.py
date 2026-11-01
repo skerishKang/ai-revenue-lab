@@ -319,8 +319,11 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
         return _error(503, "quote_runtime_unavailable")
     try:
         pattern = ""
+        if saved_form is not None and saved_form.get("mapping"):
+            pattern += ("\n\n사용자가 확인한 칸 위치(재선택하지 말고 그대로 사용):\n"
+                        + json.dumps(saved_form["mapping"], ensure_ascii=False))
         if saved_form is not None and saved_form.get("item_rows"):
-            pattern = ("\n\n이 양식에서 지난번 품목 행을 늘린 방식:\n"
+            pattern += ("\n\n이 양식에서 지난번 품목 행을 늘린 방식:\n"
                        + json.dumps(saved_form["item_rows"], ensure_ascii=False)[:2000])
         result = await completer(
             [{"role": "user", "content": asked.strip()}],

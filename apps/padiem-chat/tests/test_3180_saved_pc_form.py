@@ -306,3 +306,53 @@ def test_the_quote_screen_lists_and_reuses_the_saved_form():
     # and never sends a saved form through the quote interpreter.
     assert 'saved.data.ok !== true' in script
     assert 'if (isPcForm(savedSkill))' in script
+
+
+def test_confirmed_cell_mapping_is_persisted_and_used_on_repeat(monkeypatch):
+    lane = Lane()
+    state, history, _, _ = _state(monkeypatch, lane)
+    dispatch = "dsp_" + "b" * 32
+    _finished(history, dispatch)
+    mapping = {"recipient": {"sheet": "견적서", "cell": "B3"}}
+    response = forms.pc_quote_form_register(base._Request(state, body={
+        "file_id": dispatch, "name": "가상 양식", "mapping": mapping,
+    }))
+    status, registered = base._answer(base.pairing.run(response))
+    assert status == 200
+    form_id = registered["form"]["saved_skill_id"]
+    stored = base.pairing.run(state.b66_saved_quote_skill_store.get_skill(
+        user_id=OWNER, workspace_id=WORKSPACE, saved_skill_id=form_id,
+    ))
+    assert stored["skill"]["form"]["mapping"] == mapping
+    status, _ = _fill(state, dispatch, form_id=form_id, request="가상 거래처")
+    assert status == 200
+    assert '"recipient"' in state.b66_quote_interpreter._client.complete.seen["system"]
+
+
+def test_confirmed_mapping_must_reference_valid_sheet_and_cell(monkeypatch):
+    lane = Lane()
+    state, history, _, _ = _state(monkeypatch, lane)
+    dispatch = "dsp_" + "c" * 32
+    _finished(history, dispatch)
+    response = forms.pc_quote_form_register(base._Request(state, body={
+        "file_id": dispatch, "name": "가상 양식",
+        "mapping": {"unit_price": {"sheet": "다른 시트", "cell": "D9"}},
+    }))
+    status, body = base._answer(base.pairing.run(response))
+    assert status == 422 and body["error"]["code"] == "form_invalid"
+
+
+def test_analyzing_form_returns_candidates_without_saving(monkeypatch):
+    lane = Lane()
+    state, history, _, _ = _state(monkeypatch, lane)
+    dispatch = "dsp_" + "d" * 32
+    _finished(history, dispatch)
+    response = forms.pc_quote_form_register(base._Request(state, body={
+        "file_id": dispatch, "name": "가상 양식", "analyze_only": True,
+    }))
+    status, body = base._answer(base.pairing.run(response))
+    assert status == 200
+    assert body["analysis"]["recipient"]["candidates"][0]["cell"] == "B3"
+    assert base.pairing.run(state.b66_saved_quote_skill_store.list_skills(
+        user_id=OWNER, workspace_id=WORKSPACE,
+    )) == []
