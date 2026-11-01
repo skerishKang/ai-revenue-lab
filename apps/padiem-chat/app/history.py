@@ -33,7 +33,7 @@ MAX_RUN_RESULT_SUMMARY_CHARS = 200
 #: 063 dispatch scope (``tool_call_ref``) is written only by the trusted PC file
 #: tool lane, and that lane is this one; the marker therefore names the same
 #: lane the dispatch scope names, without a second authority.
-MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query"})
+MULTI_COMMAND_RUN_ACTIONS = frozenset({"pc_files_query", "pc_browser_query"})
 
 #: #5895 — how long one executor claim is held before the same dispatch may be
 #: handed out again. The Oracle executor holds a poll open for 20 seconds and
@@ -77,7 +77,6 @@ def _merge_run_result_summaries(stored: object, addition: str) -> str:
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
-ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
 
 
 def _oracle_mesh_original_max_bytes(
@@ -87,7 +86,13 @@ def _oracle_mesh_original_max_bytes(
     # argument or model value. Other reads retain the 6MB guard; only command
     # results can use the host-configured limit.
     if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
-        return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+        # #5882 A: the PC read lane has no product store cap of its own. These
+        # bytes were verified against the dispatch pin (size + digest) just
+        # above, and what actually bounds them is the connector's read
+        # envelope — a smaller store number only refused a read that had
+        # already succeeded. A file larger than one answer is paged by the
+        # Engine from its first range instead.
+        return None
     if row.get("kind") == "command":
         return command_max_bytes
     return ORACLE_MESH_ORIGINAL_MAX_BYTES
@@ -180,6 +185,7 @@ PC_SCOPE_NOTICE_LABELS = {
     "files": "요청한 파일의 목록과 내용을 확인합니다.",
     "files_write": "요청한 파일을 만들거나 바꾸고, 옮기거나 지웁니다. 바뀌기 전 내용은 백업합니다.",
     "query_drives": "드라이브 목록만 조회합니다.",
+    "browser": "연결된 PC의 작업용 브라우저에서 요청한 웹 작업을 진행합니다.",
     "none": "허용된 PC 작업 범위를 확인하지 못했습니다.",
 }
 
@@ -1534,13 +1540,15 @@ class D1HistoryStore:
 
     async def record_txt_pending_run(
         self, *, user_id: str, run_id: str, workspace_id: str,
-        user_text: str, conversation_id: str | None,
+        user_text: str, conversation_id: str | None, action: str = "txt_read",
     ) -> str:
         """Stage a real owner conversation + pending local run, never an answer.
 
         The verified Broker result alone is allowed to insert the assistant
         message later. This uses the existing conversation/messages/run tables.
         """
+        if not isinstance(action, str) or action not in {"txt_read", "pc_browser_query"}:
+            raise HistoryError("unsupported pending PC action")
         workspace = _safe_identifier("workspace_id", workspace_id)
         content = _bounded_text(user_text, "user_text")
         cid = validate_conversation_id(conversation_id)
@@ -1577,7 +1585,7 @@ class D1HistoryStore:
             persisted = True
             await self.record_claw_run(
                 user_id=user_id, run_id=run_id, channel="web",
-                action="txt_read", title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
+                action=action, title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
                 status="pending", conversation_id=cid, workspace_id=workspace,
             )
             await self._run(
@@ -1654,7 +1662,7 @@ class D1HistoryStore:
         self, *, user_id: str, run_id: str, workspace_id: str, action: str,
     ) -> dict | None:
         """Called only after a signed Engine tool call revalidates its owner."""
-        if action not in ("pc_files_query", "pc_drive_query"):
+        if action not in ("pc_files_query", "pc_drive_query", "pc_browser_query"):
             raise HistoryForbidden("Invalid PC run action")
         turn = await self._chat_stream_turn(user_id, run_id)
         if turn is None:
@@ -1712,7 +1720,7 @@ class D1HistoryStore:
         title so a Chat turn never reads as a Claw turn. The verified Mesh
         result alone is allowed to insert the assistant message later.
         """
-        if action not in ("pc_drive_query", "pc_files_query"):
+        if action not in ("pc_drive_query", "pc_files_query", "pc_browser_query"):
             raise HistoryError("unsupported Chat PC action")
         if not isinstance(title_prefix, str) or not title_prefix:
             raise HistoryError("Chat PC title prefix is required")
@@ -2057,7 +2065,7 @@ class D1HistoryStore:
             "UPDATE claw_run_history SET status=?, updated_at=?, "
             "result_summary=CASE WHEN ? IS NULL THEN result_summary ELSE ? END "
             "WHERE run_id=? AND user_id=? AND status<>'completed' "
-            "AND (? <> 'running' OR action <> 'pc_files_query' OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
+            "AND (? <> 'running' OR action NOT IN ('pc_files_query','pc_browser_query') OR status NOT IN ('failed', 'cancelled', 'timed_out'))",
             status, _now_iso(), summary, summary, run_id, user_id, status,
         )
         return _changed_rows(result) > 0
@@ -3603,7 +3611,7 @@ class D1HistoryStore:
         # without them raises here and every caller fails closed (503), so a
         # missing migration can never read as a successful deploy.
         row = await self._first(
-            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, "
+            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, tool_request_ref, "
             "result_sha256, result_bytes, termination, exit_code, state "
             "FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?",
             dispatch_id, user_id,

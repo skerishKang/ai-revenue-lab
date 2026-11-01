@@ -7,9 +7,26 @@ LINUX_DATA = Path("/opt/padiem/chat-com2/data")
 AUTH_MODES = {"password", "google", "hybrid"}
 MODES = {"mock", "b14"}
 
+#: One line, operator-facing, no configuration values in it. The single-process
+#: contract backs the edge-verification semaphore (#6563), the per-upload tus
+#: locks (#6604) and the replay connection (#6610).
+MULTI_WORKER_REASON = (
+    "프로세스 1개 전제 잠금: edge·tus·replay — 교차 프로세스화 전에는 1만 허용"
+)
+
 
 def _flag(name: str, default: str = "false") -> bool:
     return os.environ.get(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _workers_at_least_two() -> bool:
+    raw = os.environ.get("PADIEM_CHAT_WORKERS", "1").strip()
+    return raw.isascii() and raw.isdecimal() and int(raw) >= 2
+
+
+def _multi_worker_escape() -> bool:
+    # The owner's switch; it is off in every deployment today.
+    return _flag("PADIEM_CHAT_ALLOW_MULTI_WORKERS", "false")
 
 
 def ready() -> bool:
@@ -71,6 +88,11 @@ def _pairs_consistent(origin_name: str, secret_name: str) -> bool:
 
 
 if __name__ == "__main__":
+    if _workers_at_least_two() and not _multi_worker_escape():
+        # ExecCondition exit 2: the launch contract itself is violated, not
+        # merely unready. One line, no configuration values.
+        print("CHAT_COM2_CONFIG_BLOCKED: " + MULTI_WORKER_REASON)
+        raise SystemExit(2)
     valid = ready()
     print("CHAT_COM2_CONFIG_READY=" + ("1" if valid else "0"))
     raise SystemExit(0 if valid else 1)

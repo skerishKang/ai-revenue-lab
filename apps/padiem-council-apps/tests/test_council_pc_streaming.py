@@ -8,6 +8,7 @@ asserts a string that the browser would not run.
 from __future__ import annotations
 
 import re
+from datetime import date
 from pathlib import Path
 
 from _council_module import run
@@ -47,7 +48,10 @@ def test_a_picked_text_becomes_a_reference_in_both_prompts() -> None:
 def test_saving_to_the_pc_offers_a_new_dated_name_never_the_original() -> None:
     obs = run("pc")
     saved = obs["savedB"]
-    assert saved["fileName"] == "축사_PC 가져오기 검증_2026-11-01.txt"
+    # The stamp is the day the save runs — the app's todayStamp() reads the real
+    # clock, so the expectation reads the same clock instead of pinning the day
+    # this test was written (which made it fail on every later day).
+    assert saved["fileName"] == f"축사_PC 가져오기 검증_{date.today().isoformat()}.txt"
     assert saved["content"] == obs["outputB"]
     assert obs["savedIsNewName"] is True, "a copy must never reuse the stored document name"
     assert obs["saveNoticeB"] == "내 PC에 저장했습니다."

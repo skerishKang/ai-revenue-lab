@@ -496,7 +496,7 @@ class B62EngineOrchestrationBridge:
                     or set(pc_tools) != {"device_id", "allowed_scopes"}
                     or not is_pc_device_id(pc_tools.get("device_id"))
                     or not isinstance(scopes, list) or not scopes
-                    or any(v not in ("query_drives", "files_list", "files", "files_write") for v in scopes)
+                    or any(v not in ("query_drives", "files_list", "files", "files_write", "browser") for v in scopes)
                     or len(set(scopes)) != len(scopes)
                     or not request.get("subject_id") or not request.get("session_id")):
                 raise B62OrchestrationError("invalid_engine_request", "PC 도구 요청을 확인할 수 없습니다.", status_code=500)

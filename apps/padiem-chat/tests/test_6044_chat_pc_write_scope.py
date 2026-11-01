@@ -44,11 +44,11 @@ def test_a_write_request_opens_the_files_write_scope():
     assert chat_pc_drive._tool_arguments_for_plan(plan, DEVICE_ID) == {
         "files_write": {"device_id": DEVICE_ID},
     }
-    # The streaming bridge admits the same four scopes and no others.
+    # Browser is independent; the existing file scopes stay unchanged.
     bridge = (Path(__file__).resolve().parents[1] / "app/orchestration_bridge.py").read_text(
         encoding="utf-8",
     )
-    assert '("query_drives", "files_list", "files", "files_write")' in bridge
+    assert '("query_drives", "files_list", "files", "files_write", "browser")' in bridge
 
 
 def test_a_read_request_does_not_open_the_write_scope():
@@ -59,7 +59,7 @@ def test_a_read_request_does_not_open_the_write_scope():
         assert not (tool_ids & WRITE_TOOL_IDS), tool_name
 
     read_names = {tool.name for tool in chat_pc_drive.pc_tools_for_turn("폴더에 뭐가 있는지 알려 줘")}
-    assert read_names == {"query_drives", "files_list", "files"}
+    assert read_names == {"query_drives", "files_list", "files", "browser"}
     assert "files_write" not in read_names
     assert chat_pc_drive.pc_write_intent("이름을 최종으로 바꿔 줘")
     assert not chat_pc_drive.pc_write_intent("지난주 회의록 읽어 줘")

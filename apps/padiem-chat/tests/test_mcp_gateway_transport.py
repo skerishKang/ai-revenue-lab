@@ -121,10 +121,10 @@ def test_modern_discovery_and_legacy_initialization_are_sessionless(gateway):
 
 
 @pytest.mark.parametrize("version", [MODERN, LEGACY])
-def test_six_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
+def test_ten_sorted_tools_use_closed_schemas_and_token_bound_device(gateway, version):
     response = post(gateway, version=version)
     tools = response.json()["result"]["tools"]
-    assert [tool["name"] for tool in tools] == ["pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write"]
+    assert [tool["name"] for tool in tools] == ["pc_browser_act", "pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_delete", "pc_list", "pc_move", "pc_read", "pc_search", "pc_write"]
     for tool in tools:
         assert tool["inputSchema"]["additionalProperties"] is False
         assert "device_id" not in tool["inputSchema"]["properties"]
