@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JON:chapter:004",
+  "unit_ordinal": 893,
+  "unit_label": "JON 4",
+  "book_code": "JON",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JON:4:1",
+      "sequence": 22570,
+      "chapter_label": "JON 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "But it displeased Jonah exceedingly, and he was angry.",
+      "ko": "요나가 심히 싫어하고 노하여",
+      "source_text_hash": "3383b7fce6472ed853493e493450e941d19bce202fad540527ee726ee7d38f0d",
+      "translation_text_hash": "57e85c728afef7b002eef3a48c5ded81bf925e67cc7eb073e3e024107baca627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 심히 싫어하고 노하여"
+      ],
+      "raw_text_hashes": [
+        "57e85c728afef7b002eef3a48c5ded81bf925e67cc7eb073e3e024107baca627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:2",
+      "sequence": 22571,
+      "chapter_label": "JON 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "He prayed to the LORD, and said, “Please, LORD, wasn’t this what I said when I was still in my own country? Therefore I hurried to flee to Tarshish, for I knew that you are a gracious God and merciful, slow to anger, and abundant in loving kindness, and you relent of doing harm.",
+      "ko": "여호와께 기도하여 가로되 여호와여 내가 고국에 있을 때에 이러하겠다고 말씀하지 아니하였나이까 그러므로 내가 빨리 다시스로 도망하였사오니 주께서는 은혜로우시며 자비로우시며 노하기를 더디하시며 인애가 크시사 뜻을 돌이켜 재앙을 내리지 아니하시는 하나님이신 줄을 내가 알았음이니이다",
+      "source_text_hash": "de5df5c22bb733701c31bb3f9631a3c9fb9cfc4c5773f244cdf18dccd72bb4b7",
+      "translation_text_hash": "3947f2734e1d4c8c0810519608d362472f05baa0d39210d126426bc507596039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 기도하여 가로되 여호와여 내가 고국에 있을 때에 이러하겠다고 말씀하지 아니하였나이까 그러므로 내가 빨리 다시스로 도망하였사오니 주께서는 은혜로우시며 자비로우시며 노하기를 더디하시며 인애가 크시사 뜻을 돌이켜 재앙을 내리지 아니하시는 하나님이신 줄을 내가 알았음이니이다"
+      ],
+      "raw_text_hashes": [
+        "3947f2734e1d4c8c0810519608d362472f05baa0d39210d126426bc507596039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:3",
+      "sequence": 22572,
+      "chapter_label": "JON 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore now, LORD, take, I beg you, my life from me, for it is better for me to die than to live.”",
+      "ko": "여호와여 원컨대 이제 내 생명을 취하소서 사는 것보다 죽는 것이 내게 나음이니이다",
+      "source_text_hash": "b279efc3c744f323d9220350ae0694fc247120674b93a4fbb6daddfcd09920e8",
+      "translation_text_hash": "7015ada4de0102f6f163ea1d123b3b77c39f19ed30fe46584c639d53a07e23b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 원컨대 이제 내 생명을 취하소서 사는 것보다 죽는 것이 내게 나음이니이다"
+      ],
+      "raw_text_hashes": [
+        "7015ada4de0102f6f163ea1d123b3b77c39f19ed30fe46584c639d53a07e23b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:4",
+      "sequence": 22573,
+      "chapter_label": "JON 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD said, “Is it right for you to be angry?”",
+      "ko": "여호와께서 이르시되 너의 성냄이 어찌 합당하냐 하시니라",
+      "source_text_hash": "bec38748c723e1b5748cb40ab040737085822d2d20e9ff2f68797104e61a4b67",
+      "translation_text_hash": "329abb4e353ba44e7ae7b5c25392775bb5c58b9758c0f8c3c2d6d6b636be2a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이르시되 너의 성냄이 어찌 합당하냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "329abb4e353ba44e7ae7b5c25392775bb5c58b9758c0f8c3c2d6d6b636be2a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:5",
+      "sequence": 22574,
+      "chapter_label": "JON 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Then Jonah went out of the city and sat on the east side of the city, and there made himself a booth and sat under it in the shade, until he might see what would become of the city.",
+      "ko": "요나가 성에서 나가서 그 성 동편에 앉되 거기서 자기를 위하여 초막을 짓고 그 그늘 아래 앉아서 성읍이 어떻게 되는 것을 보려 하니라",
+      "source_text_hash": "10880c195cc12a6a864946494ce2a9da0135da0379cab5010ed6489bb9fbbd3e",
+      "translation_text_hash": "c02e5c890620d3c9809509ce5dd94b94daa5bd64370ea8a18cef1429d934ac63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 성에서 나가서 그 성 동편에 앉되 거기서 자기를 위하여 초막을 짓고 그 그늘 아래 앉아서 성읍이 어떻게 되는 것을 보려 하니라"
+      ],
+      "raw_text_hashes": [
+        "c02e5c890620d3c9809509ce5dd94b94daa5bd64370ea8a18cef1429d934ac63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:6",
+      "sequence": 22575,
+      "chapter_label": "JON 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD God prepared a vine and made it to come up over Jonah, that it might be a shade over his head to deliver him from his discomfort. So Jonah was exceedingly glad because of the vine.",
+      "ko": "하나님 여호와께서 박 넝쿨을 준비하사 요나 위에 가리우게 하셨으니 이는 그 머리를 위하여 그늘이 지게 하며 그 괴로움을 면케 하려 하심이었더라 요나가 박 넝쿨을 인하여 심히 기뻐하였더니",
+      "source_text_hash": "f741c54fabe113b1f5b70f28a248338db58676ea53779c5b997a68eedb9100ee",
+      "translation_text_hash": "f82828d4adcf0b880c41fb5c187ebe339e84b28bb0dc568ba4fa9e92682c78fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 여호와께서 박 넝쿨을 준비하사 요나 위에 가리우게 하셨으니 이는 그 머리를 위하여 그늘이 지게 하며 그 괴로움을 면케 하려 하심이었더라 요나가 박 넝쿨을 인하여 심히 기뻐하였더니"
+      ],
+      "raw_text_hashes": [
+        "f82828d4adcf0b880c41fb5c187ebe339e84b28bb0dc568ba4fa9e92682c78fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:7",
+      "sequence": 22576,
+      "chapter_label": "JON 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But God prepared a worm at dawn the next day, and it chewed on the vine so that it withered.",
+      "ko": "하나님이 벌레를 준비하사 이튿날 새벽에 그 박 넝쿨을 씹게 하시매 곧 시드니라",
+      "source_text_hash": "b7782ecfaff051a0075fe6cafa4a4d01d56110442e6af41c98b7fe2ea4ec390b",
+      "translation_text_hash": "24665e9f626c09f21b820bbfd7c1295e511e4b809dfdae202314a1431566c24f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 벌레를 준비하사 이튿날 새벽에 그 박 넝쿨을 씹게 하시매 곧 시드니라"
+      ],
+      "raw_text_hashes": [
+        "24665e9f626c09f21b820bbfd7c1295e511e4b809dfdae202314a1431566c24f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:8",
+      "sequence": 22577,
+      "chapter_label": "JON 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "When the sun arose, God prepared a sultry east wind; and the sun beat on Jonah’s head, so that he was faint and requested for himself that he might die. He said, “It is better for me to die than to live.”",
+      "ko": "해가 뜰 때에 하나님이 뜨거운 동풍을 준비하셨고 해는 요나의 머리에 쬐매 요나가 혼곤하여 스스로 죽기를 구하여 가로되 사는 것보다 죽는 것이 내게 나으니이다",
+      "source_text_hash": "751ad7a14b77cfe2c7fb2ebceb323621a6fc81bfc1796c3ac58f021e5eb7224b",
+      "translation_text_hash": "cabdba9477f18dbdc9bed3d4d5177f83815cb6f6cccd04d76eddf75b2a9b7015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 뜰 때에 하나님이 뜨거운 동풍을 준비하셨고 해는 요나의 머리에 쬐매 요나가 혼곤하여 스스로 죽기를 구하여 가로되 사는 것보다 죽는 것이 내게 나으니이다"
+      ],
+      "raw_text_hashes": [
+        "cabdba9477f18dbdc9bed3d4d5177f83815cb6f6cccd04d76eddf75b2a9b7015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:9",
+      "sequence": 22578,
+      "chapter_label": "JON 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "God said to Jonah, “Is it right for you to be angry about the vine?” He said, “I am right to be angry, even to death.”",
+      "ko": "하나님이 요나에게 이르시되 네가 이 박 넝쿨로 인하여 성냄이 어찌 합당하냐 그가 대답하되 내가 성내어 죽기까지 할찌라도 합당하니이다",
+      "source_text_hash": "f54c309f69b049a2c5db68b0362b5fd83ca55bb076664abab953f6eb518b43ea",
+      "translation_text_hash": "758381d80d48bb6ce9bcf0aa297fa3cea0ffa3c15498d000f5e68c6e6f5c9417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 요나에게 이르시되 네가 이 박 넝쿨로 인하여 성냄이 어찌 합당하냐 그가 대답하되 내가 성내어 죽기까지 할찌라도 합당하니이다"
+      ],
+      "raw_text_hashes": [
+        "758381d80d48bb6ce9bcf0aa297fa3cea0ffa3c15498d000f5e68c6e6f5c9417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:10",
+      "sequence": 22579,
+      "chapter_label": "JON 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD said, “You have been concerned for the vine, for which you have not labored, neither made it grow; which came up in a night and perished in a night.",
+      "ko": "여호와께서 가라사대 네가 수고도 아니하였고 배양도 아니하였고 하룻밤에 났다가 하룻밤에 망한 이 박 넝쿨을 네가 아꼈거든",
+      "source_text_hash": "beb574b581eed847ba355d94d8cfc35c173d5427152e76603ef9e9b28c8675ff",
+      "translation_text_hash": "b6290ff202ccf4eba8648bef29e68e4393aced9d25103495cbb1ebb9c99b2a6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 네가 수고도 아니하였고 배양도 아니하였고 하룻밤에 났다가 하룻밤에 망한 이 박 넝쿨을 네가 아꼈거든"
+      ],
+      "raw_text_hashes": [
+        "b6290ff202ccf4eba8648bef29e68e4393aced9d25103495cbb1ebb9c99b2a6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:4:11",
+      "sequence": 22580,
+      "chapter_label": "JON 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JON",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Shouldn’t I be concerned for Nineveh, that great city, in which are more than one hundred twenty thousand persons who can’t discern between their right hand and their left hand, and also many animals?”",
+      "ko": "하물며 이 큰 성읍, 니느웨에는 좌우를 분변치 못하는 자가 십 이만 여명이요 육축도 많이 있나니 내가 아끼는 것이 어찌 합당치 아니하냐",
+      "source_text_hash": "6ce8edec7071f64862a7d875a592f1592b3e6ba7e995d1801d6f85c2d7929a54",
+      "translation_text_hash": "48411d3f6958823b58baee94a9f468961f356b3907a6a7aecd6a30a71dba3869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 이 큰 성읍, 니느웨에는 좌우를 분변치 못하는 자가 십 이만 여명이요 육축도 많이 있나니 내가 아끼는 것이 어찌 합당치 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "48411d3f6958823b58baee94a9f468961f356b3907a6a7aecd6a30a71dba3869"
+      ]
+    }
+  ]
+}

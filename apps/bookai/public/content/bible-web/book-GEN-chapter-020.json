@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:020",
+  "unit_ordinal": 20,
+  "unit_label": "GEN 20",
+  "book_code": "GEN",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:20:1",
+      "sequence": 497,
+      "chapter_label": "GEN 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Abraham traveled from there toward the land of the South, and lived between Kadesh and Shur. He lived as a foreigner in Gerar.",
+      "ko": "아브라함이 거기서 남방으로 이사하여 가데스와 술 사이 그랄에 우거하며",
+      "source_text_hash": "12bb6a4cec8670a935880d7cc8765710374de6cb32269f01e3043b23de8f11f4",
+      "translation_text_hash": "7f7340fbae9c16911242373c9c495f82536d07310309eeacac2db5cd230cbaad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 거기서 남방으로 이사하여 가데스와 술 사이 그랄에 우거하며"
+      ],
+      "raw_text_hashes": [
+        "7f7340fbae9c16911242373c9c495f82536d07310309eeacac2db5cd230cbaad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:2",
+      "sequence": 498,
+      "chapter_label": "GEN 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "Abraham said about Sarah his wife, “She is my sister.” Abimelech king of Gerar sent, and took Sarah.",
+      "ko": "그 아내 사라를 자기 누이라 하였으므로 그랄 왕 아비멜렉이 보내어 사라를 취하였더니",
+      "source_text_hash": "edbe9da7a8ae4741501cdb291091c1b029f9612de8f546c778940b6c69f26793",
+      "translation_text_hash": "e31bba92988022c9ab52c27e55b9e5920f725fcb197a21faab52acc696eb86d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내 사라를 자기 누이라 하였으므로 그랄 왕 아비멜렉이 보내어 사라를 취하였더니"
+      ],
+      "raw_text_hashes": [
+        "e31bba92988022c9ab52c27e55b9e5920f725fcb197a21faab52acc696eb86d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:3",
+      "sequence": 499,
+      "chapter_label": "GEN 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "But God came to Abimelech in a dream of the night, and said to him, “Behold, you are a dead man, because of the woman whom you have taken; for she is a man’s wife.”",
+      "ko": "그 밤에 하나님이 아비멜렉에게 현몽하시고 그에게 이르시되 네가 취한 이 여인을 인하여 네가 죽으리니 그가 남의 아내임이니라",
+      "source_text_hash": "97ce33b91ea133f9f25aa270c707847a9699b210a95176f89f9e5030695fbdc5",
+      "translation_text_hash": "9aecb1098edfcadc8cea46a99810075b3493718cd9783d3242f88fe2467a9c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 하나님이 아비멜렉에게 현몽하시고 그에게 이르시되 네가 취한 이 여인을 인하여 네가 죽으리니 그가 남의 아내임이니라"
+      ],
+      "raw_text_hashes": [
+        "9aecb1098edfcadc8cea46a99810075b3493718cd9783d3242f88fe2467a9c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:4",
+      "sequence": 500,
+      "chapter_label": "GEN 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "Now Abimelech had not come near her. He said, “Lord, will you kill even a righteous nation?",
+      "ko": "아비멜렉이 그 여인을 가까이 아니한고로 그가 대답하되 주여 주께서 의로운 백성도 멸하시나이까",
+      "source_text_hash": "d211cc209c4a0766ad3f419592650191d0800e2c80ec846fd7775a4ddde8c8fe",
+      "translation_text_hash": "582b405a6404489e11024a16070c0b0d51249786a63f92cc284a0d72ffd25dc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 그 여인을 가까이 아니한고로 그가 대답하되 주여 주께서 의로운 백성도 멸하시나이까"
+      ],
+      "raw_text_hashes": [
+        "582b405a6404489e11024a16070c0b0d51249786a63f92cc284a0d72ffd25dc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:5",
+      "sequence": 501,
+      "chapter_label": "GEN 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Didn’t he tell me, ‘She is my sister’? She, even she herself, said, ‘He is my brother.’ I have done this in the integrity of my heart and the innocence of my hands.”",
+      "ko": "그가 나더러 이는 내 누이라고 하지 아니하였나이까 그 여인도 그는 내 오라비라 하였사오니 나는 온전한 마음과 깨끗한 손으로 이렇게 하였나이다",
+      "source_text_hash": "4c46cbc7416997a25f90a0207417526c1552e9bfb7958a32827ee9f83b3de6fe",
+      "translation_text_hash": "2e401a06ca90189db6504ccfd985860a34e6a35e5ccc44e205f2ef7b1224a734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나더러 이는 내 누이라고 하지 아니하였나이까 그 여인도 그는 내 오라비라 하였사오니 나는 온전한 마음과 깨끗한 손으로 이렇게 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "2e401a06ca90189db6504ccfd985860a34e6a35e5ccc44e205f2ef7b1224a734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:6",
+      "sequence": 502,
+      "chapter_label": "GEN 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "God said to him in the dream, “Yes, I know that in the integrity of your heart you have done this, and I also withheld you from sinning against me. Therefore I didn’t allow you to touch her.",
+      "ko": "하나님이 꿈에 또 그에게 이르시되 네가 온전한 마음으로 이렇게 한 줄을 나도 알았으므로 너를 막아 내게 범죄하지 않게 하였나니 여인에게 가까이 못하게 함이 이 까닭이니라",
+      "source_text_hash": "efd00a68ccfb9d4c79601ed44fe73417bb5863799bb0d64e51c64ce9754e24e7",
+      "translation_text_hash": "9f2d895fd68faba2bc95ef73674860e3b2bed02cb5bcc618738907f5f245d813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 꿈에 또 그에게 이르시되 네가 온전한 마음으로 이렇게 한 줄을 나도 알았으므로 너를 막아 내게 범죄하지 않게 하였나니 여인에게 가까이 못하게 함이 이 까닭이니라"
+      ],
+      "raw_text_hashes": [
+        "9f2d895fd68faba2bc95ef73674860e3b2bed02cb5bcc618738907f5f245d813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:7",
+      "sequence": 503,
+      "chapter_label": "GEN 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore, restore the man’s wife. For he is a prophet, and he will pray for you, and you will live. If you don’t restore her, know for sure that you will die, you, and all who are yours.”",
+      "ko": "이제 그 사람의 아내를 돌려 보내라 그는 선지자라 그가 너를 위하여 기도하리니 네가 살려니와 네가 돌려 보내지 않으면 너와 네게 속한 자가 다 정녕 죽을줄 알찌니라",
+      "source_text_hash": "f7fd2e9165a84ae72567ea6b12a6170cc5f0d934d2c51b744b76d522763381e9",
+      "translation_text_hash": "20fec0e9d4989a6751b0356a12b70665e2778306381d54a0189c8fd02c0bafb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 그 사람의 아내를 돌려 보내라 그는 선지자라 그가 너를 위하여 기도하리니 네가 살려니와 네가 돌려 보내지 않으면 너와 네게 속한 자가 다 정녕 죽을줄 알찌니라"
+      ],
+      "raw_text_hashes": [
+        "20fec0e9d4989a6751b0356a12b70665e2778306381d54a0189c8fd02c0bafb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:8",
+      "sequence": 504,
+      "chapter_label": "GEN 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "Abimelech rose early in the morning, and called all his servants, and told all these things in their ear. The men were very scared.",
+      "ko": "아비멜렉이 그 아침에 일찌기 일어나 모든 신복을 불러 그 일을 다 말하여 들리매 그 사람들이 심히 두려워하였더라",
+      "source_text_hash": "629db86330dc965301914ae4a49d2238e8e04b1dbe9bb76c9c857c34178bd814",
+      "translation_text_hash": "f26c8923901b6465a66ee6d3da669c876685ef70cbddd0c380d20f03bbe996f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 그 아침에 일찌기 일어나 모든 신복을 불러 그 일을 다 말하여 들리매 그 사람들이 심히 두려워하였더라"
+      ],
+      "raw_text_hashes": [
+        "f26c8923901b6465a66ee6d3da669c876685ef70cbddd0c380d20f03bbe996f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:9",
+      "sequence": 505,
+      "chapter_label": "GEN 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Then Abimelech called Abraham, and said to him, “What have you done to us? How have I sinned against you, that you have brought on me and on my kingdom a great sin? You have done deeds to me that ought not to be done!”",
+      "ko": "아비멜렉이 아브라함을 불러서 그에게 이르되 네가 어찌하여 우리에게 이리 하느냐 내가 무슨 죄를 네게 범하였관대 네가 나와 내 나라로 큰 죄에 빠질뻔하게 하였느냐 네가 합당치 않은 일을 내게 행하였도다 하고",
+      "source_text_hash": "24925848ef53375329304d6fab996ec9251a0f4eb8f360c3083de6dbbf55833e",
+      "translation_text_hash": "c22eefb74ba5738b98d77add79ea926e7312018042b3efbd1222914a17b03450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 아브라함을 불러서 그에게 이르되 네가 어찌하여 우리에게 이리 하느냐 내가 무슨 죄를 네게 범하였관대 네가 나와 내 나라로 큰 죄에 빠질뻔하게 하였느냐 네가 합당치 않은 일을 내게 행하였도다 하고"
+      ],
+      "raw_text_hashes": [
+        "c22eefb74ba5738b98d77add79ea926e7312018042b3efbd1222914a17b03450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:10",
+      "sequence": 506,
+      "chapter_label": "GEN 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Abimelech said to Abraham, “What did you see, that you have done this thing?”",
+      "ko": "아비멜렉이 또 아브라함에게 이르되 네가 무슨 의견으로 이렇게 하였느냐",
+      "source_text_hash": "bc692a8b516f238fce10bcee783b4e931776ebdc11aea090ecf0f7cb1761a207",
+      "translation_text_hash": "936cf1ce2bf83ece4793f348c2d787066d2b82cc26e2ed484aafd2b8f93e76f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 또 아브라함에게 이르되 네가 무슨 의견으로 이렇게 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "936cf1ce2bf83ece4793f348c2d787066d2b82cc26e2ed484aafd2b8f93e76f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:11",
+      "sequence": 507,
+      "chapter_label": "GEN 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "Abraham said, “Because I thought, ‘Surely the fear of God is not in this place. They will kill me for my wife’s sake.’",
+      "ko": "아브라함이 가로되 이곳에서는 하나님을 두려워함이 없으니 내 아내를 인하여 사람이 나를 죽일까 생각하였음이요",
+      "source_text_hash": "209b9adf31967870dc16d037321bb9c97d2f27f29a1c81ed250d68830147c037",
+      "translation_text_hash": "449e987a2af949bc2edc7e98831c7ee6f762e370180380df16aa22b5c35996c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 이곳에서는 하나님을 두려워함이 없으니 내 아내를 인하여 사람이 나를 죽일까 생각하였음이요"
+      ],
+      "raw_text_hashes": [
+        "449e987a2af949bc2edc7e98831c7ee6f762e370180380df16aa22b5c35996c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:12",
+      "sequence": 508,
+      "chapter_label": "GEN 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "Besides, she is indeed my sister, the daughter of my father, but not the daughter of my mother; and she became my wife.",
+      "ko": "또 그는 실로 나의 이복누이로서 내 처가 되었음이니라",
+      "source_text_hash": "3eeafbba13b34babfd8ab489726ff2f05bf6bd7297c2f20e3bb1a47bcf98db2b",
+      "translation_text_hash": "2e0f0a640ccd7af2730e21967702f328904aa02ec69877c9986a81070cb40e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그는 실로 나의 이복누이로서 내 처가 되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "2e0f0a640ccd7af2730e21967702f328904aa02ec69877c9986a81070cb40e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:13",
+      "sequence": 509,
+      "chapter_label": "GEN 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "When God caused me to wander from my father’s house, I said to her, ‘This is your kindness which you shall show to me. Everywhere that we go, say of me, “He is my brother.”’”",
+      "ko": "하나님이 나로 내 아비 집을 떠나 두루 다니게 하실 때에 내가 아내에게 말하기를 이후로 우리의 가는 곳마다 그대는 나를 그대의 오라비라 하라 이것이 그대가 내게 베풀 은혜라 하였었노라",
+      "source_text_hash": "475f9406495294131cee0e735eb5287835c1e9713f3009a479f2358515c41fc3",
+      "translation_text_hash": "7cd5f7230fab97561301fddaa49ad7c22ecae84e64818bd633373d914bc98f60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나로 내 아비 집을 떠나 두루 다니게 하실 때에 내가 아내에게 말하기를 이후로 우리의 가는 곳마다 그대는 나를 그대의 오라비라 하라 이것이 그대가 내게 베풀 은혜라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "7cd5f7230fab97561301fddaa49ad7c22ecae84e64818bd633373d914bc98f60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:14",
+      "sequence": 510,
+      "chapter_label": "GEN 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Abimelech took sheep and cattle, male servants and female servants, and gave them to Abraham, and restored Sarah, his wife, to him.",
+      "ko": "아비멜렉이 양과 소와 노비를 취하여 아브라함에게 주고 그 아내 사라도 그에게 돌려보내고",
+      "source_text_hash": "87ab6a8817eb1e46d13f5496c2cf07243daa465b42bc27f7b8ab9176ed6838b4",
+      "translation_text_hash": "4907e67c193cda68dcbd3b22cca98792ce32fcf4c23b7195c20245bbad0123a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 양과 소와 노비를 취하여 아브라함에게 주고 그 아내 사라도 그에게 돌려보내고"
+      ],
+      "raw_text_hashes": [
+        "4907e67c193cda68dcbd3b22cca98792ce32fcf4c23b7195c20245bbad0123a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:15",
+      "sequence": 511,
+      "chapter_label": "GEN 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Abimelech said, “Behold, my land is before you. Dwell where it pleases you.”",
+      "ko": "아브라함에게 이르되 내 땅이 네 앞에 있으니 너 보기에 좋은대로 거하라 하고",
+      "source_text_hash": "1a7a91e16ef961b6cd0257aca526dd85af1f4d265f8dcfc6f2fa0c18f8245ab5",
+      "translation_text_hash": "8db344dae7e489314bce450e9e558d73cbe422e2e99f62b30700091bb242dc9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함에게 이르되 내 땅이 네 앞에 있으니 너 보기에 좋은대로 거하라 하고"
+      ],
+      "raw_text_hashes": [
+        "8db344dae7e489314bce450e9e558d73cbe422e2e99f62b30700091bb242dc9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:16",
+      "sequence": 512,
+      "chapter_label": "GEN 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "To Sarah he said, “Behold, I have given your brother a thousand pieces of silver. Behold, it is for you a covering of the eyes to all that are with you. In front of all you are vindicated.”",
+      "ko": "사라에게 이르되 내가 은 천개를 네 오라비에게 주어서 그것으로 너와 함께한 여러 사람 앞에서 네 수치를 풀게 하였노니 네 일이 다 선히 해결되었느니라",
+      "source_text_hash": "95dcb6b0aa76cb889efd2eeafbcda3097755a5d9dc13d92ddd58e537d243262e",
+      "translation_text_hash": "a8cd4a8112b80ea165c767eff4731ed70bff338895dd21463a308a8758fd43f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라에게 이르되 내가 은 천개를 네 오라비에게 주어서 그것으로 너와 함께한 여러 사람 앞에서 네 수치를 풀게 하였노니 네 일이 다 선히 해결되었느니라"
+      ],
+      "raw_text_hashes": [
+        "a8cd4a8112b80ea165c767eff4731ed70bff338895dd21463a308a8758fd43f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:17",
+      "sequence": 513,
+      "chapter_label": "GEN 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "Abraham prayed to God. So God healed Abimelech, his wife, and his female servants, and they bore children.",
+      "ko": "아브라함이 하나님께 기도하매 하나님이 아비멜렉과 그 아내와 여종을 치료하사 생산케 하셨으니",
+      "source_text_hash": "847e93f112ae737490c1f681e54b4455b4505a30cf50438b2b98dc13f8c22bdc",
+      "translation_text_hash": "f8dafdfc33369e41842c36b779a3109e762f520608a5c16ede8c7f7e53eaa31d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 하나님께 기도하매 하나님이 아비멜렉과 그 아내와 여종을 치료하사 생산케 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "f8dafdfc33369e41842c36b779a3109e762f520608a5c16ede8c7f7e53eaa31d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:20:18",
+      "sequence": 514,
+      "chapter_label": "GEN 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "For the LORD had closed up tight all the wombs of the house of Abimelech, because of Sarah, Abraham’s wife.",
+      "ko": "여호와께서 이왕에 아브라함의 아내 사라의 연고로 아비멜렉의 집 모든 태를 닫히셨음이더라",
+      "source_text_hash": "3e594ddde662da31547cc4d7a0bc0b3d3d47782c4c8c4de221cb32ba35505754",
+      "translation_text_hash": "46f7b5f789761a56377193d8da9b962a6ce12cb8993b67202b00279762dc5750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이왕에 아브라함의 아내 사라의 연고로 아비멜렉의 집 모든 태를 닫히셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "46f7b5f789761a56377193d8da9b962a6ce12cb8993b67202b00279762dc5750"
+      ]
+    }
+  ]
+}

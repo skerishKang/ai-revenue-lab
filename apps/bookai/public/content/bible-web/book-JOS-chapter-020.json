@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:020",
+  "unit_ordinal": 207,
+  "unit_label": "JOS 20",
+  "book_code": "JOS",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:20:1",
+      "sequence": 6374,
+      "chapter_label": "JOS 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Joshua, saying,",
+      "ko": "여호와께서 여호수아에게 일러 가라사대",
+      "source_text_hash": "0f522429c2698d92d41ebd42d9096b9098e7e3f3442ff4e4684d05c5dc7bb63e",
+      "translation_text_hash": "01b37ef22947b834f057eac4f4857a8b2df2abed1e6f252309e1feaa1d379854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "01b37ef22947b834f057eac4f4857a8b2df2abed1e6f252309e1feaa1d379854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:2",
+      "sequence": 6375,
+      "chapter_label": "JOS 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘Assign the cities of refuge, of which I spoke to you by Moses,",
+      "ko": "이스라엘 자손에게 고하여 이르라 내가 모세로 너희에게 말한 도피성을 택정하여",
+      "source_text_hash": "1d28542fad4d0d605297bd633b95e2afc0ac03e990d46ef0b25df89d63476f45",
+      "translation_text_hash": "426486e6dc63b5b2b1022c7df0eb8db1eaa9d8bb4752cbecdbf3e8ae2cdf8d10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 내가 모세로 너희에게 말한 도피성을 택정하여"
+      ],
+      "raw_text_hashes": [
+        "426486e6dc63b5b2b1022c7df0eb8db1eaa9d8bb4752cbecdbf3e8ae2cdf8d10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:3",
+      "sequence": 6376,
+      "chapter_label": "JOS 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "that the man slayer who kills any person accidentally or unintentionally may flee there. They shall be to you for a refuge from the avenger of blood.",
+      "ko": "부지중 오살한 자를 그리로 도망하게 하라 이는 너희 중 피의 보수자를 피할 곳이니라",
+      "source_text_hash": "a7f325aac5663d58a882421f3290507841364d8bab84ffa2e68b04a5210fe4c2",
+      "translation_text_hash": "fef29432aa129a37504a703c494e0c1bc97a51862ccef000702139fb87ac910c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부지중 오살한 자를 그리로 도망하게 하라 이는 너희 중 피의 보수자를 피할 곳이니라"
+      ],
+      "raw_text_hashes": [
+        "fef29432aa129a37504a703c494e0c1bc97a51862ccef000702139fb87ac910c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:4",
+      "sequence": 6377,
+      "chapter_label": "JOS 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "He shall flee to one of those cities, and shall stand at the entrance of the gate of the city, and declare his case in the ears of the elders of that city. They shall take him into the city with them, and give him a place, that he may live among them.",
+      "ko": "그 성읍들의 하나에 도피하는 자는 그 성읍에 들어가는 문 어귀에 서서 그 성읍 장로들의 귀에 자기의 사고를 고할 것이요 그들은 그를 받아 성읍에 들여 한 곳을 주어 자기들 중에 거하게 하고",
+      "source_text_hash": "7232ac613857bb315780322f183e5e0530e2a4d73775c7aefdb42abd937d11ae",
+      "translation_text_hash": "c77dcd741aa2845f7a141256d912d4ea64d551c8bbfef1113693128f20620aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍들의 하나에 도피하는 자는 그 성읍에 들어가는 문 어귀에 서서 그 성읍 장로들의 귀에 자기의 사고를 고할 것이요 그들은 그를 받아 성읍에 들여 한 곳을 주어 자기들 중에 거하게 하고"
+      ],
+      "raw_text_hashes": [
+        "c77dcd741aa2845f7a141256d912d4ea64d551c8bbfef1113693128f20620aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:5",
+      "sequence": 6378,
+      "chapter_label": "JOS 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "If the avenger of blood pursues him, then they shall not deliver up the man slayer into his hand; because he struck his neighbor unintentionally, and didn’t hate him before.",
+      "ko": "피의 보수자가 그 뒤를 따라온다 할찌라도 그들은 그 살인자를 그의 손에 내어주지 말찌니 이는 본래 미워함이 없이 부지중에 그 이웃을 죽였음이라",
+      "source_text_hash": "db122b8b850b5b61380e5f9d625c1036d087c613c87118a7fbfd94033fa3fb1c",
+      "translation_text_hash": "4c033cd2de197d092c83b80cdadbfcdd4f1a2a6fd362aa33efdd52acf985df3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피의 보수자가 그 뒤를 따라온다 할찌라도 그들은 그 살인자를 그의 손에 내어주지 말찌니 이는 본래 미워함이 없이 부지중에 그 이웃을 죽였음이라"
+      ],
+      "raw_text_hashes": [
+        "4c033cd2de197d092c83b80cdadbfcdd4f1a2a6fd362aa33efdd52acf985df3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:6",
+      "sequence": 6379,
+      "chapter_label": "JOS 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "He shall dwell in that city until he stands before the congregation for judgment, until the death of the high priest that shall be in those days. Then the man slayer shall return, and come to his own city, and to his own house, to the city he fled from.’”",
+      "ko": "그 살인자가 회중의 앞에 서서 재판을 받기까지나 당시 대제사장의 죽기까지 그 성읍에 거하다가 그 후에 그 살인자가 본 성읍 곧 자기가 도망하여 나온 그 성읍의 자기 집으로 돌아갈찌니라",
+      "source_text_hash": "5c36118e2274b86211d25106d23cb750b4b2d9d7a9bc96e7ab8b876cc2876f5d",
+      "translation_text_hash": "384b1b25cbcb1278667bb791dc71973013fdf560b4be7af5f88ad467bd8ddcff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 살인자가 회중의 앞에 서서 재판을 받기까지나 당시 대제사장의 죽기까지 그 성읍에 거하다가 그 후에 그 살인자가 본 성읍 곧 자기가 도망하여 나온 그 성읍의 자기 집으로 돌아갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "384b1b25cbcb1278667bb791dc71973013fdf560b4be7af5f88ad467bd8ddcff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:7",
+      "sequence": 6380,
+      "chapter_label": "JOS 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "They set apart Kedesh in Galilee in the hill country of Naphtali, Shechem in the hill country of Ephraim, and Kiriath Arba (also called Hebron) in the hill country of Judah.",
+      "ko": "무리가 납달리의 산지 갈릴리 게데스와 에브라임 산지의 세겜과 유다 산지의 기럇 아르바 곧 헤브론을 구별하였고",
+      "source_text_hash": "cf20504204aca9cb7032223e69d12ae9af18053cb2516879b3fd5b85e5201358",
+      "translation_text_hash": "2867594ca53aeb5d095751fe03d46abf3bfdc23275190057c14939ba2dd57ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 납달리의 산지 갈릴리 게데스와 에브라임 산지의 세겜과 유다 산지의 기럇 아르바 곧 헤브론을 구별하였고"
+      ],
+      "raw_text_hashes": [
+        "2867594ca53aeb5d095751fe03d46abf3bfdc23275190057c14939ba2dd57ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:8",
+      "sequence": 6381,
+      "chapter_label": "JOS 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "Beyond the Jordan at Jericho eastward, they assigned Bezer in the wilderness in the plain out of the tribe of Reuben, Ramoth in Gilead out of the tribe of Gad, and Golan in Bashan out of the tribe of Manasseh.",
+      "ko": "또 여리고 동 요단 저편 르우벤 지파 중에서 평지 광야의 베셀과 갓 지파 중에서 길르앗라못과 므낫세 지파 중에서 바산 골란을 택하였으니",
+      "source_text_hash": "17405e06c6895bfd2af996d379a38119a7177bb5858e4931d2876220942094e4",
+      "translation_text_hash": "23b3d166e06f99df0d6953593ac68f98ee5969ee8d960fd61c476751770f9e3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여리고 동 요단 저편 르우벤 지파 중에서 평지 광야의 베셀과 갓 지파 중에서 길르앗라못과 므낫세 지파 중에서 바산 골란을 택하였으니"
+      ],
+      "raw_text_hashes": [
+        "23b3d166e06f99df0d6953593ac68f98ee5969ee8d960fd61c476751770f9e3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:20:9",
+      "sequence": 6382,
+      "chapter_label": "JOS 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "These were the appointed cities for all the children of Israel, and for the alien who lives among them, that whoever kills any person unintentionally might flee there, and not die by the hand of the avenger of blood, until he stands trial before the congregation.",
+      "ko": "이는 곧 이스라엘 모든 자손과 그들 중에 우거하는 객을 위하여 선정한 성읍들로서 누구든지 부지중 살인한 자로 그리로 도망하여 피의 보수자의 손에 죽지 않게 하기 위함이며 그는 회중 앞에 설 때까지 거기 있을것이니라",
+      "source_text_hash": "1ee713b721558d1e0559e9c8e3bb5541d137e3fd58baeeb5fdba3e8330e2dcdb",
+      "translation_text_hash": "5c8a339f64e4bb474e0279faaed0a07184a904b4d32eb3cd04cb7a56b6e03dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 이스라엘 모든 자손과 그들 중에 우거하는 객을 위하여 선정한 성읍들로서 누구든지 부지중 살인한 자로 그리로 도망하여 피의 보수자의 손에 죽지 않게 하기 위함이며 그는 회중 앞에 설 때까지 거기 있을것이니라"
+      ],
+      "raw_text_hashes": [
+        "5c8a339f64e4bb474e0279faaed0a07184a904b4d32eb3cd04cb7a56b6e03dd1"
+      ]
+    }
+  ]
+}

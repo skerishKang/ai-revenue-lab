@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:008",
+  "unit_ordinal": 1175,
+  "unit_label": "REV 8",
+  "book_code": "REV",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:8:1",
+      "sequence": 30825,
+      "chapter_label": "REV 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "When he opened the seventh seal, there was silence in heaven for about half an hour.",
+      "ko": "일곱째 인을 떼실 때에 하늘이 반시 동안쯤 고요하더니",
+      "source_text_hash": "461c037c910a00d1b3ac224d7e02a8eed40d301591e95c72b97f855bf986a976",
+      "translation_text_hash": "f62c2ed83acfa9c0c6b8d2edb0f6d4a70abfc68208dc3afe36e762d156152e86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째 인을 떼실 때에 하늘이 반시 동안쯤 고요하더니"
+      ],
+      "raw_text_hashes": [
+        "f62c2ed83acfa9c0c6b8d2edb0f6d4a70abfc68208dc3afe36e762d156152e86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:2",
+      "sequence": 30826,
+      "chapter_label": "REV 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "I saw the seven angels who stand before God, and seven trumpets were given to them.",
+      "ko": "내가 보매 하나님 앞에 시위한 일곱 천사가 있어 일곱 나팔을 받았더라",
+      "source_text_hash": "20be0234e1c508f066fba09082452509b80066d54310b02416aaf23ac1349af6",
+      "translation_text_hash": "a8166852c48e3adc721a18cf25a501f84eba5e4ca908caf116880b747a965774",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보매 하나님 앞에 시위한 일곱 천사가 있어 일곱 나팔을 받았더라"
+      ],
+      "raw_text_hashes": [
+        "a8166852c48e3adc721a18cf25a501f84eba5e4ca908caf116880b747a965774"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:3",
+      "sequence": 30827,
+      "chapter_label": "REV 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Another angel came and stood over the altar, having a golden censer. Much incense was given to him, that he should add it to the prayers of all the saints on the golden altar which was before the throne.",
+      "ko": "또 다른 천사가 와서 제단 곁에 서서 금 향로를 가지고 많은 향을 받았으니 이는 모든 성도의 기도들과 합하여 보좌 앞 금단에 드리고자 함이라",
+      "source_text_hash": "7d6b0913aacb31cee17c3cfd783028c5e52888e734d1be98f261264bd9d5bb7a",
+      "translation_text_hash": "f3f55529ced52244b6233afe28b0cb66baefb41d622eab63162f775f3b539832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 천사가 와서 제단 곁에 서서 금 향로를 가지고 많은 향을 받았으니 이는 모든 성도의 기도들과 합하여 보좌 앞 금단에 드리고자 함이라"
+      ],
+      "raw_text_hashes": [
+        "f3f55529ced52244b6233afe28b0cb66baefb41d622eab63162f775f3b539832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:4",
+      "sequence": 30828,
+      "chapter_label": "REV 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "The smoke of the incense, with the prayers of the saints, went up before God out of the angel’s hand.",
+      "ko": "향연이 성도의 기도와 함께 천사의 손으로부터 하나님 앞으로 올라가는지라",
+      "source_text_hash": "e69cc00f5b931d25c8b5285c32f7bb03c3ad6e8e0c7021d40b0f15aed4fb3cc0",
+      "translation_text_hash": "4088a5c08494ac10159d09dacd97986862e9ca11ef02180ec3ec655694bf7268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "향연이 성도의 기도와 함께 천사의 손으로부터 하나님 앞으로 올라가는지라"
+      ],
+      "raw_text_hashes": [
+        "4088a5c08494ac10159d09dacd97986862e9ca11ef02180ec3ec655694bf7268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:5",
+      "sequence": 30829,
+      "chapter_label": "REV 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "The angel took the censer, and he filled it with the fire of the altar, then threw it on the earth. Thunders, sounds, lightnings, and an earthquake followed.",
+      "ko": "천사가 향로를 가지고 단 위의 불을 담아다가 땅에 쏟으매 뇌성과 음성과 번개와 지진이 나더라",
+      "source_text_hash": "eb9e462c33a281912ccee4c639e1ac43446af86d57ceec2965f991ac07baf011",
+      "translation_text_hash": "e11c5470c5ad8a35b8cf68a542cd5c60f434f84e6fbd6bfa315508e11adaeef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 향로를 가지고 단 위의 불을 담아다가 땅에 쏟으매 뇌성과 음성과 번개와 지진이 나더라"
+      ],
+      "raw_text_hashes": [
+        "e11c5470c5ad8a35b8cf68a542cd5c60f434f84e6fbd6bfa315508e11adaeef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:6",
+      "sequence": 30830,
+      "chapter_label": "REV 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "The seven angels who had the seven trumpets prepared themselves to sound.",
+      "ko": "일곱 나팔 가진 일곱 천사가 나팔 불기를 예비하더라",
+      "source_text_hash": "d4394a78acd1e22ef2ce302ad78e0eee4095cbb270d80f49e5afb107739f5b16",
+      "translation_text_hash": "3eaf796c0c5bf2f206b8d8f43aeb3398ff809556166c093cf3cf23191518015e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 나팔 가진 일곱 천사가 나팔 불기를 예비하더라"
+      ],
+      "raw_text_hashes": [
+        "3eaf796c0c5bf2f206b8d8f43aeb3398ff809556166c093cf3cf23191518015e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:7",
+      "sequence": 30831,
+      "chapter_label": "REV 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "The first sounded, and there followed hail and fire, mixed with blood, and they were thrown to the earth. One third of the earth was burned up, and one third of the trees were burned up, and all green grass was burned up.",
+      "ko": "첫째 천사가 나팔을 부니 피 섞인 우박과 불이 나서 땅에 쏟아지매 땅의 삼분의 일이 타서 사위고 수목의 삼분의 일도 타서 사위고 각종 푸른 풀도 타서 사위더라",
+      "source_text_hash": "cae5d5ba5ce121490132b5cdb88b0f6deecc12c93dbd588262092023dcca2690",
+      "translation_text_hash": "f8916ca93bf343894d987f2fb6ee02830c6b961af766be0d0687b640df035cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째 천사가 나팔을 부니 피 섞인 우박과 불이 나서 땅에 쏟아지매 땅의 삼분의 일이 타서 사위고 수목의 삼분의 일도 타서 사위고 각종 푸른 풀도 타서 사위더라"
+      ],
+      "raw_text_hashes": [
+        "f8916ca93bf343894d987f2fb6ee02830c6b961af766be0d0687b640df035cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:8",
+      "sequence": 30832,
+      "chapter_label": "REV 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "The second angel sounded, and something like a great burning mountain was thrown into the sea. One third of the sea became blood,",
+      "ko": "둘째 천사가 나팔을 부니 불붙는 큰 산과 같은 것이 바다에 던지우매 바다의 삼분의 일이 피가 되고",
+      "source_text_hash": "fad10657790c8656d9ff97b82d5732b5155b5602e449a320b45fdee5d840add2",
+      "translation_text_hash": "420566ca00f9ef64c81dcb35d2e1920652b1071650f5ce49a8ebbc8adc689ffc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 천사가 나팔을 부니 불붙는 큰 산과 같은 것이 바다에 던지우매 바다의 삼분의 일이 피가 되고"
+      ],
+      "raw_text_hashes": [
+        "420566ca00f9ef64c81dcb35d2e1920652b1071650f5ce49a8ebbc8adc689ffc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:9",
+      "sequence": 30833,
+      "chapter_label": "REV 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "and one third of the living creatures which were in the sea died. One third of the ships were destroyed.",
+      "ko": "바다 가운데 생명 가진 피조물들의 삼분의 일이 죽고 배들의 삼분의 일이 깨어지더라",
+      "source_text_hash": "e6f4597b773638ec01ec933a176b94723118639f68cbac0007eac5eb62d0d04f",
+      "translation_text_hash": "83e5de9cef5624ac77045a4fced8cf2817f186dae1fb2c9f2068787c10929657",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다 가운데 생명 가진 피조물들의 삼분의 일이 죽고 배들의 삼분의 일이 깨어지더라"
+      ],
+      "raw_text_hashes": [
+        "83e5de9cef5624ac77045a4fced8cf2817f186dae1fb2c9f2068787c10929657"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:10",
+      "sequence": 30834,
+      "chapter_label": "REV 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "The third angel sounded, and a great star fell from the sky, burning like a torch, and it fell on one third of the rivers, and on the springs of water.",
+      "ko": "세째 천사가 나팔을 부니 횃불 같이 타는 큰 별이 하늘에서 떨어져 강들의 삼분의 일과 여러 물샘에 떨어지니",
+      "source_text_hash": "cc724580fec4a2c15558705d9c7492acc656f2948d7de5ca942f7f10d2956a22",
+      "translation_text_hash": "eb577e26b3d6cde2212473a4da16dcf1f2577de449257b5d20f744d708cf4537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째 천사가 나팔을 부니 횃불 같이 타는 큰 별이 하늘에서 떨어져 강들의 삼분의 일과 여러 물샘에 떨어지니"
+      ],
+      "raw_text_hashes": [
+        "eb577e26b3d6cde2212473a4da16dcf1f2577de449257b5d20f744d708cf4537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:11",
+      "sequence": 30835,
+      "chapter_label": "REV 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "The name of the star is “Wormwood.” One third of the waters became wormwood. Many people died from the waters, because they were made bitter.",
+      "ko": "이 별 이름은 쑥이라 물들의 삼분의 일이 쑥이 되매 그 물들이 쓰게 됨을 인하여 많은 사람이 죽더라",
+      "source_text_hash": "ea2b3c777d4753def4213337ec1b465ca803c11cac440a7ff60ec33984a3cc85",
+      "translation_text_hash": "cfcbc960ac47158b5ae7de9a95f0963263db2bfb412c9369216203385a518a8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 별 이름은 쑥이라 물들의 삼분의 일이 쑥이 되매 그 물들이 쓰게 됨을 인하여 많은 사람이 죽더라"
+      ],
+      "raw_text_hashes": [
+        "cfcbc960ac47158b5ae7de9a95f0963263db2bfb412c9369216203385a518a8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:12",
+      "sequence": 30836,
+      "chapter_label": "REV 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "The fourth angel sounded, and one third of the sun was struck, and one third of the moon, and one third of the stars, so that one third of them would be darkened; and the day wouldn’t shine for one third of it, and the night in the same way.",
+      "ko": "네째 천사가 나팔을 부니 해 삼분의 일과 달 삼분의 일과 별들의 삼분의 일이 침을 받아 그 삼분의 일이 어두워지니 낮 삼분의 일은 비췸이 없고 밤도 그러하더라",
+      "source_text_hash": "2e673734c32afe2e102943a291748bacf9c4a6b489a685ad0d735596986b5f77",
+      "translation_text_hash": "6724fb80bc57cc78aed607e7546ca61b9065aa4c55c6a26a13e0f5bbe2168974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째 천사가 나팔을 부니 해 삼분의 일과 달 삼분의 일과 별들의 삼분의 일이 침을 받아 그 삼분의 일이 어두워지니 낮 삼분의 일은 비췸이 없고 밤도 그러하더라"
+      ],
+      "raw_text_hashes": [
+        "6724fb80bc57cc78aed607e7546ca61b9065aa4c55c6a26a13e0f5bbe2168974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:8:13",
+      "sequence": 30837,
+      "chapter_label": "REV 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "I saw, and I heard an eagle, flying in mid heaven, saying with a loud voice, “Woe! Woe! Woe to those who dwell on the earth, because of the other blasts of the trumpets of the three angels, who are yet to sound!”",
+      "ko": "내가 또 보고 들으니 공중에 날아가는 독수리가 큰 소리로 이르되 땅에 거하는 자들에게 화, 화, 화가 있으리로다 이 외에도 세 천사의 불 나팔소리를 인함이로다 하더라",
+      "source_text_hash": "9d3d9de2529aea9bccef3981f8b3838315bd8fdeeaca1055bc672f61fde7bbcd",
+      "translation_text_hash": "56687646c32046caae2550868e2c8d6295fb289abd8b3e1edeaddc02dc4894a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 보고 들으니 공중에 날아가는 독수리가 큰 소리로 이르되 땅에 거하는 자들에게 화, 화, 화가 있으리로다 이 외에도 세 천사의 불 나팔소리를 인함이로다 하더라"
+      ],
+      "raw_text_hashes": [
+        "56687646c32046caae2550868e2c8d6295fb289abd8b3e1edeaddc02dc4894a5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:040",
+  "unit_ordinal": 518,
+  "unit_label": "PSA 40",
+  "book_code": "PSA",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:40:1",
+      "sequence": 14527,
+      "chapter_label": "PSA 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "I waited patiently for the LORD. He turned to me, and heard my cry.",
+      "ko": "내가 여호와를 기다리고 기다렸더니 귀를 기울이사 나의 부르짖음을 들으셨도다",
+      "source_text_hash": "701bb10053554f4c8fcf59ebe57b4899881ef0d8c24488677c2718a57e898f2b",
+      "translation_text_hash": "be4587af40f41a0ff43d0c45e5155846feffceb1da1aabe89961a0c6fb5d1da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와를 기다리고 기다렸더니 귀를 기울이사 나의 부르짖음을 들으셨도다"
+      ],
+      "raw_text_hashes": [
+        "be4587af40f41a0ff43d0c45e5155846feffceb1da1aabe89961a0c6fb5d1da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:2",
+      "sequence": 14528,
+      "chapter_label": "PSA 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "He brought me up also out of a horrible pit, out of the miry clay. He set my feet on a rock, and gave me a firm place to stand.",
+      "ko": "나를 기가 막힐 웅덩이와 수렁에서 끌어 올리시고 내 발을 반석 위에 두사 내 걸음을 견고케 하셨도다",
+      "source_text_hash": "492983dad75d7b58b0da50158df04ffa0990e53cadf3769cb8467cbbebd72146",
+      "translation_text_hash": "442faf72ceb6c72a8ead9a40b67028c58f935265f79cf28900586651f2c7b061",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 기가 막힐 웅덩이와 수렁에서 끌어 올리시고 내 발을 반석 위에 두사 내 걸음을 견고케 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "442faf72ceb6c72a8ead9a40b67028c58f935265f79cf28900586651f2c7b061"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:3",
+      "sequence": 14529,
+      "chapter_label": "PSA 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "He has put a new song in my mouth, even praise to our God. Many shall see it, and fear, and shall trust in the LORD.",
+      "ko": "새 노래 곧 우리 하나님께 올릴 찬송을 내 입에 두셨으니 많은 사람이 보고 두려워하여 여호와를 의지하리로다",
+      "source_text_hash": "8920f1fc1a475926ba5df61ba1c7449091e5dbf5dc01420a79bd7e67783fbaad",
+      "translation_text_hash": "f2d6bc95666db07157c13646013a124017d25d9e7a3978fae6ab090560f49a17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 노래 곧 우리 하나님께 올릴 찬송을 내 입에 두셨으니 많은 사람이 보고 두려워하여 여호와를 의지하리로다"
+      ],
+      "raw_text_hashes": [
+        "f2d6bc95666db07157c13646013a124017d25d9e7a3978fae6ab090560f49a17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:4",
+      "sequence": 14530,
+      "chapter_label": "PSA 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "Blessed is the man who makes the LORD his trust, and doesn’t respect the proud, nor such as turn away to lies.",
+      "ko": "여호와를 의지하고 교만한 자와 거짓에 치우치는 자를 돌아보지 아니하는 자는 복이 있도다",
+      "source_text_hash": "10b9b48913477ace3fccfedef76761a5313050d1fa3749cff8c3280bd2935054",
+      "translation_text_hash": "3fcf34e87a20ef75835cd1bc364006d5dd09700221a727b96889cf4feec4c9f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 의지하고 교만한 자와 거짓에 치우치는 자를 돌아보지 아니하는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "3fcf34e87a20ef75835cd1bc364006d5dd09700221a727b96889cf4feec4c9f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:5",
+      "sequence": 14531,
+      "chapter_label": "PSA 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "Many, LORD, my God, are the wonderful works which you have done, and your thoughts which are toward us. They can’t be declared back to you. If I would declare and speak of them, they are more than can be counted.",
+      "ko": "여호와 나의 하나님이여 주의 행하신 기적이 많고 우리를 향하신 주의 생각도 많도소이다 내가 들어 말하고자 하나 주의 앞에 베풀 수도 없고 그 수를 셀 수도 없나이다",
+      "source_text_hash": "4cfa355b4f8c4255df370ed03e3b5d7f47ac6b3b53e91829c7022e8d0a65cb0d",
+      "translation_text_hash": "2a9feb0a2da2a19b37c9a64bfef5a3bd8f9d689d78c7f0b1b0cb4c84bc2f0b4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 나의 하나님이여 주의 행하신 기적이 많고 우리를 향하신 주의 생각도 많도소이다 내가 들어 말하고자 하나 주의 앞에 베풀 수도 없고 그 수를 셀 수도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "2a9feb0a2da2a19b37c9a64bfef5a3bd8f9d689d78c7f0b1b0cb4c84bc2f0b4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:6",
+      "sequence": 14532,
+      "chapter_label": "PSA 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "Sacrifice and offering you didn’t desire. You have opened my ears. You have not required burnt offering and sin offering.",
+      "ko": "주께서 나의 귀를 통하여 들리시기를 제사와 예물을 기뻐 아니하시며 번제와 속죄제를 요구치 아니하신다 하신지라",
+      "source_text_hash": "fedc3992e7e64f666ac927f40254571294ec58ac12de7d2c33cdc913242cf1a6",
+      "translation_text_hash": "81ef0fa834f91ac9d4d266b46be470cab1409f840377aab25dadf70cdd6383cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 귀를 통하여 들리시기를 제사와 예물을 기뻐 아니하시며 번제와 속죄제를 요구치 아니하신다 하신지라"
+      ],
+      "raw_text_hashes": [
+        "81ef0fa834f91ac9d4d266b46be470cab1409f840377aab25dadf70cdd6383cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:7",
+      "sequence": 14533,
+      "chapter_label": "PSA 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "Then I said, “Behold, I have come. It is written about me in the book in the scroll.",
+      "ko": "그 때에 내가 말하기를 내가 왔나이다 나를 가리켜 기록한 것이 두루마리 책에 있나이다",
+      "source_text_hash": "07d8fbeb2fbbd400a1f92eb91d96f705042a9b39b9ec19be6202aece99d0db1c",
+      "translation_text_hash": "1c5faed7e42497009c678da06a13cbcfe88899a7ab5f618efcf2a6a8f4d2650b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 말하기를 내가 왔나이다 나를 가리켜 기록한 것이 두루마리 책에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "1c5faed7e42497009c678da06a13cbcfe88899a7ab5f618efcf2a6a8f4d2650b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:8",
+      "sequence": 14534,
+      "chapter_label": "PSA 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "I delight to do your will, my God. Yes, your law is within my heart.”",
+      "ko": "나의 하나님이여 내가 주의 뜻 행하기를 즐기오니 주의 법이 나의 심중에 있나이다 하였나이다",
+      "source_text_hash": "c8c42ca27779fc945fd94f512a15720e4508e0cb2c4f73e931b445d7e2425f4a",
+      "translation_text_hash": "959c8ffc47652666c2a7426c68e364b4b10339c3d72eb04ffb309692e7dc809b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 내가 주의 뜻 행하기를 즐기오니 주의 법이 나의 심중에 있나이다 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "959c8ffc47652666c2a7426c68e364b4b10339c3d72eb04ffb309692e7dc809b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:9",
+      "sequence": 14535,
+      "chapter_label": "PSA 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "I have proclaimed glad news of righteousness in the great assembly. Behold, I will not seal my lips, LORD, you know.",
+      "ko": "내가 대회 중에서 의의 기쁜 소식을 전하였나이다 여호와여 내가 내 입술을 닫지 아니할 줄을 주께서 아시나이다",
+      "source_text_hash": "9812c2e564c43664e522402981d7352aabe224b376dec67ac46f120a88b92d5b",
+      "translation_text_hash": "735324afc97c2b1475c55c98a7065769e70f1bdaeafd764aa827c20c32848c99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대회 중에서 의의 기쁜 소식을 전하였나이다 여호와여 내가 내 입술을 닫지 아니할 줄을 주께서 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "735324afc97c2b1475c55c98a7065769e70f1bdaeafd764aa827c20c32848c99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:10",
+      "sequence": 14536,
+      "chapter_label": "PSA 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "I have not hidden your righteousness within my heart. I have declared your faithfulness and your salvation. I have not concealed your loving kindness and your truth from the great assembly.",
+      "ko": "내가 주의 의를 내 심중에 숨기지 아니하고 주의 성실과 구원을 선포하였으며 내가 주의 인자와 진리를 대회 중에서 은휘치 아니하였나이다",
+      "source_text_hash": "04702675df59e3ca2af22da209b442abe31cded9de2cf252b97b9dec18290c83",
+      "translation_text_hash": "affa9f31260e653812b99d308117997b0ed0e4ee3abe0a80e6d17f5ede9e232a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 의를 내 심중에 숨기지 아니하고 주의 성실과 구원을 선포하였으며 내가 주의 인자와 진리를 대회 중에서 은휘치 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "affa9f31260e653812b99d308117997b0ed0e4ee3abe0a80e6d17f5ede9e232a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:11",
+      "sequence": 14537,
+      "chapter_label": "PSA 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t withhold your tender mercies from me, LORD. Let your loving kindness and your truth continually preserve me.",
+      "ko": "여호와여 주의 긍휼을 내게 그치지 마시고 주의 인자와 진리로 나를 항상 보호하소서",
+      "source_text_hash": "0dc15fb7e7dd4111540eccbb737b87a381f49be564e9e06bf44336e03a3671b5",
+      "translation_text_hash": "eaca4e1006079f69ad40b5c64803a9a78e98e35f9d085122f6087152bfd9c0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 긍휼을 내게 그치지 마시고 주의 인자와 진리로 나를 항상 보호하소서"
+      ],
+      "raw_text_hashes": [
+        "eaca4e1006079f69ad40b5c64803a9a78e98e35f9d085122f6087152bfd9c0ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:12",
+      "sequence": 14538,
+      "chapter_label": "PSA 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "For innumerable evils have surrounded me. My iniquities have overtaken me, so that I am not able to look up. They are more than the hairs of my head. My heart has failed me.",
+      "ko": "무수한 재앙이 나를 둘러 싸고 나의 죄악이 내게 미치므로 우러러 볼 수도 없으며 죄가 나의 머리털보다 많으므로 내 마음이 사라졌음이니이다",
+      "source_text_hash": "27826922de5e8eb4164148a7c054f50dc8768bf9c87d5aebb6aba31a46b5a368",
+      "translation_text_hash": "9be7da3ee961127cb5de98579718be0b519d2d0e26663ebbebf860f4181742ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무수한 재앙이 나를 둘러 싸고 나의 죄악이 내게 미치므로 우러러 볼 수도 없으며 죄가 나의 머리털보다 많으므로 내 마음이 사라졌음이니이다"
+      ],
+      "raw_text_hashes": [
+        "9be7da3ee961127cb5de98579718be0b519d2d0e26663ebbebf860f4181742ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:13",
+      "sequence": 14539,
+      "chapter_label": "PSA 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "Be pleased, LORD, to deliver me. Hurry to help me, LORD.",
+      "ko": "여호와여 은총을 베푸사 나를 구원하소서 여호와여 속히 나를 도우소서",
+      "source_text_hash": "b6786378cb5e3ba1a684b15b34334f6800892f3eb680728b7c17fcbef8fb76c0",
+      "translation_text_hash": "c4ef8a90434ad11cb5d3438e2b33a21f31529264e7ac53a678f448aff0d66f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 은총을 베푸사 나를 구원하소서 여호와여 속히 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "c4ef8a90434ad11cb5d3438e2b33a21f31529264e7ac53a678f448aff0d66f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:14",
+      "sequence": 14540,
+      "chapter_label": "PSA 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "Let them be disappointed and confounded together who seek after my soul to destroy it. Let them be turned backward and brought to dishonor who delight in my hurt.",
+      "ko": "나의 영혼을 찾아 멸하려 하는 자로 다 수치와 낭패를 당케 하시며 나의 해를 기뻐하는 자로 다 물러가 욕을 당케 하소서",
+      "source_text_hash": "83a323d916ba00f8a4d20518159d9f863f575ab9d73f135951842dffff695209",
+      "translation_text_hash": "48a5534f4982b3d97692caeb63729e2fa6960589c2d191e3245de8f7f55741a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼을 찾아 멸하려 하는 자로 다 수치와 낭패를 당케 하시며 나의 해를 기뻐하는 자로 다 물러가 욕을 당케 하소서"
+      ],
+      "raw_text_hashes": [
+        "48a5534f4982b3d97692caeb63729e2fa6960589c2d191e3245de8f7f55741a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:15",
+      "sequence": 14541,
+      "chapter_label": "PSA 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "Let them be desolate by reason of their shame that tell me, “Aha! Aha!”",
+      "ko": "나를 향하여 하하 하는 자로 자기 수치를 인하여 놀라게 하소서",
+      "source_text_hash": "324a81ad46134c0995b9ad68d5ae39e560f994eb5109331ace161f284654ab7d",
+      "translation_text_hash": "b7b4178faffd15e2be870fcba7da324e30cb231e4047816c3c38cbcef919f810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 향하여 하하 하는 자로 자기 수치를 인하여 놀라게 하소서"
+      ],
+      "raw_text_hashes": [
+        "b7b4178faffd15e2be870fcba7da324e30cb231e4047816c3c38cbcef919f810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:16",
+      "sequence": 14542,
+      "chapter_label": "PSA 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "Let all those who seek you rejoice and be glad in you. Let such as love your salvation say continually, “Let the LORD be exalted!”",
+      "ko": "무릇 주를 찾는 자는 다 주로 즐거워하고 기뻐하게 하시며 주의 구원을 사랑하는 자는 항상 말하기를 여호와는 광대하시다 하게 하소서",
+      "source_text_hash": "cc2d106072f6f66b25910ad71e594e25ffb1df992836162732b028ef5bea0e2f",
+      "translation_text_hash": "c22b004d760907397894d0143db1cae7f1f9a37c0c88e736094c7fc405aa70be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 주를 찾는 자는 다 주로 즐거워하고 기뻐하게 하시며 주의 구원을 사랑하는 자는 항상 말하기를 여호와는 광대하시다 하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "c22b004d760907397894d0143db1cae7f1f9a37c0c88e736094c7fc405aa70be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:40:17",
+      "sequence": 14543,
+      "chapter_label": "PSA 40",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 40,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 40,
+          "verse": 17
+        }
+      ],
+      "en": "But I am poor and needy. May the Lord think about me. You are my help and my deliverer. Don’t delay, my God.",
+      "ko": "나는 가난하고 궁핍하오나 주께서는 나를 생각하시오니 주는 나의 도움이시요 건지시는 자시라 나의 하나님이여 지체하지 마소서",
+      "source_text_hash": "eb846726f74a669aff5e97dc86a1e782fa2e77af50a77f01a29bfea8c4012bdb",
+      "translation_text_hash": "ce2d255f83d391cd782e94c0b8e017c48a2e50621fcfa42526eddc4394caff6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 가난하고 궁핍하오나 주께서는 나를 생각하시오니 주는 나의 도움이시요 건지시는 자시라 나의 하나님이여 지체하지 마소서"
+      ],
+      "raw_text_hashes": [
+        "ce2d255f83d391cd782e94c0b8e017c48a2e50621fcfa42526eddc4394caff6f"
+      ]
+    }
+  ]
+}

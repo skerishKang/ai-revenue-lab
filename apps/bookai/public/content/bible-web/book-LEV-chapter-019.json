@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:019",
+  "unit_ordinal": 109,
+  "unit_label": "LEV 19",
+  "book_code": "LEV",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:19:1",
+      "sequence": 3283,
+      "chapter_label": "LEV 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:2",
+      "sequence": 3284,
+      "chapter_label": "LEV 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to all the congregation of the children of Israel, and tell them, ‘You shall be holy; for I, the LORD your God, am holy.",
+      "ko": "너는 이스라엘 자손의 온 회중에게 고하여 이르라 너희는 거룩하라 나 여호와 너희 하나님이 거룩함이니라",
+      "source_text_hash": "6cefe3ac6f217f388569dabaf8db23f119d715d8236691106758824a256d7bb9",
+      "translation_text_hash": "c7e62c3c204a466b0ef6423e35e4999cf158c1a1f2f0ec25757107c3f790191f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손의 온 회중에게 고하여 이르라 너희는 거룩하라 나 여호와 너희 하나님이 거룩함이니라"
+      ],
+      "raw_text_hashes": [
+        "c7e62c3c204a466b0ef6423e35e4999cf158c1a1f2f0ec25757107c3f790191f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:3",
+      "sequence": 3285,
+      "chapter_label": "LEV 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "“‘Each one of you shall respect his mother and his father. You shall keep my Sabbaths. I am the LORD your God.",
+      "ko": "너희 각 사람은 부모를 경외하고 나의 안식일을 지키라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "eec6adc538b3a652eb3b604ef98b3041a763ff348cf09ce6b4faca9f8d164e13",
+      "translation_text_hash": "5814df682ba33f993f704b710b6140ad1cc09431e8432e5a843cbd08401d518d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 각 사람은 부모를 경외하고 나의 안식일을 지키라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "5814df682ba33f993f704b710b6140ad1cc09431e8432e5a843cbd08401d518d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:4",
+      "sequence": 3286,
+      "chapter_label": "LEV 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "“‘Don’t turn to idols, nor make molten gods for yourselves. I am the LORD your God.",
+      "ko": "너희는 헛것을 위하지 말며 너희를 위하여 신상들을 부어 만들지 말라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "2d3d77f6d1a74c56dd5bb2a14079d8d044c13d8fd5f96adb03bc115e4e04948c",
+      "translation_text_hash": "ac07ca94073942bda22e994ae0a7741f255ca9c2f1796ffc9821b814db166b81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 헛것을 위하지 말며 너희를 위하여 신상들을 부어 만들지 말라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "ac07ca94073942bda22e994ae0a7741f255ca9c2f1796ffc9821b814db166b81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:5",
+      "sequence": 3287,
+      "chapter_label": "LEV 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "“‘When you offer a sacrifice of peace offerings to the LORD, you shall offer it so that you may be accepted.",
+      "ko": "너희는 화목제 희생을 여호와께 드릴 때에 열납되도록 드리고",
+      "source_text_hash": "502ac0c48ab63c9f3848f54f455be33146ab7e216d8d49399c7eacaa0471aedd",
+      "translation_text_hash": "fe81684ebabb32464fd465ddd91d6ec52fd87ae848e9ba97939b09e33f997e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 화목제 희생을 여호와께 드릴 때에 열납되도록 드리고"
+      ],
+      "raw_text_hashes": [
+        "fe81684ebabb32464fd465ddd91d6ec52fd87ae848e9ba97939b09e33f997e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:6",
+      "sequence": 3288,
+      "chapter_label": "LEV 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "It shall be eaten the same day you offer it, and on the next day. If anything remains until the third day, it shall be burned with fire.",
+      "ko": "그 제물은 드리는 날과 이튿날에 먹고 제 삼일까지 남았거든 불사르라",
+      "source_text_hash": "9b0fa6a1e1035702af508ccbd94c0da231b8c79184b28d8a881879ffd950048a",
+      "translation_text_hash": "26dd2acd99703a40ea95117c519150b086c6841a9500bd125b0edc123228ac5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제물은 드리는 날과 이튿날에 먹고 제 삼일까지 남았거든 불사르라"
+      ],
+      "raw_text_hashes": [
+        "26dd2acd99703a40ea95117c519150b086c6841a9500bd125b0edc123228ac5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:7",
+      "sequence": 3289,
+      "chapter_label": "LEV 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "If it is eaten at all on the third day, it is an abomination. It will not be accepted;",
+      "ko": "제 삼일에 조금이라도 먹으면 가증한 것이 되어 열납되지 못하고",
+      "source_text_hash": "b5e4e4f3991a12d6e91b09e500585faa5ab6a431f8b4b1f3a618f2ede9ccc1bc",
+      "translation_text_hash": "d309adb039f4f4d87dca692ad0afbfd18113161f344bd6f54bab8f5157bfe8e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에 조금이라도 먹으면 가증한 것이 되어 열납되지 못하고"
+      ],
+      "raw_text_hashes": [
+        "d309adb039f4f4d87dca692ad0afbfd18113161f344bd6f54bab8f5157bfe8e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:8",
+      "sequence": 3290,
+      "chapter_label": "LEV 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "but everyone who eats it shall bear his iniquity, because he has profaned the holy thing of the LORD, and that soul shall be cut off from his people.",
+      "ko": "그것을 먹는 자는 여호와의 성물 더럽힘을 인하여 죄를 당하리니 그가 그 백성 중에서 끊쳐지리라",
+      "source_text_hash": "5525d70b171436a2d42cda0336417fcdd45b2dac475c1c6976606b8a327d99ed",
+      "translation_text_hash": "2c315252f4d7d7df9a571eb613103f9c3c5955580170df561a5b474fc9620ce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 먹는 자는 여호와의 성물 더럽힘을 인하여 죄를 당하리니 그가 그 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "2c315252f4d7d7df9a571eb613103f9c3c5955580170df561a5b474fc9620ce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:9",
+      "sequence": 3291,
+      "chapter_label": "LEV 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "“‘When you reap the harvest of your land, you shall not wholly reap the corners of your field, neither shall you gather the gleanings of your harvest.",
+      "ko": "너희 땅의 곡물을 벨 때에 너는 밭 모퉁이까지 다 거두지 말고 너의 떨어진 이삭도 줍지 말며",
+      "source_text_hash": "8a3797daa828f28570243855264bb002d9ed4003cb267ca5f29123865480d382",
+      "translation_text_hash": "44ab51af021cb4dbc83b4c769557c925d98c49aabd36eb1b151b07835e9582b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 땅의 곡물을 벨 때에 너는 밭 모퉁이까지 다 거두지 말고 너의 떨어진 이삭도 줍지 말며"
+      ],
+      "raw_text_hashes": [
+        "44ab51af021cb4dbc83b4c769557c925d98c49aabd36eb1b151b07835e9582b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:10",
+      "sequence": 3292,
+      "chapter_label": "LEV 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "You shall not glean your vineyard, neither shall you gather the fallen grapes of your vineyard. You shall leave them for the poor and for the foreigner. I am the LORD your God.",
+      "ko": "너의 포도원의 열매를 다 따지 말며 너의 포도원에 떨어진 열매도 줍지 말고 가난한 사람과 타국인을 위하여 버려 두라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "f8182479e8673773a52268ea445c04284a8cfe354e81da1aa48eb0e1be3ed10a",
+      "translation_text_hash": "1b04c2a093fa0ea42cafdf4d6cba6442e6c794c6e15e3d07d965f49f09972416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 포도원의 열매를 다 따지 말며 너의 포도원에 떨어진 열매도 줍지 말고 가난한 사람과 타국인을 위하여 버려 두라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "1b04c2a093fa0ea42cafdf4d6cba6442e6c794c6e15e3d07d965f49f09972416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:11",
+      "sequence": 3293,
+      "chapter_label": "LEV 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "“‘You shall not steal. “‘You shall not lie. “‘You shall not deceive one another.",
+      "ko": "너희는 도적질하지 말며 속이지 말며 서로 거짓말 하지 말며",
+      "source_text_hash": "e9700b992baccd1a544c7e2c73288140d0a00380e632d325dac731da80a2ee9c",
+      "translation_text_hash": "2b8da5a31923a76c89185052ee6dd8b87e6aabebe212d09c9ac936ef47161e1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 도적질하지 말며 속이지 말며 서로 거짓말 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "2b8da5a31923a76c89185052ee6dd8b87e6aabebe212d09c9ac936ef47161e1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:12",
+      "sequence": 3294,
+      "chapter_label": "LEV 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "“‘You shall not swear by my name falsely, and profane the name of your God. I am the LORD.",
+      "ko": "너희는 내 이름으로 거짓 맹세함으로 네 하나님의 이름을 욕되게 하지 말라 나는 여호와니라",
+      "source_text_hash": "9b2c49db2d75813414b33f4e7bdddbe8e404b48f688a7166ca73f6d7de4826db",
+      "translation_text_hash": "3a62e5e9bebc1ea9d63947bff058674e4c1f61e8d3576d81b6987d6f6e98273c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 이름으로 거짓 맹세함으로 네 하나님의 이름을 욕되게 하지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "3a62e5e9bebc1ea9d63947bff058674e4c1f61e8d3576d81b6987d6f6e98273c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:13",
+      "sequence": 3295,
+      "chapter_label": "LEV 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "“‘You shall not oppress your neighbor, nor rob him. “‘The wages of a hired servant shall not remain with you all night until the morning.",
+      "ko": "너는 네 이웃을 압제하지 말며 늑탈하지 말며 품군의 삯을 아침까지 밤새도록 네게 두지 말며",
+      "source_text_hash": "5458e3ce844870dd97d9b8b254c2d5297d1f697cee4ead466d3daba32cd928a0",
+      "translation_text_hash": "e539a91326ee6e1f6a8e414b1c3c3bdec28a8d80d5d70f561f5ceb0149b33271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 이웃을 압제하지 말며 늑탈하지 말며 품군의 삯을 아침까지 밤새도록 네게 두지 말며"
+      ],
+      "raw_text_hashes": [
+        "e539a91326ee6e1f6a8e414b1c3c3bdec28a8d80d5d70f561f5ceb0149b33271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:14",
+      "sequence": 3296,
+      "chapter_label": "LEV 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "“‘You shall not curse the deaf, nor put a stumbling block before the blind; but you shall fear your God. I am the LORD.",
+      "ko": "너는 귀먹은 자를 저주하지 말며 소경 앞에 장애물을 놓지 말고 네 하나님을 경외하라 나는 여호와니라",
+      "source_text_hash": "bb536a06d05a727e7115e30137ad2c1f754c86934fb2bb096a8b860ebeeb847e",
+      "translation_text_hash": "e6b69735f15b938029c209538111b3d10e3e5d7cd9240708729b438c75bb9be2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 귀먹은 자를 저주하지 말며 소경 앞에 장애물을 놓지 말고 네 하나님을 경외하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "e6b69735f15b938029c209538111b3d10e3e5d7cd9240708729b438c75bb9be2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:15",
+      "sequence": 3297,
+      "chapter_label": "LEV 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "“‘You shall do no injustice in judgment. You shall not be partial to the poor, nor show favoritism to the great; but you shall judge your neighbor in righteousness.",
+      "ko": "너희는 재판할 때에 불의를 행치 말며 가난한 자의 편을 들지 말며 세력 있는 자라고 두호하지 말고 공의로 사람을 재판할찌며",
+      "source_text_hash": "e7974e471e3b1f824b0cb682af9613e86e18b8be31dff908ebe945148f782746",
+      "translation_text_hash": "ab3286fee5846bb20d9d8e9f4cff350ff8cabbb6a5ad90bb03c13b8666c78462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 재판할 때에 불의를 행치 말며 가난한 자의 편을 들지 말며 세력 있는 자라고 두호하지 말고 공의로 사람을 재판할찌며"
+      ],
+      "raw_text_hashes": [
+        "ab3286fee5846bb20d9d8e9f4cff350ff8cabbb6a5ad90bb03c13b8666c78462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:16",
+      "sequence": 3298,
+      "chapter_label": "LEV 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "“‘You shall not go around as a slanderer among your people. “‘You shall not endanger the life of your neighbor. I am the LORD.",
+      "ko": "너는 네 백성 중으로 돌아다니며 사람을 논단하지 말며 네 이웃을 대적하여 죽을 지경에 이르게 하지 말라 나는 여호와니라",
+      "source_text_hash": "3f535a9727e10c1f94efb59200f8e55bb93e3e23c44b57a1ddbf8f7be18f475d",
+      "translation_text_hash": "265f083a129e66a13ded938063335d17ec2e54e25a2084ff2fe87864a9a63809",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 백성 중으로 돌아다니며 사람을 논단하지 말며 네 이웃을 대적하여 죽을 지경에 이르게 하지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "265f083a129e66a13ded938063335d17ec2e54e25a2084ff2fe87864a9a63809"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:17",
+      "sequence": 3299,
+      "chapter_label": "LEV 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "“‘You shall not hate your brother in your heart. You shall surely rebuke your neighbor, and not bear sin because of him.",
+      "ko": "너는 네 형제를 마음으로 미워하지 말며 이웃을 인하여 죄를 당치 않도록 그를 반드시 책선하라",
+      "source_text_hash": "9ebb974c4477543f75d37a8042499bb90c9b9e863fdd30b2be5e454bcd91cabf",
+      "translation_text_hash": "2156a7dae1bc1d4f932a489b6d079801e21c94e04fba62bcbec838bf1fac0d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 형제를 마음으로 미워하지 말며 이웃을 인하여 죄를 당치 않도록 그를 반드시 책선하라"
+      ],
+      "raw_text_hashes": [
+        "2156a7dae1bc1d4f932a489b6d079801e21c94e04fba62bcbec838bf1fac0d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:18",
+      "sequence": 3300,
+      "chapter_label": "LEV 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "“‘You shall not take vengeance, nor bear any grudge against the children of your people; but you shall love your neighbor as yourself. I am the LORD.",
+      "ko": "원수를 갚지 말며 동포를 원망하지 말며 이웃 사랑하기를 네 몸과 같이 하라 나는 여호와니라",
+      "source_text_hash": "c3ff53242d2ddac405d197638f8a4e75ff5b0f04ec2dd0436bddf084de11f16f",
+      "translation_text_hash": "7ec0a56780081d2287e38cbb763ff4e2b01ed5a6a17d124c3d38e112c7e7f4a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수를 갚지 말며 동포를 원망하지 말며 이웃 사랑하기를 네 몸과 같이 하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "7ec0a56780081d2287e38cbb763ff4e2b01ed5a6a17d124c3d38e112c7e7f4a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:19",
+      "sequence": 3301,
+      "chapter_label": "LEV 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "“‘You shall keep my statutes. “‘You shall not cross-breed different kinds of animals. “‘You shall not sow your field with two kinds of seed; “‘Don’t wear a garment made of two kinds of material.",
+      "ko": "너희는 내 규례를 지킬찌어다 네 육축을 다른 종류와 교합시키지 말며 네 밭에 두 종자를 섞어 뿌리지 말며 두 재료로 직조한 옷을 입지 말찌며",
+      "source_text_hash": "f4f3a5fe3dd4a1733f35d839a9908ef274c4058a1045c248f487040a72dfee6a",
+      "translation_text_hash": "8db47ed17312974830f722e1cdb5dd508bfbd4c9ed0ba67815f868bccdca894c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 규례를 지킬찌어다 네 육축을 다른 종류와 교합시키지 말며 네 밭에 두 종자를 섞어 뿌리지 말며 두 재료로 직조한 옷을 입지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "8db47ed17312974830f722e1cdb5dd508bfbd4c9ed0ba67815f868bccdca894c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:20",
+      "sequence": 3302,
+      "chapter_label": "LEV 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "“‘If a man lies carnally with a woman who is a slave girl, pledged to be married to another man, and not ransomed or given her freedom; they shall be punished. They shall not be put to death, because she was not free.",
+      "ko": "무릇 아직 속량도 되지 못하고 해방도 되지 못하고 정혼한 씨종과 사람이 행음하면 두 사람이 형벌은 받으려니와 그들이 죽임을 당치 아니할 것은 그 여인은 아직 해방되지 못하였음이라",
+      "source_text_hash": "b1f1b185eeff27c5e8cddfbfaef9f2aaab302398ae5bafbad0262a7fa6f278f2",
+      "translation_text_hash": "610489c0bdf9d389309b86b618fcb0b594863bdcb4d3a41bc201c9a87e99d9dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 아직 속량도 되지 못하고 해방도 되지 못하고 정혼한 씨종과 사람이 행음하면 두 사람이 형벌은 받으려니와 그들이 죽임을 당치 아니할 것은 그 여인은 아직 해방되지 못하였음이라"
+      ],
+      "raw_text_hashes": [
+        "610489c0bdf9d389309b86b618fcb0b594863bdcb4d3a41bc201c9a87e99d9dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:21",
+      "sequence": 3303,
+      "chapter_label": "LEV 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "He shall bring his trespass offering to the LORD, to the door of the Tent of Meeting, even a ram for a trespass offering.",
+      "ko": "그 남자는 그 속건제물 곧 속건제 수양을 회막문 여호와께로 끌어올 것이요",
+      "source_text_hash": "5c830db3bedea21c06c12d96eda7556014d2cbf836f85ac3fabe0f6563b45963",
+      "translation_text_hash": "318e7a13f04893430ec69115d34fe85c19862b708ab02d8d50ede728d1a7813e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남자는 그 속건제물 곧 속건제 수양을 회막문 여호와께로 끌어올 것이요"
+      ],
+      "raw_text_hashes": [
+        "318e7a13f04893430ec69115d34fe85c19862b708ab02d8d50ede728d1a7813e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:22",
+      "sequence": 3304,
+      "chapter_label": "LEV 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "The priest shall make atonement for him with the ram of the trespass offering before the LORD for his sin which he has committed; and the sin which he has committed shall be forgiven him.",
+      "ko": "제사장은 그의 범한 죄를 위하여 그 속건제의 수양으로 여호와 앞에 속죄할 것이요 그리하면 그의 범한 죄의 사함을 받으리라",
+      "source_text_hash": "cb9be4fa64caf18059ebedbbdaa081918303ddf15ceecf863f4e446386bd2591",
+      "translation_text_hash": "9958517380c2dad004793c49d49906f961f7c3622a443080cb2a5c4815ef0bae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그의 범한 죄를 위하여 그 속건제의 수양으로 여호와 앞에 속죄할 것이요 그리하면 그의 범한 죄의 사함을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "9958517380c2dad004793c49d49906f961f7c3622a443080cb2a5c4815ef0bae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:23",
+      "sequence": 3305,
+      "chapter_label": "LEV 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "“‘When you come into the land, and have planted all kinds of trees for food, then you shall count their fruit as forbidden. For three years it shall be forbidden to you. It shall not be eaten.",
+      "ko": "너희가 그 땅에 들어가 각종 과목을 심거든 그 열매는 아직 할례 받지 못한 것으로 여기되 곧 삼년 동안 너희는 그것을 할례 받지 못한 것으로 여겨 먹지 말것이요",
+      "source_text_hash": "a2e9475dfc47fffc6e3fcb1923ba623ad85ab03a689a023be50b6824f256a10a",
+      "translation_text_hash": "810f9d1a9566cb19ccf4f37f60a6859ec8052fdebe7e4164ab2c90b454594942",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 땅에 들어가 각종 과목을 심거든 그 열매는 아직 할례 받지 못한 것으로 여기되 곧 삼년 동안 너희는 그것을 할례 받지 못한 것으로 여겨 먹지 말것이요"
+      ],
+      "raw_text_hashes": [
+        "810f9d1a9566cb19ccf4f37f60a6859ec8052fdebe7e4164ab2c90b454594942"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:24",
+      "sequence": 3306,
+      "chapter_label": "LEV 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "But in the fourth year all its fruit shall be holy, for giving praise to the LORD.",
+      "ko": "제 사년에는 그 모든 과실이 거룩하니 여호와께 드려 찬송할 것이며",
+      "source_text_hash": "8d774a997f2dc737e16bfb3f8fbb92f32c7a0573e84cd242bf3e89de09f20ecd",
+      "translation_text_hash": "fe719603a0687bac9c4765259f72d312249b379f3eb82e2bd40ccbf3eb71aad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사년에는 그 모든 과실이 거룩하니 여호와께 드려 찬송할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fe719603a0687bac9c4765259f72d312249b379f3eb82e2bd40ccbf3eb71aad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:25",
+      "sequence": 3307,
+      "chapter_label": "LEV 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "In the fifth year you shall eat its fruit, that it may yield its increase to you. I am the LORD your God.",
+      "ko": "제 오년에는 그 열매를 먹을찌니 그리하면 너희에게 그 소산이 풍성하리라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "c8eda1def65f40eca1923865b0e9d337fb9bf426f22716277573efff4e6b251d",
+      "translation_text_hash": "f4f945e9ab1a16c3ffae5a26554bd667cdbdd79a545ec611fcdc343e241ecf87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 오년에는 그 열매를 먹을찌니 그리하면 너희에게 그 소산이 풍성하리라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "f4f945e9ab1a16c3ffae5a26554bd667cdbdd79a545ec611fcdc343e241ecf87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:26",
+      "sequence": 3308,
+      "chapter_label": "LEV 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "“‘You shall not eat any meat with the blood still in it. You shall not use enchantments, nor practice sorcery.",
+      "ko": "너희는 무엇이든지 피채 먹지 말며 복술을 하지 말며 술수를 행치 말며",
+      "source_text_hash": "098004074480f6e9e54123ee54c43c157646f0e40a852b737e8824706fded232",
+      "translation_text_hash": "ada6816f847252889bdba314758738d1a6822e18e031306183a243e03c3d2320",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 무엇이든지 피채 먹지 말며 복술을 하지 말며 술수를 행치 말며"
+      ],
+      "raw_text_hashes": [
+        "ada6816f847252889bdba314758738d1a6822e18e031306183a243e03c3d2320"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:27",
+      "sequence": 3309,
+      "chapter_label": "LEV 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "“‘You shall not cut the hair on the sides of your head or clip off the edge of your beard.",
+      "ko": "머리 가를 둥글게 깎지 말며 수염 끝을 손상치 말며",
+      "source_text_hash": "813d43384f7d7e8c0e4357e57e1618a513b47b78374f466d5e8e5e3673d3b6c9",
+      "translation_text_hash": "a8f4e3ea520b60c64ce80ec54bd0c1e6336a06ae21ad8da9ee99032f3a62ec17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리 가를 둥글게 깎지 말며 수염 끝을 손상치 말며"
+      ],
+      "raw_text_hashes": [
+        "a8f4e3ea520b60c64ce80ec54bd0c1e6336a06ae21ad8da9ee99032f3a62ec17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:28",
+      "sequence": 3310,
+      "chapter_label": "LEV 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "“‘You shall not make any cuttings in your flesh for the dead, nor tattoo any marks on you. I am the LORD.",
+      "ko": "죽은 자를 위하여 너희는 살을 베지 말며 몸에 무늬를 놓지 말라 나는 여호와니라",
+      "source_text_hash": "812c712500ffcd40c3ed55f1d9cf8481f56cc72170e8c12bcc36f93a4ddaa022",
+      "translation_text_hash": "7795ea30d3ce76b5a59b504f43bc04ece3abb9df2fd09cf0d14de9b772f23028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자를 위하여 너희는 살을 베지 말며 몸에 무늬를 놓지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "7795ea30d3ce76b5a59b504f43bc04ece3abb9df2fd09cf0d14de9b772f23028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:29",
+      "sequence": 3311,
+      "chapter_label": "LEV 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "“‘Don’t profane your daughter, to make her a prostitute; lest the land fall to prostitution, and the land become full of wickedness.",
+      "ko": "네 딸을 더럽혀 기생이 되게 말라 음풍이 전국에 퍼져 죄악이 가득할까 하노라",
+      "source_text_hash": "52876ca2ec4a156f43139349820799dd33d73f7f373a825a919b84e068c49ed2",
+      "translation_text_hash": "002f25a859d0ee7017a808770994c71cdfbbe13f47f89e6edf2b0ad8b85667dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 딸을 더럽혀 기생이 되게 말라 음풍이 전국에 퍼져 죄악이 가득할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "002f25a859d0ee7017a808770994c71cdfbbe13f47f89e6edf2b0ad8b85667dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:30",
+      "sequence": 3312,
+      "chapter_label": "LEV 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "“‘You shall keep my Sabbaths, and reverence my sanctuary; I am the LORD.",
+      "ko": "내 안식일을 지키고 내 성소를 공경하라 나는 여호와니라",
+      "source_text_hash": "fc47bec64ad376f0eeb12b1169a19f9adebc408b3d8c6e77b268c357e2768ee8",
+      "translation_text_hash": "18ad16fceab1ff29a162aff22c9eb0f4e0e8be0a3c87415d6717e59197fa5af6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 안식일을 지키고 내 성소를 공경하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "18ad16fceab1ff29a162aff22c9eb0f4e0e8be0a3c87415d6717e59197fa5af6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:31",
+      "sequence": 3313,
+      "chapter_label": "LEV 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "“‘Don’t turn to those who are mediums, nor to the wizards. Don’t seek them out, to be defiled by them. I am the LORD your God.",
+      "ko": "너희는 신접한 자와 박수를 믿지 말며 그들을 추종하여 스스로 더럽히지 말라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "d436f968300acec9ef64a99b9ebfd0db6c6b01cc4e5aab5dfa64c1e0b67b9fb9",
+      "translation_text_hash": "9aaace2d34fc4463f1400bd7c1808438db2fab0d0838a6e2accd73785f0bcf37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 신접한 자와 박수를 믿지 말며 그들을 추종하여 스스로 더럽히지 말라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "9aaace2d34fc4463f1400bd7c1808438db2fab0d0838a6e2accd73785f0bcf37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:32",
+      "sequence": 3314,
+      "chapter_label": "LEV 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "“‘You shall rise up before the gray head and honor the face of the elderly; and you shall fear your God. I am the LORD.",
+      "ko": "너는 센 머리 앞에 일어서고 노인의 얼굴을 공경하며 네 하나님을 경외하라 나는 여호와니라",
+      "source_text_hash": "35ababaab1b1417544ab2387bd6b8545403a33d33dced35ecca728e41bd9378a",
+      "translation_text_hash": "a28224f683cfbe61c2d4c1970641f3c2c1e3c111358582909c7d15e78453cb55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 센 머리 앞에 일어서고 노인의 얼굴을 공경하며 네 하나님을 경외하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "a28224f683cfbe61c2d4c1970641f3c2c1e3c111358582909c7d15e78453cb55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:33",
+      "sequence": 3315,
+      "chapter_label": "LEV 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "“‘If a stranger lives as a foreigner with you in your land, you shall not do him wrong.",
+      "ko": "타국인이 너희 땅에 우거하여 함께 있거든 너희는 그를 학대하지 말고",
+      "source_text_hash": "b8fb73a90e836beb6585f9a8881a33079e2e02c3bc0eb3482f500a1aba6acf17",
+      "translation_text_hash": "a58adee3721c905b2a03a455ace98805b029fadf41075db3b1bf09208d99dd62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타국인이 너희 땅에 우거하여 함께 있거든 너희는 그를 학대하지 말고"
+      ],
+      "raw_text_hashes": [
+        "a58adee3721c905b2a03a455ace98805b029fadf41075db3b1bf09208d99dd62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:34",
+      "sequence": 3316,
+      "chapter_label": "LEV 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "The stranger who lives as a foreigner with you shall be to you as the native-born among you, and you shall love him as yourself; for you lived as foreigners in the land of Egypt. I am the LORD your God.",
+      "ko": "너희와 함께 있는 타국인을 너희 중에서 낳은 자 같이 여기며 자기 같이 사랑하라 너희도 애굽 땅에서 객이 되었더니라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "c579a26dee1511f697c23974abd7027b421893337e32ec1353431a59be07ac7e",
+      "translation_text_hash": "4fb2e5400e95a3a232805b84e362dc77ae231e36787eae37933eefa778f42019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 함께 있는 타국인을 너희 중에서 낳은 자 같이 여기며 자기 같이 사랑하라 너희도 애굽 땅에서 객이 되었더니라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "4fb2e5400e95a3a232805b84e362dc77ae231e36787eae37933eefa778f42019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:35",
+      "sequence": 3317,
+      "chapter_label": "LEV 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "“‘You shall do no unrighteousness in judgment, in measures of length, of weight, or of quantity.",
+      "ko": "너희는 재판에든지 도량형에든지 불의를 행치 말고",
+      "source_text_hash": "a8ade67e38d4b03c90f87246e3d4192b65f8c9f53829d017fa92ed980a8e5d0a",
+      "translation_text_hash": "3a1c83ef72040ffa3e701e90e4141245f24fc76edd3f2a428f7d8ad0270289cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 재판에든지 도량형에든지 불의를 행치 말고"
+      ],
+      "raw_text_hashes": [
+        "3a1c83ef72040ffa3e701e90e4141245f24fc76edd3f2a428f7d8ad0270289cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:36",
+      "sequence": 3318,
+      "chapter_label": "LEV 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "You shall have just balances, just weights, a just ephah, and a just hin. I am the LORD your God, who brought you out of the land of Egypt.",
+      "ko": "공평한 저울과 공평한 추와 공평한 에바와 공평한 힌을 사용하라 나는 너희를 인도하여 애굽 땅에서 나오게 한 너희 하나님 여호와니라",
+      "source_text_hash": "5bc90930e1dcc010deb1eee53a100abdfb5c54c30e2f7da4f8ca2e22626e3ca0",
+      "translation_text_hash": "eb4388af0e21c28585ddd26553b8f32db6705a2509efe48f61db57a397e15954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공평한 저울과 공평한 추와 공평한 에바와 공평한 힌을 사용하라 나는 너희를 인도하여 애굽 땅에서 나오게 한 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "eb4388af0e21c28585ddd26553b8f32db6705a2509efe48f61db57a397e15954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:19:37",
+      "sequence": 3319,
+      "chapter_label": "LEV 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "“‘You shall observe all my statutes and all my ordinances, and do them. I am the LORD.’”",
+      "ko": "너희는 나의 모든 규례와 나의 모든 법도를 지켜 행하라 나는 여호와니라",
+      "source_text_hash": "89f7290517eacc98e7be980c8c61407376976d9a013b8efea9ec7ada1ea3a460",
+      "translation_text_hash": "a709a75aca3a92275c85780deed13c55a243bc02473a77aab03f39c1b6ff2c10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 모든 규례와 나의 모든 법도를 지켜 행하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "a709a75aca3a92275c85780deed13c55a243bc02473a77aab03f39c1b6ff2c10"
+      ]
+    }
+  ]
+}

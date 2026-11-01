@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:103",
+  "unit_ordinal": 581,
+  "unit_label": "PSA 103",
+  "book_code": "PSA",
+  "chapter_number": 103,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:103:1",
+      "sequence": 15551,
+      "chapter_label": "PSA 103",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD, my soul! All that is within me, praise his holy name!",
+      "ko": "내 영혼아 여호와를 송축하라 내 속에 있는 것들아 다 그 성호를 송축하라",
+      "source_text_hash": "661f5b518b204b156c22f099053e831618acbab6efa134ec7b2c91f932976a83",
+      "translation_text_hash": "3184bf439b726cd25d1672e750c0958915af71d51b43006b8a3e30dbb075e503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 여호와를 송축하라 내 속에 있는 것들아 다 그 성호를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "3184bf439b726cd25d1672e750c0958915af71d51b43006b8a3e30dbb075e503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:2",
+      "sequence": 15552,
+      "chapter_label": "PSA 103",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 2
+        }
+      ],
+      "en": "Praise the LORD, my soul, and don’t forget all his benefits,",
+      "ko": "내 영혼아 여호와를 송축하며 그 모든 은택을 잊지 말찌어다",
+      "source_text_hash": "92966f8df9bd97f9368b1bf106c23db4623093ca47350a9f4984c5927ff8eec0",
+      "translation_text_hash": "748d8a1072c3ef906a09e8aacea8f4457cdf680b609236202663515c9798441b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 여호와를 송축하며 그 모든 은택을 잊지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "748d8a1072c3ef906a09e8aacea8f4457cdf680b609236202663515c9798441b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:3",
+      "sequence": 15553,
+      "chapter_label": "PSA 103",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 3
+        }
+      ],
+      "en": "who forgives all your sins, who heals all your diseases,",
+      "ko": "저가 네 모든 죄악을 사하시며 네 모든 병을 고치시며",
+      "source_text_hash": "9463c616cf61dd4bdd7c879d6ca536a04a5916631e37b8cac4a4419afb1e95f0",
+      "translation_text_hash": "e4c1b27cd268caf27b63537880b7018ab8be620300b0a78b2896d7a1429118ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 네 모든 죄악을 사하시며 네 모든 병을 고치시며"
+      ],
+      "raw_text_hashes": [
+        "e4c1b27cd268caf27b63537880b7018ab8be620300b0a78b2896d7a1429118ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:4",
+      "sequence": 15554,
+      "chapter_label": "PSA 103",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 4
+        }
+      ],
+      "en": "who redeems your life from destruction, who crowns you with loving kindness and tender mercies,",
+      "ko": "네 생명을 파멸에서 구속하시고 인자와 긍휼로 관을 씌우시며",
+      "source_text_hash": "d2516c6ea0fdb441ebd774982e9db460b1ecb50ece581bcf7c0749d043a90aa6",
+      "translation_text_hash": "7d8f3200a09e1e31b5be4ff1dd60a7cc1d92d5296647dca5cfb71996441f6911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생명을 파멸에서 구속하시고 인자와 긍휼로 관을 씌우시며"
+      ],
+      "raw_text_hashes": [
+        "7d8f3200a09e1e31b5be4ff1dd60a7cc1d92d5296647dca5cfb71996441f6911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:5",
+      "sequence": 15555,
+      "chapter_label": "PSA 103",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 5
+        }
+      ],
+      "en": "who satisfies your desire with good things, so that your youth is renewed like the eagle’s.",
+      "ko": "좋은 것으로 네 소원을 만족케 하사 네 청춘으로 독수리 같이 새롭게 하시는도다",
+      "source_text_hash": "af9c9d8a5820965efcbbc4fd1332f59e415d8a1f4b2ce68f842f3dabe90ab67f",
+      "translation_text_hash": "6edd2c90adc2dff6ac27e7e6062c80cfe414f3165456c1dcdf774888f89e8b7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 것으로 네 소원을 만족케 하사 네 청춘으로 독수리 같이 새롭게 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "6edd2c90adc2dff6ac27e7e6062c80cfe414f3165456c1dcdf774888f89e8b7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:6",
+      "sequence": 15556,
+      "chapter_label": "PSA 103",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD executes righteous acts, and justice for all who are oppressed.",
+      "ko": "여호와께서 의로운 일을 행하시며 압박 당하는 모든 자를 위하여 판단하시는도다",
+      "source_text_hash": "f728290b0fe150f42f43468b9d763352167b7dfe3dc3b55ab35d7b097e532afb",
+      "translation_text_hash": "5a64393fdcbb9d03e8bc31babba59dcc423fdf99809eca27dd3f77a40d2e0be3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 의로운 일을 행하시며 압박 당하는 모든 자를 위하여 판단하시는도다"
+      ],
+      "raw_text_hashes": [
+        "5a64393fdcbb9d03e8bc31babba59dcc423fdf99809eca27dd3f77a40d2e0be3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:7",
+      "sequence": 15557,
+      "chapter_label": "PSA 103",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 7
+        }
+      ],
+      "en": "He made known his ways to Moses, his deeds to the children of Israel.",
+      "ko": "그 행위를 모세에게, 그 행사를 이스라엘 자손에게 알리셨도다",
+      "source_text_hash": "e3f810f35dc22bcd56b6e8901ed8b2a267bcd8da1fc87c8ef829202310ec297c",
+      "translation_text_hash": "e60156660beb18c6a5053ebae656b27742ce4b09aaab5d36db79910d92fde8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 행위를 모세에게, 그 행사를 이스라엘 자손에게 알리셨도다"
+      ],
+      "raw_text_hashes": [
+        "e60156660beb18c6a5053ebae656b27742ce4b09aaab5d36db79910d92fde8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:8",
+      "sequence": 15558,
+      "chapter_label": "PSA 103",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD is merciful and gracious, slow to anger, and abundant in loving kindness.",
+      "ko": "여호와는 자비로우시며 은혜로우시며 노하기를 더디 하시며 인자하심이 풍부하시도다",
+      "source_text_hash": "eabb7576d6187495e079a02c6dbbaa4e6d2bc62b8735f6c25757552235afa307",
+      "translation_text_hash": "f18c666fd14da6f58222be8d3a8179b84d73bda3d2aceaf58ec18e996faf9b76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 자비로우시며 은혜로우시며 노하기를 더디 하시며 인자하심이 풍부하시도다"
+      ],
+      "raw_text_hashes": [
+        "f18c666fd14da6f58222be8d3a8179b84d73bda3d2aceaf58ec18e996faf9b76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:9",
+      "sequence": 15559,
+      "chapter_label": "PSA 103",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 9
+        }
+      ],
+      "en": "He will not always accuse; neither will he stay angry forever.",
+      "ko": "항상 경책지 아니하시며 노를 영원히 품지 아니하시리로다",
+      "source_text_hash": "191208370fa314ed937c388ebaba37ae32be52c2ee11f21e4213283dd5dc75fd",
+      "translation_text_hash": "cc6bf1f4f3d78caebed71b7c2584d691be4903f5d202bc633cfab89d2d12f9cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 경책지 아니하시며 노를 영원히 품지 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "cc6bf1f4f3d78caebed71b7c2584d691be4903f5d202bc633cfab89d2d12f9cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:10",
+      "sequence": 15560,
+      "chapter_label": "PSA 103",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 10
+        }
+      ],
+      "en": "He has not dealt with us according to our sins, nor repaid us for our iniquities.",
+      "ko": "우리의 죄를 따라 처치하지 아니하시며 우리의 죄악을 따라 갚지 아니하셨으니",
+      "source_text_hash": "4500386d01472cc212c1fb91b71cf9f00bfca4c6751d1170dd72aab83cff202c",
+      "translation_text_hash": "749a211019da74e4e81195124cdd4befaceab187307876133305dc0b56721146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 죄를 따라 처치하지 아니하시며 우리의 죄악을 따라 갚지 아니하셨으니"
+      ],
+      "raw_text_hashes": [
+        "749a211019da74e4e81195124cdd4befaceab187307876133305dc0b56721146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:11",
+      "sequence": 15561,
+      "chapter_label": "PSA 103",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 11
+        }
+      ],
+      "en": "For as the heavens are high above the earth, so great is his loving kindness toward those who fear him.",
+      "ko": "이는 하늘이 땅에서 높음 같이 그를 경외하는 자에게 그 인자하심이 크심이로다",
+      "source_text_hash": "b330284ba54a8bb2f9f72a3aa07e454a09bad2135a50ead5ebc4a12522ea419b",
+      "translation_text_hash": "a63704f3c283c76345380dfb63e1ede85e94d667bffe5ffc48d3f18053853c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하늘이 땅에서 높음 같이 그를 경외하는 자에게 그 인자하심이 크심이로다"
+      ],
+      "raw_text_hashes": [
+        "a63704f3c283c76345380dfb63e1ede85e94d667bffe5ffc48d3f18053853c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:12",
+      "sequence": 15562,
+      "chapter_label": "PSA 103",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 12
+        }
+      ],
+      "en": "As far as the east is from the west, so far has he removed our transgressions from us.",
+      "ko": "동이 서에서 먼 것 같이 우리 죄과를 우리에게서 멀리 옮기셨으며",
+      "source_text_hash": "47a0278dcc1eac010bf4fdd97dfff82623464823a9e766738d308b47905ed124",
+      "translation_text_hash": "6e6c611f1b194b1e41e2e7ac42c83ca456c7cd6af716290939aafbb045dc89ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동이 서에서 먼 것 같이 우리 죄과를 우리에게서 멀리 옮기셨으며"
+      ],
+      "raw_text_hashes": [
+        "6e6c611f1b194b1e41e2e7ac42c83ca456c7cd6af716290939aafbb045dc89ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:13",
+      "sequence": 15563,
+      "chapter_label": "PSA 103",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 13
+        }
+      ],
+      "en": "Like a father has compassion on his children, so the LORD has compassion on those who fear him.",
+      "ko": "아비가 자식을 불쌍히 여김 같이 여호와께서 자기를 경외하는 자를 불쌍히 여기시나니",
+      "source_text_hash": "22c7540018f74eac6f208ba6ddcdeb8577bf7ed4d6e54a8a66427161606a8c4f",
+      "translation_text_hash": "fccf7e16279159e45daa156468e813ff00d9d6d33bd24c784c38c201e70cd614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 자식을 불쌍히 여김 같이 여호와께서 자기를 경외하는 자를 불쌍히 여기시나니"
+      ],
+      "raw_text_hashes": [
+        "fccf7e16279159e45daa156468e813ff00d9d6d33bd24c784c38c201e70cd614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:14",
+      "sequence": 15564,
+      "chapter_label": "PSA 103",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 14
+        }
+      ],
+      "en": "For he knows how we are made. He remembers that we are dust.",
+      "ko": "이는 저가 우리의 체질을 아시며 우리가 진토임을 기억하심이로다",
+      "source_text_hash": "3ac96ce42354834aae429d1e6a9a60ec268c41c82750c3420d4089c6130a5c05",
+      "translation_text_hash": "0329aae2d3f40914202a541ac380cb68171e78c3d3db0b9c1b71c76cf378a19b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 우리의 체질을 아시며 우리가 진토임을 기억하심이로다"
+      ],
+      "raw_text_hashes": [
+        "0329aae2d3f40914202a541ac380cb68171e78c3d3db0b9c1b71c76cf378a19b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:15",
+      "sequence": 15565,
+      "chapter_label": "PSA 103",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 15
+        }
+      ],
+      "en": "As for man, his days are like grass. As a flower of the field, so he flourishes.",
+      "ko": "인생은 그 날이 풀과 같으며 그 영화가 들의 꽃과 같도다",
+      "source_text_hash": "9ba620dbc0220199c4d28a379298f09c29635bb19e4426dece559102f8740385",
+      "translation_text_hash": "edd5bcb7cda15bf21620e1a8b48b8e25c38961ba62f3b43c8eb0d65097c8e3ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생은 그 날이 풀과 같으며 그 영화가 들의 꽃과 같도다"
+      ],
+      "raw_text_hashes": [
+        "edd5bcb7cda15bf21620e1a8b48b8e25c38961ba62f3b43c8eb0d65097c8e3ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:16",
+      "sequence": 15566,
+      "chapter_label": "PSA 103",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 16
+        }
+      ],
+      "en": "For the wind passes over it, and it is gone. Its place remembers it no more.",
+      "ko": "그것은 바람이 지나면 없어지나니 그 곳이 다시 알지 못하거니와",
+      "source_text_hash": "fa1534f7ab6cb29c141a7d50d0763865a6c442bc4f99e9a6c467878ab1d6299d",
+      "translation_text_hash": "c2e31a42bcb3c0302760dbdbd47205ef0dd655b542e762489ffeb0a9841baac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것은 바람이 지나면 없어지나니 그 곳이 다시 알지 못하거니와"
+      ],
+      "raw_text_hashes": [
+        "c2e31a42bcb3c0302760dbdbd47205ef0dd655b542e762489ffeb0a9841baac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:17",
+      "sequence": 15567,
+      "chapter_label": "PSA 103",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 17
+        }
+      ],
+      "en": "But the LORD’s loving kindness is from everlasting to everlasting with those who fear him, his righteousness to children’s children,",
+      "ko": "여호와의 인자하심은 자기를 경외하는 자에게 영원부터 영원까지 이르며 그의 의는 자손의 자손에게 미치리니",
+      "source_text_hash": "c6c95a54cb5eee447fbd20abe0b54e7971ab927625ca6a0986ebfcf8cca8c2e0",
+      "translation_text_hash": "35f4e06aac78043affad86d7b018925527eaeabfd4feabc344812c50280c96bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 인자하심은 자기를 경외하는 자에게 영원부터 영원까지 이르며 그의 의는 자손의 자손에게 미치리니"
+      ],
+      "raw_text_hashes": [
+        "35f4e06aac78043affad86d7b018925527eaeabfd4feabc344812c50280c96bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:18",
+      "sequence": 15568,
+      "chapter_label": "PSA 103",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 18
+        }
+      ],
+      "en": "to those who keep his covenant, to those who remember to obey his precepts.",
+      "ko": "곧 그 언약을 지키고 그 법도를 기억하여 행하는 자에게로다",
+      "source_text_hash": "3d60432d2b2d35da7e43b2bb6e50aec64cbb64b6a49f9ef04e896c652dbd0461",
+      "translation_text_hash": "2b5432b63d6c3b8da8835144605f34fb4f0a17d4d4fc5dcde7153f92d41d5603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 언약을 지키고 그 법도를 기억하여 행하는 자에게로다"
+      ],
+      "raw_text_hashes": [
+        "2b5432b63d6c3b8da8835144605f34fb4f0a17d4d4fc5dcde7153f92d41d5603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:19",
+      "sequence": 15569,
+      "chapter_label": "PSA 103",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD has established his throne in the heavens. His kingdom rules over all.",
+      "ko": "여호와께서 그 보좌를 하늘에 세우시고 그 정권으로 만유를 통치하시도다",
+      "source_text_hash": "355405035200a9053cc3759bfd3ee90a29a70b98080eab92dbec774bf0860c9f",
+      "translation_text_hash": "cbc21b9e000d948daa4be2a413aea189e809781a0f4aaf38fa5189c633430d12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 보좌를 하늘에 세우시고 그 정권으로 만유를 통치하시도다"
+      ],
+      "raw_text_hashes": [
+        "cbc21b9e000d948daa4be2a413aea189e809781a0f4aaf38fa5189c633430d12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:20",
+      "sequence": 15570,
+      "chapter_label": "PSA 103",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 20
+        }
+      ],
+      "en": "Praise the LORD, you angels of his, who are mighty in strength, who fulfill his word, obeying the voice of his word.",
+      "ko": "능력이 있어 여호와의 말씀을 이루며 그 말씀의 소리를 듣는 너희 천사여 여호와를 송축하라",
+      "source_text_hash": "86c875159b1bbae59f5d3627952c44bc6e096d9208478716fdcf34889d498cee",
+      "translation_text_hash": "cc5c2b81ac8934720acaf45854d734d986a9f1123ea6827836f4c79695437eb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능력이 있어 여호와의 말씀을 이루며 그 말씀의 소리를 듣는 너희 천사여 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "cc5c2b81ac8934720acaf45854d734d986a9f1123ea6827836f4c79695437eb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:21",
+      "sequence": 15571,
+      "chapter_label": "PSA 103",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 21
+        }
+      ],
+      "en": "Praise the LORD, all you armies of his, you servants of his, who do his pleasure.",
+      "ko": "여호와를 봉사하여 그 뜻을 행하는 너희 모든 천군이여 여호와를 송축하라",
+      "source_text_hash": "7f71eb034015fa3ecbd97f444e614f4e5cd51dee0687a48f05f6e6764817966f",
+      "translation_text_hash": "3e4c67d46dcf1976dcf4d5c3bef7631da19ebf27ea742f697adbef9e633b6be3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 봉사하여 그 뜻을 행하는 너희 모든 천군이여 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "3e4c67d46dcf1976dcf4d5c3bef7631da19ebf27ea742f697adbef9e633b6be3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:103:22",
+      "sequence": 15572,
+      "chapter_label": "PSA 103",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 103,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 103,
+          "verse": 22
+        }
+      ],
+      "en": "Praise the LORD, all you works of his, in all places of his dominion. Praise the LORD, my soul!",
+      "ko": "여호와의 지으심을 받고 그 다스리시는 모든 곳에 있는 너희여 여호와를 송축하라 내 영혼아 여호와를 송축하라",
+      "source_text_hash": "7590a0b9d80861751de6c8e0fba8efdd732c4d1a41a9f28ec9c20b5d25fe75c2",
+      "translation_text_hash": "09f3114f28c8aba9cd33b33d039a124f5c288183f6e23247e4f59fd0ea9da9bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 지으심을 받고 그 다스리시는 모든 곳에 있는 너희여 여호와를 송축하라 내 영혼아 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "09f3114f28c8aba9cd33b33d039a124f5c288183f6e23247e4f59fd0ea9da9bb"
+      ]
+    }
+  ]
+}

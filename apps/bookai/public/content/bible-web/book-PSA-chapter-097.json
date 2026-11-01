@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:097",
+  "unit_ordinal": 575,
+  "unit_label": "PSA 97",
+  "book_code": "PSA",
+  "chapter_number": 97,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:97:1",
+      "sequence": 15480,
+      "chapter_label": "PSA 97",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD reigns! Let the earth rejoice! Let the multitude of islands be glad!",
+      "ko": "여호와께서 통치하시나니 땅은 즐거워하며 허다한 섬은 기뻐할찌어다",
+      "source_text_hash": "17a68f14c601d19aa8b4bf955880040e7943184cc7e90a054f6d7203c26a6280",
+      "translation_text_hash": "7d9f67118b0b3b71cb501bcce2f9fef1575115c24502246add1cfb837a00b590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 통치하시나니 땅은 즐거워하며 허다한 섬은 기뻐할찌어다"
+      ],
+      "raw_text_hashes": [
+        "7d9f67118b0b3b71cb501bcce2f9fef1575115c24502246add1cfb837a00b590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:2",
+      "sequence": 15481,
+      "chapter_label": "PSA 97",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 2
+        }
+      ],
+      "en": "Clouds and darkness are around him. Righteousness and justice are the foundation of his throne.",
+      "ko": "구름과 흑암이 그에게 둘렸고 의와 공평이 그 보좌의 기초로다",
+      "source_text_hash": "1aa0daff041da7a3d3857ddb360ada695eda738220fc056f436abdb5e46345e8",
+      "translation_text_hash": "69b5e27e7981105d7a66e31a1a7e8f38ba12d87b4af5eaa23433e935ab0d433c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름과 흑암이 그에게 둘렸고 의와 공평이 그 보좌의 기초로다"
+      ],
+      "raw_text_hashes": [
+        "69b5e27e7981105d7a66e31a1a7e8f38ba12d87b4af5eaa23433e935ab0d433c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:3",
+      "sequence": 15482,
+      "chapter_label": "PSA 97",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 3
+        }
+      ],
+      "en": "A fire goes before him, and burns up his adversaries on every side.",
+      "ko": "불이 그 앞에서 발하여 사면의 대적을 사르는도다",
+      "source_text_hash": "5e98dd9fb8594e3386214334e4a060b8f1ddfe1da6bf3ed91786e88e91559372",
+      "translation_text_hash": "936b2ff676482d14506cbb61f1ef5d311af183356ccae488105700696b9a448f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 그 앞에서 발하여 사면의 대적을 사르는도다"
+      ],
+      "raw_text_hashes": [
+        "936b2ff676482d14506cbb61f1ef5d311af183356ccae488105700696b9a448f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:4",
+      "sequence": 15483,
+      "chapter_label": "PSA 97",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 4
+        }
+      ],
+      "en": "His lightning lights up the world. The earth sees, and trembles.",
+      "ko": "그의 번개가 세계를 비추니 땅이 보고 떨었도다",
+      "source_text_hash": "b6ccf2d18030208b4b06b88904c00532e9282cd5f69a26292d79ecfe5a110e93",
+      "translation_text_hash": "702ab29f73eccba9757153169a23dd6370f84ccd85d379c0d90c16fd35d19721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 번개가 세계를 비추니 땅이 보고 떨었도다"
+      ],
+      "raw_text_hashes": [
+        "702ab29f73eccba9757153169a23dd6370f84ccd85d379c0d90c16fd35d19721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:5",
+      "sequence": 15484,
+      "chapter_label": "PSA 97",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 5
+        }
+      ],
+      "en": "The mountains melt like wax at the presence of the LORD, at the presence of the Lord of the whole earth.",
+      "ko": "산들이 여호와의 앞 곧 온 땅의 주 앞에서 밀 같이 녹았도다",
+      "source_text_hash": "11ebbc2732814dc310888c72de6e723701144b469b7f08e82eed38c33367c2b5",
+      "translation_text_hash": "bb5632bd21cac5881a93800ef1a269f46339c3dd6115b60056b9d7f5cdace2d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들이 여호와의 앞 곧 온 땅의 주 앞에서 밀 같이 녹았도다"
+      ],
+      "raw_text_hashes": [
+        "bb5632bd21cac5881a93800ef1a269f46339c3dd6115b60056b9d7f5cdace2d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:6",
+      "sequence": 15485,
+      "chapter_label": "PSA 97",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 6
+        }
+      ],
+      "en": "The heavens declare his righteousness. All the peoples have seen his glory.",
+      "ko": "하늘이 그 의를 선포하니 모든 백성이 그 영광을 보았도다",
+      "source_text_hash": "52ad264e6a2328c0b0624a58e14b666a38adc73eabd860ac1c23e11fd70cd96a",
+      "translation_text_hash": "f15332245b9f6633351ec27e5be3cdb186353e358d5979f06075170d2c82de71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이 그 의를 선포하니 모든 백성이 그 영광을 보았도다"
+      ],
+      "raw_text_hashes": [
+        "f15332245b9f6633351ec27e5be3cdb186353e358d5979f06075170d2c82de71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:7",
+      "sequence": 15486,
+      "chapter_label": "PSA 97",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 7
+        }
+      ],
+      "en": "Let all them be shamed who serve engraved images, who boast in their idols. Worship him, all you gods!",
+      "ko": "조각 신상을 섬기며 허무한 것으로 자긍하는 자는 다 수치를 당할 것이라 너희 신들아 여호와께 경배할찌어다",
+      "source_text_hash": "11501438e40077c0da1ff216cd243a0b42ef5fb87fadb5a95744bb2903840dbc",
+      "translation_text_hash": "69c46842ff9b58dd575b22fea592058b427fa95f949b4f76a5521263718fee13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각 신상을 섬기며 허무한 것으로 자긍하는 자는 다 수치를 당할 것이라 너희 신들아 여호와께 경배할찌어다"
+      ],
+      "raw_text_hashes": [
+        "69c46842ff9b58dd575b22fea592058b427fa95f949b4f76a5521263718fee13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:8",
+      "sequence": 15487,
+      "chapter_label": "PSA 97",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 8
+        }
+      ],
+      "en": "Zion heard and was glad. The daughters of Judah rejoiced because of your judgments, LORD.",
+      "ko": "여호와여 주의 판단을 시온이 듣고 기뻐하며 유다의 딸들이 인하여 즐거워하였나이다",
+      "source_text_hash": "679237b27cc11d7c594b4bd7e2abac4743b7c652fdedcc5c377db66f93051ed5",
+      "translation_text_hash": "79ce6e3b9b07e52f55aa3916d85df3f31cfc9d807bcd9b5842c2d7277a491eb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 판단을 시온이 듣고 기뻐하며 유다의 딸들이 인하여 즐거워하였나이다"
+      ],
+      "raw_text_hashes": [
+        "79ce6e3b9b07e52f55aa3916d85df3f31cfc9d807bcd9b5842c2d7277a491eb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:9",
+      "sequence": 15488,
+      "chapter_label": "PSA 97",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 9
+        }
+      ],
+      "en": "For you, LORD, are most high above all the earth. You are exalted far above all gods.",
+      "ko": "여호와여 주는 온 땅 위에 지존하시고 모든 신 위에 초월하시니이다",
+      "source_text_hash": "f9cbf8e0be193da442a3082586689fd6f43ff98ff39bb08b1b4071dc9e42abbe",
+      "translation_text_hash": "74154943a8ca96aed3dce339d9896dfc1b5c8b7161f50b311f9b4e7ef829b4d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 온 땅 위에 지존하시고 모든 신 위에 초월하시니이다"
+      ],
+      "raw_text_hashes": [
+        "74154943a8ca96aed3dce339d9896dfc1b5c8b7161f50b311f9b4e7ef829b4d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:10",
+      "sequence": 15489,
+      "chapter_label": "PSA 97",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 10
+        }
+      ],
+      "en": "You who love the LORD, hate evil! He preserves the souls of his saints. He delivers them out of the hand of the wicked.",
+      "ko": "여호와를 사랑하는 너희여 악을 미워하라 저가 그 성도의 영혼을 보전하사 악인의 손에서 건지시느니라",
+      "source_text_hash": "011a56ee69c2d2d3f460b4230dae91f17cc99931c38c8ec829f12f7adabf4cd0",
+      "translation_text_hash": "98344cf0961eeb899a7caecc158db4e33dde96bc7ba89b81a8b44728530baf79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 사랑하는 너희여 악을 미워하라 저가 그 성도의 영혼을 보전하사 악인의 손에서 건지시느니라"
+      ],
+      "raw_text_hashes": [
+        "98344cf0961eeb899a7caecc158db4e33dde96bc7ba89b81a8b44728530baf79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:11",
+      "sequence": 15490,
+      "chapter_label": "PSA 97",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 11
+        }
+      ],
+      "en": "Light is sown for the righteous, and gladness for the upright in heart.",
+      "ko": "의인을 위하여 빛을 뿌리고 마음이 정직한 자를 위하여 기쁨을 뿌렸도다",
+      "source_text_hash": "5157cd70a67a204baf88b1b0062c5647ee1484205d54883c52361938799e5528",
+      "translation_text_hash": "3c7d07cef68997b5ba88663c86831902dab3d330de1acb1cff316d9fdaeae8a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인을 위하여 빛을 뿌리고 마음이 정직한 자를 위하여 기쁨을 뿌렸도다"
+      ],
+      "raw_text_hashes": [
+        "3c7d07cef68997b5ba88663c86831902dab3d330de1acb1cff316d9fdaeae8a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:97:12",
+      "sequence": 15491,
+      "chapter_label": "PSA 97",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 97,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 97,
+          "verse": 12
+        }
+      ],
+      "en": "Be glad in the LORD, you righteous people! Give thanks to his holy Name.",
+      "ko": "의인이여 너희는 여호와로 인하여 기뻐하며 그 거룩한 기념에 감사할찌어다",
+      "source_text_hash": "7baa0aba5f1e93455317225b3e05e448b6042810a596093669875b56efd9fe89",
+      "translation_text_hash": "797828577e7c7e47d45d076310bf585502ce5be33541ee285ac89ebbaa46410a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이여 너희는 여호와로 인하여 기뻐하며 그 거룩한 기념에 감사할찌어다"
+      ],
+      "raw_text_hashes": [
+        "797828577e7c7e47d45d076310bf585502ce5be33541ee285ac89ebbaa46410a"
+      ]
+    }
+  ]
+}

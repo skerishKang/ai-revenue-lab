@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:017",
+  "unit_ordinal": 495,
+  "unit_label": "PSA 17",
+  "book_code": "PSA",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:17:1",
+      "sequence": 14105,
+      "chapter_label": "PSA 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Hear, LORD, my righteous plea. Give ear to my prayer that doesn’t go out of deceitful lips.",
+      "ko": "여호와여 정직함을 들으소서 나의 부르짖음에 주의하소서 거짓되지 않은 입술에서 나오는 내 기도에 귀를 기울이소서",
+      "source_text_hash": "3d7ea9be868e785b3f9386b8bc2c6aabb50c4994b50fefde2f1fca185ac6f4f4",
+      "translation_text_hash": "f28d0fed6d0f12002836460efaa99eccbc5954bb67e5f88281ccd6666e257158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 정직함을 들으소서 나의 부르짖음에 주의하소서 거짓되지 않은 입술에서 나오는 내 기도에 귀를 기울이소서"
+      ],
+      "raw_text_hashes": [
+        "f28d0fed6d0f12002836460efaa99eccbc5954bb67e5f88281ccd6666e257158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:2",
+      "sequence": 14106,
+      "chapter_label": "PSA 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Let my sentence come out of your presence. Let your eyes look on equity.",
+      "ko": "나의 판단을 주 앞에서 내시며 주의 눈은 공평함을 살피소서",
+      "source_text_hash": "6b7bbc56b598ac20a79c4b89a5eeb2fd6cff7b87e34fdfff4502cca03bd4bb34",
+      "translation_text_hash": "5ed2c3baec2814b6b3410765b60e08d81317d03e43e8a476d28ad968f6afd1ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 판단을 주 앞에서 내시며 주의 눈은 공평함을 살피소서"
+      ],
+      "raw_text_hashes": [
+        "5ed2c3baec2814b6b3410765b60e08d81317d03e43e8a476d28ad968f6afd1ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:3",
+      "sequence": 14107,
+      "chapter_label": "PSA 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "You have proved my heart. You have visited me in the night. You have tried me, and found nothing. I have resolved that my mouth shall not disobey.",
+      "ko": "주께서 내 마음을 시험하시고 밤에 나를 권고하시며 나를 감찰하셨으나 흠을 찾지 못하셨으니 내가 결심하고 입으로 범죄치 아니하리이다",
+      "source_text_hash": "dc7f33c955ffa555b0ffba3b6bf13cff1b34a94ef6def0fdf4865a095737b0bf",
+      "translation_text_hash": "824826a723d203a729fd54fd63d89ff4ebf08498e1e6df23c0932744e69806e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 마음을 시험하시고 밤에 나를 권고하시며 나를 감찰하셨으나 흠을 찾지 못하셨으니 내가 결심하고 입으로 범죄치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "824826a723d203a729fd54fd63d89ff4ebf08498e1e6df23c0932744e69806e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:4",
+      "sequence": 14108,
+      "chapter_label": "PSA 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "As for the deeds of men, by the word of your lips, I have kept myself from the ways of the violent.",
+      "ko": "사람의 행사로 논하면 나는 주의 입술의 말씀을 좇아 스스로 삼가서 강포한 자의 길에 행치 아니하였사오며",
+      "source_text_hash": "9d1e3ce410df742fb1b212eff82f6cb3264224ca552e9345f867e265a04a624c",
+      "translation_text_hash": "9d20a9ba5c93dd16d7834f59eeb9640b78837fbd067ff616f6b086dcf79027a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 행사로 논하면 나는 주의 입술의 말씀을 좇아 스스로 삼가서 강포한 자의 길에 행치 아니하였사오며"
+      ],
+      "raw_text_hashes": [
+        "9d20a9ba5c93dd16d7834f59eeb9640b78837fbd067ff616f6b086dcf79027a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:5",
+      "sequence": 14109,
+      "chapter_label": "PSA 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "My steps have held fast to your paths. My feet have not slipped.",
+      "ko": "나의 걸음이 주의 길을 굳게 지키고 실족지 아니하였나이다",
+      "source_text_hash": "e93cf756802311c17eab269e35cd81892c27a8e48dfceb5a085c267fd603a0de",
+      "translation_text_hash": "1ea3d12bfd153e527234df2e5bae571909676da56ae71046c14a2662cbbc17a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 걸음이 주의 길을 굳게 지키고 실족지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1ea3d12bfd153e527234df2e5bae571909676da56ae71046c14a2662cbbc17a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:6",
+      "sequence": 14110,
+      "chapter_label": "PSA 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "I have called on you, for you will answer me, God. Turn your ear to me. Hear my speech.",
+      "ko": "하나님이여 내게 응답하시겠는고로 내가 불렀사오니 귀를 기울여 내 말을 들으소서",
+      "source_text_hash": "4b0f1c34bc0690d141bb465171dafef4db8e932ff764e192c7ffca2766a69cbc",
+      "translation_text_hash": "4618ed759fabe84f8ec5a2b781675e6bfe3482ce220cc404861b6d439d47f05b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내게 응답하시겠는고로 내가 불렀사오니 귀를 기울여 내 말을 들으소서"
+      ],
+      "raw_text_hashes": [
+        "4618ed759fabe84f8ec5a2b781675e6bfe3482ce220cc404861b6d439d47f05b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:7",
+      "sequence": 14111,
+      "chapter_label": "PSA 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "Show your marvelous loving kindness, you who save those who take refuge by your right hand from their enemies.",
+      "ko": "주께 피하는 자를 그 일어나 치는 자에게서 오른손으로 구원하시는 주여 주의 기이한 인자를 나타내소서",
+      "source_text_hash": "2336c0f92d6c448a41a1b20808dd71b45b83bf43d332ef9c1ab13e4a7158a9fc",
+      "translation_text_hash": "f91dd6e6644b4da1133fab79febf0a7d2abc25cd10b40c31db622ee7a6706e9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께 피하는 자를 그 일어나 치는 자에게서 오른손으로 구원하시는 주여 주의 기이한 인자를 나타내소서"
+      ],
+      "raw_text_hashes": [
+        "f91dd6e6644b4da1133fab79febf0a7d2abc25cd10b40c31db622ee7a6706e9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:8",
+      "sequence": 14112,
+      "chapter_label": "PSA 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "Keep me as the apple of your eye. Hide me under the shadow of your wings,",
+      "ko": "나를 눈동자 같이 지키시고 주의 날개 그늘 아래 감추사",
+      "source_text_hash": "7d7337d66fb6aea8256e5171d00b8c3c4fed83ce3ee2a37312debc4f9cb12311",
+      "translation_text_hash": "c341c348757e95d95b072c030d18d1d55188eaf9231f0328de0ede7f2069cb14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 눈동자 같이 지키시고 주의 날개 그늘 아래 감추사"
+      ],
+      "raw_text_hashes": [
+        "c341c348757e95d95b072c030d18d1d55188eaf9231f0328de0ede7f2069cb14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:9",
+      "sequence": 14113,
+      "chapter_label": "PSA 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "from the wicked who oppress me, my deadly enemies, who surround me.",
+      "ko": "나를 압제하는 악인과 나를 에워싼 극한 원수에게서 벗어나게 하소서",
+      "source_text_hash": "dc364cce65fdd5d774a3c3d9594b972a71aff100b9aecc546561d280cf006f46",
+      "translation_text_hash": "b0b2f4589fc251ea3e47394cfb82b9443dac57d3a67b39a8035cc1c187b590c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 압제하는 악인과 나를 에워싼 극한 원수에게서 벗어나게 하소서"
+      ],
+      "raw_text_hashes": [
+        "b0b2f4589fc251ea3e47394cfb82b9443dac57d3a67b39a8035cc1c187b590c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:10",
+      "sequence": 14114,
+      "chapter_label": "PSA 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "They close up their callous hearts. With their mouth they speak proudly.",
+      "ko": "저희가 자기 기름에 잠겼으며 그 입으로 교만히 말하나이다",
+      "source_text_hash": "49814be02595f70d87ad4c286d241140b916d85de5db09be78938ddea725cb91",
+      "translation_text_hash": "a6a6a7b3a9a89ecca7fa8d881643a852d01fb940b27095152d5b92bced706242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 자기 기름에 잠겼으며 그 입으로 교만히 말하나이다"
+      ],
+      "raw_text_hashes": [
+        "a6a6a7b3a9a89ecca7fa8d881643a852d01fb940b27095152d5b92bced706242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:11",
+      "sequence": 14115,
+      "chapter_label": "PSA 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "They have now surrounded us in our steps. They set their eyes to cast us down to the earth.",
+      "ko": "이제 우리의 걸어가는 것을 저희가 에워싸며 주목하고 땅에 넘어뜨리려 하나이다",
+      "source_text_hash": "3726d7d879395e7475ebc06740eb90ac631d7ccc014395867508dedb83e55726",
+      "translation_text_hash": "9db3a07e794f3dbedda8b27517b99b1dbe9b61a6fb13c9d6d6d392cf7430c767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 우리의 걸어가는 것을 저희가 에워싸며 주목하고 땅에 넘어뜨리려 하나이다"
+      ],
+      "raw_text_hashes": [
+        "9db3a07e794f3dbedda8b27517b99b1dbe9b61a6fb13c9d6d6d392cf7430c767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:12",
+      "sequence": 14116,
+      "chapter_label": "PSA 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "He is like a lion that is greedy of his prey, as it were a young lion lurking in secret places.",
+      "ko": "저는 그 움킨 것을 찢으려 하는 사자 같으며 은밀한 곳에 엎드린 젊은 사자 같으니이다",
+      "source_text_hash": "2c57bf9ed32e761d6cfd65d8e206cd565f42c4a3589ee887ffeec8fd563abd85",
+      "translation_text_hash": "73e8cf6025dc011f043e9db40c58e16bfb51747c1b2590391a68daa8db760602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 그 움킨 것을 찢으려 하는 사자 같으며 은밀한 곳에 엎드린 젊은 사자 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "73e8cf6025dc011f043e9db40c58e16bfb51747c1b2590391a68daa8db760602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:13",
+      "sequence": 14117,
+      "chapter_label": "PSA 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Arise, LORD, confront him. Cast him down. Deliver my soul from the wicked by your sword,",
+      "ko": "여호와여 일어나 저를 대항하여 넘어뜨리시고 주의 칼로 악인에게서 나의 영혼을 구원하소서",
+      "source_text_hash": "7ca7dae69428c173b37f7ec65d3e8a27572b2982dafd01eb69221030c9e4cf3b",
+      "translation_text_hash": "794ebea9a6910e123e95499c81967ad09b02eaf9db62db9a327d08d374956a94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 일어나 저를 대항하여 넘어뜨리시고 주의 칼로 악인에게서 나의 영혼을 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "794ebea9a6910e123e95499c81967ad09b02eaf9db62db9a327d08d374956a94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:14",
+      "sequence": 14118,
+      "chapter_label": "PSA 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "from men by your hand, LORD, from men of the world, whose portion is in this life. You fill the belly of your cherished ones. Your sons have plenty, and they store up wealth for their children.",
+      "ko": "여호와여 금생에서 저희 분깃을 받은 세상 사람에게서 나를 주의 손으로 구하소서 그는 주의 재물로 배를 채우심을 입고 자녀로 만족하고 그 남은 산업을 그 어린 아이들에게 유전하는 자니이다",
+      "source_text_hash": "2884a46b134957e1ad98bf28ef34a2a7989b76a85c28b8a772558fb72a479c3d",
+      "translation_text_hash": "e51f97b6ba26c00e186b8631bc468e6de7ab91c7c23a360092f76ec62882cc7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 금생에서 저희 분깃을 받은 세상 사람에게서 나를 주의 손으로 구하소서 그는 주의 재물로 배를 채우심을 입고 자녀로 만족하고 그 남은 산업을 그 어린 아이들에게 유전하는 자니이다"
+      ],
+      "raw_text_hashes": [
+        "e51f97b6ba26c00e186b8631bc468e6de7ab91c7c23a360092f76ec62882cc7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:17:15",
+      "sequence": 14119,
+      "chapter_label": "PSA 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "As for me, I shall see your face in righteousness. I shall be satisfied, when I awake, with seeing your form.",
+      "ko": "나는 의로운 중에 주의 얼굴을 보리니 깰 때에 주의 형상으로 만족하리이다",
+      "source_text_hash": "d7c8949d59106126ba25ab8734371fc706646c0869ec3147536698c23ff1235b",
+      "translation_text_hash": "07162fc2d2d0c7e5217045e028aca05930c6ca572ddd9317627dce9cdef2de31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 의로운 중에 주의 얼굴을 보리니 깰 때에 주의 형상으로 만족하리이다"
+      ],
+      "raw_text_hashes": [
+        "07162fc2d2d0c7e5217045e028aca05930c6ca572ddd9317627dce9cdef2de31"
+      ]
+    }
+  ]
+}

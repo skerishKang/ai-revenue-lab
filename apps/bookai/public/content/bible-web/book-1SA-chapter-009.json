@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:009",
+  "unit_ordinal": 245,
+  "unit_label": "1SA 9",
+  "book_code": "1SA",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:9:1",
+      "sequence": 7393,
+      "chapter_label": "1SA 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Now there was a man of Benjamin, whose name was Kish the son of Abiel, the son of Zeror, the son of Becorath, the son of Aphiah, the son of a Benjamite, a mighty man of valor.",
+      "ko": "베냐민 지파에 기스라 이름하는 유력한 사람이 있으니 그는 아비엘의 아들이요 스롤의 손자요 베고랏의 증손이요 아비아의 현손이라 베냐민 사람이더라",
+      "source_text_hash": "b1abd6a76e49ec68f005c8d91c104d034e2bc651672c722da5c9f9f9db35796e",
+      "translation_text_hash": "becc11b8001ee526eb54f340b457527b9fe410bd98ff184cf8a591950251bc4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 지파에 기스라 이름하는 유력한 사람이 있으니 그는 아비엘의 아들이요 스롤의 손자요 베고랏의 증손이요 아비아의 현손이라 베냐민 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "becc11b8001ee526eb54f340b457527b9fe410bd98ff184cf8a591950251bc4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:2",
+      "sequence": 7394,
+      "chapter_label": "1SA 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "He had a son whose name was Saul, an impressive young man; and there was not among the children of Israel a more handsome person than he. From his shoulders and upward he was taller than any of the people.",
+      "ko": "기스가 아들이 있으니 그 이름은 사울이요 준수한 소년이라 이스라엘 자손 중에 그보다 더 준수한 자가 없고 키는 모든 백성보다 어깨 위는 더 하더라",
+      "source_text_hash": "a60dfd1d6abe73ea6b011873a857597b394161d7053c8c9f44fb39fe87672fdd",
+      "translation_text_hash": "2c07b4c634d7e3c9a03971ba6b1934b568eb533af149e01df485c28d5cbab30e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기스가 아들이 있으니 그 이름은 사울이요 준수한 소년이라 이스라엘 자손 중에 그보다 더 준수한 자가 없고 키는 모든 백성보다 어깨 위는 더 하더라"
+      ],
+      "raw_text_hashes": [
+        "2c07b4c634d7e3c9a03971ba6b1934b568eb533af149e01df485c28d5cbab30e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:3",
+      "sequence": 7395,
+      "chapter_label": "1SA 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "The donkeys of Kish, Saul’s father, were lost. Kish said to Saul his son, “Now take one of the servants with you, and arise, go look for the donkeys.”",
+      "ko": "사울의 아비 기스가 암나귀들을 잃고 그 아들 사울에게 이르되 너는 한 사환을 데리고 일어나 가서 암나귀들을 찾으라 하매",
+      "source_text_hash": "a255d2a839dbf359a1def9a32adef9b644cd5842c94ad2727dbad443dac72779",
+      "translation_text_hash": "2094e4a8dbcf03db2271cb1514ad7acdbaf6aa6380434b3a26d0b05165e10798",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아비 기스가 암나귀들을 잃고 그 아들 사울에게 이르되 너는 한 사환을 데리고 일어나 가서 암나귀들을 찾으라 하매"
+      ],
+      "raw_text_hashes": [
+        "2094e4a8dbcf03db2271cb1514ad7acdbaf6aa6380434b3a26d0b05165e10798"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:4",
+      "sequence": 7396,
+      "chapter_label": "1SA 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "He passed through the hill country of Ephraim, and passed through the land of Shalishah, but they didn’t find them. Then they passed through the land of Shaalim, and they weren’t there. Then he passed through the land of the Benjamites, but they didn’t find them.",
+      "ko": "그가 에브라임 산지와 살리사 땅으로 두루 다니되 찾지 못하고 사알림 땅으로 두루 다니되 없고 베냐민 사람의 땅으로 두루 다니되 찾지 못하니라",
+      "source_text_hash": "020d8886e58f799953b55f450fb931262b2f8c9890e2616099040856b25cf30b",
+      "translation_text_hash": "4c6dcce5a88bd10820b2eac8a11ca3c11ff778bdd9a9928859700f9158bc766b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 에브라임 산지와 살리사 땅으로 두루 다니되 찾지 못하고 사알림 땅으로 두루 다니되 없고 베냐민 사람의 땅으로 두루 다니되 찾지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "4c6dcce5a88bd10820b2eac8a11ca3c11ff778bdd9a9928859700f9158bc766b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:5",
+      "sequence": 7397,
+      "chapter_label": "1SA 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "When they had come to the land of Zuph, Saul said to his servant who was with him, “Come! Let’s return, lest my father stop caring about the donkeys and be anxious for us.”",
+      "ko": "그들이 숩 땅에 이른 때에 사울이 함께하는 사환에게 이르되 돌아가자 내 부친이 암나귀 생각은 고사하고 우리를 위하여 걱정하실까 두려워하노라",
+      "source_text_hash": "933e68c7fb0acc36a3dcc6e42470afa6370d4589c97a7d3aef3ca7b47b7bdf3d",
+      "translation_text_hash": "1da520aaf92796e30ca80fb9b6450df84b11119736af3299896eecfbd13451a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 숩 땅에 이른 때에 사울이 함께하는 사환에게 이르되 돌아가자 내 부친이 암나귀 생각은 고사하고 우리를 위하여 걱정하실까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "1da520aaf92796e30ca80fb9b6450df84b11119736af3299896eecfbd13451a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:6",
+      "sequence": 7398,
+      "chapter_label": "1SA 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "The servant said to him, “Behold now, there is a man of God in this city, and he is a man who is held in honor. All that he says surely happens. Now let’s go there. Perhaps he can tell us which way to go.”",
+      "ko": "대답하되 보소서 이 성에 하나님의 사람이 있는데 존중히 여김을 받는 사람이라 그가 말한 것은 반드시 다 응하나니 그리로 가사이다 그가 혹 우리의 갈 길을 가르칠까 하나이다",
+      "source_text_hash": "474a2aa880b57b0cde71673a9a3c657947ecdcdd4ca1b1e22012ded0e3f33dda",
+      "translation_text_hash": "4ca9a32dcddfa3bdd94bcfd24748836d9cbaaaad21238a23032d72121d7327dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 보소서 이 성에 하나님의 사람이 있는데 존중히 여김을 받는 사람이라 그가 말한 것은 반드시 다 응하나니 그리로 가사이다 그가 혹 우리의 갈 길을 가르칠까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "4ca9a32dcddfa3bdd94bcfd24748836d9cbaaaad21238a23032d72121d7327dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:7",
+      "sequence": 7399,
+      "chapter_label": "1SA 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Then Saul said to his servant, “But behold, if we go, what should we bring the man? For the bread is spent in our sacks, and there is not a present to bring to the man of God. What do we have?”",
+      "ko": "사울이 그 사환에게 이르되 우리가 가면 그 사람에게 무엇을 드리겠느냐 우리 그릇에 식물이 다 하였으니 하나님의 사람에게 드릴 예물이 없도다 무엇이 있느냐",
+      "source_text_hash": "e9b2d41910c2fe733b07399fb3baa1cce0db5346917cd0a6cf083db792e16aa5",
+      "translation_text_hash": "0037df0fc42dd548467331d59d5bb303e634f212493cbfed852248e3f932dd53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그 사환에게 이르되 우리가 가면 그 사람에게 무엇을 드리겠느냐 우리 그릇에 식물이 다 하였으니 하나님의 사람에게 드릴 예물이 없도다 무엇이 있느냐"
+      ],
+      "raw_text_hashes": [
+        "0037df0fc42dd548467331d59d5bb303e634f212493cbfed852248e3f932dd53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:8",
+      "sequence": 7400,
+      "chapter_label": "1SA 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "The servant answered Saul again and said, “Behold, I have in my hand the fourth part of a shekel of silver. I will give that to the man of God, to tell us our way.”",
+      "ko": "사환이 사울에게 다시 대답하여 가로되 보소서 내 손에 은 한 세겔의 사분 일이 있으니 하나님의 사람에게 드려 우리 길을 가르치게 하겠나이다",
+      "source_text_hash": "84143a1e59e5060c0e42a4003c65e839ddbaf1c1a404662d7e7d51d9ab8c38b9",
+      "translation_text_hash": "219e9c61a4eef38aa4a276021d28d16333f8e98993dc25afd659ea93846f5d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사환이 사울에게 다시 대답하여 가로되 보소서 내 손에 은 한 세겔의 사분 일이 있으니 하나님의 사람에게 드려 우리 길을 가르치게 하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "219e9c61a4eef38aa4a276021d28d16333f8e98993dc25afd659ea93846f5d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:9",
+      "sequence": 7401,
+      "chapter_label": "1SA 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "(In earlier times in Israel, when a man went to inquire of God, he said, “Come! Let’s go to the seer;” for he who is now called a prophet was before called a seer.)",
+      "ko": "(옛적 이스라엘에 사람이 하나님께 가서 물으려 하면 말하기를 선견자에게로 가자 하였으니 지금 선지자라 하는 자를 옛적에는 선견자라 일컬었더라)",
+      "source_text_hash": "b9cefd089bbd0298e5009df2eafc1269abe55405b94f863bdf06db3aa55e2922",
+      "translation_text_hash": "a5d566bbf1c7fa52c4fc161ccb38ffae323c68c307aa95a234111ab1ed1fc94a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(옛적 이스라엘에 사람이 하나님께 가서 물으려 하면 말하기를 선견자에게로 가자 하였으니 지금 선지자라 하는 자를 옛적에는 선견자라 일컬었더라)"
+      ],
+      "raw_text_hashes": [
+        "a5d566bbf1c7fa52c4fc161ccb38ffae323c68c307aa95a234111ab1ed1fc94a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:10",
+      "sequence": 7402,
+      "chapter_label": "1SA 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Then Saul said to his servant, “Well said. Come! Let’s go.” So they went to the city where the man of God was.",
+      "ko": "사울이 그 사환에게 이르되 네 말이 옳다 가자 하고 그들이 하나님의 사람 있는 성으로 가니라",
+      "source_text_hash": "48f0ac80a95738dc39a0336db29bb8d65c9724a38cf56db871abbd2a50d2a347",
+      "translation_text_hash": "a74ab92769ab4015d42193a11d6d6a45efb3bb601e60e3071c4b87281702221b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그 사환에게 이르되 네 말이 옳다 가자 하고 그들이 하나님의 사람 있는 성으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "a74ab92769ab4015d42193a11d6d6a45efb3bb601e60e3071c4b87281702221b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:11",
+      "sequence": 7403,
+      "chapter_label": "1SA 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "As they went up the ascent to the city, they found young maidens going out to draw water, and said to them, “Is the seer here?”",
+      "ko": "그들이 성을 향한 비탈길로 올라가다가 물 길러 나오는 소녀들을 만나 그들에게 묻되 선견자가 여기 있느냐",
+      "source_text_hash": "a89fa71f9a5b9dc07e8a860c422675da5403d9ed7ef27a84fe0bf5f6dcae6d75",
+      "translation_text_hash": "6c74cd9cd5e6160a3b7bf075c8c6bc473516ab0c7b9c730e20d29cd6acad64e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 성을 향한 비탈길로 올라가다가 물 길러 나오는 소녀들을 만나 그들에게 묻되 선견자가 여기 있느냐"
+      ],
+      "raw_text_hashes": [
+        "6c74cd9cd5e6160a3b7bf075c8c6bc473516ab0c7b9c730e20d29cd6acad64e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:12",
+      "sequence": 7404,
+      "chapter_label": "1SA 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "They answered them and said, “He is. Behold, he is before you. Hurry now, for he has come today into the city; for the people have a sacrifice today in the high place.",
+      "ko": "그들이 대답하여 가로되 있나이다 보소서 그가 당신보다 앞섰으니 빨리 가소서 백성이 오늘 산당에서 제사를 드리므로 그가 오늘 성에 들어 오셨나이다",
+      "source_text_hash": "4cc741187d20002f1056e14a83f805c4096cb08413b7bed5f8121ba06fa5bced",
+      "translation_text_hash": "02e9c8d907d657e6819e1f411fcefc8724b877dbb93e6a6ad22ae08f0541d4a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 대답하여 가로되 있나이다 보소서 그가 당신보다 앞섰으니 빨리 가소서 백성이 오늘 산당에서 제사를 드리므로 그가 오늘 성에 들어 오셨나이다"
+      ],
+      "raw_text_hashes": [
+        "02e9c8d907d657e6819e1f411fcefc8724b877dbb93e6a6ad22ae08f0541d4a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:13",
+      "sequence": 7405,
+      "chapter_label": "1SA 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "As soon as you have come into the city, you will immediately find him before he goes up to the high place to eat; for the people will not eat until he comes, because he blesses the sacrifice. Afterwards those who are invited eat. Now therefore go up; for at this time you will find him.”",
+      "ko": "당신들이 성으로 들어가면 그가 먹으러 산당에 올라가기 전에 곧 만나리이다 그가 오기 전에는 백성이 먹지 아니하나니 이는 그가 제물을 축사한 후에야 청함을 받은 자가 먹음이라 그러므로 지금 올라가소서 금시로 만나리이다 하는지라",
+      "source_text_hash": "9cc96165781950374001851d2fb411ec703254a2bf8f73d7c18d86f1bed44efe",
+      "translation_text_hash": "c7772e43d87a27fb168d6b1221c4d4d73a3c29a92e9ff4c0b64c24697e3daaf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들이 성으로 들어가면 그가 먹으러 산당에 올라가기 전에 곧 만나리이다 그가 오기 전에는 백성이 먹지 아니하나니 이는 그가 제물을 축사한 후에야 청함을 받은 자가 먹음이라 그러므로 지금 올라가소서 금시로 만나리이다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "c7772e43d87a27fb168d6b1221c4d4d73a3c29a92e9ff4c0b64c24697e3daaf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:14",
+      "sequence": 7406,
+      "chapter_label": "1SA 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "They went up to the city. As they came within the city, behold, Samuel came out toward them to go up to the high place.",
+      "ko": "그들이 성읍으로 올라가서 그리로 들어갈 때에 사무엘이 마침 산당으로 올라가려고 마주 나오더라",
+      "source_text_hash": "52bac1c5483ce8e594b54ec8e93e9bdb14c64be5b5d425051845b558f739ae22",
+      "translation_text_hash": "1abef6cd444afb9dbfe394a9f0435a88f369b3c4bc0e121a807bc97bbf4fa5a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 성읍으로 올라가서 그리로 들어갈 때에 사무엘이 마침 산당으로 올라가려고 마주 나오더라"
+      ],
+      "raw_text_hashes": [
+        "1abef6cd444afb9dbfe394a9f0435a88f369b3c4bc0e121a807bc97bbf4fa5a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:15",
+      "sequence": 7407,
+      "chapter_label": "1SA 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Now the LORD had revealed to Samuel a day before Saul came, saying,",
+      "ko": "사울의 오기 전 날에 여호와께서 사무엘에게 알게 하여 가라사대",
+      "source_text_hash": "1886c6ff2e0fa16b6c4822a3cf4bb22edebf8ebb7b2bcd3505a95c66af185a33",
+      "translation_text_hash": "11e67aa1406d9405fed76d396dc3052736055119b1bad0ad1e5655b474ac050f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 오기 전 날에 여호와께서 사무엘에게 알게 하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "11e67aa1406d9405fed76d396dc3052736055119b1bad0ad1e5655b474ac050f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:16",
+      "sequence": 7408,
+      "chapter_label": "1SA 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "“Tomorrow about this time I will send you a man out of the land of Benjamin, and you shall anoint him to be prince over my people Israel. He will save my people out of the hand of the Philistines; for I have looked upon my people, because their cry has come to me.”",
+      "ko": "내일 이맘때에 내가 베냐민 땅에서 한 사람을 네게 보내리니 너는 그에게 기름을 부어 내 백성 이스라엘의 지도자를 삼으라 그가 내 백성을 블레셋 사람의 손에서 구원하리라 내 백성의 부르짖음이 내게 상달하였으므로 내가 그들을 돌아보았노라 하시더니",
+      "source_text_hash": "426aa986af7c1bef841962e074fa26ab58c4f133887061a6c3dd11cac553d7e5",
+      "translation_text_hash": "9ee2e970f52952d8da1fe15503450f91f1b8bbd1ea85f3ecd544adaa5c7fad45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 이맘때에 내가 베냐민 땅에서 한 사람을 네게 보내리니 너는 그에게 기름을 부어 내 백성 이스라엘의 지도자를 삼으라 그가 내 백성을 블레셋 사람의 손에서 구원하리라 내 백성의 부르짖음이 내게 상달하였으므로 내가 그들을 돌아보았노라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "9ee2e970f52952d8da1fe15503450f91f1b8bbd1ea85f3ecd544adaa5c7fad45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:17",
+      "sequence": 7409,
+      "chapter_label": "1SA 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "When Samuel saw Saul, the LORD said to him, “Behold, the man of whom I spoke to you! He will have authority over my people.”",
+      "ko": "사무엘이 사울을 볼 때에 여호와께서 그에게 이르시되 보라 이는 내가 네게 말한 사람이니 이가 내 백성을 통할하리라 하시니라",
+      "source_text_hash": "be455e80e8276984df6ed938e1c39cf87e0a9db50f64036105d87ff4edecc397",
+      "translation_text_hash": "844c9a5b93daf889f442ac3426f8136850f1cd421823bfa50b062567bc5d0e5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울을 볼 때에 여호와께서 그에게 이르시되 보라 이는 내가 네게 말한 사람이니 이가 내 백성을 통할하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "844c9a5b93daf889f442ac3426f8136850f1cd421823bfa50b062567bc5d0e5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:18",
+      "sequence": 7410,
+      "chapter_label": "1SA 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Then Saul approached Samuel in the gateway, and said, “Please tell me where the seer’s house is.”",
+      "ko": "사울이 성문 가운데 사무엘에게 나아가 가로되 선견자의 집이 어디인지 청컨대 내게 가르치소서",
+      "source_text_hash": "277dcabbe9dff56eb3d9bf9cb55f6628bb1b75968a37bacf789733520ba883b9",
+      "translation_text_hash": "93530714ddd756dd4c085dc694e88b939725debb5508404c87778508e7be2156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 성문 가운데 사무엘에게 나아가 가로되 선견자의 집이 어디인지 청컨대 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "93530714ddd756dd4c085dc694e88b939725debb5508404c87778508e7be2156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:19",
+      "sequence": 7411,
+      "chapter_label": "1SA 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Samuel answered Saul and said, “I am the seer. Go up before me to the high place, for you are to eat with me today. In the morning I will let you go and will tell you all that is in your heart.",
+      "ko": "사무엘이 사울에게 대답하여 가로되 내가 선견자니라 너는 내 앞서 산당으로 올라가라 너희가 오늘날 나와 함께 먹을 것이요 아침에는 내가 너를 보내되 네 마음에 있는 것을 다 네게 말하리라",
+      "source_text_hash": "6bd27798c81f74d4a4295abaee7df1f74aebc72e8fe8d58362019e4d96c0828d",
+      "translation_text_hash": "664e138f08c13430e7795c2365b69b2e953ffc482c298728b0f09cc6c6b79810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 대답하여 가로되 내가 선견자니라 너는 내 앞서 산당으로 올라가라 너희가 오늘날 나와 함께 먹을 것이요 아침에는 내가 너를 보내되 네 마음에 있는 것을 다 네게 말하리라"
+      ],
+      "raw_text_hashes": [
+        "664e138f08c13430e7795c2365b69b2e953ffc482c298728b0f09cc6c6b79810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:20",
+      "sequence": 7412,
+      "chapter_label": "1SA 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "As for your donkeys who were lost three days ago, don’t set your mind on them, for they have been found. For whom does all Israel desire? Is it not you and all your father’s house?”",
+      "ko": "사흘 전에 잃은 네 암나귀들을 염려하지 말라 찾았느니라 온 이스라엘의 사모하는 자가 누구냐 너와 네 아비의 온 집이 아니냐",
+      "source_text_hash": "60b71b5565664470c00c97c1d76b01f3bb598a20da6b4321aef2c06537845b25",
+      "translation_text_hash": "1df91b60af6729e2957a1693bb846f89680ac69591f65154b362056b442ce87c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사흘 전에 잃은 네 암나귀들을 염려하지 말라 찾았느니라 온 이스라엘의 사모하는 자가 누구냐 너와 네 아비의 온 집이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "1df91b60af6729e2957a1693bb846f89680ac69591f65154b362056b442ce87c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:21",
+      "sequence": 7413,
+      "chapter_label": "1SA 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Saul answered, “Am I not a Benjamite, of the smallest of the tribes of Israel? And my family the least of all the families of the tribe of Benjamin? Why then do you speak to me like this?”",
+      "ko": "사울이 대답하여 가로되 나는 이스라엘 지파의 가장 작은 지파 베냐민 사람이 아니오며 나의 가족은 베냐민 지파 모든 가족 중에 가장 미약하지 아니하니이까 당신이 어찌하여 내게 이같이 말씀하시나이까",
+      "source_text_hash": "4b1e83e5e6d779504ceb815b423db30e275e5b3ce26af9d8a7c86d0ba66fc7b8",
+      "translation_text_hash": "9fac2af84124000d320732db701b7df6d8a7533cb3ccdc8cf5baf9f5639cad1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 대답하여 가로되 나는 이스라엘 지파의 가장 작은 지파 베냐민 사람이 아니오며 나의 가족은 베냐민 지파 모든 가족 중에 가장 미약하지 아니하니이까 당신이 어찌하여 내게 이같이 말씀하시나이까"
+      ],
+      "raw_text_hashes": [
+        "9fac2af84124000d320732db701b7df6d8a7533cb3ccdc8cf5baf9f5639cad1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:22",
+      "sequence": 7414,
+      "chapter_label": "1SA 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Samuel took Saul and his servant and brought them into the guest room, and made them sit in the best place among those who were invited, who were about thirty persons.",
+      "ko": "사무엘이 사울과 그 사환을 인도하여 객실로 들어가서 청한 자 중 수석에 앉게 하였는데 객은 삼십명 가량이었더라",
+      "source_text_hash": "efeddb1fc072f47ca0a9d5763c8b3dc4ee915874732539312a81ddad9e8f1031",
+      "translation_text_hash": "48571255221b38e6bb77834d180bed814a485a005063f494bb8947e7343ff94d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울과 그 사환을 인도하여 객실로 들어가서 청한 자 중 수석에 앉게 하였는데 객은 삼십명 가량이었더라"
+      ],
+      "raw_text_hashes": [
+        "48571255221b38e6bb77834d180bed814a485a005063f494bb8947e7343ff94d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:23",
+      "sequence": 7415,
+      "chapter_label": "1SA 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Samuel said to the cook, “Bring the portion which I gave you, of which I said to you, ‘Set it aside.’”",
+      "ko": "사무엘이 요리인에게 이르되 내가 네게 주며 네게 두라고 말한 그 부분을 가져오라",
+      "source_text_hash": "e7b829c28df8c4c52ba6f6f256149606a89cc4703566700fd1f9db56add01c96",
+      "translation_text_hash": "0b4aea310c380da156fb100105d363409300ae7ec6459eb857e048e558b4fa70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 요리인에게 이르되 내가 네게 주며 네게 두라고 말한 그 부분을 가져오라"
+      ],
+      "raw_text_hashes": [
+        "0b4aea310c380da156fb100105d363409300ae7ec6459eb857e048e558b4fa70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:24",
+      "sequence": 7416,
+      "chapter_label": "1SA 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "The cook took up the thigh, and that which was on it, and set it before Saul. Samuel said, “Behold, that which has been reserved! Set it before yourself and eat; because it has been kept for you for the appointed time, for I said, ‘I have invited the people.’” So Saul ate with Samuel that day.",
+      "ko": "요리인이 넓적다리와 그것에 붙은 것을 가져다가 사울 앞에 놓는지라 사무엘이 가로되 보라 이는 두었던 것이니 네 앞에 놓고 먹으라 내가 백성을 청할 때부터 너를 위하여 이것을 두어서 이때를 기다리게 하였느니라 그 날에 사울이 사무엘과 함께 먹으니라",
+      "source_text_hash": "c06912dc933ec30fd677cf60ee7670e8e30643d315ec1038fa0f1e99a9dc8a84",
+      "translation_text_hash": "fd515e3b9fb36c70a8fc0b8de7e5884bed4fe0b7d24bc355f2480afad05a6c1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요리인이 넓적다리와 그것에 붙은 것을 가져다가 사울 앞에 놓는지라 사무엘이 가로되 보라 이는 두었던 것이니 네 앞에 놓고 먹으라 내가 백성을 청할 때부터 너를 위하여 이것을 두어서 이때를 기다리게 하였느니라 그 날에 사울이 사무엘과 함께 먹으니라"
+      ],
+      "raw_text_hashes": [
+        "fd515e3b9fb36c70a8fc0b8de7e5884bed4fe0b7d24bc355f2480afad05a6c1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:25",
+      "sequence": 7417,
+      "chapter_label": "1SA 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "When they had come down from the high place into the city, he talked with Saul on the housetop.",
+      "ko": "그들이 산당에서 내려 성에 들어가서는 사무엘이 사울과 함께 지붕에서 담화하고",
+      "source_text_hash": "633d4b8d8bd2db6abf6bf00a89ad8a0a65fe2537fb0b3abb208ebf039b37e3f7",
+      "translation_text_hash": "90b685993c6cfffd9c967adf8f6f642b0c61ff56667dc3c4a34acd4d127eab65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 산당에서 내려 성에 들어가서는 사무엘이 사울과 함께 지붕에서 담화하고"
+      ],
+      "raw_text_hashes": [
+        "90b685993c6cfffd9c967adf8f6f642b0c61ff56667dc3c4a34acd4d127eab65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:26",
+      "sequence": 7418,
+      "chapter_label": "1SA 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "They arose early; and about daybreak, Samuel called to Saul on the housetop, saying, “Get up, that I may send you away.” Saul arose, and they both went outside, he and Samuel, together.",
+      "ko": "그들이 일찌기 일어날쌔 동틀 때 즈음이라 사무엘이 지붕에서 사울을 불러 가로되 일어나라 내가 너를 보내리라 하매 사울이 일어나고 그 두 사람 사울과 사무엘이 함께 밖으로 나가서",
+      "source_text_hash": "832a4e2ffb501efd4c2605cc0bf763d8bb407cea06a2a3b1abb5370f06d2ff9c",
+      "translation_text_hash": "dcb75201faac95d51894a70425faaa55a7ffc3c873a75f553167ab365c75cc3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 일찌기 일어날쌔 동틀 때 즈음이라 사무엘이 지붕에서 사울을 불러 가로되 일어나라 내가 너를 보내리라 하매 사울이 일어나고 그 두 사람 사울과 사무엘이 함께 밖으로 나가서"
+      ],
+      "raw_text_hashes": [
+        "dcb75201faac95d51894a70425faaa55a7ffc3c873a75f553167ab365c75cc3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:9:27",
+      "sequence": 7419,
+      "chapter_label": "1SA 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "As they were going down at the end of the city, Samuel said to Saul, “Tell the servant to go on ahead of us.” He went ahead, then Samuel said, “But stand still first, that I may cause you to hear God’s message.”",
+      "ko": "성읍 끝에 이르매 사무엘이 사울에게 이르되 사환으로 우리를 앞서게 하라 사환이 앞서매 또 가로되 너는 이제 잠간 서 있으라 내가 하나님의 말씀을 네게 들리리라",
+      "source_text_hash": "fc67a994bf34afd885a309b1416c980df9eff493e10ecf6f7d24e0596946f0b4",
+      "translation_text_hash": "775577c4def86a05ef5ecc999cbb39d315362c308912d44b31be472f7e5e50c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍 끝에 이르매 사무엘이 사울에게 이르되 사환으로 우리를 앞서게 하라 사환이 앞서매 또 가로되 너는 이제 잠간 서 있으라 내가 하나님의 말씀을 네게 들리리라"
+      ],
+      "raw_text_hashes": [
+        "775577c4def86a05ef5ecc999cbb39d315362c308912d44b31be472f7e5e50c2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:001",
+  "unit_ordinal": 1134,
+  "unit_label": "HEB 1",
+  "book_code": "HEB",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:1:1",
+      "sequence": 29961,
+      "chapter_label": "HEB 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "God, having in the past spoken to the fathers through the prophets at many times and in various ways,",
+      "ko": "옛적에 선지자들로 여러 부분과 여러 모양으로 우리 조상들에게 말씀하신 하나님이",
+      "source_text_hash": "023c1c712612fdc1d9f577e096608bc7d1d68ea5fc6350bb8aacb67f7d64f342",
+      "translation_text_hash": "5769cdab62d51021d35c0d68744c9c2b2b222f16ee2af46ada084b6ace35bc2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 선지자들로 여러 부분과 여러 모양으로 우리 조상들에게 말씀하신 하나님이"
+      ],
+      "raw_text_hashes": [
+        "5769cdab62d51021d35c0d68744c9c2b2b222f16ee2af46ada084b6ace35bc2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:2",
+      "sequence": 29962,
+      "chapter_label": "HEB 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "has at the end of these days spoken to us by his Son, whom he appointed heir of all things, through whom also he made the worlds.",
+      "ko": "이 모든 날 마지막에 아들로 우리에게 말씀하셨으니 이 아들을 만유의 후사로 세우시고 또 저로 말미암아 모든 세계를 지으셨느니라",
+      "source_text_hash": "0ca23fd21b17834e89f9ab8eb3752d793546a60a84f4b7a2e912184c2ac5cbda",
+      "translation_text_hash": "92726e54f9f1b8b26ccf1167fbe9b945d38bac073ee6367ee415fde2aed2034e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 날 마지막에 아들로 우리에게 말씀하셨으니 이 아들을 만유의 후사로 세우시고 또 저로 말미암아 모든 세계를 지으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "92726e54f9f1b8b26ccf1167fbe9b945d38bac073ee6367ee415fde2aed2034e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:3",
+      "sequence": 29963,
+      "chapter_label": "HEB 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "His Son is the radiance of his glory, the very image of his substance, and upholding all things by the word of his power, who, when he had by himself purified us of our sins, sat down on the right hand of the Majesty on high,",
+      "ko": "이는 하나님의 영광의 광채시요 그 본체의 형상이시라 그의 능력의 말씀으로 만물을 붙드시며 죄를 정결케 하는 일을 하시고 높은 곳에 계신 위엄의 우편에 앉으셨느니라",
+      "source_text_hash": "82bbe9e3e14530003048a32d0ce6907b56a1220ba8eaff65df739d83307760f2",
+      "translation_text_hash": "7080c3e62dcf1f24d92c832a0f71a0a5aba1cf1e783cefc280d6e44ca3581825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님의 영광의 광채시요 그 본체의 형상이시라 그의 능력의 말씀으로 만물을 붙드시며 죄를 정결케 하는 일을 하시고 높은 곳에 계신 위엄의 우편에 앉으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "7080c3e62dcf1f24d92c832a0f71a0a5aba1cf1e783cefc280d6e44ca3581825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:4",
+      "sequence": 29964,
+      "chapter_label": "HEB 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "having become as much better than the angels as the more excellent name he has inherited is better than theirs.",
+      "ko": "저가 천사보다 얼마큼 뛰어남은 저희보다 더욱 아름다운 이름을 기업으로 얻으심이니",
+      "source_text_hash": "a4e800f72c30eea46bb633c5d41198f351a6640754ffadbea40d64809e4c4bf4",
+      "translation_text_hash": "1ef3001987edcfbb95e235f96bb3e4f59cc48e4776bea33e45a6755fad09499a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 천사보다 얼마큼 뛰어남은 저희보다 더욱 아름다운 이름을 기업으로 얻으심이니"
+      ],
+      "raw_text_hashes": [
+        "1ef3001987edcfbb95e235f96bb3e4f59cc48e4776bea33e45a6755fad09499a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:5",
+      "sequence": 29965,
+      "chapter_label": "HEB 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "For to which of the angels did he say at any time, “You are my Son. Today I have become your father?” and again, “I will be to him a Father, and he will be to me a Son?”",
+      "ko": "하나님께서 어느 때에 천사 중 누구에게 네가 내 아들이라 오늘날 내가 너를 낳았다 하셨으며 또 다시 나는 그에게 아버지가 되고 그는 내게 아들이 되리라 하셨느뇨",
+      "source_text_hash": "29ed7ff695a69ff1290dbd4608f6a59a47816db7980519ad303eed1d06d3eed6",
+      "translation_text_hash": "c09138c7a7bd374500c5e460acdf85e87701701c009187bd12f6d3a17c79ca81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께서 어느 때에 천사 중 누구에게 네가 내 아들이라 오늘날 내가 너를 낳았다 하셨으며 또 다시 나는 그에게 아버지가 되고 그는 내게 아들이 되리라 하셨느뇨"
+      ],
+      "raw_text_hashes": [
+        "c09138c7a7bd374500c5e460acdf85e87701701c009187bd12f6d3a17c79ca81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:6",
+      "sequence": 29966,
+      "chapter_label": "HEB 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "When he again brings in the firstborn into the world he says, “Let all the angels of God worship him.”",
+      "ko": "또 맏아들을 이끌어 세상에 다시 들어 오게 하실 때에 하나님의 모든 천사가 저에게 경배할찌어다 말씀하시며",
+      "source_text_hash": "6de8bb9249653a6c0abb1c5727690df2e2d05f7c644d32def22763f194026e00",
+      "translation_text_hash": "70903512c0f3d7afc0dae602eb9695283e1251cb15287db2d82aa5dd462b3633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 맏아들을 이끌어 세상에 다시 들어 오게 하실 때에 하나님의 모든 천사가 저에게 경배할찌어다 말씀하시며"
+      ],
+      "raw_text_hashes": [
+        "70903512c0f3d7afc0dae602eb9695283e1251cb15287db2d82aa5dd462b3633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:7",
+      "sequence": 29967,
+      "chapter_label": "HEB 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Of the angels he says, “He makes his angels winds, and his servants a flame of fire.”",
+      "ko": "또 천사들에 관하여는 그는 그의 천사들을 바람으로, 그의 사역자들을 불꽃으로 삼으시느니라 하셨으되",
+      "source_text_hash": "9261d571b2750043755d76b05229cd8603575ac34c889161c8db4425f03a18ed",
+      "translation_text_hash": "547f055c48d49ba5088d290ac7abe72a5719942f5de7ecf26b208187e2f028de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 천사들에 관하여는 그는 그의 천사들을 바람으로, 그의 사역자들을 불꽃으로 삼으시느니라 하셨으되"
+      ],
+      "raw_text_hashes": [
+        "547f055c48d49ba5088d290ac7abe72a5719942f5de7ecf26b208187e2f028de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:8",
+      "sequence": 29968,
+      "chapter_label": "HEB 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "But of the Son he says, “Your throne, O God, is forever and ever. The scepter of uprightness is the scepter of your Kingdom.",
+      "ko": "아들에 관하여는 하나님이여 주의 보좌가 영영하며 주의 나라의 홀은 공평한 홀이니이다",
+      "source_text_hash": "e2c48251f09a0c21ae2cce1b42d9d1cf227c151ed49b1c97d3c4605071ab0d91",
+      "translation_text_hash": "20dc94e5d82fe462f02569a4eb1c2ea87fff75203263cd29caa1ca2e5233f54f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들에 관하여는 하나님이여 주의 보좌가 영영하며 주의 나라의 홀은 공평한 홀이니이다"
+      ],
+      "raw_text_hashes": [
+        "20dc94e5d82fe462f02569a4eb1c2ea87fff75203263cd29caa1ca2e5233f54f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:9",
+      "sequence": 29969,
+      "chapter_label": "HEB 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "You have loved righteousness and hated iniquity; therefore God, your God, has anointed you with the oil of gladness above your fellows.”",
+      "ko": "네가 의를 사랑하고 불법을 미워하였으니 그러므로 하나님 곧 너의 하나님이 즐거움의 기름을 네게 부어 네 동류들보다 승하게 하셨도다 하였고",
+      "source_text_hash": "42461b8c61c20585af3dba435eed67a1ec86c4506cbe0725da0a3ded0d25c51a",
+      "translation_text_hash": "c3fc2bf519e73da766cfb16c7c4b682ccad5b50fd09f97a4624fe507cab53ce3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 의를 사랑하고 불법을 미워하였으니 그러므로 하나님 곧 너의 하나님이 즐거움의 기름을 네게 부어 네 동류들보다 승하게 하셨도다 하였고"
+      ],
+      "raw_text_hashes": [
+        "c3fc2bf519e73da766cfb16c7c4b682ccad5b50fd09f97a4624fe507cab53ce3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:10",
+      "sequence": 29970,
+      "chapter_label": "HEB 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "And, “You, Lord, in the beginning, laid the foundation of the earth. The heavens are the works of your hands.",
+      "ko": "또 주여 태초에 주께서 땅의 기초를 두셨으며 하늘도 주의 손으로 지으신바라",
+      "source_text_hash": "71f8fc5843cf5ce22d75a23be9c22e18d9bfeced91b3a178d16646f961db2717",
+      "translation_text_hash": "084b50b02f42e4fcea36b1a212e1fd28221f601f681a9bfcb30a80df48a6d689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주여 태초에 주께서 땅의 기초를 두셨으며 하늘도 주의 손으로 지으신바라"
+      ],
+      "raw_text_hashes": [
+        "084b50b02f42e4fcea36b1a212e1fd28221f601f681a9bfcb30a80df48a6d689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:11",
+      "sequence": 29971,
+      "chapter_label": "HEB 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "They will perish, but you continue. They all will grow old like a garment does.",
+      "ko": "그것들은 멸망할 것이나 오직 주는 영존할 것이요 그것들은 다 옷과 같이 낡아지리니",
+      "source_text_hash": "a2989e4a61e9a8007113209e9a8e8cdcbb578d51c13f97d315821adca6ff3626",
+      "translation_text_hash": "9c5ac083c62b6f8d9c0cb89c37f5e3e0137e3c7e8bc0e0a8b7db92f2e5cc5926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들은 멸망할 것이나 오직 주는 영존할 것이요 그것들은 다 옷과 같이 낡아지리니"
+      ],
+      "raw_text_hashes": [
+        "9c5ac083c62b6f8d9c0cb89c37f5e3e0137e3c7e8bc0e0a8b7db92f2e5cc5926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:12",
+      "sequence": 29972,
+      "chapter_label": "HEB 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "You will roll them up like a mantle, and they will be changed; but you are the same. Your years won’t fail.”",
+      "ko": "의복처럼 갈아 입을 것이요 그것들이 옷과 같이 변할 것이나 주는 여전하여 연대가 다함이 없으리라 하였으나",
+      "source_text_hash": "439e64d72081d132e4df055fafbb2052c30d31b827bb2d970ae2cfd260a9fef8",
+      "translation_text_hash": "06fe55730d826d7c0bf164acb9dfb5701d81e7f09b1e5e488ba781fee2b9359c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의복처럼 갈아 입을 것이요 그것들이 옷과 같이 변할 것이나 주는 여전하여 연대가 다함이 없으리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "06fe55730d826d7c0bf164acb9dfb5701d81e7f09b1e5e488ba781fee2b9359c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:13",
+      "sequence": 29973,
+      "chapter_label": "HEB 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "But which of the angels has he told at any time, “Sit at my right hand, until I make your enemies the footstool of your feet?”",
+      "ko": "어느 때에 천사 중 누구에게 내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉았으라 하셨느뇨",
+      "source_text_hash": "43524ecf69103a8f7ddb59894f14e11005b2ed386e377fe79a5637ca32430ef2",
+      "translation_text_hash": "7ccbb4013be58d760c9b6ed6fac3e95265478a7e3e1ac06d858a3585380d1ab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 때에 천사 중 누구에게 내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉았으라 하셨느뇨"
+      ],
+      "raw_text_hashes": [
+        "7ccbb4013be58d760c9b6ed6fac3e95265478a7e3e1ac06d858a3585380d1ab2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:1:14",
+      "sequence": 29974,
+      "chapter_label": "HEB 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Aren’t they all serving spirits, sent out to do service for the sake of those who will inherit salvation?",
+      "ko": "모든 천사들은 부리는 영으로서 구원 얻을 후사들을 위하여 섬기라고 보내심이 아니뇨",
+      "source_text_hash": "dd2c6c0753056a56d885c2916196a6cbde6af6556e9b7c1c96fe529ac0a8fd8b",
+      "translation_text_hash": "9b6b794e69bb3c8738bc37389b2ad48b11e5a3b1e672336203f00c383b48303a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 천사들은 부리는 영으로서 구원 얻을 후사들을 위하여 섬기라고 보내심이 아니뇨"
+      ],
+      "raw_text_hashes": [
+        "9b6b794e69bb3c8738bc37389b2ad48b11e5a3b1e672336203f00c383b48303a"
+      ]
+    }
+  ]
+}

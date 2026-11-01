@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:004",
+  "unit_ordinal": 215,
+  "unit_label": "JDG 4",
+  "book_code": "JDG",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:4:1",
+      "sequence": 6601,
+      "chapter_label": "JDG 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The children of Israel again did that which was evil in the LORD’s sight, when Ehud was dead.",
+      "ko": "에훗의 죽은 후에 이스라엘 자손이 또 여호와의 목전에 악을 행하매",
+      "source_text_hash": "d6c324a234786b74b38155f8cc78cfa8513ebad636ca23d2c686c97d413e6a77",
+      "translation_text_hash": "f1fa3acb37c7f4ef4c1b1ca4bc06a0db133906d8a38028a7b5c27cd3d358ab0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗의 죽은 후에 이스라엘 자손이 또 여호와의 목전에 악을 행하매"
+      ],
+      "raw_text_hashes": [
+        "f1fa3acb37c7f4ef4c1b1ca4bc06a0db133906d8a38028a7b5c27cd3d358ab0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:2",
+      "sequence": 6602,
+      "chapter_label": "JDG 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD sold them into the hand of Jabin king of Canaan, who reigned in Hazor; the captain of whose army was Sisera, who lived in Harosheth of the Gentiles.",
+      "ko": "여호와께서 하솔에 도읍한 가나안 왕 야빈의 손에 그들을 파셨는데 그 군대 장관은 이방 하로셋에 거하는 시스라요",
+      "source_text_hash": "217bb1e1fd520886a55005e85339ca135853b2fd8f1299c797c150d7dc6668ff",
+      "translation_text_hash": "4feb62ac8dbcd7708b07e1ad79581a15661168c43c6d1c9e88d5df0ed4909274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하솔에 도읍한 가나안 왕 야빈의 손에 그들을 파셨는데 그 군대 장관은 이방 하로셋에 거하는 시스라요"
+      ],
+      "raw_text_hashes": [
+        "4feb62ac8dbcd7708b07e1ad79581a15661168c43c6d1c9e88d5df0ed4909274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:3",
+      "sequence": 6603,
+      "chapter_label": "JDG 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "The children of Israel cried to the LORD, for he had nine hundred chariots of iron; and he mightily oppressed the children of Israel for twenty years.",
+      "ko": "야빈왕은 철병거 구백승이 있어서 이십년 동안 이스라엘 자손을 심히 학대한고로 이스라엘 자손이 여호와께 부르짖었더라",
+      "source_text_hash": "4a168a60836f7ef372874a13a61edbdb17cdc074fd77e8795c973e28fe078e23",
+      "translation_text_hash": "768e24da42ff506dd113b97818ffc2c263b6cd24b0a38c0e2322e52ce26b20f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야빈왕은 철병거 구백승이 있어서 이십년 동안 이스라엘 자손을 심히 학대한고로 이스라엘 자손이 여호와께 부르짖었더라"
+      ],
+      "raw_text_hashes": [
+        "768e24da42ff506dd113b97818ffc2c263b6cd24b0a38c0e2322e52ce26b20f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:4",
+      "sequence": 6604,
+      "chapter_label": "JDG 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Now Deborah, a prophetess, the wife of Lappidoth, judged Israel at that time.",
+      "ko": "그 때에 랍비돗의 아내 여선지 드보라가 이스라엘의 사사가 되었는데",
+      "source_text_hash": "56b0d84186aec567d047635b67001e4aac60e9e544a8dd606ef3ffee4392c19a",
+      "translation_text_hash": "84e393519b82a3242e434e4eb6d026126c6821936cc447a221780993c3386786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 랍비돗의 아내 여선지 드보라가 이스라엘의 사사가 되었는데"
+      ],
+      "raw_text_hashes": [
+        "84e393519b82a3242e434e4eb6d026126c6821936cc447a221780993c3386786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:5",
+      "sequence": 6605,
+      "chapter_label": "JDG 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "She lived under Deborah’s palm tree between Ramah and Bethel in the hill country of Ephraim; and the children of Israel came up to her for judgment.",
+      "ko": "그는 에브라임 산지 라마와 벧엘 사이 드보라의 종려나무 아래 거하였고 이스라엘 자손은 그에게 나아가 재판을 받더라",
+      "source_text_hash": "468c7f2bd915acf762b1f4149e5868863e783646bff92517c1cc49e56b3210ba",
+      "translation_text_hash": "92570a5bbacaba3a0daca54f563755894204ea4b1973b0dbad2a7f603b54b926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 에브라임 산지 라마와 벧엘 사이 드보라의 종려나무 아래 거하였고 이스라엘 자손은 그에게 나아가 재판을 받더라"
+      ],
+      "raw_text_hashes": [
+        "92570a5bbacaba3a0daca54f563755894204ea4b1973b0dbad2a7f603b54b926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:6",
+      "sequence": 6606,
+      "chapter_label": "JDG 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "She sent and called Barak the son of Abinoam out of Kedesh Naphtali, and said to him, “Hasn’t the LORD, the God of Israel, commanded, ‘Go and lead the way to Mount Tabor, and take with you ten thousand men of the children of Naphtali and of the children of Zebulun?",
+      "ko": "드보라가 보내어 아비노암의 아들 바락을 납달리 게데스에서 불러다가 그에게 이르되 이스라엘 하나님 여호와께서 이같이 명하지 아니하셨느냐 이르시기를 너는 납달리 자손과 스불론 자손 일만명을 거느리고 다볼산으로 가라",
+      "source_text_hash": "479afa4be281e83698c1f4ce9d41343fad7802905b41aa0cbd4945f09df9d88d",
+      "translation_text_hash": "03183bb7453d10cade433e30ba56eb6c39be9a6f222b944be27664f9e2fa90a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드보라가 보내어 아비노암의 아들 바락을 납달리 게데스에서 불러다가 그에게 이르되 이스라엘 하나님 여호와께서 이같이 명하지 아니하셨느냐 이르시기를 너는 납달리 자손과 스불론 자손 일만명을 거느리고 다볼산으로 가라"
+      ],
+      "raw_text_hashes": [
+        "03183bb7453d10cade433e30ba56eb6c39be9a6f222b944be27664f9e2fa90a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:7",
+      "sequence": 6607,
+      "chapter_label": "JDG 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "I will draw to you, to the river Kishon, Sisera, the captain of Jabin’s army, with his chariots and his multitude; and I will deliver him into your hand.’”",
+      "ko": "내가 야빈의 군대 장관 시스라와 그 병거들과 그 무리를 기손강으로 이끌어 네게 이르게 하고 그를 네 손에 붙이리라 하셨느니라",
+      "source_text_hash": "035411ab796d159933e4342a1f17023fca9e4a7b01eb7270f49dd40ff5c366f7",
+      "translation_text_hash": "b4b35005c83dba810ed6dfe38af4533fb165a74119fc9c8fbdff14b45bf75082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 야빈의 군대 장관 시스라와 그 병거들과 그 무리를 기손강으로 이끌어 네게 이르게 하고 그를 네 손에 붙이리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "b4b35005c83dba810ed6dfe38af4533fb165a74119fc9c8fbdff14b45bf75082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:8",
+      "sequence": 6608,
+      "chapter_label": "JDG 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Barak said to her, “If you will go with me, then I will go; but if you will not go with me, I will not go.”",
+      "ko": "바락이 그에게 이르되 당신이 나와 함께 가면 내가 가려니와 당신이 나와 함께 가지 아니하면 나는 가지 않겠노라",
+      "source_text_hash": "6589f0c9f6e1fb1290aecbafc745d26a2f18b538c9ec57a123613c1d562aa1a8",
+      "translation_text_hash": "c5116bd2d665e861690b83e474850f8b1e9c7b979aa711f54d95b011617f6631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바락이 그에게 이르되 당신이 나와 함께 가면 내가 가려니와 당신이 나와 함께 가지 아니하면 나는 가지 않겠노라"
+      ],
+      "raw_text_hashes": [
+        "c5116bd2d665e861690b83e474850f8b1e9c7b979aa711f54d95b011617f6631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:9",
+      "sequence": 6609,
+      "chapter_label": "JDG 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "She said, “I will surely go with you. Nevertheless, the journey that you take won’t be for your honor; for the LORD will sell Sisera into a woman’s hand.” Deborah arose, and went with Barak to Kedesh.",
+      "ko": "가로되 내가 반드시 너와 함께 가리라 그러나 네가 이제 가는 일로는 영광을 얻지 못하리니 이는 여호와께서 시스라를 여인의 손에 파실것임이니라 하고 드보라가 일어나 바락과 함께 게데스로 가니라",
+      "source_text_hash": "d7cd1aca6fad0559fad4c70cffd7658cd6147c149e176d3d205b062588c00f4d",
+      "translation_text_hash": "54f0ab2f60aa0fc3c1f95578b872fdb5869f4c68a501ece5ec7450d00fbf658b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 반드시 너와 함께 가리라 그러나 네가 이제 가는 일로는 영광을 얻지 못하리니 이는 여호와께서 시스라를 여인의 손에 파실것임이니라 하고 드보라가 일어나 바락과 함께 게데스로 가니라"
+      ],
+      "raw_text_hashes": [
+        "54f0ab2f60aa0fc3c1f95578b872fdb5869f4c68a501ece5ec7450d00fbf658b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:10",
+      "sequence": 6610,
+      "chapter_label": "JDG 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Barak called Zebulun and Naphtali together to Kedesh. Ten thousand men followed him; and Deborah went up with him.",
+      "ko": "바락이 스불론과 납달리를 게데스로 부르니 일만인이 그를 따라 올라가고 드보라도 그와 함께 올라가니라",
+      "source_text_hash": "d9c4fc72ecaa8fb96b6054c74c875492d58cbea8dff0e54d8a65e1b9b369eec1",
+      "translation_text_hash": "c2de148bf0a0178b4d159a24aa83dddbd30fb790e4fedb8f3646440d99f4fb08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바락이 스불론과 납달리를 게데스로 부르니 일만인이 그를 따라 올라가고 드보라도 그와 함께 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "c2de148bf0a0178b4d159a24aa83dddbd30fb790e4fedb8f3646440d99f4fb08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:11",
+      "sequence": 6611,
+      "chapter_label": "JDG 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Now Heber the Kenite had separated himself from the Kenites, even from the children of Hobab, Moses’ brother-in-law, and had pitched his tent as far as the oak in Zaanannim, which is by Kedesh.",
+      "ko": "모세의 장인 호밥의 자손 중 겐 사람 헤벨이 자기 족속을 떠나 게데스에 가까운 사아난님 상수리나무 곁에 이르러 장막을 쳤더라",
+      "source_text_hash": "157cf3ae4502e65d4d375dd087417f17cd64e4109257fa737550432b342cc3f4",
+      "translation_text_hash": "7a01fa3654c5a3cb42aae2a86d2154e4622e0830bb12031ed80dd9ea0281b953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인 호밥의 자손 중 겐 사람 헤벨이 자기 족속을 떠나 게데스에 가까운 사아난님 상수리나무 곁에 이르러 장막을 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "7a01fa3654c5a3cb42aae2a86d2154e4622e0830bb12031ed80dd9ea0281b953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:12",
+      "sequence": 6612,
+      "chapter_label": "JDG 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "They told Sisera that Barak the son of Abinoam had gone up to Mount Tabor.",
+      "ko": "아비노암의 아들 바락이 다볼산에 오른 것을 혹이 시스라에게 고하매",
+      "source_text_hash": "cf731cda0173cf781067b2afd06bf5aa5ea50a021ef9b4e14eca9afb503bd05b",
+      "translation_text_hash": "a5807b6936dc39311d49a983ec21de3787111f81a7bc932b49834bb02b6b8ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비노암의 아들 바락이 다볼산에 오른 것을 혹이 시스라에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "a5807b6936dc39311d49a983ec21de3787111f81a7bc932b49834bb02b6b8ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:13",
+      "sequence": 6613,
+      "chapter_label": "JDG 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Sisera gathered together all his chariots, even nine hundred chariots of iron, and all the people who were with him, from Harosheth of the Gentiles, to the river Kishon.",
+      "ko": "시스라가 모든 병거 곧 철병거 구백승과 자기와 함께 있는 온 군사를 이방 하로셋에서부터 기손강으로 모은지라",
+      "source_text_hash": "eefd5d2ecf7bd684488d71091eed8f2427db6bdb7cdf53dbbbcbce2870490483",
+      "translation_text_hash": "3463efe9e66afff79cd828d83906125d7c50b3ded2b4f1e655aeb2110f3d2020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시스라가 모든 병거 곧 철병거 구백승과 자기와 함께 있는 온 군사를 이방 하로셋에서부터 기손강으로 모은지라"
+      ],
+      "raw_text_hashes": [
+        "3463efe9e66afff79cd828d83906125d7c50b3ded2b4f1e655aeb2110f3d2020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:14",
+      "sequence": 6614,
+      "chapter_label": "JDG 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Deborah said to Barak, “Go; for this is the day in which the LORD has delivered Sisera into your hand. Hasn’t the LORD gone out before you?” So Barak went down from Mount Tabor, and ten thousand men after him.",
+      "ko": "드보라가 바락에게 이르되 일어나라 이는 여호와께서 시스라를 네 손에 붙이신 날이라 여호와께서 너의 앞서 행하지 아니하시느냐 이에 바락이 일만명을 거느리고 다볼산에서 내려가니",
+      "source_text_hash": "fea9f274209a73a4b173d8dd8868e5fd26c9597d9bf71abd66153fbdc8a8e4e3",
+      "translation_text_hash": "7f1728f419195366a182a4d86ee30c50db95af2beaaccc127c875a4b927d9f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드보라가 바락에게 이르되 일어나라 이는 여호와께서 시스라를 네 손에 붙이신 날이라 여호와께서 너의 앞서 행하지 아니하시느냐 이에 바락이 일만명을 거느리고 다볼산에서 내려가니"
+      ],
+      "raw_text_hashes": [
+        "7f1728f419195366a182a4d86ee30c50db95af2beaaccc127c875a4b927d9f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:15",
+      "sequence": 6615,
+      "chapter_label": "JDG 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD confused Sisera, all his chariots, and all his army, with the edge of the sword before Barak. Sisera abandoned his chariot and fled away on his feet.",
+      "ko": "여호와께서 바락의 앞에서 시스라와 그 모든 병거와 그 온 군대를 칼날로 쳐서 패하게 하시매 시스라가 병거에서 내려 도보로 도망한지라",
+      "source_text_hash": "264dc766e80b62ca31d4df8fa3f66ef3f92a66dcad8f2e60f234ee2cae29af35",
+      "translation_text_hash": "6baaa2a23dc6b186c7464113fa9ccbb47adb4a0317364edd1a208b8929b7ea34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 바락의 앞에서 시스라와 그 모든 병거와 그 온 군대를 칼날로 쳐서 패하게 하시매 시스라가 병거에서 내려 도보로 도망한지라"
+      ],
+      "raw_text_hashes": [
+        "6baaa2a23dc6b186c7464113fa9ccbb47adb4a0317364edd1a208b8929b7ea34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:16",
+      "sequence": 6616,
+      "chapter_label": "JDG 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "But Barak pursued the chariots and the army to Harosheth of the Gentiles; and all the army of Sisera fell by the edge of the sword. There was not a man left.",
+      "ko": "바락이 그 병거들과 군대를 추격하여 이방 하로셋에 이르니 시스라의 온 군대가 다 칼에 엎드러졌고 남은 자가 없었더라",
+      "source_text_hash": "35e139e1391e358f7fa7596ad284ce78afa5e05c405d189c791b331e32df95c7",
+      "translation_text_hash": "e1db3bc163bb28dff1774c08e1c2e004618ce89ca21aa75fbbec25f4c7a525a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바락이 그 병거들과 군대를 추격하여 이방 하로셋에 이르니 시스라의 온 군대가 다 칼에 엎드러졌고 남은 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "e1db3bc163bb28dff1774c08e1c2e004618ce89ca21aa75fbbec25f4c7a525a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:17",
+      "sequence": 6617,
+      "chapter_label": "JDG 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "However Sisera fled away on his feet to the tent of Jael the wife of Heber the Kenite; for there was peace between Jabin the king of Hazor and the house of Heber the Kenite.",
+      "ko": "시스라가 도보로 도망하여 겐 사람 헤벨의 아내 야엘의 장막에 이르렀으니 하솔 왕 야빈은 겐 사람 헤벨의 집과 화평이 있음이라",
+      "source_text_hash": "7ec475d0ac4c5d96f7f41e4906b6d6fbdbad12d787b937f3a1cc6501920f760b",
+      "translation_text_hash": "a58a18fecc95581c7a7c20b462059a3402368374f85a1d7c4a338d79ca61e2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시스라가 도보로 도망하여 겐 사람 헤벨의 아내 야엘의 장막에 이르렀으니 하솔 왕 야빈은 겐 사람 헤벨의 집과 화평이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "a58a18fecc95581c7a7c20b462059a3402368374f85a1d7c4a338d79ca61e2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:18",
+      "sequence": 6618,
+      "chapter_label": "JDG 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Jael went out to meet Sisera, and said to him, “Turn in, my lord, turn in to me; don’t be afraid.” He came in to her into the tent, and she covered him with a rug.",
+      "ko": "야엘이 나가 시스라를 영접하며 그에게 말하되 나의 주여 들어오소서 내게로 들어오시고 두려워하지 마소서 하매 그 장막에 들어가니 야엘이 이불로 덮으니라",
+      "source_text_hash": "a091ed4bac3cecad926a21008d4c1da28124b8de8d26a5a07ccdc67f1a78a086",
+      "translation_text_hash": "f9d1773e6d395844f864099d55daf10c9a45aaf751ae8a4a3e6006f73a218855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야엘이 나가 시스라를 영접하며 그에게 말하되 나의 주여 들어오소서 내게로 들어오시고 두려워하지 마소서 하매 그 장막에 들어가니 야엘이 이불로 덮으니라"
+      ],
+      "raw_text_hashes": [
+        "f9d1773e6d395844f864099d55daf10c9a45aaf751ae8a4a3e6006f73a218855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:19",
+      "sequence": 6619,
+      "chapter_label": "JDG 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "He said to her, “Please give me a little water to drink; for I am thirsty.” She opened a container of milk, and gave him a drink, and covered him.",
+      "ko": "시스라가 그에게 말하되 청하노니 내게 물을 조금 마시우라 내가 목이 마르도다 하매 젖부대를 열어 그에게 마시우고 그를 덮으니",
+      "source_text_hash": "b38676e9634f51114d4574b0badee3506a7e6c8f92fa727d078957397a6eb3f5",
+      "translation_text_hash": "a31ab499ff40b4f55dde35bf461aef182306ffbff87b6e82c90181e1592d99a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시스라가 그에게 말하되 청하노니 내게 물을 조금 마시우라 내가 목이 마르도다 하매 젖부대를 열어 그에게 마시우고 그를 덮으니"
+      ],
+      "raw_text_hashes": [
+        "a31ab499ff40b4f55dde35bf461aef182306ffbff87b6e82c90181e1592d99a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:20",
+      "sequence": 6620,
+      "chapter_label": "JDG 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "He said to her, “Stand in the door of the tent, and if any man comes and inquires of you, and says, ‘Is there any man here?’ you shall say, ‘No.’”",
+      "ko": "그가 또 가로되 장막문에 섰다가 만일 사람이 와서 네게 묻기를 여기 어떤 사람이 있느냐 하거든 너는 없다 하라 하고",
+      "source_text_hash": "b38eb92dac723e4c961eda682a85fde75c9f94e9aea40340ddc0c1f113f8e6b7",
+      "translation_text_hash": "3bc89c1cfc9218a8419ece5691d5bf7f65bb276a45e495c28b0d1d8b5bca888b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 가로되 장막문에 섰다가 만일 사람이 와서 네게 묻기를 여기 어떤 사람이 있느냐 하거든 너는 없다 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "3bc89c1cfc9218a8419ece5691d5bf7f65bb276a45e495c28b0d1d8b5bca888b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:21",
+      "sequence": 6621,
+      "chapter_label": "JDG 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Then Jael, Heber’s wife, took a tent peg, and took a hammer in her hand, and went softly to him, and struck the pin into his temples, and it pierced through into the ground, for he was in a deep sleep; so he fainted and died.",
+      "ko": "그가 곤비하여 깊이 잠든지라 헤벨의 아내 야엘이 장막 말뚝을 취하고 손에 방망이를 들고 그에게로 가만히 가서 말뚝을 그 살쩍에 박으매 말뚝이 꿰뚫고 땅에 박히니 시스라가 기절하여 죽으니라",
+      "source_text_hash": "d892f415ce8ed3811e18ddcd296ee425f3315587571470572aca20027622799d",
+      "translation_text_hash": "0978d921a32aa61ad0d2ac921a7d1470f9a4f9bf3d188cfaa7674fcf37bbafc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 곤비하여 깊이 잠든지라 헤벨의 아내 야엘이 장막 말뚝을 취하고 손에 방망이를 들고 그에게로 가만히 가서 말뚝을 그 살쩍에 박으매 말뚝이 꿰뚫고 땅에 박히니 시스라가 기절하여 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "0978d921a32aa61ad0d2ac921a7d1470f9a4f9bf3d188cfaa7674fcf37bbafc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:22",
+      "sequence": 6622,
+      "chapter_label": "JDG 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, as Barak pursued Sisera, Jael came out to meet him, and said to him, “Come, and I will show you the man whom you seek.” He came to her; and behold, Sisera lay dead, and the tent peg was in his temples.",
+      "ko": "바락이 시스라를 따를 때에 야엘이 나가서 그를 맞아 가로되 오라 내가 너의 찾는 사람을 네게 보이리라 바락이 그에게 들어가 보니 시스라가 죽어 누웠고 말뚝은 그 살쩍에 박혔더라",
+      "source_text_hash": "68e5398a7f97fa496a2f9f824afca5e4dd332458d2b2a15a2d26aa0375cba008",
+      "translation_text_hash": "ca521afdfde70311b24ccb10a93ed1ae1f46108a22d492823b9bcbc94050bf87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바락이 시스라를 따를 때에 야엘이 나가서 그를 맞아 가로되 오라 내가 너의 찾는 사람을 네게 보이리라 바락이 그에게 들어가 보니 시스라가 죽어 누웠고 말뚝은 그 살쩍에 박혔더라"
+      ],
+      "raw_text_hashes": [
+        "ca521afdfde70311b24ccb10a93ed1ae1f46108a22d492823b9bcbc94050bf87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:23",
+      "sequence": 6623,
+      "chapter_label": "JDG 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "So God subdued Jabin the king of Canaan before the children of Israel on that day.",
+      "ko": "이와 같이 이 날에 하나님이 가나안 왕 야빈을 이스라엘 자손 앞에 패하게 하신지라",
+      "source_text_hash": "e8d85a83a41209e9acbb9657f558d1843d0d930686d36ee6e08c8907f5b98c5b",
+      "translation_text_hash": "526888f207db4a7a927d1f8179556908e30eab942d7cb1428ea362b18d251d23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 이 날에 하나님이 가나안 왕 야빈을 이스라엘 자손 앞에 패하게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "526888f207db4a7a927d1f8179556908e30eab942d7cb1428ea362b18d251d23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:4:24",
+      "sequence": 6624,
+      "chapter_label": "JDG 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "The hand of the children of Israel prevailed more and more against Jabin the king of Canaan, until they had destroyed Jabin king of Canaan.",
+      "ko": "이스라엘 자손의 손이 가나안 왕 야빈을 점점 더 이기어서 마침내 가나안 왕 야빈을 진멸하였더라",
+      "source_text_hash": "89685fdecd064a7c13c6dc1fe4392934a6de9f3e78b129f7d7d59edb701db470",
+      "translation_text_hash": "e24ab5a1c50f6a7a424b2b593d0886dccea50854a9389ee7bb8e4b9ab84f4ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 손이 가나안 왕 야빈을 점점 더 이기어서 마침내 가나안 왕 야빈을 진멸하였더라"
+      ],
+      "raw_text_hashes": [
+        "e24ab5a1c50f6a7a424b2b593d0886dccea50854a9389ee7bb8e4b9ab84f4ffe"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:014",
+  "unit_ordinal": 14,
+  "unit_label": "GEN 14",
+  "book_code": "GEN",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:14:1",
+      "sequence": 338,
+      "chapter_label": "GEN 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "In the days of Amraphel, king of Shinar; Arioch, king of Ellasar; Chedorlaomer, king of Elam; and Tidal, king of Goiim,",
+      "ko": "당시에 시날왕 아므라벨과 엘라살왕 아리옥과 엘람왕 그돌라오멜과 고임왕 디달이",
+      "source_text_hash": "47dca821ba899a2b80da95e6116af3c8324c5e564fda22934c9f122a5fdcab3c",
+      "translation_text_hash": "4e70e42c8498f3e4bad3d63dc8d01d2876d93c35eceb68db63d371ba2df1ab57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당시에 시날왕 아므라벨과 엘라살왕 아리옥과 엘람왕 그돌라오멜과 고임왕 디달이"
+      ],
+      "raw_text_hashes": [
+        "4e70e42c8498f3e4bad3d63dc8d01d2876d93c35eceb68db63d371ba2df1ab57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:2",
+      "sequence": 339,
+      "chapter_label": "GEN 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "they made war with Bera, king of Sodom; Birsha, king of Gomorrah; Shinab, king of Admah; Shemeber, king of Zeboiim; and the king of Bela (also called Zoar).",
+      "ko": "소돔왕 베라와 고모라왕 비르사와 아드마왕 시납과 스보임왕 세메벨과 벨라 곧 소알왕과 싸우니라",
+      "source_text_hash": "3e1b73b1cdc6cf931a6e026cb4cc14f60fb638ff09e03f7aaac23705014a762a",
+      "translation_text_hash": "96c2fff0225436a794afb599e3f202fd104b45a9e9790d34009749019b169a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔왕 베라와 고모라왕 비르사와 아드마왕 시납과 스보임왕 세메벨과 벨라 곧 소알왕과 싸우니라"
+      ],
+      "raw_text_hashes": [
+        "96c2fff0225436a794afb599e3f202fd104b45a9e9790d34009749019b169a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:3",
+      "sequence": 340,
+      "chapter_label": "GEN 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "All these joined together in the valley of Siddim (also called the Salt Sea).",
+      "ko": "이들이 다 싯딤 골짜기 곧 지금 염해에 모였더라",
+      "source_text_hash": "5085a3f323c8c38ccde756059435451e1c4db5a8962ce558ae930225b7a0006d",
+      "translation_text_hash": "22b70de599efbf658afd49508064527d716b33cf1e6e5544d8644273407b6346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들이 다 싯딤 골짜기 곧 지금 염해에 모였더라"
+      ],
+      "raw_text_hashes": [
+        "22b70de599efbf658afd49508064527d716b33cf1e6e5544d8644273407b6346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:4",
+      "sequence": 341,
+      "chapter_label": "GEN 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "They served Chedorlaomer for twelve years, and in the thirteenth year they rebelled.",
+      "ko": "이들이 십 이년 동안 그돌라오멜을 섬기다가 제 십삼년에 배반한지라",
+      "source_text_hash": "70ee94753dc40f1e75a31c2acfbc2697bc722386f95fc099f49153fd10d89737",
+      "translation_text_hash": "70cd1e89566558195440db6f0c290ee1c19961630ac9140ce93cbadb5415d2ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들이 십 이년 동안 그돌라오멜을 섬기다가 제 십삼년에 배반한지라"
+      ],
+      "raw_text_hashes": [
+        "70cd1e89566558195440db6f0c290ee1c19961630ac9140ce93cbadb5415d2ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:5",
+      "sequence": 342,
+      "chapter_label": "GEN 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "In the fourteenth year Chedorlaomer and the kings who were with him came and struck the Rephaim in Ashteroth Karnaim, the Zuzim in Ham, the Emim in Shaveh Kiriathaim,",
+      "ko": "제 십사년에 그돌라오멜과 그와 동맹한 왕들이 나와서 아스드롯 가르나임에서 르바 족속을, 함에서 수스 족속을, 사웨 기랴다임에서 엠 족속을 치고",
+      "source_text_hash": "410772510f1e1c18682b865c55f30741f899218f850ab05168d5d072c1abbc64",
+      "translation_text_hash": "2923dcc1005a6675e724d5e9e1663d45c543893e7c4d367ce423c551d0f0c578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십사년에 그돌라오멜과 그와 동맹한 왕들이 나와서 아스드롯 가르나임에서 르바 족속을, 함에서 수스 족속을, 사웨 기랴다임에서 엠 족속을 치고"
+      ],
+      "raw_text_hashes": [
+        "2923dcc1005a6675e724d5e9e1663d45c543893e7c4d367ce423c551d0f0c578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:6",
+      "sequence": 343,
+      "chapter_label": "GEN 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "and the Horites in their Mount Seir, to El Paran, which is by the wilderness.",
+      "ko": "호리 족속을 그 산 세일에서 쳐서 광야 근방 엘바란까지 이르렀으며",
+      "source_text_hash": "acb473d6e02d6bcbd123353573dd522a65e71c9810936f7a76cfe61150eded80",
+      "translation_text_hash": "7c0a1688a348ea153f6ca191e88f1ca3e547dddc5a8fff24588eb2b32d2698fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호리 족속을 그 산 세일에서 쳐서 광야 근방 엘바란까지 이르렀으며"
+      ],
+      "raw_text_hashes": [
+        "7c0a1688a348ea153f6ca191e88f1ca3e547dddc5a8fff24588eb2b32d2698fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:7",
+      "sequence": 344,
+      "chapter_label": "GEN 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "They returned, and came to En Mishpat (also called Kadesh), and struck all the country of the Amalekites, and also the Amorites, that lived in Hazazon Tamar.",
+      "ko": "그들이 돌이켜 엔미스밧 곧 가데스에 이르러 아말렉 족속의 온 땅과 하사손다말에 사는 아모리 족속을 친지라",
+      "source_text_hash": "538718b6181d0150574097ba9d854d89690d6211ce57d10c9514c71b74bb081c",
+      "translation_text_hash": "36fbd77729f08972028412ed64a75adea75729887b4e9e61d07a594b90cb92c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 돌이켜 엔미스밧 곧 가데스에 이르러 아말렉 족속의 온 땅과 하사손다말에 사는 아모리 족속을 친지라"
+      ],
+      "raw_text_hashes": [
+        "36fbd77729f08972028412ed64a75adea75729887b4e9e61d07a594b90cb92c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:8",
+      "sequence": 345,
+      "chapter_label": "GEN 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "The king of Sodom, and the king of Gomorrah, the king of Admah, the king of Zeboiim, and the king of Bela (also called Zoar) went out; and they set the battle in array against them in the valley of Siddim",
+      "ko": "소돔왕과 고모라왕과 아드마왕과 스보임왕과 벨라 곧 소알왕이 나와서 싯딤 골짜기에서 그들과 접전하였으니",
+      "source_text_hash": "83b2e84d00852d63c728b37d89374a23cc67d7787e46adf65f92ca6ed81d984b",
+      "translation_text_hash": "c109390b86099c0a8a7e747897d0838594ccaff466aa6c002fdd2e8682a5b886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔왕과 고모라왕과 아드마왕과 스보임왕과 벨라 곧 소알왕이 나와서 싯딤 골짜기에서 그들과 접전하였으니"
+      ],
+      "raw_text_hashes": [
+        "c109390b86099c0a8a7e747897d0838594ccaff466aa6c002fdd2e8682a5b886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:9",
+      "sequence": 346,
+      "chapter_label": "GEN 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "against Chedorlaomer king of Elam, Tidal king of Goiim, Amraphel king of Shinar, and Arioch king of Ellasar; four kings against the five.",
+      "ko": "곧 그 다섯 왕이 엘람왕 그돌라오멜과 고임왕 디달과 시날왕 아므라벨과 엘라살왕 아리옥 네 왕과 교전하였더라",
+      "source_text_hash": "49b30ffa381e680b888828464f68eed1f794ba8109e44ad3ff45ba0d70f006db",
+      "translation_text_hash": "bedd9ee31d16ca731ebbee65be73463abd1578c5a2655f850ad5fa7097bb0fcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 다섯 왕이 엘람왕 그돌라오멜과 고임왕 디달과 시날왕 아므라벨과 엘라살왕 아리옥 네 왕과 교전하였더라"
+      ],
+      "raw_text_hashes": [
+        "bedd9ee31d16ca731ebbee65be73463abd1578c5a2655f850ad5fa7097bb0fcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:10",
+      "sequence": 347,
+      "chapter_label": "GEN 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "Now the valley of Siddim was full of tar pits; and the kings of Sodom and Gomorrah fled, and some fell there. Those who remained fled to the hills.",
+      "ko": "싯딤 골짜기에는 역청 구덩이가 많은지라 소돔왕과 고모라왕이 달아날 때에 군사가 거기 빠지고 그 나머지는 산으로 도망하매",
+      "source_text_hash": "c8ce43b83657faa8d26c73f60caab6e16d891e4eab6510da97e47331d1cf4f3c",
+      "translation_text_hash": "0976e30f52d5a1bdcaf636f31cd5af44075ff8900b7a52580af491cb435235ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싯딤 골짜기에는 역청 구덩이가 많은지라 소돔왕과 고모라왕이 달아날 때에 군사가 거기 빠지고 그 나머지는 산으로 도망하매"
+      ],
+      "raw_text_hashes": [
+        "0976e30f52d5a1bdcaf636f31cd5af44075ff8900b7a52580af491cb435235ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:11",
+      "sequence": 348,
+      "chapter_label": "GEN 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "They took all the goods of Sodom and Gomorrah, and all their food, and went their way.",
+      "ko": "네 왕이 소돔과 고모라의 모든 재물과 양식을 빼앗아 가고",
+      "source_text_hash": "44fd9f0fa62c49d3d1eabb3aacc3ca023e459977a0cb765ea1265773354789b1",
+      "translation_text_hash": "351a9264a2cbe661cedfdfbc0152465bc27ae9ae8eca7a2c08752491730f8ae5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 왕이 소돔과 고모라의 모든 재물과 양식을 빼앗아 가고"
+      ],
+      "raw_text_hashes": [
+        "351a9264a2cbe661cedfdfbc0152465bc27ae9ae8eca7a2c08752491730f8ae5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:12",
+      "sequence": 349,
+      "chapter_label": "GEN 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "They took Lot, Abram’s brother’s son, who lived in Sodom, and his goods, and departed.",
+      "ko": "소돔에 거하는 아브람의 조카 롯도 사로잡고 그 재물까지 노략하여 갔더라",
+      "source_text_hash": "5032dbe2bf8f14bdbf9747d598399a48051a3c2b98cca4cbc41d8f6d665c8c5c",
+      "translation_text_hash": "64c1366ea31ff76e3d342d2003df486aae999d8f06cfe69b03b8bfc5fa5a2f5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔에 거하는 아브람의 조카 롯도 사로잡고 그 재물까지 노략하여 갔더라"
+      ],
+      "raw_text_hashes": [
+        "64c1366ea31ff76e3d342d2003df486aae999d8f06cfe69b03b8bfc5fa5a2f5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:13",
+      "sequence": 350,
+      "chapter_label": "GEN 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "One who had escaped came and told Abram, the Hebrew. At that time, he lived by the oaks of Mamre, the Amorite, brother of Eshcol and brother of Aner. They were allies of Abram.",
+      "ko": "도망한 자가 와서 히브리 사람 아브람에게 고하니 때에 아브람이 아모리 족속 마므레의 상수리 수풀 근처에 거하였더라 마므레는 에스골의 형제요 또 아넬의 형제라 이들은 아브람과 동맹한 자더라",
+      "source_text_hash": "55250212df17968678a1ef951b7d5f083b7f6480cbc305ec4245e640dc74b91c",
+      "translation_text_hash": "f1198eb73acc883b355e003f8692cdc24596903730b612b7445a34701a6a2d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도망한 자가 와서 히브리 사람 아브람에게 고하니 때에 아브람이 아모리 족속 마므레의 상수리 수풀 근처에 거하였더라 마므레는 에스골의 형제요 또 아넬의 형제라 이들은 아브람과 동맹한 자더라"
+      ],
+      "raw_text_hashes": [
+        "f1198eb73acc883b355e003f8692cdc24596903730b612b7445a34701a6a2d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:14",
+      "sequence": 351,
+      "chapter_label": "GEN 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "When Abram heard that his relative was taken captive, he led out his three hundred eighteen trained men, born in his house, and pursued as far as Dan.",
+      "ko": "아브람이 그 조카의 사로잡혔음을 듣고 집에서 길리고 연습한 자 삼백 십 팔인을 거느리고 단까지 쫓아가서",
+      "source_text_hash": "b22d73aa3927d13bcf33c9e2573a390a44e1792b1e21c8988b4aed5d7d282ce6",
+      "translation_text_hash": "6fdcd757ebb07085ce721d2a96f9886f3be18c91351777ed3e6d114ad7c60883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 그 조카의 사로잡혔음을 듣고 집에서 길리고 연습한 자 삼백 십 팔인을 거느리고 단까지 쫓아가서"
+      ],
+      "raw_text_hashes": [
+        "6fdcd757ebb07085ce721d2a96f9886f3be18c91351777ed3e6d114ad7c60883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:15",
+      "sequence": 352,
+      "chapter_label": "GEN 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "He divided himself against them by night, he and his servants, and struck them, and pursued them to Hobah, which is on the left hand of Damascus.",
+      "ko": "그 가신을 나누어 밤을 타서 그들을 쳐서 파하고 다메섹 좌편 호바까지 쫓아가서",
+      "source_text_hash": "acf54d57cf958255d8e2944fc128cc2b8beb8323cdf92f258aa1a4224daeb6e8",
+      "translation_text_hash": "c203fd2fc0cde143c1fc318e495fe8a54bf931791ccfc8a33495ec415d273122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가신을 나누어 밤을 타서 그들을 쳐서 파하고 다메섹 좌편 호바까지 쫓아가서"
+      ],
+      "raw_text_hashes": [
+        "c203fd2fc0cde143c1fc318e495fe8a54bf931791ccfc8a33495ec415d273122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:16",
+      "sequence": 353,
+      "chapter_label": "GEN 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "He brought back all the goods, and also brought back his relative Lot and his goods, and the women also, and the other people.",
+      "ko": "모든 빼앗겼던 재물과 자기 조카 롯과 그 재물과 또 부녀와 인민을 다 찾아 왔더라",
+      "source_text_hash": "62dc1853a352712849d382b04c03077d8d801e38d10a9940de9ef2c369e846c3",
+      "translation_text_hash": "9d1e4050b3572ff43d588e89d039199a0ed2f67d8af404c2196509514c278a0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 빼앗겼던 재물과 자기 조카 롯과 그 재물과 또 부녀와 인민을 다 찾아 왔더라"
+      ],
+      "raw_text_hashes": [
+        "9d1e4050b3572ff43d588e89d039199a0ed2f67d8af404c2196509514c278a0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:17",
+      "sequence": 354,
+      "chapter_label": "GEN 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "The king of Sodom went out to meet him after his return from the slaughter of Chedorlaomer and the kings who were with him, at the valley of Shaveh (that is, the King’s Valley).",
+      "ko": "아브람이 그돌라오멜과 그와 함께한 왕들을 파하고 돌아올 때에 소돔왕이 사웨 골짜기 곧 왕곡에 나와 그를 영접하였고",
+      "source_text_hash": "16a2de688514ddd6f88a6ddefb1c873eadd13895c4d9e0e7ab0c197169b5cffe",
+      "translation_text_hash": "cf144995b4bb29cb2cd4bcebedd454ab31d0b15517a9ca4217864df20cb20821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 그돌라오멜과 그와 함께한 왕들을 파하고 돌아올 때에 소돔왕이 사웨 골짜기 곧 왕곡에 나와 그를 영접하였고"
+      ],
+      "raw_text_hashes": [
+        "cf144995b4bb29cb2cd4bcebedd454ab31d0b15517a9ca4217864df20cb20821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:18",
+      "sequence": 355,
+      "chapter_label": "GEN 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Melchizedek king of Salem brought out bread and wine. He was priest of God Most High.",
+      "ko": "살렘왕 멜기세덱이 떡과 포도주를 가지고 나왔으니 그는 지극히 높으신 하나님의 제사장이었더라",
+      "source_text_hash": "5a50c9c312ef18e3a8ac561d9f0c79496988da5df2186bdccc6e51cd50830626",
+      "translation_text_hash": "7347c30f44f05918a2b6e2e4bb347a00b918f4cd18dc601d1c6b15412829a059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살렘왕 멜기세덱이 떡과 포도주를 가지고 나왔으니 그는 지극히 높으신 하나님의 제사장이었더라"
+      ],
+      "raw_text_hashes": [
+        "7347c30f44f05918a2b6e2e4bb347a00b918f4cd18dc601d1c6b15412829a059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:19",
+      "sequence": 356,
+      "chapter_label": "GEN 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "He blessed him, and said, “Blessed be Abram of God Most High, possessor of heaven and earth.",
+      "ko": "그가 아브람에게 축복하여 가로되 천지의 주재시요 지극히 높으신 하나님이여 아브람에게 복을 주옵소서",
+      "source_text_hash": "bae3b71e7417d55532f6fe22c7682c1290cb82185bd3b7c9ae9884a0a4b8c26d",
+      "translation_text_hash": "b80ea93ec4db980ed6c1fc611c8bc86e5f61b96cb7ed5092e5080751446c9588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아브람에게 축복하여 가로되 천지의 주재시요 지극히 높으신 하나님이여 아브람에게 복을 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "b80ea93ec4db980ed6c1fc611c8bc86e5f61b96cb7ed5092e5080751446c9588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:20",
+      "sequence": 357,
+      "chapter_label": "GEN 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Blessed be God Most High, who has delivered your enemies into your hand.” Abram gave him a tenth of all.",
+      "ko": "너희 대적을 네 손에 붙이신 지극히 높으신 하나님을 찬송할찌로다 하매 아브람이 그 얻은 것에서 십분 일을 멜기세덱에게 주었더라",
+      "source_text_hash": "cee05fe751eb6e36afc77b0d7250fede288529ad61634ce6ed1674bcaf8b8c65",
+      "translation_text_hash": "4c84d51400baae8d918cdc0ad2759ae7f7637c1e4c88a0ce47b664e62d708a0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 대적을 네 손에 붙이신 지극히 높으신 하나님을 찬송할찌로다 하매 아브람이 그 얻은 것에서 십분 일을 멜기세덱에게 주었더라"
+      ],
+      "raw_text_hashes": [
+        "4c84d51400baae8d918cdc0ad2759ae7f7637c1e4c88a0ce47b664e62d708a0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:21",
+      "sequence": 358,
+      "chapter_label": "GEN 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "The king of Sodom said to Abram, “Give me the people, and take the goods for yourself.”",
+      "ko": "소돔왕이 아브람에게 이르되 사람은 내게 보내고 물품은 네가 취하라",
+      "source_text_hash": "fe5f5b9adeb718d23152cc0c0b76aaed37a444d6f0717b2bd4c07bf2ec02a777",
+      "translation_text_hash": "29c52bc065dce5baa7684be09d1857b72721969410135add73246aab6d2c5b2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔왕이 아브람에게 이르되 사람은 내게 보내고 물품은 네가 취하라"
+      ],
+      "raw_text_hashes": [
+        "29c52bc065dce5baa7684be09d1857b72721969410135add73246aab6d2c5b2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:22",
+      "sequence": 359,
+      "chapter_label": "GEN 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Abram said to the king of Sodom, “I have lifted up my hand to the LORD, God Most High, possessor of heaven and earth,",
+      "ko": "아브람이 소돔왕에게 이르되 천지의 주재시요 지극히 높으신 하나님 여호와께 내가 손을 들어 맹세하노니",
+      "source_text_hash": "614589874cacddb49fc85347e7b1a467bc1ebe60c36a6ce3983ca6cc714dfb14",
+      "translation_text_hash": "599747bb9decc41646c44ec30335035e1d89a110a70fcecea63c99bee3e98a8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 소돔왕에게 이르되 천지의 주재시요 지극히 높으신 하나님 여호와께 내가 손을 들어 맹세하노니"
+      ],
+      "raw_text_hashes": [
+        "599747bb9decc41646c44ec30335035e1d89a110a70fcecea63c99bee3e98a8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:23",
+      "sequence": 360,
+      "chapter_label": "GEN 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "that I will not take a thread nor a sandal strap nor anything that is yours, lest you should say, ‘I have made Abram rich.’",
+      "ko": "네 말이 내가 아브람으로 치부케 하였다 할까 하여 네게 속한 것은 무론 한 실이나 신들메라도 내가 취하지 아니하리라",
+      "source_text_hash": "830b38c41d72848d0900b3efb50a0d11a7b7699fb70f45be0f6f9cf633c4a7ca",
+      "translation_text_hash": "a785be96ed8a20ccfbe9c41ced79284f935f4a820305a5ead82e02cf749b2215",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 말이 내가 아브람으로 치부케 하였다 할까 하여 네게 속한 것은 무론 한 실이나 신들메라도 내가 취하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "a785be96ed8a20ccfbe9c41ced79284f935f4a820305a5ead82e02cf749b2215"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:14:24",
+      "sequence": 361,
+      "chapter_label": "GEN 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "I will accept nothing from you except that which the young men have eaten, and the portion of the men who went with me: Aner, Eshcol, and Mamre. Let them take their portion.”",
+      "ko": "오직 소년들의 먹은 것과 나와 동행한 아넬과 에스골과 마므레의 분깃을 제할찌니 그들이 그 분깃을 취할 것이니라",
+      "source_text_hash": "054716f9dce687288e5088b50f2f0fe3a6f6467ea7fd36ff75ce3b990d2fc88e",
+      "translation_text_hash": "a65f86d0b2810267c88fe6be363d4b5bab423b61bf39d65693b5724669893127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 소년들의 먹은 것과 나와 동행한 아넬과 에스골과 마므레의 분깃을 제할찌니 그들이 그 분깃을 취할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a65f86d0b2810267c88fe6be363d4b5bab423b61bf39d65693b5724669893127"
+      ]
+    }
+  ]
+}

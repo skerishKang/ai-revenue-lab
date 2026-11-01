@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:019",
+  "unit_ordinal": 497,
+  "unit_label": "PSA 19",
+  "book_code": "PSA",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:19:1",
+      "sequence": 14170,
+      "chapter_label": "PSA 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The heavens declare the glory of God. The expanse shows his handiwork.",
+      "ko": "하늘이 하나님의 영광을 선포하고 궁창이 그 손으로 하신 일을 나타내는도다",
+      "source_text_hash": "43e89924f5f8a507b87c0d3af42372a8e9629005dc4034ef5e68f9906dce6c65",
+      "translation_text_hash": "dadb7f454cc57fa75c69c6ddf78d77042cba7d0e896a84e51928480a5164b493",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이 하나님의 영광을 선포하고 궁창이 그 손으로 하신 일을 나타내는도다"
+      ],
+      "raw_text_hashes": [
+        "dadb7f454cc57fa75c69c6ddf78d77042cba7d0e896a84e51928480a5164b493"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:2",
+      "sequence": 14171,
+      "chapter_label": "PSA 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "Day after day they pour out speech, and night after night they display knowledge.",
+      "ko": "날은 날에게 말하고 밤은 밤에게 지식을 전하니",
+      "source_text_hash": "f56df503767c9ea4e6a739825f3671bc6db334cc01e90af5820911778f0db032",
+      "translation_text_hash": "d8d8772f4e2e11d84298b241a2a4f58279168d5b6dcd2c7f47034309550c1e3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날은 날에게 말하고 밤은 밤에게 지식을 전하니"
+      ],
+      "raw_text_hashes": [
+        "d8d8772f4e2e11d84298b241a2a4f58279168d5b6dcd2c7f47034309550c1e3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:3",
+      "sequence": 14172,
+      "chapter_label": "PSA 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "There is no speech nor language where their voice is not heard.",
+      "ko": "언어가 없고 들리는 소리도 없으나",
+      "source_text_hash": "6905af83aed6fa56343a8d4c48d613967a643cecd0a650ba85d645b75b9aa997",
+      "translation_text_hash": "63988c83d0354c5d56389f4976c6898969c5e7b734fdc247ae79c5efc12c45c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언어가 없고 들리는 소리도 없으나"
+      ],
+      "raw_text_hashes": [
+        "63988c83d0354c5d56389f4976c6898969c5e7b734fdc247ae79c5efc12c45c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:4",
+      "sequence": 14173,
+      "chapter_label": "PSA 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Their voice has gone out through all the earth, their words to the end of the world. In them he has set a tent for the sun,",
+      "ko": "그 소리가 온 땅에 통하고 그 말씀이 세계 끝까지 이르도다 하나님이 해를 위하여 하늘에 장막을 베푸셨도다",
+      "source_text_hash": "a986ec32dbb452f0227e4979421d536890c78005dea7dda2e92809230ec969f4",
+      "translation_text_hash": "dbe4b4554aa12021b2f6e07d38f844b34d9b5dd6258109853680a7a786d62778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소리가 온 땅에 통하고 그 말씀이 세계 끝까지 이르도다 하나님이 해를 위하여 하늘에 장막을 베푸셨도다"
+      ],
+      "raw_text_hashes": [
+        "dbe4b4554aa12021b2f6e07d38f844b34d9b5dd6258109853680a7a786d62778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:5",
+      "sequence": 14174,
+      "chapter_label": "PSA 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "which is as a bridegroom coming out of his room, like a strong man rejoicing to run his course.",
+      "ko": "해는 그 방에서 나오는 신랑과 같고 그 길을 달리기 기뻐하는 장사 같아서",
+      "source_text_hash": "5849f2f6daf45ae5b589ac17de2f5b698fd01e3d6d6d93e4b2e1741f1d7b6069",
+      "translation_text_hash": "c960e371578b8432a61919bc433a2c514ac421345d1bccc610b0137a2a1c598f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해는 그 방에서 나오는 신랑과 같고 그 길을 달리기 기뻐하는 장사 같아서"
+      ],
+      "raw_text_hashes": [
+        "c960e371578b8432a61919bc433a2c514ac421345d1bccc610b0137a2a1c598f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:6",
+      "sequence": 14175,
+      "chapter_label": "PSA 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "His going out is from the end of the heavens, his circuit to its ends. There is nothing hidden from its heat.",
+      "ko": "하늘 이 끝에서 나와서 하늘 저 끝까지 운행함이여 그 온기에서 피하여 숨은 자 없도다",
+      "source_text_hash": "f055e26c453ce4344d040d4bc10cce69918ab206730074f967e9035030fc4d30",
+      "translation_text_hash": "16d88f4d57581716d25d4657c6e359bb97f30b16d464a9a66a64ab19b8955fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘 이 끝에서 나와서 하늘 저 끝까지 운행함이여 그 온기에서 피하여 숨은 자 없도다"
+      ],
+      "raw_text_hashes": [
+        "16d88f4d57581716d25d4657c6e359bb97f30b16d464a9a66a64ab19b8955fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:7",
+      "sequence": 14176,
+      "chapter_label": "PSA 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s law is perfect, restoring the soul. The LORD’s covenant is sure, making wise the simple.",
+      "ko": "여호와의 율법은 완전하여 영혼을 소성케 하고 여호와의 증거는 확실하여 우둔한 자로 지혜롭게 하며",
+      "source_text_hash": "8c73cb0711db6c5760a935419e830ffd63abc55e44786c6d1207449d44d3bc7f",
+      "translation_text_hash": "65738fb8a73b47c94d87d670895d5a9e0df3f71cd39576294bbb81d1ca72b04a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 율법은 완전하여 영혼을 소성케 하고 여호와의 증거는 확실하여 우둔한 자로 지혜롭게 하며"
+      ],
+      "raw_text_hashes": [
+        "65738fb8a73b47c94d87d670895d5a9e0df3f71cd39576294bbb81d1ca72b04a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:8",
+      "sequence": 14177,
+      "chapter_label": "PSA 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD’s precepts are right, rejoicing the heart. The LORD’s commandment is pure, enlightening the eyes.",
+      "ko": "여호와의 교훈은 정직하여 마음을 기쁘게 하고 여호와의 계명은 순결하여 눈을 밝게 하도다",
+      "source_text_hash": "b9a10e09d0c3defddc0b8092e4bdf88f33feb63320862f65e647f00c9f0bdacf",
+      "translation_text_hash": "af8076337101a1f124644f59063ef7e3381313f9cf78781e091d548f8fae4283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 교훈은 정직하여 마음을 기쁘게 하고 여호와의 계명은 순결하여 눈을 밝게 하도다"
+      ],
+      "raw_text_hashes": [
+        "af8076337101a1f124644f59063ef7e3381313f9cf78781e091d548f8fae4283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:9",
+      "sequence": 14178,
+      "chapter_label": "PSA 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "The fear of the LORD is clean, enduring forever. The LORD’s ordinances are true, and righteous altogether.",
+      "ko": "여호와를 경외하는 도는 정결하여 영원까지 이르고 여호와의 규례는 확실하여 다 의로우니",
+      "source_text_hash": "23dc6997132ca5802fef1586852dc9db26ced18add7104c4ac222e64b1da7a67",
+      "translation_text_hash": "6d04cc25f0482011621a1681c4c8f95e9ea193415dac963a0c95beed50755828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 도는 정결하여 영원까지 이르고 여호와의 규례는 확실하여 다 의로우니"
+      ],
+      "raw_text_hashes": [
+        "6d04cc25f0482011621a1681c4c8f95e9ea193415dac963a0c95beed50755828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:10",
+      "sequence": 14179,
+      "chapter_label": "PSA 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "They are more to be desired than gold, yes, than much fine gold, sweeter also than honey and the extract of the honeycomb.",
+      "ko": "금 곧 많은 정금보다 더 사모할 것이며 꿀과 송이꿀보다 더 달도다",
+      "source_text_hash": "db956c14222551d7e01be24bdebd7fbf4c06ef7e1688e436e84d8160b0e96de1",
+      "translation_text_hash": "22ad1a7232187c84571b76deb60d8a735ad96d64626014c4ce1dd004bd0cb617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금 곧 많은 정금보다 더 사모할 것이며 꿀과 송이꿀보다 더 달도다"
+      ],
+      "raw_text_hashes": [
+        "22ad1a7232187c84571b76deb60d8a735ad96d64626014c4ce1dd004bd0cb617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:11",
+      "sequence": 14180,
+      "chapter_label": "PSA 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover your servant is warned by them. In keeping them there is great reward.",
+      "ko": "또 주의 종이 이로 경계를 받고 이를 지킴으로 상이 크니이다",
+      "source_text_hash": "547e957b8172a870d6db811cfbf5de8dae731528ef699714b057aa8eb0ccea5f",
+      "translation_text_hash": "8ac53afca891efb0e39f494d8543c31459578b411a0ae0a21eaead62b04dfdbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 종이 이로 경계를 받고 이를 지킴으로 상이 크니이다"
+      ],
+      "raw_text_hashes": [
+        "8ac53afca891efb0e39f494d8543c31459578b411a0ae0a21eaead62b04dfdbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:12",
+      "sequence": 14181,
+      "chapter_label": "PSA 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "Who can discern his errors? Forgive me from hidden errors.",
+      "ko": "자기 허물을 능히 깨달을 자 누구리요 나를 숨은 허물에서 벗어나게 하소서",
+      "source_text_hash": "2bb9156466f49f53f87bd8a580a8c7a0e8c47f0cc9a08af7bb78f1744cec269f",
+      "translation_text_hash": "40df5ffc30a31ac03827d225a640a186e335a62331142b9eeceb77244fb7acd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 허물을 능히 깨달을 자 누구리요 나를 숨은 허물에서 벗어나게 하소서"
+      ],
+      "raw_text_hashes": [
+        "40df5ffc30a31ac03827d225a640a186e335a62331142b9eeceb77244fb7acd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:13",
+      "sequence": 14182,
+      "chapter_label": "PSA 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Keep back your servant also from presumptuous sins. Let them not have dominion over me. Then I will be upright. I will be blameless and innocent of great transgression.",
+      "ko": "또 주의 종으로 고범죄를 짓지 말게 하사 그 죄가 나를 주장치 못하게 하소서 그리하시면 내가 정직하여 큰 죄과에서 벗어나겠나이다",
+      "source_text_hash": "56934cbe25a26d58a83abfd3c94121f36bcfa00671f747e54c068826975ed769",
+      "translation_text_hash": "3af74d43533f5a373e96149d299f33bedbbc3943e49650f7d466dd870e8b1d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 종으로 고범죄를 짓지 말게 하사 그 죄가 나를 주장치 못하게 하소서 그리하시면 내가 정직하여 큰 죄과에서 벗어나겠나이다"
+      ],
+      "raw_text_hashes": [
+        "3af74d43533f5a373e96149d299f33bedbbc3943e49650f7d466dd870e8b1d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:19:14",
+      "sequence": 14183,
+      "chapter_label": "PSA 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Let the words of my mouth and the meditation of my heart be acceptable in your sight, LORD, my rock, and my redeemer.",
+      "ko": "나의 반석이시요 나의 구속자이신 여호와여 내 입의 말과 마음의 묵상이 주의 앞에 열납되기를 원하나이다",
+      "source_text_hash": "bf513a792d5b4c0c51feed8a5aa96f2738a1fbb8e339f1cef9d9c2fb5854074e",
+      "translation_text_hash": "df3c32ee81ae816698273c886b84bd5d2a8ccbdf5624b955dd3a51d1a31fd171",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 반석이시요 나의 구속자이신 여호와여 내 입의 말과 마음의 묵상이 주의 앞에 열납되기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "df3c32ee81ae816698273c886b84bd5d2a8ccbdf5624b955dd3a51d1a31fd171"
+      ]
+    }
+  ]
+}

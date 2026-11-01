@@ -1,0 +1,2861 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:007",
+  "unit_ordinal": 124,
+  "unit_label": "NUM 7",
+  "book_code": "NUM",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:7:1",
+      "sequence": 3852,
+      "chapter_label": "NUM 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "On the day that Moses had finished setting up the tabernacle, and had anointed it and sanctified it with all its furniture, and the altar with all its vessels, and had anointed and sanctified them;",
+      "ko": "모세가 장막 세우기를 필하고 그것에 기름을 발라 거룩히 구별하고 또 그 모든 기구와 단과 그 모든 기구에 기름을 발라 거룩히 구별한 날에",
+      "source_text_hash": "5055a3bcfcdf93d2fef2bd0267c81f17a8df14572e45e412493bb61ce1530d00",
+      "translation_text_hash": "b0faf4577dc9de36c37bf22bcfc89fc8ebb1cece9ae18976e065678dfe330589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 장막 세우기를 필하고 그것에 기름을 발라 거룩히 구별하고 또 그 모든 기구와 단과 그 모든 기구에 기름을 발라 거룩히 구별한 날에"
+      ],
+      "raw_text_hashes": [
+        "b0faf4577dc9de36c37bf22bcfc89fc8ebb1cece9ae18976e065678dfe330589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:2",
+      "sequence": 3853,
+      "chapter_label": "NUM 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "the princes of Israel, the heads of their fathers’ houses, gave offerings. These were the princes of the tribes. These are they who were over those who were counted;",
+      "ko": "이스라엘 족장들 곧 그들의 종족의 두령들이요 그 지파의 족장으로서 그 계수함을 입은 자의 감독된 자들이 예물을 드렸으니",
+      "source_text_hash": "eb494a42fcbb4561e6a46bb730d8283097183603e845e8d5d187cc4f9852596b",
+      "translation_text_hash": "212137d07ab3a36887fef484d7867d7499abb1ed53b326a91114368aeee0f34e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족장들 곧 그들의 종족의 두령들이요 그 지파의 족장으로서 그 계수함을 입은 자의 감독된 자들이 예물을 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "212137d07ab3a36887fef484d7867d7499abb1ed53b326a91114368aeee0f34e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:3",
+      "sequence": 3854,
+      "chapter_label": "NUM 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "and they brought their offering before the LORD, six covered wagons and twelve oxen; a wagon for every two of the princes, and for each one an ox. They presented them before the tabernacle.",
+      "ko": "그들의 여호와께 드린 예물은 덮개 있는 수레 여섯과 소 열 둘이니 족장 둘에 수레가 하나씩이요 하나에 소가 하나씩이라 그것들을 장막 앞에 드린지라",
+      "source_text_hash": "0d8b00fcbc3d79215c79601bdf9417a7737b9943ca6deb8913a7ddc0f36afa13",
+      "translation_text_hash": "df64f8bd16ff36aac387ca6ea8ad3ba75a7dda2874093a99c9efe643b6811cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 여호와께 드린 예물은 덮개 있는 수레 여섯과 소 열 둘이니 족장 둘에 수레가 하나씩이요 하나에 소가 하나씩이라 그것들을 장막 앞에 드린지라"
+      ],
+      "raw_text_hashes": [
+        "df64f8bd16ff36aac387ca6ea8ad3ba75a7dda2874093a99c9efe643b6811cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:4",
+      "sequence": 3855,
+      "chapter_label": "NUM 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:5",
+      "sequence": 3856,
+      "chapter_label": "NUM 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "“Accept these from them, that they may be used in doing the service of the Tent of Meeting; and you shall give them to the Levites, to every man according to his service.”",
+      "ko": "그것을 그들에게서 받아 레위인에게 주어 각기 직임대로 회막 봉사에 쓰게 할찌니라",
+      "source_text_hash": "c8e817eeafb1a99fc19097cbb27b4065ce572c67665c1d0ce3e258de4a1c923e",
+      "translation_text_hash": "a250f346649ef0482f7bde0487d1805865be6123bd6b8a827b3210418bfe1eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 그들에게서 받아 레위인에게 주어 각기 직임대로 회막 봉사에 쓰게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a250f346649ef0482f7bde0487d1805865be6123bd6b8a827b3210418bfe1eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:6",
+      "sequence": 3857,
+      "chapter_label": "NUM 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Moses took the wagons and the oxen, and gave them to the Levites.",
+      "ko": "모세가 수레와 소를 받아 레위인에게 주었으니",
+      "source_text_hash": "6c411babff80525a90c9aef9cf114737998a6c6b709f6484c59c31e814729c7f",
+      "translation_text_hash": "c92f880288b63591cd15823ec91c835255f00c4e9c60c94c4eae1e318102d671",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 수레와 소를 받아 레위인에게 주었으니"
+      ],
+      "raw_text_hashes": [
+        "c92f880288b63591cd15823ec91c835255f00c4e9c60c94c4eae1e318102d671"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:7",
+      "sequence": 3858,
+      "chapter_label": "NUM 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "He gave two wagons and four oxen to the sons of Gershon, according to their service.",
+      "ko": "곧 게르손 자손들에게는 그 직임대로 수레 둘과 소 넷을 주었고",
+      "source_text_hash": "0b912a1778e7fcf6f70d1b8a26a0cdabfcdae5aef6af094edee4713cad26d74e",
+      "translation_text_hash": "23bc5813ca700bb8f5ef46724a1ea962f39c11fa2a2529e23f751a0ddf6657c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 게르손 자손들에게는 그 직임대로 수레 둘과 소 넷을 주었고"
+      ],
+      "raw_text_hashes": [
+        "23bc5813ca700bb8f5ef46724a1ea962f39c11fa2a2529e23f751a0ddf6657c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:8",
+      "sequence": 3859,
+      "chapter_label": "NUM 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "He gave four wagons and eight oxen to the sons of Merari, according to their service, under the direction of Ithamar the son of Aaron the priest.",
+      "ko": "므라리 자손들에게는 그 직임대로 수레 넷과 소 여덟을 주고 제사장 아론의 아들 이다말로 감독케 하였으나",
+      "source_text_hash": "b8f582d8f88d924d55082397772a07186a28a86bcd94debc578e458dc5e020ad",
+      "translation_text_hash": "91f97fd8f5a453b1508bafb581e9ee699900d65751b19c88d339a83910d89d6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손들에게는 그 직임대로 수레 넷과 소 여덟을 주고 제사장 아론의 아들 이다말로 감독케 하였으나"
+      ],
+      "raw_text_hashes": [
+        "91f97fd8f5a453b1508bafb581e9ee699900d65751b19c88d339a83910d89d6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:9",
+      "sequence": 3860,
+      "chapter_label": "NUM 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "But to the sons of Kohath he gave none, because the service of the sanctuary belonged to them; they carried it on their shoulders.",
+      "ko": "고핫 자손에게는 주지 아니하였으니 그들의 성소의 직임은 그 어깨로 메는 일을 하는 까닭이었더라",
+      "source_text_hash": "7598f0dbe7f5506603ac10aeca53c65f1ebc035057968dd151ef4e5ad92dd935",
+      "translation_text_hash": "fc4204fd7bdc2a5abe1f980fe5d9edc1a76710688697757e89a4bb1a0b3780e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫 자손에게는 주지 아니하였으니 그들의 성소의 직임은 그 어깨로 메는 일을 하는 까닭이었더라"
+      ],
+      "raw_text_hashes": [
+        "fc4204fd7bdc2a5abe1f980fe5d9edc1a76710688697757e89a4bb1a0b3780e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:10",
+      "sequence": 3861,
+      "chapter_label": "NUM 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The princes gave offerings for the dedication of the altar in the day that it was anointed. The princes gave their offerings before the altar.",
+      "ko": "단에 기름을 바르던 날에 족장들이 단의 봉헌을 위하여 예물을 가져다가 그 예물을 단 앞에 드리니라",
+      "source_text_hash": "2e54a67b08a7f93a1a27e0faf64f518d2c05338eab005a1e7a63cd865b091ba1",
+      "translation_text_hash": "7c515a79cdf5f0370268cbe63328593f61d8499a7dbb1b777ed469114121407c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단에 기름을 바르던 날에 족장들이 단의 봉헌을 위하여 예물을 가져다가 그 예물을 단 앞에 드리니라"
+      ],
+      "raw_text_hashes": [
+        "7c515a79cdf5f0370268cbe63328593f61d8499a7dbb1b777ed469114121407c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:11",
+      "sequence": 3862,
+      "chapter_label": "NUM 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to Moses, “They shall offer their offering, each prince on his day, for the dedication of the altar.”",
+      "ko": "여호와께서 모세에게 이르시기를 족장들은 하루 한 사람씩 단의 봉헌 예물을 드릴찌니라 하셨더라",
+      "source_text_hash": "2cd39cea46511df0e2c6a2046447343c74735bb834f912e73fffe8da19f372d7",
+      "translation_text_hash": "917bd746b3e440c3287b2ab7acadeb6766a23e786376e316a5f36705ed8bf76a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시기를 족장들은 하루 한 사람씩 단의 봉헌 예물을 드릴찌니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "917bd746b3e440c3287b2ab7acadeb6766a23e786376e316a5f36705ed8bf76a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:12",
+      "sequence": 3863,
+      "chapter_label": "NUM 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "He who offered his offering the first day was Nahshon the son of Amminadab, of the tribe of Judah,",
+      "ko": "제 일일에 예물을 드린 자는 유다 지파 암미나답의 아들 나손이라",
+      "source_text_hash": "c0fe7066ec801dac59ff3418ae242af9289fb90c20eb52d8ecfb300798bb1d7f",
+      "translation_text_hash": "cbb19afd367763f582960e48913305d63084da185b1dd929d0853cdb0f60581e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 일일에 예물을 드린 자는 유다 지파 암미나답의 아들 나손이라"
+      ],
+      "raw_text_hashes": [
+        "cbb19afd367763f582960e48913305d63084da185b1dd929d0853cdb0f60581e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:13",
+      "sequence": 3864,
+      "chapter_label": "NUM 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "and his offering was: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물은 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "f5b706e3058476735ced908ba92ac826df6cb7280254356ea83c03c5b4483bc4",
+      "translation_text_hash": "aa919a71a725555d33f45d7c410bb8b229462da88e2f0989e3cdeb4b7a72f638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물은 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "aa919a71a725555d33f45d7c410bb8b229462da88e2f0989e3cdeb4b7a72f638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:14",
+      "sequence": 3865,
+      "chapter_label": "NUM 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금 숟가락 하나라 그것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "c975769fe01667e56695f7ab428bb6cbd1494e37825496323a78186143a65526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금 숟가락 하나라 그것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "c975769fe01667e56695f7ab428bb6cbd1494e37825496323a78186143a65526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:15",
+      "sequence": 3866,
+      "chapter_label": "NUM 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:16",
+      "sequence": 3867,
+      "chapter_label": "NUM 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:17",
+      "sequence": 3868,
+      "chapter_label": "NUM 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Nahshon the son of Amminadab.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미나답의 아들 나손의 예물이었더라",
+      "source_text_hash": "b676bc829ee75d4dbc6e2a0bc58c5f175640e8d67a025040f56fd415eada1b10",
+      "translation_text_hash": "7c558365adb1cd792ac1b5002e9b87a72a83e19863140908b44a327f25b5db85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미나답의 아들 나손의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "7c558365adb1cd792ac1b5002e9b87a72a83e19863140908b44a327f25b5db85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:18",
+      "sequence": 3869,
+      "chapter_label": "NUM 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "On the second day Nethanel the son of Zuar, prince of Issachar, gave his offering.",
+      "ko": "제 이일에는 잇사갈의 족장 수알의 아들 느다넬이 드렸으니",
+      "source_text_hash": "70f83bbc14c2def23f945a73fffba4d4a5afb56ace9adcd551699b84f8b1443c",
+      "translation_text_hash": "7217daf73202f89d357bd401b3549da8828cca29a9cbd5101261ebfae90f0b46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 이일에는 잇사갈의 족장 수알의 아들 느다넬이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "7217daf73202f89d357bd401b3549da8828cca29a9cbd5101261ebfae90f0b46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:19",
+      "sequence": 3870,
+      "chapter_label": "NUM 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "He offered for his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 드린 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "20cd3a0b7f6ed2bb1d780977880a9e1da49318b1ba873baff24043a72a2eecd4",
+      "translation_text_hash": "87cba64c6b2a63b6224e023c18015401bede85189cb1862f2e97714c61e4d1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 드린 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "87cba64c6b2a63b6224e023c18015401bede85189cb1862f2e97714c61e4d1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:20",
+      "sequence": 3871,
+      "chapter_label": "NUM 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금 숟가락 하나라 그것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "c975769fe01667e56695f7ab428bb6cbd1494e37825496323a78186143a65526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금 숟가락 하나라 그것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "c975769fe01667e56695f7ab428bb6cbd1494e37825496323a78186143a65526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:21",
+      "sequence": 3872,
+      "chapter_label": "NUM 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:22",
+      "sequence": 3873,
+      "chapter_label": "NUM 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:23",
+      "sequence": 3874,
+      "chapter_label": "NUM 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, five male lambs a year old. This was the offering of Nethanel the son of Zuar.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 수알의 아들 느다넬의 예물이었더라",
+      "source_text_hash": "efcbb3ff9a5ade182189ad8d3abb6f21340efb13f327c0d3d38b7d3647788d83",
+      "translation_text_hash": "9a45c538b2a17049c09a4512cc8b3d3757f1672958b7a66040f77f2a9365d98a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 수알의 아들 느다넬의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "9a45c538b2a17049c09a4512cc8b3d3757f1672958b7a66040f77f2a9365d98a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:24",
+      "sequence": 3875,
+      "chapter_label": "NUM 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "On the third day Eliab the son of Helon, prince of the children of Zebulun,",
+      "ko": "제 삼일에는 스불론 자손의 족장 헬론의 아들 엘리압이 드렸으니",
+      "source_text_hash": "37bf659bb266d46652d417459e8c13bb75c5da1775374400606cbccb14fa8be7",
+      "translation_text_hash": "6ba4a064b345cf4b95b74f46c6e5680c8015a061857eef6a9e23f4c32036e5ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에는 스불론 자손의 족장 헬론의 아들 엘리압이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "6ba4a064b345cf4b95b74f46c6e5680c8015a061857eef6a9e23f4c32036e5ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:25",
+      "sequence": 3876,
+      "chapter_label": "NUM 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was a hundred and thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "8cfb16c937af8dfd2e18576242120900b2baee1d44ee2d504a938e9c8af9d5e5",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:26",
+      "sequence": 3877,
+      "chapter_label": "NUM 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금 숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "0cecf173bea03d9140da3d576ec114b4a7bf7632949d7a133ff7054ba1de4fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금 숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "0cecf173bea03d9140da3d576ec114b4a7bf7632949d7a133ff7054ba1de4fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:27",
+      "sequence": 3878,
+      "chapter_label": "NUM 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:28",
+      "sequence": 3879,
+      "chapter_label": "NUM 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:29",
+      "sequence": 3880,
+      "chapter_label": "NUM 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Eliab the son of Helon.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 헬론의 아들 엘리압의 예물이었더라",
+      "source_text_hash": "ea88781e6394b97928bcb3066d9ebf77bfcb2153580f6c84423a1847e2855400",
+      "translation_text_hash": "2eccb1f21ae07b43697d06b454a5987e782c39e98738dcf91a89a515ad0c29b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 헬론의 아들 엘리압의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "2eccb1f21ae07b43697d06b454a5987e782c39e98738dcf91a89a515ad0c29b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:30",
+      "sequence": 3881,
+      "chapter_label": "NUM 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "On the fourth day Elizur the son of Shedeur, prince of the children of Reuben,",
+      "ko": "제 사일에는 르우벤 자손의 족장 스데울의 아들 엘리술이 드렸으니",
+      "source_text_hash": "17a878494949b8c8f291f5f3bd94255967135e413ef2cbd4ae540755c8fe3cc5",
+      "translation_text_hash": "51bf32ee8aa67b1207149d369a574f8af49c3298fc3197812888e77ca6f48b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사일에는 르우벤 자손의 족장 스데울의 아들 엘리술이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "51bf32ee8aa67b1207149d369a574f8af49c3298fc3197812888e77ca6f48b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:31",
+      "sequence": 3882,
+      "chapter_label": "NUM 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:32",
+      "sequence": 3883,
+      "chapter_label": "NUM 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:33",
+      "sequence": 3884,
+      "chapter_label": "NUM 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:34",
+      "sequence": 3885,
+      "chapter_label": "NUM 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:35",
+      "sequence": 3886,
+      "chapter_label": "NUM 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Elizur the son of Shedeur.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 스데울의 아들 엘리술의 예물이었더라",
+      "source_text_hash": "c5150ca7cc210e90da999f37355518e2342e3253633ff1949ea3b92147440a7f",
+      "translation_text_hash": "0feeb2c18eed5c53fe84aed89966b0864746a5d3717864a640fc1a3d9d67514b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 스데울의 아들 엘리술의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "0feeb2c18eed5c53fe84aed89966b0864746a5d3717864a640fc1a3d9d67514b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:36",
+      "sequence": 3887,
+      "chapter_label": "NUM 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "On the fifth day Shelumiel the son of Zurishaddai, prince of the children of Simeon,",
+      "ko": "제 오일에는 시므온 자손의 족장 수리삿대의 아들 슬루미엘이 드렸으니",
+      "source_text_hash": "22dd4c358d3be181a97d6a0dd98fb84483d66b2a5c61c90865572e241c57d5d6",
+      "translation_text_hash": "a8071309c9b2b93792634fbc3d4b63792b7821724a230035c85512f53ea3e13c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 오일에는 시므온 자손의 족장 수리삿대의 아들 슬루미엘이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "a8071309c9b2b93792634fbc3d4b63792b7821724a230035c85512f53ea3e13c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:37",
+      "sequence": 3888,
+      "chapter_label": "NUM 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:38",
+      "sequence": 3889,
+      "chapter_label": "NUM 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:39",
+      "sequence": 3890,
+      "chapter_label": "NUM 7",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 39
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:40",
+      "sequence": 3891,
+      "chapter_label": "NUM 7",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 40
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:41",
+      "sequence": 3892,
+      "chapter_label": "NUM 7",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 41
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old: this was the offering of Shelumiel the son of Zurishaddai.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 수리삿대의 아들 슬루미엘의 예물이었더라",
+      "source_text_hash": "718006b8cfd09e0af5ce20aad7a44852bbe5ee2a2086f34a53eeff4e2058c4f7",
+      "translation_text_hash": "30d0012c4137da1ce14a5d6ad9ebefc0ed8f1deb35b430339ddc1b12fb4d609e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 수리삿대의 아들 슬루미엘의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "30d0012c4137da1ce14a5d6ad9ebefc0ed8f1deb35b430339ddc1b12fb4d609e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:42",
+      "sequence": 3893,
+      "chapter_label": "NUM 7",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 42
+        }
+      ],
+      "en": "On the sixth day, Eliasaph the son of Deuel, prince of the children of Gad,",
+      "ko": "제 육일에는 갓 자손의 족장 드우엘의 아들 엘리아삽이 드렸으니",
+      "source_text_hash": "11474c78dd6f31859792cfb0c782ac88e4fe971bb43b907a029925eb7e6b7d1f",
+      "translation_text_hash": "8cd2c7276905e53eb9c704a76ccc3962766b0dd5cb91cff753973cbcd0f98099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육일에는 갓 자손의 족장 드우엘의 아들 엘리아삽이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "8cd2c7276905e53eb9c704a76ccc3962766b0dd5cb91cff753973cbcd0f98099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:43",
+      "sequence": 3894,
+      "chapter_label": "NUM 7",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 43
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:44",
+      "sequence": 3895,
+      "chapter_label": "NUM 7",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 44
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금 숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "0cecf173bea03d9140da3d576ec114b4a7bf7632949d7a133ff7054ba1de4fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금 숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "0cecf173bea03d9140da3d576ec114b4a7bf7632949d7a133ff7054ba1de4fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:45",
+      "sequence": 3896,
+      "chapter_label": "NUM 7",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 45
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:46",
+      "sequence": 3897,
+      "chapter_label": "NUM 7",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 46
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:47",
+      "sequence": 3898,
+      "chapter_label": "NUM 7",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 47
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Eliasaph the son of Deuel.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 드우엘의 아들 엘리아삽의 예물이었더라",
+      "source_text_hash": "44a5b3eb5095db5597ee51137cfa92be41efe8a513cba3d16ac98c5f6b8d3578",
+      "translation_text_hash": "436055bc51b0612fb294c590d400510112a8129caf69c3dc14c7a3a617270dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 드우엘의 아들 엘리아삽의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "436055bc51b0612fb294c590d400510112a8129caf69c3dc14c7a3a617270dd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:48",
+      "sequence": 3899,
+      "chapter_label": "NUM 7",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 48
+        }
+      ],
+      "en": "On the seventh day Elishama the son of Ammihud, prince of the children of Ephraim,",
+      "ko": "제 칠일에는 에브라임 자손의 족장 암미훗의 아들 엘리사마가 드렸으니",
+      "source_text_hash": "e8f49dda7fa82b3f2b85cc7a78cb485673fc9f71642a8d0db3049eee0edfeb46",
+      "translation_text_hash": "8b5a897350cefc86e906a5a4118c292a8df564278a8a1edb32422c9a0d7e56ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일에는 에브라임 자손의 족장 암미훗의 아들 엘리사마가 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "8b5a897350cefc86e906a5a4118c292a8df564278a8a1edb32422c9a0d7e56ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:49",
+      "sequence": 3900,
+      "chapter_label": "NUM 7",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 49
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:50",
+      "sequence": 3901,
+      "chapter_label": "NUM 7",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 50
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:51",
+      "sequence": 3902,
+      "chapter_label": "NUM 7",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 51
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:52",
+      "sequence": 3903,
+      "chapter_label": "NUM 7",
+      "verse_label": "52",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 52
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:53",
+      "sequence": 3904,
+      "chapter_label": "NUM 7",
+      "verse_label": "53",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 53
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Elishama the son of Ammihud.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미훗의 아들 엘리사마의 예물이었더라",
+      "source_text_hash": "640a5e44916e388d0e0726374bc02d4dea3e42732cdfe6cc45c21324a25805fa",
+      "translation_text_hash": "b56e249cdb748e1da77bb968a82f09f3201e4136ff3e7f3476d9ff23ceaf17de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미훗의 아들 엘리사마의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "b56e249cdb748e1da77bb968a82f09f3201e4136ff3e7f3476d9ff23ceaf17de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:54",
+      "sequence": 3905,
+      "chapter_label": "NUM 7",
+      "verse_label": "54",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 54
+        }
+      ],
+      "en": "On the eighth day Gamaliel the son of Pedahzur, prince of the children of Manasseh,",
+      "ko": "제 팔일에는 므낫세 자손의 족장 브다술의 아들 가말리엘이 드렸으니",
+      "source_text_hash": "cfbc1312e341ad0812f3ea1870e77349ed7d986fd2ffbef07899db643746101a",
+      "translation_text_hash": "1ea4f6a024b677ea578aed90296786bc81447afc3a9f0f142aeff65136abc8a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에는 므낫세 자손의 족장 브다술의 아들 가말리엘이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "1ea4f6a024b677ea578aed90296786bc81447afc3a9f0f142aeff65136abc8a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:55",
+      "sequence": 3906,
+      "chapter_label": "NUM 7",
+      "verse_label": "55",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 55
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:56",
+      "sequence": 3907,
+      "chapter_label": "NUM 7",
+      "verse_label": "56",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 56
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:57",
+      "sequence": 3908,
+      "chapter_label": "NUM 7",
+      "verse_label": "57",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 57
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:58",
+      "sequence": 3909,
+      "chapter_label": "NUM 7",
+      "verse_label": "58",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 58
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:59",
+      "sequence": 3910,
+      "chapter_label": "NUM 7",
+      "verse_label": "59",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 59
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Gamaliel the son of Pedahzur.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 브다술의 아들 가말리엘의 예물이었더라",
+      "source_text_hash": "c6d524530afd3da367aa916c2f94fe8bd690e60967c7c197ce924f6b2f62e8ca",
+      "translation_text_hash": "b62e1b370f2837880e73364dabdb783a7c2f8f34552ddbdde13481fda1f9d5d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 브다술의 아들 가말리엘의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "b62e1b370f2837880e73364dabdb783a7c2f8f34552ddbdde13481fda1f9d5d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:60",
+      "sequence": 3911,
+      "chapter_label": "NUM 7",
+      "verse_label": "60",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 60
+        }
+      ],
+      "en": "On the ninth day Abidan the son of Gideoni, prince of the children of Benjamin,",
+      "ko": "제 구일에는 베냐민 자손의 족장 기드오니의 아들 아비단이 드렸으니",
+      "source_text_hash": "5fdbd6ca2e822b29588657a29ca4289c469edc38e697f2538e167418e0f864fa",
+      "translation_text_hash": "a1ea3a33cb98af55bbcc0bd2bc3273f1e4c007793439a2d358f0257683810fbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 구일에는 베냐민 자손의 족장 기드오니의 아들 아비단이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "a1ea3a33cb98af55bbcc0bd2bc3273f1e4c007793439a2d358f0257683810fbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:61",
+      "sequence": 3912,
+      "chapter_label": "NUM 7",
+      "verse_label": "61",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 61
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:62",
+      "sequence": 3913,
+      "chapter_label": "NUM 7",
+      "verse_label": "62",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 62
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:63",
+      "sequence": 3914,
+      "chapter_label": "NUM 7",
+      "verse_label": "63",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 63
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:64",
+      "sequence": 3915,
+      "chapter_label": "NUM 7",
+      "verse_label": "64",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 64
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:65",
+      "sequence": 3916,
+      "chapter_label": "NUM 7",
+      "verse_label": "65",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 65
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Abidan the son of Gideoni.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 기드오니의 아들 아비단의 예물이었더라",
+      "source_text_hash": "ea6b1441636ff71a9cbf7194c53acbf32bbe8660a86c1d24226e53407c123811",
+      "translation_text_hash": "9a52e66aa3bb6055ea2f7a4f9e171893564da8f8f661114297d3d862801a9890",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 기드오니의 아들 아비단의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "9a52e66aa3bb6055ea2f7a4f9e171893564da8f8f661114297d3d862801a9890"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:66",
+      "sequence": 3917,
+      "chapter_label": "NUM 7",
+      "verse_label": "66",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 66
+        }
+      ],
+      "en": "On the tenth day Ahiezer the son of Ammishaddai, prince of the children of Dan,",
+      "ko": "제 십일에는 단 자손의 족장 암미삿대의 아들 아히에셀이 드렸으니",
+      "source_text_hash": "760d83083a918f477c8abfa56075f53933b917273a1a6f3136e1615091f67361",
+      "translation_text_hash": "2ce1c495e5d7b735632142aef7fd5031f9eaa943a2cf1808c72882209b9c6268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십일에는 단 자손의 족장 암미삿대의 아들 아히에셀이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "2ce1c495e5d7b735632142aef7fd5031f9eaa943a2cf1808c72882209b9c6268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:67",
+      "sequence": 3918,
+      "chapter_label": "NUM 7",
+      "verse_label": "67",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 67
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:68",
+      "sequence": 3919,
+      "chapter_label": "NUM 7",
+      "verse_label": "68",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 68
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:69",
+      "sequence": 3920,
+      "chapter_label": "NUM 7",
+      "verse_label": "69",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 69
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:70",
+      "sequence": 3921,
+      "chapter_label": "NUM 7",
+      "verse_label": "70",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 70
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:71",
+      "sequence": 3922,
+      "chapter_label": "NUM 7",
+      "verse_label": "71",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 71
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Ahiezer the son of Ammishaddai.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미삿대의 아들 아히에셀의 예물이었더라",
+      "source_text_hash": "412860ab2ac55d092da5be105c5f0e79f8bd15156323c5483cb86342c1b68910",
+      "translation_text_hash": "d17c16c84273179d85490fff14c2ef59cab624a26f1d0feea114266902df59e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 암미삿대의 아들 아히에셀의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "d17c16c84273179d85490fff14c2ef59cab624a26f1d0feea114266902df59e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:72",
+      "sequence": 3923,
+      "chapter_label": "NUM 7",
+      "verse_label": "72",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 72
+        }
+      ],
+      "en": "On the eleventh day Pagiel the son of Ochran, prince of the children of Asher,",
+      "ko": "제 십일일에는 아셀 자손의 족장 오그란의 아들 바기엘이 드렸으니",
+      "source_text_hash": "bfafc093f1028ad7b28d3f828d403ea323156645024cfa2e7fee472c5df0b158",
+      "translation_text_hash": "a2d5c24758ced4016d367826a963e9a88bd8635fd3f90b108b43d32faccebc40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십일일에는 아셀 자손의 족장 오그란의 아들 바기엘이 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "a2d5c24758ced4016d367826a963e9a88bd8635fd3f90b108b43d32faccebc40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:73",
+      "sequence": 3924,
+      "chapter_label": "NUM 7",
+      "verse_label": "73",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 73
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:74",
+      "sequence": 3925,
+      "chapter_label": "NUM 7",
+      "verse_label": "74",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 74
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 74
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:75",
+      "sequence": 3926,
+      "chapter_label": "NUM 7",
+      "verse_label": "75",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 75
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 75
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:76",
+      "sequence": 3927,
+      "chapter_label": "NUM 7",
+      "verse_label": "76",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 76
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 76
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:77",
+      "sequence": 3928,
+      "chapter_label": "NUM 7",
+      "verse_label": "77",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 77
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 77
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Pagiel the son of Ochran.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 오그란의 아들 바기엘의 예물이었더라",
+      "source_text_hash": "e154711d8387aedd1cb9ba20b4d6183b2763255924135727981054de76373bec",
+      "translation_text_hash": "7cab450a5a8a0f02823bcef99db6e291cfdbee5ab4104ad4d358851821f0810f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 오그란의 아들 바기엘의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "7cab450a5a8a0f02823bcef99db6e291cfdbee5ab4104ad4d358851821f0810f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:78",
+      "sequence": 3929,
+      "chapter_label": "NUM 7",
+      "verse_label": "78",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 78
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 78
+        }
+      ],
+      "en": "On the twelfth day Ahira the son of Enan, prince of the children of Naphtali,",
+      "ko": "제 십 이일에는 납달리 자손의 족장 에난의 아들 아히라가 드렸으니",
+      "source_text_hash": "f7b1b6b7d25cf26010f5952503574dc94e5f8dba7c57eb9a3082cdb0924cc4cf",
+      "translation_text_hash": "36a89f0c50483c2837ad9d919c5e7413fb7e2fcde0f1485cf77953f59743dcb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 이일에는 납달리 자손의 족장 에난의 아들 아히라가 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "36a89f0c50483c2837ad9d919c5e7413fb7e2fcde0f1485cf77953f59743dcb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:79",
+      "sequence": 3930,
+      "chapter_label": "NUM 7",
+      "verse_label": "79",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 79
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 79
+        }
+      ],
+      "en": "gave his offering: one silver platter, the weight of which was one hundred thirty shekels, one silver bowl of seventy shekels, according to the shekel of the sanctuary, both of them full of fine flour mixed with oil for a meal offering;",
+      "ko": "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고",
+      "source_text_hash": "e9eae74b8e278ebaeb69f95db2064141c0af844bb970eddc159950cbcd24320e",
+      "translation_text_hash": "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물도 성소의 세겔대로 일백 삼십 세겔중 은반 하나와 칠십 세겔중 은바리 하나라 이 두 그릇에는 소제물로 기름 섞은 고운 가루를 채웠고"
+      ],
+      "raw_text_hashes": [
+        "7cb91824b1de8302c22452295d7446e15a27138efc1641720515221efbe2ee55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:80",
+      "sequence": 3931,
+      "chapter_label": "NUM 7",
+      "verse_label": "80",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 80
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 80
+        }
+      ],
+      "en": "one golden ladle of ten shekels, full of incense;",
+      "ko": "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고",
+      "source_text_hash": "cd9353098146847fe5e46b4ab8555671ecfee494f3184099b13be49abb20ea2e",
+      "translation_text_hash": "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 십 세겔중 금숟가락 하나라 이것에는 향을 채웠고"
+      ],
+      "raw_text_hashes": [
+        "8a861e866aa10fc23c92135ffea976b467e0276fbd3f9a176ed41d6c3169bd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:81",
+      "sequence": 3932,
+      "chapter_label": "NUM 7",
+      "verse_label": "81",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 81
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 81
+        }
+      ],
+      "en": "one young bull, one ram, one male lamb a year old, for a burnt offering;",
+      "ko": "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며",
+      "source_text_hash": "84290382b45dfa23003557b90a7525319eb6166787736f0bec04879204d8e9c8",
+      "translation_text_hash": "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지 하나와 수양 하나와 일년 된 어린 수양 하나이며"
+      ],
+      "raw_text_hashes": [
+        "5fb31a57515e7c9ed28de9846bdd3513a5f59b1a05ef9d578c046e1ac613538a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:82",
+      "sequence": 3933,
+      "chapter_label": "NUM 7",
+      "verse_label": "82",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 82
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 82
+        }
+      ],
+      "en": "one male goat for a sin offering;",
+      "ko": "속죄제물로 수염소 하나이며",
+      "source_text_hash": "5a4cdbe4ca8f839197b793a721b1dd70052812f832b7da77c5c3600057e87d6b",
+      "translation_text_hash": "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄제물로 수염소 하나이며"
+      ],
+      "raw_text_hashes": [
+        "72816b2a0afc8930015c4988aaa2f9810974afd6d205b8ad26d7dea4ffd4e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:83",
+      "sequence": 3934,
+      "chapter_label": "NUM 7",
+      "verse_label": "83",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 83
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 83
+        }
+      ],
+      "en": "and for the sacrifice of peace offerings, two head of cattle, five rams, five male goats, and five male lambs a year old. This was the offering of Ahira the son of Enan.",
+      "ko": "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 에난의 아들 아히라의 예물이었더라",
+      "source_text_hash": "42df98d2eba0129c00b1d3803d93d7cde2571322ac4e0602acb70c606e557783",
+      "translation_text_hash": "ac794c7e9f6c12f4e1533d603a7b4fa095dfad3b2f0c4854d6bf74d7d50610c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 소 둘과 수양 다섯과 수염소 다섯과 일년 된 어린 수양 다섯이라 이는 에난의 아들 아히라의 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "ac794c7e9f6c12f4e1533d603a7b4fa095dfad3b2f0c4854d6bf74d7d50610c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:84",
+      "sequence": 3935,
+      "chapter_label": "NUM 7",
+      "verse_label": "84",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 84
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 84
+        }
+      ],
+      "en": "This was the dedication offering of the altar, on the day when it was anointed, by the princes of Israel: twelve silver platters, twelve silver bowls, twelve golden ladles;",
+      "ko": "이는 곧 단에 기름 바르던 날에 이스라엘 족장들이 드린바 단의 봉헌 예물이라 은반이 열 둘이요 은바리가 열 둘이요 금숟가락이 열 둘이니",
+      "source_text_hash": "6f39053dd119a1a7f3a4b84749506b888347d1fb03d73dff904293b86dda204f",
+      "translation_text_hash": "775ded540f40da0a75647b2421b98aab5b79ba7f45ae31f3d0be3d34bf0b0ef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 단에 기름 바르던 날에 이스라엘 족장들이 드린바 단의 봉헌 예물이라 은반이 열 둘이요 은바리가 열 둘이요 금숟가락이 열 둘이니"
+      ],
+      "raw_text_hashes": [
+        "775ded540f40da0a75647b2421b98aab5b79ba7f45ae31f3d0be3d34bf0b0ef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:85",
+      "sequence": 3936,
+      "chapter_label": "NUM 7",
+      "verse_label": "85",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 85
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 85
+        }
+      ],
+      "en": "each silver platter weighing one hundred thirty shekels, and each bowl seventy; all the silver of the vessels two thousand four hundred shekels, according to the shekel of the sanctuary;",
+      "ko": "은반은 각각 일백 삼십 세겔중이요 은바리는 각각 칠십 세겔중이라 성소의 세겔대로 모든 기명의 은이 도합이 이천 사백 세겔이요",
+      "source_text_hash": "d205a8658be37f1049c7188c912998d14183eef729692032bee933ab20f95ff6",
+      "translation_text_hash": "652c332a692b7edc81502475a66819dd5ea93de6624697723ed375db3ca6d0f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은반은 각각 일백 삼십 세겔중이요 은바리는 각각 칠십 세겔중이라 성소의 세겔대로 모든 기명의 은이 도합이 이천 사백 세겔이요"
+      ],
+      "raw_text_hashes": [
+        "652c332a692b7edc81502475a66819dd5ea93de6624697723ed375db3ca6d0f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:86",
+      "sequence": 3937,
+      "chapter_label": "NUM 7",
+      "verse_label": "86",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 86
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 86
+        }
+      ],
+      "en": "the twelve golden ladles, full of incense, weighing ten shekels apiece, according to the shekel of the sanctuary; all the gold of the ladles weighed one hundred twenty shekels;",
+      "ko": "또 향을 채운 금숟가락이 열 둘이니 성소의 세겔대로 각각 십 세겔중이라 그 숟가락의 금이 도합이 일백 이십 세겔이요",
+      "source_text_hash": "f0e60a65f3d94680fd42e6d3d501e1c472303365602641735953a7edc7313d5c",
+      "translation_text_hash": "79a0e54247e9e75b305dc3bc430027d89c2904e3916837e0703e11aab18d2bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 향을 채운 금숟가락이 열 둘이니 성소의 세겔대로 각각 십 세겔중이라 그 숟가락의 금이 도합이 일백 이십 세겔이요"
+      ],
+      "raw_text_hashes": [
+        "79a0e54247e9e75b305dc3bc430027d89c2904e3916837e0703e11aab18d2bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:87",
+      "sequence": 3938,
+      "chapter_label": "NUM 7",
+      "verse_label": "87",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 87
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 87
+        }
+      ],
+      "en": "all the cattle for the burnt offering twelve bulls, the rams twelve, the male lambs a year old twelve, and their meal offering; and twelve male goats for a sin offering;",
+      "ko": "또 번제물로 수송아지가 열 둘이요 수양이 열 둘이요 일년 된 어린 수양이 열 둘이요 그 소제물이며 속죄제물로 수염소가 열 둘이며",
+      "source_text_hash": "fdda5adddd68c860f4bde21aeb3f2e3cd19337768beb09b9e4a41b281be7290a",
+      "translation_text_hash": "47976d65e1833c6ccccdad8f04a621bd2af826115562652a143dbd1bcf7b87e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제물로 수송아지가 열 둘이요 수양이 열 둘이요 일년 된 어린 수양이 열 둘이요 그 소제물이며 속죄제물로 수염소가 열 둘이며"
+      ],
+      "raw_text_hashes": [
+        "47976d65e1833c6ccccdad8f04a621bd2af826115562652a143dbd1bcf7b87e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:88",
+      "sequence": 3939,
+      "chapter_label": "NUM 7",
+      "verse_label": "88",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 88
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 88
+        }
+      ],
+      "en": "and all the cattle for the sacrifice of peace offerings: twenty-four bulls, sixty rams, sixty male goats, and sixty male lambs a year old. This was the dedication offering of the altar, after it was anointed.",
+      "ko": "화목제물로 수소가 이십 사요 수양이 육십이요 수염소가 육십이요 일년 된 어린 수양이 육십이라 이는 단에 기름 바른 후에 드린바 단의 봉헌 예물이었더라",
+      "source_text_hash": "c528e05a69a906c3eeaa8b86626922c15d7405dd0e3a070d34cfda443b77df94",
+      "translation_text_hash": "336f6e9e8c86c23a0f84f55654b4e9edb2fde09ffd78acf1fbac39e62773bf8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목제물로 수소가 이십 사요 수양이 육십이요 수염소가 육십이요 일년 된 어린 수양이 육십이라 이는 단에 기름 바른 후에 드린바 단의 봉헌 예물이었더라"
+      ],
+      "raw_text_hashes": [
+        "336f6e9e8c86c23a0f84f55654b4e9edb2fde09ffd78acf1fbac39e62773bf8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:7:89",
+      "sequence": 3940,
+      "chapter_label": "NUM 7",
+      "verse_label": "89",
+      "locator": {
+        "book": "NUM",
+        "chapter": 7,
+        "verse": 89
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 7,
+          "verse": 89
+        }
+      ],
+      "en": "When Moses went into the Tent of Meeting to speak with the LORD, he heard his voice speaking to him from above the mercy seat that was on the ark of the Testimony, from between the two cherubim; and he spoke to him.",
+      "ko": "모세가 회막에 들어가서 여호와께 말씀하려 할 때에 증거궤 위 속죄소 위의 두 그룹 사이에서 자기에게 말씀하시는 목소리를 들었으니 여호와께서 그에게 말씀하심이었더라",
+      "source_text_hash": "b05f996ac44c81254492930154c43f6658b178d433fdd5aa4d9b182c84f9d8ca",
+      "translation_text_hash": "4e9437a27adad300efcfd67d0f7f6d070e6634ec8a4669251de1048d5841d521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회막에 들어가서 여호와께 말씀하려 할 때에 증거궤 위 속죄소 위의 두 그룹 사이에서 자기에게 말씀하시는 목소리를 들었으니 여호와께서 그에게 말씀하심이었더라"
+      ],
+      "raw_text_hashes": [
+        "4e9437a27adad300efcfd67d0f7f6d070e6634ec8a4669251de1048d5841d521"
+      ]
+    }
+  ]
+}

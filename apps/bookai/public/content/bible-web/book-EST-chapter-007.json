@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:007",
+  "unit_ordinal": 433,
+  "unit_label": "EST 7",
+  "book_code": "EST",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:7:1",
+      "sequence": 12809,
+      "chapter_label": "EST 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "So the king and Haman came to banquet with Esther the queen.",
+      "ko": "왕이 하만과 함께 또 왕후 에스더의 잔치에 나아가니라",
+      "source_text_hash": "12e9f5a851050671ade352cbc9bd44580c8a430c0ad93be9b16e1629c1aa0495",
+      "translation_text_hash": "8c76a7b24f85095131e65621d74a04562d1f8ef1819fa5b7a07f1711ff15bc72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 하만과 함께 또 왕후 에스더의 잔치에 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "8c76a7b24f85095131e65621d74a04562d1f8ef1819fa5b7a07f1711ff15bc72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:2",
+      "sequence": 12810,
+      "chapter_label": "EST 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "The king said again to Esther on the second day at the banquet of wine, “What is your petition, queen Esther? It shall be granted you. What is your request? Even to the half of the kingdom it shall be performed.”",
+      "ko": "왕이 이 둘째날 잔치에 술을 마실 때에 다시 에스더에게 물어 가로되 왕후 에스더여 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 곧 나라의 절반이라 할찌라도 시행하겠노라",
+      "source_text_hash": "7916215e4a2c2ac2ee33a55785d210a4b04e0b9a9fceca7270e66659812c8574",
+      "translation_text_hash": "c2b4d691138024c68d47f960a7cd26d0fe5e30bc546f8de0a7e9214c60a08ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이 둘째날 잔치에 술을 마실 때에 다시 에스더에게 물어 가로되 왕후 에스더여 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 곧 나라의 절반이라 할찌라도 시행하겠노라"
+      ],
+      "raw_text_hashes": [
+        "c2b4d691138024c68d47f960a7cd26d0fe5e30bc546f8de0a7e9214c60a08ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:3",
+      "sequence": 12811,
+      "chapter_label": "EST 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Then Esther the queen answered, “If I have found favor in your sight, O king, and if it pleases the king, let my life be given me at my petition, and my people at my request.",
+      "ko": "왕후 에스더가 대답하여 가로되 왕이여 내가 만일 왕의 목전에서 은혜를 입었으며 왕이 선히 여기시거든 내 소청대로 내 생명을 내게 주시고 내 요구대로 내 민족을 내게 주소서",
+      "source_text_hash": "38d89575eaff755b9183f8264ca6fc25c7586e6da63a072b8fa4e1f28693003e",
+      "translation_text_hash": "edcf28c766218aeee1d6bf37244771a6b28636569d706fbd4061b472bc116ac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후 에스더가 대답하여 가로되 왕이여 내가 만일 왕의 목전에서 은혜를 입었으며 왕이 선히 여기시거든 내 소청대로 내 생명을 내게 주시고 내 요구대로 내 민족을 내게 주소서"
+      ],
+      "raw_text_hashes": [
+        "edcf28c766218aeee1d6bf37244771a6b28636569d706fbd4061b472bc116ac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:4",
+      "sequence": 12812,
+      "chapter_label": "EST 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "For we are sold, I and my people, to be destroyed, to be slain, and to perish. But if we had been sold for male and female slaves, I would have held my peace, although the adversary could not have compensated for the king’s loss.”",
+      "ko": "나와 내 민족이 팔려서 죽임과 도륙함과 진멸함을 당하게 되었나이다 만일 우리가 노비로 팔렸더면 내가 잠잠하였으리이다 그래도 대적이 왕의 손해를 보충하지 못하였으리이다",
+      "source_text_hash": "d8122220a1187152cac2a68f394025a126504ed7031ef3987f207d4beccfbdac",
+      "translation_text_hash": "d5a9a2e561bd217b5ba6229ceddcceda0b22a367b6d044974cc9916846a925e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 내 민족이 팔려서 죽임과 도륙함과 진멸함을 당하게 되었나이다 만일 우리가 노비로 팔렸더면 내가 잠잠하였으리이다 그래도 대적이 왕의 손해를 보충하지 못하였으리이다"
+      ],
+      "raw_text_hashes": [
+        "d5a9a2e561bd217b5ba6229ceddcceda0b22a367b6d044974cc9916846a925e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:5",
+      "sequence": 12813,
+      "chapter_label": "EST 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Then King Ahasuerus said to Esther the queen, “Who is he, and where is he who dared presume in his heart to do so?”",
+      "ko": "아하수에로왕이 왕후 에스더에게 일러 가로되 감히 이런 일을 심중에 품은 자가 누구며 그가 어디 있느뇨",
+      "source_text_hash": "287b44a7279f711bd8ef4325c9b241a31587a2d4ee54011d68a5b2a03e36886c",
+      "translation_text_hash": "881780329cc1edfd3216ff0497bdd4c5a8a67c8bbf42459cf8938f2d2f8e97a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕이 왕후 에스더에게 일러 가로되 감히 이런 일을 심중에 품은 자가 누구며 그가 어디 있느뇨"
+      ],
+      "raw_text_hashes": [
+        "881780329cc1edfd3216ff0497bdd4c5a8a67c8bbf42459cf8938f2d2f8e97a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:6",
+      "sequence": 12814,
+      "chapter_label": "EST 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Esther said, “An adversary and an enemy, even this wicked Haman!” Then Haman was afraid before the king and the queen.",
+      "ko": "에스더가 가로되 대적과 원수는 이 악한 하만이니이다 하니 하만이 왕과 왕후 앞에서 두려워하거늘",
+      "source_text_hash": "620a0865405dc17f364c62595e55e1132555495afbd25683b49bc24c24950ef4",
+      "translation_text_hash": "05c2fc1d65cd5f529f4a03d59fa6e6f9e433a688bf82870e7ea11c5ef595b68a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 가로되 대적과 원수는 이 악한 하만이니이다 하니 하만이 왕과 왕후 앞에서 두려워하거늘"
+      ],
+      "raw_text_hashes": [
+        "05c2fc1d65cd5f529f4a03d59fa6e6f9e433a688bf82870e7ea11c5ef595b68a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:7",
+      "sequence": 12815,
+      "chapter_label": "EST 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "The king arose in his wrath from the banquet of wine and went into the palace garden. Haman stood up to make request for his life to Esther the queen, for he saw that there was evil determined against him by the king.",
+      "ko": "왕이 노하여 일어나서 잔치 자리를 떠나 왕궁 후원으로 들어가니라 하만이 일어서서 왕후 에스더에게 생명을 구하니 이는 왕이 자기에게 화를 내리기로 결심한줄 앎이더라",
+      "source_text_hash": "395ba92458ffcfff876a2e18bb4d7fd8a0514a2ca0ac2d5454949b50d7ef3164",
+      "translation_text_hash": "56a54c02e35284d8082a67f4dc447f9a78a0d916dfeeabc81926218670b44117",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 노하여 일어나서 잔치 자리를 떠나 왕궁 후원으로 들어가니라 하만이 일어서서 왕후 에스더에게 생명을 구하니 이는 왕이 자기에게 화를 내리기로 결심한줄 앎이더라"
+      ],
+      "raw_text_hashes": [
+        "56a54c02e35284d8082a67f4dc447f9a78a0d916dfeeabc81926218670b44117"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:8",
+      "sequence": 12816,
+      "chapter_label": "EST 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Then the king returned out of the palace garden into the place of the banquet of wine; and Haman had fallen on the couch where Esther was. Then the king said, “Will he even assault the queen in front of me in the house?” As the word went out of the king’s mouth, they covered Haman’s face.",
+      "ko": "왕이 후원으로부터 잔치 자리에 돌아오니 하만이 에스더의 앉은 걸상 위에 엎드렸거늘 왕이 가로되 저가 궁중 내 앞에서 왕후를 강간까지 하고자 하는가 이 말이 왕의 입에서 나오매 무리가 하만의 얼굴을 싸더라",
+      "source_text_hash": "36cccaa676e92ac77727385381b1d86c4ecbd84c37d2fd1d875d1a9a878132c0",
+      "translation_text_hash": "26c005b626050f1bb2aee441641299ac0acbc768ec1960c8d5f7dcc5144afac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 후원으로부터 잔치 자리에 돌아오니 하만이 에스더의 앉은 걸상 위에 엎드렸거늘 왕이 가로되 저가 궁중 내 앞에서 왕후를 강간까지 하고자 하는가 이 말이 왕의 입에서 나오매 무리가 하만의 얼굴을 싸더라"
+      ],
+      "raw_text_hashes": [
+        "26c005b626050f1bb2aee441641299ac0acbc768ec1960c8d5f7dcc5144afac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:9",
+      "sequence": 12817,
+      "chapter_label": "EST 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Then Harbonah, one of the eunuchs who were with the king, said, “Behold, the gallows fifty cubits high, which Haman has made for Mordecai, who spoke good for the king, is standing at Haman’s house.” The king said, “Hang him on it!”",
+      "ko": "왕을 모신 내시 중에 하르보나가 왕에게 아뢰되 왕을 위하여 충성된 말로 고발한 모르드개를 달고자 하여 하만이 고가 오십 규빗 되는 나무를 준비하였는데 이제 그 나무가 하만의 집에 섰나이다 왕이 가로되 하만을 그 나무에 달라 하매",
+      "source_text_hash": "492ad0029ec6ccdb124518e390ce6a36f9d1b3bbc68e3db1b0fe1fdb21d02c30",
+      "translation_text_hash": "38a624b06ce3133ab9e75553d473dd566ff5cc3dacda037deaac5842836ddd0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕을 모신 내시 중에 하르보나가 왕에게 아뢰되 왕을 위하여 충성된 말로 고발한 모르드개를 달고자 하여 하만이 고가 오십 규빗 되는 나무를 준비하였는데 이제 그 나무가 하만의 집에 섰나이다 왕이 가로되 하만을 그 나무에 달라 하매"
+      ],
+      "raw_text_hashes": [
+        "38a624b06ce3133ab9e75553d473dd566ff5cc3dacda037deaac5842836ddd0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:7:10",
+      "sequence": 12818,
+      "chapter_label": "EST 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "So they hanged Haman on the gallows that he had prepared for Mordecai. Then the king’s wrath was pacified.",
+      "ko": "모르드개를 달고자 한 나무에 하만을 다니 왕의 노가 그치니라",
+      "source_text_hash": "bb9bac51b473db1eb622b7b12b81ddc694baa8c1132b993f00c056fe8ae44075",
+      "translation_text_hash": "c707b04f59ac8f0d8550af7dd42639d789117da06d99bb8e6cbe5ea832dc5606",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개를 달고자 한 나무에 하만을 다니 왕의 노가 그치니라"
+      ],
+      "raw_text_hashes": [
+        "c707b04f59ac8f0d8550af7dd42639d789117da06d99bb8e6cbe5ea832dc5606"
+      ]
+    }
+  ]
+}

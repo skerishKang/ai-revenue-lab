@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:021",
+  "unit_ordinal": 766,
+  "unit_label": "JER 21",
+  "book_code": "JER",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:21:1",
+      "sequence": 19442,
+      "chapter_label": "JER 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The word which came to Jeremiah from the LORD, when King Zedekiah sent to him Pashhur the son of Malchijah, and Zephaniah the son of Maaseiah, the priest, saying,",
+      "ko": "시드기야왕이 말기야의 아들 바스훌과 제사장 마아세야의 아들 스바냐를 보내어 예레미야에게 말하기를 바벨론 왕 느부갓네살이 우리를 치니 청컨대 너는 우리를 위하여 여호와께 간구하라 여호와께서 혹시 그 모든 기사로 우리를 도와 행하시면 그가 우리를 떠나리라 하던 그 때에 여호와께로부터 예레미야에게 말씀이 임하니라",
+      "source_text_hash": "58e249c8dc5b343942fdd2a0f826978c8551a07cb63fa94ce6fa90513c367ce1",
+      "translation_text_hash": "742de472ce9f22c34195968702487d8f2fabc70008403418f8ef707b72709a8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 말기야의 아들 바스훌과 제사장 마아세야의 아들 스바냐를 보내어 예레미야에게 말하기를 바벨론 왕 느부갓네살이 우리를 치니 청컨대 너는 우리를 위하여 여호와께 간구하라 여호와께서 혹시 그 모든 기사로 우리를 도와 행하시면 그가 우리를 떠나리라 하던 그 때에 여호와께로부터 예레미야에게 말씀이 임하니라"
+      ],
+      "raw_text_hashes": [
+        "742de472ce9f22c34195968702487d8f2fabc70008403418f8ef707b72709a8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:2",
+      "sequence": 19443,
+      "chapter_label": "JER 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "“Please inquire of the LORD for us; for Nebuchadnezzar king of Babylon makes war against us. Perhaps the LORD will deal with us according to all his wondrous works, that he may withdraw from us.”",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "a343930552f9f74afd7e67bab0728b1c2685779e2a9dd6b857b6dad8be718d3f",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:3",
+      "sequence": 19444,
+      "chapter_label": "JER 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Then Jeremiah said to them, “Tell Zedekiah:",
+      "ko": "예레미야가 그들에게 대답하되 너희는 시드기야에게 이같이 말하라",
+      "source_text_hash": "4a40ae87abc6cc2487a2a349f75600723f7a2d6f2421252c8c935e6d17bedccc",
+      "translation_text_hash": "5d69404bc8cdd5b681cd4cfb317e1285002b027bdf1d686bc29fa891ac4191e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 그들에게 대답하되 너희는 시드기야에게 이같이 말하라"
+      ],
+      "raw_text_hashes": [
+        "5d69404bc8cdd5b681cd4cfb317e1285002b027bdf1d686bc29fa891ac4191e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:4",
+      "sequence": 19445,
+      "chapter_label": "JER 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "‘The LORD, the God of Israel says, “Behold, I will turn back the weapons of war that are in your hands, with which you fight against the king of Babylon, and against the Chaldeans who besiege you outside the walls; and I will gather them into the middle of this city.",
+      "ko": "이스라엘의 하나님 여호와께서 이같이 말씀하시되 보라 너희가 성밖에서 바벨론 왕과 또 너희를 에운 갈대아인과 싸우는바 너희 손에 가진 병기를 내가 돌이킬 것이요 그들을 이 성중에 모아 들이리라",
+      "source_text_hash": "64f7a9920b97306cd975effc80a58db802bfca191d279b8a42922aa96ba9ffaa",
+      "translation_text_hash": "05f6154f40ebd186952ac006f95935291e24279d365af39e1ee64f8d6107456a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와께서 이같이 말씀하시되 보라 너희가 성밖에서 바벨론 왕과 또 너희를 에운 갈대아인과 싸우는바 너희 손에 가진 병기를 내가 돌이킬 것이요 그들을 이 성중에 모아 들이리라"
+      ],
+      "raw_text_hashes": [
+        "05f6154f40ebd186952ac006f95935291e24279d365af39e1ee64f8d6107456a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:5",
+      "sequence": 19446,
+      "chapter_label": "JER 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "I myself will fight against you with an outstretched hand and with a strong arm, even in anger, in wrath, and in great indignation.",
+      "ko": "내가 든 손과 강한 팔 곧 노와 분과 대노로 친히 너희를 칠 것이며",
+      "source_text_hash": "cda9e433261b48b1ffe38cc24c268569b41748c9185d1c91ff949b6b35d87f1d",
+      "translation_text_hash": "ef1996005226e86cb8aab4c18d6067dea614a38b835bbba4ab575d1a0d17da32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 든 손과 강한 팔 곧 노와 분과 대노로 친히 너희를 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "ef1996005226e86cb8aab4c18d6067dea614a38b835bbba4ab575d1a0d17da32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:6",
+      "sequence": 19447,
+      "chapter_label": "JER 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "I will strike the inhabitants of this city, both man and animal. They will die of a great pestilence.",
+      "ko": "내가 또 이 성에 거주하는 자를 사람이나 짐승이나 다 치리니 그들이 큰 염병에 죽으리라 하셨다 하라",
+      "source_text_hash": "55c95b1df0d2de480addc5f5fc54f4315c7c83a462ce5d13b8e2e5730dd10630",
+      "translation_text_hash": "42e0826f46796695585a0017c34587fc4a4dacffde396a83d3f23fb5ca66c085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 이 성에 거주하는 자를 사람이나 짐승이나 다 치리니 그들이 큰 염병에 죽으리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "42e0826f46796695585a0017c34587fc4a4dacffde396a83d3f23fb5ca66c085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:7",
+      "sequence": 19448,
+      "chapter_label": "JER 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "Afterward,” says the LORD, “I will deliver Zedekiah king of Judah, his servants, and the people, even those who are left in this city from the pestilence, from the sword, and from the famine, into the hand of Nebuchadnezzar king of Babylon, and into the hand of their enemies, and into the hand of those who seek their life. He will strike them with the edge of the sword. He will not spare them, have pity, or have mercy.”’",
+      "ko": "여호와께서 또 말씀하시되 그 후에 내가 유다 왕 시드기야와 그 신하들과 백성과 및 이 성읍에서 염병과 칼과 기근에서 남은 자를 바벨론 왕 느부갓네살의 손과 그 대적의 손과 그 생명을 찾는 자들의 손에 붙이리니 그가 칼날로 그들을 치되 아끼지 아니하며 긍휼히 여기지 아니하며 불쌍히 여기지 아니하리라 하셨느니라",
+      "source_text_hash": "462e9c3c98d1f2102b5547ff70027901d0159c7d302af31a8694e23e5d6b5dd6",
+      "translation_text_hash": "e76279d50f8b938b07e2863391ab8edd8c1afd8561e3556ba25c3e4d035ee089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 말씀하시되 그 후에 내가 유다 왕 시드기야와 그 신하들과 백성과 및 이 성읍에서 염병과 칼과 기근에서 남은 자를 바벨론 왕 느부갓네살의 손과 그 대적의 손과 그 생명을 찾는 자들의 손에 붙이리니 그가 칼날로 그들을 치되 아끼지 아니하며 긍휼히 여기지 아니하며 불쌍히 여기지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e76279d50f8b938b07e2863391ab8edd8c1afd8561e3556ba25c3e4d035ee089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:8",
+      "sequence": 19449,
+      "chapter_label": "JER 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "“You shall say to this people, ‘The LORD says: “Behold, I set before you the way of life and the way of death.",
+      "ko": "여호와께서 가라사대 너는 또 이 백성에게 여호와께서 이같이 말씀하신다 하라 보라 내가 너희 앞에 생명의 길과 사망의 길을 두었노니",
+      "source_text_hash": "cf9062f3b28686ee18a98903365c806b3d40ce55401ff203ec91a0868ac38f91",
+      "translation_text_hash": "623b469247c374c61d6f556782731a9fe355687fd4086a93e345388c53509554",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 너는 또 이 백성에게 여호와께서 이같이 말씀하신다 하라 보라 내가 너희 앞에 생명의 길과 사망의 길을 두었노니"
+      ],
+      "raw_text_hashes": [
+        "623b469247c374c61d6f556782731a9fe355687fd4086a93e345388c53509554"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:9",
+      "sequence": 19450,
+      "chapter_label": "JER 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "He who remains in this city will die by the sword, by the famine, and by the pestilence, but he who goes out and passes over to the Chaldeans who besiege you, he will live, and he will escape with his life.",
+      "ko": "이 성에 거주하는 자는 칼과 기근과 염병에 죽으려니와 너희를 에운 갈대아인에게 나가서 항복하는 자는 살리니 그의 생명은 노략한것 같이 얻으리라",
+      "source_text_hash": "53452b5c86fd1d0b0c3544a40ea775f0d58ed40d66865b9f70e5ad7bb675f97a",
+      "translation_text_hash": "bdacb7ebb5c5419fce2349661eb58148324c619aac5e76c855edbf4ecd763053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성에 거주하는 자는 칼과 기근과 염병에 죽으려니와 너희를 에운 갈대아인에게 나가서 항복하는 자는 살리니 그의 생명은 노략한것 같이 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "bdacb7ebb5c5419fce2349661eb58148324c619aac5e76c855edbf4ecd763053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:10",
+      "sequence": 19451,
+      "chapter_label": "JER 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "For I have set my face on this city for evil, and not for good,” says the LORD. “It will be given into the hand of the king of Babylon, and he will burn it with fire.”’",
+      "ko": "나 여호와가 말하노라 내가 나의 얼굴을 이 성으로 향함은 복을 위함이 아니요 화를 위함이라 이 성이 바벨론 왕의 손에 붙임이 될 것이요 그는 그것을 불로 사르리라",
+      "source_text_hash": "7faa34e9436698df23bbe814d76d3a33d12d458b5cf0b184fbd2d6fa31a22222",
+      "translation_text_hash": "24f0b12ee0cd88883ebb8077ee830b18aae8ed1215bd3b04332527cb84a400b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 나의 얼굴을 이 성으로 향함은 복을 위함이 아니요 화를 위함이라 이 성이 바벨론 왕의 손에 붙임이 될 것이요 그는 그것을 불로 사르리라"
+      ],
+      "raw_text_hashes": [
+        "24f0b12ee0cd88883ebb8077ee830b18aae8ed1215bd3b04332527cb84a400b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:11",
+      "sequence": 19452,
+      "chapter_label": "JER 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "“Concerning the house of the king of Judah, hear the LORD’s word:",
+      "ko": "유다 왕의 집에 대한 여호와의 말을 들으라",
+      "source_text_hash": "8b61abcf9097be5e6b3a9b2b2ff0a0309b849b0942f0ba0b5b4f7efd23d67b60",
+      "translation_text_hash": "68d44dff874bf67252742370921c949361301b974b6311b9cf918db1c3e62d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕의 집에 대한 여호와의 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "68d44dff874bf67252742370921c949361301b974b6311b9cf918db1c3e62d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:12",
+      "sequence": 19453,
+      "chapter_label": "JER 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "House of David, the LORD says, ‘Execute justice in the morning, and deliver him who is robbed out of the hand of the oppressor, lest my wrath go out like fire, and burn so that no one can quench it, because of the evil of your doings.",
+      "ko": "나 여호와가 이같이 말하노라 다윗의 집이여 너는 아침마다 공평히 판결하여 탈취 당한 자를 압박자의 손에서 건지라 그리하지 아니하면 너희의 악행을 인하여 내 노가 불 같이 일어나서 사르리니 능히 끌 자가 없으리라",
+      "source_text_hash": "6f15f4e34d8702f4b4867cae70632549120de72c19a06962fdc2d87078826a03",
+      "translation_text_hash": "1b3569b5e299563e7186a1d49f6d077331988b3e80650b421a6f022e2f44dfa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 다윗의 집이여 너는 아침마다 공평히 판결하여 탈취 당한 자를 압박자의 손에서 건지라 그리하지 아니하면 너희의 악행을 인하여 내 노가 불 같이 일어나서 사르리니 능히 끌 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "1b3569b5e299563e7186a1d49f6d077331988b3e80650b421a6f022e2f44dfa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:13",
+      "sequence": 19454,
+      "chapter_label": "JER 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, I am against you, O inhabitant of the valley, and of the rock of the plain,’ says the LORD. ‘You that say, “Who would come down against us?” or, “Who would enter into our homes?”",
+      "ko": "나 여호와가 이르노라 골짜기와 평원 반석의 거민아 보라 너희가 말하기를 누가 내려와서 우리를 치리요 누가 우리의 거처에 들어 오리요 하거니와 나는 네 대적이라",
+      "source_text_hash": "375402ab0c6df31637b1a0611c634c1b434a9c51e91c161fa1eda1fa9889c41e",
+      "translation_text_hash": "e1a57ce870bc5daa35b444af19f0eabf2f5a4974af03e06e806c781814b82430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이르노라 골짜기와 평원 반석의 거민아 보라 너희가 말하기를 누가 내려와서 우리를 치리요 누가 우리의 거처에 들어 오리요 하거니와 나는 네 대적이라"
+      ],
+      "raw_text_hashes": [
+        "e1a57ce870bc5daa35b444af19f0eabf2f5a4974af03e06e806c781814b82430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:21:14",
+      "sequence": 19455,
+      "chapter_label": "JER 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "I will punish you according to the fruit of your doings,’ says the LORD; ‘and I will kindle a fire in her forest, and it will devour all that is around her.’”",
+      "ko": "내가 너희 행위대로 벌할 것이요 내가 또 수풀에 불을 놓아 그 사경을 사르리라 여호와의 말이니라",
+      "source_text_hash": "a33a6abb044a9779369b83bac39c485aa1df24ea41883de18815a7a4da3bdef8",
+      "translation_text_hash": "20d3ff2542c0fa067cfaef70b3411d4cec44cabc1dbd3fff9700210be44e4723",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 행위대로 벌할 것이요 내가 또 수풀에 불을 놓아 그 사경을 사르리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "20d3ff2542c0fa067cfaef70b3411d4cec44cabc1dbd3fff9700210be44e4723"
+      ]
+    }
+  ]
+}

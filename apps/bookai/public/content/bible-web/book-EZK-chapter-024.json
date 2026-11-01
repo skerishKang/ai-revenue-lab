@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:024",
+  "unit_ordinal": 826,
+  "unit_label": "EZK 24",
+  "book_code": "EZK",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:24:1",
+      "sequence": 21058,
+      "chapter_label": "EZK 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Again, in the ninth year, in the tenth month, in the tenth day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 구년 시월 십일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "537ab1f299d4d75858670a9a448c701b02c1ac616644614e0f885d44a483140a",
+      "translation_text_hash": "fa0ccad323374e6f6263fde3246c9998e412f202787083a5b861ab02b804bdb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 구년 시월 십일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "fa0ccad323374e6f6263fde3246c9998e412f202787083a5b861ab02b804bdb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:2",
+      "sequence": 21059,
+      "chapter_label": "EZK 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, write the name of the day, this same day. The king of Babylon drew close to Jerusalem this same day.",
+      "ko": "인자야 너는 날짜 곧 오늘날을 기록하라 바벨론 왕이 오늘날 예루살렘에 핍근하였느니라",
+      "source_text_hash": "50f1a99098cc2da35fc0457beb351c8a25faef1a568e0a1f39cb32976b4c45e6",
+      "translation_text_hash": "6a68277bc4e565ea9aecb265c7e9379dc8b98580cd58a24416011a53899c5afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 날짜 곧 오늘날을 기록하라 바벨론 왕이 오늘날 예루살렘에 핍근하였느니라"
+      ],
+      "raw_text_hashes": [
+        "6a68277bc4e565ea9aecb265c7e9379dc8b98580cd58a24416011a53899c5afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:3",
+      "sequence": 21060,
+      "chapter_label": "EZK 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Utter a parable to the rebellious house, and tell them, ‘The Lord GOD says, “Put the cauldron on the fire. Put it on, and also pour water into it.",
+      "ko": "너는 이 패역한 족속에게 비유를 베풀어 이르기를 주 여호와의 말씀에 한 가마를 걸라",
+      "source_text_hash": "6b14b71db2f6f5fcfe204fa895f1287c4de547d6d8ae1552f98fc4c213842ce7",
+      "translation_text_hash": "d700f5b2a8a3db3796521dad5edb6046501abf65da490f7201fcd8541ea27f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 패역한 족속에게 비유를 베풀어 이르기를 주 여호와의 말씀에 한 가마를 걸라"
+      ],
+      "raw_text_hashes": [
+        "d700f5b2a8a3db3796521dad5edb6046501abf65da490f7201fcd8541ea27f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:4",
+      "sequence": 21061,
+      "chapter_label": "EZK 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "Gather its pieces into it, even every good piece: the thigh and the shoulder. Fill it with the choice bones.",
+      "ko": "건 후에 물을 붓고 양떼에서 고른 것을 가지고 각을 뜨고 그 넓적다리와 어깨고기의 모든 좋은 덩이를 그 가운데 모아 넣으며 고른 뼈를 가득히 담고 그 뼈를 위하여 가마 밑에 나무를 쌓아 넣고 잘 삶되 가마 속의 뼈가 무르도록 삶을찌어다",
+      "source_text_hash": "1e16d6ff72c45dac53b9460a1d91e5b8bafb627cb53c0f24dacecd17e40bbe2b",
+      "translation_text_hash": "804c36345364e0093e1557d6e8921fd5ef4bfed15b8957900bd5912afb5a75a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건 후에 물을 붓고 양떼에서 고른 것을 가지고 각을 뜨고 그 넓적다리와 어깨고기의 모든 좋은 덩이를 그 가운데 모아 넣으며 고른 뼈를 가득히 담고 그 뼈를 위하여 가마 밑에 나무를 쌓아 넣고 잘 삶되 가마 속의 뼈가 무르도록 삶을찌어다"
+      ],
+      "raw_text_hashes": [
+        "804c36345364e0093e1557d6e8921fd5ef4bfed15b8957900bd5912afb5a75a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:5",
+      "sequence": 21062,
+      "chapter_label": "EZK 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Take the choice of the flock, and also a pile of wood for the bones under the cauldron. Make it boil well. Yes, let its bones be boiled within it.”",
+      "ko": "(4절에 포함되어 있음)",
+      "source_text_hash": "cf84734a434f153887f5b239499460bb664061900cfdbdeec525e0b9ea2a6ebf",
+      "translation_text_hash": "3f2d24b494aa1f4596777f5917406608bab1db869a8f06d86e52d0570ed93359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(4절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "3f2d24b494aa1f4596777f5917406608bab1db869a8f06d86e52d0570ed93359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:6",
+      "sequence": 21063,
+      "chapter_label": "EZK 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “Woe to the bloody city, to the cauldron whose rust is in it, and whose rust hasn’t gone out of it! Take out of it piece after piece without casting lots for it.",
+      "ko": "그러므로 나 주 여호와가 말하노라 피 흘린 성읍, 녹슨 가마 곧 그 속의 녹을 없이 하지 아니한 가마여 화 있을찐저 제비 뽑을 것도 없이 그 덩이를 일일이 꺼낼찌어다",
+      "source_text_hash": "68415a66b2b6137062a8284ac1f09d741bb7ba4d5f850230124782f935108936",
+      "translation_text_hash": "c32c30f0d44048b6418b2130be28d90c0a37c2f84a0584460f8358ceb5a824b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 피 흘린 성읍, 녹슨 가마 곧 그 속의 녹을 없이 하지 아니한 가마여 화 있을찐저 제비 뽑을 것도 없이 그 덩이를 일일이 꺼낼찌어다"
+      ],
+      "raw_text_hashes": [
+        "c32c30f0d44048b6418b2130be28d90c0a37c2f84a0584460f8358ceb5a824b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:7",
+      "sequence": 21064,
+      "chapter_label": "EZK 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“For the blood she shed is in the middle of her. She set it on the bare rock. She didn’t pour it on the ground, to cover it with dust.",
+      "ko": "그 피가 그 가운데 있음이여 피를 땅에 쏟아서 티끌이 덮이게 하지 않고 말간 반석 위에 두었도다",
+      "source_text_hash": "72e22a4b124000075d6912c19f25e158f2c183345488eed9f921ae4fe8756f69",
+      "translation_text_hash": "68a215b810fcf26881a1536a90d351e1c4bd2f02173262ea51112f3991250737",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피가 그 가운데 있음이여 피를 땅에 쏟아서 티끌이 덮이게 하지 않고 말간 반석 위에 두었도다"
+      ],
+      "raw_text_hashes": [
+        "68a215b810fcf26881a1536a90d351e1c4bd2f02173262ea51112f3991250737"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:8",
+      "sequence": 21065,
+      "chapter_label": "EZK 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "That it may cause wrath to come up to take vengeance, I have set her blood on the bare rock, that it should not be covered.”",
+      "ko": "내가 그 피를 말간 반석 위에 두고 덮이지 않게 함은 분노를 발하여 보응하려 함이로라",
+      "source_text_hash": "94909766778e4de30e7c2cd754144faf02e8b86f8fa92add3d38609cddc3c881",
+      "translation_text_hash": "a42dafd07212fd1587ca233ed15aadd98af5ff2f565496eaf4052a03226cc9ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 피를 말간 반석 위에 두고 덮이지 않게 함은 분노를 발하여 보응하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "a42dafd07212fd1587ca233ed15aadd98af5ff2f565496eaf4052a03226cc9ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:9",
+      "sequence": 21066,
+      "chapter_label": "EZK 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “Woe to the bloody city! I also will make the pile great.",
+      "ko": "그러므로 나 주 여호와가 말하노라 화 있을찐저 피를 흘린 성읍이여 내가 또 나무 무더기를 크게 하리라",
+      "source_text_hash": "9885fc2d2c362a45c245126e71779ee6ce7d4d4ab5eac666bbc8db09c4c30849",
+      "translation_text_hash": "e65812c9e8a7c2a8464a1a355b9bb95a04173b50a6623f71ee2364ad3d2cc44f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 화 있을찐저 피를 흘린 성읍이여 내가 또 나무 무더기를 크게 하리라"
+      ],
+      "raw_text_hashes": [
+        "e65812c9e8a7c2a8464a1a355b9bb95a04173b50a6623f71ee2364ad3d2cc44f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:10",
+      "sequence": 21067,
+      "chapter_label": "EZK 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Heap on the wood. Make the fire hot. Boil the meat well. Make the broth thick, and let the bones be burned.",
+      "ko": "나무를 많이 쌓고 불을 피워 그 고기를 삶아 녹이고 국물을 졸이고 그 뼈를 태우고",
+      "source_text_hash": "416cfc1af15c7b766bc1a0378762ad7c484e574bcb0f056ec8d8763818f586f7",
+      "translation_text_hash": "1bc68d5521c989823844ee7e4607193f3e24f038f24f8c0615b62c49fef05af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무를 많이 쌓고 불을 피워 그 고기를 삶아 녹이고 국물을 졸이고 그 뼈를 태우고"
+      ],
+      "raw_text_hashes": [
+        "1bc68d5521c989823844ee7e4607193f3e24f038f24f8c0615b62c49fef05af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:11",
+      "sequence": 21068,
+      "chapter_label": "EZK 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Then set it empty on its coals, that it may be hot, and its bronze may burn, and that its filthiness may be molten in it, that its rust may be consumed.",
+      "ko": "가마가 빈 후에는 숯불 위에 놓아 뜨겁게 하며 그 가마의 놋을 달궈서 그 속에 더러운 것을 녹게 하며 녹이 소멸하게 하라",
+      "source_text_hash": "8a0650c9f152db2ab1a955a105150015fe49ed75ce088ce5687b7461877862b1",
+      "translation_text_hash": "75b5a6548fa789f5ab2870c9d868eee26cee95b718489652ab0e714cc20bdd61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가마가 빈 후에는 숯불 위에 놓아 뜨겁게 하며 그 가마의 놋을 달궈서 그 속에 더러운 것을 녹게 하며 녹이 소멸하게 하라"
+      ],
+      "raw_text_hashes": [
+        "75b5a6548fa789f5ab2870c9d868eee26cee95b718489652ab0e714cc20bdd61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:12",
+      "sequence": 21069,
+      "chapter_label": "EZK 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "She is weary with toil; yet her great rust, rust by fire, doesn’t leave her.",
+      "ko": "이 성읍이 수고하므로 스스로 곤비하나 많은 녹이 그 속에서 벗어지지 아니하며 불에서도 없어지지 아니하는도다",
+      "source_text_hash": "c6f02c2ecaf149ba7df6f85b3ba9eb47505531d2974acefa8470ef070012a4c7",
+      "translation_text_hash": "c711b541480ecb19fee058ddf1f0e2708b617f595ffaca254e0b8b5c8fc01ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성읍이 수고하므로 스스로 곤비하나 많은 녹이 그 속에서 벗어지지 아니하며 불에서도 없어지지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "c711b541480ecb19fee058ddf1f0e2708b617f595ffaca254e0b8b5c8fc01ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:13",
+      "sequence": 21070,
+      "chapter_label": "EZK 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "“‘“In your filthiness is lewdness. Because I have cleansed you and you weren’t cleansed, you won’t be cleansed from your filthiness any more, until I have caused my wrath toward you to rest.",
+      "ko": "너의 더러운 중에 음란이 하나이라 내가 너를 정하게 하나 네가 정하여지지 아니하니 내가 네게 향한 분노를 풀기 전에는 네 더러움이 다시 정하여지지 아니하리라",
+      "source_text_hash": "affd978e6220d505cf0115815b4814e114090e3ca245424dbe9d0dd134168642",
+      "translation_text_hash": "3fad8ceefcb99375ed19ccea583d4e0dbd922d4342a352cc8430ec8ed4fbe3b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 더러운 중에 음란이 하나이라 내가 너를 정하게 하나 네가 정하여지지 아니하니 내가 네게 향한 분노를 풀기 전에는 네 더러움이 다시 정하여지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "3fad8ceefcb99375ed19ccea583d4e0dbd922d4342a352cc8430ec8ed4fbe3b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:14",
+      "sequence": 21071,
+      "chapter_label": "EZK 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "“‘“I, the LORD, have spoken it. It will happen, and I will do it. I won’t go back. I won’t spare. I won’t repent. According to your ways and according to your doings, they will judge you,” says the Lord GOD.’”",
+      "ko": "나 여호와가 말하였은즉 그 일이 이룰찌라 내가 돌이키지도 아니하며 아끼지도 아니하며 뉘우치지도 아니하고 행하리니 그들이 네 모든 행위대로 너를 심문하리라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "6c5210023a06d378be0cb570864cd77f2ab280e33ed90f3eb76cd244594728ff",
+      "translation_text_hash": "400bfbfc5e15b247a91840bbf2125f15e7d2d3fee564a32867e1a28b5429c8ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하였은즉 그 일이 이룰찌라 내가 돌이키지도 아니하며 아끼지도 아니하며 뉘우치지도 아니하고 행하리니 그들이 네 모든 행위대로 너를 심문하리라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "400bfbfc5e15b247a91840bbf2125f15e7d2d3fee564a32867e1a28b5429c8ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:15",
+      "sequence": 21072,
+      "chapter_label": "EZK 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "Also the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "64b0c3b5740f53f2cd89556d1bb5fb62b26905684f13cf6aeb5fc340d4c6266d",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:16",
+      "sequence": 21073,
+      "chapter_label": "EZK 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "“Son of man, behold, I will take away from you the desire of your eyes with one stroke; yet you shall neither mourn nor weep, neither shall your tears run down.",
+      "ko": "인자야 내가 네 눈에 기뻐하는 것을 한번 쳐서 빼앗으리니 너는 슬퍼 하거나 울거나 눈물을 흘리거나 하지 말며",
+      "source_text_hash": "6e63e58811b1358b847fb73e7faa88ad34514aa4dff72d7b7384fc787ae6a224",
+      "translation_text_hash": "61d6641886b94280b37567741439275ca877e23668d43a363049a4e2a4975d21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 네 눈에 기뻐하는 것을 한번 쳐서 빼앗으리니 너는 슬퍼 하거나 울거나 눈물을 흘리거나 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "61d6641886b94280b37567741439275ca877e23668d43a363049a4e2a4975d21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:17",
+      "sequence": 21074,
+      "chapter_label": "EZK 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "Sigh, but not aloud. Make no mourning for the dead. Bind your headdress on you, and put your sandals on your feet. Don’t cover your lips, and don’t eat mourner’s bread.”",
+      "ko": "죽은 자들을 위하여 슬퍼하지 말고 종용히 탄식하며 수건으로 머리를 동이고 발에 신을 신고 입술을 가리우지 말고 사람의 부의하는 식물을 먹지 말라 하신지라",
+      "source_text_hash": "f3c61fba481bfebb704d3e4a7b5cbcbeffcc00c88e06a77da648cb73e368c96d",
+      "translation_text_hash": "4091e259f4473fdee38228d4d1cc6b8749de2d0d8df76e16cc20b923435d1ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자들을 위하여 슬퍼하지 말고 종용히 탄식하며 수건으로 머리를 동이고 발에 신을 신고 입술을 가리우지 말고 사람의 부의하는 식물을 먹지 말라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "4091e259f4473fdee38228d4d1cc6b8749de2d0d8df76e16cc20b923435d1ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:18",
+      "sequence": 21075,
+      "chapter_label": "EZK 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "So I spoke to the people in the morning, and at evening my wife died. So I did in the morning as I was commanded.",
+      "ko": "내가 아침에 백성에게 고하였더니 저녁에 내 아내가 죽기로 아침에 내가 받은 명령대로 행하매",
+      "source_text_hash": "c79d5064d11fcb0d48e0cdd8ad12f55ba685ae3988019b4aaaebd63046830099",
+      "translation_text_hash": "379731ad96fe459384b1395690325f8163b289f994b26b3016d280c7f7774d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아침에 백성에게 고하였더니 저녁에 내 아내가 죽기로 아침에 내가 받은 명령대로 행하매"
+      ],
+      "raw_text_hashes": [
+        "379731ad96fe459384b1395690325f8163b289f994b26b3016d280c7f7774d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:19",
+      "sequence": 21076,
+      "chapter_label": "EZK 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "The people asked me, “Won’t you tell us what these things mean to us, that you act like this?”",
+      "ko": "백성이 내게 이르되 네가 행하는 이 일이 우리에게 무슨 상관이 되는지 너는 우리에게 고하지 아니하겠느냐 하므로",
+      "source_text_hash": "457225c01fe2e702c2dee8dabd2288fb041aa2e811e84fd4a0d7d7de972d9f55",
+      "translation_text_hash": "46e03b2654b8d064d560e9c9d216d874a82ffead1fc0d2980b4abca2a38eb2da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 내게 이르되 네가 행하는 이 일이 우리에게 무슨 상관이 되는지 너는 우리에게 고하지 아니하겠느냐 하므로"
+      ],
+      "raw_text_hashes": [
+        "46e03b2654b8d064d560e9c9d216d874a82ffead1fc0d2980b4abca2a38eb2da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:20",
+      "sequence": 21077,
+      "chapter_label": "EZK 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "Then I said to them, “The LORD’s word came to me, saying,",
+      "ko": "내가 그들에게 대답하기를 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "d680fe54c0f07d0918f267565fbdec7371a228f92bcc1767cf2236148fc059c6",
+      "translation_text_hash": "085a3e5645f39b260e1e7f2bd5ab06bafe5603745c93bc51d2c05e4f3e9b1c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 대답하기를 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "085a3e5645f39b260e1e7f2bd5ab06bafe5603745c93bc51d2c05e4f3e9b1c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:21",
+      "sequence": 21078,
+      "chapter_label": "EZK 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "‘Speak to the house of Israel, “The Lord GOD says: ‘Behold, I will profane my sanctuary, the pride of your power, the desire of your eyes, and that which your soul pities; and your sons and your daughters whom you have left behind will fall by the sword.",
+      "ko": "너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 내 성소는 너희 세력의 영광이요 너희 눈의 기쁨이요 너희 마음에 아낌이 되거니와 내가 더럽힐 것이며 너희의 버려 둔 자녀를 칼에 엎드러지게 할찌라",
+      "source_text_hash": "9ae9f4e4e6adc9980464b669cae88a2e81275af5ec3dc91d0c34331466e8214c",
+      "translation_text_hash": "3fa59d1722361766906ba54f899af15d661179f3f20054064d60c856d4617af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 내 성소는 너희 세력의 영광이요 너희 눈의 기쁨이요 너희 마음에 아낌이 되거니와 내가 더럽힐 것이며 너희의 버려 둔 자녀를 칼에 엎드러지게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "3fa59d1722361766906ba54f899af15d661179f3f20054064d60c856d4617af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:22",
+      "sequence": 21079,
+      "chapter_label": "EZK 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "You will do as I have done. You won’t cover your lips or eat mourner’s bread.",
+      "ko": "너희가 에스겔의 행한 바와 같이 행하여 입술을 가리우지 아니하며 사람의 식물을 먹지 아니하며",
+      "source_text_hash": "a920fd1d3ec3b7aab8094150497167ab004686e8e90417e8bcd0b2381b834119",
+      "translation_text_hash": "9eca53f2d1f7972c473fdec8af54b2b0668abcccb0cf56668bb40df36cd6bccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 에스겔의 행한 바와 같이 행하여 입술을 가리우지 아니하며 사람의 식물을 먹지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "9eca53f2d1f7972c473fdec8af54b2b0668abcccb0cf56668bb40df36cd6bccb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:23",
+      "sequence": 21080,
+      "chapter_label": "EZK 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "Your turbans will be on your heads, and your sandals on your feet. You won’t mourn or weep; but you will pine away in your iniquities, and moan one toward another.",
+      "ko": "수건으로 머리를 동인채, 발에 신을 신은채로 두고 슬퍼하지도 아니하며 울지도 아니하되 죄악 중에 쇠패하여 피차 바라보고 탄식하리라",
+      "source_text_hash": "c003b8da2a7accfb4966ec8a0aa32a262cd1f375885b000fa5739f6a11d3b9d5",
+      "translation_text_hash": "ff70c718930142d1bc2ca4f27d00efb4b89ef5858e4f4603a4c8ca9a9119cdb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수건으로 머리를 동인채, 발에 신을 신은채로 두고 슬퍼하지도 아니하며 울지도 아니하되 죄악 중에 쇠패하여 피차 바라보고 탄식하리라"
+      ],
+      "raw_text_hashes": [
+        "ff70c718930142d1bc2ca4f27d00efb4b89ef5858e4f4603a4c8ca9a9119cdb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:24",
+      "sequence": 21081,
+      "chapter_label": "EZK 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "Thus Ezekiel will be a sign to you; according to all that he has done, you will do. When this comes, then you will know that I am the Lord GOD.’”’”",
+      "ko": "이와 같이 에스겔이 너희에게 표징이 되리니 그가 행한대로 너희가 다 행할찌라 이 일이 이루면 너희가 나를 주 여호와인줄 알리라 하라 하셨느니라",
+      "source_text_hash": "85da63b4ba717772061c9f1d0a2ee3137647c08c3be7540870483c7195a55f9d",
+      "translation_text_hash": "f7c24a0de67ecf1fcd93d3941834f7542e00c39822b75842832a3aea4d2ea229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 에스겔이 너희에게 표징이 되리니 그가 행한대로 너희가 다 행할찌라 이 일이 이루면 너희가 나를 주 여호와인줄 알리라 하라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f7c24a0de67ecf1fcd93d3941834f7542e00c39822b75842832a3aea4d2ea229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:25",
+      "sequence": 21082,
+      "chapter_label": "EZK 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "“You, son of man, shouldn’t it be in the day when I take from them their strength, the joy of their glory, the desire of their eyes, and that whereupon they set their heart—their sons and their daughters—",
+      "ko": "인자야 내가 그 힘과 그 즐거워하는 영광과 그 눈의 기뻐하는 것과 그 마음의 간절히 생각하는 자녀를 제하는 날",
+      "source_text_hash": "20b921245df0437c62b7821f7d7f2480500706e23dbb3bc89b79cb9baec125b7",
+      "translation_text_hash": "8aec51f07280b9b99c72474c1f2e3b669cfb117b0c4255f97db4364aabe0a97a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 그 힘과 그 즐거워하는 영광과 그 눈의 기뻐하는 것과 그 마음의 간절히 생각하는 자녀를 제하는 날"
+      ],
+      "raw_text_hashes": [
+        "8aec51f07280b9b99c72474c1f2e3b669cfb117b0c4255f97db4364aabe0a97a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:26",
+      "sequence": 21083,
+      "chapter_label": "EZK 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "that in that day he who escapes will come to you, to cause you to hear it with your ears?",
+      "ko": "곧 그 날에 도피한 자가 네게 나아와서 네 귀에 그 일을 들리지 아니하겠느냐",
+      "source_text_hash": "64937ce27ac599372bf67553ec2b8ab037ead214e7e0d5df6c477e8f0c70dac7",
+      "translation_text_hash": "3504523505a5eb7b009c822b6d514f8cb31b177daefb4d221b1ecd3c0f442e74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 날에 도피한 자가 네게 나아와서 네 귀에 그 일을 들리지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3504523505a5eb7b009c822b6d514f8cb31b177daefb4d221b1ecd3c0f442e74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:24:27",
+      "sequence": 21084,
+      "chapter_label": "EZK 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "In that day your mouth will be opened to him who has escaped, and you will speak and be no more mute. So you will be a sign to them. Then they will know that I am the LORD.”",
+      "ko": "그 날에 네 입이 열려서 도피한 자에게 말하고 다시는 잠잠하지 아니하리라 이와 같이 너는 그들에게 표징이 되고 그들은 내가 여호와인줄 알리라",
+      "source_text_hash": "77c7b09817f8e27f781e1ab52c07db1247c18edd11ee4718a0525ca22ba20d2a",
+      "translation_text_hash": "2b777f75cad48dd1ac50521034130659d3d7813a0a49a68addae3ec9deecf71a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 네 입이 열려서 도피한 자에게 말하고 다시는 잠잠하지 아니하리라 이와 같이 너는 그들에게 표징이 되고 그들은 내가 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "2b777f75cad48dd1ac50521034130659d3d7813a0a49a68addae3ec9deecf71a"
+      ]
+    }
+  ]
+}

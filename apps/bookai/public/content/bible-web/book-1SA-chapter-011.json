@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:011",
+  "unit_ordinal": 247,
+  "unit_label": "1SA 11",
+  "book_code": "1SA",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:11:1",
+      "sequence": 7447,
+      "chapter_label": "1SA 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Then Nahash the Ammonite came up and encamped against Jabesh Gilead; and all the men of Jabesh said to Nahash, “Make a covenant with us, and we will serve you.”",
+      "ko": "암몬 사람 나하스가 올라와서 길르앗 야베스를 대하여 진 치매 야베스 모든 사람이 나하스에게 이르되 우리와 언약하자 그리하면 우리가 너를 섬기리라",
+      "source_text_hash": "e8d4bff4db4dbda5b1bc2b608dff1763de6982bf328e603810c18a8e8c346f5e",
+      "translation_text_hash": "8bdcc17d300b01e933b05cb99bc48bce69831094d4ab0aa9df740c5b8ee3d5fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람 나하스가 올라와서 길르앗 야베스를 대하여 진 치매 야베스 모든 사람이 나하스에게 이르되 우리와 언약하자 그리하면 우리가 너를 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "8bdcc17d300b01e933b05cb99bc48bce69831094d4ab0aa9df740c5b8ee3d5fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:2",
+      "sequence": 7448,
+      "chapter_label": "1SA 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Nahash the Ammonite said to them, “On this condition I will make it with you, that all your right eyes be gouged out. I will make this dishonor all Israel.”",
+      "ko": "암몬 사람 나하스가 그들에게 이르되 내가 너희 오른눈을 다 빼어야 너희와 언약하리라 내가 온 이스라엘을 이같이 모욕하리라",
+      "source_text_hash": "ea6c99101cc303b5ed2c2a184f203118641ce44d2c909a0a01932028ae4c0b63",
+      "translation_text_hash": "a5a80ad4d55a8917c89415ab4bbc2c5c983628df3b27da5028313e236ce67838",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람 나하스가 그들에게 이르되 내가 너희 오른눈을 다 빼어야 너희와 언약하리라 내가 온 이스라엘을 이같이 모욕하리라"
+      ],
+      "raw_text_hashes": [
+        "a5a80ad4d55a8917c89415ab4bbc2c5c983628df3b27da5028313e236ce67838"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:3",
+      "sequence": 7449,
+      "chapter_label": "1SA 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "The elders of Jabesh said to him, “Give us seven days, that we may send messengers to all the borders of Israel; and then, if there is no one to save us, we will come out to you.”",
+      "ko": "야베스 장로들이 이르되 우리에게 이레 유예를 주어 우리로 이스라엘 온 지경에 사자를 보내게 하라 우리를 구원할 자가 없으면 네게 나아가리라 하니라",
+      "source_text_hash": "1f2eb3eeef44d3e4714a09c816cf9a208f1c1807340dc3295b3914be92ee98ce",
+      "translation_text_hash": "528d198fe77669da78b621d51c6dc44c5a4db35cf2b7300290080a71509c41b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야베스 장로들이 이르되 우리에게 이레 유예를 주어 우리로 이스라엘 온 지경에 사자를 보내게 하라 우리를 구원할 자가 없으면 네게 나아가리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "528d198fe77669da78b621d51c6dc44c5a4db35cf2b7300290080a71509c41b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:4",
+      "sequence": 7450,
+      "chapter_label": "1SA 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Then the messengers came to Gibeah of Saul, and spoke these words in the ears of the people, then all the people lifted up their voice and wept.",
+      "ko": "이에 사자가 사울의 기브아에 이르러 이 말을 백성에게 고하매 모든 백성이 소리를 높여 울더니",
+      "source_text_hash": "d129edfb0eb850b71e463050339bff3f6fd6a0b49b83f77dd3d6bcb4ef40a645",
+      "translation_text_hash": "7f713f7776663eb5e31593ba46dae74896c30fdfad106292ab72f62f7f42e591",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사자가 사울의 기브아에 이르러 이 말을 백성에게 고하매 모든 백성이 소리를 높여 울더니"
+      ],
+      "raw_text_hashes": [
+        "7f713f7776663eb5e31593ba46dae74896c30fdfad106292ab72f62f7f42e591"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:5",
+      "sequence": 7451,
+      "chapter_label": "1SA 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, Saul came following the oxen out of the field; and Saul said, “What ails the people that they weep?” They told him the words of the men of Jabesh.",
+      "ko": "마침 사울이 밭에서 소를 몰고 오다가 가로되 백성이 무슨 일로 우느냐 그들이 야베스 사람의 말로 고하니라",
+      "source_text_hash": "a0359a8fec5d02a20fc184256c2d6c00b5bcd939118006854ec64b2eeceb49e2",
+      "translation_text_hash": "8a4a7550dd0f8c891ad001ac48fbf035b653c595f8108c827af62d34231b8314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 사울이 밭에서 소를 몰고 오다가 가로되 백성이 무슨 일로 우느냐 그들이 야베스 사람의 말로 고하니라"
+      ],
+      "raw_text_hashes": [
+        "8a4a7550dd0f8c891ad001ac48fbf035b653c595f8108c827af62d34231b8314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:6",
+      "sequence": 7452,
+      "chapter_label": "1SA 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "God’s Spirit came mightily on Saul when he heard those words, and his anger burned hot.",
+      "ko": "사울이 이 말을 들을 때에 하나님의 신에게 크게 감동되매 그 노가 크게 일어나서",
+      "source_text_hash": "d039369852cbf4efd9ebb43860f47b07617e1815cf333a7ef3b6bdb88fe57309",
+      "translation_text_hash": "cb5f0c0f842a9a61ba953d9d00bcfa580f8f8e6336b35025911b7cebf6f1896f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 이 말을 들을 때에 하나님의 신에게 크게 감동되매 그 노가 크게 일어나서"
+      ],
+      "raw_text_hashes": [
+        "cb5f0c0f842a9a61ba953d9d00bcfa580f8f8e6336b35025911b7cebf6f1896f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:7",
+      "sequence": 7453,
+      "chapter_label": "1SA 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "He took a yoke of oxen and cut them in pieces, then sent them throughout all the borders of Israel by the hand of messengers, saying, “Whoever doesn’t come out after Saul and after Samuel, so shall it be done to his oxen.” The dread of the LORD fell on the people, and they came out as one man.",
+      "ko": "한 겨리 소를 취하여 각을 뜨고 사자의 손으로 그것을 이스라엘 모든 지경에 두루 보내어 가로되 누구든지 나와서 사울과 사무엘을 좇지 아니하면 그 소들도 이와 같이 하리라 하였더니 여호와의 두려움이 백성에게 임하매 그들이 한 사람같이 나온지라",
+      "source_text_hash": "746571dff774a140ce3d7f0928a4533a55731bb6475aa8f4e92ec79fceeaecb7",
+      "translation_text_hash": "c5632897a6c9386a9fd1882a588ef640f72fd259cd0e8843c79c911fd32a8abc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 겨리 소를 취하여 각을 뜨고 사자의 손으로 그것을 이스라엘 모든 지경에 두루 보내어 가로되 누구든지 나와서 사울과 사무엘을 좇지 아니하면 그 소들도 이와 같이 하리라 하였더니 여호와의 두려움이 백성에게 임하매 그들이 한 사람같이 나온지라"
+      ],
+      "raw_text_hashes": [
+        "c5632897a6c9386a9fd1882a588ef640f72fd259cd0e8843c79c911fd32a8abc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:8",
+      "sequence": 7454,
+      "chapter_label": "1SA 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "He counted them in Bezek; and the children of Israel were three hundred thousand, and the men of Judah thirty thousand.",
+      "ko": "사울이 베섹에서 그들을 계수하니 이스라엘 자손이 삼십만이요 유다 사람이 삼만이더라",
+      "source_text_hash": "4a249466d8118a26fe3a4f8826c020c55c3791e33ccfeb43b3ffcc38a5104b46",
+      "translation_text_hash": "21aa7db35a26354f278ae8e258f667ffdec7d56e0d0316902b9db7b459d80f48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 베섹에서 그들을 계수하니 이스라엘 자손이 삼십만이요 유다 사람이 삼만이더라"
+      ],
+      "raw_text_hashes": [
+        "21aa7db35a26354f278ae8e258f667ffdec7d56e0d0316902b9db7b459d80f48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:9",
+      "sequence": 7455,
+      "chapter_label": "1SA 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "They said to the messengers who came, “Tell the men of Jabesh Gilead, ‘Tomorrow, by the time the sun is hot, you will be rescued.’” The messengers came and told the men of Jabesh; and they were glad.",
+      "ko": "무리가 온 사자들에게 이르되 너희는 길르앗 야베스 사람에게 이같이 이르기를 내일 해가 더울 때에 너희가 구원을 얻으리라 하라 사자들이 돌아가서 야베스 사람들에게 고하매 그들이 기뻐하니라",
+      "source_text_hash": "f3465b6c7a126150623985ccf1d5d106560577dcb53b8e5eeedf6ac9ece35800",
+      "translation_text_hash": "8ed8fd599ec8911ca935fc833b4f93349f29c06f4d2604844c612ab96245fb43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 온 사자들에게 이르되 너희는 길르앗 야베스 사람에게 이같이 이르기를 내일 해가 더울 때에 너희가 구원을 얻으리라 하라 사자들이 돌아가서 야베스 사람들에게 고하매 그들이 기뻐하니라"
+      ],
+      "raw_text_hashes": [
+        "8ed8fd599ec8911ca935fc833b4f93349f29c06f4d2604844c612ab96245fb43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:10",
+      "sequence": 7456,
+      "chapter_label": "1SA 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore the men of Jabesh said, “Tomorrow we will come out to you, and you shall do with us all that seems good to you.”",
+      "ko": "야베스 사람들이 이에 가로되 우리가 내일 너희에게 나아가리니 너희 소견에 좋을대로 우리에게 다 행하라 하니라",
+      "source_text_hash": "e2fb186ec40b13d770f176d73a7b81e3754c80ac597031241f4b82bcced5285e",
+      "translation_text_hash": "71ae2c7b39d37d650569f5c7eb96a7fe72efdc747c82e4fbde30db77cce12551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야베스 사람들이 이에 가로되 우리가 내일 너희에게 나아가리니 너희 소견에 좋을대로 우리에게 다 행하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "71ae2c7b39d37d650569f5c7eb96a7fe72efdc747c82e4fbde30db77cce12551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:11",
+      "sequence": 7457,
+      "chapter_label": "1SA 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "On the next day, Saul put the people in three companies; and they came into the middle of the camp in the morning watch, and struck the Ammonites until the heat of the day. Those who remained were scattered, so that no two of them were left together.",
+      "ko": "이튿날에 사울이 백성을 삼대에 나누고 새벽에 적진 중에 들어가서 날이 더울 때까지 암몬 사람을 치매 남은 자가 다 흩어져서 둘도 함께한 자가 없었더라",
+      "source_text_hash": "b2f7b69e9173163a179a4b09a5fc504cc95b7175fbcecb35ce07d8a1cfa985dc",
+      "translation_text_hash": "e377cbfd00c677534ddf41994e5640ab2f47a2a0a8481ea82f94322f4a75a5d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 사울이 백성을 삼대에 나누고 새벽에 적진 중에 들어가서 날이 더울 때까지 암몬 사람을 치매 남은 자가 다 흩어져서 둘도 함께한 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "e377cbfd00c677534ddf41994e5640ab2f47a2a0a8481ea82f94322f4a75a5d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:12",
+      "sequence": 7458,
+      "chapter_label": "1SA 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "The people said to Samuel, “Who is he who said, ‘Shall Saul reign over us?’ Bring those men, that we may put them to death!”",
+      "ko": "백성이 사무엘에게 이르되 사울이 어찌 우리를 다스리겠느냐 한 자가 누구니이까 그들을 끌어내소서 우리가 죽이겠나이다",
+      "source_text_hash": "f70247b39a85aacf00ac5d5e1608f1cbd7e646d5c9b5d7f4159759204f989ea6",
+      "translation_text_hash": "d4c0ffbc29a33f58285ae52a7e20925a6cf9ff4186c56eec5b6f5510e6d9cf2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 사무엘에게 이르되 사울이 어찌 우리를 다스리겠느냐 한 자가 누구니이까 그들을 끌어내소서 우리가 죽이겠나이다"
+      ],
+      "raw_text_hashes": [
+        "d4c0ffbc29a33f58285ae52a7e20925a6cf9ff4186c56eec5b6f5510e6d9cf2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:13",
+      "sequence": 7459,
+      "chapter_label": "1SA 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Saul said, “No man shall be put to death today; for today the LORD has rescued Israel.”",
+      "ko": "사울이 가로되 이 날에는 사람을 죽이지 못하리니 여호와께서 오늘날 이스라엘 중에 구원을 베푸셨음이니라",
+      "source_text_hash": "24f039e08a2fd2a36afde35f1b039d1a053f45b228f9f411fed009546d241039",
+      "translation_text_hash": "bf54754d822f82ac5f0e3213bb6fc72707545bb208cc99f1dc90ebecc3038da7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 이 날에는 사람을 죽이지 못하리니 여호와께서 오늘날 이스라엘 중에 구원을 베푸셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "bf54754d822f82ac5f0e3213bb6fc72707545bb208cc99f1dc90ebecc3038da7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:14",
+      "sequence": 7460,
+      "chapter_label": "1SA 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "Then Samuel said to the people, “Come! Let’s go to Gilgal, and renew the kingdom there.”",
+      "ko": "사무엘이 백성에게 이르되 오라 우리가 길갈로 가서 나라를 새롭게 하자",
+      "source_text_hash": "f8ae20c15f055be55b806ec9fb42529f81f345fd512ccf941f5b7519386da071",
+      "translation_text_hash": "ed311289f04dbaad5a23c4d40e10e47a359a3393e1a12b349e82708a647917ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 백성에게 이르되 오라 우리가 길갈로 가서 나라를 새롭게 하자"
+      ],
+      "raw_text_hashes": [
+        "ed311289f04dbaad5a23c4d40e10e47a359a3393e1a12b349e82708a647917ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:11:15",
+      "sequence": 7461,
+      "chapter_label": "1SA 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "All the people went to Gilgal; and there they made Saul king before the LORD in Gilgal. There they offered sacrifices of peace offerings before the LORD; and there Saul and all the men of Israel rejoiced greatly.",
+      "ko": "모든 백성이 길갈로 가서 거기서 여호와 앞에 사울로 왕을 삼고 거기서 여호와 앞에 화목제를 드리고 사울과 이스라엘 모든 사람이 거기서 크게 기뻐하니라",
+      "source_text_hash": "380a40950a1d75e416241e8d163ad550301342b5bc66d3104299ad8da60c1673",
+      "translation_text_hash": "fad22fdca8492c52485627b2ce8558d863056c36926f8c5712da6c2cde7c5b64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 길갈로 가서 거기서 여호와 앞에 사울로 왕을 삼고 거기서 여호와 앞에 화목제를 드리고 사울과 이스라엘 모든 사람이 거기서 크게 기뻐하니라"
+      ],
+      "raw_text_hashes": [
+        "fad22fdca8492c52485627b2ce8558d863056c36926f8c5712da6c2cde7c5b64"
+      ]
+    }
+  ]
+}

@@ -81,3 +81,6 @@ B14_UPSTREAM_MODE=https + B14_UPSTREAM_URL=https://b14.padiem.net
 - 실PC Connector·#4434 Excel·알림 레인 코드와는 무관한 파일만 다룬다.
 
 관련: #5784(이 작업) · #5115(COM2 이전 추적) · #5881/#5891/#5892(파일 레인·Tunnel 준비) · `docs/operations/COM2_HOST_FACTS_20261026.md`
+
+
+The optional `B14_COMPLETED_RESPONSE_MAX_BYTES` in `b14.env` accepts a positive byte count. When unset on the loopback COM2 host, completed responses have no product size cap. The bounded error-body and individual stream-frame guards remain in place.

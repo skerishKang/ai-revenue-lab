@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:012",
+  "unit_ordinal": 62,
+  "unit_label": "EXO 12",
+  "book_code": "EXO",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:12:1",
+      "sequence": 1818,
+      "chapter_label": "EXO 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and Aaron in the land of Egypt, saying,",
+      "ko": "여호와께서 애굽 땅에서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "766ba4275200fbe351b444dfda542044cf6484f3712328133f7d6f8a6bcb0c13",
+      "translation_text_hash": "1b09e9640e08ae46a5daaeac71a5b0215daf6b7f8c3f6070656eeebd790be933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 땅에서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1b09e9640e08ae46a5daaeac71a5b0215daf6b7f8c3f6070656eeebd790be933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:2",
+      "sequence": 1819,
+      "chapter_label": "EXO 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "“This month shall be to you the beginning of months. It shall be the first month of the year to you.",
+      "ko": "이 달로 너희에게 달의 시작 곧 해의 첫 달이 되게 하고",
+      "source_text_hash": "7a6be376027d2da395e6139a4b4485909ec2f477b175f9238450858144843c1c",
+      "translation_text_hash": "e36d85cb3cc8e4f718e3cf1b0833b1a07d8c9f2cf48bc19c68936f56f236afbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 달로 너희에게 달의 시작 곧 해의 첫 달이 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "e36d85cb3cc8e4f718e3cf1b0833b1a07d8c9f2cf48bc19c68936f56f236afbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:3",
+      "sequence": 1820,
+      "chapter_label": "EXO 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Speak to all the congregation of Israel, saying, ‘On the tenth day of this month, they shall take to them every man a lamb, according to their fathers’ houses, a lamb for a household;",
+      "ko": "너희는 이스라엘 회중에게 고하여 이르라 이 달 열흘에 너희 매인이 어린 양을 취할찌니 각 가족대로 그 식구를 위하여 어린 양을 취하되",
+      "source_text_hash": "9758663ddddec5ad9effb15a5771ccb0d8364ed1089a255a8e8dd25d60e79f2e",
+      "translation_text_hash": "2d733d4ab9ddccee5561bfe66272b5dd4caf35fb9d896a5a962f2aeeee6023c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이스라엘 회중에게 고하여 이르라 이 달 열흘에 너희 매인이 어린 양을 취할찌니 각 가족대로 그 식구를 위하여 어린 양을 취하되"
+      ],
+      "raw_text_hashes": [
+        "2d733d4ab9ddccee5561bfe66272b5dd4caf35fb9d896a5a962f2aeeee6023c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:4",
+      "sequence": 1821,
+      "chapter_label": "EXO 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "and if the household is too little for a lamb, then he and his neighbor next to his house shall take one according to the number of the souls. You shall make your count for the lamb according to what everyone can eat.",
+      "ko": "그 어린 양에 대하여 식구가 너무 적으면 그 집의 이웃과 함께 인수를 따라서 하나를 취하며 각 사람의 식량을 따라서 너희 어린 양을 계산할 것이며",
+      "source_text_hash": "a6e12001ae6e22ef3f4e04f57e5b8f1301dd393e28d17d933b41b507ff5cd083",
+      "translation_text_hash": "c886b8843f43f61b63dbcc5c7817079a05a18ed7288b429f05d8cf5663f22fef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어린 양에 대하여 식구가 너무 적으면 그 집의 이웃과 함께 인수를 따라서 하나를 취하며 각 사람의 식량을 따라서 너희 어린 양을 계산할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c886b8843f43f61b63dbcc5c7817079a05a18ed7288b429f05d8cf5663f22fef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:5",
+      "sequence": 1822,
+      "chapter_label": "EXO 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Your lamb shall be without defect, a male a year old. You shall take it from the sheep or from the goats.",
+      "ko": "너희 어린 양은 흠 없고 일년 된 수컷으로 하되 양이나 염소 중에서 취하고",
+      "source_text_hash": "80cfbf7bddb75341062e50790cae455ec91ab4fa7183e79bb47383283283238c",
+      "translation_text_hash": "47e15aa5ad10d02db1569513ff4ee9183567230ab23c4c8a9682fbe716fc43a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 어린 양은 흠 없고 일년 된 수컷으로 하되 양이나 염소 중에서 취하고"
+      ],
+      "raw_text_hashes": [
+        "47e15aa5ad10d02db1569513ff4ee9183567230ab23c4c8a9682fbe716fc43a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:6",
+      "sequence": 1823,
+      "chapter_label": "EXO 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "You shall keep it until the fourteenth day of the same month; and the whole assembly of the congregation of Israel shall kill it at evening.",
+      "ko": "이 달 십 사일까지 간직하였다가 해 질 때에 이스라엘 회중이 그 양을 잡고",
+      "source_text_hash": "1972529921513e8ec3ebdbf58adfed44b1b1e822e6eeba202bede7792b096d19",
+      "translation_text_hash": "298717cb1b3bd717d9ac7ac4cc9ff5d9afb03233a06ebfe7a154bab30435faa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 달 십 사일까지 간직하였다가 해 질 때에 이스라엘 회중이 그 양을 잡고"
+      ],
+      "raw_text_hashes": [
+        "298717cb1b3bd717d9ac7ac4cc9ff5d9afb03233a06ebfe7a154bab30435faa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:7",
+      "sequence": 1824,
+      "chapter_label": "EXO 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "They shall take some of the blood, and put it on the two door posts and on the lintel, on the houses in which they shall eat it.",
+      "ko": "그 피로 양을 먹을 집 문 좌우 설주와 인방에 바르고",
+      "source_text_hash": "9e053251a25c027ff8f6a02a2717112176f599006fa3ef0cdf1fde47252584e3",
+      "translation_text_hash": "a43813682bf9a1d676e4cf0cb503baa2dbfde0c6c736270609cec3ec90454431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피로 양을 먹을 집 문 좌우 설주와 인방에 바르고"
+      ],
+      "raw_text_hashes": [
+        "a43813682bf9a1d676e4cf0cb503baa2dbfde0c6c736270609cec3ec90454431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:8",
+      "sequence": 1825,
+      "chapter_label": "EXO 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "They shall eat the meat in that night, roasted with fire, with unleavened bread. They shall eat it with bitter herbs.",
+      "ko": "그 밤에 그 고기를 불에 구워 무교병과 쓴 나물과 아울러 먹되",
+      "source_text_hash": "69162c502f233dbfa0e4e96fd0464c4a0c0aee951d38bea716715ec1a51ddb3c",
+      "translation_text_hash": "51bd24080cb07b45fd5b7894a69365c34ccf6faf847f061fdb575f0928969c53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 그 고기를 불에 구워 무교병과 쓴 나물과 아울러 먹되"
+      ],
+      "raw_text_hashes": [
+        "51bd24080cb07b45fd5b7894a69365c34ccf6faf847f061fdb575f0928969c53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:9",
+      "sequence": 1826,
+      "chapter_label": "EXO 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t eat it raw, nor boiled at all with water, but roasted with fire; with its head, its legs and its inner parts.",
+      "ko": "날로나 물에 삶아서나 먹지 말고 그 머리와 정강이와 내장을 다 불에 구워 먹고",
+      "source_text_hash": "e9b03330494c0441d851e596bea97c0e659fd387f634c4ea7db10031178c5e4c",
+      "translation_text_hash": "4c1856a6dc150985da35b3241ac56dc41db907d290964ebedc5e9c359bfb75d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날로나 물에 삶아서나 먹지 말고 그 머리와 정강이와 내장을 다 불에 구워 먹고"
+      ],
+      "raw_text_hashes": [
+        "4c1856a6dc150985da35b3241ac56dc41db907d290964ebedc5e9c359bfb75d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:10",
+      "sequence": 1827,
+      "chapter_label": "EXO 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "You shall let nothing of it remain until the morning; but that which remains of it until the morning you shall burn with fire.",
+      "ko": "아침까지 남겨 두지말며 아침까지 남은 것은 곧 소화하라",
+      "source_text_hash": "9730daffcad88bd1662c0795f56492580fafbe2f8da5dd11c1492973b63ea170",
+      "translation_text_hash": "ce5665b9410db7461c37dcb2b49212da1325dfdb06bd188a04b37d4027c96187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침까지 남겨 두지말며 아침까지 남은 것은 곧 소화하라"
+      ],
+      "raw_text_hashes": [
+        "ce5665b9410db7461c37dcb2b49212da1325dfdb06bd188a04b37d4027c96187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:11",
+      "sequence": 1828,
+      "chapter_label": "EXO 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "This is how you shall eat it: with your belt on your waist, your sandals on your feet, and your staff in your hand; and you shall eat it in haste: it is the LORD’s Passover.",
+      "ko": "너희는 그것을 이렇게 먹을찌니 허리에 띠를 띠고 발에 신을 신고 손에 지팡이를 잡고 급히 먹으라 이것이 여호와의 유월절이니라",
+      "source_text_hash": "67800891da9ab17d4d45e1942bb13d9c6bfd2347869091eb2392dde93092fa22",
+      "translation_text_hash": "a74adf4e1a6239374a4b4617c8cf75124c3125559ad00cdd888f1755e2f8cdf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그것을 이렇게 먹을찌니 허리에 띠를 띠고 발에 신을 신고 손에 지팡이를 잡고 급히 먹으라 이것이 여호와의 유월절이니라"
+      ],
+      "raw_text_hashes": [
+        "a74adf4e1a6239374a4b4617c8cf75124c3125559ad00cdd888f1755e2f8cdf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:12",
+      "sequence": 1829,
+      "chapter_label": "EXO 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "For I will go through the land of Egypt in that night, and will strike all the firstborn in the land of Egypt, both man and animal. I will execute judgments against all the gods of Egypt. I am the LORD.",
+      "ko": "내가 그 밤에 애굽 땅에 두루 다니며 사람과 짐승을 무론하고 애굽 나라 가운데 처음 난 것을 다 치고 애굽의 모든 신에게 벌을 내리리라 나는 여호와로라",
+      "source_text_hash": "49677617e4f86b9fed3ff0e2dcc66104870d36ea6e7eeef92bd714c5109f521d",
+      "translation_text_hash": "9b5e029e8243156df5e230f77e0238d96b897d23d71499b7dc2d2f074adf1aa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 밤에 애굽 땅에 두루 다니며 사람과 짐승을 무론하고 애굽 나라 가운데 처음 난 것을 다 치고 애굽의 모든 신에게 벌을 내리리라 나는 여호와로라"
+      ],
+      "raw_text_hashes": [
+        "9b5e029e8243156df5e230f77e0238d96b897d23d71499b7dc2d2f074adf1aa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:13",
+      "sequence": 1830,
+      "chapter_label": "EXO 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "The blood shall be to you for a token on the houses where you are. When I see the blood, I will pass over you, and no plague will be on you to destroy you when I strike the land of Egypt.",
+      "ko": "내가 애굽 땅을 칠 때에 그 피가 너희의 거하는 집에 있어서 너희를 위하여 표적이 될찌라 내가 피를 볼 때에 너희를 넘어가리니 재앙이 너희에게 내려 멸하지 아니하리라",
+      "source_text_hash": "68e3e8fa32b7a8b6314867066701462873f7595496590586a1da24f14a4c2ec0",
+      "translation_text_hash": "dabd00d0e387e6bfe0d063d88130e43ed231e6a93197a72aed7ff1e9986d505a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 땅을 칠 때에 그 피가 너희의 거하는 집에 있어서 너희를 위하여 표적이 될찌라 내가 피를 볼 때에 너희를 넘어가리니 재앙이 너희에게 내려 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "dabd00d0e387e6bfe0d063d88130e43ed231e6a93197a72aed7ff1e9986d505a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:14",
+      "sequence": 1831,
+      "chapter_label": "EXO 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "This day shall be a memorial for you. You shall keep it as a feast to the LORD. You shall keep it as a feast throughout your generations by an ordinance forever.",
+      "ko": "너희는 이 날을 기념하여 여호와의 절기를 삼아 영원한 규례로 대대에 지킬찌니라",
+      "source_text_hash": "b1ac652402661ec0e553499f1d023e3d69b71d21920d1eec6c93bb4f0fa865b1",
+      "translation_text_hash": "2a12e03855b4d3dbfa47cdd000b0684d2a0ecd08dd23a0ab7de7e2793aa27e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 날을 기념하여 여호와의 절기를 삼아 영원한 규례로 대대에 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "2a12e03855b4d3dbfa47cdd000b0684d2a0ecd08dd23a0ab7de7e2793aa27e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:15",
+      "sequence": 1832,
+      "chapter_label": "EXO 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "“‘Seven days you shall eat unleavened bread; even the first day you shall put away yeast out of your houses, for whoever eats leavened bread from the first day until the seventh day, that soul shall be cut off from Israel.",
+      "ko": "너희는 칠일 동안 무교병을 먹을찌니 그 첫날에 누룩을 너희 집에서 제하라 무릇 첫날부터 칠일까지 유교병을 먹는 자는 이스라엘에서 끊쳐지리라",
+      "source_text_hash": "4418ddb89f2ce2f4ed130146f605e0d1c49ffd619183ad1d2a1b70dd3f3b82ad",
+      "translation_text_hash": "861dc42ccaa1e39afe8b3f5291e88cf4ab776360690f887626eab7505608aa2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칠일 동안 무교병을 먹을찌니 그 첫날에 누룩을 너희 집에서 제하라 무릇 첫날부터 칠일까지 유교병을 먹는 자는 이스라엘에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "861dc42ccaa1e39afe8b3f5291e88cf4ab776360690f887626eab7505608aa2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:16",
+      "sequence": 1833,
+      "chapter_label": "EXO 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "In the first day there shall be to you a holy convocation, and in the seventh day a holy convocation; no kind of work shall be done in them, except that which every man must eat, only that may be done by you.",
+      "ko": "너희에게 첫날에도 성회요 제 칠일에도 성회가 되리니 이 두 날에는 아무 일도 하지 말고 각인의 식물만 너희가 갖출 것이니라",
+      "source_text_hash": "f4c5a85aa1edaa04b0e2e47073d41cdd98bb087c2b0d10732f69f271e106762a",
+      "translation_text_hash": "1193eeeec359084258dcf5707777cc0b95fb6690186591532778aae9d82706e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 첫날에도 성회요 제 칠일에도 성회가 되리니 이 두 날에는 아무 일도 하지 말고 각인의 식물만 너희가 갖출 것이니라"
+      ],
+      "raw_text_hashes": [
+        "1193eeeec359084258dcf5707777cc0b95fb6690186591532778aae9d82706e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:17",
+      "sequence": 1834,
+      "chapter_label": "EXO 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "You shall observe the feast of unleavened bread; for in this same day I have brought your armies out of the land of Egypt. Therefore you shall observe this day throughout your generations by an ordinance forever.",
+      "ko": "너희는 무교절을 지키라 이 날에 내가 너희 군대를 애굽 땅에서 인도하여 내었음이니라 그러므로 너희가 영원한 규례를 삼아 이 날을 대대로 지킬찌니라",
+      "source_text_hash": "c5d920fc2ac01969bfcd0a308cdf23b9410f8ecbb15f1b60075157bf89471dbd",
+      "translation_text_hash": "240ef5dbc3ef6a5d1369b644c544936d39bb38e37b4841080b565cea9a95f266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 무교절을 지키라 이 날에 내가 너희 군대를 애굽 땅에서 인도하여 내었음이니라 그러므로 너희가 영원한 규례를 삼아 이 날을 대대로 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "240ef5dbc3ef6a5d1369b644c544936d39bb38e37b4841080b565cea9a95f266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:18",
+      "sequence": 1835,
+      "chapter_label": "EXO 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "In the first month, on the fourteenth day of the month at evening, you shall eat unleavened bread, until the twenty first day of the month at evening.",
+      "ko": "정월에 그 달 십사일 저녁부터 이십일일 저녁까지 너희는 무교병을 먹을 것이요",
+      "source_text_hash": "76e737ab8fc9e064072d4deeec2f947cb1400421a7d29e1a387e531689509971",
+      "translation_text_hash": "ba671e168891aa6ece932d285ca09a1edb6bd5c8e6826255cbe246d105ab5c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월에 그 달 십사일 저녁부터 이십일일 저녁까지 너희는 무교병을 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "ba671e168891aa6ece932d285ca09a1edb6bd5c8e6826255cbe246d105ab5c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:19",
+      "sequence": 1836,
+      "chapter_label": "EXO 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "There shall be no yeast found in your houses for seven days, for whoever eats that which is leavened, that soul shall be cut off from the congregation of Israel, whether he is a foreigner, or one who is born in the land.",
+      "ko": "칠일 동안은 누룩을 너희 집에 있지 않게 하라 무릇 유교물을 먹는 자는 타국인이든지 본국에서 난 자든지 무론하고 이스라엘 회중에서 끊쳐지리니",
+      "source_text_hash": "67b019f7cf764d28b526d7d8f993fb448249eff3c105e741336106c8e1f52893",
+      "translation_text_hash": "9a745e9c9c2ad0d105a1e60ccae1fd887c870b75928a481e5a016f48c09f063b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 동안은 누룩을 너희 집에 있지 않게 하라 무릇 유교물을 먹는 자는 타국인이든지 본국에서 난 자든지 무론하고 이스라엘 회중에서 끊쳐지리니"
+      ],
+      "raw_text_hashes": [
+        "9a745e9c9c2ad0d105a1e60ccae1fd887c870b75928a481e5a016f48c09f063b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:20",
+      "sequence": 1837,
+      "chapter_label": "EXO 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "You shall eat nothing leavened. In all your habitations you shall eat unleavened bread.’”",
+      "ko": "너희는 아무 유교물이든지 먹지 말고 너희 모든 유하는 곳에서 무교병을 먹을찌니라",
+      "source_text_hash": "f932466a3058ed1f6a3b2d9d713e8a32a49dee8b1e208d43339c857e526c3f79",
+      "translation_text_hash": "1c8bd7557b8dd573dc681a2c92b18bc8a13429b1ffd2e1c6018cad4b42895e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 아무 유교물이든지 먹지 말고 너희 모든 유하는 곳에서 무교병을 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "1c8bd7557b8dd573dc681a2c92b18bc8a13429b1ffd2e1c6018cad4b42895e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:21",
+      "sequence": 1838,
+      "chapter_label": "EXO 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "Then Moses called for all the elders of Israel, and said to them, “Draw out, and take lambs according to your families, and kill the Passover.",
+      "ko": "모세가 이스라엘 모든 장로를 불러서 그들에게 이르되 너희는 나가서 너희 가족대로 어린 양을 택하여 유월절 양으로 잡고",
+      "source_text_hash": "fc39a7860088cdc3aa78dda3101071d5bc99d3a1a26cb2e45887cc310d928634",
+      "translation_text_hash": "20197533498f2d64899281cd217685c9b0160f148f7a32324afa155b38fcf4f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 모든 장로를 불러서 그들에게 이르되 너희는 나가서 너희 가족대로 어린 양을 택하여 유월절 양으로 잡고"
+      ],
+      "raw_text_hashes": [
+        "20197533498f2d64899281cd217685c9b0160f148f7a32324afa155b38fcf4f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:22",
+      "sequence": 1839,
+      "chapter_label": "EXO 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "You shall take a bunch of hyssop, and dip it in the blood that is in the basin, and strike the lintel and the two door posts with the blood that is in the basin. None of you shall go out of the door of his house until the morning.",
+      "ko": "너희는 우슬초 묶음을 취하여 그릇에 담은 피에 적시어서 그 피를 문 인방과 좌우 설주에 뿌리고 아침까지 한 사람도 자기 집 문밖에 나가지 말라",
+      "source_text_hash": "f86212979eab88e95b2e8fd5e959dab86aaa1afd67d7618e2dfef7b43fadbb9c",
+      "translation_text_hash": "e253f15f446b05fdae6e79eeffed70657c4d3f22c9f7002eb79bed1e03f4ce5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 우슬초 묶음을 취하여 그릇에 담은 피에 적시어서 그 피를 문 인방과 좌우 설주에 뿌리고 아침까지 한 사람도 자기 집 문밖에 나가지 말라"
+      ],
+      "raw_text_hashes": [
+        "e253f15f446b05fdae6e79eeffed70657c4d3f22c9f7002eb79bed1e03f4ce5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:23",
+      "sequence": 1840,
+      "chapter_label": "EXO 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "For the LORD will pass through to strike the Egyptians; and when he sees the blood on the lintel, and on the two door posts, the LORD will pass over the door, and will not allow the destroyer to come in to your houses to strike you.",
+      "ko": "여호와께서 애굽 사람을 치러 두루 다니실 때에 문 인방과 좌우 설주의 피를 보시면 그 문을 넘으시고 멸하는 자로 너희 집에 들어가서 너희를 치지 못하게 하실 것임이니라",
+      "source_text_hash": "9bb42404381dd38fc15df573de7adcc84190fc3e6ec7e67a9361f1dd5ab5ffb3",
+      "translation_text_hash": "62ab582cd7646bf9ba08f2ee40c411020f2cd58341a5259f32929127582f8f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 사람을 치러 두루 다니실 때에 문 인방과 좌우 설주의 피를 보시면 그 문을 넘으시고 멸하는 자로 너희 집에 들어가서 너희를 치지 못하게 하실 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "62ab582cd7646bf9ba08f2ee40c411020f2cd58341a5259f32929127582f8f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:24",
+      "sequence": 1841,
+      "chapter_label": "EXO 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "You shall observe this thing for an ordinance to you and to your sons forever.",
+      "ko": "너희는 이 일을 규례로 삼아 너희와 너희 자손이 영원히 지킬 것이니",
+      "source_text_hash": "d25c48ce06126d158c6332fb53ca40ed8954167f163ed05edeb91e6338daddd1",
+      "translation_text_hash": "915753b2f79ae91ad9b05c88f7d4f9a0804d7af338e9099ecaf2c577f6c98a89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 일을 규례로 삼아 너희와 너희 자손이 영원히 지킬 것이니"
+      ],
+      "raw_text_hashes": [
+        "915753b2f79ae91ad9b05c88f7d4f9a0804d7af338e9099ecaf2c577f6c98a89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:25",
+      "sequence": 1842,
+      "chapter_label": "EXO 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "It shall happen when you have come to the land which the LORD will give you, as he has promised, that you shall keep this service.",
+      "ko": "너희는 여호와께서 허락하신 대로 너희에게 주시는 땅에 이를 때에 이 예식을 지킬 것이라",
+      "source_text_hash": "d0bd51f594dcd50d61de8e21058e7c3eacb2f2db3b24c29465acc54c4c766955",
+      "translation_text_hash": "7c753ce0ee5e790a3e873ba6c11b8cab1473138314b934b90462c954278dda6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와께서 허락하신 대로 너희에게 주시는 땅에 이를 때에 이 예식을 지킬 것이라"
+      ],
+      "raw_text_hashes": [
+        "7c753ce0ee5e790a3e873ba6c11b8cab1473138314b934b90462c954278dda6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:26",
+      "sequence": 1843,
+      "chapter_label": "EXO 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "It will happen, when your children ask you, ‘What do you mean by this service?’",
+      "ko": "이 후에 너희 자녀가 묻기를 이 예식이 무슨 뜻이냐 하거든",
+      "source_text_hash": "10a4586cecf43af484c809c73a0777bdae8e403cce4a5d3fecef260a39f4a622",
+      "translation_text_hash": "4e09d13554fb2ed6c009e82a8e82cd71bd989a9c6079f17ee8d0dc7e8277ece7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 너희 자녀가 묻기를 이 예식이 무슨 뜻이냐 하거든"
+      ],
+      "raw_text_hashes": [
+        "4e09d13554fb2ed6c009e82a8e82cd71bd989a9c6079f17ee8d0dc7e8277ece7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:27",
+      "sequence": 1844,
+      "chapter_label": "EXO 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "that you shall say, ‘It is the sacrifice of the LORD’s Passover, who passed over the houses of the children of Israel in Egypt, when he struck the Egyptians, and spared our houses.’” The people bowed their heads and worshiped.",
+      "ko": "너희는 이르기를 이는 여호와의 유월절 제사라 여호와께서 애굽 사람을 치실 때에 애굽에 있는 이스라엘 자손의 집을 넘으사 우리의 집을 구원하셨느니라 하라 하매 백성이 머리 숙여 경배하니라",
+      "source_text_hash": "e6e0948c06e0cfc9f07f0b024149751b2636db9c06caf5173a2474bd5eabad07",
+      "translation_text_hash": "3271a5e5132c2cba8fd5d0aaa02688e74efc6c5431b8fcc2d0d2e82e8441c869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이르기를 이는 여호와의 유월절 제사라 여호와께서 애굽 사람을 치실 때에 애굽에 있는 이스라엘 자손의 집을 넘으사 우리의 집을 구원하셨느니라 하라 하매 백성이 머리 숙여 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "3271a5e5132c2cba8fd5d0aaa02688e74efc6c5431b8fcc2d0d2e82e8441c869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:28",
+      "sequence": 1845,
+      "chapter_label": "EXO 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "The children of Israel went and did so; as the LORD had commanded Moses and Aaron, so they did.",
+      "ko": "이스라엘 자손이 물러가서 그대로 행하되 여호와께서 모세와 아론에게 명하신 대로 행하니라",
+      "source_text_hash": "615f35252f6bac0350c809727a0ca149b43d5cef283061e95830ac28a59af842",
+      "translation_text_hash": "19a7fede9251f11a16951dfb103cb6f529a46798b40f7e8348be411b3980469e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 물러가서 그대로 행하되 여호와께서 모세와 아론에게 명하신 대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "19a7fede9251f11a16951dfb103cb6f529a46798b40f7e8348be411b3980469e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:29",
+      "sequence": 1846,
+      "chapter_label": "EXO 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "At midnight, the LORD struck all the firstborn in the land of Egypt, from the firstborn of Pharaoh who sat on his throne to the firstborn of the captive who was in the dungeon, and all the firstborn of livestock.",
+      "ko": "밤중에 여호와께서 애굽 땅에서 모든 처음 난것 곧 위에 앉은 바로의 장자로부터 옥에 갇힌 사람의 장자까지와 생축의 처음 난 것을 다 치시매",
+      "source_text_hash": "75e211571e7137945a40d3b81e41edac55cf87d965e40548b48f0cb837fb7ec1",
+      "translation_text_hash": "c6aabbfa666ba9983e676d15cef67a75415ffdd02d2e6298c287898af9d97019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤중에 여호와께서 애굽 땅에서 모든 처음 난것 곧 위에 앉은 바로의 장자로부터 옥에 갇힌 사람의 장자까지와 생축의 처음 난 것을 다 치시매"
+      ],
+      "raw_text_hashes": [
+        "c6aabbfa666ba9983e676d15cef67a75415ffdd02d2e6298c287898af9d97019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:30",
+      "sequence": 1847,
+      "chapter_label": "EXO 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "Pharaoh rose up in the night, he, and all his servants, and all the Egyptians; and there was a great cry in Egypt, for there was not a house where there was not one dead.",
+      "ko": "그 밤에 바로와 그 모든 신하와 모든 애굽 사람이 일어나고 애굽에 큰 호곡이 있었으니 이는 그 나라에 사망치 아니한 집이 하나도 없었음이었더라",
+      "source_text_hash": "d9b5fe74ef2ef8f24ebb80f07851ec9585db77b3f9633d6e51f490aa7e3c57a8",
+      "translation_text_hash": "83a2d83069a33fd1de8756023280beb949685d54d06b7fa80047d7d471834d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 바로와 그 모든 신하와 모든 애굽 사람이 일어나고 애굽에 큰 호곡이 있었으니 이는 그 나라에 사망치 아니한 집이 하나도 없었음이었더라"
+      ],
+      "raw_text_hashes": [
+        "83a2d83069a33fd1de8756023280beb949685d54d06b7fa80047d7d471834d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:31",
+      "sequence": 1848,
+      "chapter_label": "EXO 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "He called for Moses and Aaron by night, and said, “Rise up, get out from among my people, both you and the children of Israel; and go, serve the LORD, as you have said!",
+      "ko": "밤에 바로가 모세와 아론을 불러서 이르되 너희와 이스라엘 자손은 일어나 내 백성 가운데서 떠나서 너희의 말대로 가서 여호와를 섬기며",
+      "source_text_hash": "6625ce8317220bb9af660a0791c7a2a60f4b1c98776e87e7b10e7a39c888d8bd",
+      "translation_text_hash": "d5e88064568f3b1d31eea1b292c17de5ddc7e49e285eadd6478a28951cb12c24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 바로가 모세와 아론을 불러서 이르되 너희와 이스라엘 자손은 일어나 내 백성 가운데서 떠나서 너희의 말대로 가서 여호와를 섬기며"
+      ],
+      "raw_text_hashes": [
+        "d5e88064568f3b1d31eea1b292c17de5ddc7e49e285eadd6478a28951cb12c24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:32",
+      "sequence": 1849,
+      "chapter_label": "EXO 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "Take both your flocks and your herds, as you have said, and be gone; and bless me also!”",
+      "ko": "너희의 말대로 너희의 양도 소도 몰아가고 나를 위하여 축복하라 하며",
+      "source_text_hash": "b43fdffdc4b9f66f1b5c60d821f549ad57ea09a41cdfe7e0156acd4464b78237",
+      "translation_text_hash": "2106337d55963fff2a098dbd9c8b5f02e2720cd90ac9655591444262d283db12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 말대로 너희의 양도 소도 몰아가고 나를 위하여 축복하라 하며"
+      ],
+      "raw_text_hashes": [
+        "2106337d55963fff2a098dbd9c8b5f02e2720cd90ac9655591444262d283db12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:33",
+      "sequence": 1850,
+      "chapter_label": "EXO 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "The Egyptians were urgent with the people, to send them out of the land in haste, for they said, “We are all dead men.”",
+      "ko": "애굽 사람들은 말하기를 우리가 다 죽은 자가 되도다 하고 백성을 재촉하여 그 지경에서 속히 보내려 하므로",
+      "source_text_hash": "0b10af82990520e195a56e12f6d36cd61066f65eb3f763c98d66d6fe83a2fc14",
+      "translation_text_hash": "0ca2d076a90a427c270d9b93631bdd7617d7e76decb59fa8dfd79ae62bd35d78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람들은 말하기를 우리가 다 죽은 자가 되도다 하고 백성을 재촉하여 그 지경에서 속히 보내려 하므로"
+      ],
+      "raw_text_hashes": [
+        "0ca2d076a90a427c270d9b93631bdd7617d7e76decb59fa8dfd79ae62bd35d78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:34",
+      "sequence": 1851,
+      "chapter_label": "EXO 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "The people took their dough before it was leavened, their kneading troughs being bound up in their clothes on their shoulders.",
+      "ko": "백성이 발교되지 못한 반죽 담은 그릇을 옷에 싸서 어깨에 메니라",
+      "source_text_hash": "8dc66f4dc4867ec282672e4562c0ef1056840e942e459f070fc75ae6fdbefccc",
+      "translation_text_hash": "0135e76b8b53827c05d294d91e5628ec0ad399a8152817e1b747616a412fa4d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 발교되지 못한 반죽 담은 그릇을 옷에 싸서 어깨에 메니라"
+      ],
+      "raw_text_hashes": [
+        "0135e76b8b53827c05d294d91e5628ec0ad399a8152817e1b747616a412fa4d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:35",
+      "sequence": 1852,
+      "chapter_label": "EXO 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "The children of Israel did according to the word of Moses; and they asked of the Egyptians jewels of silver, and jewels of gold, and clothing.",
+      "ko": "이스라엘 자손이 모세의 말대로 하여 애굽 사람에게 은금 패물과 의복을 구하매",
+      "source_text_hash": "d17d8bed0d85fb112684d3bddd3ab1e932b083796fab32381b4f44e73fb9031c",
+      "translation_text_hash": "d4671865e113a7f6c4a65ce1dccfd10c599cdbc9c746ac6948640b7cf2338641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 모세의 말대로 하여 애굽 사람에게 은금 패물과 의복을 구하매"
+      ],
+      "raw_text_hashes": [
+        "d4671865e113a7f6c4a65ce1dccfd10c599cdbc9c746ac6948640b7cf2338641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:36",
+      "sequence": 1853,
+      "chapter_label": "EXO 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "The LORD gave the people favor in the sight of the Egyptians, so that they let them have what they asked. They plundered the Egyptians.",
+      "ko": "여호와께서 애굽 사람으로 백성에게 은혜를 입히게 하사 그들의 구하는대로 주게 하시므로 그들이 애굽 사람의 물품을 취하였더라",
+      "source_text_hash": "081cce4ba74e57ff92e0a825109b60559c66847f7743b8a42816458130ad86e9",
+      "translation_text_hash": "f0a51b91f020280fcc9d62613f3e19a991e49315baceb58e4641686582a5a4ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 사람으로 백성에게 은혜를 입히게 하사 그들의 구하는대로 주게 하시므로 그들이 애굽 사람의 물품을 취하였더라"
+      ],
+      "raw_text_hashes": [
+        "f0a51b91f020280fcc9d62613f3e19a991e49315baceb58e4641686582a5a4ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:37",
+      "sequence": 1854,
+      "chapter_label": "EXO 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "The children of Israel traveled from Rameses to Succoth, about six hundred thousand on foot who were men, in addition to children.",
+      "ko": "이스라엘 자손이 라암셋에서 발행하여 숙곳에 이르니 유아 외에 보행하는 장정이 육십만 가량이요",
+      "source_text_hash": "d2765aed7bd17c36779d1206ac61fcff7a41c45dbb84b0a6c40447f2ff1c4525",
+      "translation_text_hash": "8354114db8cd3d268454af1cac37127c3d8ce76c9056a378b21f1bc3d1b79e7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 라암셋에서 발행하여 숙곳에 이르니 유아 외에 보행하는 장정이 육십만 가량이요"
+      ],
+      "raw_text_hashes": [
+        "8354114db8cd3d268454af1cac37127c3d8ce76c9056a378b21f1bc3d1b79e7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:38",
+      "sequence": 1855,
+      "chapter_label": "EXO 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "A mixed multitude went up also with them, with flocks, herds, and even very much livestock.",
+      "ko": "중다한 잡족과 양과 소와 심히 많은 생축이 그들과 함께 하였으며",
+      "source_text_hash": "604ed275f45eea69036756ff1dda23df67d8372654fc41f34e7842b7a33476ef",
+      "translation_text_hash": "c5a24ad2637afc4e7d4aaf6fa40324d7887667c195e10ab1a2bb9737976b0472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중다한 잡족과 양과 소와 심히 많은 생축이 그들과 함께 하였으며"
+      ],
+      "raw_text_hashes": [
+        "c5a24ad2637afc4e7d4aaf6fa40324d7887667c195e10ab1a2bb9737976b0472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:39",
+      "sequence": 1856,
+      "chapter_label": "EXO 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "They baked unleavened cakes of the dough which they brought out of Egypt; for it wasn’t leavened, because they were thrust out of Egypt, and couldn’t wait, and they had not prepared any food for themselves.",
+      "ko": "그들이 가지고 나온 발교되지 못한 반죽으로 무교병을 구웠으니 이는 그들이 애굽에서 쫓겨남으로 지체할 수 없었음이며 아무 양식도 준비하지 못하였음이었더라",
+      "source_text_hash": "dede60a91f30dba0044c46bf1bedbce1d5444daaf1e97a7cef504d290d4681fb",
+      "translation_text_hash": "0504fe01ea9eed5b1be3a290da5d0f99f2ba793c0ddba0eefa00d7647f960b0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가지고 나온 발교되지 못한 반죽으로 무교병을 구웠으니 이는 그들이 애굽에서 쫓겨남으로 지체할 수 없었음이며 아무 양식도 준비하지 못하였음이었더라"
+      ],
+      "raw_text_hashes": [
+        "0504fe01ea9eed5b1be3a290da5d0f99f2ba793c0ddba0eefa00d7647f960b0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:40",
+      "sequence": 1857,
+      "chapter_label": "EXO 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "Now the time that the children of Israel lived in Egypt was four hundred thirty years.",
+      "ko": "이스라엘 자손이 애굽에 거주한 지 사백 삼십년이라",
+      "source_text_hash": "73edad4024aeafdb701f727c0ae8808e19813c86d7ee2f44ee462b771b80c5d1",
+      "translation_text_hash": "2d03ef6d8e76135cbc9e5fff68530cae95ae4292e3d2e98b6093f14eb86fce9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽에 거주한 지 사백 삼십년이라"
+      ],
+      "raw_text_hashes": [
+        "2d03ef6d8e76135cbc9e5fff68530cae95ae4292e3d2e98b6093f14eb86fce9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:41",
+      "sequence": 1858,
+      "chapter_label": "EXO 12",
+      "verse_label": "41",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 41
+        }
+      ],
+      "en": "At the end of four hundred thirty years, to the day, all of the LORD’s armies went out from the land of Egypt.",
+      "ko": "사백 삼십년이 마치는 그 날에 여호와의 군대가 다 애굽 땅에서 나왔은즉",
+      "source_text_hash": "a58f566cb828920a38619834ca2a4d527a927cb1ec0fbc362634e6324b76c76e",
+      "translation_text_hash": "abd2d387d924a0087bceba6c0a80f286ea5e750db8383e94788c4a461c19a81e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사백 삼십년이 마치는 그 날에 여호와의 군대가 다 애굽 땅에서 나왔은즉"
+      ],
+      "raw_text_hashes": [
+        "abd2d387d924a0087bceba6c0a80f286ea5e750db8383e94788c4a461c19a81e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:42",
+      "sequence": 1859,
+      "chapter_label": "EXO 12",
+      "verse_label": "42",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 42
+        }
+      ],
+      "en": "It is a night to be much observed to the LORD for bringing them out from the land of Egypt. This is that night of the LORD, to be much observed by all the children of Israel throughout their generations.",
+      "ko": "이 밤은 그들을 애굽 땅에서 인도하여 내심을 인하여 여호와 앞에 지킬 것이니 이는 여호와의 밤이라 이스라엘 자손이 다 대대로 지킬 것이니라",
+      "source_text_hash": "a8f8982334be2d0dadf6ba27113d9db002c4f15bb357b41fb6ecb5c1f32c22f6",
+      "translation_text_hash": "d8a39279fdb533f4e48827f0fe025e9fc8274889a5f01687aaf1d74abe5f427b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤은 그들을 애굽 땅에서 인도하여 내심을 인하여 여호와 앞에 지킬 것이니 이는 여호와의 밤이라 이스라엘 자손이 다 대대로 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d8a39279fdb533f4e48827f0fe025e9fc8274889a5f01687aaf1d74abe5f427b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:43",
+      "sequence": 1860,
+      "chapter_label": "EXO 12",
+      "verse_label": "43",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 43
+        }
+      ],
+      "en": "The LORD said to Moses and Aaron, “This is the ordinance of the Passover. No foreigner shall eat of it,",
+      "ko": "여호와께서 모세와 아론에게 이르시되 유월절 규례가 이러하니라 이방 사람은 먹지 못할 것이나",
+      "source_text_hash": "10bef741c0eed78c4ba6198a4d2fda543065884f9e2a522f1cb4b138827656cd",
+      "translation_text_hash": "c0a5bd497911d62e1be17021fe8ca278f4af80fe2e89d0990ba49a89ab5aeaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 이르시되 유월절 규례가 이러하니라 이방 사람은 먹지 못할 것이나"
+      ],
+      "raw_text_hashes": [
+        "c0a5bd497911d62e1be17021fe8ca278f4af80fe2e89d0990ba49a89ab5aeaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:44",
+      "sequence": 1861,
+      "chapter_label": "EXO 12",
+      "verse_label": "44",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 44
+        }
+      ],
+      "en": "but every man’s servant who is bought for money, when you have circumcised him, then shall he eat of it.",
+      "ko": "각 사람이 돈으로 산 종은 할례를 받은 후에 먹을 것이며",
+      "source_text_hash": "ad3a24be799bd097e6c5bba3b2c44cdebcef0a44c7f2b67a139e4fd52a68db97",
+      "translation_text_hash": "9b0414a1004105065aa64432a6bcfef909a8ba0814ca84885af0e17b8eae9b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람이 돈으로 산 종은 할례를 받은 후에 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "9b0414a1004105065aa64432a6bcfef909a8ba0814ca84885af0e17b8eae9b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:45",
+      "sequence": 1862,
+      "chapter_label": "EXO 12",
+      "verse_label": "45",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 45
+        }
+      ],
+      "en": "A foreigner and a hired servant shall not eat of it.",
+      "ko": "거류인과 타국 품군은 먹지 못하리라",
+      "source_text_hash": "826a4587958c97164fc00e9052ad5f597730cf9083bf015728ca783d1550840e",
+      "translation_text_hash": "896aa6e5e8ffb9d02e8410ef0a7bc10dc94d177fd33f05bc434e63dcdd36d6ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거류인과 타국 품군은 먹지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "896aa6e5e8ffb9d02e8410ef0a7bc10dc94d177fd33f05bc434e63dcdd36d6ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:46",
+      "sequence": 1863,
+      "chapter_label": "EXO 12",
+      "verse_label": "46",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 46
+        }
+      ],
+      "en": "It must be eaten in one house. You shall not carry any of the meat outside of the house. Do not break any of its bones.",
+      "ko": "한 집에서 먹되 그 고기를 조금도 집 밖으로 내지 말고 뼈도 꺾지 말찌며",
+      "source_text_hash": "f1ec0adf1efdba5b179fcbe51f6a90bccd69db3f66b74d67314d56819cc9c95b",
+      "translation_text_hash": "69acd35d825a2115afab3daf04d0ad88ada158068a1c583a4c2f71d3b4e3be2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 집에서 먹되 그 고기를 조금도 집 밖으로 내지 말고 뼈도 꺾지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "69acd35d825a2115afab3daf04d0ad88ada158068a1c583a4c2f71d3b4e3be2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:47",
+      "sequence": 1864,
+      "chapter_label": "EXO 12",
+      "verse_label": "47",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 47
+        }
+      ],
+      "en": "All the congregation of Israel shall keep it.",
+      "ko": "이스라엘 회중이 다 이것을 지킬찌니라",
+      "source_text_hash": "41049ec0f6c7cb47de67fb45c713af6be892e9cc2c6b05bdfd0e50a33bc522be",
+      "translation_text_hash": "e85bbeafbf627cbae266873e58e707de633634cb8e753dcf055a22295b0db463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 회중이 다 이것을 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "e85bbeafbf627cbae266873e58e707de633634cb8e753dcf055a22295b0db463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:48",
+      "sequence": 1865,
+      "chapter_label": "EXO 12",
+      "verse_label": "48",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 48
+        }
+      ],
+      "en": "When a stranger lives as a foreigner with you, and would like to keep the Passover to the LORD, let all his males be circumcised, and then let him come near and keep it. He shall be as one who is born in the land; but no uncircumcised person shall eat of it.",
+      "ko": "너희와 함께 거하는 타국인이 여호와의 유월절을 지키고자 하거든 그 모든 남자는 할례를 받은 후에야 가까이하여 지킬찌니 곧 그는 본토인과 같이 될 것이나 할례 받지 못한 자는 먹지 못할 것이니라",
+      "source_text_hash": "fc4e86ea42a8e1e5f0d93e60f8e66a0dd5e6866bf133cfe09f645eb0284d4479",
+      "translation_text_hash": "6be9625c5e70bf6e5dee3bcca52d8fc93aaa785782dbf7853123e64929065dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 함께 거하는 타국인이 여호와의 유월절을 지키고자 하거든 그 모든 남자는 할례를 받은 후에야 가까이하여 지킬찌니 곧 그는 본토인과 같이 될 것이나 할례 받지 못한 자는 먹지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "6be9625c5e70bf6e5dee3bcca52d8fc93aaa785782dbf7853123e64929065dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:49",
+      "sequence": 1866,
+      "chapter_label": "EXO 12",
+      "verse_label": "49",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 49
+        }
+      ],
+      "en": "One law shall be to him who is born at home, and to the stranger who lives as a foreigner among you.”",
+      "ko": "본토인에게나 너희 중에 우거한 이방인에게나 이 법이 동일하니라 하셨으므로",
+      "source_text_hash": "a50ea6dcacf279535a6242e9d54df081d671c3b813cf4276676d364ded6056cb",
+      "translation_text_hash": "1aa3700a8835640ecca6ddac0169941c3a243a759d60f3c7d4e826f31112efc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "본토인에게나 너희 중에 우거한 이방인에게나 이 법이 동일하니라 하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "1aa3700a8835640ecca6ddac0169941c3a243a759d60f3c7d4e826f31112efc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:50",
+      "sequence": 1867,
+      "chapter_label": "EXO 12",
+      "verse_label": "50",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 50
+        }
+      ],
+      "en": "All the children of Israel did so. As the LORD commanded Moses and Aaron, so they did.",
+      "ko": "온 이스라엘 자손이 이와 같이 행하되 여호와께서 모세와 아론에게 명하신대로 행하였으며",
+      "source_text_hash": "72157ba10cf16184048e88c4e2caf297b0d0f48723cc99893644d81b6c12c0f8",
+      "translation_text_hash": "d26dc03a5e42bf1b97e8d49097c436f4c58ce7cfa0c4f914fe3ccc31fe90f60f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘 자손이 이와 같이 행하되 여호와께서 모세와 아론에게 명하신대로 행하였으며"
+      ],
+      "raw_text_hashes": [
+        "d26dc03a5e42bf1b97e8d49097c436f4c58ce7cfa0c4f914fe3ccc31fe90f60f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:12:51",
+      "sequence": 1868,
+      "chapter_label": "EXO 12",
+      "verse_label": "51",
+      "locator": {
+        "book": "EXO",
+        "chapter": 12,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 12,
+          "verse": 51
+        }
+      ],
+      "en": "That same day, the LORD brought the children of Israel out of the land of Egypt by their armies.",
+      "ko": "그 같은 날에 여호와께서 이스라엘 자손을 그 군대대로 애굽 땅에서 인도하여 내셨더라",
+      "source_text_hash": "087d6eb24bc56867f699d2b04ed683358961e661c2937db3dadbbf2f79e7f26c",
+      "translation_text_hash": "a96992722bb93b249656d458d294bc479a80fd2a1b6fb5655493b8fe053b5fa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 같은 날에 여호와께서 이스라엘 자손을 그 군대대로 애굽 땅에서 인도하여 내셨더라"
+      ],
+      "raw_text_hashes": [
+        "a96992722bb93b249656d458d294bc479a80fd2a1b6fb5655493b8fe053b5fa0"
+      ]
+    }
+  ]
+}

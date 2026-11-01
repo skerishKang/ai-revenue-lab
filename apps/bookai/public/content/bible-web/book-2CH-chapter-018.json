@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:018",
+  "unit_ordinal": 385,
+  "unit_label": "2CH 18",
+  "book_code": "2CH",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:18:1",
+      "sequence": 11544,
+      "chapter_label": "2CH 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "Now Jehoshaphat had riches and honor in abundance; and he allied himself with Ahab.",
+      "ko": "여호사밧이 부귀와 영광이 극하였고 아합으로 더불어 연혼하였더라",
+      "source_text_hash": "1075d5ac2a267140bdc56b40a6d7e8594ea8775a036818e838add8e50289cb1c",
+      "translation_text_hash": "6abb51b503e5686ecd95b7280eb5340b0e8e5aa25797af253717af4399890f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 부귀와 영광이 극하였고 아합으로 더불어 연혼하였더라"
+      ],
+      "raw_text_hashes": [
+        "6abb51b503e5686ecd95b7280eb5340b0e8e5aa25797af253717af4399890f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:2",
+      "sequence": 11545,
+      "chapter_label": "2CH 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "After some years, he went down to Ahab to Samaria. Ahab killed sheep and cattle for him in abundance, and for the people who were with him, and moved him to go up with him to Ramoth Gilead.",
+      "ko": "두어해 후에 저가 사마리아에 내려가서 아합에게 나아갔더니 아합이 저와 종자를 위하여 우양을 많이 잡고 함께 가서 길르앗 라못 치기를 권하더라",
+      "source_text_hash": "d33187f9c9f0f7e3844715e7327f41942e56e30c7bf52a3f3d4be0dd899a9659",
+      "translation_text_hash": "192171bda77085bbb4764a9c0b971a833f7e4e2a17441175942574d669d3b1bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두어해 후에 저가 사마리아에 내려가서 아합에게 나아갔더니 아합이 저와 종자를 위하여 우양을 많이 잡고 함께 가서 길르앗 라못 치기를 권하더라"
+      ],
+      "raw_text_hashes": [
+        "192171bda77085bbb4764a9c0b971a833f7e4e2a17441175942574d669d3b1bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:3",
+      "sequence": 11546,
+      "chapter_label": "2CH 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "Ahab king of Israel said to Jehoshaphat king of Judah, “Will you go with me to Ramoth Gilead?” He answered him, “I am as you are, and my people as your people. We will be with you in the war.”",
+      "ko": "이스라엘 왕 아합이 유다 왕 여호사밧에게 이르되 당신은 나와 함께 길르앗 라못으로 가시겠느뇨 대답하되 나는 당신과 일반이요 내 백성은 당신의 백성과 일반이니 당신과 함께 싸우리이다",
+      "source_text_hash": "b3d5460f9a9f4cd2fb95970ab628fee5aca8f7089d6addf4843beb1929f47273",
+      "translation_text_hash": "f9582e1a142920cb566d4a1fe313058dbb35c3a989442ece7aca5630b11b8368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 아합이 유다 왕 여호사밧에게 이르되 당신은 나와 함께 길르앗 라못으로 가시겠느뇨 대답하되 나는 당신과 일반이요 내 백성은 당신의 백성과 일반이니 당신과 함께 싸우리이다"
+      ],
+      "raw_text_hashes": [
+        "f9582e1a142920cb566d4a1fe313058dbb35c3a989442ece7aca5630b11b8368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:4",
+      "sequence": 11547,
+      "chapter_label": "2CH 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "Jehoshaphat said to the king of Israel, “Please inquire first for the LORD’s word.”",
+      "ko": "여호사밧이 또 이스라엘 왕에게 이르되 청컨대 먼저 여호와의 말씀이 어떠하신지 물어 보소서",
+      "source_text_hash": "8fe923e336cf915391b4a510cde0ab503a27cfb1053f3591a95cf8b4e7e42b9e",
+      "translation_text_hash": "85ece923222b77e3eaf4f76a514b46ea318fdc75799932b39c3124a9b8817105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 또 이스라엘 왕에게 이르되 청컨대 먼저 여호와의 말씀이 어떠하신지 물어 보소서"
+      ],
+      "raw_text_hashes": [
+        "85ece923222b77e3eaf4f76a514b46ea318fdc75799932b39c3124a9b8817105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:5",
+      "sequence": 11548,
+      "chapter_label": "2CH 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "Then the king of Israel gathered the prophets together, four hundred men, and said to them, “Shall we go to Ramoth Gilead to battle, or shall I forbear?” They said, “Go up, for God will deliver it into the hand of the king.”",
+      "ko": "이스라엘 왕이 이에 선지자 사백인을 모으고 저희에게 이르되 우리가 길르앗 라못에 가서 싸우랴 말랴 저희가 가로되 올라 가소서 하나님이 그 성을 왕의 손에 붙이시리이다",
+      "source_text_hash": "2c3bf1f766a3d5a0863828fc62eecaa17e25e3682d6a431040d820b594d6b3ba",
+      "translation_text_hash": "afcbbca855012b0bb2f42f02c33ab9a7cf59cf1f660919b9225d897bb03fb31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 이에 선지자 사백인을 모으고 저희에게 이르되 우리가 길르앗 라못에 가서 싸우랴 말랴 저희가 가로되 올라 가소서 하나님이 그 성을 왕의 손에 붙이시리이다"
+      ],
+      "raw_text_hashes": [
+        "afcbbca855012b0bb2f42f02c33ab9a7cf59cf1f660919b9225d897bb03fb31c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:6",
+      "sequence": 11549,
+      "chapter_label": "2CH 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "But Jehoshaphat said, “Isn’t there here a prophet of the LORD besides, that we may inquire of him?”",
+      "ko": "여호사밧이 가로되 이 외에 우리가 물을만한 여호와의 선지자가 여기 있지 아니하니이까",
+      "source_text_hash": "abd12bcf505f59853f492b5e308de758a4eced122fe28da433a7b0524c083660",
+      "translation_text_hash": "6cb663e394f1679086beea9dbcba2aa3f3fdaad109a1188df11d47b1f333ed10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 가로되 이 외에 우리가 물을만한 여호와의 선지자가 여기 있지 아니하니이까"
+      ],
+      "raw_text_hashes": [
+        "6cb663e394f1679086beea9dbcba2aa3f3fdaad109a1188df11d47b1f333ed10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:7",
+      "sequence": 11550,
+      "chapter_label": "2CH 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "The king of Israel said to Jehoshaphat, “There is yet one man by whom we may inquire of the LORD; but I hate him, for he never prophesies good concerning me, but always evil. He is Micaiah the son of Imla.” Jehoshaphat said, “Don’t let the king say so.”",
+      "ko": "이스라엘 왕이 여호사밧에게 이르되 오히려 이믈라의 아들 미가야 한 사람이 있으니 저로 말미암아 여호와께 물을 수 있으나 저는 내게 대하여 길한 일은 예언하지 아니하고 항상 흉한 일만 예언하기로 내가 저를 미워하나이다 여호사밧이 가로되 왕은 그런 말씀을 마소서",
+      "source_text_hash": "12595b89f4b1762de399a9a7a88a13ed95fc0ccabfdf8032866c1d65bf284c43",
+      "translation_text_hash": "0760b6a4f2f772e38c122b9fc6e123425d563a796ab1ccae7f36b8b9e5f2e65b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 여호사밧에게 이르되 오히려 이믈라의 아들 미가야 한 사람이 있으니 저로 말미암아 여호와께 물을 수 있으나 저는 내게 대하여 길한 일은 예언하지 아니하고 항상 흉한 일만 예언하기로 내가 저를 미워하나이다 여호사밧이 가로되 왕은 그런 말씀을 마소서"
+      ],
+      "raw_text_hashes": [
+        "0760b6a4f2f772e38c122b9fc6e123425d563a796ab1ccae7f36b8b9e5f2e65b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:8",
+      "sequence": 11551,
+      "chapter_label": "2CH 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Then the king of Israel called an officer, and said, “Get Micaiah the son of Imla quickly.”",
+      "ko": "이스라엘 왕이 한 내시를 불러 이르되 이믈라의 아들 미가야로 속히 오게 하라 하니라",
+      "source_text_hash": "f49a04c9e887dcbf27f9ec69f893e74015053b970ee7a3e78f9cfc24aa451759",
+      "translation_text_hash": "d0fee2dfd25a2c393558713d92f518e3b23c4716bb5907546abf6006736244be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 한 내시를 불러 이르되 이믈라의 아들 미가야로 속히 오게 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "d0fee2dfd25a2c393558713d92f518e3b23c4716bb5907546abf6006736244be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:9",
+      "sequence": 11552,
+      "chapter_label": "2CH 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "Now the king of Israel and Jehoshaphat the king of Judah each sat on his throne, arrayed in their robes, and they were sitting in an open place at the entrance of the gate of Samaria; and all the prophets were prophesying before them.",
+      "ko": "이스라엘 왕과 유다 왕 여호사밧이 왕복을 입고 사마리아 성문 어귀 광장에서 각기 보좌에 앉았고 모든 선지자가 그 앞에서 예언을 하는데",
+      "source_text_hash": "13bf8d097636d0d2215edb72d798331886bc63c6afcd3bdf1e13e5bee96975ba",
+      "translation_text_hash": "20b79b4ef68407a145f09e6323ca3ac4cc40d1dea1f111d44eaa3cc77c035dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕과 유다 왕 여호사밧이 왕복을 입고 사마리아 성문 어귀 광장에서 각기 보좌에 앉았고 모든 선지자가 그 앞에서 예언을 하는데"
+      ],
+      "raw_text_hashes": [
+        "20b79b4ef68407a145f09e6323ca3ac4cc40d1dea1f111d44eaa3cc77c035dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:10",
+      "sequence": 11553,
+      "chapter_label": "2CH 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "Zedekiah the son of Chenaanah made himself horns of iron and said, “The LORD says, ‘With these you shall push the Syrians, until they are consumed.’”",
+      "ko": "그나아나의 아들 시드기야는 철로 뿔들을 만들어 가지고 말하되 여호와의 말씀이 왕이 이것들로 아람 사람을 찔러 진멸하리라 하셨다 하고",
+      "source_text_hash": "1cadf5af72fa47b1bc95ca75e9ea327fc64c288c81e6f6c7ff5a88a6cb8a83ac",
+      "translation_text_hash": "4486a61f0b4cf2d6b4e01163d3342888e5a146951b862e7d2d3d7931828bfcb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그나아나의 아들 시드기야는 철로 뿔들을 만들어 가지고 말하되 여호와의 말씀이 왕이 이것들로 아람 사람을 찔러 진멸하리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "4486a61f0b4cf2d6b4e01163d3342888e5a146951b862e7d2d3d7931828bfcb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:11",
+      "sequence": 11554,
+      "chapter_label": "2CH 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "All the prophets prophesied so, saying, “Go up to Ramoth Gilead, and prosper; for the LORD will deliver it into the hand of the king.”",
+      "ko": "모든 선지자도 그와 같이 예언하여 이르기를 길르앗 라못으로 올라가서 승리를 얻으소서 여호와께서 그 성을 왕의 손에 붙이시리이다 하더라",
+      "source_text_hash": "f83fe8a2aaa5fe6ce4f7bf47eb4e7107964ddd30b1dad6e1ad7863ad79515250",
+      "translation_text_hash": "ae887a18886d484f172eb4c54ee28aea93b32a9a2e1eb71fe5e6c48bc433e7cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 선지자도 그와 같이 예언하여 이르기를 길르앗 라못으로 올라가서 승리를 얻으소서 여호와께서 그 성을 왕의 손에 붙이시리이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "ae887a18886d484f172eb4c54ee28aea93b32a9a2e1eb71fe5e6c48bc433e7cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:12",
+      "sequence": 11555,
+      "chapter_label": "2CH 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "The messenger who went to call Micaiah spoke to him, saying, “Behold, the words of the prophets declare good to the king with one mouth. Let your word therefore, please be like one of theirs, and speak good.”",
+      "ko": "미가야를 부르러 간 사자가 일러 가로되 선지자들의 말이 여출일구하여 왕에게 길하게 하니 청컨대 당신의 말도 저희중 한 사람처럼 길하게 하소서",
+      "source_text_hash": "ff81af4464f5dd1426389da87828af4ad2ca28f8da193892177b4d55d34c6898",
+      "translation_text_hash": "eba2b13d1d56ed2f561ee89f6932d2dd6f24e4e7ae4972a19a7593255b9a7413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가야를 부르러 간 사자가 일러 가로되 선지자들의 말이 여출일구하여 왕에게 길하게 하니 청컨대 당신의 말도 저희중 한 사람처럼 길하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "eba2b13d1d56ed2f561ee89f6932d2dd6f24e4e7ae4972a19a7593255b9a7413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:13",
+      "sequence": 11556,
+      "chapter_label": "2CH 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "Micaiah said, “As the LORD lives, I will say what my God says.”",
+      "ko": "미가야가 가로되 여호와의 사심을 가리켜 맹세하노니 내 하나님의 말씀하시는 것 곧 그것을 내가 말하리라하고",
+      "source_text_hash": "3f7e982e922d2cf8dc85ca420fbe4ea56661b6464f1e479f0af2f41602b03bfb",
+      "translation_text_hash": "45c476fad1d1174c67a03353ef7db65c5aa514bcae350249c66c2edf30e9179b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가야가 가로되 여호와의 사심을 가리켜 맹세하노니 내 하나님의 말씀하시는 것 곧 그것을 내가 말하리라하고"
+      ],
+      "raw_text_hashes": [
+        "45c476fad1d1174c67a03353ef7db65c5aa514bcae350249c66c2edf30e9179b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:14",
+      "sequence": 11557,
+      "chapter_label": "2CH 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "When he had come to the king, the king said to him, “Micaiah, shall we go to Ramoth Gilead to battle, or shall I forbear?” He said, “Go up, and prosper. They shall be delivered into your hand.”",
+      "ko": "이에 왕에게 이르니 왕이 저에게 이르되 미가야야 우리가 길르앗 라못으로 싸우러 가랴 말랴 가로되 올라가서 승리를 얻으소서 저희가 왕의 손에 붙인바 되리이다",
+      "source_text_hash": "434d0365c44e251dd1ed5aa6ddf740d00a191774383bb85e3158ac78a277e279",
+      "translation_text_hash": "30df97928dd70fef168938dfd61c19de295997f7d999ac58d30eb36b673a2339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕에게 이르니 왕이 저에게 이르되 미가야야 우리가 길르앗 라못으로 싸우러 가랴 말랴 가로되 올라가서 승리를 얻으소서 저희가 왕의 손에 붙인바 되리이다"
+      ],
+      "raw_text_hashes": [
+        "30df97928dd70fef168938dfd61c19de295997f7d999ac58d30eb36b673a2339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:15",
+      "sequence": 11558,
+      "chapter_label": "2CH 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "The king said to him, “How many times shall I adjure you that you speak to me nothing but the truth in the LORD’s name?”",
+      "ko": "왕이 저에게 이르되 여호와의 이름으로 진실한것만 말하라고 내가 몇번이나 너로 맹세케 하여야 하겠느냐",
+      "source_text_hash": "e1f52fb53a53013f61bf47c0251f2257aa361738bdf618e555f03ed2961f2be3",
+      "translation_text_hash": "d4d9d1eef90140b8a3e1b838275f95dfb3589ec80e9e4eb74ee1619acc4852fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저에게 이르되 여호와의 이름으로 진실한것만 말하라고 내가 몇번이나 너로 맹세케 하여야 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d4d9d1eef90140b8a3e1b838275f95dfb3589ec80e9e4eb74ee1619acc4852fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:16",
+      "sequence": 11559,
+      "chapter_label": "2CH 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “I saw all Israel scattered on the mountains, as sheep that have no shepherd. The LORD said, ‘These have no master. Let them each return to his house in peace.’”",
+      "ko": "저가 가로되 내가 보니 온 이스라엘이 목자 없는 양 같이 산에 흩어졌는데 여호와의 말씀이 이 무리가 주인이 없으니 각각 평안히 그 집으로 돌아갈 것이니라 하셨나이다",
+      "source_text_hash": "b1def5413c225f12a0ad23d5bbf58c6b3a8063d994cb697c5c0874fae6af3d67",
+      "translation_text_hash": "044a95a3de555f9c0d493423c4ecc2b1da6d460a282d628ae5445f239e833a6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가로되 내가 보니 온 이스라엘이 목자 없는 양 같이 산에 흩어졌는데 여호와의 말씀이 이 무리가 주인이 없으니 각각 평안히 그 집으로 돌아갈 것이니라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "044a95a3de555f9c0d493423c4ecc2b1da6d460a282d628ae5445f239e833a6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:17",
+      "sequence": 11560,
+      "chapter_label": "2CH 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "The king of Israel said to Jehoshaphat, “Didn’t I tell you that he would not prophesy good concerning me, but evil?”",
+      "ko": "이스라엘 왕이 여호사밧에게 이르되 저 사람이 내게 대하여 길한 것을 예언하지 아니하고 흉한 것만 예언하겠다고 당신에게 말씀하지 아니하였나이까",
+      "source_text_hash": "5c16ea4903f4034bdbdc7f19c53978c77459a5ccd2b30ba563f125c7bc03424b",
+      "translation_text_hash": "6de4f8e3edff8c9fbbf680c360e7298036cef0ee3a782c164eabead26fc7d31b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 여호사밧에게 이르되 저 사람이 내게 대하여 길한 것을 예언하지 아니하고 흉한 것만 예언하겠다고 당신에게 말씀하지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "6de4f8e3edff8c9fbbf680c360e7298036cef0ee3a782c164eabead26fc7d31b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:18",
+      "sequence": 11561,
+      "chapter_label": "2CH 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Micaiah said, “Therefore hear the LORD’s word: I saw the LORD sitting on his throne, and all the army of heaven standing on his right hand and on his left.",
+      "ko": "미가야가 가로되 그런즉 왕은 여호와의 말씀을 들으소서 내가 보니 여호와께서 그 보좌에 앉으셨고 하늘의 만군이 그 좌우편에 모시고 섰는데",
+      "source_text_hash": "8ec380d8f8269a0f5624c31f690d28d94150072fcd246714a3cb0b5d18972547",
+      "translation_text_hash": "bcfbd2ca0cd020538b0785f04f9ac3520f5dfa19fc574fa12a2f8670703fc2b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가야가 가로되 그런즉 왕은 여호와의 말씀을 들으소서 내가 보니 여호와께서 그 보좌에 앉으셨고 하늘의 만군이 그 좌우편에 모시고 섰는데"
+      ],
+      "raw_text_hashes": [
+        "bcfbd2ca0cd020538b0785f04f9ac3520f5dfa19fc574fa12a2f8670703fc2b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:19",
+      "sequence": 11562,
+      "chapter_label": "2CH 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD said, ‘Who will entice Ahab king of Israel, that he may go up and fall at Ramoth Gilead?’ One spoke saying in this way, and another saying in that way.",
+      "ko": "여호와께서 말씀하시기를 누가 이스라엘 왕 아합을 꾀어 저로 길르앗 라못에 올라가서 죽게 할꼬 하시니 하나는 이렇게 하겠다 하고 하나는 저렇게 하겠다 하였는데",
+      "source_text_hash": "b3a82e368851d5c92f99a75a81bed997d70a816180728290614a7e4f2d4367e3",
+      "translation_text_hash": "8fd4eb4cba50a2134a757e5dc9fa0545f0c8909c4c1a8e0cf0e0e80ec9c1168a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시기를 누가 이스라엘 왕 아합을 꾀어 저로 길르앗 라못에 올라가서 죽게 할꼬 하시니 하나는 이렇게 하겠다 하고 하나는 저렇게 하겠다 하였는데"
+      ],
+      "raw_text_hashes": [
+        "8fd4eb4cba50a2134a757e5dc9fa0545f0c8909c4c1a8e0cf0e0e80ec9c1168a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:20",
+      "sequence": 11563,
+      "chapter_label": "2CH 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "A spirit came out, stood before the LORD, and said, ‘I will entice him.’ “The LORD said to him, ‘How?’",
+      "ko": "한 영이 나아와 여호와 앞에 서서 말하되 내가 저를 꾀이겠나이다 여호와께서 저에게 이르시되 어떻게 하겠느냐",
+      "source_text_hash": "f67d9b1960f57c64ceea42caeb54659d3c37a6746e679b35aa7be03c717efc9c",
+      "translation_text_hash": "239df849ce6bbe8388fa08c5c6a0459e4931ba3088d598aa7223abd91b818a39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 영이 나아와 여호와 앞에 서서 말하되 내가 저를 꾀이겠나이다 여호와께서 저에게 이르시되 어떻게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "239df849ce6bbe8388fa08c5c6a0459e4931ba3088d598aa7223abd91b818a39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:21",
+      "sequence": 11564,
+      "chapter_label": "2CH 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "“He said, ‘I will go, and will be a lying spirit in the mouth of all his prophets.’ “He said, ‘You will entice him, and will prevail also. Go and do so.’",
+      "ko": "가로되 내가 나가서 거짓말 하는 영이 되어 그 모든 선지자의 입에 있겠나이다 여호와께서 가라사대 너는 꾀이겠고 또 이루리라 나가서 그리하라 하셨은즉",
+      "source_text_hash": "5c2bd936f267fe21387e3d579c303d0ced0f6f2b53660317732d480f3c3253dd",
+      "translation_text_hash": "30c7f0dbaaaa708498d8150497cc847b80ebfe66f54ef850dc3bb11186fd0d1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 나가서 거짓말 하는 영이 되어 그 모든 선지자의 입에 있겠나이다 여호와께서 가라사대 너는 꾀이겠고 또 이루리라 나가서 그리하라 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "30c7f0dbaaaa708498d8150497cc847b80ebfe66f54ef850dc3bb11186fd0d1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:22",
+      "sequence": 11565,
+      "chapter_label": "2CH 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "“Now therefore, behold, the LORD has put a lying spirit in the mouth of these your prophets; and the LORD has spoken evil concerning you.”",
+      "ko": "이제 여호와께서 거짓말 하는 영을 왕의 이 모든 선지자의 입에 넣으셨고 또 여호와께서 왕에게 대하여 화를 말씀하셨나이다",
+      "source_text_hash": "fa181d9c10691573a4ee43cff3538e753c4b0feb2b5e0e322d19c65eb362a334",
+      "translation_text_hash": "013a9291776187f82c29e4c0b500d6c901cf98f4205e1ad9cc5305f792e517f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 여호와께서 거짓말 하는 영을 왕의 이 모든 선지자의 입에 넣으셨고 또 여호와께서 왕에게 대하여 화를 말씀하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "013a9291776187f82c29e4c0b500d6c901cf98f4205e1ad9cc5305f792e517f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:23",
+      "sequence": 11566,
+      "chapter_label": "2CH 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Then Zedekiah the son of Chenaanah came near, and struck Micaiah on the cheek, and said, “Which way did the LORD’s Spirit go from me to speak to you?”",
+      "ko": "그나아나의 아들 시드기야가 가까이 와서 미가야의 뺨을 치며 이르되 여호와의 영이 나를 떠나 어디로 말미암아 가서 네게 말씀하더냐",
+      "source_text_hash": "47f32471b240ee58052682954d14049770ec11842a895e7e60f9da83f72d9838",
+      "translation_text_hash": "ef2b675031053c787c19e3ace93f01d68929441e3c05bea1fd639aa39d354d9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그나아나의 아들 시드기야가 가까이 와서 미가야의 뺨을 치며 이르되 여호와의 영이 나를 떠나 어디로 말미암아 가서 네게 말씀하더냐"
+      ],
+      "raw_text_hashes": [
+        "ef2b675031053c787c19e3ace93f01d68929441e3c05bea1fd639aa39d354d9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:24",
+      "sequence": 11567,
+      "chapter_label": "2CH 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Micaiah said, “Behold, you shall see on that day, when you go into an inner room to hide yourself.”",
+      "ko": "미가야가 가로되 네가 골방에 들어가서 숨는 그 날에 보리라",
+      "source_text_hash": "594e109019b2b1b14583644bf93599c3485c06d07823f9515e084ed18512585c",
+      "translation_text_hash": "b6fbae0bd000d30fc17bb8db8c81cbfd577617f4bd43e7a5e5ebc5fd033462c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가야가 가로되 네가 골방에 들어가서 숨는 그 날에 보리라"
+      ],
+      "raw_text_hashes": [
+        "b6fbae0bd000d30fc17bb8db8c81cbfd577617f4bd43e7a5e5ebc5fd033462c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:25",
+      "sequence": 11568,
+      "chapter_label": "2CH 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "The king of Israel said, “Take Micaiah, and carry him back to Amon the governor of the city, and to Joash the king’s son;",
+      "ko": "이스라엘 왕이 가로되 미가야를 잡아 부윤 아몬과 왕자 요아스에게로 끌고 돌아가서",
+      "source_text_hash": "0f13912615e9e9c19351a3a6c2471e40cce2a6b81e338ca0639819f441656bd4",
+      "translation_text_hash": "442bcd61bd7d95cce7c8ec60f64495c8b3d5a74923664c6bdb95e8842c591683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 가로되 미가야를 잡아 부윤 아몬과 왕자 요아스에게로 끌고 돌아가서"
+      ],
+      "raw_text_hashes": [
+        "442bcd61bd7d95cce7c8ec60f64495c8b3d5a74923664c6bdb95e8842c591683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:26",
+      "sequence": 11569,
+      "chapter_label": "2CH 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "and say, ‘The king says, “Put this fellow in the prison, and feed him with bread of affliction and with water of affliction, until I return in peace.”’”",
+      "ko": "말하기를 왕의 말씀이 이 놈을 옥에 가두고 내가 평안히 돌아올 때까지 고생의 떡과 고생의 물로 먹이라 하라",
+      "source_text_hash": "53bd56a9b6f90192b5e6fa19c36b1f41516cf0c9cc57b27d5f4d67fad5dfb720",
+      "translation_text_hash": "35edcc2048bdece77455d9a4fbe55703511d7f9cfc1d8ff0d6482829ee6d25e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 왕의 말씀이 이 놈을 옥에 가두고 내가 평안히 돌아올 때까지 고생의 떡과 고생의 물로 먹이라 하라"
+      ],
+      "raw_text_hashes": [
+        "35edcc2048bdece77455d9a4fbe55703511d7f9cfc1d8ff0d6482829ee6d25e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:27",
+      "sequence": 11570,
+      "chapter_label": "2CH 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Micaiah said, “If you return at all in peace, the LORD has not spoken by me.” He said, “Listen, you people, all of you!”",
+      "ko": "미가야가 가로되 왕이 참으로 평안히 돌아오시게 될찐대 여호와께서 나로 말씀하지 아니하셨으리이다 또 가로되 너희 백성들아 다 들을찌어다 하니라",
+      "source_text_hash": "a6162c7b15df11fe06c122cca524f2c8398cb82bcdd4964062ffaf5934026618",
+      "translation_text_hash": "b765e36a05fea4b732849a875b5b7a864dcdd7c0e3cfe3fdc7c408981a51e839",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가야가 가로되 왕이 참으로 평안히 돌아오시게 될찐대 여호와께서 나로 말씀하지 아니하셨으리이다 또 가로되 너희 백성들아 다 들을찌어다 하니라"
+      ],
+      "raw_text_hashes": [
+        "b765e36a05fea4b732849a875b5b7a864dcdd7c0e3cfe3fdc7c408981a51e839"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:28",
+      "sequence": 11571,
+      "chapter_label": "2CH 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "So the king of Israel and Jehoshaphat the king of Judah went up to Ramoth Gilead.",
+      "ko": "이스라엘 왕과 유다 왕 여호사밧이 길르앗 라못으로 올라가니라",
+      "source_text_hash": "dbb8bd839dcc01cacab1f4a73ac498665fd023c94c5798b50ba65c4f030d343e",
+      "translation_text_hash": "221db0a0f0b985f81f66640f965df1fc34d027aa3e97c6b11d312de8fd05fa4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕과 유다 왕 여호사밧이 길르앗 라못으로 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "221db0a0f0b985f81f66640f965df1fc34d027aa3e97c6b11d312de8fd05fa4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:29",
+      "sequence": 11572,
+      "chapter_label": "2CH 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "The king of Israel said to Jehoshaphat, “I will disguise myself, and go into the battle; but you put on your robes.” So the king of Israel disguised himself; and they went into the battle.",
+      "ko": "이스라엘 왕이 여호사밧에게 이르되 나는 변장하고 군중으로 들어가려 하노니 당신은 왕복을 입으소서 하고 이스라엘 왕이 변장하고 둘이 군중으로 들어가니라",
+      "source_text_hash": "12cbabfa401c7eeb36238b3c77c0af365461b95d3bd50fbb26a83879a8e3038e",
+      "translation_text_hash": "d05a6d8763bc3eb3bf470890b904cf7fed1243c7fa0c5de9af57119cb949da33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 여호사밧에게 이르되 나는 변장하고 군중으로 들어가려 하노니 당신은 왕복을 입으소서 하고 이스라엘 왕이 변장하고 둘이 군중으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "d05a6d8763bc3eb3bf470890b904cf7fed1243c7fa0c5de9af57119cb949da33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:30",
+      "sequence": 11573,
+      "chapter_label": "2CH 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "Now the king of Syria had commanded the captains of his chariots, saying, “Don’t fight with small nor great, except only with the king of Israel.”",
+      "ko": "아람 왕이 그 병거 장관들에게 이미 명하여 이르기를 너희는 작은 자나 큰 자나 더불어 싸우지 말고 오직 이스라엘 왕과 싸우라 한지라",
+      "source_text_hash": "1019e963057597287068fbab3d8a882e5c22772699a7450bb055ecc04fb0020c",
+      "translation_text_hash": "fc92fe3a8ea941f902002015a7e400e0ddaa6d4aaf776d53b093d9340735ad7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕이 그 병거 장관들에게 이미 명하여 이르기를 너희는 작은 자나 큰 자나 더불어 싸우지 말고 오직 이스라엘 왕과 싸우라 한지라"
+      ],
+      "raw_text_hashes": [
+        "fc92fe3a8ea941f902002015a7e400e0ddaa6d4aaf776d53b093d9340735ad7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:31",
+      "sequence": 11574,
+      "chapter_label": "2CH 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "When the captains of the chariots saw Jehoshaphat, they said, “It is the king of Israel!” Therefore they turned around to fight against him. But Jehoshaphat cried out, and the LORD helped him; and God moved them to depart from him.",
+      "ko": "병거의 장관들이 여호사밧을 보고 이르되 이가 이스라엘 왕이라 하고 돌이켜 저와 싸우려 한즉 여호사밧이 소리를 지르매 여호와께서 저를 도우시며 하나님이 저희를 감동시키사 저를 떠나가게 하신지라",
+      "source_text_hash": "cb520452758830c8a490b3084a61bd36fa114f2efb161727da3c551c3b1772ff",
+      "translation_text_hash": "64ee784f12695c3192228abe836f54aeb46519a26cab3dd2e3c498a5ef911862",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병거의 장관들이 여호사밧을 보고 이르되 이가 이스라엘 왕이라 하고 돌이켜 저와 싸우려 한즉 여호사밧이 소리를 지르매 여호와께서 저를 도우시며 하나님이 저희를 감동시키사 저를 떠나가게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "64ee784f12695c3192228abe836f54aeb46519a26cab3dd2e3c498a5ef911862"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:32",
+      "sequence": 11575,
+      "chapter_label": "2CH 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "When the captains of the chariots saw that it was not the king of Israel, they turned back from pursuing him.",
+      "ko": "병거의 장관들이 저가 이스라엘 왕이 아님을 보고 쫓기를 그치고 돌이켰더라",
+      "source_text_hash": "a928feccc2152e83923968cf67300258afde954b8075d7d375825642558c62dc",
+      "translation_text_hash": "be930ee06505861b59d4f4868e2fec2b9423218b0e05e2b888d529f695707c64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병거의 장관들이 저가 이스라엘 왕이 아님을 보고 쫓기를 그치고 돌이켰더라"
+      ],
+      "raw_text_hashes": [
+        "be930ee06505861b59d4f4868e2fec2b9423218b0e05e2b888d529f695707c64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:33",
+      "sequence": 11576,
+      "chapter_label": "2CH 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "A certain man drew his bow at random, and struck the king of Israel between the joints of the armor. Therefore he said to the driver of the chariot, “Turn around and carry me out of the battle, for I am severely wounded.”",
+      "ko": "한 사람이 우연히 활을 당기어 이스라엘 왕의 갑옷 솔기를 쏜지라 왕이 그 병거 모는 자에게 이르되 내가 부상하였으니 네 손을 돌이켜 나로 군중에서 나가게 하라 하였으나",
+      "source_text_hash": "717ee0317c8b27a19a74efbf24bce87602272fd116a47fb8fdbeabe6e3df29e0",
+      "translation_text_hash": "93726618483b4fb9497632dd62ecd6c9d281fb9fa7ed7b0389dfd26e723d5b7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 우연히 활을 당기어 이스라엘 왕의 갑옷 솔기를 쏜지라 왕이 그 병거 모는 자에게 이르되 내가 부상하였으니 네 손을 돌이켜 나로 군중에서 나가게 하라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "93726618483b4fb9497632dd62ecd6c9d281fb9fa7ed7b0389dfd26e723d5b7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:18:34",
+      "sequence": 11577,
+      "chapter_label": "2CH 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "2CH",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "The battle increased that day. However, the king of Israel propped himself up in his chariot against the Syrians until the evening; and at about sunset, he died.",
+      "ko": "이 날의 전쟁이 맹렬하였으므로 이스라엘 왕이 병거에서 스스로 부지하며 저녁때까지 아람 사람을 막다가 해가 질 즈음에 죽었더라",
+      "source_text_hash": "32ad8deb4389634efccf2cc233d943580a5db425f2126741641703f0aaeac60b",
+      "translation_text_hash": "ba7ff3f5535dff3357d54e4504b11f571e00744aba08cf9a65b7ce7fcdb03100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날의 전쟁이 맹렬하였으므로 이스라엘 왕이 병거에서 스스로 부지하며 저녁때까지 아람 사람을 막다가 해가 질 즈음에 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "ba7ff3f5535dff3357d54e4504b11f571e00744aba08cf9a65b7ce7fcdb03100"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:034",
+  "unit_ordinal": 151,
+  "unit_label": "NUM 34",
+  "book_code": "NUM",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:34:1",
+      "sequence": 4818,
+      "chapter_label": "NUM 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:2",
+      "sequence": 4819,
+      "chapter_label": "NUM 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "“Command the children of Israel, and tell them, ‘When you come into the land of Canaan (this is the land that shall fall to you for an inheritance, even the land of Canaan according to its borders),",
+      "ko": "너는 이스라엘 자손에게 명하여 그들에게 이르라 너희가 가나안 땅에 들어가는 때에 그 땅은 너희의 기업이 되리니 곧 가나안 사방 지경이라",
+      "source_text_hash": "36ec1c65880de70ee433e2f22afaeb0592eb4967d4fdecbde2f079f2e8e45621",
+      "translation_text_hash": "c9a5a2310b6307f22e1ca363754228e3ebc0b13ca28a0496094c686d3834dbef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 명하여 그들에게 이르라 너희가 가나안 땅에 들어가는 때에 그 땅은 너희의 기업이 되리니 곧 가나안 사방 지경이라"
+      ],
+      "raw_text_hashes": [
+        "c9a5a2310b6307f22e1ca363754228e3ebc0b13ca28a0496094c686d3834dbef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:3",
+      "sequence": 4820,
+      "chapter_label": "NUM 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "then your south quarter shall be from the wilderness of Zin along by the side of Edom, and your south border shall be from the end of the Salt Sea eastward.",
+      "ko": "너희 남방은 에돔 곁에 접근한 신 광야니 너희 남편 경계는 동편으로 염해 끝에서 시작하여",
+      "source_text_hash": "33acf7709345f63f961af09f556ffeca63689a171f78fa72d2beb3ef63117fca",
+      "translation_text_hash": "e7a7856ba44198ab556ab886549dd8b9505bdbd4a7b29457de5d33273b6ca850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 남방은 에돔 곁에 접근한 신 광야니 너희 남편 경계는 동편으로 염해 끝에서 시작하여"
+      ],
+      "raw_text_hashes": [
+        "e7a7856ba44198ab556ab886549dd8b9505bdbd4a7b29457de5d33273b6ca850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:4",
+      "sequence": 4821,
+      "chapter_label": "NUM 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "Your border shall turn about southward of the ascent of Akrabbim, and pass along to Zin; and it shall pass southward of Kadesh Barnea; and it shall go from there to Hazar Addar, and pass along to Azmon.",
+      "ko": "돌아서 아그랍빔 언덕 남편에 이르고 신을 지나 가데스 바네아 남방에 이르고 또 하살아달을 지나 아스몬에 이르고",
+      "source_text_hash": "c7c8bac17a06a1b7ac6619751a927f0d45e8a37851dfef6c2202454f29b6c2c5",
+      "translation_text_hash": "a22236674c403bcc74001eed82597bf821cdb29db4edbf6fb6ddc846f601424f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아서 아그랍빔 언덕 남편에 이르고 신을 지나 가데스 바네아 남방에 이르고 또 하살아달을 지나 아스몬에 이르고"
+      ],
+      "raw_text_hashes": [
+        "a22236674c403bcc74001eed82597bf821cdb29db4edbf6fb6ddc846f601424f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:5",
+      "sequence": 4822,
+      "chapter_label": "NUM 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "The border shall turn about from Azmon to the brook of Egypt, and it shall end at the sea.",
+      "ko": "아스몬에서 돌아서 애굽 시내를 지나 바다까지 이르느니라",
+      "source_text_hash": "5063972d86fea80acd60825c80ba0ec8b2f3d16c2edb293e4f2e9ffe1d16265e",
+      "translation_text_hash": "52ab1a7f03a8e9811216739a714cbbde92124015d1345079052dca9b7330f8cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스몬에서 돌아서 애굽 시내를 지나 바다까지 이르느니라"
+      ],
+      "raw_text_hashes": [
+        "52ab1a7f03a8e9811216739a714cbbde92124015d1345079052dca9b7330f8cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:6",
+      "sequence": 4823,
+      "chapter_label": "NUM 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "“‘For the western border, you shall have the great sea and its border. This shall be your west border.",
+      "ko": "서편 경계는 대해가 경계가 되나니 이는 너희의 서편 경계니라",
+      "source_text_hash": "c7eda95c0bd4ee1c432f3541381d3cad103ad50d8cd5c2367a65d6f6019e9e7c",
+      "translation_text_hash": "088f066601054b8928e17e341531b146f6b0c1ebdbd7457ae758a2615b2ede72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편 경계는 대해가 경계가 되나니 이는 너희의 서편 경계니라"
+      ],
+      "raw_text_hashes": [
+        "088f066601054b8928e17e341531b146f6b0c1ebdbd7457ae758a2615b2ede72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:7",
+      "sequence": 4824,
+      "chapter_label": "NUM 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "“‘This shall be your north border: from the great sea you shall mark out for yourselves Mount Hor.",
+      "ko": "북편 경계는 이러하니 대해에서부터 호르산까지 긋고",
+      "source_text_hash": "7af4054aa97021497344fe09db9edcf7c28922424c696036ba15cd759a1a46c0",
+      "translation_text_hash": "1775caaba813ec74ba78020fea686a36d405b5b442371351b8b7ceb02eab27ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북편 경계는 이러하니 대해에서부터 호르산까지 긋고"
+      ],
+      "raw_text_hashes": [
+        "1775caaba813ec74ba78020fea686a36d405b5b442371351b8b7ceb02eab27ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:8",
+      "sequence": 4825,
+      "chapter_label": "NUM 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "From Mount Hor you shall mark out to the entrance of Hamath; and the border shall pass by Zedad.",
+      "ko": "호르산에서 그어 하맛 어귀에 이르러 스닷에 미치고",
+      "source_text_hash": "3cb45fb89081bf639cc1dd4f62d8f105cc52c2a9069381fc07822d9714ec365e",
+      "translation_text_hash": "fbf6aaf4a27094cfdb5ddd0065a66a9f3759c6743b73c261db6536a376e56bfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호르산에서 그어 하맛 어귀에 이르러 스닷에 미치고"
+      ],
+      "raw_text_hashes": [
+        "fbf6aaf4a27094cfdb5ddd0065a66a9f3759c6743b73c261db6536a376e56bfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:9",
+      "sequence": 4826,
+      "chapter_label": "NUM 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "Then the border shall go to Ziphron, and it shall end at Hazar Enan. This shall be your north border.",
+      "ko": "그 경계가 또 시브론을 지나 하살에난에 미치나니 이는 너희 북편 경계니라",
+      "source_text_hash": "e6d95e3c2384a65ac08f5efdbbfa92d9e5081187636a6b973472129836a8b6db",
+      "translation_text_hash": "92ea74b23ca6e68069b1706c3b1d99b50b2bd2d1fff5c18d29cad512d12d9d4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 경계가 또 시브론을 지나 하살에난에 미치나니 이는 너희 북편 경계니라"
+      ],
+      "raw_text_hashes": [
+        "92ea74b23ca6e68069b1706c3b1d99b50b2bd2d1fff5c18d29cad512d12d9d4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:10",
+      "sequence": 4827,
+      "chapter_label": "NUM 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "“‘You shall mark out your east border from Hazar Enan to Shepham.",
+      "ko": "너희의 동편 경계는 하살에난에서 그어 스밤에 이르고",
+      "source_text_hash": "8128f6c811b9b8f9ed96a01581325eaeb408e426b4eb606afbf0890206f1ff47",
+      "translation_text_hash": "e08cab7c9c21c934ed0b1a1bd8dfe0ef286c475d4b6386ad411d1d799d14fc18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 동편 경계는 하살에난에서 그어 스밤에 이르고"
+      ],
+      "raw_text_hashes": [
+        "e08cab7c9c21c934ed0b1a1bd8dfe0ef286c475d4b6386ad411d1d799d14fc18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:11",
+      "sequence": 4828,
+      "chapter_label": "NUM 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "The border shall go down from Shepham to Riblah, on the east side of Ain. The border shall go down, and shall reach to the side of the sea of Chinnereth eastward.",
+      "ko": "그 경계가 또 스밤에서 리블라로 내려가서 아인 동편에 이르고 또 내려가서 긴네렛 동편 해변에 미치고",
+      "source_text_hash": "82fcee585f875a6939820196393ff0fe6bf0b9c5b5ea8379befb4fba5e2a7581",
+      "translation_text_hash": "6a53c3da1b54825356c2aa77be1a9b55ced1056a6514c8155c86158cbe282cb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 경계가 또 스밤에서 리블라로 내려가서 아인 동편에 이르고 또 내려가서 긴네렛 동편 해변에 미치고"
+      ],
+      "raw_text_hashes": [
+        "6a53c3da1b54825356c2aa77be1a9b55ced1056a6514c8155c86158cbe282cb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:12",
+      "sequence": 4829,
+      "chapter_label": "NUM 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "The border shall go down to the Jordan, and end at the Salt Sea. This shall be your land according to its borders around it.’”",
+      "ko": "그 경계가 또 요단으로 내려가서 염해에 미치나니 너희 땅의 사방 경계가 이러하니라",
+      "source_text_hash": "351df58d8f54f386272adeab47397147831131de7f43d403bb195b8ea82a041a",
+      "translation_text_hash": "8710885a2c57739ea504ebf91318b9735d6b7bad219502b6b6533fe539b0ffba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 경계가 또 요단으로 내려가서 염해에 미치나니 너희 땅의 사방 경계가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "8710885a2c57739ea504ebf91318b9735d6b7bad219502b6b6533fe539b0ffba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:13",
+      "sequence": 4830,
+      "chapter_label": "NUM 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "Moses commanded the children of Israel, saying, “This is the land which you shall inherit by lot, which the LORD has commanded to give to the nine tribes, and to the half-tribe;",
+      "ko": "모세가 이스라엘 자손에게 명하여 가로되 이는 너희가 제비 뽑아 얻을 땅이라 여호와께서 이것을 아홉 지파와 반 지파에게 주라고 명하셨나니",
+      "source_text_hash": "ade10105616209d8a8aec9446781cb2efb1a04d2fa5453b884f88edf7d4a9f0d",
+      "translation_text_hash": "c0ca6c6ec7ce815860b80e88ff1004857da61789122a983c18571b970a85c4ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 명하여 가로되 이는 너희가 제비 뽑아 얻을 땅이라 여호와께서 이것을 아홉 지파와 반 지파에게 주라고 명하셨나니"
+      ],
+      "raw_text_hashes": [
+        "c0ca6c6ec7ce815860b80e88ff1004857da61789122a983c18571b970a85c4ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:14",
+      "sequence": 4831,
+      "chapter_label": "NUM 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "for the tribe of the children of Reuben according to their fathers’ houses, the tribe of the children of Gad according to their fathers’ houses, and the half-tribe of Manasseh have received their inheritance.",
+      "ko": "이는 르우벤 자손의 지파와 갓 자손의 지파가 함께 그들의 종족대로 그 기업을 받았고 므낫세의 반 지파도 기업을 받았음이라",
+      "source_text_hash": "ea879eddf21482b534b7a554aca88b3631acafa7a55c9375b8a3fa1fcb0fbb38",
+      "translation_text_hash": "db64340fe1839c7fc805c7eb65d4b59c9ced4f87b6e55091239d17f2cb895387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 르우벤 자손의 지파와 갓 자손의 지파가 함께 그들의 종족대로 그 기업을 받았고 므낫세의 반 지파도 기업을 받았음이라"
+      ],
+      "raw_text_hashes": [
+        "db64340fe1839c7fc805c7eb65d4b59c9ced4f87b6e55091239d17f2cb895387"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:15",
+      "sequence": 4832,
+      "chapter_label": "NUM 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "The two tribes and the half-tribe have received their inheritance beyond the Jordan at Jericho eastward, toward the sunrise.”",
+      "ko": "이 두 지파와 반 지파가 여리고 맞은편 요단 건너편 곧 해 돋는 편에서 그 기업을 받았느니라",
+      "source_text_hash": "70270f0b9574840381c47a23be0307811930fd0cc5ba26af301191bfd48c29e3",
+      "translation_text_hash": "df33797ff32f31616f3e1a5f521745618af04389dca83311bf6b02afe40ecc8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 지파와 반 지파가 여리고 맞은편 요단 건너편 곧 해 돋는 편에서 그 기업을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "df33797ff32f31616f3e1a5f521745618af04389dca83311bf6b02afe40ecc8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:16",
+      "sequence": 4833,
+      "chapter_label": "NUM 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:17",
+      "sequence": 4834,
+      "chapter_label": "NUM 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "“These are the names of the men who shall divide the land to you for inheritance: Eleazar the priest, and Joshua the son of Nun.",
+      "ko": "너희에게 땅을 기업으로 나눌 자의 이름이 이러하니 제사장 엘르아살과 눈의 아들 여호수아니라",
+      "source_text_hash": "67cc29265559de04bd04acb62f4cb87850a600b12e2f72f0a16708c450c30f6e",
+      "translation_text_hash": "f4b1c200b3a6d7bf2a78bde66ddf87577a6d9cee565e240ce94824f380340cbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 땅을 기업으로 나눌 자의 이름이 이러하니 제사장 엘르아살과 눈의 아들 여호수아니라"
+      ],
+      "raw_text_hashes": [
+        "f4b1c200b3a6d7bf2a78bde66ddf87577a6d9cee565e240ce94824f380340cbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:18",
+      "sequence": 4835,
+      "chapter_label": "NUM 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "You shall take one prince of every tribe, to divide the land for inheritance.",
+      "ko": "너희는 또 기업의 땅을 나누기 위하여 매 지파에 한 족장씩 택하라",
+      "source_text_hash": "e3fb9e241c198327b916c5f4e5c29892897f8609d5a3c5a5f90d8d5286f25470",
+      "translation_text_hash": "acdb6826980713fc097204a76de3ebe53580d38bc6702a546bf0fa0f3aac257f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 또 기업의 땅을 나누기 위하여 매 지파에 한 족장씩 택하라"
+      ],
+      "raw_text_hashes": [
+        "acdb6826980713fc097204a76de3ebe53580d38bc6702a546bf0fa0f3aac257f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:19",
+      "sequence": 4836,
+      "chapter_label": "NUM 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "These are the names of the men: Of the tribe of Judah, Caleb the son of Jephunneh.",
+      "ko": "그 사람들의 이름은 이러하니 유다 지파에서는 여분네의 아들 갈렙이요",
+      "source_text_hash": "c064d8161ef4faba812916602babd241a856ed630ba2635d1723a6c6aca4601a",
+      "translation_text_hash": "2a4b8e45f0555a1f93ed02ba12c08feaafc181ac3ad0b97d741a2af1dc7e6cd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들의 이름은 이러하니 유다 지파에서는 여분네의 아들 갈렙이요"
+      ],
+      "raw_text_hashes": [
+        "2a4b8e45f0555a1f93ed02ba12c08feaafc181ac3ad0b97d741a2af1dc7e6cd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:20",
+      "sequence": 4837,
+      "chapter_label": "NUM 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "Of the tribe of the children of Simeon, Shemuel the son of Ammihud.",
+      "ko": "시므온 지파에서는 암미훗의 아들 스므엘이요",
+      "source_text_hash": "4b1353bea272b8b847b0067ef377e9e15f0ed0789284c89e4bdeb030e5830166",
+      "translation_text_hash": "1e509e09175338e399d0cb534029f1c9a2383b7d70f9e8e2964c0d4e95953573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 지파에서는 암미훗의 아들 스므엘이요"
+      ],
+      "raw_text_hashes": [
+        "1e509e09175338e399d0cb534029f1c9a2383b7d70f9e8e2964c0d4e95953573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:21",
+      "sequence": 4838,
+      "chapter_label": "NUM 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "Of the tribe of Benjamin, Elidad the son of Chislon.",
+      "ko": "베냐민 지파에서는 기슬론의 아들 엘리닷이요",
+      "source_text_hash": "7e5b3905bd4c9d028f095b9be25b1aac82cb6286b4beb39d84bd2805291cd9c4",
+      "translation_text_hash": "5324f4f49089a04dcd7544c64853f045d61c3a50cc8355f674a4f4745e2c60b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 지파에서는 기슬론의 아들 엘리닷이요"
+      ],
+      "raw_text_hashes": [
+        "5324f4f49089a04dcd7544c64853f045d61c3a50cc8355f674a4f4745e2c60b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:22",
+      "sequence": 4839,
+      "chapter_label": "NUM 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "Of the tribe of the children of Dan a prince, Bukki the son of Jogli.",
+      "ko": "단 자손 지파의 족장 요글리의 아들 북기요",
+      "source_text_hash": "723d56b373170e53bcd5ee74e706133a93756aa355553991d0b606b2297d499f",
+      "translation_text_hash": "006bd5383324b160419fa805892e23c90e4e792894653353c6f8ca4b980925d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손 지파의 족장 요글리의 아들 북기요"
+      ],
+      "raw_text_hashes": [
+        "006bd5383324b160419fa805892e23c90e4e792894653353c6f8ca4b980925d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:23",
+      "sequence": 4840,
+      "chapter_label": "NUM 34",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 23
+        }
+      ],
+      "en": "Of the children of Joseph: of the tribe of the children of Manasseh a prince, Hanniel the son of Ephod.",
+      "ko": "요셉 자손 중 므낫세 자손 지파의 족장 에봇의 아들 한니엘이요",
+      "source_text_hash": "bf73e0ad4ff58d98523f9ec65f5193a4362da216a4b06d7127dc95bd8f86771a",
+      "translation_text_hash": "45749e241c6aa8866eb701514c33fdf34470bf7f9a69a316862bbbef7cbeaedd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손 중 므낫세 자손 지파의 족장 에봇의 아들 한니엘이요"
+      ],
+      "raw_text_hashes": [
+        "45749e241c6aa8866eb701514c33fdf34470bf7f9a69a316862bbbef7cbeaedd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:24",
+      "sequence": 4841,
+      "chapter_label": "NUM 34",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 24
+        }
+      ],
+      "en": "Of the tribe of the children of Ephraim a prince, Kemuel the son of Shiphtan.",
+      "ko": "에브라임 자손 지파의 족장 십단의 아들 그므엘이요",
+      "source_text_hash": "fc8d15b30c964ff7e609ed8070ecb55f4a393a220d6a383593a008a53e9eac26",
+      "translation_text_hash": "e58a08b1892b5d1c92ecd39a77b8424aa36c16a2ca93fe35119e18d810d0c975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손 지파의 족장 십단의 아들 그므엘이요"
+      ],
+      "raw_text_hashes": [
+        "e58a08b1892b5d1c92ecd39a77b8424aa36c16a2ca93fe35119e18d810d0c975"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:25",
+      "sequence": 4842,
+      "chapter_label": "NUM 34",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 25
+        }
+      ],
+      "en": "Of the tribe of the children of Zebulun a prince, Elizaphan the son of Parnach.",
+      "ko": "스불론 자손 지파의 족장 바르낙의 아들 엘리사반이요",
+      "source_text_hash": "b97cc224df251045f91d48823a1475328d6c40fb703684f90f0170d98b309f51",
+      "translation_text_hash": "202c10f87570314ce6586b47ca96a922bd781daa81ee7fc4dd72fbecee27f40a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 자손 지파의 족장 바르낙의 아들 엘리사반이요"
+      ],
+      "raw_text_hashes": [
+        "202c10f87570314ce6586b47ca96a922bd781daa81ee7fc4dd72fbecee27f40a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:26",
+      "sequence": 4843,
+      "chapter_label": "NUM 34",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 26
+        }
+      ],
+      "en": "Of the tribe of the children of Issachar a prince, Paltiel the son of Azzan.",
+      "ko": "잇사갈 자손 지파의 족장 앗산의 아들 발디엘이요",
+      "source_text_hash": "e577545dc36552f33f04d17a81bf190feba32f412b34860bcb971b395b7adfe4",
+      "translation_text_hash": "9a53e899c04ef0186850f37310694508605b5204990b34cf646af91131b21b90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 자손 지파의 족장 앗산의 아들 발디엘이요"
+      ],
+      "raw_text_hashes": [
+        "9a53e899c04ef0186850f37310694508605b5204990b34cf646af91131b21b90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:27",
+      "sequence": 4844,
+      "chapter_label": "NUM 34",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 27
+        }
+      ],
+      "en": "Of the tribe of the children of Asher a prince, Ahihud the son of Shelomi.",
+      "ko": "아셀 자손 지파의 족장 슬로미의 아들 아히훗이요",
+      "source_text_hash": "85873b420be2e961ea57eab73f010da781cf13e920d018d4f59288f5a5842673",
+      "translation_text_hash": "ae4da954f72ec199e2681b262aa450ee8e38db5e1dd45f83c2da5d9e7aef4228",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 자손 지파의 족장 슬로미의 아들 아히훗이요"
+      ],
+      "raw_text_hashes": [
+        "ae4da954f72ec199e2681b262aa450ee8e38db5e1dd45f83c2da5d9e7aef4228"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:28",
+      "sequence": 4845,
+      "chapter_label": "NUM 34",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 28
+        }
+      ],
+      "en": "Of the tribe of the children of Naphtali a prince, Pedahel the son of Ammihud.”",
+      "ko": "납달리 자손 지파의 족장 암미훗의 아들 브다헬이니라 하셨으니",
+      "source_text_hash": "965182187ffebfa6c7241c15a38aa5541982d8df1983c04926a58ca1c1a81032",
+      "translation_text_hash": "69b49fad1bcc9d69f44f68f713c44a01bd9f0678c618a1167f09454e5fcba3aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 자손 지파의 족장 암미훗의 아들 브다헬이니라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "69b49fad1bcc9d69f44f68f713c44a01bd9f0678c618a1167f09454e5fcba3aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:34:29",
+      "sequence": 4846,
+      "chapter_label": "NUM 34",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 34,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 34,
+          "verse": 29
+        }
+      ],
+      "en": "These are they whom the LORD commanded to divide the inheritance to the children of Israel in the land of Canaan.",
+      "ko": "여호와께서 명하사 가나안 땅에서 이스라엘 자손에게 기업을 나누게 하신 자들이 이러하였더라",
+      "source_text_hash": "0584e7f499576f8ef6cd62e7583f411173a1c1efa723c095f4a2575fcaeb253a",
+      "translation_text_hash": "71cc739f5ee2e629d5119368be060b2fc95895e3175f5e0d9bc141954655bc4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 명하사 가나안 땅에서 이스라엘 자손에게 기업을 나누게 하신 자들이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "71cc739f5ee2e629d5119368be060b2fc95895e3175f5e0d9bc141954655bc4f"
+      ]
+    }
+  ]
+}

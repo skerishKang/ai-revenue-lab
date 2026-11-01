@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:005",
+  "unit_ordinal": 1138,
+  "unit_label": "HEB 5",
+  "book_code": "HEB",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:5:1",
+      "sequence": 30028,
+      "chapter_label": "HEB 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "For every high priest, being taken from among men, is appointed for men in things pertaining to God, that he may offer both gifts and sacrifices for sins.",
+      "ko": "대제사장마다 사람 가운데서 취한 자이므로 하나님께 속한 일에 사람을 위하여 예물과 속죄하는 제사를 드리게 하나니",
+      "source_text_hash": "e515559dd2ea8d839573c98b6415011e92aa27b11ce9b61aeadb8ab2040e100a",
+      "translation_text_hash": "b8c2e762d088b35f2cf81fb97b710322d049a4eb28c7f193b0a1fd29902de1b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장마다 사람 가운데서 취한 자이므로 하나님께 속한 일에 사람을 위하여 예물과 속죄하는 제사를 드리게 하나니"
+      ],
+      "raw_text_hashes": [
+        "b8c2e762d088b35f2cf81fb97b710322d049a4eb28c7f193b0a1fd29902de1b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:2",
+      "sequence": 30029,
+      "chapter_label": "HEB 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "The high priest can deal gently with those who are ignorant and going astray, because he himself is also surrounded with weakness.",
+      "ko": "저가 무식하고 미혹한 자를 능히 용납할 수 있는 것은 자기도 연약에 싸여 있음이니라",
+      "source_text_hash": "715c08de00a158bc9374a579c65c3a20ef342b5c88def5749bee75ad9f006b3a",
+      "translation_text_hash": "8a4328bde6839cab0ef5b777d9eed74badeedf490df089ee999932f52fc8405e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 무식하고 미혹한 자를 능히 용납할 수 있는 것은 자기도 연약에 싸여 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "8a4328bde6839cab0ef5b777d9eed74badeedf490df089ee999932f52fc8405e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:3",
+      "sequence": 30030,
+      "chapter_label": "HEB 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Because of this, he must offer sacrifices for sins for the people, as well as for himself.",
+      "ko": "이러므로 백성을 위하여 속죄제를 드림과 같이 또한 자기를 위하여 드리는 것이 마땅하니라",
+      "source_text_hash": "3320708cfb6bfe42654bd5900da24146be19a9c26d6885fc69a23717ea56d58c",
+      "translation_text_hash": "f6755d64a65be397e75b2049b4425f67fde2abe96925951926e49ad8f627cb78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 백성을 위하여 속죄제를 드림과 같이 또한 자기를 위하여 드리는 것이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "f6755d64a65be397e75b2049b4425f67fde2abe96925951926e49ad8f627cb78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:4",
+      "sequence": 30031,
+      "chapter_label": "HEB 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Nobody takes this honor on himself, but he is called by God, just like Aaron was.",
+      "ko": "이 존귀는 아무나 스스로 취하지 못하고 오직 아론과 같이 하나님의 부르심을 입은 자라야 할 것이니라",
+      "source_text_hash": "62227d4a022186a6ad28d263e65ea5581e2fe12e5301bdb3d64fb0d814bd1c53",
+      "translation_text_hash": "e8e45dd6e7750d8453e3f1f511c197def36356dbdd6d7c166f7e8d9d19ba7084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 존귀는 아무나 스스로 취하지 못하고 오직 아론과 같이 하나님의 부르심을 입은 자라야 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e8e45dd6e7750d8453e3f1f511c197def36356dbdd6d7c166f7e8d9d19ba7084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:5",
+      "sequence": 30032,
+      "chapter_label": "HEB 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "So also Christ didn’t glorify himself to be made a high priest, but it was he who said to him, “You are my Son. Today I have become your father.”",
+      "ko": "또한 이와 같이 그리스도께서 대제사장 되심도 스스로 영광을 취하심이 아니요 오직 말씀하신 이가 저더러 이르시되 너는 내 아들이니 내가 오늘날 너를 낳았다 하셨고",
+      "source_text_hash": "7bdf6a599acfef41468858819c1647a76191e8e9be1872e8b7f64712b3e9d778",
+      "translation_text_hash": "d910353152b67a2dcd6fab3b9e6dcb3a26e88fb1e1cf6f4c9f0baacfc11ee1d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이와 같이 그리스도께서 대제사장 되심도 스스로 영광을 취하심이 아니요 오직 말씀하신 이가 저더러 이르시되 너는 내 아들이니 내가 오늘날 너를 낳았다 하셨고"
+      ],
+      "raw_text_hashes": [
+        "d910353152b67a2dcd6fab3b9e6dcb3a26e88fb1e1cf6f4c9f0baacfc11ee1d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:6",
+      "sequence": 30033,
+      "chapter_label": "HEB 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "As he says also in another place, “You are a priest forever, after the order of Melchizedek.”",
+      "ko": "또한 이와 같이 다른데 말씀하시되 네가 영원히 멜기세덱의 반차를 좇는 제사장이라 하셨으니",
+      "source_text_hash": "3193043bae8c06b24b5c0632c1edf666bf5f6fcd693f928e76f3df374a41ccde",
+      "translation_text_hash": "a1a98a2651505b4c1cf4cd288267aa987482f29eff30d3aea66e2535ac83933c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이와 같이 다른데 말씀하시되 네가 영원히 멜기세덱의 반차를 좇는 제사장이라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "a1a98a2651505b4c1cf4cd288267aa987482f29eff30d3aea66e2535ac83933c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:7",
+      "sequence": 30034,
+      "chapter_label": "HEB 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "He, in the days of his flesh, having offered up prayers and petitions with strong crying and tears to him who was able to save him from death, and having been heard for his godly fear,",
+      "ko": "그는 육체에 계실 때에 자기를 죽음에서 능히 구원하실 이에게 심한 통곡과 눈물로 간구와 소원을 올렸고 그의 경외하심을 인하여 들으심을 얻었느니라",
+      "source_text_hash": "e468a3d153528e38836649e770c9659f39d72fc2e31e2b0394f6458fc2737f82",
+      "translation_text_hash": "8eea313cd5ed1397d0d27de5b7ee2701c44f61f4471e2c0912aa33bafaf7e23d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 육체에 계실 때에 자기를 죽음에서 능히 구원하실 이에게 심한 통곡과 눈물로 간구와 소원을 올렸고 그의 경외하심을 인하여 들으심을 얻었느니라"
+      ],
+      "raw_text_hashes": [
+        "8eea313cd5ed1397d0d27de5b7ee2701c44f61f4471e2c0912aa33bafaf7e23d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:8",
+      "sequence": 30035,
+      "chapter_label": "HEB 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "though he was a Son, yet learned obedience by the things which he suffered.",
+      "ko": "그가 아들이시라도 받으신 고난으로 순종함을 배워서",
+      "source_text_hash": "2aed272ca093e8bf43940d9169f85d25867ee3a3a8cf783f866729615ce88c9b",
+      "translation_text_hash": "5d36eeb6b8be90dbc0d083a927c10b28f002893910a283966f82f493cd4efbcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아들이시라도 받으신 고난으로 순종함을 배워서"
+      ],
+      "raw_text_hashes": [
+        "5d36eeb6b8be90dbc0d083a927c10b28f002893910a283966f82f493cd4efbcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:9",
+      "sequence": 30036,
+      "chapter_label": "HEB 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Having been made perfect, he became to all of those who obey him the author of eternal salvation,",
+      "ko": "온전하게 되었은즉 자기를 순종하는 모든 자에게 영원한 구원의 근원이 되시고",
+      "source_text_hash": "44113fe22a558d5424fd032c43007f188ed069d2267ea45badb10eb41ab5f8d0",
+      "translation_text_hash": "cb60fee3a688c90143277a459725217286d567e4a107d5ba964e3e1677491361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온전하게 되었은즉 자기를 순종하는 모든 자에게 영원한 구원의 근원이 되시고"
+      ],
+      "raw_text_hashes": [
+        "cb60fee3a688c90143277a459725217286d567e4a107d5ba964e3e1677491361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:10",
+      "sequence": 30037,
+      "chapter_label": "HEB 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "named by God a high priest after the order of Melchizedek.",
+      "ko": "하나님께 멜기세덱의 반차를 좇은 대제사장이라 칭하심을 받았느니라",
+      "source_text_hash": "483df6419df84a85327849d0de1740da71c0cead9d841f32f8fb9b748cded63b",
+      "translation_text_hash": "24fd37c3ad13e3a2b14d713b54cdf4a3046f584af89f32cce8d166448ad375fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 멜기세덱의 반차를 좇은 대제사장이라 칭하심을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "24fd37c3ad13e3a2b14d713b54cdf4a3046f584af89f32cce8d166448ad375fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:11",
+      "sequence": 30038,
+      "chapter_label": "HEB 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "About him we have many words to say, and hard to interpret, seeing you have become dull of hearing.",
+      "ko": "멜기세덱에 관하여는 우리가 할 말이 많으나 너희의 듣는 것이 둔하므로 해석하기 어려우니라",
+      "source_text_hash": "af947c65050bce8149d45cc8db12bc53c0e2b832a3edbb923ffdcf69f9d98945",
+      "translation_text_hash": "18ac543a73553785f6548b5d6293a4486e57e90c392004e7c4fedf842b0b41fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멜기세덱에 관하여는 우리가 할 말이 많으나 너희의 듣는 것이 둔하므로 해석하기 어려우니라"
+      ],
+      "raw_text_hashes": [
+        "18ac543a73553785f6548b5d6293a4486e57e90c392004e7c4fedf842b0b41fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:12",
+      "sequence": 30039,
+      "chapter_label": "HEB 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "For although by this time you should be teachers, you again need to have someone teach you the rudiments of the first principles of the revelations of God. You have come to need milk, and not solid food.",
+      "ko": "때가 오래므로 너희가 마땅히 선생이 될터인데 너희가 다시 하나님의 말씀의 초보가 무엇인지 누구에게 가르침을 받아야 할 것이니 젖이나 먹고 단단한 식물을 못 먹을 자가 되었도다",
+      "source_text_hash": "ff9ac8db22688d5874559a1093fc0236f1d9ee281633826ac73b33c2bd149e3b",
+      "translation_text_hash": "ff31888402ba61f079f286c1f2e79db85d50a31c1cf0893d01c88d65d5580abe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 오래므로 너희가 마땅히 선생이 될터인데 너희가 다시 하나님의 말씀의 초보가 무엇인지 누구에게 가르침을 받아야 할 것이니 젖이나 먹고 단단한 식물을 못 먹을 자가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "ff31888402ba61f079f286c1f2e79db85d50a31c1cf0893d01c88d65d5580abe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:13",
+      "sequence": 30040,
+      "chapter_label": "HEB 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "For everyone who lives on milk is not experienced in the word of righteousness, for he is a baby.",
+      "ko": "대저 젖을 먹는 자마다 어린 아이니 의의 말씀을 경험하지 못한 자요",
+      "source_text_hash": "aa2949c13c1504de9eb5d1446c37918f295f22b3f4ced9624a230eff3877de60",
+      "translation_text_hash": "7ebc3f8a58887fe4f9ec3cf3cf476c3605991f92e3dace4b71cfc418dbdbaff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 젖을 먹는 자마다 어린 아이니 의의 말씀을 경험하지 못한 자요"
+      ],
+      "raw_text_hashes": [
+        "7ebc3f8a58887fe4f9ec3cf3cf476c3605991f92e3dace4b71cfc418dbdbaff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:5:14",
+      "sequence": 30041,
+      "chapter_label": "HEB 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "But solid food is for those who are full grown, who by reason of use have their senses exercised to discern good and evil.",
+      "ko": "단단한 식물은 장성한 자의 것이니 저희는 지각을 사용하므로 연단을 받아 선악을 분변하는 자들이니라",
+      "source_text_hash": "f94357638459f2860fe3b8317575b12ffdaa270222646600c5849a039fa78815",
+      "translation_text_hash": "4fdbe7d4d44d11e22bca1969a5b8a6f8c73847f352a2a428f3237f592a6e0a53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단단한 식물은 장성한 자의 것이니 저희는 지각을 사용하므로 연단을 받아 선악을 분변하는 자들이니라"
+      ],
+      "raw_text_hashes": [
+        "4fdbe7d4d44d11e22bca1969a5b8a6f8c73847f352a2a428f3237f592a6e0a53"
+      ]
+    }
+  ]
+}

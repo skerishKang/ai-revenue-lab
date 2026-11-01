@@ -1,0 +1,453 @@
+/* ===== v2.8.0 continuous carousel direct manipulation ===== */
+#library .shelf-wrap,
+#library .shelf-track{cursor:default!important}
+#library .book-rig:not(.motion-echo){cursor:grab}
+#library .book-rig.book-grabbed{cursor:grabbing!important;z-index:90!important}
+
+/* During a drag, every physical volume receives a continuously interpolated
+   3D pose from JavaScript. This mirrors the normal carousel movement instead
+   of moving only one book. */
+#library.library-live-drag .book-rig:not(.motion-echo){
+  animation:none!important;
+  transition:none!important;
+  will-change:transform,filter,opacity;
+}
+#library.library-live-drag .book-rig.book-grabbed{
+  filter:drop-shadow(0 42px 38px rgba(0,0,0,.46)) brightness(1.085)!important;
+}
+
+/* Very short release completion; the hand already performed most of the move. */
+#library.library-drag-release .book-rig:not(.motion-echo){
+  will-change:transform,opacity,filter;
+}
+
+/* Retarget animations created with WAAPI stay interactive through the 2D hit map. */
+#library.library-retargeting .book-rig:not(.motion-echo){
+  will-change:transform,opacity,filter;
+}
+
+/* Reliable pointer surface for the actual visible front cover.
+   This fixes side-volume hit testing inside the CSS 3D scene. */
+.book-hit-surface{
+  position:absolute;
+  inset:-4px;
+  z-index:80;
+  transform:translateZ(calc(var(--d) / 2 + 4px));
+  background:rgba(255,255,255,.001);
+  border-radius:5px;
+  pointer-events:auto;
+  cursor:inherit;
+}
+.motion-echo .book-hit-surface{display:none}
+
+
+/* 2D pointer map above the CSS 3D shelf.
+   CSS 3D projected covers can have unreliable browser hit-testing, so
+   interaction follows the real projected cover rectangles instead. */
+.book-hit-layer{
+  position:absolute;
+  inset:0;
+  z-index:60;
+  pointer-events:none;
+}
+.book-hit-zone{
+  position:absolute;
+  display:block;
+  border:0;
+  padding:0;
+  margin:0;
+  background:rgba(255,255,255,.001);
+  border-radius:5px;
+  pointer-events:auto;
+  cursor:grab;
+  touch-action:none;
+}
+.book-hit-zone:active{cursor:grabbing}
+.library.opening-book .book-hit-layer{pointer-events:none;opacity:0}
+
+
+/* ===== v2.8.1 MOBILE POLISH =====
+   Final mobile overrides live at the end so they win over the older
+   accumulated prototype rules. */
+@media(max-width:720px){
+
+  /* ---------- Library: reduce typographic crowding ---------- */
+  .lib-head{
+    left:18px!important;
+    right:18px!important;
+    top:22px!important;
+  }
+  .lib-head::after{display:none!important}
+  .lib-head .kicker{
+    font-size:6.5px!important;
+    letter-spacing:.16em!important;
+    opacity:.66!important;
+    white-space:nowrap;
+  }
+  .hero-title{
+    margin-top:9px!important;
+    font-size:clamp(38px,10.8vw,46px)!important;
+    line-height:.90!important;
+    letter-spacing:-.062em!important;
+    max-width:9.4em!important;
+  }
+
+  .shelf-depth-line,
+  .shelf-label,
+  .library-floor-guide{
+    display:none!important;
+  }
+  .shelf-reflection{
+    opacity:.14!important;
+    filter:blur(14px)!important;
+  }
+  .shelf-glow{
+    opacity:.48!important;
+    height:62px!important;
+    bottom:48px!important;
+  }
+  .shelf-wrap{
+    bottom:96px!important;
+    transform:scale(.74)!important;
+    transform-origin:50% 100%!important;
+  }
+  .shelf-plank{
+    bottom:57px!important;
+    height:16px!important;
+  }
+
+  /* Keep the selected-book area legible and separate from controls. */
+  .lib-bottom{
+    left:16px!important;
+    right:16px!important;
+    bottom:14px!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:10px!important;
+    align-items:end!important;
+  }
+  .sel-meta{
+    grid-template-columns:auto minmax(0,1fr)!important;
+    gap:11px!important;
+  }
+  .counter{
+    font-size:8px!important;
+    letter-spacing:.12em!important;
+    padding-bottom:3px!important;
+  }
+  .sel-title{
+    font-size:28px!important;
+    line-height:.96!important;
+  }
+  .sel-note{
+    max-width:180px!important;
+    margin-top:5px!important;
+    font-size:8.5px!important;
+    line-height:1.45!important;
+  }
+  .sel-progress{
+    margin-top:7px!important;
+  }
+  .sel-progress span{
+    font-size:6.5px!important;
+  }
+  .lib-actions{
+    gap:6px!important;
+  }
+  .round{
+    width:40px!important;
+    height:40px!important;
+    font-size:16px!important;
+  }
+  .open-btn{
+    height:40px!important;
+    padding-inline:17px!important;
+    font-size:9px!important;
+  }
+
+  /* ---------- Reader: mobile reading proportions ---------- */
+  .reader-stage{
+    inset:0 0 62px 0!important;
+  }
+  .paper-stack{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+  }
+  .paper{
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+  .paper-inner{
+    padding-top:78px!important;
+    padding-left:22px!important;
+    padding-right:22px!important;
+    padding-bottom:104px!important;
+  }
+  .paper-head{
+    margin-bottom:19px!important;
+    padding-bottom:12px!important;
+  }
+  .paper-head h1{
+    font-size:36px!important;
+    line-height:.96!important;
+    letter-spacing:-.058em!important;
+    max-width:8.4em!important;
+  }
+  .paper-head .paper-subtitle{
+    margin-top:7px!important;
+    font-size:9.5px!important;
+    line-height:1.45!important;
+  }
+  .paper-head small{
+    font-size:7px!important;
+  }
+  .verse{
+    font-size:16.5px!important;
+    line-height:1.82!important;
+    margin-bottom:13px!important;
+    letter-spacing:-.012em!important;
+  }
+  .vn{width:20px!important}
+  .dropcap{font-size:2.05em!important}
+
+  .reader-toolbar{
+    top:8px!important;
+    max-width:calc(100% - 16px)!important;
+    opacity:.90!important;
+    background:#fbf8f2!important;
+    backdrop-filter:none!important;
+    box-shadow:0 6px 18px rgba(46,33,22,.07)!important;
+  }
+  .reader-nav{
+    top:50px!important;
+    left:8px!important;
+    background:#fbf8f2!important;
+    backdrop-filter:none!important;
+  }
+
+  /* ---------- Mobile Memory / AI sheets: fully opaque ---------- */
+  .memory-rail,
+  .ai-panel{
+    opacity:1!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border-color:rgba(76,57,40,.10)!important;
+    box-shadow:0 -18px 48px rgba(40,28,18,.20)!important;
+  }
+  .memory-rail{
+    background:#f6f0e7!important;
+  }
+  .ai-panel{
+    background:#f4ede4!important;
+  }
+  .memory-rail::before,
+  .ai-panel::before{
+    content:"";
+    position:absolute;
+    top:8px;
+    left:50%;
+    width:34px;
+    height:4px;
+    border-radius:999px;
+    transform:translateX(-50%);
+    background:rgba(74,57,43,.18);
+  }
+
+  /* Stronger scrim on the uncovered part of the reader. The sheet itself is
+     opaque, so body text can never ghost through sheet content. */
+  .scrim{
+    background:rgba(27,22,18,.42)!important;
+    backdrop-filter:none!important;
+  }
+
+  .memory-rail .side-head,
+  .ai-panel .side-head{
+    margin-top:8px!important;
+    margin-bottom:14px!important;
+  }
+  .memory-item{
+    background:transparent!important;
+  }
+  .memory-item.on{
+    background:#fffaf3!important;
+  }
+  .context-card,
+  .ai-message,
+  .ask input{
+    background:#fffaf4!important;
+  }
+
+  /* Bottom dock is intentionally solid: this is a control surface, not glass. */
+  .reader-mode .mobile-dock{
+    background:#fffdfa!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border-color:rgba(58,43,30,.10)!important;
+    box-shadow:0 10px 28px rgba(41,29,19,.14)!important;
+  }
+}
+
+/* Very narrow phones need one more typography step down. */
+@media(max-width:380px){
+  .hero-title{
+    font-size:36px!important;
+  }
+  .paper-inner{
+    padding-left:19px!important;
+    padding-right:19px!important;
+  }
+  .paper-head h1{
+    font-size:33px!important;
+  }
+  .verse{
+    font-size:15.8px!important;
+    line-height:1.80!important;
+  }
+  .lib-actions .round{
+    width:37px!important;
+    height:37px!important;
+  }
+  .open-btn{
+    height:37px!important;
+    padding-inline:13px!important;
+  }
+}
+
+
+/* ===== v2.8.2 motion control + mobile composition ===== */
+.motion-control{
+  position:absolute;
+  right:30px;
+  top:30px;
+  z-index:95;
+}
+.motion-toggle{
+  height:32px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 11px;
+  border:1px solid rgba(239,226,210,.14);
+  border-radius:999px;
+  background:rgba(21,23,31,.70);
+  color:rgba(248,240,230,.72);
+  backdrop-filter:blur(12px);
+  box-shadow:0 8px 24px rgba(0,0,0,.14);
+  font:600 7px var(--sans);
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.motion-toggle b{
+  color:#ead2b7;
+  font-size:8px;
+  letter-spacing:.04em;
+}
+.motion-popover{
+  position:absolute;
+  right:0;
+  top:39px;
+  width:190px;
+  padding:12px 12px 10px;
+  border:1px solid rgba(239,226,210,.14);
+  border-radius:13px;
+  background:#191c24;
+  box-shadow:0 18px 42px rgba(0,0,0,.32);
+  opacity:0;
+  transform:translateY(-5px) scale(.98);
+  pointer-events:none;
+  transition:.18s ease;
+}
+.motion-control.open .motion-popover{
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
+}
+.motion-popover-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:9px;
+  color:rgba(245,236,224,.48);
+  font:600 6.5px var(--sans);
+  letter-spacing:.14em;
+}
+.motion-popover-head b{color:#dfbea0;font-size:8px}
+.motion-popover input[type="range"]{
+  width:100%;
+  accent-color:#c48b68;
+}
+.motion-scale{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:4px;
+  color:rgba(245,236,224,.36);
+  font:500 6px var(--sans);
+}
+.motion-scale i{flex:1;height:1px;background:rgba(255,255,255,.08)}
+
+/* Reader: sheets now feel like true mobile sheets rather than overlays. */
+@media(max-width:720px){
+  /* Move the physical shelf upward to remove the large dead zone between
+     headline and books while preserving the selected-book controls below. */
+  .shelf-wrap{
+    bottom:clamp(160px,22vh,205px)!important;
+  }
+
+  .motion-control{
+    top:139px;
+    right:18px;
+  }
+  .motion-toggle{
+    height:28px;
+    padding:0 9px;
+    background:rgba(21,23,31,.84);
+  }
+  .motion-toggle span{display:none}
+  .motion-popover{
+    width:174px;
+    top:34px;
+  }
+
+  /* Hide the decorative Reader side-progress on phone; page count + swipe
+     controls are clearer and avoid edge collisions. */
+  .reading-progress-edge{
+    display:none!important;
+  }
+
+  .memory-rail,
+  .ai-panel{
+    overscroll-behavior:contain;
+  }
+  .memory-rail .side-head,
+  .ai-panel .side-head{
+    position:sticky;
+    top:-18px;
+    z-index:4;
+    padding-top:21px;
+    background:inherit;
+  }
+
+  /* A slightly stronger divider makes the opaque sheet boundary obvious. */
+  .memory-rail::after,
+  .ai-panel::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;top:0;
+    height:1px;
+    background:rgba(84,62,44,.10);
+  }
+}
+
+@media(max-width:380px){
+  .shelf-wrap{
+    bottom:clamp(150px,21vh,178px)!important;
+  }
+  .motion-control{
+    top:128px;
+    right:14px;
+  }
+}
+
+

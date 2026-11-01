@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:008",
+  "unit_ordinal": 858,
+  "unit_label": "DAN 8",
+  "book_code": "DAN",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:8:1",
+      "sequence": 21963,
+      "chapter_label": "DAN 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "In the third year of the reign of King Belshazzar, a vision appeared to me, even to me, Daniel, after that which appeared to me at the first.",
+      "ko": "나 다니엘에게 처음에 나타난 이상 후 벨사살왕 삼년에 다시 이상이 나타나니라",
+      "source_text_hash": "2250fbcdac4539d27fb0b4149582519e219dbef9f022f24bb9cffc84ec1e8e06",
+      "translation_text_hash": "fb3a10ee77501c2ec60f7e38785d0bdbb95746a4a9a3320c57d0a0c539aec0f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 다니엘에게 처음에 나타난 이상 후 벨사살왕 삼년에 다시 이상이 나타나니라"
+      ],
+      "raw_text_hashes": [
+        "fb3a10ee77501c2ec60f7e38785d0bdbb95746a4a9a3320c57d0a0c539aec0f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:2",
+      "sequence": 21964,
+      "chapter_label": "DAN 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "I saw the vision. Now it was so, that when I saw, I was in the citadel of Susa, which is in the province of Elam. I saw in the vision, and I was by the river Ulai.",
+      "ko": "내가 이상을 보았는데 내가 그것을 볼 때에 내 몸은 엘람도 수산 성에 있었고 내가 이상을 보기는 을래 강변에서니라",
+      "source_text_hash": "573724836810aafc560df27ba08c761f42c44fd61ba498c29afc3c5521a528b7",
+      "translation_text_hash": "714b37a703d8ec45ab9ebec2c078bc5ed3b47bebf9b3ef164e84086ad7a9c73a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이상을 보았는데 내가 그것을 볼 때에 내 몸은 엘람도 수산 성에 있었고 내가 이상을 보기는 을래 강변에서니라"
+      ],
+      "raw_text_hashes": [
+        "714b37a703d8ec45ab9ebec2c078bc5ed3b47bebf9b3ef164e84086ad7a9c73a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:3",
+      "sequence": 21965,
+      "chapter_label": "DAN 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Then I lifted up my eyes and saw, and behold, a ram which had two horns stood before the river. The two horns were high, but one was higher than the other, and the higher came up last.",
+      "ko": "내가 눈을 들어 본즉 강 가에 두 뿔 가진 수양이 섰는데 그 두 뿔이 다 길어도 한 뿔은 다른 뿔보다도 길었고 그 긴 것은 나중에 난 것이더라",
+      "source_text_hash": "c7534babc1da890fe962472eecdd3c8f9deb092c079167083ca91b9c8ddf0984",
+      "translation_text_hash": "f55ef8fedde03112b5c7a7a440a74c1f16ca8d9754baf2a96cddf9c65ba421f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 눈을 들어 본즉 강 가에 두 뿔 가진 수양이 섰는데 그 두 뿔이 다 길어도 한 뿔은 다른 뿔보다도 길었고 그 긴 것은 나중에 난 것이더라"
+      ],
+      "raw_text_hashes": [
+        "f55ef8fedde03112b5c7a7a440a74c1f16ca8d9754baf2a96cddf9c65ba421f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:4",
+      "sequence": 21966,
+      "chapter_label": "DAN 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "I saw the ram pushing westward, northward, and southward. No animals could stand before him. There wasn’t any who could deliver out of his hand, but he did according to his will, and magnified himself.",
+      "ko": "내가 본즉 그 수양이 서와 북과 남을 향하여 받으나 그것을 당할 짐승이 하나도 없고 그 손에서 능히 구할이가 절대로 없으므로 그것이 임의로 행하고 스스로 강대하더라",
+      "source_text_hash": "4df17d696dd302e65e83ef6dbd9d5408437c9557868fa0f51d592a0477ac0276",
+      "translation_text_hash": "f1f714606140870f41482fc3ef4bf784f2ba1056e5953cb7a3053059e1d40bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 그 수양이 서와 북과 남을 향하여 받으나 그것을 당할 짐승이 하나도 없고 그 손에서 능히 구할이가 절대로 없으므로 그것이 임의로 행하고 스스로 강대하더라"
+      ],
+      "raw_text_hashes": [
+        "f1f714606140870f41482fc3ef4bf784f2ba1056e5953cb7a3053059e1d40bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:5",
+      "sequence": 21967,
+      "chapter_label": "DAN 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "As I was considering, behold, a male goat came from the west over the surface of the whole earth, and didn’t touch the ground. The goat had a notable horn between his eyes.",
+      "ko": "내가 생각할 때에 한 수염소가 서편에서부터 와서 온 지면에 두루 다니되 땅에 닿지 아니하며 그 염소 두 눈 사이에는 현저한 뿔이 있더라",
+      "source_text_hash": "dd5d55d5aa29353d2191cca1944f22353edd10b7e42f85ad7b2a8e56da0bd6f8",
+      "translation_text_hash": "f97ba3d40fca79b328163577e7d81b8fb5b8db1ba1484209328295d404a11744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 생각할 때에 한 수염소가 서편에서부터 와서 온 지면에 두루 다니되 땅에 닿지 아니하며 그 염소 두 눈 사이에는 현저한 뿔이 있더라"
+      ],
+      "raw_text_hashes": [
+        "f97ba3d40fca79b328163577e7d81b8fb5b8db1ba1484209328295d404a11744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:6",
+      "sequence": 21968,
+      "chapter_label": "DAN 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "He came to the ram that had the two horns, which I saw standing before the river, and ran on him in the fury of his power.",
+      "ko": "그것이 두 뿔 가진 수양 곧 내가 본바 강 가에 섰던 양에게로 나아가되 분노한 힘으로 그것에게로 달려가더니",
+      "source_text_hash": "1c91ad9ac8189813a6db3db830d983156d3154dffa5d2bc43707824b3e718aaa",
+      "translation_text_hash": "0d258db1f0eaf630452ce7504ab3e3b131b1fe7e5b54f1baf2b1654e8d11d863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 두 뿔 가진 수양 곧 내가 본바 강 가에 섰던 양에게로 나아가되 분노한 힘으로 그것에게로 달려가더니"
+      ],
+      "raw_text_hashes": [
+        "0d258db1f0eaf630452ce7504ab3e3b131b1fe7e5b54f1baf2b1654e8d11d863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:7",
+      "sequence": 21969,
+      "chapter_label": "DAN 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "I saw him come close to the ram, and he was moved with anger against him, and struck the ram, and broke his two horns. There was no power in the ram to stand before him; but he cast him down to the ground and trampled on him. There was no one who could deliver the ram out of his hand.",
+      "ko": "내가 본즉 그것이 수양에게로 가까이 나아가서는 더욱 성내어 그 수양을 쳐서 그 두 뿔을 꺾으나 수양에게는 그것을 대적할 힘이 없으므로 그것이 수양을 땅에 엎드러뜨리고 짓밟았으나 능히 수양을 그 손에서 벗어나게 할 이가 없었더라",
+      "source_text_hash": "c990e913c32d061cc6b8cddac4389b8667fe30d25b513cc5789e53acabf5f4f9",
+      "translation_text_hash": "0228d633aedae0e64c4fd8aebfa6d47267889b3fca4ca987c4f84d42ac092771",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 그것이 수양에게로 가까이 나아가서는 더욱 성내어 그 수양을 쳐서 그 두 뿔을 꺾으나 수양에게는 그것을 대적할 힘이 없으므로 그것이 수양을 땅에 엎드러뜨리고 짓밟았으나 능히 수양을 그 손에서 벗어나게 할 이가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "0228d633aedae0e64c4fd8aebfa6d47267889b3fca4ca987c4f84d42ac092771"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:8",
+      "sequence": 21970,
+      "chapter_label": "DAN 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "The male goat magnified himself exceedingly. When he was strong, the great horn was broken; and instead of it there came up four notable horns toward the four winds of the sky.",
+      "ko": "수염소가 스스로 심히 강대하여 가더니 강성할 때에 그 큰 뿔이 꺾이고 그 대신에 현저한 뿔 넷이 하늘 사방을 향하여 났더라",
+      "source_text_hash": "816262bbf95c2e8fd74a0b62321dd361aee3201576b120965bda7b739f72f507",
+      "translation_text_hash": "77e244fc32e64a9d1fe459b299de3d5c384924e4931125178f6f1acda2f69ebc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수염소가 스스로 심히 강대하여 가더니 강성할 때에 그 큰 뿔이 꺾이고 그 대신에 현저한 뿔 넷이 하늘 사방을 향하여 났더라"
+      ],
+      "raw_text_hashes": [
+        "77e244fc32e64a9d1fe459b299de3d5c384924e4931125178f6f1acda2f69ebc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:9",
+      "sequence": 21971,
+      "chapter_label": "DAN 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Out of one of them came out a little horn which grew exceedingly great—toward the south, and toward the east, and toward the glorious land.",
+      "ko": "그 중 한 뿔에서 또 작은 뿔 하나가 나서 남편과 동편과 또 영화로운 땅을 향하여 심히 커지더니",
+      "source_text_hash": "711278dd1209b4f0ec11bf22301c5437098453010e439202c6027fa6eb9dfb20",
+      "translation_text_hash": "9169abe1d4776efc6315a498cf4be48add56fc2f18d63c6024f0c5d7ba689ee5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중 한 뿔에서 또 작은 뿔 하나가 나서 남편과 동편과 또 영화로운 땅을 향하여 심히 커지더니"
+      ],
+      "raw_text_hashes": [
+        "9169abe1d4776efc6315a498cf4be48add56fc2f18d63c6024f0c5d7ba689ee5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:10",
+      "sequence": 21972,
+      "chapter_label": "DAN 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "It grew great, even to the army of the sky; and it cast down some of the army and of the stars to the ground and trampled on them.",
+      "ko": "그것이 하늘 군대에 미칠만큼 커져서 그 군대와 별 중에 몇을 땅에 떨어뜨리고 그것을 짓밟고",
+      "source_text_hash": "d58dd6085cd18e62595218938824c34b58f70b1e8a9c32f30a502021598c4cca",
+      "translation_text_hash": "e1565b0afb66706660a456446cc0bdea7e722d61271531264ca2e3fad4eb18b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 하늘 군대에 미칠만큼 커져서 그 군대와 별 중에 몇을 땅에 떨어뜨리고 그것을 짓밟고"
+      ],
+      "raw_text_hashes": [
+        "e1565b0afb66706660a456446cc0bdea7e722d61271531264ca2e3fad4eb18b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:11",
+      "sequence": 21973,
+      "chapter_label": "DAN 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, it magnified itself, even to the prince of the army; and it took away from him the continual burnt offering, and the place of his sanctuary was cast down.",
+      "ko": "또 스스로 높아져서 군대의 주재를 대적하며 그에게 매일 드리는 제사를 제하여 버렸고 그의 성소를 헐었으며",
+      "source_text_hash": "31eef9d2a15e0b586ef326c4dad4c11ea1be7ef4b6afdb5a577c23eff183b555",
+      "translation_text_hash": "03a50194b405c6fc1151930079aeacf915415e42ffa85c4d5144bdd10971ded0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 스스로 높아져서 군대의 주재를 대적하며 그에게 매일 드리는 제사를 제하여 버렸고 그의 성소를 헐었으며"
+      ],
+      "raw_text_hashes": [
+        "03a50194b405c6fc1151930079aeacf915415e42ffa85c4d5144bdd10971ded0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:12",
+      "sequence": 21974,
+      "chapter_label": "DAN 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "The army was given over to it together with the continual burnt offering through disobedience. It cast down truth to the ground, and it did its pleasure and prospered.",
+      "ko": "범죄함을 인하여 백성과 매일 드리는 제사가 그것에게 붙인바 되었고 그것이 또 진리를 땅에 던지며 자의로 행하여 형통하였더라",
+      "source_text_hash": "2222e7d168e1ddc0b22c65ad7f669441819998e65cadcf99dd2af18e16f7f8db",
+      "translation_text_hash": "f10df27966cd5f7976fdb9bf6a109a9b84076819fefc008ad09e52201682cb09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범죄함을 인하여 백성과 매일 드리는 제사가 그것에게 붙인바 되었고 그것이 또 진리를 땅에 던지며 자의로 행하여 형통하였더라"
+      ],
+      "raw_text_hashes": [
+        "f10df27966cd5f7976fdb9bf6a109a9b84076819fefc008ad09e52201682cb09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:13",
+      "sequence": 21975,
+      "chapter_label": "DAN 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Then I heard a holy one speaking; and another holy one said to that certain one who spoke, “How long will the vision about the continual burnt offering, and the disobedience that makes desolate, to give both the sanctuary and the army to be trodden under foot be?”",
+      "ko": "내가 들은즉 거룩한 자가 말하더니 다른 거룩한 자가 그 말하는 자에게 묻되 이상에 나타난바 매일 드리는 제사와 망하게 하는 죄악에 대한 일과 성소와 백성이 내어준바 되며 짓밟힐 일이 어느 때까지 이를꼬 하매",
+      "source_text_hash": "d5170d54c9ccfb5f739407c28ad66dfc2b24310e10d43c59cc0173a1467705f3",
+      "translation_text_hash": "c6a2c0ea5ad7e2c121f3cdedfca53c319f65205e1f5e4feae650393d40008da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들은즉 거룩한 자가 말하더니 다른 거룩한 자가 그 말하는 자에게 묻되 이상에 나타난바 매일 드리는 제사와 망하게 하는 죄악에 대한 일과 성소와 백성이 내어준바 되며 짓밟힐 일이 어느 때까지 이를꼬 하매"
+      ],
+      "raw_text_hashes": [
+        "c6a2c0ea5ad7e2c121f3cdedfca53c319f65205e1f5e4feae650393d40008da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:14",
+      "sequence": 21976,
+      "chapter_label": "DAN 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "He said to me, “To two thousand and three hundred evenings and mornings. Then the sanctuary will be cleansed.”",
+      "ko": "그가 내게 이르되 이천 삼백 주야까지니 그 때에 성소가 정결하게 함을 입으리라 하였느니라",
+      "source_text_hash": "c6f90bd2a317dbf82d428b172db9419fb354f98f88a064e4647cceeabce09a73",
+      "translation_text_hash": "7ef2719b1d71cfd60bc160a4c8043bb629d01ae143a073be8a62ae85fb32a52a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르되 이천 삼백 주야까지니 그 때에 성소가 정결하게 함을 입으리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7ef2719b1d71cfd60bc160a4c8043bb629d01ae143a073be8a62ae85fb32a52a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:15",
+      "sequence": 21977,
+      "chapter_label": "DAN 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "When I, even I Daniel, had seen the vision, I sought to understand it. Then behold, there stood before me someone with the appearance of a man.",
+      "ko": "나 다니엘이 이 이상을 보고 그 뜻을 알고자 할 때에 사람 모양 같은 것이 내 앞에 섰고",
+      "source_text_hash": "275ce9a8973dc3924002cb741b8a49a9d97de6e1e6167ead6fd2236e82861661",
+      "translation_text_hash": "c12088aa11fc403a64f9f66d8fdf48bb47053d4f261a4d8b91c6eb252eeb5717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 다니엘이 이 이상을 보고 그 뜻을 알고자 할 때에 사람 모양 같은 것이 내 앞에 섰고"
+      ],
+      "raw_text_hashes": [
+        "c12088aa11fc403a64f9f66d8fdf48bb47053d4f261a4d8b91c6eb252eeb5717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:16",
+      "sequence": 21978,
+      "chapter_label": "DAN 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "I heard a man’s voice between the banks of the Ulai, which called and said, “Gabriel, make this man understand the vision.”",
+      "ko": "내가 들은즉 을래강 두 언덕 사이에서 사람의 목소리가 있어 외쳐 이르되 가브리엘아 이 이상을 이 사람에게 깨닫게 하라 하더니",
+      "source_text_hash": "d5c3e17e2e823eab4327126cd3a16dbdf08a79bbbc1eb759ce0ece14bc3188bd",
+      "translation_text_hash": "436dd74d6cd70a82e900d745edb8b1a6c02c909895dbc4c911d3c7c71c606b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들은즉 을래강 두 언덕 사이에서 사람의 목소리가 있어 외쳐 이르되 가브리엘아 이 이상을 이 사람에게 깨닫게 하라 하더니"
+      ],
+      "raw_text_hashes": [
+        "436dd74d6cd70a82e900d745edb8b1a6c02c909895dbc4c911d3c7c71c606b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:17",
+      "sequence": 21979,
+      "chapter_label": "DAN 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "So he came near where I stood; and when he came, I was frightened, and fell on my face; but he said to me, “Understand, son of man, for the vision belongs to the time of the end.”",
+      "ko": "그가 나의 선 곳으로 나아왔는데 그 나아올 때에 내가 두려워서 얼굴을 땅에 대고 엎드리매 그가 내게 이르되 인자야 깨달아 알라 이 이상은 정한 때 끝에 관한 것이니라",
+      "source_text_hash": "676fc1861c9a5a4539f6c76f592a8d73dd6b526036754b6aafdf78086bbf973e",
+      "translation_text_hash": "207a96189116d2ba361868c335ff01b8def6aca03f926e01effb860d9c66cae3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나의 선 곳으로 나아왔는데 그 나아올 때에 내가 두려워서 얼굴을 땅에 대고 엎드리매 그가 내게 이르되 인자야 깨달아 알라 이 이상은 정한 때 끝에 관한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "207a96189116d2ba361868c335ff01b8def6aca03f926e01effb860d9c66cae3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:18",
+      "sequence": 21980,
+      "chapter_label": "DAN 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Now as he was speaking with me, I fell into a deep sleep with my face toward the ground; but he touched me and set me upright.",
+      "ko": "그가 내게 말할 때에 내가 얼굴을 땅에 대고 엎드리어 깊이 잠들매 그가 나를 어루 만져서 일으켜 세우며",
+      "source_text_hash": "5f89144b25500d943831955104661c1dc0f1d539f35db9465e63cde6d8b9daf8",
+      "translation_text_hash": "4288a2c138c0bba35f4de2cdf93bf4b0c17d7bef4b208bb930eff1d35e6c5fd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 말할 때에 내가 얼굴을 땅에 대고 엎드리어 깊이 잠들매 그가 나를 어루 만져서 일으켜 세우며"
+      ],
+      "raw_text_hashes": [
+        "4288a2c138c0bba35f4de2cdf93bf4b0c17d7bef4b208bb930eff1d35e6c5fd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:19",
+      "sequence": 21981,
+      "chapter_label": "DAN 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "He said, “Behold, I will make you know what will be in the latter time of the indignation, for it belongs to the appointed time of the end.",
+      "ko": "가로되 진노하시는 때가 마친 후에 될 일을 내가 네게 알게 하리니 이 이상은 정한 때 끝에 관한 일임이니라",
+      "source_text_hash": "ecec0eafc76dcb10e8a7fe07e296dce55217cb79db81176442250dcf604a078c",
+      "translation_text_hash": "a78c3edef84e067bb7e8f609dc1cde3f74ef951e825b5ccee8624348d0c21457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 진노하시는 때가 마친 후에 될 일을 내가 네게 알게 하리니 이 이상은 정한 때 끝에 관한 일임이니라"
+      ],
+      "raw_text_hashes": [
+        "a78c3edef84e067bb7e8f609dc1cde3f74ef951e825b5ccee8624348d0c21457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:20",
+      "sequence": 21982,
+      "chapter_label": "DAN 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "The ram which you saw, that had the two horns, they are the kings of Media and Persia.",
+      "ko": "네가 본바 두 뿔 가진 수양은 곧 메대와 바사 왕들이요",
+      "source_text_hash": "8e7df74bfe2d7304fd2aac7eafbde51ef9e7c45c70b110e4c0a09629c9625a06",
+      "translation_text_hash": "6294c05fe0b62038f00d0f55c6640894acee0abb2b6d189c2b2bd78b06c62fd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 본바 두 뿔 가진 수양은 곧 메대와 바사 왕들이요"
+      ],
+      "raw_text_hashes": [
+        "6294c05fe0b62038f00d0f55c6640894acee0abb2b6d189c2b2bd78b06c62fd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:21",
+      "sequence": 21983,
+      "chapter_label": "DAN 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "The rough male goat is the king of Greece. The great horn that is between his eyes is the first king.",
+      "ko": "털이 많은 수염소는 곧 헬라 왕이요 두 눈 사이에 있는 큰 뿔은 곧 그 첫째 왕이요",
+      "source_text_hash": "5a774cb8383a44353418210fa3a98a3e2af0f421baf2f283f6af8725b4548d36",
+      "translation_text_hash": "dc3ddabe96c2dc4212369d468d07c9eddb419ce84ab2e35c2844877f58b9e546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "털이 많은 수염소는 곧 헬라 왕이요 두 눈 사이에 있는 큰 뿔은 곧 그 첫째 왕이요"
+      ],
+      "raw_text_hashes": [
+        "dc3ddabe96c2dc4212369d468d07c9eddb419ce84ab2e35c2844877f58b9e546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:22",
+      "sequence": 21984,
+      "chapter_label": "DAN 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "As for that which was broken, in the place where four stood up, four kingdoms will stand up out of the nation, but not with his power.",
+      "ko": "이 뿔이 꺾이고 그 대신에 네 뿔이 났은즉 그 나라 가운데서 네 나라가 일어나되 그 권세만 못하리라",
+      "source_text_hash": "47ee3d525660d255d90fe4e7f0a66c33d7c63d6ac4d2939611ed30c07cc5f7ea",
+      "translation_text_hash": "5946193866daf4cfcc6adff14321adf0fd47bc8505de2531770aaafd78d3cba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 뿔이 꺾이고 그 대신에 네 뿔이 났은즉 그 나라 가운데서 네 나라가 일어나되 그 권세만 못하리라"
+      ],
+      "raw_text_hashes": [
+        "5946193866daf4cfcc6adff14321adf0fd47bc8505de2531770aaafd78d3cba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:23",
+      "sequence": 21985,
+      "chapter_label": "DAN 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "“In the latter time of their kingdom, when the transgressors have come to the full, a king of fierce face, and understanding riddles, will stand up.",
+      "ko": "이 네 나라 마지막 때에 패역자들이 가득할 즈음에 한 왕이 일어나리니 그 얼굴은 엄장하며 궤휼에 능하며",
+      "source_text_hash": "edb31aefed53ab74e731102dca837af066263ad5100202084a2b4571cc0acb1e",
+      "translation_text_hash": "bc50c0089cc4316db6e604596917453a8652e6d01bd56425e65440f389654830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 네 나라 마지막 때에 패역자들이 가득할 즈음에 한 왕이 일어나리니 그 얼굴은 엄장하며 궤휼에 능하며"
+      ],
+      "raw_text_hashes": [
+        "bc50c0089cc4316db6e604596917453a8652e6d01bd56425e65440f389654830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:24",
+      "sequence": 21986,
+      "chapter_label": "DAN 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "His power will be mighty, but not by his own power. He will destroy awesomely, and will prosper in what he does. He will destroy the mighty ones and the holy people.",
+      "ko": "그 권세가 강할 것이나 자기의 힘으로 말미암은 것이 아니며 그가 장차 비상하게 파괴를 행하고 자의로 행하여 형통하며 강한 자들과 거룩한 백성을 멸하리라",
+      "source_text_hash": "4e6efd70d212701628a103a7e0f2856514674690caca5cd15723d4311a4b78d5",
+      "translation_text_hash": "19791c0a3a4a593d19f84c9deb6fe449f5caef258e0f6abab327f9370725c2b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 권세가 강할 것이나 자기의 힘으로 말미암은 것이 아니며 그가 장차 비상하게 파괴를 행하고 자의로 행하여 형통하며 강한 자들과 거룩한 백성을 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "19791c0a3a4a593d19f84c9deb6fe449f5caef258e0f6abab327f9370725c2b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:25",
+      "sequence": 21987,
+      "chapter_label": "DAN 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Through his policy he will cause deceit to prosper in his hand. He will magnify himself in his heart, and he will destroy many in their security. He will also stand up against the prince of princes, but he will be broken without human hands.",
+      "ko": "그가 꾀를 베풀어 제 손으로 궤휼을 이루고 마음에 스스로 큰체하며 또 평화한 때에 많은 무리를 멸하며 또 스스로 서서 만왕의 왕을 대적할 것이나 그가 사람의 손을 말미암지 않고 깨어지리라",
+      "source_text_hash": "9442101db3e27d1bd46b87e34dce651418a82a756d9bab8abc92814586c9db49",
+      "translation_text_hash": "ea330c20e4d91be07590db06789f4b261e85bf54dc5a7142d28b3a517eb921af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 꾀를 베풀어 제 손으로 궤휼을 이루고 마음에 스스로 큰체하며 또 평화한 때에 많은 무리를 멸하며 또 스스로 서서 만왕의 왕을 대적할 것이나 그가 사람의 손을 말미암지 않고 깨어지리라"
+      ],
+      "raw_text_hashes": [
+        "ea330c20e4d91be07590db06789f4b261e85bf54dc5a7142d28b3a517eb921af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:26",
+      "sequence": 21988,
+      "chapter_label": "DAN 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "“The vision of the evenings and mornings which has been told is true; but seal up the vision, for it belongs to many days to come.”",
+      "ko": "이미 말한바 주야에 대한 이상이 확실하니 너는 그 이상을 간수하라 이는 여러 날 후의 일임이니라",
+      "source_text_hash": "5b76b0e98db945cf4c3d7062099885cdd4a7f57e0c71d4181597812f95fc3929",
+      "translation_text_hash": "2dd64008f718c79049789f1a0b002f3e515f860385db3edaba9dab89ab5ac148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 말한바 주야에 대한 이상이 확실하니 너는 그 이상을 간수하라 이는 여러 날 후의 일임이니라"
+      ],
+      "raw_text_hashes": [
+        "2dd64008f718c79049789f1a0b002f3e515f860385db3edaba9dab89ab5ac148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:8:27",
+      "sequence": 21989,
+      "chapter_label": "DAN 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "I, Daniel, fainted, and was sick for some days. Then I rose up and did the king’s business. I wondered at the vision, but no one understood it.",
+      "ko": "이에 나 다니엘이 혼절하여 수일을 앓다가 일어나서 왕의 일을 보았느니라 내가 그 이상을 인하여 놀랐고 그 뜻을 깨닫는 사람도 없었느니라",
+      "source_text_hash": "d48e286ef800b877ec480eccb2a45c4ed7fe03b2884bcd13ff2427a39e3516bb",
+      "translation_text_hash": "45b4a09fb081cb1f76fd36f7066b458571b2198451deb491cc0cc9884d76eab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 나 다니엘이 혼절하여 수일을 앓다가 일어나서 왕의 일을 보았느니라 내가 그 이상을 인하여 놀랐고 그 뜻을 깨닫는 사람도 없었느니라"
+      ],
+      "raw_text_hashes": [
+        "45b4a09fb081cb1f76fd36f7066b458571b2198451deb491cc0cc9884d76eab0"
+      ]
+    }
+  ]
+}

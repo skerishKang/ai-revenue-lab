@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:012",
+  "unit_ordinal": 923,
+  "unit_label": "ZEC 12",
+  "book_code": "ZEC",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:12:1",
+      "sequence": 23047,
+      "chapter_label": "ZEC 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "A revelation of the LORD’s word concerning Israel: The LORD, who stretches out the heavens and lays the foundation of the earth, and forms the spirit of man within him says:",
+      "ko": "이스라엘에 관한 여호와의 말씀의 경고라 여호와 곧 하늘을 펴시며 땅의 터를 세우시며 사람 안에 심령을 지으신 자가 가라사대",
+      "source_text_hash": "8d924d99cc023e776b4e6bd017382fce22b3282150c34a89c3b18dc671247de7",
+      "translation_text_hash": "fb3f4e094789b4662337c32d1fb5863b6169f028d7368cfbdc48057249ec3bca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘에 관한 여호와의 말씀의 경고라 여호와 곧 하늘을 펴시며 땅의 터를 세우시며 사람 안에 심령을 지으신 자가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "fb3f4e094789b4662337c32d1fb5863b6169f028d7368cfbdc48057249ec3bca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:2",
+      "sequence": 23048,
+      "chapter_label": "ZEC 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "“Behold, I will make Jerusalem a cup of reeling to all the surrounding peoples, and it will also be on Judah in the siege against Jerusalem.",
+      "ko": "보라 내가 예루살렘으로 그 사면 국민에게 혼취케 하는 잔이 되게 할 것이라 예루살렘이 에워싸일 때에 유다에까지 미치리라",
+      "source_text_hash": "9ab7d65efac8e3cc24ff1136f02e79c29f6bf6de042161700b3c5cb5f06beac1",
+      "translation_text_hash": "95bfdb8b4eb9dbbf5efb4a6dc4e55c0df9fc36c399e64038babfd5b14756f4bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 예루살렘으로 그 사면 국민에게 혼취케 하는 잔이 되게 할 것이라 예루살렘이 에워싸일 때에 유다에까지 미치리라"
+      ],
+      "raw_text_hashes": [
+        "95bfdb8b4eb9dbbf5efb4a6dc4e55c0df9fc36c399e64038babfd5b14756f4bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:3",
+      "sequence": 23049,
+      "chapter_label": "ZEC 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "It will happen in that day that I will make Jerusalem a burdensome stone for all the peoples. All who burden themselves with it will be severely wounded, and all the nations of the earth will be gathered together against it.",
+      "ko": "그 날에는 내가 예루살렘으로 모든 국민에게 무거운 돌이 되게 하리니 무릇 그것을 드는 자는 크게 상할 것이라 천하 만국이 그것을 치려고 모이리라",
+      "source_text_hash": "d7504f7dadcd1390527bd2227ec0eb26a2b9544865767e8ade3ea9bc4a624b6b",
+      "translation_text_hash": "368793214130680592da7db26f8c6d1a83ac06a83abf586c08251b841d07a90b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 내가 예루살렘으로 모든 국민에게 무거운 돌이 되게 하리니 무릇 그것을 드는 자는 크게 상할 것이라 천하 만국이 그것을 치려고 모이리라"
+      ],
+      "raw_text_hashes": [
+        "368793214130680592da7db26f8c6d1a83ac06a83abf586c08251b841d07a90b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:4",
+      "sequence": 23050,
+      "chapter_label": "ZEC 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "In that day,” says the LORD, “I will strike every horse with terror and his rider with madness. I will open my eyes on the house of Judah, and will strike every horse of the peoples with blindness.",
+      "ko": "여호와가 말하노라 그 날에 내가 모든 말을 쳐서 놀라게 하며 그 탄 자를 쳐서 미치게 하되 유다 족속은 내가 돌아보고 모든 국민의 말을 쳐서 눈이 멀게 하리니",
+      "source_text_hash": "6fd48690cafef755f5c6dd8b9bca3af85e915d452cb32304f13a81278670ecf6",
+      "translation_text_hash": "5430fa69a566f359390323607c9730d101a9fc1aff6cff3fcae770bf07e08514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 말하노라 그 날에 내가 모든 말을 쳐서 놀라게 하며 그 탄 자를 쳐서 미치게 하되 유다 족속은 내가 돌아보고 모든 국민의 말을 쳐서 눈이 멀게 하리니"
+      ],
+      "raw_text_hashes": [
+        "5430fa69a566f359390323607c9730d101a9fc1aff6cff3fcae770bf07e08514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:5",
+      "sequence": 23051,
+      "chapter_label": "ZEC 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "The chieftains of Judah will say in their heart, ‘The inhabitants of Jerusalem are my strength in the LORD of Armies their God.’",
+      "ko": "유다의 두목들이 심중에 이르기를 예루살렘 거민이 그들의 하나님 만군의 여호와로 말미암아 힘을 얻었다 할찌라",
+      "source_text_hash": "79f2cd9b8d3acdfac75cd428e872e40d408e747be0e20d684bb516e539b1f1de",
+      "translation_text_hash": "f3074fd12d66e9cecdd58a68cc6298738e4e01cc817bd56e89ab950b3862de39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 두목들이 심중에 이르기를 예루살렘 거민이 그들의 하나님 만군의 여호와로 말미암아 힘을 얻었다 할찌라"
+      ],
+      "raw_text_hashes": [
+        "f3074fd12d66e9cecdd58a68cc6298738e4e01cc817bd56e89ab950b3862de39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:6",
+      "sequence": 23052,
+      "chapter_label": "ZEC 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "In that day I will make the chieftains of Judah like a pan of fire among wood, and like a flaming torch among sheaves. They will devour all the surrounding peoples on the right hand and on the left; and Jerusalem will yet again dwell in their own place, even in Jerusalem.",
+      "ko": "그 날에 내가 유다 두목들로 나무 가운데 화로 같게 하며 곡식단 사이에 횃불 같게 하리니 그들이 그 좌우에 에워싼 모든 국민을 사를 것이요 예루살렘 사람은 다시 그 본 곳 예루살렘에 거하게 되리라",
+      "source_text_hash": "fd8e669f9b9978b3dc5367b9383604ee8cffcd78dcb8e217cb80bceaa7e63cfc",
+      "translation_text_hash": "b6035dddb0316218dc4e75c15a617612703f9ae7a8d1b0db8d42fab36f66bd90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 유다 두목들로 나무 가운데 화로 같게 하며 곡식단 사이에 횃불 같게 하리니 그들이 그 좌우에 에워싼 모든 국민을 사를 것이요 예루살렘 사람은 다시 그 본 곳 예루살렘에 거하게 되리라"
+      ],
+      "raw_text_hashes": [
+        "b6035dddb0316218dc4e75c15a617612703f9ae7a8d1b0db8d42fab36f66bd90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:7",
+      "sequence": 23053,
+      "chapter_label": "ZEC 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD also will save the tents of Judah first, that the glory of David’s house and the glory of the inhabitants of Jerusalem not be magnified above Judah.",
+      "ko": "여호와가 먼저 유다 장막을 구원하리니 이는 다윗의 집의 영광과 예루살렘 거민의 영광이 유다보다 더하지 못하게 하려 함이니라",
+      "source_text_hash": "3a9f2ef746c78178bf4d2fe53b32f5f6d0362a90b41588ea24091af2db74f1ec",
+      "translation_text_hash": "f1a9541fbccd4b03f759d1abe424d92e7fa488c938de8d3c09ceb3d0b57b07dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 먼저 유다 장막을 구원하리니 이는 다윗의 집의 영광과 예루살렘 거민의 영광이 유다보다 더하지 못하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "f1a9541fbccd4b03f759d1abe424d92e7fa488c938de8d3c09ceb3d0b57b07dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:8",
+      "sequence": 23054,
+      "chapter_label": "ZEC 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "In that day the LORD will defend the inhabitants of Jerusalem. He who is feeble among them at that day will be like David, and David’s house will be like God, like the LORD’s angel before them.",
+      "ko": "그 날에 여호와가 예루살렘 거민을 보호하리니 그 중에 약한 자가 그 날에는 다윗 같겠고 다윗의 족속은 하나님 같고 무리 앞에 있는 여호와의 사자 같을 것이라",
+      "source_text_hash": "291b5588e7eeda2eb221feac7e69a9a8631c284434f4e33239b5b15b80a64edd",
+      "translation_text_hash": "670d7414457cf220faee16e1b30cd6f5390c45608079117ab98ca310a287ff82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와가 예루살렘 거민을 보호하리니 그 중에 약한 자가 그 날에는 다윗 같겠고 다윗의 족속은 하나님 같고 무리 앞에 있는 여호와의 사자 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "670d7414457cf220faee16e1b30cd6f5390c45608079117ab98ca310a287ff82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:9",
+      "sequence": 23055,
+      "chapter_label": "ZEC 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "It will happen in that day, that I will seek to destroy all the nations that come against Jerusalem.",
+      "ko": "예루살렘을 치러 오는 열국을 그 날에 내가 멸하기를 힘쓰리라",
+      "source_text_hash": "3fb5454d0fac67f4fca142c21cdeac4d51d28cc14f6ec39555737e3c5de4710f",
+      "translation_text_hash": "0688a6070f5bdfa5b326f09f69bb8a2047c11110fc33ab91b7d9d27b17e42ff7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘을 치러 오는 열국을 그 날에 내가 멸하기를 힘쓰리라"
+      ],
+      "raw_text_hashes": [
+        "0688a6070f5bdfa5b326f09f69bb8a2047c11110fc33ab91b7d9d27b17e42ff7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:10",
+      "sequence": 23056,
+      "chapter_label": "ZEC 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "I will pour on David’s house and on the inhabitants of Jerusalem the spirit of grace and of supplication. They will look to me whom they have pierced; and they shall mourn for him as one mourns for his only son, and will grieve bitterly for him as one grieves for his firstborn.",
+      "ko": "내가 다윗의 집과 예루살렘 거민에게 은총과 간구하는 심령을 부어 주리니 그들이 그 찌른바 그를 바라보고 그를 위하여 애통하기를 독자를 위하여 애통하듯 하며 그를 위하여 통곡하기를 장자를 위하여 통곡하듯 하리로다",
+      "source_text_hash": "64c7d4a34a14ba73026c8250b8f90306209fde0d69d2883019ac643c7d06c874",
+      "translation_text_hash": "b4f8e33894589fd161f6530c25d058d93018e8914f06d7e434179fd547360c26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다윗의 집과 예루살렘 거민에게 은총과 간구하는 심령을 부어 주리니 그들이 그 찌른바 그를 바라보고 그를 위하여 애통하기를 독자를 위하여 애통하듯 하며 그를 위하여 통곡하기를 장자를 위하여 통곡하듯 하리로다"
+      ],
+      "raw_text_hashes": [
+        "b4f8e33894589fd161f6530c25d058d93018e8914f06d7e434179fd547360c26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:11",
+      "sequence": 23057,
+      "chapter_label": "ZEC 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "In that day there will be a great mourning in Jerusalem, like the mourning of Hadadrimmon in the valley of Megiddo.",
+      "ko": "그 날에 예루살렘에 큰 애통이 있으리니 므깃도 골짜기 하다드림몬에 있던 애통과 같을 것이라",
+      "source_text_hash": "aa67135364b1fc845117845a4eef6d79e0fc5f17845f9dc8de09f3333af8d8bf",
+      "translation_text_hash": "91311d4e0b5a5121d05d5e7114f91bb189899fd7f7ae2505bf3a228b8415e8e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 예루살렘에 큰 애통이 있으리니 므깃도 골짜기 하다드림몬에 있던 애통과 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "91311d4e0b5a5121d05d5e7114f91bb189899fd7f7ae2505bf3a228b8415e8e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:12",
+      "sequence": 23058,
+      "chapter_label": "ZEC 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "The land will mourn, every family apart; the family of David’s house apart, and their wives apart; the family of the house of Nathan apart, and their wives apart;",
+      "ko": "온 땅 각 족속이 따로 애통하되 다윗의 족속이 따로 하고 그 아내들이 따로 하며 나단의 족속이 따로 하고 그 아내들이 따로 하며",
+      "source_text_hash": "f4a496de305aad0d21f3f108630b809e2fedba433ef96dbec4e15de341e7020b",
+      "translation_text_hash": "7bc335894f478f86d228e3cbc1507ee41d7d4c764c37cac969e34ddad002f6a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅 각 족속이 따로 애통하되 다윗의 족속이 따로 하고 그 아내들이 따로 하며 나단의 족속이 따로 하고 그 아내들이 따로 하며"
+      ],
+      "raw_text_hashes": [
+        "7bc335894f478f86d228e3cbc1507ee41d7d4c764c37cac969e34ddad002f6a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:13",
+      "sequence": 23059,
+      "chapter_label": "ZEC 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "the family of the house of Levi apart, and their wives apart; the family of the Shimeites apart, and their wives apart;",
+      "ko": "레위의 족속이 따로 하고 그 아내들이 따로 하며 시므이의 족속이 따로 하고 그 아내들이 따로 하며",
+      "source_text_hash": "7f9a8f061141b0d56b5260b47082ae59dbaa756931ccc8da797caf6ef0560328",
+      "translation_text_hash": "de7abe3ac837409472c5b5c0c7109a4e43fb0c6c9ce4dc231046e43083ad9a7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 족속이 따로 하고 그 아내들이 따로 하며 시므이의 족속이 따로 하고 그 아내들이 따로 하며"
+      ],
+      "raw_text_hashes": [
+        "de7abe3ac837409472c5b5c0c7109a4e43fb0c6c9ce4dc231046e43083ad9a7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:12:14",
+      "sequence": 23060,
+      "chapter_label": "ZEC 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "all the families who remain, every family apart, and their wives apart.",
+      "ko": "모든 남은 족속도 각기 따로 하고 그 아내들이 따로 하리라",
+      "source_text_hash": "75c714da94658ec71c4b5a698fb643fea0c7e90b3f2561d4e8e49779dde6be34",
+      "translation_text_hash": "835e8ba91970da724d2f1e5e3d17806f5a6b372ba4286f4ccac206d19a96fcc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 남은 족속도 각기 따로 하고 그 아내들이 따로 하리라"
+      ],
+      "raw_text_hashes": [
+        "835e8ba91970da724d2f1e5e3d17806f5a6b372ba4286f4ccac206d19a96fcc8"
+      ]
+    }
+  ]
+}

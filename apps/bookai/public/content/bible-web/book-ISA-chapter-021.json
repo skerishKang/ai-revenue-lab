@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:021",
+  "unit_ordinal": 700,
+  "unit_label": "ISA 21",
+  "book_code": "ISA",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:21:1",
+      "sequence": 18037,
+      "chapter_label": "ISA 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The burden of the wilderness of the sea. As whirlwinds in the South sweep through, it comes from the wilderness, from an awesome land.",
+      "ko": "해변 광야에 관한 경고라 적병이 광야에서, 두려운 땅에서 남방 회리바람 같이 몰려 왔도다",
+      "source_text_hash": "492549e5a2657b77f29d9b57ad3ae9e2f78f549da99c4aaf92b1407334193bbd",
+      "translation_text_hash": "9c5cb9e0b7f03b850afb6b757ee23c6d0529cee72b28ee50d28059fbdef437eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해변 광야에 관한 경고라 적병이 광야에서, 두려운 땅에서 남방 회리바람 같이 몰려 왔도다"
+      ],
+      "raw_text_hashes": [
+        "9c5cb9e0b7f03b850afb6b757ee23c6d0529cee72b28ee50d28059fbdef437eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:2",
+      "sequence": 18038,
+      "chapter_label": "ISA 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "A grievous vision is declared to me. The treacherous man deals treacherously, and the destroyer destroys. Go up, Elam; attack! I have stopped all of Media’s sighing.",
+      "ko": "혹독한 묵시가 내게 보였도다 주께서 가라사대 속이는 자는 속이고 약탈하는 자는 약탈하도다 엘람이여 올라가고 메대여 에워싸라 그의 모든 탄식을 내가 그치게 하였노라 하시도다",
+      "source_text_hash": "e96f67ea07cc70c28fee23a5ffebf133063de4eb2a87e419f69dc91110201117",
+      "translation_text_hash": "2db41b36b18e2f8fc7e2a1ecab6ef64f834ef88e318c2572e5b9b94d363ee9ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹독한 묵시가 내게 보였도다 주께서 가라사대 속이는 자는 속이고 약탈하는 자는 약탈하도다 엘람이여 올라가고 메대여 에워싸라 그의 모든 탄식을 내가 그치게 하였노라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "2db41b36b18e2f8fc7e2a1ecab6ef64f834ef88e318c2572e5b9b94d363ee9ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:3",
+      "sequence": 18039,
+      "chapter_label": "ISA 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore my thighs are filled with anguish. Pains have seized me, like the pains of a woman in labor. I am in so much pain that I can’t hear. I am so dismayed that I can’t see.",
+      "ko": "이러므로 나의 요통이 심하여 임산한 여인의 고통 같은 고통이 내게 임하였으므로 고통으로 인하여 듣지 못하며 놀라서 보지 못하도다",
+      "source_text_hash": "e968b41f6c47f5dd018153cb8adba3d078d6e274b4ab342c04f69ba078736088",
+      "translation_text_hash": "ed0e267fe0e49cf0e302c7a4f3bab6f05f4a47b7c81389afcffdf06383207d25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 나의 요통이 심하여 임산한 여인의 고통 같은 고통이 내게 임하였으므로 고통으로 인하여 듣지 못하며 놀라서 보지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "ed0e267fe0e49cf0e302c7a4f3bab6f05f4a47b7c81389afcffdf06383207d25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:4",
+      "sequence": 18040,
+      "chapter_label": "ISA 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "My heart flutters. Horror has frightened me. The twilight that I desired has been turned into trembling for me.",
+      "ko": "내 마음이 진동하며 두려움이 나를 놀래며 희망의 서광이 변하여 내게 떨림이 되도다",
+      "source_text_hash": "57ebeb4fb48594d6cca6112e97a42828b759a22e12f93efc010c00b359845988",
+      "translation_text_hash": "85224d1e215e83b9b539d847470a6b0d83ecdc62648c06361628c2267284838e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 진동하며 두려움이 나를 놀래며 희망의 서광이 변하여 내게 떨림이 되도다"
+      ],
+      "raw_text_hashes": [
+        "85224d1e215e83b9b539d847470a6b0d83ecdc62648c06361628c2267284838e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:5",
+      "sequence": 18041,
+      "chapter_label": "ISA 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "They prepare the table. They set the watch. They eat. They drink. Rise up, you princes, oil the shield!",
+      "ko": "그들이 식탁을 베풀고 파숫군을 세우고 먹고 마시도다 너희 방백들아 일어나 방패에 기름을 바를찌어다",
+      "source_text_hash": "c789dcc9d72cb287bb4a84c814169131238b804e79a6c948053a4a5db3054aa1",
+      "translation_text_hash": "56b558d774cb6950ae346acab3014a5a2d8e95ecdffc6f071b24b0e6e4516517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 식탁을 베풀고 파숫군을 세우고 먹고 마시도다 너희 방백들아 일어나 방패에 기름을 바를찌어다"
+      ],
+      "raw_text_hashes": [
+        "56b558d774cb6950ae346acab3014a5a2d8e95ecdffc6f071b24b0e6e4516517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:6",
+      "sequence": 18042,
+      "chapter_label": "ISA 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "For the Lord said to me, “Go, set a watchman. Let him declare what he sees.",
+      "ko": "주께서 내게 이르시되 가서 파숫군을 세우고 그 보는 것을 고하게 하되",
+      "source_text_hash": "186b5f6d82ca92405c34e28a02b191c295ce152f395be46ee40ec5b3a95bc8e0",
+      "translation_text_hash": "8e2f0d26bfea61af57f0d8483fd550eff7d4c7dab23afafaf117f71958085ed5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내게 이르시되 가서 파숫군을 세우고 그 보는 것을 고하게 하되"
+      ],
+      "raw_text_hashes": [
+        "8e2f0d26bfea61af57f0d8483fd550eff7d4c7dab23afafaf117f71958085ed5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:7",
+      "sequence": 18043,
+      "chapter_label": "ISA 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "When he sees a troop, horsemen in pairs, a troop of donkeys, a troop of camels, he shall listen diligently with great attentiveness.”",
+      "ko": "마병대가 쌍쌍이 오는 것과 나귀떼와 약대떼를 보거든 자세히, 유심히 들으라 하셨더니",
+      "source_text_hash": "15fb33442e2f6771dec9acc09ef13c86162b6a508b0148ed7a9dd45d2ab7699c",
+      "translation_text_hash": "c4efb0c8b3462876acf3cd3b59a97b29db114a0dace7ebcc8b39bb350bd54108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마병대가 쌍쌍이 오는 것과 나귀떼와 약대떼를 보거든 자세히, 유심히 들으라 하셨더니"
+      ],
+      "raw_text_hashes": [
+        "c4efb0c8b3462876acf3cd3b59a97b29db114a0dace7ebcc8b39bb350bd54108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:8",
+      "sequence": 18044,
+      "chapter_label": "ISA 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "He cried like a lion: “Lord, I stand continually on the watchtower in the daytime, and every night I stay at my post.",
+      "ko": "파숫군이 사자같이 부르짖기를 주여 내가 낮에 늘 망대에 섰었고 밤이 맟도록 파수하는 곳에 있었더니",
+      "source_text_hash": "aff77dada01f89080cfb68f82e179416f2347039a2e5aa81d256eb5096feb5b9",
+      "translation_text_hash": "8c34d9dcd1501e60a897825bb94f9c80b4de50eb665ac9e963879fdb81eff7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 사자같이 부르짖기를 주여 내가 낮에 늘 망대에 섰었고 밤이 맟도록 파수하는 곳에 있었더니"
+      ],
+      "raw_text_hashes": [
+        "8c34d9dcd1501e60a897825bb94f9c80b4de50eb665ac9e963879fdb81eff7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:9",
+      "sequence": 18045,
+      "chapter_label": "ISA 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, here comes a troop of men, horsemen in pairs.” He answered, “Fallen, fallen is Babylon; and all the engraved images of her gods are broken to the ground.",
+      "ko": "마병대가 쌍쌍이 오나이다 그가 대답하여 가라사대 함락되었도다 함락되었도다 바벨론이여 그 신들의 조각한 형상이 다 부숴져 땅에 떨어졌도다 하시도다",
+      "source_text_hash": "ea37686754972264df1b1377a20d5a0bb9651a2295663d90f21b554a54b4806f",
+      "translation_text_hash": "ca4c774243756f137640cd391c2a77d2e8a8b412e19ce4aac16dcee937012366",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마병대가 쌍쌍이 오나이다 그가 대답하여 가라사대 함락되었도다 함락되었도다 바벨론이여 그 신들의 조각한 형상이 다 부숴져 땅에 떨어졌도다 하시도다"
+      ],
+      "raw_text_hashes": [
+        "ca4c774243756f137640cd391c2a77d2e8a8b412e19ce4aac16dcee937012366"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:10",
+      "sequence": 18046,
+      "chapter_label": "ISA 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "You are my threshing, and the grain of my floor!” That which I have heard from the LORD of Armies, the God of Israel, I have declared to you.",
+      "ko": "너 나의 타작한 것이여 나의 마당의 곡식이여 내가 이스라엘의 하나님 만군의 여호와께 들은대로 너희에게 고하였노라",
+      "source_text_hash": "013c4d9a2550b215db6dc10c005aa10ae8f6e27473e2d526790e3d52e63b1bce",
+      "translation_text_hash": "f82b78477e392c7dcd8b82e9f8f7c82544532d725a42ced4d60d58f459ef1190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 나의 타작한 것이여 나의 마당의 곡식이여 내가 이스라엘의 하나님 만군의 여호와께 들은대로 너희에게 고하였노라"
+      ],
+      "raw_text_hashes": [
+        "f82b78477e392c7dcd8b82e9f8f7c82544532d725a42ced4d60d58f459ef1190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:11",
+      "sequence": 18047,
+      "chapter_label": "ISA 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "The burden of Dumah. One calls to me out of Seir, “Watchman, what of the night? Watchman, what of the night?”",
+      "ko": "두마에 관한 경고라 사람이 세일에서 나를 부르되 파숫군이여 밤이 어떻게 되었느뇨 파숫군이여 밤이 어떻게 되었느뇨",
+      "source_text_hash": "2a462009d1052d78297e621e8420d3ec8bd819b0631916df1a60d76613e6bd2b",
+      "translation_text_hash": "05a64c27665ce3b83c3d0bae1ec568a2ec217c499fe85b7bf79cb71044bba469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두마에 관한 경고라 사람이 세일에서 나를 부르되 파숫군이여 밤이 어떻게 되었느뇨 파숫군이여 밤이 어떻게 되었느뇨"
+      ],
+      "raw_text_hashes": [
+        "05a64c27665ce3b83c3d0bae1ec568a2ec217c499fe85b7bf79cb71044bba469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:12",
+      "sequence": 18048,
+      "chapter_label": "ISA 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "The watchman said, “The morning comes, and also the night. If you will inquire, inquire. Come back again.”",
+      "ko": "파숫군이 가로되 아침이 오나니 밤도 오리라 네가 물으려거든 물으라 너희는 돌아올지니라",
+      "source_text_hash": "9859e32e250f2d7e3e7644f0b3aba5b7c51295f875b2faf63dcbdd87c5c3ba97",
+      "translation_text_hash": "9486d670dfc6be8f57410017c68ea5cc68c3bf85da4a547955052f11566c1d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 가로되 아침이 오나니 밤도 오리라 네가 물으려거든 물으라 너희는 돌아올지니라"
+      ],
+      "raw_text_hashes": [
+        "9486d670dfc6be8f57410017c68ea5cc68c3bf85da4a547955052f11566c1d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:13",
+      "sequence": 18049,
+      "chapter_label": "ISA 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "The burden on Arabia. You will lodge in the thickets in Arabia, you caravans of Dedanites.",
+      "ko": "아라비아에 관한 경고라 드단 대상이여 너희가 아라비아 수풀에서 유숙하리라",
+      "source_text_hash": "30927c1c2aa56dbaaaaa16df79d7361e5d01f1420fa97c7c4b7469221c0dc0eb",
+      "translation_text_hash": "e8d82e968f7f3b306d25471113a1df4e28d649aa864b1efb962300c15ca66ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라비아에 관한 경고라 드단 대상이여 너희가 아라비아 수풀에서 유숙하리라"
+      ],
+      "raw_text_hashes": [
+        "e8d82e968f7f3b306d25471113a1df4e28d649aa864b1efb962300c15ca66ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:14",
+      "sequence": 18050,
+      "chapter_label": "ISA 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "They brought water to him who was thirsty. The inhabitants of the land of Tema met the fugitives with their bread.",
+      "ko": "데마 땅의 거민들아 물을 가져다가 목마른 자에게 주고 떡을 가지고 도피하는 자를 영접하라",
+      "source_text_hash": "ec4ee4213593618c9bb03315ec2c5f107e5f4d972e1f26de7064af62b16ec402",
+      "translation_text_hash": "5e72532a60a4cee23bc9315aa4854cd32dd1910aded71eef426f264a7ccf06df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데마 땅의 거민들아 물을 가져다가 목마른 자에게 주고 떡을 가지고 도피하는 자를 영접하라"
+      ],
+      "raw_text_hashes": [
+        "5e72532a60a4cee23bc9315aa4854cd32dd1910aded71eef426f264a7ccf06df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:15",
+      "sequence": 18051,
+      "chapter_label": "ISA 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "For they fled away from the swords, from the drawn sword, from the bent bow, and from the heat of battle.",
+      "ko": "그들이 칼날을 피하며 뺀 칼과 당긴 활과 전쟁의 어려움에서 도망하였음이니라",
+      "source_text_hash": "f6d6d6afadfe3edfdea8f4e46fb8cfdb68d044f22d15cacbd22ba7e380020959",
+      "translation_text_hash": "d389309aa3b339c1ea6de02d3c238322e32407af8c19f79172879b27a1db0689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 칼날을 피하며 뺀 칼과 당긴 활과 전쟁의 어려움에서 도망하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "d389309aa3b339c1ea6de02d3c238322e32407af8c19f79172879b27a1db0689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:16",
+      "sequence": 18052,
+      "chapter_label": "ISA 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "For the Lord said to me, “Within a year, as a worker bound by contract would count it, all the glory of Kedar will fail,",
+      "ko": "주께서 이같이 내게 이르시되 품군의 정한 기한 같이 일년내에 게달의 영광이 다 쇠멸하리니",
+      "source_text_hash": "1962ea8022180a19acfd7b1feeb91e3f421d501fd414d292f009b0190a166763",
+      "translation_text_hash": "9e22025e314e7b0fad5dced8810b91e85319a358f598a8a5da4bf83fb2a5dc5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이같이 내게 이르시되 품군의 정한 기한 같이 일년내에 게달의 영광이 다 쇠멸하리니"
+      ],
+      "raw_text_hashes": [
+        "9e22025e314e7b0fad5dced8810b91e85319a358f598a8a5da4bf83fb2a5dc5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:21:17",
+      "sequence": 18053,
+      "chapter_label": "ISA 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "and the residue of the number of the archers, the mighty men of the children of Kedar, will be few; for the LORD, the God of Israel, has spoken it.”",
+      "ko": "게달 자손 중 활 가진 용사의 남은 수가 적으리라 하시니라 이스라엘의 하나님 여호와의 말씀이니라",
+      "source_text_hash": "5875055c6365966d339f6bea697a50154eefee1230921a9d8a6538b2db0a2f3d",
+      "translation_text_hash": "fcd386f648d9aa6c7825e3f79b40ae3af3354653568e15a03f2fdffd5a802685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게달 자손 중 활 가진 용사의 남은 수가 적으리라 하시니라 이스라엘의 하나님 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "fcd386f648d9aa6c7825e3f79b40ae3af3354653568e15a03f2fdffd5a802685"
+      ]
+    }
+  ]
+}

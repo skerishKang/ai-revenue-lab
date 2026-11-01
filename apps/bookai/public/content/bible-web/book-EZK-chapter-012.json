@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:012",
+  "unit_ordinal": 814,
+  "unit_label": "EZK 12",
+  "book_code": "EZK",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:12:1",
+      "sequence": 20682,
+      "chapter_label": "EZK 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word also came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "41a66e01d12d9e1c63b00df76209c8f48bed24612199fce4fe291e56a599ca8d",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:2",
+      "sequence": 20683,
+      "chapter_label": "EZK 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, you dwell in the middle of the rebellious house, who have eyes to see, and don’t see, who have ears to hear, and don’t hear; for they are a rebellious house.",
+      "ko": "인자야 네가 패역한 족속 중에 거하도다 그들은 볼 눈이 있어도 보지 아니하고 들을 귀가 있어도 듣지 아니하나니 그들은 패역한 족속임이니라",
+      "source_text_hash": "71f481dacf3d1b02bff8ce08ed9ba61a33d2e53da5dbb484ee9f0ce51f052665",
+      "translation_text_hash": "0af98ef5a47a545ec21e3063d2ab2f5aeccf128db13cad40f27ea754fb0cd29f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 네가 패역한 족속 중에 거하도다 그들은 볼 눈이 있어도 보지 아니하고 들을 귀가 있어도 듣지 아니하나니 그들은 패역한 족속임이니라"
+      ],
+      "raw_text_hashes": [
+        "0af98ef5a47a545ec21e3063d2ab2f5aeccf128db13cad40f27ea754fb0cd29f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:3",
+      "sequence": 20684,
+      "chapter_label": "EZK 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "“Therefore, you son of man, prepare your baggage for moving, and move by day in their sight. You shall move from your place to another place in their sight. It may be they will consider, though they are a rebellious house.",
+      "ko": "인자야 너는 행구를 준비하고 낮에 그들의 목전에서 이사하라 네가 네 처소를 다른 곳으로 옮기는 것을 그들이 보면 비록 패역한 족속이라도 혹 생각이 있으리라",
+      "source_text_hash": "5faa1279dc9113a537d4be0456ef258c8a3ef9a942c2bfafbb854c11fff1aed5",
+      "translation_text_hash": "b2566b09126f64f9269eaebbd5e425a2335a808220531a8c3882387c587b0967",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 행구를 준비하고 낮에 그들의 목전에서 이사하라 네가 네 처소를 다른 곳으로 옮기는 것을 그들이 보면 비록 패역한 족속이라도 혹 생각이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "b2566b09126f64f9269eaebbd5e425a2335a808220531a8c3882387c587b0967"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:4",
+      "sequence": 20685,
+      "chapter_label": "EZK 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "You shall bring out your baggage by day in their sight, as baggage for moving. You shall go out yourself at evening in their sight, as when men go out into exile.",
+      "ko": "너는 낮에 그 목전에서 네 행구를 밖으로 내기를 이사하는 행구 같이 하고 저물 때에 너는 그 목전에서 밖으로 나가기를 포로되어 가는 자 같이 하라",
+      "source_text_hash": "69e4c6f0eb06ffdf5a932c6894a8dda710f9b1e4ccc9bce6d05fd8d5450988a9",
+      "translation_text_hash": "6bdbc943b273c443260edebe785ac22bf5aea77a7ee293f62ea883cbdbb932f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 낮에 그 목전에서 네 행구를 밖으로 내기를 이사하는 행구 같이 하고 저물 때에 너는 그 목전에서 밖으로 나가기를 포로되어 가는 자 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "6bdbc943b273c443260edebe785ac22bf5aea77a7ee293f62ea883cbdbb932f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:5",
+      "sequence": 20686,
+      "chapter_label": "EZK 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Dig through the wall in their sight, and carry your baggage out that way.",
+      "ko": "너는 그 목전에서 성벽을 뚫고 그리로 좇아 옮기되",
+      "source_text_hash": "1d24d2f8344c2c8c45d4fda780b0e08f9813efa6c821aa9b9a7a80b9be2eaea4",
+      "translation_text_hash": "16376e1d4db55857a2bd97588caf0e8a4335b5afa83c4f95b6cdd5600f755c4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 목전에서 성벽을 뚫고 그리로 좇아 옮기되"
+      ],
+      "raw_text_hashes": [
+        "16376e1d4db55857a2bd97588caf0e8a4335b5afa83c4f95b6cdd5600f755c4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:6",
+      "sequence": 20687,
+      "chapter_label": "EZK 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "In their sight you shall bear it on your shoulder, and carry it out in the dark. You shall cover your face, so that you don’t see the land, for I have set you for a sign to the house of Israel.”",
+      "ko": "캄캄할 때에 그 목전에서 어깨에 메고 나가며 얼굴을 가리우고 땅을 보지 말찌어다 이는 내가 너를 세워 이스라엘 족속에게 징조가 되게 함이니라 하시기로",
+      "source_text_hash": "ebe6d618524abe3221d5c228ede86b2021611abb7e21d6a119f994127713eae5",
+      "translation_text_hash": "41289282ea9120715c5ce9faff77bcc9a92c944fa8cf359b9a6d011cac85f781",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "캄캄할 때에 그 목전에서 어깨에 메고 나가며 얼굴을 가리우고 땅을 보지 말찌어다 이는 내가 너를 세워 이스라엘 족속에게 징조가 되게 함이니라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "41289282ea9120715c5ce9faff77bcc9a92c944fa8cf359b9a6d011cac85f781"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:7",
+      "sequence": 20688,
+      "chapter_label": "EZK 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "I did so as I was commanded. I brought out my baggage by day, as baggage for moving, and in the evening I dug through the wall with my hand. I brought it out in the dark, and bore it on my shoulder in their sight.",
+      "ko": "내가 그 명대로 행하여 낮에 나의 행구를 이사하는 행구 같이 내어 놓고 저물 때에 내 손으로 성벽을 뚫고 캄캄할 때에 행구를 내어다가 그 목전에서 어깨에 메고 나가니라",
+      "source_text_hash": "047c744351cdef846b828657ea642ebb8d0232c6178d24a5aea75636f8ee3483",
+      "translation_text_hash": "567237dc6deb6a6904ae06edb9899a1edb051ce8fdb5244c84b182cf269cefcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 명대로 행하여 낮에 나의 행구를 이사하는 행구 같이 내어 놓고 저물 때에 내 손으로 성벽을 뚫고 캄캄할 때에 행구를 내어다가 그 목전에서 어깨에 메고 나가니라"
+      ],
+      "raw_text_hashes": [
+        "567237dc6deb6a6904ae06edb9899a1edb051ce8fdb5244c84b182cf269cefcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:8",
+      "sequence": 20689,
+      "chapter_label": "EZK 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "In the morning, the LORD’s word came to me, saying,",
+      "ko": "이튿날 아침에 여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "5315f46300e5eab625923f8c2dc45f997d7a5ca7447b5e5695f60bceca77e8fa",
+      "translation_text_hash": "7f7f4bc6d3ce0087897493ffbff2c9ce0ca8fc100cf646affe0f8e976e49b41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 아침에 여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "7f7f4bc6d3ce0087897493ffbff2c9ce0ca8fc100cf646affe0f8e976e49b41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:9",
+      "sequence": 20690,
+      "chapter_label": "EZK 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "“Son of man, hasn’t the house of Israel, the rebellious house, said to you, ‘What are you doing?’",
+      "ko": "인자야 이스라엘 족속 곧 그 패역한 족속이 네게 묻기를 무엇을 하느냐 하지 아니하더냐",
+      "source_text_hash": "86b490b6431a4947556d1b6a5db2e4f5f82bce755faca0f33d5becc2014d263d",
+      "translation_text_hash": "e870009db5d8b3624d1014f6b9dd279f6dac9ec225ac1dcfdd37421cb6cb7c86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 족속 곧 그 패역한 족속이 네게 묻기를 무엇을 하느냐 하지 아니하더냐"
+      ],
+      "raw_text_hashes": [
+        "e870009db5d8b3624d1014f6b9dd279f6dac9ec225ac1dcfdd37421cb6cb7c86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:10",
+      "sequence": 20691,
+      "chapter_label": "EZK 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "“Say to them, ‘The Lord GOD says: “This burden concerns the prince in Jerusalem, and all the house of Israel among whom they are.”’",
+      "ko": "너는 그들에게 말하기를 주 여호와의 말씀에 이것은 예루살렘 왕과 그 가운데 있는 이스라엘 온 족속에 대한 예조라 하셨다 하고",
+      "source_text_hash": "47ef4b97f47a4bb1115edc7b2f3a3d25bbe255d09e5b966e3528222a1bd2374b",
+      "translation_text_hash": "86b209e852ba568e5b858c9e9a244b781eb1b8681636417899e06fb0a31ce56d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 말하기를 주 여호와의 말씀에 이것은 예루살렘 왕과 그 가운데 있는 이스라엘 온 족속에 대한 예조라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "86b209e852ba568e5b858c9e9a244b781eb1b8681636417899e06fb0a31ce56d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:11",
+      "sequence": 20692,
+      "chapter_label": "EZK 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "“Say, ‘I am your sign. As I have done, so will it be done to them. They will go into exile, into captivity.",
+      "ko": "또 말하기를 나는 너희 징조라 내가 행한대로 그들이 당하여 사로잡혀 옮겨 갈찌라",
+      "source_text_hash": "8996e27e16dd419aa3b775d382d9828bf72c2f6bad9c813fd50cc6ea964b05e7",
+      "translation_text_hash": "9c5da8e08b9f4f965a71514b74f8082f85ad500cd55393dfa295ba26f339dd3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하기를 나는 너희 징조라 내가 행한대로 그들이 당하여 사로잡혀 옮겨 갈찌라"
+      ],
+      "raw_text_hashes": [
+        "9c5da8e08b9f4f965a71514b74f8082f85ad500cd55393dfa295ba26f339dd3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:12",
+      "sequence": 20693,
+      "chapter_label": "EZK 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "“‘The prince who is among them will bear his baggage on his shoulder in the dark, and will go out. They will dig through the wall to carry things out that way. He will cover his face, because he will not see the land with his eyes.",
+      "ko": "무리가 성벽을 뚫고 행구를 그리로 가지고 나가고 그 중에 왕은 어두울 때에 어깨에 행구를 메고 나가며 눈으로 땅을 보지 아니하려고 자기 얼굴을 가리우리라 하라",
+      "source_text_hash": "3ebc7fd02c3c3621f5303beb4ef952e52cb14ee87867ce25a9bb915a70b438ea",
+      "translation_text_hash": "c20439fba62f819678aa7e0224bf798e26fcd457f0ba1cceffa411b19e397652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 성벽을 뚫고 행구를 그리로 가지고 나가고 그 중에 왕은 어두울 때에 어깨에 행구를 메고 나가며 눈으로 땅을 보지 아니하려고 자기 얼굴을 가리우리라 하라"
+      ],
+      "raw_text_hashes": [
+        "c20439fba62f819678aa7e0224bf798e26fcd457f0ba1cceffa411b19e397652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:13",
+      "sequence": 20694,
+      "chapter_label": "EZK 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "I will also spread my net on him, and he will be taken in my snare. I will bring him to Babylon to the land of the Chaldeans; yet he will not see it, though he will die there.",
+      "ko": "내가 또 내 그물을 그의 위에 치고 내 올무에 걸리게 하여 그를 끌고 갈대아 땅 바벨론에 이르리니 그가 거기서 죽으려니와 그 땅을 보지 못하리라",
+      "source_text_hash": "8308ec7d8383541ed3ed3b2e72d8514e431c47a0e38ed213071fa2958915d64d",
+      "translation_text_hash": "d14a14fd50e50db1e9ca5ed99735cfb850f7a1a4d14f4209ec450fe5c618e919",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 내 그물을 그의 위에 치고 내 올무에 걸리게 하여 그를 끌고 갈대아 땅 바벨론에 이르리니 그가 거기서 죽으려니와 그 땅을 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "d14a14fd50e50db1e9ca5ed99735cfb850f7a1a4d14f4209ec450fe5c618e919"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:14",
+      "sequence": 20695,
+      "chapter_label": "EZK 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "I will scatter toward every wind all who are around him to help him, and all his bands. I will draw out the sword after them.",
+      "ko": "내가 그 호위하는 자와 부대들을 다 사방으로 흩고 또 그 뒤를 따라 칼을 빼리라",
+      "source_text_hash": "81a4264ffb9eac26ef824427db58e2c27654c02fe66aebba9af65601239c3123",
+      "translation_text_hash": "aba029c3aca1b5a017e8ac46c5bf7303f7f1ea489ad8c1d33a03659189b8335e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 호위하는 자와 부대들을 다 사방으로 흩고 또 그 뒤를 따라 칼을 빼리라"
+      ],
+      "raw_text_hashes": [
+        "aba029c3aca1b5a017e8ac46c5bf7303f7f1ea489ad8c1d33a03659189b8335e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:15",
+      "sequence": 20696,
+      "chapter_label": "EZK 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "“‘They will know that I am the LORD when I disperse them among the nations and scatter them through the countries.",
+      "ko": "내가 그들을 이방인 가운데로 흩으며 열방 중에 헤친 후에야 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "1d39cc6b0ef95d823b6c66b2044e32e8a6799134d1ac39cf338db53c1c03ecc0",
+      "translation_text_hash": "bf1ac139ae246dd082e1031ee5552bb8bc33f02337f13d81689f03ea925f1be6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 이방인 가운데로 흩으며 열방 중에 헤친 후에야 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "bf1ac139ae246dd082e1031ee5552bb8bc33f02337f13d81689f03ea925f1be6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:16",
+      "sequence": 20697,
+      "chapter_label": "EZK 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "But I will leave a few men of them from the sword, from the famine, and from the pestilence, that they may declare all their abominations among the nations where they come. Then they will know that I am the LORD.’”",
+      "ko": "그러나 내가 그 중 몇 사람을 남겨 칼과 기근과 온역을 벗어나게 하여 그들로 이르는 이방인 중에 자기의 모든 가증한 일을 자백하게 하리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "70e86075c02cf84db9b332decd98eb7947508713e41280874ab66d002a66ab9b",
+      "translation_text_hash": "5b02ab5a90188c27b9831b15726aeb2da332f4cbcb955a162cf79b8c0a343339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 그 중 몇 사람을 남겨 칼과 기근과 온역을 벗어나게 하여 그들로 이르는 이방인 중에 자기의 모든 가증한 일을 자백하게 하리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "5b02ab5a90188c27b9831b15726aeb2da332f4cbcb955a162cf79b8c0a343339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:17",
+      "sequence": 20698,
+      "chapter_label": "EZK 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:18",
+      "sequence": 20699,
+      "chapter_label": "EZK 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "“Son of man, eat your bread with quaking, and drink your water with trembling and with fearfulness.",
+      "ko": "인자야 너는 떨면서 네 식물을 먹고 놀라고 근심하면서 네 물을 마시며",
+      "source_text_hash": "920671f8c567e8a99da2306c8b9b2d0576d8417c5828b22a7935c29add7e2ba4",
+      "translation_text_hash": "b4b653f8dc756bd39c97ea622b93cd3dc782f4162dd8a436a35c2d2e7ffdf48e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 떨면서 네 식물을 먹고 놀라고 근심하면서 네 물을 마시며"
+      ],
+      "raw_text_hashes": [
+        "b4b653f8dc756bd39c97ea622b93cd3dc782f4162dd8a436a35c2d2e7ffdf48e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:19",
+      "sequence": 20700,
+      "chapter_label": "EZK 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Tell the people of the land, ‘The Lord GOD says concerning the inhabitants of Jerusalem and the land of Israel: “They will eat their bread with fearfulness and drink their water in dismay, that her land may be desolate, and all that is therein, because of the violence of all those who dwell therein.",
+      "ko": "이 땅 백성에게 말하되 주 여호와께서 예루살렘 거민과 이스라엘 땅에 대하여 이르시기를 그들이 근심하면서 그 식물을 먹으며 놀라면서 그 물을 마실 것은 이 땅 모든 거민의 강포를 인하여 땅에 가득한 것이 황무하게 됨이라",
+      "source_text_hash": "27df90d89da162aac884e9070b8c1d280ec91ec4d0f6b320e26c41e0db2f82e8",
+      "translation_text_hash": "f6d84c2d947507ed8f8b0329c084e5f94d3cecc46adaf83da7351c1d6ca881c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 백성에게 말하되 주 여호와께서 예루살렘 거민과 이스라엘 땅에 대하여 이르시기를 그들이 근심하면서 그 식물을 먹으며 놀라면서 그 물을 마실 것은 이 땅 모든 거민의 강포를 인하여 땅에 가득한 것이 황무하게 됨이라"
+      ],
+      "raw_text_hashes": [
+        "f6d84c2d947507ed8f8b0329c084e5f94d3cecc46adaf83da7351c1d6ca881c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:20",
+      "sequence": 20701,
+      "chapter_label": "EZK 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "The cities that are inhabited will be laid waste, and the land will be a desolation. Then you will know that I am the LORD.”’”",
+      "ko": "사람의 거하는 성읍들이 황폐하며 땅이 황무하리니 너희가 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "eb9817aa6e54369f3cb972e7b2277dc775c0e0f9250b0431ba3863f94abffa92",
+      "translation_text_hash": "fc51d7a3015bcec2b90958b0b7ade21bd5e3b340ba4100007bf2a1f003d262a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 거하는 성읍들이 황폐하며 땅이 황무하리니 너희가 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "fc51d7a3015bcec2b90958b0b7ade21bd5e3b340ba4100007bf2a1f003d262a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:21",
+      "sequence": 20702,
+      "chapter_label": "EZK 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:22",
+      "sequence": 20703,
+      "chapter_label": "EZK 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "“Son of man, what is this proverb that you have in the land of Israel, saying, ‘The days are prolonged, and every vision fails’?",
+      "ko": "인자야 이스라엘 땅에서 이르기를 날이 더디고 모든 묵시가 응험이 없다 하는 너희의 속담이 어찜이뇨",
+      "source_text_hash": "949e58e1c4e09b91b7e8448089cbd7ee8b3eb30cd8c0cd814957e4abfa5421c3",
+      "translation_text_hash": "bddb5fa0143f30a89e894c0f565563d965a75f35b36b982925ff82c37e788f11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 땅에서 이르기를 날이 더디고 모든 묵시가 응험이 없다 하는 너희의 속담이 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "bddb5fa0143f30a89e894c0f565563d965a75f35b36b982925ff82c37e788f11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:23",
+      "sequence": 20704,
+      "chapter_label": "EZK 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Tell them therefore, ‘The Lord GOD says: “I will make this proverb to cease, and they will no more use it as a proverb in Israel;”’ but tell them, ‘“The days are at hand, and the fulfillment of every vision.",
+      "ko": "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 내가 이 속담을 그치게 하리니 사람이 다시는 이스라엘 가운데서 이 속담을 못하리라 하셨다 하고 또 그들에게 이르기를 날과 모든 묵시의 응함이 가까우니",
+      "source_text_hash": "db8ffd1dcf9f0a7649404647510c4865433f46f34e5e382e28bd6f49afa1cf01",
+      "translation_text_hash": "9e28ba81a90d9ec83eaea85dbaba92e00f6e4945471f6bd0dc71200ffcd87693",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 내가 이 속담을 그치게 하리니 사람이 다시는 이스라엘 가운데서 이 속담을 못하리라 하셨다 하고 또 그들에게 이르기를 날과 모든 묵시의 응함이 가까우니"
+      ],
+      "raw_text_hashes": [
+        "9e28ba81a90d9ec83eaea85dbaba92e00f6e4945471f6bd0dc71200ffcd87693"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:24",
+      "sequence": 20705,
+      "chapter_label": "EZK 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "For there will be no more any false vision nor flattering divination within the house of Israel.",
+      "ko": "이스라엘 족속 중에 허탄한 묵시나 아첨하는 복술이 다시 있지 못하리라 하라",
+      "source_text_hash": "e92adb02e8cb71fc24bc522c2ee05ac8615e49248727fb74b3064583a2fdfd4b",
+      "translation_text_hash": "465bee0b4ffd05723702b2a672d3e083663110906251aca193e34696527b2497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속 중에 허탄한 묵시나 아첨하는 복술이 다시 있지 못하리라 하라"
+      ],
+      "raw_text_hashes": [
+        "465bee0b4ffd05723702b2a672d3e083663110906251aca193e34696527b2497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:25",
+      "sequence": 20706,
+      "chapter_label": "EZK 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "For I am the LORD. I will speak, and the word that I speak will be performed. It will be no more deferred; for in your days, rebellious house, I will speak the word and will perform it,” says the Lord GOD.’”",
+      "ko": "나는 여호와라 내가 말하리니 내가 하는 말이 다시는 더디지 아니하고 응하리라 패역한 족속아 내가 너희 생전에 말하고 이루리라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "0240be34b4ffa45d21620c0f45ccd375102c5b3f3c772b8ee5be90b3fd0c2024",
+      "translation_text_hash": "08df87c69520478823cf6a648a3c20e3d6f1120aafab948a54620ecd90b204bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와라 내가 말하리니 내가 하는 말이 다시는 더디지 아니하고 응하리라 패역한 족속아 내가 너희 생전에 말하고 이루리라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "08df87c69520478823cf6a648a3c20e3d6f1120aafab948a54620ecd90b204bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:26",
+      "sequence": 20707,
+      "chapter_label": "EZK 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "Again the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "6aa89cee6f0d885104e7c721a6314a8ba50104a695701c868c559b4a414222bd",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:27",
+      "sequence": 20708,
+      "chapter_label": "EZK 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "“Son of man, behold, they of the house of Israel say, ‘The vision that he sees is for many days to come, and he prophesies of times that are far off.’",
+      "ko": "인자야 이스라엘 족속의 말이 그의 보는 묵시는 여러날 후의 일이라 그가 먼 때에 대하여 예언하는도다 하나니",
+      "source_text_hash": "d836110b5dd5143332cab96544648e335a1644f87f767938d2fd28c8b916d510",
+      "translation_text_hash": "f46c2a755c027355cc53374eeff4e20eafd3411a92254058335dab1983724b22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 족속의 말이 그의 보는 묵시는 여러날 후의 일이라 그가 먼 때에 대하여 예언하는도다 하나니"
+      ],
+      "raw_text_hashes": [
+        "f46c2a755c027355cc53374eeff4e20eafd3411a92254058335dab1983724b22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:12:28",
+      "sequence": 20709,
+      "chapter_label": "EZK 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "“Therefore tell them, ‘The Lord GOD says: “None of my words will be deferred any more, but the word which I speak will be performed,” says the Lord GOD.’”",
+      "ko": "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 나의 말이 하나도 다시 더디지 않을찌니 나의 한 말이 이루리라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "166445e7cdeeb2a65539375c30ac2420c28df091d2d0b788f64a1de798c9a6bd",
+      "translation_text_hash": "86041e450493cf78206a126a62309a1e6a514c2ed2a3ffb6a732bef2670290fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 그들에게 이르기를 주 여호와의 말씀에 나의 말이 하나도 다시 더디지 않을찌니 나의 한 말이 이루리라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "86041e450493cf78206a126a62309a1e6a514c2ed2a3ffb6a732bef2670290fe"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:072",
+  "unit_ordinal": 550,
+  "unit_label": "PSA 72",
+  "book_code": "PSA",
+  "chapter_number": 72,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:72:1",
+      "sequence": 15002,
+      "chapter_label": "PSA 72",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 1
+        }
+      ],
+      "en": "God, give the king your justice; your righteousness to the royal son.",
+      "ko": "하나님이여 주의 판단력을 왕에게 주시고 주의 의를 왕의 아들에게 주소서",
+      "source_text_hash": "7319a32367acd2c9c967a09887c25ee4064a74636b8a06acdffe3583d535e28c",
+      "translation_text_hash": "f05291c1eb945889951969332c89e59309e9241653f2864efad251aef12c62b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 판단력을 왕에게 주시고 주의 의를 왕의 아들에게 주소서"
+      ],
+      "raw_text_hashes": [
+        "f05291c1eb945889951969332c89e59309e9241653f2864efad251aef12c62b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:2",
+      "sequence": 15003,
+      "chapter_label": "PSA 72",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 2
+        }
+      ],
+      "en": "He will judge your people with righteousness, and your poor with justice.",
+      "ko": "저가 주의 백성을 의로 판단하며 주의 가난한 자를 공의로 판단하리니",
+      "source_text_hash": "fc6a806dd56a69b2612a714e4d1724e29eb73d5dd26235c6e4f5747594cb4cc2",
+      "translation_text_hash": "c8d2322abab665c9387b36a727671e9aa398eb0e7378774652260c9c279f3bef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 주의 백성을 의로 판단하며 주의 가난한 자를 공의로 판단하리니"
+      ],
+      "raw_text_hashes": [
+        "c8d2322abab665c9387b36a727671e9aa398eb0e7378774652260c9c279f3bef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:3",
+      "sequence": 15004,
+      "chapter_label": "PSA 72",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 3
+        }
+      ],
+      "en": "The mountains shall bring prosperity to the people. The hills bring the fruit of righteousness.",
+      "ko": "의로 인하여 산들이 백성에게 평강을 주며 작은 산들도 그리하리로다",
+      "source_text_hash": "2b4c91a27145120c540b5f476737743a3754e884b74d45409f95a1abf294518a",
+      "translation_text_hash": "47ea5fe875561726247fab901b9cd312085278c201a7d6ae462f35ef96e68357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의로 인하여 산들이 백성에게 평강을 주며 작은 산들도 그리하리로다"
+      ],
+      "raw_text_hashes": [
+        "47ea5fe875561726247fab901b9cd312085278c201a7d6ae462f35ef96e68357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:4",
+      "sequence": 15005,
+      "chapter_label": "PSA 72",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 4
+        }
+      ],
+      "en": "He will judge the poor of the people. He will save the children of the needy, and will break the oppressor in pieces.",
+      "ko": "저가 백성의 가난한 자를 신원하며 궁핍한 자의 자손을 구원하며 압박하는 자를 꺾으리로다",
+      "source_text_hash": "6554e171da02717ec36f4ea326f0d9730826d5a8cb3c8e2b4825fd8860878232",
+      "translation_text_hash": "55f5b15197dcbce0cb39be441b636e8a59590eba984e147582555f2df3a0a6ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 백성의 가난한 자를 신원하며 궁핍한 자의 자손을 구원하며 압박하는 자를 꺾으리로다"
+      ],
+      "raw_text_hashes": [
+        "55f5b15197dcbce0cb39be441b636e8a59590eba984e147582555f2df3a0a6ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:5",
+      "sequence": 15006,
+      "chapter_label": "PSA 72",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 5
+        }
+      ],
+      "en": "They shall fear you while the sun endures; and as long as the moon, throughout all generations.",
+      "ko": "저희가 해가 있을 동안에 주를 두려워하며 달이 있을 동안에 대대로 그리하리로다",
+      "source_text_hash": "f73fb7f0c209cb070dae387d645c3c8bff508458bcbea0bab22d579f9b20122b",
+      "translation_text_hash": "add4884af8cea5d52a8c79a6896ab4d97a2cab21b0636eb6980146ffa30d38b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 해가 있을 동안에 주를 두려워하며 달이 있을 동안에 대대로 그리하리로다"
+      ],
+      "raw_text_hashes": [
+        "add4884af8cea5d52a8c79a6896ab4d97a2cab21b0636eb6980146ffa30d38b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:6",
+      "sequence": 15007,
+      "chapter_label": "PSA 72",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 6
+        }
+      ],
+      "en": "He will come down like rain on the mown grass, as showers that water the earth.",
+      "ko": "저는 벤 풀에 내리는 비 같이, 땅을 적시는 소낙비 같이 임하리니",
+      "source_text_hash": "309e9a18a220de718970204e10568ea29983231cf6cb1aabae46009c4a776467",
+      "translation_text_hash": "a1dd49a8908df83a31d17066aa7985324def50af6c88924f8875296e6ba2f58d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 벤 풀에 내리는 비 같이, 땅을 적시는 소낙비 같이 임하리니"
+      ],
+      "raw_text_hashes": [
+        "a1dd49a8908df83a31d17066aa7985324def50af6c88924f8875296e6ba2f58d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:7",
+      "sequence": 15008,
+      "chapter_label": "PSA 72",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 7
+        }
+      ],
+      "en": "In his days, the righteous shall flourish, and abundance of peace, until the moon is no more.",
+      "ko": "저의 날에 의인이 흥왕하여 평강의 풍성함이 달이 다할 때까지 이르리로다",
+      "source_text_hash": "41a582664067d11ebd03a9a5500788ba545d61d068554f750a8adc91599c56d2",
+      "translation_text_hash": "826215124b706bd27a2b1c676258b6b749533a2757c2777cb6e61627104e819d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 날에 의인이 흥왕하여 평강의 풍성함이 달이 다할 때까지 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "826215124b706bd27a2b1c676258b6b749533a2757c2777cb6e61627104e819d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:8",
+      "sequence": 15009,
+      "chapter_label": "PSA 72",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 8
+        }
+      ],
+      "en": "He shall have dominion also from sea to sea, from the River to the ends of the earth.",
+      "ko": "저가 바다에서부터 바다까지와 강에서부터 땅 끝까지 다스리리니",
+      "source_text_hash": "612a366162af73e89c1ba221070cf1a3887eeede132a05704904c02bc16ca4f2",
+      "translation_text_hash": "34185ce1779de20d797ebe5824a7492d530ec2be8ea4a834a53f08a7f3dd2e67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 바다에서부터 바다까지와 강에서부터 땅 끝까지 다스리리니"
+      ],
+      "raw_text_hashes": [
+        "34185ce1779de20d797ebe5824a7492d530ec2be8ea4a834a53f08a7f3dd2e67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:9",
+      "sequence": 15010,
+      "chapter_label": "PSA 72",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 9
+        }
+      ],
+      "en": "Those who dwell in the wilderness shall bow before him. His enemies shall lick the dust.",
+      "ko": "광야에 거하는 자는 저의 앞에 굽히며 그 원수들은 티끌을 핥을 것이며",
+      "source_text_hash": "9052c1fb50f7569b6d94fb41b8ec680f5e0ee9bb1d8cb993d1b6ed8d781bb505",
+      "translation_text_hash": "78d19202b0bb0c619e98721596a3b10493b09a24e06a2d8966c09ea15d869f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에 거하는 자는 저의 앞에 굽히며 그 원수들은 티끌을 핥을 것이며"
+      ],
+      "raw_text_hashes": [
+        "78d19202b0bb0c619e98721596a3b10493b09a24e06a2d8966c09ea15d869f31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:10",
+      "sequence": 15011,
+      "chapter_label": "PSA 72",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 10
+        }
+      ],
+      "en": "The kings of Tarshish and of the islands will bring tribute. The kings of Sheba and Seba shall offer gifts.",
+      "ko": "다시스와 섬의 왕들이 공세를 바치며 스바와 시바왕들이 예물을 드리리로다",
+      "source_text_hash": "e9529b22c6c6f608ec4094dbee6c2c7f1e7d18919b4c4171b816a4c32a4e8ae9",
+      "translation_text_hash": "ddc30792d96b8a134b8d7eed58a8edb6ba5005dd41146a24b6ecd2de552cdb06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시스와 섬의 왕들이 공세를 바치며 스바와 시바왕들이 예물을 드리리로다"
+      ],
+      "raw_text_hashes": [
+        "ddc30792d96b8a134b8d7eed58a8edb6ba5005dd41146a24b6ecd2de552cdb06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:11",
+      "sequence": 15012,
+      "chapter_label": "PSA 72",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, all kings shall fall down before him. All nations shall serve him.",
+      "ko": "만왕이 그 앞에 부복하며 열방이 다 그를 섬기리로다",
+      "source_text_hash": "b2b4f638e81a11ace38b294b7ebb1260414d31d5808141fbeece378e44a94f9d",
+      "translation_text_hash": "06a6e3540e28f0a3b25ad24e12483063e5257331fa9f3680546828972e825cf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만왕이 그 앞에 부복하며 열방이 다 그를 섬기리로다"
+      ],
+      "raw_text_hashes": [
+        "06a6e3540e28f0a3b25ad24e12483063e5257331fa9f3680546828972e825cf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:12",
+      "sequence": 15013,
+      "chapter_label": "PSA 72",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 12
+        }
+      ],
+      "en": "For he will deliver the needy when he cries; the poor, who has no helper.",
+      "ko": "저는 궁핍한 자의 부르짖을 때에 건지며 도움이 없는 가난한 자도 건지며",
+      "source_text_hash": "64b2acbe453ac60fe84258a9ac8507d35d42594de28e14152146308fb678dfe2",
+      "translation_text_hash": "35e8e256b230eba5333349bd97d9f1c5b778deb6bccd7781c819ce3cc1048116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 궁핍한 자의 부르짖을 때에 건지며 도움이 없는 가난한 자도 건지며"
+      ],
+      "raw_text_hashes": [
+        "35e8e256b230eba5333349bd97d9f1c5b778deb6bccd7781c819ce3cc1048116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:13",
+      "sequence": 15014,
+      "chapter_label": "PSA 72",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 13
+        }
+      ],
+      "en": "He will have pity on the poor and needy. He will save the souls of the needy.",
+      "ko": "저는 가난한 자와 궁핍한 자를 긍휼히 여기며 궁핍한 자의 생명을 구원하며",
+      "source_text_hash": "48e66ee87d3b38689d117cb446a603fca9c35a3c572ec6828850edfe97c8cdf1",
+      "translation_text_hash": "21f4cd89b1af1a695a9d006a602591428b3c02d1a40ca60a6c5d3272dcb15011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 가난한 자와 궁핍한 자를 긍휼히 여기며 궁핍한 자의 생명을 구원하며"
+      ],
+      "raw_text_hashes": [
+        "21f4cd89b1af1a695a9d006a602591428b3c02d1a40ca60a6c5d3272dcb15011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:14",
+      "sequence": 15015,
+      "chapter_label": "PSA 72",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 14
+        }
+      ],
+      "en": "He will redeem their soul from oppression and violence. Their blood will be precious in his sight.",
+      "ko": "저희 생명을 압박과 강포에서 구속하리니 저희 피가 그 목전에 귀하리로다",
+      "source_text_hash": "4b51639de3dcf72f380ef04f885f7dc8db45785c11bc981fd28de2fdacdde9e9",
+      "translation_text_hash": "c36c6b1bebdfa4161465b935d5c1fcea8b2da2d4c54e47e01029db8a4e4af277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 생명을 압박과 강포에서 구속하리니 저희 피가 그 목전에 귀하리로다"
+      ],
+      "raw_text_hashes": [
+        "c36c6b1bebdfa4161465b935d5c1fcea8b2da2d4c54e47e01029db8a4e4af277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:15",
+      "sequence": 15016,
+      "chapter_label": "PSA 72",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 15
+        }
+      ],
+      "en": "He will live; and Sheba’s gold will be given to him. Men will pray for him continually. They will bless him all day long.",
+      "ko": "저희가 생존하여 스바의 금을 저에게 드리며 사람들이 저를 위하여 항상 기도하고 종일 찬송하리로다",
+      "source_text_hash": "246b012ecbe5fd6989e04ea5671ec16754e158e1ab685c21afa2f56cc5160d3a",
+      "translation_text_hash": "9998136f71550ea7885554339ee60b6393af3d6840f1b89c990290cc43a3d5b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 생존하여 스바의 금을 저에게 드리며 사람들이 저를 위하여 항상 기도하고 종일 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "9998136f71550ea7885554339ee60b6393af3d6840f1b89c990290cc43a3d5b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:16",
+      "sequence": 15017,
+      "chapter_label": "PSA 72",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 16
+        }
+      ],
+      "en": "Abundance of grain shall be throughout the land. Its fruit sways like Lebanon. Let it flourish, thriving like the grass of the field.",
+      "ko": "산꼭대기의 땅에도 화곡이 풍성하고 그 열매가 레바논 같이 흔들리며 성에 있는 자가 땅의 풀 같이 왕성하리로다",
+      "source_text_hash": "376557d8473ac1ad7bcf7c25bb53a4a8636a2bf67a479f734679ae663167d4da",
+      "translation_text_hash": "a3a9530a9bb54c92bd8d3d81d569e0baeef378bd22dc4ee72ea384e5b17c5b12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산꼭대기의 땅에도 화곡이 풍성하고 그 열매가 레바논 같이 흔들리며 성에 있는 자가 땅의 풀 같이 왕성하리로다"
+      ],
+      "raw_text_hashes": [
+        "a3a9530a9bb54c92bd8d3d81d569e0baeef378bd22dc4ee72ea384e5b17c5b12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:17",
+      "sequence": 15018,
+      "chapter_label": "PSA 72",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 17
+        }
+      ],
+      "en": "His name endures forever. His name continues as long as the sun. Men shall be blessed by him. All nations will call him blessed.",
+      "ko": "그 이름이 영구함이여 그 이름이 해와 같이 장구하리로다 사람들이 그로 인하여 복을 받으리니 열방이 다 그를 복되다 하리로다",
+      "source_text_hash": "1da0fd61a051992828f7d72243e1391a021436fbb467578b8a0776cb0199f33e",
+      "translation_text_hash": "32327a3beaccfd8c8c1fc4896afb5297e902b0874124ccb97a00cdce549240b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이름이 영구함이여 그 이름이 해와 같이 장구하리로다 사람들이 그로 인하여 복을 받으리니 열방이 다 그를 복되다 하리로다"
+      ],
+      "raw_text_hashes": [
+        "32327a3beaccfd8c8c1fc4896afb5297e902b0874124ccb97a00cdce549240b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:18",
+      "sequence": 15019,
+      "chapter_label": "PSA 72",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 18
+        }
+      ],
+      "en": "Praise be to the LORD God, the God of Israel, who alone does marvelous deeds.",
+      "ko": "홀로 기사를 행하시는 여호와 하나님 곧 이스라엘의 하나님을 찬송하며",
+      "source_text_hash": "eff4c37b30570d1e495511718155ac52a34cfc28eda68e3dffb4c9bc45e48019",
+      "translation_text_hash": "866ecea3d620776f0732ceec9cb1a318ec491b6512cbf146f3fc75b85d93e315",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀로 기사를 행하시는 여호와 하나님 곧 이스라엘의 하나님을 찬송하며"
+      ],
+      "raw_text_hashes": [
+        "866ecea3d620776f0732ceec9cb1a318ec491b6512cbf146f3fc75b85d93e315"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:19",
+      "sequence": 15020,
+      "chapter_label": "PSA 72",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 19
+        }
+      ],
+      "en": "Blessed be his glorious name forever! Let the whole earth be filled with his glory! Amen and amen.",
+      "ko": "그 영화로운 이름을 영원히 찬송할찌어다 온 땅에 그 영광이 충만할찌어다 아멘 아멘. 이새의 아들 다윗의 기도가 필하다",
+      "source_text_hash": "bdd293d15db4bdf645271599314cd53a6378cbc96a1243e1e82ad2d9f09d2a15",
+      "translation_text_hash": "c5f95382ac967d5dacf620f9538d7cb828f5ff38ddf06840e1cc26a14bf3022a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV PSA 72:19 contains the WEB 72:19/72:20 boundary.",
+      "raw_texts": [
+        "그 영화로운 이름을 영원히 찬송할찌어다 온 땅에 그 영광이 충만할찌어다 아멘 아멘. 이새의 아들 다윗의 기도가 필하다"
+      ],
+      "raw_text_hashes": [
+        "c5f95382ac967d5dacf620f9538d7cb828f5ff38ddf06840e1cc26a14bf3022a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:72:20",
+      "sequence": 15021,
+      "chapter_label": "PSA 72",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 72,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 72,
+          "verse": 19
+        }
+      ],
+      "en": "This ends the prayers by David, the son of Jesse.",
+      "ko": "그 영화로운 이름을 영원히 찬송할찌어다 온 땅에 그 영광이 충만할찌어다 아멘 아멘. 이새의 아들 다윗의 기도가 필하다",
+      "source_text_hash": "a14110215122a13c1f433aeb626127c34654e6bb0aafd42f9061bbb3a4ca3742",
+      "translation_text_hash": "c5f95382ac967d5dacf620f9538d7cb828f5ff38ddf06840e1cc26a14bf3022a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV PSA 72:19 contains the WEB 72:19/72:20 boundary.",
+      "raw_texts": [
+        "그 영화로운 이름을 영원히 찬송할찌어다 온 땅에 그 영광이 충만할찌어다 아멘 아멘. 이새의 아들 다윗의 기도가 필하다"
+      ],
+      "raw_text_hashes": [
+        "c5f95382ac967d5dacf620f9538d7cb828f5ff38ddf06840e1cc26a14bf3022a"
+      ]
+    }
+  ]
+}

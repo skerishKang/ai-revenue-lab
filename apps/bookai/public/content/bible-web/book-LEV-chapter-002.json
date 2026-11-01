@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:002",
+  "unit_ordinal": 92,
+  "unit_label": "LEV 2",
+  "book_code": "LEV",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:2:1",
+      "sequence": 2764,
+      "chapter_label": "LEV 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "“‘When anyone offers an offering of a meal offering to the LORD, his offering shall be of fine flour. He shall pour oil on it, and put frankincense on it.",
+      "ko": "누구든지 소제의 예물을 여호와께 드리려거든 고운 가루로 예물을 삼아 그 위에 기름을 붓고 또 그 위에 유향을 놓아",
+      "source_text_hash": "6b3a073a19805dcfdd87619efb4200ce0d0b649a3ba15b81725e7dda607f0de9",
+      "translation_text_hash": "a60b64536ba1bfa4a423461b8b91eec50495e90cc18ced7c384227842f9fe4d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 소제의 예물을 여호와께 드리려거든 고운 가루로 예물을 삼아 그 위에 기름을 붓고 또 그 위에 유향을 놓아"
+      ],
+      "raw_text_hashes": [
+        "a60b64536ba1bfa4a423461b8b91eec50495e90cc18ced7c384227842f9fe4d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:2",
+      "sequence": 2765,
+      "chapter_label": "LEV 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "He shall bring it to Aaron’s sons, the priests. He shall take his handful of its fine flour, and of its oil, with all its frankincense, and the priest shall burn its memorial on the altar, an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "아론의 자손 제사장들에게로 가져 올 것이요 제사장은 그 고운 기름 가루 한 줌과 그 모든 유향을 취하여 기념물로 단 위에 불사를찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "48043213a1a1a6783a5e83ba1fec677ab7c71bf4d5235a9cb9a83abf655825d7",
+      "translation_text_hash": "fa39dd932be9cdd50396f1d8d38e827440fd5812dc7fc5cac14c81b0bf5b72a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손 제사장들에게로 가져 올 것이요 제사장은 그 고운 기름 가루 한 줌과 그 모든 유향을 취하여 기념물로 단 위에 불사를찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "fa39dd932be9cdd50396f1d8d38e827440fd5812dc7fc5cac14c81b0bf5b72a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:3",
+      "sequence": 2766,
+      "chapter_label": "LEV 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "That which is left of the meal offering shall be Aaron’s and his sons’. It is a most holy part of the offerings of the LORD made by fire.",
+      "ko": "그 소제물의 남은 것은 아론과 그 자손에게 돌릴찌니 이는 여호와의 화제 중에 지극히 거룩한 것이니라",
+      "source_text_hash": "244f56c4e832fe75c3b67310e349308cba5bf647848f32cfb3fddf7342c9e202",
+      "translation_text_hash": "79b2d4f3fc46bb79a7993e64aea9efa9aca63e45dd1c5ed89b83e39bec71eeca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제물의 남은 것은 아론과 그 자손에게 돌릴찌니 이는 여호와의 화제 중에 지극히 거룩한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "79b2d4f3fc46bb79a7993e64aea9efa9aca63e45dd1c5ed89b83e39bec71eeca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:4",
+      "sequence": 2767,
+      "chapter_label": "LEV 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "“‘When you offer an offering of a meal offering baked in the oven, it shall be unleavened cakes of fine flour mixed with oil, or unleavened wafers anointed with oil.",
+      "ko": "네가 화덕에 구운 것으로 소제의 예물을 드리려거든 고운 가루에 기름을 섞어 만든 무교병이나 기름을 바른 무교전병을 드릴 것이요",
+      "source_text_hash": "793917c0f8f1adf9d81554eb3495b4f127a8dfaa66789461002cfc30cc739d15",
+      "translation_text_hash": "366b9c8bc90c9bd163b15d607f98e153896bb2693d18dda558d7425970b14da8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 화덕에 구운 것으로 소제의 예물을 드리려거든 고운 가루에 기름을 섞어 만든 무교병이나 기름을 바른 무교전병을 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "366b9c8bc90c9bd163b15d607f98e153896bb2693d18dda558d7425970b14da8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:5",
+      "sequence": 2768,
+      "chapter_label": "LEV 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "If your offering is a meal offering made on a griddle, it shall be of unleavened fine flour, mixed with oil.",
+      "ko": "번철에 부친 것으로 소제의 예물을 드리려거든 고운 가루에 누룩을 넣지 말고 기름을 섞어",
+      "source_text_hash": "274e319d52e8c796df55f3748c828dc5ffb80a1e2702ad313b0ca1dd044a828c",
+      "translation_text_hash": "abd19991158fab49fb482a69a604a887b5c2399ad72e598ba04d4648b0ecaaf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번철에 부친 것으로 소제의 예물을 드리려거든 고운 가루에 누룩을 넣지 말고 기름을 섞어"
+      ],
+      "raw_text_hashes": [
+        "abd19991158fab49fb482a69a604a887b5c2399ad72e598ba04d4648b0ecaaf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:6",
+      "sequence": 2769,
+      "chapter_label": "LEV 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "You shall cut it in pieces, and pour oil on it. It is a meal offering.",
+      "ko": "조각으로 나누고 그 위에 기름을 부을찌니 이는 소제니라",
+      "source_text_hash": "075e750d3a2deed6a0bfb2e9bfced70a2bd75a7aace65e295c3fed79b48691c7",
+      "translation_text_hash": "807608b31db0ad1e6b386d4d4ce04a1255b13d9cd347821422f5b71a16f474ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각으로 나누고 그 위에 기름을 부을찌니 이는 소제니라"
+      ],
+      "raw_text_hashes": [
+        "807608b31db0ad1e6b386d4d4ce04a1255b13d9cd347821422f5b71a16f474ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:7",
+      "sequence": 2770,
+      "chapter_label": "LEV 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "If your offering is a meal offering of the pan, it shall be made of fine flour with oil.",
+      "ko": "네가 솥에 삶은 것으로 소제를 드리려거든 고운 가루와 기름을 섞어 만들찌니라",
+      "source_text_hash": "d59e7437475daad6823030eb9db652f23055f1f28d5f12d078f40c3db8bc0aa0",
+      "translation_text_hash": "3426d1140d05a2fc31e3ef32c0b68f13a3aa565dc11c304f310bbdb5152f51c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 솥에 삶은 것으로 소제를 드리려거든 고운 가루와 기름을 섞어 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "3426d1140d05a2fc31e3ef32c0b68f13a3aa565dc11c304f310bbdb5152f51c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:8",
+      "sequence": 2771,
+      "chapter_label": "LEV 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "You shall bring the meal offering that is made of these things to the LORD. It shall be presented to the priest, and he shall bring it to the altar.",
+      "ko": "너는 이것들로 만든 소제물을 여호와께로 가져다가 제사장에게 줄 것이요 제사장은 그것을 단으로 가져다가",
+      "source_text_hash": "c97b3ee9f1d0b33963a841cae8385ef49c3c82ce06eb940b383a3220f51b1892",
+      "translation_text_hash": "62bc643f3f6ad7368cbfe127e0c715e92d2fb13eb77a4eb0ebaee704409666d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이것들로 만든 소제물을 여호와께로 가져다가 제사장에게 줄 것이요 제사장은 그것을 단으로 가져다가"
+      ],
+      "raw_text_hashes": [
+        "62bc643f3f6ad7368cbfe127e0c715e92d2fb13eb77a4eb0ebaee704409666d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:9",
+      "sequence": 2772,
+      "chapter_label": "LEV 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "The priest shall take from the meal offering its memorial, and shall burn it on the altar, an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "그 소제물 중에서 기념할 것을 취하여 단 위에 불사를찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "2b667ce2d8f21e39a30ed8d410978f78c4f8a7c23ef31469663efc31bb2af513",
+      "translation_text_hash": "b40cbe51542fb84aed2bf9a9d8e8819aa010b4ca85b10d31d4ee0bc9cdef275d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제물 중에서 기념할 것을 취하여 단 위에 불사를찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "b40cbe51542fb84aed2bf9a9d8e8819aa010b4ca85b10d31d4ee0bc9cdef275d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:10",
+      "sequence": 2773,
+      "chapter_label": "LEV 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "That which is left of the meal offering shall be Aaron’s and his sons’. It is a most holy part of the offerings of the LORD made by fire.",
+      "ko": "소제물의 남은 것은 아론과 그 자손에게 돌릴찌니 이는 여호와의 화제 중에 지극히 거룩한 것이니라",
+      "source_text_hash": "244f56c4e832fe75c3b67310e349308cba5bf647848f32cfb3fddf7342c9e202",
+      "translation_text_hash": "78e000068bad9ac72f1cdb5805eacfdee212b198de75683a08eafae03b4a661a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소제물의 남은 것은 아론과 그 자손에게 돌릴찌니 이는 여호와의 화제 중에 지극히 거룩한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "78e000068bad9ac72f1cdb5805eacfdee212b198de75683a08eafae03b4a661a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:11",
+      "sequence": 2774,
+      "chapter_label": "LEV 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "“‘No meal offering which you shall offer to the LORD shall be made with yeast; for you shall burn no yeast, nor any honey, as an offering made by fire to the LORD.",
+      "ko": "무릇 너희가 여호와께 드리는 소제물에는 모두 누룩을 넣지 말찌니 너희가 누룩이나 꿀을 여호와께 화제로 드려 사르지 못할찌니라",
+      "source_text_hash": "05db18ac87f05a562d8ef2c930ebde2d1912452f77a07ffb4486a52daf4db608",
+      "translation_text_hash": "c40d0aed8d0007f49a3f8f1ba60b47ca85f420ed4a3741527ee913b326df1c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 너희가 여호와께 드리는 소제물에는 모두 누룩을 넣지 말찌니 너희가 누룩이나 꿀을 여호와께 화제로 드려 사르지 못할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c40d0aed8d0007f49a3f8f1ba60b47ca85f420ed4a3741527ee913b326df1c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:12",
+      "sequence": 2775,
+      "chapter_label": "LEV 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "As an offering of first fruits you shall offer them to the LORD, but they shall not rise up as a pleasant aroma on the altar.",
+      "ko": "처음 익은 것으로는 그것을 여호와께 드릴찌나 향기로운 냄새를 위하여는 단에 올리지 말찌며",
+      "source_text_hash": "861fdeef8171da86198479566faa9f0ffd8a19e9c98b2fc6100f960b4b47ce45",
+      "translation_text_hash": "ea57af3eca9d7ad6a039241636445e532fcc9a2ac65d0bb5172ae0ea9fa51f2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음 익은 것으로는 그것을 여호와께 드릴찌나 향기로운 냄새를 위하여는 단에 올리지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "ea57af3eca9d7ad6a039241636445e532fcc9a2ac65d0bb5172ae0ea9fa51f2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:13",
+      "sequence": 2776,
+      "chapter_label": "LEV 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Every offering of your meal offering you shall season with salt. You shall not allow the salt of the covenant of your God to be lacking from your meal offering. With all your offerings you shall offer salt.",
+      "ko": "네 모든 소제물에 소금을 치라 네 하나님의 언약의 소금을 네 소제에 빼지 못할찌니 네 모든 예물에 소금을 드릴찌니라",
+      "source_text_hash": "107fcb1d165fb91c63afd01f6ddb29b154e794a46e0715f923f505b85885f5ad",
+      "translation_text_hash": "2d699caa17ec3cf50c2cf76d8c5e30d9d1df15ad991c3e477bbe96f4d1a2c645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 소제물에 소금을 치라 네 하나님의 언약의 소금을 네 소제에 빼지 못할찌니 네 모든 예물에 소금을 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "2d699caa17ec3cf50c2cf76d8c5e30d9d1df15ad991c3e477bbe96f4d1a2c645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:14",
+      "sequence": 2777,
+      "chapter_label": "LEV 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If you offer a meal offering of first fruits to the LORD, you shall offer for the meal offering of your first fruits fresh heads of grain parched with fire and crushed.",
+      "ko": "너는 첫 이삭의 소제를 여호와께 드리거든 첫 이삭을 볶아 찧은 것으로 너의 소제를 삼되",
+      "source_text_hash": "f3aa7c9de30a25f823f128aebabd0889224994adfbeaa3a6ec51f650d9a999a9",
+      "translation_text_hash": "786a3cd9280b9a9b289a95125995546d94db4c37a5bcc1cb7513489313560eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 첫 이삭의 소제를 여호와께 드리거든 첫 이삭을 볶아 찧은 것으로 너의 소제를 삼되"
+      ],
+      "raw_text_hashes": [
+        "786a3cd9280b9a9b289a95125995546d94db4c37a5bcc1cb7513489313560eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:15",
+      "sequence": 2778,
+      "chapter_label": "LEV 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "You shall put oil on it and lay frankincense on it. It is a meal offering.",
+      "ko": "그 위에 기름을 붓고 그 위에 유향을 더할찌니 이는 소제니라",
+      "source_text_hash": "201d3757710e4bc930a2fc53328683a4b50d66875b41aaf3963eaa26bc435601",
+      "translation_text_hash": "eea37f8ed1da7894b9b4d47a745ee4b587e9051489697af2a73de2d524c99a09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 기름을 붓고 그 위에 유향을 더할찌니 이는 소제니라"
+      ],
+      "raw_text_hashes": [
+        "eea37f8ed1da7894b9b4d47a745ee4b587e9051489697af2a73de2d524c99a09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:2:16",
+      "sequence": 2779,
+      "chapter_label": "LEV 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The priest shall burn as its memorial part of its crushed grain and part of its oil, along with all its frankincense. It is an offering made by fire to the LORD.",
+      "ko": "제사장은 찧은 곡식 얼마와 기름의 얼마와 모든 유향을 기념물로 불사를찌니 이는 여호와께 드리는 화제니라",
+      "source_text_hash": "709b167c04adce324f7b525da598039fc847f269adb543aca40149ebe48192ca",
+      "translation_text_hash": "22fbe6447d1d67927fbf2a5c071139aeb14f2687131899edfa5398c5220117ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 찧은 곡식 얼마와 기름의 얼마와 모든 유향을 기념물로 불사를찌니 이는 여호와께 드리는 화제니라"
+      ],
+      "raw_text_hashes": [
+        "22fbe6447d1d67927fbf2a5c071139aeb14f2687131899edfa5398c5220117ce"
+      ]
+    }
+  ]
+}

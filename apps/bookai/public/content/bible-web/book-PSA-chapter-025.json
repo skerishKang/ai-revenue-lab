@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:025",
+  "unit_ordinal": 503,
+  "unit_label": "PSA 25",
+  "book_code": "PSA",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:25:1",
+      "sequence": 14253,
+      "chapter_label": "PSA 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "To you, LORD, I lift up my soul.",
+      "ko": "여호와여 나의 영혼이 주를 우러러 보나이다",
+      "source_text_hash": "d6b3e05ef547a67e7768dd33f7621d79c9e62cc7f0875c769bbce126fedcc4bd",
+      "translation_text_hash": "89caac28ae66f6601db07aa542043b4c2d052a00fa45318d41b1b3ad712df3b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 영혼이 주를 우러러 보나이다"
+      ],
+      "raw_text_hashes": [
+        "89caac28ae66f6601db07aa542043b4c2d052a00fa45318d41b1b3ad712df3b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:2",
+      "sequence": 14254,
+      "chapter_label": "PSA 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "My God, I have trusted in you. Don’t let me be shamed. Don’t let my enemies triumph over me.",
+      "ko": "나의 하나님이여 내가 주께 의지하였사오니 나로 부끄럽지 않게 하시고 나의 원수로 나를 이기어 개가를 부르지 못하게 하소서",
+      "source_text_hash": "8965750103433b7a6f8d4e836c90982bfc954690ab904978839e7b2f8855e35b",
+      "translation_text_hash": "aefa0124f1caa7427a337936d85fcb4cc77cab602645f6bd1a9bd14b53ad16d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 내가 주께 의지하였사오니 나로 부끄럽지 않게 하시고 나의 원수로 나를 이기어 개가를 부르지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "aefa0124f1caa7427a337936d85fcb4cc77cab602645f6bd1a9bd14b53ad16d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:3",
+      "sequence": 14255,
+      "chapter_label": "PSA 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, no one who waits for you will be shamed. They will be shamed who deal treacherously without cause.",
+      "ko": "주를 바라는 자는 수치를 당하지 아니하려니와 무고히 속이는 자는 수치를 당하리이다",
+      "source_text_hash": "93978658fc68ea49be69c4b46c12b97e48dfe86c760113e270bc75bb37ca826a",
+      "translation_text_hash": "26ae23d7138f7486cf716b835882f474a11e3437527a739025a67242aeb6fe8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 바라는 자는 수치를 당하지 아니하려니와 무고히 속이는 자는 수치를 당하리이다"
+      ],
+      "raw_text_hashes": [
+        "26ae23d7138f7486cf716b835882f474a11e3437527a739025a67242aeb6fe8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:4",
+      "sequence": 14256,
+      "chapter_label": "PSA 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "Show me your ways, LORD. Teach me your paths.",
+      "ko": "여호와여 주의 도를 내게 보이시고 주의 길을 내게 가르치소서",
+      "source_text_hash": "4541a1d36405d9a08d5ea66aea987d3a106d1897b666e5c6f20d34a90baaf2bb",
+      "translation_text_hash": "90b21e8c18e409a7ad4f00a7845ee3f6555b33b7a807acf1f0f8a7ad7ff2735d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 도를 내게 보이시고 주의 길을 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "90b21e8c18e409a7ad4f00a7845ee3f6555b33b7a807acf1f0f8a7ad7ff2735d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:5",
+      "sequence": 14257,
+      "chapter_label": "PSA 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Guide me in your truth, and teach me, for you are the God of my salvation. I wait for you all day long.",
+      "ko": "주의 진리로 나를 지도하시고 교훈하소서 주는 내 구원의 하나님이시니 내가 종일 주를 바라나이다",
+      "source_text_hash": "400f260c102abf8edcd53fe30fbb61d15c4403dc81ff14f34398f46b35a3540d",
+      "translation_text_hash": "fc2d53d8147f18e3bd12eb540e67969e44a462f178a322f0932821978281dc0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 진리로 나를 지도하시고 교훈하소서 주는 내 구원의 하나님이시니 내가 종일 주를 바라나이다"
+      ],
+      "raw_text_hashes": [
+        "fc2d53d8147f18e3bd12eb540e67969e44a462f178a322f0932821978281dc0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:6",
+      "sequence": 14258,
+      "chapter_label": "PSA 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "LORD, remember your tender mercies and your loving kindness, for they are from old times.",
+      "ko": "여호와여 주의 긍휼하심과 인자하심이 영원부터 있었사오니 주여 이것을 기억하옵소서",
+      "source_text_hash": "de115d1c4c30bae914e25e6a65ad10bb659fbebb6724b3e92a893c6c6fd4b5b0",
+      "translation_text_hash": "f779abf1431483352dde39f46d992ef06c1c59c3a990597ff7d52681deea6016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 긍휼하심과 인자하심이 영원부터 있었사오니 주여 이것을 기억하옵소서"
+      ],
+      "raw_text_hashes": [
+        "f779abf1431483352dde39f46d992ef06c1c59c3a990597ff7d52681deea6016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:7",
+      "sequence": 14259,
+      "chapter_label": "PSA 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t remember the sins of my youth, nor my transgressions. Remember me according to your loving kindness, for your goodness’ sake, LORD.",
+      "ko": "여호와여 내 소시의 죄와 허물을 기억지 마시고 주의 인자하심을 따라 나를 기억하시되 주의 선하심을 인하여 하옵소서",
+      "source_text_hash": "cecfa4af799caf7be170e95328880d7f37351aa4a99ddeffe7c15d28f5640bf6",
+      "translation_text_hash": "eb61366555959daa450a7f6f6361e1b841e85486fd608a8cb402d2eb7caf2163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 소시의 죄와 허물을 기억지 마시고 주의 인자하심을 따라 나를 기억하시되 주의 선하심을 인하여 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "eb61366555959daa450a7f6f6361e1b841e85486fd608a8cb402d2eb7caf2163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:8",
+      "sequence": 14260,
+      "chapter_label": "PSA 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Good and upright is the LORD, therefore he will instruct sinners in the way.",
+      "ko": "여호와는 선하시고 정직하시니 그러므로 그 도로 죄인을 교훈하시리로다",
+      "source_text_hash": "fdfc9b348458616848f21fd41dc97dac246190ecac296067da6206f7f8a2e24c",
+      "translation_text_hash": "7d39d4084b0e0adb0b29782f9eca707b481a8e2965c976f0db03e32b9c6018e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 선하시고 정직하시니 그러므로 그 도로 죄인을 교훈하시리로다"
+      ],
+      "raw_text_hashes": [
+        "7d39d4084b0e0adb0b29782f9eca707b481a8e2965c976f0db03e32b9c6018e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:9",
+      "sequence": 14261,
+      "chapter_label": "PSA 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "He will guide the humble in justice. He will teach the humble his way.",
+      "ko": "온유한 자를 공의로 지도하심이여 온유한 자에게 그 도를 가르치시리로다",
+      "source_text_hash": "35ea9f232018ec472c513b083ef0446129e09440eadfc34c777e879e8049645b",
+      "translation_text_hash": "18e29cf7389169ddfc6237f902627b4a623dc4992aa51b149c57491f2ad119f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온유한 자를 공의로 지도하심이여 온유한 자에게 그 도를 가르치시리로다"
+      ],
+      "raw_text_hashes": [
+        "18e29cf7389169ddfc6237f902627b4a623dc4992aa51b149c57491f2ad119f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:10",
+      "sequence": 14262,
+      "chapter_label": "PSA 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "All the paths of the LORD are loving kindness and truth to such as keep his covenant and his testimonies.",
+      "ko": "여호와의 모든 길은 그 언약과 증거를 지키는 자에게 인자와 진리로다",
+      "source_text_hash": "0eee21c2e19ced8b32315bab500d56725af7b7aa2f5902447a63d765090d1222",
+      "translation_text_hash": "9d43a5da54152582eb4948e3f45c7c450ea13e3b81a7fcddb904ab2184559f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 모든 길은 그 언약과 증거를 지키는 자에게 인자와 진리로다"
+      ],
+      "raw_text_hashes": [
+        "9d43a5da54152582eb4948e3f45c7c450ea13e3b81a7fcddb904ab2184559f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:11",
+      "sequence": 14263,
+      "chapter_label": "PSA 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "For your name’s sake, LORD, pardon my iniquity, for it is great.",
+      "ko": "여호와여 나의 죄악이 중대하오니 주의 이름을 인하여 사하소서",
+      "source_text_hash": "9177fa4c2befd90a245135364722147104d572e715b4280ad24cada5784e9293",
+      "translation_text_hash": "9a354be0fc53e629594c708296c38a11d00a9b5d7971895b56a08a5aa13aad56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 죄악이 중대하오니 주의 이름을 인하여 사하소서"
+      ],
+      "raw_text_hashes": [
+        "9a354be0fc53e629594c708296c38a11d00a9b5d7971895b56a08a5aa13aad56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:12",
+      "sequence": 14264,
+      "chapter_label": "PSA 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "What man is he who fears the LORD? He shall instruct him in the way that he shall choose.",
+      "ko": "여호와를 경외하는 자 누구뇨 그 택할 길을 저에게 가르치시리로다",
+      "source_text_hash": "5552abb94f3c7589a5281a64a995dd37050908349d2f17b9e0b17bb598b7e04b",
+      "translation_text_hash": "3bcb6b8351a41d6797318b0bc2895b1bfaa545d12e048af366c410568c1bcb63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 자 누구뇨 그 택할 길을 저에게 가르치시리로다"
+      ],
+      "raw_text_hashes": [
+        "3bcb6b8351a41d6797318b0bc2895b1bfaa545d12e048af366c410568c1bcb63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:13",
+      "sequence": 14265,
+      "chapter_label": "PSA 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "His soul will dwell at ease. His offspring will inherit the land.",
+      "ko": "저의 영혼은 평안히 거하고 그 자손은 땅을 상속하리로다",
+      "source_text_hash": "46d9f34c3c0d6fb912702c088a6c33b231767149b981d45190437b95a8f1fa0b",
+      "translation_text_hash": "6fece7af960dee9e9ded76cd5bc9c7ed9eab0254762705eb77e03f0e666d4f1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 영혼은 평안히 거하고 그 자손은 땅을 상속하리로다"
+      ],
+      "raw_text_hashes": [
+        "6fece7af960dee9e9ded76cd5bc9c7ed9eab0254762705eb77e03f0e666d4f1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:14",
+      "sequence": 14266,
+      "chapter_label": "PSA 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "The friendship of the LORD is with those who fear him. He will show them his covenant.",
+      "ko": "여호와의 친밀함이 경외하는 자에게 있음이여 그 언약을 저희에게 보이시리로다",
+      "source_text_hash": "79d159bccc5b5286356e360ba3d3f3032776b84c81326d7c61d97dbd874e850d",
+      "translation_text_hash": "02e8dea76f6fed97c91683eed4a49f35e8450896150d37305fdc6fa63c971594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 친밀함이 경외하는 자에게 있음이여 그 언약을 저희에게 보이시리로다"
+      ],
+      "raw_text_hashes": [
+        "02e8dea76f6fed97c91683eed4a49f35e8450896150d37305fdc6fa63c971594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:15",
+      "sequence": 14267,
+      "chapter_label": "PSA 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "My eyes are ever on the LORD, for he will pluck my feet out of the net.",
+      "ko": "내 눈이 항상 여호와를 앙망함은 내 발을 그물에서 벗어나게 하실 것임이로다",
+      "source_text_hash": "e7d8715e089a82c261b4c53af0552dc36e1fc65ffc7fdb4ade5216658619670f",
+      "translation_text_hash": "7a4b6cf885f736d632bffb51b9a49f69d886d32030bc30d5ed9b51f7d6da0664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈이 항상 여호와를 앙망함은 내 발을 그물에서 벗어나게 하실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "7a4b6cf885f736d632bffb51b9a49f69d886d32030bc30d5ed9b51f7d6da0664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:16",
+      "sequence": 14268,
+      "chapter_label": "PSA 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "Turn to me, and have mercy on me, for I am desolate and afflicted.",
+      "ko": "주여 나는 외롭고 괴롭사오니 내게 돌이키사 나를 긍휼히 여기소서",
+      "source_text_hash": "e3c73b64e1e6109b829b32f7a305c9055ee7ff4ba887e9ac6494f9cd99f642e1",
+      "translation_text_hash": "0306e2c1d92397cab2df1c6ce16021e1367006a290b683bd7486c9d3ed5c1514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 나는 외롭고 괴롭사오니 내게 돌이키사 나를 긍휼히 여기소서"
+      ],
+      "raw_text_hashes": [
+        "0306e2c1d92397cab2df1c6ce16021e1367006a290b683bd7486c9d3ed5c1514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:17",
+      "sequence": 14269,
+      "chapter_label": "PSA 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "The troubles of my heart are enlarged. Oh bring me out of my distresses.",
+      "ko": "내 마음의 근심이 많사오니 나를 곤난에서 끌어 내소서",
+      "source_text_hash": "e8f3540ea0fc0332c3685c69af10aa823b5e20b184fd774277563e104c9d7a62",
+      "translation_text_hash": "9244928a69dd6e2fe3eef80b929271d8029971ec130b7ca13fe5d7051677f95e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음의 근심이 많사오니 나를 곤난에서 끌어 내소서"
+      ],
+      "raw_text_hashes": [
+        "9244928a69dd6e2fe3eef80b929271d8029971ec130b7ca13fe5d7051677f95e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:18",
+      "sequence": 14270,
+      "chapter_label": "PSA 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "Consider my affliction and my travail. Forgive all my sins.",
+      "ko": "나의 곤고와 환난을 보시고 내 모든 죄를 사하소서",
+      "source_text_hash": "d9aeb4f3147e184831e6b6d43f80847bd206ce4452a044865aa2078c87df0453",
+      "translation_text_hash": "a2e5e4c58a328869a2b10ee4b90016d14356d69f09b0fb47391c45e0d30af194",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 곤고와 환난을 보시고 내 모든 죄를 사하소서"
+      ],
+      "raw_text_hashes": [
+        "a2e5e4c58a328869a2b10ee4b90016d14356d69f09b0fb47391c45e0d30af194"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:19",
+      "sequence": 14271,
+      "chapter_label": "PSA 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "Consider my enemies, for they are many. They hate me with cruel hatred.",
+      "ko": "내 원수를 보소서 저희가 많고 나를 심히 미워함이니이다",
+      "source_text_hash": "631df073b5401996e8cf228151200e44a4be8262e3f7fbe8a2bea7bcab569d14",
+      "translation_text_hash": "310613f2bbf6514e2cdb951a34524677ad147b8756432f4c8ebc3e6802d38632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 원수를 보소서 저희가 많고 나를 심히 미워함이니이다"
+      ],
+      "raw_text_hashes": [
+        "310613f2bbf6514e2cdb951a34524677ad147b8756432f4c8ebc3e6802d38632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:20",
+      "sequence": 14272,
+      "chapter_label": "PSA 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "Oh keep my soul, and deliver me. Let me not be disappointed, for I take refuge in you.",
+      "ko": "내 영혼을 지켜 나를 구원하소서 내가 주께 피하오니 수치를 당치 말게 하소서",
+      "source_text_hash": "03c408fca0369d456e7bf2e1d4e8b495b0d8c874eb93639336cf8aa74d9c3e9a",
+      "translation_text_hash": "111305d81e445be614fe43dee05adca8141d8345401c16245c2e2adec83e6eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 지켜 나를 구원하소서 내가 주께 피하오니 수치를 당치 말게 하소서"
+      ],
+      "raw_text_hashes": [
+        "111305d81e445be614fe43dee05adca8141d8345401c16245c2e2adec83e6eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:21",
+      "sequence": 14273,
+      "chapter_label": "PSA 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "Let integrity and uprightness preserve me, for I wait for you.",
+      "ko": "내가 주를 바라오니 성실과 정직으로 나를 보호하소서",
+      "source_text_hash": "96b1105a577e014919a6fdc66d197bdb9fad439f1f5faa9f08920c3ba9a4e2f2",
+      "translation_text_hash": "272c181be65f117107e321f54fd25688bc313e53c890f1e896b89b894886aa05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 바라오니 성실과 정직으로 나를 보호하소서"
+      ],
+      "raw_text_hashes": [
+        "272c181be65f117107e321f54fd25688bc313e53c890f1e896b89b894886aa05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:25:22",
+      "sequence": 14274,
+      "chapter_label": "PSA 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "God, redeem Israel out of all his troubles.",
+      "ko": "하나님이여 이스라엘을 그 모든 환난에서 구속하소서",
+      "source_text_hash": "f034f641ac2dac296eea64ee16dbd5b01fd34e36d39b7d6facee09cec5f8f11e",
+      "translation_text_hash": "483d1c567d8a4ce4914899a8fce6f7c8cd9e3e6572d673e1a30e0d69f18ebc10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 이스라엘을 그 모든 환난에서 구속하소서"
+      ],
+      "raw_text_hashes": [
+        "483d1c567d8a4ce4914899a8fce6f7c8cd9e3e6572d673e1a30e0d69f18ebc10"
+      ]
+    }
+  ]
+}

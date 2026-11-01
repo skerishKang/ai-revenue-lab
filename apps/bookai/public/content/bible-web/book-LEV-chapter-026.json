@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:026",
+  "unit_ordinal": 116,
+  "unit_label": "LEV 26",
+  "book_code": "LEV",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:26:1",
+      "sequence": 3526,
+      "chapter_label": "LEV 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "“‘You shall make for yourselves no idols, and you shall not raise up a carved image or a pillar, and you shall not place any figured stone in your land, to bow down to it; for I am the LORD your God.",
+      "ko": "너희는 자기를 위하여 우상을 만들지 말찌니 목상이나 주상을 세우지 말며 너희 땅에 조각한 석상을 세우고 그에게 경배하지 말라 나는 너희 하나님 여호와임이니라",
+      "source_text_hash": "c9be2741b369b98172f035cd4fba65c81859cada918733f9fb2cdc96a817928e",
+      "translation_text_hash": "73c726ef8249686df9a1062d4d457b61994170c5f827d4fb3e10b535dc592f3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자기를 위하여 우상을 만들지 말찌니 목상이나 주상을 세우지 말며 너희 땅에 조각한 석상을 세우고 그에게 경배하지 말라 나는 너희 하나님 여호와임이니라"
+      ],
+      "raw_text_hashes": [
+        "73c726ef8249686df9a1062d4d457b61994170c5f827d4fb3e10b535dc592f3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:2",
+      "sequence": 3527,
+      "chapter_label": "LEV 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“‘You shall keep my Sabbaths, and have reverence for my sanctuary. I am the LORD.",
+      "ko": "너희는 나의 안식일을 지키며 나의 성소를 공경하라 나는 여호와니라",
+      "source_text_hash": "4bd6a82a6967a1880622fd50d756ebf6a7710b657ac4147368b0002f274e1671",
+      "translation_text_hash": "cc997b12a36768062c0f1eaf1456c44bb90eeeae475b46dcaab68525aab7629f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 안식일을 지키며 나의 성소를 공경하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "cc997b12a36768062c0f1eaf1456c44bb90eeeae475b46dcaab68525aab7629f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:3",
+      "sequence": 3528,
+      "chapter_label": "LEV 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "“‘If you walk in my statutes and keep my commandments, and do them,",
+      "ko": "너희가 나의 규례와 계명을 준행하면",
+      "source_text_hash": "ee44e08ed74e0e533271fc683e57d303cd73a3d0f5874e268fbb36bedb9a5f41",
+      "translation_text_hash": "4d8a55e8d415e4522060095c52e2448217fb336077ddddaed3cce63da7f5cc12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나의 규례와 계명을 준행하면"
+      ],
+      "raw_text_hashes": [
+        "4d8a55e8d415e4522060095c52e2448217fb336077ddddaed3cce63da7f5cc12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:4",
+      "sequence": 3529,
+      "chapter_label": "LEV 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "then I will give you your rains in their season, and the land shall yield its increase, and the trees of the field shall yield their fruit.",
+      "ko": "내가 너희 비를 그 시후에 주리니 땅은 그 산물을 내고 밭의 수목은 열매를 맺을찌라",
+      "source_text_hash": "e75dcac32530f193cf548b2a19f55657cc29788eeba1c1eb3a00b9219077b9a0",
+      "translation_text_hash": "4b77e70d154fa77d9490fee96cce7a0fb1213f3c8a24ba12916b2ec51f956681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 비를 그 시후에 주리니 땅은 그 산물을 내고 밭의 수목은 열매를 맺을찌라"
+      ],
+      "raw_text_hashes": [
+        "4b77e70d154fa77d9490fee96cce7a0fb1213f3c8a24ba12916b2ec51f956681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:5",
+      "sequence": 3530,
+      "chapter_label": "LEV 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "Your threshing shall continue until the vintage, and the vintage shall continue until the sowing time. You shall eat your bread to the full, and dwell in your land safely.",
+      "ko": "너희의 타작은 포도 딸 때까지 미치며 너희의 포도 따는 것은 파종할 때까지 미치리니 너희가 음식을 배불리 먹고 너희 땅에 안전히 거하리라",
+      "source_text_hash": "5920e493f7831bd35eef9fd81bdd07dfb39b22b3067b5b34c8a23dcdb780de19",
+      "translation_text_hash": "1738e596c8bea42bb70768fec7b8b6479bec5e0458c4139ff9e8ff26948dc543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 타작은 포도 딸 때까지 미치며 너희의 포도 따는 것은 파종할 때까지 미치리니 너희가 음식을 배불리 먹고 너희 땅에 안전히 거하리라"
+      ],
+      "raw_text_hashes": [
+        "1738e596c8bea42bb70768fec7b8b6479bec5e0458c4139ff9e8ff26948dc543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:6",
+      "sequence": 3531,
+      "chapter_label": "LEV 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "“‘I will give peace in the land, and you shall lie down, and no one will make you afraid. I will remove evil animals out of the land, neither shall the sword go through your land.",
+      "ko": "내가 그 땅에 평화를 줄 것인즉 너희가 누우나 너희를 두렵게 할 자가 없을 것이며 내가 사나운 짐승을 그 땅에서 제할 것이요 칼이 너희 땅에 두루 행하지 아니할 것이며",
+      "source_text_hash": "232562b8c49c98d6db854c56a5fdb9007f63b0d15e79060d4f42805788d3dfd2",
+      "translation_text_hash": "a5c190c6510582b57896bbb85e0dc71ec4b76d7fb3137eb5b5f27eeb82226f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 땅에 평화를 줄 것인즉 너희가 누우나 너희를 두렵게 할 자가 없을 것이며 내가 사나운 짐승을 그 땅에서 제할 것이요 칼이 너희 땅에 두루 행하지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a5c190c6510582b57896bbb85e0dc71ec4b76d7fb3137eb5b5f27eeb82226f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:7",
+      "sequence": 3532,
+      "chapter_label": "LEV 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "You shall chase your enemies, and they shall fall before you by the sword.",
+      "ko": "너희가 대적을 쫓으리니 그들이 너희 앞에서 칼에 엎드러질 것이라",
+      "source_text_hash": "08f49f19af1127d74e8c06c9845a5d7d9f8ada8684873e35fcec00156df0df4a",
+      "translation_text_hash": "2ec959488426643dcb414dbd3cfe75e4992b2044136596a1cc82c72cbeaf35cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 대적을 쫓으리니 그들이 너희 앞에서 칼에 엎드러질 것이라"
+      ],
+      "raw_text_hashes": [
+        "2ec959488426643dcb414dbd3cfe75e4992b2044136596a1cc82c72cbeaf35cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:8",
+      "sequence": 3533,
+      "chapter_label": "LEV 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "Five of you shall chase a hundred, and a hundred of you shall chase ten thousand; and your enemies shall fall before you by the sword.",
+      "ko": "너희 다섯이 백을 쫓고 너희 백이 만을 쫓으리니 너희 대적들이 너희 앞에서 칼에 엎드러질 것이며",
+      "source_text_hash": "9522eb79a40bcc8a807aaba5d5f45c799ce0650350c0ae0ac3c0d5737a16d5d6",
+      "translation_text_hash": "644e827d5d1b2c45e72657f7c309205ce8eef05d69afd56647bea4e57daab462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 다섯이 백을 쫓고 너희 백이 만을 쫓으리니 너희 대적들이 너희 앞에서 칼에 엎드러질 것이며"
+      ],
+      "raw_text_hashes": [
+        "644e827d5d1b2c45e72657f7c309205ce8eef05d69afd56647bea4e57daab462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:9",
+      "sequence": 3534,
+      "chapter_label": "LEV 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "“‘I will have respect for you, make you fruitful, multiply you, and will establish my covenant with you.",
+      "ko": "내가 너희를 권고하여 나의 너희와 세운 언약을 이행하여 너희로 번성케 하고 너희로 창대케 할것이며",
+      "source_text_hash": "80ede409b625eeaf7d4db896b5a5dc28ab71f2d9c2fa69e7764f980904fabcdd",
+      "translation_text_hash": "ae475524bee459a3127ace188d931f432f2010138355c11badac931cc4a4709e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 권고하여 나의 너희와 세운 언약을 이행하여 너희로 번성케 하고 너희로 창대케 할것이며"
+      ],
+      "raw_text_hashes": [
+        "ae475524bee459a3127ace188d931f432f2010138355c11badac931cc4a4709e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:10",
+      "sequence": 3535,
+      "chapter_label": "LEV 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "You shall eat old supplies long kept, and you shall move out the old because of the new.",
+      "ko": "너희는 오래 두었던 묵은 곡식을 먹다가 새 곡식을 인하여 묵은 곡식을 치우게 될 것이며",
+      "source_text_hash": "00f3d2176aefa4bbdcffcdc6e43f662390b138b190790a3a972e7f129e8d369b",
+      "translation_text_hash": "d73d50154879bb163aafa585342de34a97e0d9e1af1f155ed79cb1b1710afbd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 오래 두었던 묵은 곡식을 먹다가 새 곡식을 인하여 묵은 곡식을 치우게 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "d73d50154879bb163aafa585342de34a97e0d9e1af1f155ed79cb1b1710afbd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:11",
+      "sequence": 3536,
+      "chapter_label": "LEV 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "I will set my tent among you, and my soul won’t abhor you.",
+      "ko": "내가 내 장막을 너희 중에 세우리니 내 마음이 너희를 싫어하지 아니할 것이며",
+      "source_text_hash": "06e27a456bce811c7c4e0fa9f3e8f3e35757b45cb79f4d422886250a5339b1b1",
+      "translation_text_hash": "f468e64bd8aa339bdd78fdb9878df95c41a635e46c993cbf11e2bc76af50a2a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 장막을 너희 중에 세우리니 내 마음이 너희를 싫어하지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f468e64bd8aa339bdd78fdb9878df95c41a635e46c993cbf11e2bc76af50a2a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:12",
+      "sequence": 3537,
+      "chapter_label": "LEV 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "I will walk among you, and will be your God, and you will be my people.",
+      "ko": "나는 너희 중에 행하여 너희 하나님이 되고 너희는 나의 백성이 될 것이니라",
+      "source_text_hash": "85691f7f8a588acc400fc8e1391c120ffa3a905b54b217d502e8f9e1496fe516",
+      "translation_text_hash": "bf325ea3c7178bc762b625882b511815172290612d3c07d5ab293e0c4d0cc4da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희 중에 행하여 너희 하나님이 되고 너희는 나의 백성이 될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "bf325ea3c7178bc762b625882b511815172290612d3c07d5ab293e0c4d0cc4da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:13",
+      "sequence": 3538,
+      "chapter_label": "LEV 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "I am the LORD your God, who brought you out of the land of Egypt, that you should not be their slaves. I have broken the bars of your yoke, and made you walk upright.",
+      "ko": "나는 너희를 애굽 땅에서 인도하여 내어 그 종된 것을 면케 한 너희 하나님 여호와라 내가 너희 멍에 빗장목을 깨뜨리고 너희로 바로 서서 걷게 하였느니라",
+      "source_text_hash": "00b2221e6c98814daf6e5b4f5f069bd05d18c7c289c4f3fe63f1030e77cfdbb3",
+      "translation_text_hash": "8661180c8e637068d888996eda6213a0456ecd3d990a46e5c50e5814edf1447d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희를 애굽 땅에서 인도하여 내어 그 종된 것을 면케 한 너희 하나님 여호와라 내가 너희 멍에 빗장목을 깨뜨리고 너희로 바로 서서 걷게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8661180c8e637068d888996eda6213a0456ecd3d990a46e5c50e5814edf1447d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:14",
+      "sequence": 3539,
+      "chapter_label": "LEV 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "“‘But if you will not listen to me, and will not do all these commandments,",
+      "ko": "그러나 너희가 내게 청종치 아니하여 이 모든 명령을 준행치 아니하며",
+      "source_text_hash": "963dc612b424a146860db06123a9a67e7ad4cc100436af5e3b1c6127e6a2c69d",
+      "translation_text_hash": "c66d627264c5fbf753a1b3e036d6800232961eeaa549726a2fa719a13aa078f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 내게 청종치 아니하여 이 모든 명령을 준행치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "c66d627264c5fbf753a1b3e036d6800232961eeaa549726a2fa719a13aa078f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:15",
+      "sequence": 3540,
+      "chapter_label": "LEV 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "and if you shall reject my statutes, and if your soul abhors my ordinances, so that you will not do all my commandments, but break my covenant,",
+      "ko": "나의 규례를 멸시하며 마음에 나의 법도를 싫어하여 나의 모든 계명을 준행치 아니하며 나의 언약을 배반할찐대",
+      "source_text_hash": "9cbfdf2db6cafb8ef7a7be0dd13a7890f3b541b1a824a44317ba48bb6436b85b",
+      "translation_text_hash": "82c558ab524d3f447fe6a1af87f35d6f6f59a2a58811f7385dc5775e7c7d8791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 규례를 멸시하며 마음에 나의 법도를 싫어하여 나의 모든 계명을 준행치 아니하며 나의 언약을 배반할찐대"
+      ],
+      "raw_text_hashes": [
+        "82c558ab524d3f447fe6a1af87f35d6f6f59a2a58811f7385dc5775e7c7d8791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:16",
+      "sequence": 3541,
+      "chapter_label": "LEV 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "I also will do this to you: I will appoint terror over you, even consumption and fever, that shall consume the eyes, and make the soul to pine away. You will sow your seed in vain, for your enemies will eat it.",
+      "ko": "내가 이같이 너희에게 행하리니 곧 내가 너희에게 놀라운 재앙을 내려 폐병과 열병으로 눈이 어둡고 생명이 쇠약하게 할것이요 너희의 파종은 헛되리니 너희의 대적이 그것을 먹을 것임이며",
+      "source_text_hash": "ab843b844561f6f93bedde51b81687def2e96b13de569bbd8a0bb4dd61696cd1",
+      "translation_text_hash": "c4426ec55dff50dd549595a47c8628f8c81a43aecdd6207dace33d3553a0e4f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이같이 너희에게 행하리니 곧 내가 너희에게 놀라운 재앙을 내려 폐병과 열병으로 눈이 어둡고 생명이 쇠약하게 할것이요 너희의 파종은 헛되리니 너희의 대적이 그것을 먹을 것임이며"
+      ],
+      "raw_text_hashes": [
+        "c4426ec55dff50dd549595a47c8628f8c81a43aecdd6207dace33d3553a0e4f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:17",
+      "sequence": 3542,
+      "chapter_label": "LEV 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "I will set my face against you, and you will be struck before your enemies. Those who hate you will rule over you; and you will flee when no one pursues you.",
+      "ko": "내가 너희를 치리니 너희가 너희 대적에게 패할 것이요 너희를 미워하는 자가 너희를 다스릴 것이며 너희는 쫓는 자가 없어도 도망하리라",
+      "source_text_hash": "07102810a45494336736c57a7b05d3f8e3a8c4b49d795e328bbd28f359f79740",
+      "translation_text_hash": "8c50d99215e5b51dbb5e22a221788bc5b0f453e471a912d9ac7dd32fe10e8b9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 치리니 너희가 너희 대적에게 패할 것이요 너희를 미워하는 자가 너희를 다스릴 것이며 너희는 쫓는 자가 없어도 도망하리라"
+      ],
+      "raw_text_hashes": [
+        "8c50d99215e5b51dbb5e22a221788bc5b0f453e471a912d9ac7dd32fe10e8b9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:18",
+      "sequence": 3543,
+      "chapter_label": "LEV 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "“‘If you in spite of these things will not listen to me, then I will chastise you seven times more for your sins.",
+      "ko": "너희가 그렇게 되어도 내게 청종치 아니하면 너희 죄를 인하여 내가 너희를 칠배나 더 징치할찌라",
+      "source_text_hash": "0291bc6fe351d667606c45def2287d552ddd8cae3c468f751d1fcb35f757dd92",
+      "translation_text_hash": "66c5e5061aff39fe6a29d26daf03dea7aae6855f90a097c399cce0d145a91e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그렇게 되어도 내게 청종치 아니하면 너희 죄를 인하여 내가 너희를 칠배나 더 징치할찌라"
+      ],
+      "raw_text_hashes": [
+        "66c5e5061aff39fe6a29d26daf03dea7aae6855f90a097c399cce0d145a91e58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:19",
+      "sequence": 3544,
+      "chapter_label": "LEV 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "I will break the pride of your power, and I will make your sky like iron, and your soil like bronze.",
+      "ko": "내가 너희의 세력을 인한 교만을 꺾고 너희 하늘로 철과 같게 하며 너희 땅으로 놋과 같게 하리니",
+      "source_text_hash": "3e9f5f70b14ee4dc7ce37c431d6db07716dc7bf3e4dc2c8e1d412da2f11e9ecc",
+      "translation_text_hash": "e88ef9250e10f2d0c55af36d85707d2d04e4fe5140d07fd36748d1150ae019f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 세력을 인한 교만을 꺾고 너희 하늘로 철과 같게 하며 너희 땅으로 놋과 같게 하리니"
+      ],
+      "raw_text_hashes": [
+        "e88ef9250e10f2d0c55af36d85707d2d04e4fe5140d07fd36748d1150ae019f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:20",
+      "sequence": 3545,
+      "chapter_label": "LEV 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Your strength will be spent in vain; for your land won’t yield its increase, neither will the trees of the land yield their fruit.",
+      "ko": "너희 수고가 헛될찌라 땅은 그 산물을 내지 아니하고 땅의 나무는 그 열매를 맺지 아니하리라",
+      "source_text_hash": "7e73bcc6e8f71b836eecd956b7cdcf2c5b08d1982685f2cd1e9827b0f0434629",
+      "translation_text_hash": "f3e624656fdc6e969778c4b137032c5a76f6e467ac0840a59febee606e306e46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 수고가 헛될찌라 땅은 그 산물을 내지 아니하고 땅의 나무는 그 열매를 맺지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f3e624656fdc6e969778c4b137032c5a76f6e467ac0840a59febee606e306e46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:21",
+      "sequence": 3546,
+      "chapter_label": "LEV 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "“‘If you walk contrary to me, and won’t listen to me, then I will bring seven times more plagues on you according to your sins.",
+      "ko": "너희가 나를 거스려 내게 청종치 않을찐대 내가 너희 죄대로 너희에게 칠배나 더 재앙을 내릴 것이라",
+      "source_text_hash": "467cbd23f1f668fdfd403e6279c87c9e6e9d56d886098286201664fb05c88043",
+      "translation_text_hash": "16a6a3def12a95944be5d95ce04ed3fadd7f0eb0161ed09fdb7a5f97e2c795ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 거스려 내게 청종치 않을찐대 내가 너희 죄대로 너희에게 칠배나 더 재앙을 내릴 것이라"
+      ],
+      "raw_text_hashes": [
+        "16a6a3def12a95944be5d95ce04ed3fadd7f0eb0161ed09fdb7a5f97e2c795ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:22",
+      "sequence": 3547,
+      "chapter_label": "LEV 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "I will send the wild animals among you, which will rob you of your children, destroy your livestock, and make you few in number. Your roads will become desolate.",
+      "ko": "내가 들짐승을 너희 중에 보내리니 그것들이 너희 자녀를 움키고 너희 육축을 멸하며 너희 수효를 감소케 할찌라 너희 도로가 황폐하리라",
+      "source_text_hash": "1c6e00f9820345c9a76782dd7f8ae8d3afaf271f78683b0f2dbfb1d7554805cc",
+      "translation_text_hash": "cb546d834d62ba73efbba9edce9795214cb7c400f1e1ff0258852ae9599ab2c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들짐승을 너희 중에 보내리니 그것들이 너희 자녀를 움키고 너희 육축을 멸하며 너희 수효를 감소케 할찌라 너희 도로가 황폐하리라"
+      ],
+      "raw_text_hashes": [
+        "cb546d834d62ba73efbba9edce9795214cb7c400f1e1ff0258852ae9599ab2c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:23",
+      "sequence": 3548,
+      "chapter_label": "LEV 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "“‘If by these things you won’t be turned back to me, but will walk contrary to me,",
+      "ko": "이런 일을 당하여도 너희가 내게로 돌아오지 아니하고 나를 대항할찐대",
+      "source_text_hash": "838812b5d3e3bb904f420cffacb81d526850876399b334f3d877dc590861f2ab",
+      "translation_text_hash": "7b6f570fd0a05570ffb5d0308a1fee4d21696784e46ef0bafa433c2d4aef846b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일을 당하여도 너희가 내게로 돌아오지 아니하고 나를 대항할찐대"
+      ],
+      "raw_text_hashes": [
+        "7b6f570fd0a05570ffb5d0308a1fee4d21696784e46ef0bafa433c2d4aef846b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:24",
+      "sequence": 3549,
+      "chapter_label": "LEV 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "then I will also walk contrary to you; and I will strike you, even I, seven times for your sins.",
+      "ko": "나 곧 나도 너희에게 대항하여 너희 죄를 인하여 너희를 칠배나 더 칠찌라",
+      "source_text_hash": "e9b3ec8737749577eabb6dbc9c7e3fff59d378135bb70420104d4e67dd35f1db",
+      "translation_text_hash": "dd40be4870d3bd24f47ca825ed85e0c9159d3063b6100654129d98de049f5122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 나도 너희에게 대항하여 너희 죄를 인하여 너희를 칠배나 더 칠찌라"
+      ],
+      "raw_text_hashes": [
+        "dd40be4870d3bd24f47ca825ed85e0c9159d3063b6100654129d98de049f5122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:25",
+      "sequence": 3550,
+      "chapter_label": "LEV 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "I will bring a sword upon you that will execute the vengeance of the covenant. You will be gathered together within your cities, and I will send the pestilence among you. You will be delivered into the hand of the enemy.",
+      "ko": "내가 칼을 너희에게로 가져다가 너희의 배약한 원수를 갚을 것이며 너희가 성읍에 모일찌라도 너희 중에 염병을 보내고 너희를 대적의 손에 붙일 것이며",
+      "source_text_hash": "93ab254af41f03266e4b264bba352b47f8a15765391df33f4c5c0bcceb2b1f38",
+      "translation_text_hash": "f1d17dea0f5eec25e956f1c6570f3651aec5676cb4079f983bcb058fe1eb1127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 칼을 너희에게로 가져다가 너희의 배약한 원수를 갚을 것이며 너희가 성읍에 모일찌라도 너희 중에 염병을 보내고 너희를 대적의 손에 붙일 것이며"
+      ],
+      "raw_text_hashes": [
+        "f1d17dea0f5eec25e956f1c6570f3651aec5676cb4079f983bcb058fe1eb1127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:26",
+      "sequence": 3551,
+      "chapter_label": "LEV 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "When I break your staff of bread, ten women shall bake your bread in one oven, and they shall deliver your bread again by weight. You shall eat, and not be satisfied.",
+      "ko": "내가 너희 의뢰하는 양식을 끊을 때에 열 여인이 한 화덕에서 너희 떡을 구워 저울에 달아 주리니 너희가 먹어도 배부르지 아니하리라",
+      "source_text_hash": "2fc537e714d30cf81b51c21049fc0a0cd1d1dae3b711eab529f0a8b52e46b6b1",
+      "translation_text_hash": "46065777ce0f8bb8d2a5572814eccc4b330431afb35289a20492b4deccf42387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 의뢰하는 양식을 끊을 때에 열 여인이 한 화덕에서 너희 떡을 구워 저울에 달아 주리니 너희가 먹어도 배부르지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "46065777ce0f8bb8d2a5572814eccc4b330431afb35289a20492b4deccf42387"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:27",
+      "sequence": 3552,
+      "chapter_label": "LEV 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "“‘If you in spite of this won’t listen to me, but walk contrary to me,",
+      "ko": "너희가 이같이 될찌라도 내게 청종치 아니하고 내게 대항할찐대",
+      "source_text_hash": "9d8631eef3e1059526191c3b966df5f339042a5d3bd8b1032db4068df88c9d0b",
+      "translation_text_hash": "4c57fad1d356aa47cf97ea6359139387e59e9f9707080def13cdb12a7dd919c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이같이 될찌라도 내게 청종치 아니하고 내게 대항할찐대"
+      ],
+      "raw_text_hashes": [
+        "4c57fad1d356aa47cf97ea6359139387e59e9f9707080def13cdb12a7dd919c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:28",
+      "sequence": 3553,
+      "chapter_label": "LEV 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "then I will walk contrary to you in wrath. I will also chastise you seven times for your sins.",
+      "ko": "내가 진노로 너희에게 대항하되 너희 죄를 인하여 칠배나 더 징책하리니",
+      "source_text_hash": "91b3c3454c4a672a28506a20aea00d7e832c972cb10c897280cc412f0d655a7b",
+      "translation_text_hash": "00abe07fca593babf33bc847e51f23b6518b1dfc21287d803eb23f08ecd54169",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진노로 너희에게 대항하되 너희 죄를 인하여 칠배나 더 징책하리니"
+      ],
+      "raw_text_hashes": [
+        "00abe07fca593babf33bc847e51f23b6518b1dfc21287d803eb23f08ecd54169"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:29",
+      "sequence": 3554,
+      "chapter_label": "LEV 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "You will eat the flesh of your sons, and you will eat the flesh of your daughters.",
+      "ko": "너희가 아들의 고기를 먹을 것이요 딸의 고기를 먹을 것이며",
+      "source_text_hash": "9ca040440863a8d05adb3150b347c38a07da52047be70d953c013bcbcc624abe",
+      "translation_text_hash": "e790da8b500270504b0b25cc2738e2bb58105a83cbdd369473965ef34935d621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아들의 고기를 먹을 것이요 딸의 고기를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "e790da8b500270504b0b25cc2738e2bb58105a83cbdd369473965ef34935d621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:30",
+      "sequence": 3555,
+      "chapter_label": "LEV 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "I will destroy your high places, and cut down your incense altars, and cast your dead bodies upon the bodies of your idols; and my soul will abhor you.",
+      "ko": "내가 너희의 산당을 헐며 너희의 태양 주상을 찍어 넘기며 너희 시체를 파상한 우상 위에 던지고 내 마음이 너희를 싫어할 것이며",
+      "source_text_hash": "d04f20577ed0ea2ee34fec23be9be5733cdf517cbd1a79d7ecd399ec3f816d0f",
+      "translation_text_hash": "7879af54d0ea0ea8375e189656d864b4e731fff83184b9c09f80cffee33246df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 산당을 헐며 너희의 태양 주상을 찍어 넘기며 너희 시체를 파상한 우상 위에 던지고 내 마음이 너희를 싫어할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7879af54d0ea0ea8375e189656d864b4e731fff83184b9c09f80cffee33246df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:31",
+      "sequence": 3556,
+      "chapter_label": "LEV 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "I will lay your cities waste, and will bring your sanctuaries to desolation. I will not take delight in the sweet fragrance of your offerings.",
+      "ko": "내가 너희 성읍으로 황폐케 하고 너희 성소들로 황량케 할것이요 너희의 향기로운 향을 흠향치 아니하고",
+      "source_text_hash": "11d9afdb6c6f6a0f31cf8b44a08d7f4466fa530123e39ce20eeec18352731f35",
+      "translation_text_hash": "9cbb3ef2b68278353d3a8ca577ce5b67dee78e8725c9cbd3f698a2f685b33973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 성읍으로 황폐케 하고 너희 성소들로 황량케 할것이요 너희의 향기로운 향을 흠향치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "9cbb3ef2b68278353d3a8ca577ce5b67dee78e8725c9cbd3f698a2f685b33973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:32",
+      "sequence": 3557,
+      "chapter_label": "LEV 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "I will bring the land into desolation, and your enemies who dwell in it will be astonished at it.",
+      "ko": "그 땅을 황무케 하리니 거기 거하는 너희 대적들이 그것을 인하여 놀랄 것이며",
+      "source_text_hash": "de9b7ae03f19c46760656a520a41648ca428ad1341ce434d7180f120ac98479d",
+      "translation_text_hash": "88fa176265be7b0ac79f93ecf306dc6a587700a372fb19cf31b0ea04cefb060a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 황무케 하리니 거기 거하는 너희 대적들이 그것을 인하여 놀랄 것이며"
+      ],
+      "raw_text_hashes": [
+        "88fa176265be7b0ac79f93ecf306dc6a587700a372fb19cf31b0ea04cefb060a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:33",
+      "sequence": 3558,
+      "chapter_label": "LEV 26",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 33
+        }
+      ],
+      "en": "I will scatter you among the nations, and I will draw out the sword after you. Your land will be a desolation, and your cities shall be a waste.",
+      "ko": "내가 너희를 열방 중에 흩을 것이요 내가 칼을 빼어 너희를 따르게 하리니 너희의 땅이 황무하며 너희의 성읍이 황폐하리라",
+      "source_text_hash": "e33f121a3f0380e835ffe9cd47c304b3df700ba8b893da6b59605c502a306125",
+      "translation_text_hash": "917b4e39454352ded51ea157e798b2196f529e029795e774dad185f41a40d022",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 열방 중에 흩을 것이요 내가 칼을 빼어 너희를 따르게 하리니 너희의 땅이 황무하며 너희의 성읍이 황폐하리라"
+      ],
+      "raw_text_hashes": [
+        "917b4e39454352ded51ea157e798b2196f529e029795e774dad185f41a40d022"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:34",
+      "sequence": 3559,
+      "chapter_label": "LEV 26",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 34
+        }
+      ],
+      "en": "Then the land will enjoy its Sabbaths as long as it lies desolate and you are in your enemies’ land. Even then the land will rest and enjoy its Sabbaths.",
+      "ko": "너희가 대적의 땅에 거할 동안에 너희 본토가 황무할 것이므로 땅이 안식을 누릴 것이라 그 때에 땅이 쉬어 안식을 누리리니",
+      "source_text_hash": "19cf2084df38c63438b9649a32cea0270e841786d9949ca8f1ecabd2b3c70304",
+      "translation_text_hash": "0d8585bc4d030704561c838c7981fd65b0c6666af767ee08ca72ded39cd42c35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 대적의 땅에 거할 동안에 너희 본토가 황무할 것이므로 땅이 안식을 누릴 것이라 그 때에 땅이 쉬어 안식을 누리리니"
+      ],
+      "raw_text_hashes": [
+        "0d8585bc4d030704561c838c7981fd65b0c6666af767ee08ca72ded39cd42c35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:35",
+      "sequence": 3560,
+      "chapter_label": "LEV 26",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 35
+        }
+      ],
+      "en": "As long as it lies desolate it shall have rest, even the rest which it didn’t have in your Sabbaths when you lived on it.",
+      "ko": "너희가 그 땅에 거한 동안 너희 안식시에 쉼을 얻지 못하던 땅이 그 황무할 동안에는 쉬리라",
+      "source_text_hash": "92ac9965d174759474afd76bf706a325055dc95ef50f03670a7240aca4845c1e",
+      "translation_text_hash": "7190c65ecf38fe087a765e9cf7edc90b068e6ad1e25141df9b343ec00f86f5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 땅에 거한 동안 너희 안식시에 쉼을 얻지 못하던 땅이 그 황무할 동안에는 쉬리라"
+      ],
+      "raw_text_hashes": [
+        "7190c65ecf38fe087a765e9cf7edc90b068e6ad1e25141df9b343ec00f86f5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:36",
+      "sequence": 3561,
+      "chapter_label": "LEV 26",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 36
+        }
+      ],
+      "en": "“‘As for those of you who are left, I will send a faintness into their hearts in the lands of their enemies. The sound of a driven leaf will put them to flight; and they shall flee, as one flees from the sword. They will fall when no one pursues.",
+      "ko": "너희 남은 자에게는 그 대적의 땅에서 내가 그들의 마음으로 약하게 하리니 그들은 바람에 불린 잎사귀 소리에도 놀라 도망하기를 칼을 피하여 도망하듯 할것이요 쫓는 자가 없어도 엎드러질 것이라",
+      "source_text_hash": "350ce8bfee7fcaff9e7ace19cc458dea9bde5df05e94b291ec5b8f0a19b788af",
+      "translation_text_hash": "fbf2a73c5ccadebfa7262988537b7c13658e93e47644908a32ff8fc7008c62d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 남은 자에게는 그 대적의 땅에서 내가 그들의 마음으로 약하게 하리니 그들은 바람에 불린 잎사귀 소리에도 놀라 도망하기를 칼을 피하여 도망하듯 할것이요 쫓는 자가 없어도 엎드러질 것이라"
+      ],
+      "raw_text_hashes": [
+        "fbf2a73c5ccadebfa7262988537b7c13658e93e47644908a32ff8fc7008c62d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:37",
+      "sequence": 3562,
+      "chapter_label": "LEV 26",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 37
+        }
+      ],
+      "en": "They will stumble over one another, as it were before the sword, when no one pursues. You will have no power to stand before your enemies.",
+      "ko": "그들은 쫓는 자가 없어도 칼 앞에 있음 같이 서로 천답하여 넘어지리니 너희가 대적을 당할 힘이 없을 것이요",
+      "source_text_hash": "4bdad3d14e494f37851fd82e5a765a0adbeeab4ea8b6d7f752d2f485dd8d3c26",
+      "translation_text_hash": "8a765e9b8662e4b4f8cce62c9ccdcefa2532985da146de6392fe3e11045bbe6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 쫓는 자가 없어도 칼 앞에 있음 같이 서로 천답하여 넘어지리니 너희가 대적을 당할 힘이 없을 것이요"
+      ],
+      "raw_text_hashes": [
+        "8a765e9b8662e4b4f8cce62c9ccdcefa2532985da146de6392fe3e11045bbe6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:38",
+      "sequence": 3563,
+      "chapter_label": "LEV 26",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 38
+        }
+      ],
+      "en": "You will perish among the nations. The land of your enemies will eat you up.",
+      "ko": "너희가 열방 중에서 망하리니 너희 대적의 땅이 너희를 삼킬 것이라",
+      "source_text_hash": "1733beb82afb187f232f07c448c7572b37d9a38f8675e3afe15ebc48b144fc16",
+      "translation_text_hash": "5905c3428b1805bb95fbbdb0fa461afe240bb074d525a0323ffb6658c08952ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 열방 중에서 망하리니 너희 대적의 땅이 너희를 삼킬 것이라"
+      ],
+      "raw_text_hashes": [
+        "5905c3428b1805bb95fbbdb0fa461afe240bb074d525a0323ffb6658c08952ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:39",
+      "sequence": 3564,
+      "chapter_label": "LEV 26",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 39
+        }
+      ],
+      "en": "Those of you who are left will pine away in their iniquity in your enemies’ lands; and also in the iniquities of their fathers they shall pine away with them.",
+      "ko": "너희 남은 자가 너희 대적의 땅에서 자기의 죄로 인하여 쇠잔하며 그 열조의 죄로 인하여 그 열조 같이 쇠잔하리라",
+      "source_text_hash": "fb4884090fa8aa89d1a775bc12ec2226a3c2c4b2e7ca8460d2c434d67e5aca77",
+      "translation_text_hash": "e31a2933ee2066a966cadd30ee940f8c283a58faaf7cba9f822329a263a97ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 남은 자가 너희 대적의 땅에서 자기의 죄로 인하여 쇠잔하며 그 열조의 죄로 인하여 그 열조 같이 쇠잔하리라"
+      ],
+      "raw_text_hashes": [
+        "e31a2933ee2066a966cadd30ee940f8c283a58faaf7cba9f822329a263a97ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:40",
+      "sequence": 3565,
+      "chapter_label": "LEV 26",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 40
+        }
+      ],
+      "en": "“‘If they confess their iniquity and the iniquity of their fathers, in their trespass which they trespassed against me; and also that because they walked contrary to me,",
+      "ko": "그들이 자기 죄와 그 열조의 죄와 및 그들이 나를 거스린 허물을 자복하고 또 자기들이 나를 대항하였으므로",
+      "source_text_hash": "fd1a27b008853e2f97d4619ed224a7ebf4fc2c106c48534541b5c8cda10879e5",
+      "translation_text_hash": "7ccf6d1fb313cf13701a2e650fd3343cebb54307b14bae4349af2e3b8dac832a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 자기 죄와 그 열조의 죄와 및 그들이 나를 거스린 허물을 자복하고 또 자기들이 나를 대항하였으므로"
+      ],
+      "raw_text_hashes": [
+        "7ccf6d1fb313cf13701a2e650fd3343cebb54307b14bae4349af2e3b8dac832a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:41",
+      "sequence": 3566,
+      "chapter_label": "LEV 26",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 41
+        }
+      ],
+      "en": "I also walked contrary to them, and brought them into the land of their enemies; if then their uncircumcised heart is humbled, and they then accept the punishment of their iniquity,",
+      "ko": "나도 그들을 대항하여 그 대적의 땅으로 끌어 갔음을 깨닫고 그 할례 받지 아니한 마음이 낮아져서 그 죄악의 형벌을 순히 받으면",
+      "source_text_hash": "653f3027b92138fad765d75de2f80920233c99217b58a8c16addd7aac5741f87",
+      "translation_text_hash": "f347964a5285e654772729b2d0ee46d2d360ad9457da41e5ab3477c377a47ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 그들을 대항하여 그 대적의 땅으로 끌어 갔음을 깨닫고 그 할례 받지 아니한 마음이 낮아져서 그 죄악의 형벌을 순히 받으면"
+      ],
+      "raw_text_hashes": [
+        "f347964a5285e654772729b2d0ee46d2d360ad9457da41e5ab3477c377a47ab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:42",
+      "sequence": 3567,
+      "chapter_label": "LEV 26",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 42
+        }
+      ],
+      "en": "then I will remember my covenant with Jacob, my covenant with Isaac, and also my covenant with Abraham; and I will remember the land.",
+      "ko": "내가 야곱과 맺은 내 언약과 이삭과 맺은 내 언약을 생각하며 아브라함과 맺은 내 언약을 생각하고 그 땅을 권고하리라",
+      "source_text_hash": "6c120cadc59d4a630281862590345b0ec92a33834cd1a9e274d3484049126737",
+      "translation_text_hash": "4cc0eb8aea4f484a7674e7cb190adea121037859488d1293185b9dc0281d0d5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 야곱과 맺은 내 언약과 이삭과 맺은 내 언약을 생각하며 아브라함과 맺은 내 언약을 생각하고 그 땅을 권고하리라"
+      ],
+      "raw_text_hashes": [
+        "4cc0eb8aea4f484a7674e7cb190adea121037859488d1293185b9dc0281d0d5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:43",
+      "sequence": 3568,
+      "chapter_label": "LEV 26",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 43
+        }
+      ],
+      "en": "The land also will be left by them, and will enjoy its Sabbaths while it lies desolate without them; and they will accept the punishment of their iniquity because they rejected my ordinances, and their soul abhorred my statutes.",
+      "ko": "그들이 나의 법도를 싫어하며 나의 규례를 멸시하였으므로 그 땅을 떠나서 사람이 없을 때에 땅이 황폐하여 안식을 누릴 것이요 그들은 자기 죄악으로 형벌을 순히 받으리라",
+      "source_text_hash": "c15eaa699b5697f589109dbf5ad5c5480e512d55c23f16c6a57aca718e81957d",
+      "translation_text_hash": "c271a5bde1e7b734afd6d2b52e73cbff18e9954ad77710e5df651e44f8ae9915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나의 법도를 싫어하며 나의 규례를 멸시하였으므로 그 땅을 떠나서 사람이 없을 때에 땅이 황폐하여 안식을 누릴 것이요 그들은 자기 죄악으로 형벌을 순히 받으리라"
+      ],
+      "raw_text_hashes": [
+        "c271a5bde1e7b734afd6d2b52e73cbff18e9954ad77710e5df651e44f8ae9915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:44",
+      "sequence": 3569,
+      "chapter_label": "LEV 26",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 44
+        }
+      ],
+      "en": "Yet for all that, when they are in the land of their enemies, I will not reject them, neither will I abhor them, to destroy them utterly and to break my covenant with them; for I am the LORD their God.",
+      "ko": "그런즉 그들이 대적의 땅에 거할 때에 내가 싫어 버리지 아니하며 미워하지 아니하며 아주 멸하지 아니하여 나의 그들과 세운 언약을 폐하지 아니하리니 나는 여호와 그들의 하나님이 됨이라",
+      "source_text_hash": "e0a71c0ccb8d176a0425e7fa07d6230744752c40e3ae9f2749de77ed7298bb02",
+      "translation_text_hash": "0e853207d2ad74d6461680f03664c6d017fe4c834d1d19a91043fd52116d53f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 그들이 대적의 땅에 거할 때에 내가 싫어 버리지 아니하며 미워하지 아니하며 아주 멸하지 아니하여 나의 그들과 세운 언약을 폐하지 아니하리니 나는 여호와 그들의 하나님이 됨이라"
+      ],
+      "raw_text_hashes": [
+        "0e853207d2ad74d6461680f03664c6d017fe4c834d1d19a91043fd52116d53f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:45",
+      "sequence": 3570,
+      "chapter_label": "LEV 26",
+      "verse_label": "45",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 45
+        }
+      ],
+      "en": "But I will for their sake remember the covenant of their ancestors, whom I brought out of the land of Egypt in the sight of the nations, that I might be their God. I am the LORD.’”",
+      "ko": "내가 그들의 하나님이 되기 위하여 열방의 목전에 애굽에서 인도하여 낸 그들의 열조와 맺은 언약을 그들을 위하여 기억하리라 나는 여호와니라",
+      "source_text_hash": "65d8e3cfeaded98dfa2ff3649004b30d655353686ba766b6a61ffe51e2e8b451",
+      "translation_text_hash": "4c18d7328e458ace2c129d5126b9cffb3e08cbc346bc501376fad6d11bc728b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 하나님이 되기 위하여 열방의 목전에 애굽에서 인도하여 낸 그들의 열조와 맺은 언약을 그들을 위하여 기억하리라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "4c18d7328e458ace2c129d5126b9cffb3e08cbc346bc501376fad6d11bc728b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:26:46",
+      "sequence": 3571,
+      "chapter_label": "LEV 26",
+      "verse_label": "46",
+      "locator": {
+        "book": "LEV",
+        "chapter": 26,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 26,
+          "verse": 46
+        }
+      ],
+      "en": "These are the statutes, ordinances, and laws, which the LORD made between him and the children of Israel in Mount Sinai by Moses.",
+      "ko": "이상은 여호와께서 시내산에서 자기와 이스라엘 자손 사이에 모세로 세우신 규례와 법도와 율법이니라",
+      "source_text_hash": "a9f677115ff5e287d4569ddcf1646d2478dc48ce041ba0b15373db913280d81c",
+      "translation_text_hash": "fcd583ff47d1f15bbc7ec2d490b166fa30fdfbd6fb89c1c15497b08d67950a23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 여호와께서 시내산에서 자기와 이스라엘 자손 사이에 모세로 세우신 규례와 법도와 율법이니라"
+      ],
+      "raw_text_hashes": [
+        "fcd583ff47d1f15bbc7ec2d490b166fa30fdfbd6fb89c1c15497b08d67950a23"
+      ]
+    }
+  ]
+}

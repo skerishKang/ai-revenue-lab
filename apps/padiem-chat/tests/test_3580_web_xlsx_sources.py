@@ -9,6 +9,8 @@ import asyncio
 import base64
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
+import hashlib
+import json
 from pathlib import Path
 from zipfile import ZipFile
 import sys
@@ -21,7 +23,11 @@ from test_workspace_storage import MemoryMetadata, MemoryR2
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
-from app.workspace_storage import WorkspaceDocumentStore, WorkspaceStorageError
+from app.file_lane import FileLaneClient
+from app.workspace_storage import (
+    MAX_WEB_XLSX_BYTES, WEB_XLSX_INLINE_MAX_BYTES, XLSX_MEDIA_TYPE,
+    WorkspaceDocumentStore, WorkspaceStorageError,
+)
 
 ORIGIN = "https://chat.example.test"
 OWNER = "usr_web_xlsx_owner"
@@ -254,3 +260,238 @@ async def test_actual_existing_d1_schema_sql_and_r2_bytes_across_store_recreatio
         document_id=file["document_id"],
     ) is None
     conn.close()
+
+
+LANE_ORIGIN = "https://lane.example.test"
+LANE_SECRET = "web-xlsx-lane-ticket-secret-0123456789abcdef"
+LANE_FILE_ID = "file_" + "a" * 32
+UPLOAD_TICKET = "/api/claw/office/web-sources/upload-ticket"
+
+
+def register_path(file_id=LANE_FILE_ID):
+    return "/api/claw/office/web-sources/" + file_id + "/register"
+
+
+class FakeFileLane:
+    """Owner-scoped COM2 lane double: tickets, /meta and a gated /raw stream."""
+
+    def __init__(self):
+        self.rows = {}
+        self.gate = None
+        self.raw_opens = 0
+
+    def add(self, body, *, owner=OWNER, name="big.xlsx", kind="xlsx",
+            file_id=LANE_FILE_ID, size_bytes=None, sha256=None):
+        row = {"owner": owner, "file_id": file_id, "name": name, "kind": kind,
+               "size_bytes": len(body) if size_bytes is None else size_bytes,
+               "sha256": sha256 or hashlib.sha256(body).hexdigest()}
+        self.rows[file_id] = (row, body)
+        return row
+
+    def client(self):
+        return FileLaneClient(
+            LANE_ORIGIN, LANE_SECRET, transport=httpx.MockTransport(self._handle))
+
+    @staticmethod
+    def _claim(request):
+        raw = request.headers.get("x-padiem-file-ticket")
+        if not raw:
+            return None
+        padded = raw + "=" * (-len(raw) % 4)
+        try:
+            claim = json.loads(base64.urlsafe_b64decode(padded))
+        except (ValueError, UnicodeError):
+            return None
+        return claim if isinstance(claim, dict) else None
+
+    async def _raw(self, body):
+        self.raw_opens += 1
+        if self.gate is None:
+            yield body
+            return
+        yield body[:32]
+        await self.gate.wait()
+        yield body[32:]
+
+    def _handle(self, request):
+        claim = self._claim(request)
+        parts = request.url.path.strip("/").split("/")
+        found = self.rows.get(parts[1]) if len(parts) >= 2 else None
+        if claim is None or found is None or found[0]["owner"] != claim.get("user_id"):
+            return httpx.Response(404, json={"ok": False, "error": {"code": "not_found"}})
+        row, body = found
+        if parts[-1] == "meta":
+            return httpx.Response(200, json={
+                key: row[key] for key in ("file_id", "name", "kind", "size_bytes", "sha256")
+            })
+        if parts[-1] == "raw":
+            return httpx.Response(200, content=self._raw(body),
+                                  headers={"Content-Type": XLSX_MEDIA_TYPE})
+        return httpx.Response(404, json={"ok": False, "error": {"code": "not_found"}})
+
+
+async def asgi_messages(app, settings, path, *, owner=OWNER):
+    """Drive the ASGI app directly: httpx's ASGITransport buffers the body."""
+    messages = asyncio.Queue()
+    idle = asyncio.Event()
+    received = []
+
+    async def receive():
+        # Starlette keeps listening for a disconnect while streaming; returning
+        # request messages in a tight loop would starve the event loop.
+        if not received:
+            received.append(True)
+            return {"type": "http.request", "body": b"", "more_body": False}
+        await idle.wait()
+        return {"type": "http.disconnect"}
+
+    async def send(message):
+        await messages.put(message)
+
+    headers = [(b"host", b"chat.example.test"), (b"origin", ORIGIN.encode())]
+    if owner:
+        token = create_session_token(settings, owner)
+        headers.append((b"cookie", (SESSION_COOKIE + "=" + token).encode()))
+    scope = {
+        "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
+        "method": "GET", "scheme": "https", "path": path, "raw_path": path.encode(),
+        "query_string": b"", "headers": headers, "server": (b"chat.example.test".decode(), 443),
+        "client": ("127.0.0.1", 1), "root_path": "", "state": {},
+    }
+    task = asyncio.create_task(app(scope, receive, send))
+    return task, messages
+
+
+@pytest.mark.asyncio
+async def test_large_original_ticket_register_list_and_streamed_owner_download():
+    lane = FakeFileLane()
+    source = workbook()
+    row = lane.add(source)
+    app, settings, meta, r2, store = harness()
+    app.state.file_lane_client = lane.client()
+
+    ticket = await request(app, settings, method="POST", path=UPLOAD_TICKET,
+                           payload={"size_bytes": row["size_bytes"]})
+    assert ticket.status_code == 200, ticket.text
+    assert ticket.json()["upload_url"] == LANE_ORIGIN + "/files"
+    assert ticket.json()["max_bytes"] == row["size_bytes"]
+    assert ticket.json()["contract_max_bytes"] == MAX_WEB_XLSX_BYTES
+    assert ticket.json()["register_path"] == "/api/claw/office/web-sources/{file_id}/register"
+    assert "X-Padiem-File-Ticket" in ticket.json()["headers"]
+
+    registered = await request(app, settings, method="POST",
+                               path=register_path(), payload={})
+    assert registered.status_code == 201, registered.text
+    body = registered.json()
+    file = body["file"]
+    assert body["p01_approved"] is False and body["processing_started"] is False
+    assert file["file_id"] == LANE_FILE_ID
+    assert file["filename"] == row["name"]
+    assert file["source_sha256"] == row["sha256"]
+    assert file["size_bytes"] == row["size_bytes"]
+    assert r2.objects == {}
+    assert len(meta.rows) == 1
+    assert meta.rows[file["document_id"]].object_key.endswith("/filelane:" + LANE_FILE_ID)
+    assert meta.rows[file["document_id"]].user_id == OWNER
+
+    listing = await request(app, settings)
+    assert listing.status_code == 200
+    assert listing.json()["files"] == [file]
+
+    async def must_not_materialize(**kwargs):
+        raise AssertionError("a lane original is never read through Chat")
+    store.get_web_xlsx = must_not_materialize
+
+    lane.gate = asyncio.Event()
+    task, messages = await asgi_messages(
+        app, settings, "/api/claw/office/web-sources/" + file["document_id"] + "/download")
+    start = await asyncio.wait_for(messages.get(), timeout=10)
+    assert start["type"] == "http.response.start" and start["status"] == 200
+    headers = {key.decode().lower(): value.decode() for key, value in start["headers"]}
+    assert headers["content-length"] == str(row["size_bytes"])
+    assert "attachment" in headers["content-disposition"]
+    # The lane withholds the rest of the body until this test releases it, so
+    # the head arriving here proves Chat streams instead of buffering the file.
+    first = await asyncio.wait_for(messages.get(), timeout=10)
+    assert first["type"] == "http.response.body"
+    assert first["body"] == source[:32] and first["more_body"] is True
+    lane.gate.set()
+    received = bytearray(first["body"])
+    while True:
+        message = await asyncio.wait_for(messages.get(), timeout=10)
+        received.extend(message.get("body", b""))
+        if not message.get("more_body"):
+            break
+    await asyncio.wait_for(task, timeout=10)
+    assert bytes(received) == source
+    assert lane.raw_opens == 1
+
+
+@pytest.mark.asyncio
+async def test_lane_source_is_owner_scoped_and_unreadable_without_the_lane():
+    lane = FakeFileLane()
+    lane.add(workbook())
+    app, settings, meta, r2, store = harness()
+    app.state.file_lane_client = lane.client()
+    registered = await request(app, settings, method="POST", path=register_path(), payload={})
+    assert registered.status_code == 201, registered.text
+    doc_id = registered.json()["file"]["document_id"]
+
+    assert (await request(app, settings, owner=FOREIGN)).json()["files"] == []
+    foreign = await request(app, settings, owner=FOREIGN,
+                            path="/api/claw/office/web-sources/" + doc_id + "/download")
+    assert foreign.status_code == 404
+    foreign_register = await request(app, settings, owner=FOREIGN, method="POST",
+                                     path=register_path(), payload={})
+    assert foreign_register.status_code == 404
+
+    app.state.file_lane_client = FileLaneClient(LANE_ORIGIN, None)
+    unavailable = await request(app, settings,
+                                path="/api/claw/office/web-sources/" + doc_id + "/download")
+    assert unavailable.status_code == 503
+    assert (await request(app, settings, method="POST", path=UPLOAD_TICKET,
+                          payload={"size_bytes": 5})).status_code == 503
+    assert (await request(app, settings, method="POST",
+                          path=register_path(), payload={})).status_code == 503
+    assert await store.get_web_xlsx_metadata(
+        tenant_id="owner:" + OWNER, owner_id=OWNER, workspace_id="owner:" + OWNER,
+        document_id=doc_id,
+    ) is not None
+
+
+@pytest.mark.asyncio
+async def test_sizes_above_the_released_ceiling_are_refused_before_any_row():
+    lane = FakeFileLane()
+    lane.add(b"x" * 8, size_bytes=MAX_WEB_XLSX_BYTES + 1, sha256="b" * 64)
+    lane.add(b"PK", kind="pdf", file_id="file_" + "b" * 32)
+    app, settings, meta, r2, store = harness()
+    app.state.file_lane_client = lane.client()
+
+    over = await request(app, settings, method="POST", path=UPLOAD_TICKET,
+                         payload={"size_bytes": MAX_WEB_XLSX_BYTES + 1})
+    assert over.status_code == 413 and over.json()["error"]["code"] == "web_xlsx_too_large"
+    zero = await request(app, settings, method="POST", path=UPLOAD_TICKET, payload={"size_bytes": 0})
+    assert zero.status_code == 422
+    extra = await request(app, settings, method="POST", path=UPLOAD_TICKET,
+                          payload={"size_bytes": 5, "owner_id": OWNER})
+    assert extra.status_code == 422
+    assert (await request(app, settings, method="POST", path=UPLOAD_TICKET,
+                          payload={"size_bytes": "5"})).status_code == 422
+
+    first = await request(app, settings, method="POST", path=register_path(), payload={})
+    assert first.status_code == 413 and first.json()["error"]["code"] == "web_xlsx_too_large"
+    wrong_kind = await request(app, settings, method="POST",
+                               path=register_path("file_" + "b" * 32), payload={})
+    assert wrong_kind.status_code == 422
+    missing = await request(app, settings, method="POST",
+                            path=register_path("file_" + "c" * 32), payload={})
+    assert missing.status_code == 404
+    assert meta.rows == {}
+
+    inline = await request(app, settings, method="POST", payload={
+        "name": "huge.xlsx",
+        "base64": base64.b64encode(b"x" * (WEB_XLSX_INLINE_MAX_BYTES + 1)).decode(),
+    })
+    assert inline.status_code == 413
+    assert inline.json()["error"]["code"] == "web_xlsx_too_large"
+    assert meta.rows == {} and r2.objects == {}

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:029",
+  "unit_ordinal": 465,
+  "unit_label": "JOB 29",
+  "book_code": "JOB",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:29:1",
+      "sequence": 13534,
+      "chapter_label": "JOB 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "Job again took up his parable, and said,",
+      "ko": "욥이 또 비사를 들어 가로되",
+      "source_text_hash": "cf61fbb01e530690ab54dedc829a209443e58c47652a6aaf241546e6dd2fee22",
+      "translation_text_hash": "43ad9c6c58c1bd3786173c40f3f1a44d813387f48032e3268dc61b2838abf486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 또 비사를 들어 가로되"
+      ],
+      "raw_text_hashes": [
+        "43ad9c6c58c1bd3786173c40f3f1a44d813387f48032e3268dc61b2838abf486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:2",
+      "sequence": 13535,
+      "chapter_label": "JOB 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "“Oh that I were as in the months of old, as in the days when God watched over me;",
+      "ko": "내가 이전 달과 하나님이 나를 보호하시던 날에 지내던 것 같이 되었으면",
+      "source_text_hash": "7d45f5c5f7de313bc47cd5de4303065b0bf2dbd9de42def7e26a95413ffb905a",
+      "translation_text_hash": "12482c3fa82cbbfaa83eb34c07f166718b92e5db27f6ab64d30cacbaf3f578b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이전 달과 하나님이 나를 보호하시던 날에 지내던 것 같이 되었으면"
+      ],
+      "raw_text_hashes": [
+        "12482c3fa82cbbfaa83eb34c07f166718b92e5db27f6ab64d30cacbaf3f578b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:3",
+      "sequence": 13536,
+      "chapter_label": "JOB 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "when his lamp shone on my head, and by his light I walked through darkness,",
+      "ko": "그 때는 그의 등불이 내 머리에 비취었고 내가 그 광명을 힘입어 흑암에 행하였었느니라",
+      "source_text_hash": "49edaa6a16b6ad99a78fc045a4ec17f3e6fe7bd43700b5e2c0282a88fab551bb",
+      "translation_text_hash": "5c31f8fd808da07501a7a3acdfd5d4f29816304ed454b40759669a86eee23ac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때는 그의 등불이 내 머리에 비취었고 내가 그 광명을 힘입어 흑암에 행하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "5c31f8fd808da07501a7a3acdfd5d4f29816304ed454b40759669a86eee23ac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:4",
+      "sequence": 13537,
+      "chapter_label": "JOB 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "as I was in my prime, when the friendship of God was in my tent,",
+      "ko": "나의 강장하던 날과 같이 지내었으면 그 때는 하나님의 우정이 내 장막 위에 있었으며",
+      "source_text_hash": "299a9d0f41efe0bb08eb1e11418eda9f1a1514964b0d1ae7f7f76cb13bdf6cda",
+      "translation_text_hash": "33921096ce420fa31d7d05c1686f042cac8070f8f9956b55cad744aab2c3fe51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 강장하던 날과 같이 지내었으면 그 때는 하나님의 우정이 내 장막 위에 있었으며"
+      ],
+      "raw_text_hashes": [
+        "33921096ce420fa31d7d05c1686f042cac8070f8f9956b55cad744aab2c3fe51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:5",
+      "sequence": 13538,
+      "chapter_label": "JOB 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "when the Almighty was yet with me, and my children were around me,",
+      "ko": "그 때는 전능자가 오히려 나와 함께 계셨으며 나의 자녀들이 나를 둘러 있었으며",
+      "source_text_hash": "566beab41a0b6874d5e9ad1a2ada6613f991b617fb6c8e24700d61cfb11af765",
+      "translation_text_hash": "4a99d05a4796ae850204bce3570ab3f3ecacabed1eb4aa7ef576f144d352d1d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때는 전능자가 오히려 나와 함께 계셨으며 나의 자녀들이 나를 둘러 있었으며"
+      ],
+      "raw_text_hashes": [
+        "4a99d05a4796ae850204bce3570ab3f3ecacabed1eb4aa7ef576f144d352d1d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:6",
+      "sequence": 13539,
+      "chapter_label": "JOB 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "when my steps were washed with butter, and the rock poured out streams of oil for me,",
+      "ko": "뻐터가 내 발자취를 씻기며 반석이 나를 위하여 기름시내를 흘려 내었으며",
+      "source_text_hash": "cacd73c261c417dc5a6df473da950779b28c75f4166f04e449529f14b728e99e",
+      "translation_text_hash": "3e362a7811e31901b7a74adf181bacca61aaf82f72dad24e878f0b86c5a1bfae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뻐터가 내 발자취를 씻기며 반석이 나를 위하여 기름시내를 흘려 내었으며"
+      ],
+      "raw_text_hashes": [
+        "3e362a7811e31901b7a74adf181bacca61aaf82f72dad24e878f0b86c5a1bfae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:7",
+      "sequence": 13540,
+      "chapter_label": "JOB 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "when I went out to the city gate, when I prepared my seat in the street.",
+      "ko": "그 때는 내가 나가서 성문에 이르기도 하며 내 자리를 거리에 베풀기도 하였었느니라",
+      "source_text_hash": "1e00f6860d16f5ee258f596c98e6dc852af5996a5839defb40d84abfe37e095f",
+      "translation_text_hash": "b4b18c9d86bf6d21b505099faf8767054275b8b11a7f9951168bb7499f310534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때는 내가 나가서 성문에 이르기도 하며 내 자리를 거리에 베풀기도 하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "b4b18c9d86bf6d21b505099faf8767054275b8b11a7f9951168bb7499f310534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:8",
+      "sequence": 13541,
+      "chapter_label": "JOB 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "The young men saw me and hid themselves. The aged rose up and stood.",
+      "ko": "나를 보고 소년들은 숨으며 노인들은 일어나서 서며",
+      "source_text_hash": "7a04055cecd372dbb06ae0f9a1470b6e1ba1e4d05a36a17b33cf5ee7971b1a20",
+      "translation_text_hash": "a027ec19396c7c64f459f402c7041a5669106614218946f4a44d57e6ca0a683e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보고 소년들은 숨으며 노인들은 일어나서 서며"
+      ],
+      "raw_text_hashes": [
+        "a027ec19396c7c64f459f402c7041a5669106614218946f4a44d57e6ca0a683e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:9",
+      "sequence": 13542,
+      "chapter_label": "JOB 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "The princes refrained from talking, and laid their hand on their mouth.",
+      "ko": "방백들은 말을 참고 손으로 입을 가리우며",
+      "source_text_hash": "7c54468dc13a3ab4a9bca16d870f642ae2385fec105e2811546bcae7e8c84f54",
+      "translation_text_hash": "648b0737fdf7f5af4e8022b7fe36b8eafb375e2f56c0afbc9cf1915c443a7955",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들은 말을 참고 손으로 입을 가리우며"
+      ],
+      "raw_text_hashes": [
+        "648b0737fdf7f5af4e8022b7fe36b8eafb375e2f56c0afbc9cf1915c443a7955"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:10",
+      "sequence": 13543,
+      "chapter_label": "JOB 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "The voice of the nobles was hushed, and their tongue stuck to the roof of their mouth.",
+      "ko": "귀인들은 소리를 금하니 그 혀가 입 천장에 붙었었느니라",
+      "source_text_hash": "f30aba0a5ecae99332ad14b686297e3da78b9360f406f14731b3215926c95571",
+      "translation_text_hash": "bcf82e08b3373437bace38594677855c706282bc91f22c57eb9a4e5ffa053cb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀인들은 소리를 금하니 그 혀가 입 천장에 붙었었느니라"
+      ],
+      "raw_text_hashes": [
+        "bcf82e08b3373437bace38594677855c706282bc91f22c57eb9a4e5ffa053cb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:11",
+      "sequence": 13544,
+      "chapter_label": "JOB 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "For when the ear heard me, then it blessed me, and when the eye saw me, it commended me,",
+      "ko": "귀가 들은즉 나를 위하여 축복하고 눈이 본즉 나를 위하여 증거하였었나니",
+      "source_text_hash": "45a472ae95a49530f03c8b45b0df58ac699b9d0306a2709f207a54054e354082",
+      "translation_text_hash": "e25de1f22419dfb2f931f7327f186415ac2e65c717ae65b552ee76c21597f1af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀가 들은즉 나를 위하여 축복하고 눈이 본즉 나를 위하여 증거하였었나니"
+      ],
+      "raw_text_hashes": [
+        "e25de1f22419dfb2f931f7327f186415ac2e65c717ae65b552ee76c21597f1af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:12",
+      "sequence": 13545,
+      "chapter_label": "JOB 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "because I delivered the poor who cried, and the fatherless also, who had no one to help him,",
+      "ko": "이는 내가 부르짖는 빈민과 도와줄 자 없는 고아를 건졌음이라",
+      "source_text_hash": "f0f687bf6812619e3f42117f9dd9acd80dd7a2c5eaed18886a2174c168894a2c",
+      "translation_text_hash": "3e680e2d7916cc737ef4cc1b3dffa53116b100e9f78c160878d88f15c41c1af3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 부르짖는 빈민과 도와줄 자 없는 고아를 건졌음이라"
+      ],
+      "raw_text_hashes": [
+        "3e680e2d7916cc737ef4cc1b3dffa53116b100e9f78c160878d88f15c41c1af3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:13",
+      "sequence": 13546,
+      "chapter_label": "JOB 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "the blessing of him who was ready to perish came on me, and I caused the widow’s heart to sing for joy.",
+      "ko": "망하게 된 자도 나를 위하여 복을 빌었으며 과부의 마음이 나로 인하여 기뻐 노래하였었느니라",
+      "source_text_hash": "efe18af9ca6fca9a335652235141599304b8fbb93a0e28b1eb0e8e8d2e8dcb4f",
+      "translation_text_hash": "fa81339e681987c258efd160945f3efe5ccc7c138ee8a61f963ec339eecb0e84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "망하게 된 자도 나를 위하여 복을 빌었으며 과부의 마음이 나로 인하여 기뻐 노래하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "fa81339e681987c258efd160945f3efe5ccc7c138ee8a61f963ec339eecb0e84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:14",
+      "sequence": 13547,
+      "chapter_label": "JOB 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "I put on righteousness, and it clothed me. My justice was as a robe and a diadem.",
+      "ko": "내가 의로 옷을 삼아 입었으며 나의 공의는 도포와 면류관 같았었느니라",
+      "source_text_hash": "30045b1b67ffc204c243161e30871f5ae2a4edc3e8b4adcd10e40ea637af9949",
+      "translation_text_hash": "39eefda5b29f7c846bb9f35a9cb04d5697b5befe483216ee1f451e177e728017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 의로 옷을 삼아 입었으며 나의 공의는 도포와 면류관 같았었느니라"
+      ],
+      "raw_text_hashes": [
+        "39eefda5b29f7c846bb9f35a9cb04d5697b5befe483216ee1f451e177e728017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:15",
+      "sequence": 13548,
+      "chapter_label": "JOB 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "I was eyes to the blind, and feet to the lame.",
+      "ko": "나는 소경의 눈도 되고 절뚝발이의 발도 되고",
+      "source_text_hash": "e3dd1f5430caac382f655dfa9ca7559cb134d1c92051f0634055de3338dcc4f3",
+      "translation_text_hash": "44e271de54e3b189c6067a3f3fe4aa3e42cee1e7f6bf348fb61239f3cd0872e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 소경의 눈도 되고 절뚝발이의 발도 되고"
+      ],
+      "raw_text_hashes": [
+        "44e271de54e3b189c6067a3f3fe4aa3e42cee1e7f6bf348fb61239f3cd0872e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:16",
+      "sequence": 13549,
+      "chapter_label": "JOB 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "I was a father to the needy. I researched the cause of him whom I didn’t know.",
+      "ko": "빈궁한 자의 아비도 되며 생소한 자의 일을 사실하여 주었으며",
+      "source_text_hash": "3454cdbd7b55882a278462f3c1acebff3dfbdb4b5501aba89666321d90458a74",
+      "translation_text_hash": "3ab6401ae107a19524d79c9b9e8ddf5f3ecea1aa79ca2a7e67c77be09c529ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈궁한 자의 아비도 되며 생소한 자의 일을 사실하여 주었으며"
+      ],
+      "raw_text_hashes": [
+        "3ab6401ae107a19524d79c9b9e8ddf5f3ecea1aa79ca2a7e67c77be09c529ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:17",
+      "sequence": 13550,
+      "chapter_label": "JOB 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "I broke the jaws of the unrighteous and plucked the prey out of his teeth.",
+      "ko": "불의한 자의 어금니를 꺾고 그 잇사이에서 겁탈한 물건을 빼어 내었었느니라",
+      "source_text_hash": "796859ca103977bcc1dc18e03a75da6c1a12165be1b6f619560169841794f45a",
+      "translation_text_hash": "f9790216bb31c431dde20f4b28a684a6149a560e0993fe3f07e750162ca9415c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의한 자의 어금니를 꺾고 그 잇사이에서 겁탈한 물건을 빼어 내었었느니라"
+      ],
+      "raw_text_hashes": [
+        "f9790216bb31c431dde20f4b28a684a6149a560e0993fe3f07e750162ca9415c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:18",
+      "sequence": 13551,
+      "chapter_label": "JOB 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "Then I said, ‘I will die in my own house, I will count my days as the sand.",
+      "ko": "내가 스스로 말하기를 나는 내 보금자리에서 선종하리라 나의 날은 모래 같이 많은 것이라",
+      "source_text_hash": "181167543a92698cf725d523b2f70b232f0392e2e9efd2c6c437521d5c9ab67f",
+      "translation_text_hash": "2a19d01dcca2894d9f2f701b00d299766dd83e46fcb8871db4860ae36e55f090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 스스로 말하기를 나는 내 보금자리에서 선종하리라 나의 날은 모래 같이 많은 것이라"
+      ],
+      "raw_text_hashes": [
+        "2a19d01dcca2894d9f2f701b00d299766dd83e46fcb8871db4860ae36e55f090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:19",
+      "sequence": 13552,
+      "chapter_label": "JOB 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "My root is spread out to the waters. The dew lies all night on my branch.",
+      "ko": "내 뿌리는 물로 뻗어나가고 내 가지는 밤이 맟도록 이슬에 젖으며",
+      "source_text_hash": "c4deb244af95813bbde7fa87d5498bee4cc39ae5056eab2214d661a183919584",
+      "translation_text_hash": "6a7f4b358cdbd8557558617c94f3013a105c71f4751497872384eb2eb03b05a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 뿌리는 물로 뻗어나가고 내 가지는 밤이 맟도록 이슬에 젖으며"
+      ],
+      "raw_text_hashes": [
+        "6a7f4b358cdbd8557558617c94f3013a105c71f4751497872384eb2eb03b05a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:20",
+      "sequence": 13553,
+      "chapter_label": "JOB 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "My glory is fresh in me. My bow is renewed in my hand.’",
+      "ko": "내 영광은 내게 새로와지고 내 활은 내 손에서 날로 강하여지느니라 하였었노라",
+      "source_text_hash": "0a2b13678333f9301dc0598f22aa92fd0e7f871cf5b584d2c317a50f89d3cfd4",
+      "translation_text_hash": "f3a415831303de4ce96626ee1f4ead761e3c937ffa862f82617873f42f491953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영광은 내게 새로와지고 내 활은 내 손에서 날로 강하여지느니라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "f3a415831303de4ce96626ee1f4ead761e3c937ffa862f82617873f42f491953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:21",
+      "sequence": 13554,
+      "chapter_label": "JOB 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "“Men listened to me, waited, and kept silence for my counsel.",
+      "ko": "무리는 내 말을 들으며 나의 가르치기를 잠잠히 기다리다가",
+      "source_text_hash": "e0882c0b311dad1bf4ae8b404b176d8c61a6f1c5647cb28572fd0fa04b3cdb7d",
+      "translation_text_hash": "998325076260ba66933fc58ec5fa14d5702661817338d50dbf549f5b880bd277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리는 내 말을 들으며 나의 가르치기를 잠잠히 기다리다가"
+      ],
+      "raw_text_hashes": [
+        "998325076260ba66933fc58ec5fa14d5702661817338d50dbf549f5b880bd277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:22",
+      "sequence": 13555,
+      "chapter_label": "JOB 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "After my words they didn’t speak again. My speech fell on them.",
+      "ko": "내가 말한 후에 그들이 말을 내지 못하였었나니 나의 말이 그들에게 이슬 같이 됨이니라",
+      "source_text_hash": "5528200322f26244fd0b6343b8f1020c877c7a57e7527de00e68533251c97395",
+      "translation_text_hash": "405bddaa5b75263322d3092dfc6a11bb8fa0ff81bd84c825e2f460cefebcc13a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말한 후에 그들이 말을 내지 못하였었나니 나의 말이 그들에게 이슬 같이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "405bddaa5b75263322d3092dfc6a11bb8fa0ff81bd84c825e2f460cefebcc13a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:23",
+      "sequence": 13556,
+      "chapter_label": "JOB 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "They waited for me as for the rain. Their mouths drank as with the spring rain.",
+      "ko": "그들이 나 바라기를 비 같이 하였으며 입을 벌리기를 늦은 비 기다리듯 하였으므로",
+      "source_text_hash": "b172c4e1d49c04fa05f1f6e5012d2083064272451f52424e2310e238297b0463",
+      "translation_text_hash": "c2010d5747b9e3bc4318fdebc3c48c0d6dc2a4d8b2be978448f7571bde25ccbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나 바라기를 비 같이 하였으며 입을 벌리기를 늦은 비 기다리듯 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "c2010d5747b9e3bc4318fdebc3c48c0d6dc2a4d8b2be978448f7571bde25ccbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:24",
+      "sequence": 13557,
+      "chapter_label": "JOB 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "I smiled on them when they had no confidence. They didn’t reject the light of my face.",
+      "ko": "그들이 의지 없을 때에 내가 함소하여 동정하면 그들이 나의 얼굴 빛을 무색하게 아니하였었느니라",
+      "source_text_hash": "1bf0304a69e2563551c1454898c5cd89324afa9929a1350b17d9f382fc89837d",
+      "translation_text_hash": "6571d1ec3f6f3f74694672d5d6da2b492e7023fc0c50a0c5ca28a15d49529197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 의지 없을 때에 내가 함소하여 동정하면 그들이 나의 얼굴 빛을 무색하게 아니하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "6571d1ec3f6f3f74694672d5d6da2b492e7023fc0c50a0c5ca28a15d49529197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:29:25",
+      "sequence": 13558,
+      "chapter_label": "JOB 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "I chose out their way, and sat as chief. I lived as a king in the army, as one who comforts the mourners.",
+      "ko": "내가 그들의 길을 택하고 으뜸으로 앉았었나니 왕이 군중에 거함도 같았고 애곡하는 자를 위로하는 사람도 같았었느니라",
+      "source_text_hash": "7529b27ab050bbac28028ed402000e9d5ae39bdc9d3e8bb090b969039f57e486",
+      "translation_text_hash": "659073e81c65d0b2aebfce6524a6e8f97037da8ffec86f5f5073dece08fbf64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 길을 택하고 으뜸으로 앉았었나니 왕이 군중에 거함도 같았고 애곡하는 자를 위로하는 사람도 같았었느니라"
+      ],
+      "raw_text_hashes": [
+        "659073e81c65d0b2aebfce6524a6e8f97037da8ffec86f5f5073dece08fbf64f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+
+/* ===== StoryMemory v3.3.0 — Today Exact Reading Timeline ===== */
+.today-thread-list{display:grid;gap:8px}
+.today-thread-card.sm-exact-thread{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:15px 16px 14px;border:1px solid rgba(48,42,34,.10);background:rgba(255,255,255,.46)}
+.today-thread-card.sm-exact-thread::before{content:"";position:absolute;left:0;bottom:0;height:2px;width:var(--sm-progress,0%);background:#b8734f;opacity:.7}
+.sm-thread-main{min-width:0;display:grid;gap:5px;text-align:left}
+.sm-thread-kicker{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font:700 7px/1 var(--sans);letter-spacing:.11em;color:#9d8b7b}
+.sm-thread-kicker b{font-weight:700;color:#a45f3f}
+.sm-thread-main strong{font:500 17px/1.2 var(--serif);color:#29251f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm-thread-preview{font:400 10px/1.45 var(--sans);color:#746d64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:720px}
+.sm-thread-meta{display:flex;gap:8px;flex-wrap:wrap;font:600 7px/1.2 var(--sans);letter-spacing:.07em;color:#9a9188}
+.sm-thread-arrow{font-size:17px;color:#9a6a51}
+@media(max-width:700px){.today-thread-card.sm-exact-thread{padding:13px 12px}.sm-thread-preview{max-width:68vw}.sm-thread-main strong{font-size:15px}}

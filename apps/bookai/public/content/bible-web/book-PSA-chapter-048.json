@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:048",
+  "unit_ordinal": 526,
+  "unit_label": "PSA 48",
+  "book_code": "PSA",
+  "chapter_number": 48,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:48:1",
+      "sequence": 14636,
+      "chapter_label": "PSA 48",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 1
+        }
+      ],
+      "en": "Great is the LORD, and greatly to be praised, in the city of our God, in his holy mountain.",
+      "ko": "여호와는 광대하시니 우리 하나님의 성, 거룩한 산에서 극진히 찬송하리로다",
+      "source_text_hash": "8327100245e0d9ab057635ce1f828fc71013e65405bb6d4aba13ab48cf6c79fe",
+      "translation_text_hash": "ee6f133af83c4b8944e7003dccb56c2d8ee80ea78f24c90d33159414db9d33e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 광대하시니 우리 하나님의 성, 거룩한 산에서 극진히 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "ee6f133af83c4b8944e7003dccb56c2d8ee80ea78f24c90d33159414db9d33e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:2",
+      "sequence": 14637,
+      "chapter_label": "PSA 48",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 2
+        }
+      ],
+      "en": "Beautiful in elevation, the joy of the whole earth, is Mount Zion, on the north sides, the city of the great King.",
+      "ko": "터가 높고 아름다워 온 세계가 즐거워함이여 큰 왕의 성 곧 북방에 있는 시온산이 그러하도다",
+      "source_text_hash": "411655f4a9f8f29d143727302cf816b4b3cea4cffe6eaaf2622b43eb9ce161fc",
+      "translation_text_hash": "bc9c2ca70509f7d5c42b3243527083cfa322f5d4e3a9b6eea2a024d0d8b425d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "터가 높고 아름다워 온 세계가 즐거워함이여 큰 왕의 성 곧 북방에 있는 시온산이 그러하도다"
+      ],
+      "raw_text_hashes": [
+        "bc9c2ca70509f7d5c42b3243527083cfa322f5d4e3a9b6eea2a024d0d8b425d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:3",
+      "sequence": 14638,
+      "chapter_label": "PSA 48",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 3
+        }
+      ],
+      "en": "God has shown himself in her citadels as a refuge.",
+      "ko": "하나님이 그 여러 궁중에서 자기를 피난처로 알리셨도다",
+      "source_text_hash": "b1c4006ba35e398738635698f0970f11c1ab211314635ebb5469f779c075d228",
+      "translation_text_hash": "6cea8075a86ac1162fbee441bc75ac4262e53a4253233a150ccedb66520843cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 여러 궁중에서 자기를 피난처로 알리셨도다"
+      ],
+      "raw_text_hashes": [
+        "6cea8075a86ac1162fbee441bc75ac4262e53a4253233a150ccedb66520843cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:4",
+      "sequence": 14639,
+      "chapter_label": "PSA 48",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 4
+        }
+      ],
+      "en": "For, behold, the kings assembled themselves, they passed by together.",
+      "ko": "열왕이 모여 함께 지났음이여",
+      "source_text_hash": "e5e285fe5340bfe314cf2060cddce359b313a96a5ca91a4d52500071bc9d03bc",
+      "translation_text_hash": "b3a587c2c2f0729ab4889c6db6b7cd74d6473131c255d292ec5b4e11747c6250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열왕이 모여 함께 지났음이여"
+      ],
+      "raw_text_hashes": [
+        "b3a587c2c2f0729ab4889c6db6b7cd74d6473131c255d292ec5b4e11747c6250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:5",
+      "sequence": 14640,
+      "chapter_label": "PSA 48",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 5
+        }
+      ],
+      "en": "They saw it, then they were amazed. They were dismayed. They hurried away.",
+      "ko": "저희가 보고 놀라고 두려워 빨리 갔도다",
+      "source_text_hash": "94aac0383aa42e5163ce0001d7ffcb58efe3c79654972c2941783a263e3046a0",
+      "translation_text_hash": "3f7e8861f20defa5d30d476aa10d083ad71f260f01906fd3dc537741095331f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 보고 놀라고 두려워 빨리 갔도다"
+      ],
+      "raw_text_hashes": [
+        "3f7e8861f20defa5d30d476aa10d083ad71f260f01906fd3dc537741095331f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:6",
+      "sequence": 14641,
+      "chapter_label": "PSA 48",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 6
+        }
+      ],
+      "en": "Trembling took hold of them there, pain, as of a woman in travail.",
+      "ko": "거기서 떨림이 저희를 잡으니 고통이 해산하는 여인 같도다",
+      "source_text_hash": "23de5839419e65d1aa4b82371a9a64ed20aaae938e792c922090566e0fe13d53",
+      "translation_text_hash": "d05f58b1df1d46a6bfee085b0ef678469d018ca03c24f4760386888134ebdabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 떨림이 저희를 잡으니 고통이 해산하는 여인 같도다"
+      ],
+      "raw_text_hashes": [
+        "d05f58b1df1d46a6bfee085b0ef678469d018ca03c24f4760386888134ebdabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:7",
+      "sequence": 14642,
+      "chapter_label": "PSA 48",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 7
+        }
+      ],
+      "en": "With the east wind, you break the ships of Tarshish.",
+      "ko": "주께서 동풍으로 다시스의 배를 깨뜨리시도다",
+      "source_text_hash": "ade9411557ab056488e03887b555d40de2a79b07feb483ba2384ae3498d63310",
+      "translation_text_hash": "b258be5cb83ce4889df27d1f05dff748b8b1762a762937805bde3cfa82755d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 동풍으로 다시스의 배를 깨뜨리시도다"
+      ],
+      "raw_text_hashes": [
+        "b258be5cb83ce4889df27d1f05dff748b8b1762a762937805bde3cfa82755d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:8",
+      "sequence": 14643,
+      "chapter_label": "PSA 48",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 8
+        }
+      ],
+      "en": "As we have heard, so we have seen, in the city of the LORD of Armies, in the city of our God. God will establish it forever. Selah.",
+      "ko": "우리가 들은 대로 만군의 여호와의 성, 우리 하나님의 성에서 보았나니 하나님이 이를 영영히 견고케 하시리로다(셀라)",
+      "source_text_hash": "0d490681517a6524b3ba9cae34ad7d48025c0e6fa1d5c362848422b68a8f2ca6",
+      "translation_text_hash": "bfa398e267d98fb71ba21b0baab7b0385075283a88d022d522404f0ac934dc61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 들은 대로 만군의 여호와의 성, 우리 하나님의 성에서 보았나니 하나님이 이를 영영히 견고케 하시리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "bfa398e267d98fb71ba21b0baab7b0385075283a88d022d522404f0ac934dc61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:9",
+      "sequence": 14644,
+      "chapter_label": "PSA 48",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 9
+        }
+      ],
+      "en": "We have thought about your loving kindness, God, in the middle of your temple.",
+      "ko": "하나님이여 우리가 주의 전 가운데서 주의 인자하심을 생각하였나이다",
+      "source_text_hash": "282ccedafdd0d51408fb84ad030a7f52710ce13e582e7c2100bd6ee7a2375a51",
+      "translation_text_hash": "daf2b06ca8ea280047920c8c93e009c5f93ef3d4015566f7efac2e81aba9c63a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 우리가 주의 전 가운데서 주의 인자하심을 생각하였나이다"
+      ],
+      "raw_text_hashes": [
+        "daf2b06ca8ea280047920c8c93e009c5f93ef3d4015566f7efac2e81aba9c63a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:10",
+      "sequence": 14645,
+      "chapter_label": "PSA 48",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 10
+        }
+      ],
+      "en": "As is your name, God, so is your praise to the ends of the earth. Your right hand is full of righteousness.",
+      "ko": "하나님이여 주의 이름과 같이 찬송도 땅 끝까지 미쳤으며 주의 오른손에는 정의가 충만하였나이다",
+      "source_text_hash": "72bed25130c44d9231baafa7f8b36d3df217e2d66e90d9f12477f6189e94a84f",
+      "translation_text_hash": "d457f8c4d68918bf5cbebd5f42ff05755fca91ea897078830734d38774dc693f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 이름과 같이 찬송도 땅 끝까지 미쳤으며 주의 오른손에는 정의가 충만하였나이다"
+      ],
+      "raw_text_hashes": [
+        "d457f8c4d68918bf5cbebd5f42ff05755fca91ea897078830734d38774dc693f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:11",
+      "sequence": 14646,
+      "chapter_label": "PSA 48",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 11
+        }
+      ],
+      "en": "Let Mount Zion be glad! Let the daughters of Judah rejoice because of your judgments.",
+      "ko": "주의 판단을 인하여 시온산은 기뻐하고 유다의 딸들은 즐거워할찌어다",
+      "source_text_hash": "6f3a3bf2ff37c24188186eaebc4555a8da7f1cc347e732f099d14ba9992bea5c",
+      "translation_text_hash": "bb59bbe22b20c7e3706a5073b6eb19ed5f9abca25de66da22242817ea9d034c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 판단을 인하여 시온산은 기뻐하고 유다의 딸들은 즐거워할찌어다"
+      ],
+      "raw_text_hashes": [
+        "bb59bbe22b20c7e3706a5073b6eb19ed5f9abca25de66da22242817ea9d034c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:12",
+      "sequence": 14647,
+      "chapter_label": "PSA 48",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 12
+        }
+      ],
+      "en": "Walk about Zion, and go around her. Number its towers.",
+      "ko": "너희는 시온을 편답하고 그것을 순행하며 그 망대들을 계수하라",
+      "source_text_hash": "3625ad64bb8a9c0b01d2ebcbba8304ca18c2449c108ddc80034ede0d9e956062",
+      "translation_text_hash": "3dce195933866983c8cf01a08170b6d76336104937978176c9519185c838c050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 시온을 편답하고 그것을 순행하며 그 망대들을 계수하라"
+      ],
+      "raw_text_hashes": [
+        "3dce195933866983c8cf01a08170b6d76336104937978176c9519185c838c050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:13",
+      "sequence": 14648,
+      "chapter_label": "PSA 48",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 13
+        }
+      ],
+      "en": "Notice her bulwarks. Consider her palaces, that you may tell it to the next generation.",
+      "ko": "그 성벽을 자세히 보고 그 궁전을 살펴서 후대에 전하라",
+      "source_text_hash": "58a0162d602e2ec7e6fe6ca4a4a4a400d86cf4670fe2ef2e6ac58aa32bbf7f96",
+      "translation_text_hash": "4e64aae6accd613d05e59218a0c196e6fe7853c0b484049a71305711c20c8661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성벽을 자세히 보고 그 궁전을 살펴서 후대에 전하라"
+      ],
+      "raw_text_hashes": [
+        "4e64aae6accd613d05e59218a0c196e6fe7853c0b484049a71305711c20c8661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:48:14",
+      "sequence": 14649,
+      "chapter_label": "PSA 48",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 48,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 48,
+          "verse": 14
+        }
+      ],
+      "en": "For this God is our God forever and ever. He will be our guide even to death.",
+      "ko": "이 하나님은 영영히 우리 하나님이시니 우리를 죽을 때까지 인도하시리로다",
+      "source_text_hash": "d580ebcfe05c98c0d96d7dd333b566f765aa6d149ec082d2c5cff9cf19945c18",
+      "translation_text_hash": "ff0adb940a16e075757fcb17bcb68809a9196862ebc0f27526c2e04177654090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 하나님은 영영히 우리 하나님이시니 우리를 죽을 때까지 인도하시리로다"
+      ],
+      "raw_text_hashes": [
+        "ff0adb940a16e075757fcb17bcb68809a9196862ebc0f27526c2e04177654090"
+      ]
+    }
+  ]
+}

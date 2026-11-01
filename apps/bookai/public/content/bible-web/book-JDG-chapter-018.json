@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:018",
+  "unit_ordinal": 229,
+  "unit_label": "JDG 18",
+  "book_code": "JDG",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:18:1",
+      "sequence": 6995,
+      "chapter_label": "JDG 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "In those days there was no king in Israel. In those days the tribe of the Danites sought an inheritance to dwell in; for to that day, their inheritance had not fallen to them among the tribes of Israel.",
+      "ko": "그 때에 이스라엘에 왕이 없었고 단 지파는 이 때에 거할 기업의 땅을 구하는 중이었으니 이는 그들이 이스라엘 지파 중에서 이 때까지 기업의 땅 분배함을 얻지 못하였음이라",
+      "source_text_hash": "7e8dd6b6bb45aae73f5d3462d737c0e7b8591aeb1ddb0158c7e81b50a9b9822c",
+      "translation_text_hash": "1843719579b345f804a7a8adc414cf2462e9b323024145a5249a58b885c4291a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘에 왕이 없었고 단 지파는 이 때에 거할 기업의 땅을 구하는 중이었으니 이는 그들이 이스라엘 지파 중에서 이 때까지 기업의 땅 분배함을 얻지 못하였음이라"
+      ],
+      "raw_text_hashes": [
+        "1843719579b345f804a7a8adc414cf2462e9b323024145a5249a58b885c4291a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:2",
+      "sequence": 6996,
+      "chapter_label": "JDG 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "The children of Dan sent five men of their family from their whole number, men of valor, from Zorah and from Eshtaol, to spy out the land and to search it. They said to them, “Go, explore the land!” They came to the hill country of Ephraim, to the house of Micah, and lodged there.",
+      "ko": "단 자손이 소라와 에스다올에서부터 자기 온 가족중 용맹 있는 다섯 사람을 보내어 땅을 탐지하고 살피게 하며 그들에게 이르되 너희는 가서 땅을 살펴보라 하매 그들이 에브라임 산지에 가서 미가의 집에 이르러 거기서 유숙하니라",
+      "source_text_hash": "bc5031fc57ada75f218c1c9d4d6b07a3214d34197b90e8c813d642783552dd0d",
+      "translation_text_hash": "9753b81d3ba6eb1342a7d155e9cec393ff88e06499b83a75d6fd1b26fd4dfcac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손이 소라와 에스다올에서부터 자기 온 가족중 용맹 있는 다섯 사람을 보내어 땅을 탐지하고 살피게 하며 그들에게 이르되 너희는 가서 땅을 살펴보라 하매 그들이 에브라임 산지에 가서 미가의 집에 이르러 거기서 유숙하니라"
+      ],
+      "raw_text_hashes": [
+        "9753b81d3ba6eb1342a7d155e9cec393ff88e06499b83a75d6fd1b26fd4dfcac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:3",
+      "sequence": 6997,
+      "chapter_label": "JDG 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "When they were by the house of Micah, they knew the voice of the young man the Levite; so they went over there and said to him, “Who brought you here? What do you do in this place? What do you have here?”",
+      "ko": "그들이 미가의 집에 가까이 올 때에 레위 소년의 음성을 알아듣고 그리로 돌이켜 가서 그에게 이르되 누가 너를 이리로 인도하였으며 네가 여기서 무엇을 하며 여기서 무엇을 얻었느냐",
+      "source_text_hash": "732089e829ca0646e791809b4a207a72451e623176c31917470cdc517152478f",
+      "translation_text_hash": "5f2fb56546ff3de15937a87ab5a37d00489b5fc271e31c74c474436a30a15766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 미가의 집에 가까이 올 때에 레위 소년의 음성을 알아듣고 그리로 돌이켜 가서 그에게 이르되 누가 너를 이리로 인도하였으며 네가 여기서 무엇을 하며 여기서 무엇을 얻었느냐"
+      ],
+      "raw_text_hashes": [
+        "5f2fb56546ff3de15937a87ab5a37d00489b5fc271e31c74c474436a30a15766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:4",
+      "sequence": 6998,
+      "chapter_label": "JDG 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "He said to them, “Thus and thus has Micah dealt with me, and he has hired me, and I have become his priest.”",
+      "ko": "그가 그들에게 이르되 미가가 여차여차히 나를 대접하여 나를 고빙하여 나로 자기 제사장을 삼았느니라",
+      "source_text_hash": "c7e07d67b9efd2d6e459a021994981d69b76a84c0278e00fe1454608f96e398d",
+      "translation_text_hash": "0a2d562daf2c5684f5b3ac624b2c499baa395b47861ea4ad27e72f06c0f5fa25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그들에게 이르되 미가가 여차여차히 나를 대접하여 나를 고빙하여 나로 자기 제사장을 삼았느니라"
+      ],
+      "raw_text_hashes": [
+        "0a2d562daf2c5684f5b3ac624b2c499baa395b47861ea4ad27e72f06c0f5fa25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:5",
+      "sequence": 6999,
+      "chapter_label": "JDG 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "They said to him, “Please ask counsel of God, that we may know whether our way which we go shall be prosperous.”",
+      "ko": "그들이 그에게 이르되 청컨대 우리를 위하여 하나님께 물어보아서 우리의 행하는 길이 형통할는지 우리에게 알게하라",
+      "source_text_hash": "e145170e2e051661ea5d472fd9f91128a4d7d0fb522c431715c15ec159885ee6",
+      "translation_text_hash": "39e28e83927c6887787897f917672096083c61682ac5e214288175aeb0b543fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그에게 이르되 청컨대 우리를 위하여 하나님께 물어보아서 우리의 행하는 길이 형통할는지 우리에게 알게하라"
+      ],
+      "raw_text_hashes": [
+        "39e28e83927c6887787897f917672096083c61682ac5e214288175aeb0b543fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:6",
+      "sequence": 7000,
+      "chapter_label": "JDG 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "The priest said to them, “Go in peace. Your way in which you go is before the LORD.”",
+      "ko": "그 제사장이 그들에게 이르되 평안히 가라 너희의 행하는 길은 여호와 앞에 있느니라",
+      "source_text_hash": "c30c9da2f077798c37d1bb73a6acb5feecb080ca054783e0248e3f6af91e8deb",
+      "translation_text_hash": "e40dac67f5931507715203e961fde20b48db1b1e52c64d1cd4e69fff0f86b2e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제사장이 그들에게 이르되 평안히 가라 너희의 행하는 길은 여호와 앞에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "e40dac67f5931507715203e961fde20b48db1b1e52c64d1cd4e69fff0f86b2e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:7",
+      "sequence": 7001,
+      "chapter_label": "JDG 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Then the five men departed and came to Laish and saw the people who were there, how they lived in safety, in the way of the Sidonians, quiet and secure; for there was no one in the land possessing authority, that might put them to shame in anything, and they were far from the Sidonians, and had no dealings with anyone else.",
+      "ko": "이에 다섯 사람이 떠나 라이스에 이르러 거기 있는 백성을 본즉 염려 없이 거하여 시돈 사람 같이 한가하고 평안하니 그 땅에는 권세 잡은 자가 없어서 무슨 일에든지 괴롭게 함이 없고 시돈 사람과 상거가 멀며 아무 사람과도 상종하지 아니함이라",
+      "source_text_hash": "9955e9721ef0c541780b05b15d974ffdf3e5894387476d31d8d22e8e21d1ad00",
+      "translation_text_hash": "6c11db41e401b821137c0c98a4781301b60220bd5cc0919864962d35bc815730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다섯 사람이 떠나 라이스에 이르러 거기 있는 백성을 본즉 염려 없이 거하여 시돈 사람 같이 한가하고 평안하니 그 땅에는 권세 잡은 자가 없어서 무슨 일에든지 괴롭게 함이 없고 시돈 사람과 상거가 멀며 아무 사람과도 상종하지 아니함이라"
+      ],
+      "raw_text_hashes": [
+        "6c11db41e401b821137c0c98a4781301b60220bd5cc0919864962d35bc815730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:8",
+      "sequence": 7002,
+      "chapter_label": "JDG 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "They came to their brothers at Zorah and Eshtaol; and their brothers asked them, “What do you say?”",
+      "ko": "그들이 소라와 에스다올에 돌아와서 그 형제에게 이르매 형제들이 그들에게 묻되 너희 보기에 어떠하더뇨",
+      "source_text_hash": "c52c11043024e4ccf1f787fd991375967471188ddbe7c9185662e849e5bc0dfc",
+      "translation_text_hash": "b1d4c8b94f23bfb10eb55357e4073be726faa3ace38e63481da3f07f8e5b1528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 소라와 에스다올에 돌아와서 그 형제에게 이르매 형제들이 그들에게 묻되 너희 보기에 어떠하더뇨"
+      ],
+      "raw_text_hashes": [
+        "b1d4c8b94f23bfb10eb55357e4073be726faa3ace38e63481da3f07f8e5b1528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:9",
+      "sequence": 7003,
+      "chapter_label": "JDG 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "They said, “Arise, and let’s go up against them; for we have seen the land, and behold, it is very good. Do you stand still? Don’t be slothful to go and to enter in to possess the land.",
+      "ko": "가로되 일어나서 그들을 치러 올라가자 우리가 그 땅을 본즉 매우 좋더라 너희는 가만히 있느냐 나아가서 그 땅 얻기를 게을리 말라",
+      "source_text_hash": "1aad893625f473ef9f7fc5a97233ec70b4db76dcfd45b9b41932a12ab2ccf2c6",
+      "translation_text_hash": "4ecfe90a2131ece03d6e106af288b311f8f1731d9fc68a959872a848876aafff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 일어나서 그들을 치러 올라가자 우리가 그 땅을 본즉 매우 좋더라 너희는 가만히 있느냐 나아가서 그 땅 얻기를 게을리 말라"
+      ],
+      "raw_text_hashes": [
+        "4ecfe90a2131ece03d6e106af288b311f8f1731d9fc68a959872a848876aafff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:10",
+      "sequence": 7004,
+      "chapter_label": "JDG 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "When you go, you will come to an unsuspecting people, and the land is large; for God has given it into your hand, a place where there is no lack of anything that is on the earth.”",
+      "ko": "너희가 가면 평안한 백성을 만날 것이요 그 땅은 넓고 그곳에는 세상에 있는 것이 하나도 부족함이 없느니라 하나님이 너희 손에 붙이셨느니라",
+      "source_text_hash": "13c98dfd2c0d896d4e948e1d94a5cd52ab3fd586021bee81c1b37b7342856a41",
+      "translation_text_hash": "08896819566547f3dc394537bf553cd71d18e60d90a981948e91b0ddf02e8225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가면 평안한 백성을 만날 것이요 그 땅은 넓고 그곳에는 세상에 있는 것이 하나도 부족함이 없느니라 하나님이 너희 손에 붙이셨느니라"
+      ],
+      "raw_text_hashes": [
+        "08896819566547f3dc394537bf553cd71d18e60d90a981948e91b0ddf02e8225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:11",
+      "sequence": 7005,
+      "chapter_label": "JDG 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "The family of the Danites set out from Zorah and Eshtaol with six hundred men armed with weapons of war.",
+      "ko": "단 지파 가족 중 육백명이 병기를 띠고 소라와 에스다올에서 출발하여",
+      "source_text_hash": "32a9da396e8cb5e8cdacabc474c5078978ac0e1ced75d9ca86de4d74ea5ff86c",
+      "translation_text_hash": "fe01a955ae5ad6d6b98f5668abe27168f6b7dbaeb179f1b3c3397c3dc815e45f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 지파 가족 중 육백명이 병기를 띠고 소라와 에스다올에서 출발하여"
+      ],
+      "raw_text_hashes": [
+        "fe01a955ae5ad6d6b98f5668abe27168f6b7dbaeb179f1b3c3397c3dc815e45f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:12",
+      "sequence": 7006,
+      "chapter_label": "JDG 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "They went up and encamped in Kiriath Jearim in Judah. Therefore they call that place Mahaneh Dan to this day. Behold, it is behind Kiriath Jearim.",
+      "ko": "올라가서 유다 기럇여아림에 진치니 이러므로 그곳 이름이 오늘까지 마하네단이며 그곳은 기럇여아림 뒤에 있더라",
+      "source_text_hash": "6dc68d1963d208344d00e3adf41507e32c64194bd89396f228c550809dada964",
+      "translation_text_hash": "0709cea08f1506706224b6552c5958e3e8ff20f433825c3645c15a48219a85a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올라가서 유다 기럇여아림에 진치니 이러므로 그곳 이름이 오늘까지 마하네단이며 그곳은 기럇여아림 뒤에 있더라"
+      ],
+      "raw_text_hashes": [
+        "0709cea08f1506706224b6552c5958e3e8ff20f433825c3645c15a48219a85a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:13",
+      "sequence": 7007,
+      "chapter_label": "JDG 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "They passed from there to the hill country of Ephraim, and came to the house of Micah.",
+      "ko": "무리가 거기서 떠나서 에브라임 산지 미가의 집에 이르니라",
+      "source_text_hash": "e02a8970dbeeeb94de17c1c078300de53ccd742d7a53f8c0451b5dba028893d3",
+      "translation_text_hash": "92f77bb64081c36268d6a41f6aec98e22030f9d9cabd8af974a94d4afe9d26e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 거기서 떠나서 에브라임 산지 미가의 집에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "92f77bb64081c36268d6a41f6aec98e22030f9d9cabd8af974a94d4afe9d26e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:14",
+      "sequence": 7008,
+      "chapter_label": "JDG 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Then the five men who went to spy out the country of Laish answered and said to their brothers, “Do you know that there is in these houses an ephod, and teraphim, and a carved image, and a molten image? Now therefore consider what you have to do.”",
+      "ko": "전에 라이스 땅을 탐지하러 갔던 다섯 사람이 그 형제들에게 말하여 가로되 이 집에 에봇과 드라빔과 새긴 신상과 부어만든 신상이 있는줄을 너희가 아느냐 그런즉 이제 너희는 마땅히 행할 것을 생각하라 하고",
+      "source_text_hash": "9c8622f26b453aab34be728f5663510a0d9970298b3c10949ef549269b263d15",
+      "translation_text_hash": "5ae913144039bc7f3c329a3187a4ba42fe6350815a16383eaf1d69e589b18eef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 라이스 땅을 탐지하러 갔던 다섯 사람이 그 형제들에게 말하여 가로되 이 집에 에봇과 드라빔과 새긴 신상과 부어만든 신상이 있는줄을 너희가 아느냐 그런즉 이제 너희는 마땅히 행할 것을 생각하라 하고"
+      ],
+      "raw_text_hashes": [
+        "5ae913144039bc7f3c329a3187a4ba42fe6350815a16383eaf1d69e589b18eef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:15",
+      "sequence": 7009,
+      "chapter_label": "JDG 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "They went over there and came to the house of the young Levite man, even to the house of Micah, and asked him how he was doing.",
+      "ko": "다섯 사람이 그 편으로 향하여 소년 레위 사람의 집 곧 미가의 집에 이르러 문안하고",
+      "source_text_hash": "9fff278888c8d39f2e98b9073deedac05b182685d1a9979d683004f8b9b31151",
+      "translation_text_hash": "4e13fd46cff134d432157dee5d80da252e2c0c55c492947c2301ae4c23532c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯 사람이 그 편으로 향하여 소년 레위 사람의 집 곧 미가의 집에 이르러 문안하고"
+      ],
+      "raw_text_hashes": [
+        "4e13fd46cff134d432157dee5d80da252e2c0c55c492947c2301ae4c23532c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:16",
+      "sequence": 7010,
+      "chapter_label": "JDG 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "The six hundred men armed with their weapons of war, who were of the children of Dan, stood by the entrance of the gate.",
+      "ko": "단 자손 육백명은 병기를 띠고 문 입구에 서니라",
+      "source_text_hash": "0f1b90c4ea7b4038069a9d40bd0ad00038250c0fe67726efbcd0e96c0580d7b2",
+      "translation_text_hash": "c99865649cbf57bbb0d60ef2a3134ca54ef6f4bee6e68fb13d7d9b5d5e03c387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손 육백명은 병기를 띠고 문 입구에 서니라"
+      ],
+      "raw_text_hashes": [
+        "c99865649cbf57bbb0d60ef2a3134ca54ef6f4bee6e68fb13d7d9b5d5e03c387"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:17",
+      "sequence": 7011,
+      "chapter_label": "JDG 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "The five men who went to spy out the land went up, and came in there, and took the engraved image, the ephod, the teraphim, and the molten image; and the priest stood by the entrance of the gate with the six hundred men armed with weapons of war.",
+      "ko": "땅을 탐지하러 갔던 다섯 사람이 그리로 들어가서 새긴 신상과 에봇과 드라빔과 부어만든 신상을 취할 때에 제사장은 병기를 띤 육백명과 함께 문 입구에 섰더니",
+      "source_text_hash": "d5398f094186edfee311afc84e32c40fdad72e60ba13830d5a3a176a0f1ce97d",
+      "translation_text_hash": "a0375581db72c506193327352e4a5595bf95be45355da6062655cb38f1559240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅을 탐지하러 갔던 다섯 사람이 그리로 들어가서 새긴 신상과 에봇과 드라빔과 부어만든 신상을 취할 때에 제사장은 병기를 띤 육백명과 함께 문 입구에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "a0375581db72c506193327352e4a5595bf95be45355da6062655cb38f1559240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:18",
+      "sequence": 7012,
+      "chapter_label": "JDG 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "When these went into Micah’s house, and took the engraved image, the ephod, the teraphim, and the molten image, the priest said to them, “What are you doing?”",
+      "ko": "그 다섯 사람이 미가의 집에 들어가서 그 새긴 신상과 에봇과 드라빔과 부어만든 신상을 취하여 내매 제사장이 그들에게 묻되 너희가 무엇을 하느냐",
+      "source_text_hash": "5ae7fd8a8b9bd8155058a07bdaae021cfd446f3dc45fcc5f07725abc9bd9a29b",
+      "translation_text_hash": "10afff845132c02de62d54a5c4e240516444e4abe1349a5f29c43d64acbf6c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다섯 사람이 미가의 집에 들어가서 그 새긴 신상과 에봇과 드라빔과 부어만든 신상을 취하여 내매 제사장이 그들에게 묻되 너희가 무엇을 하느냐"
+      ],
+      "raw_text_hashes": [
+        "10afff845132c02de62d54a5c4e240516444e4abe1349a5f29c43d64acbf6c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:19",
+      "sequence": 7013,
+      "chapter_label": "JDG 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "They said to him, “Hold your peace, put your hand on your mouth, and go with us. Be a father and a priest to us. Is it better for you to be priest to the house of one man, or to be priest to a tribe and a family in Israel?”",
+      "ko": "그들이 그에게 이르되 잠잠하라 네 손을 입에 대라 우리와 함께 가서 우리의 아비와 제사장이 되라 네가 한 사람의 집의 제사장이 되는 것과 이스라엘 한 지파, 한 가족의 제사장이 되는 것이 어느 것이 낫겠느냐",
+      "source_text_hash": "01fc88ca8ec2d4cf72b35bd3dc35a10591ffc7bb25aad925e1dae365df8397e9",
+      "translation_text_hash": "7ee8f0c5b2817ea5af9bb156ecdb94225c3209556ff860d0a8bb17ebf1570bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그에게 이르되 잠잠하라 네 손을 입에 대라 우리와 함께 가서 우리의 아비와 제사장이 되라 네가 한 사람의 집의 제사장이 되는 것과 이스라엘 한 지파, 한 가족의 제사장이 되는 것이 어느 것이 낫겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7ee8f0c5b2817ea5af9bb156ecdb94225c3209556ff860d0a8bb17ebf1570bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:20",
+      "sequence": 7014,
+      "chapter_label": "JDG 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "The priest’s heart was glad, and he took the ephod, the teraphim, and the engraved image, and went with the people.",
+      "ko": "제사장이 마음에 기뻐하여 에봇과 드라빔과 새긴 우상을 취하고 그 백성 중으로 들어가니라",
+      "source_text_hash": "30343b03a425d1e2a87d18a0b96898c4a135f200e49cc5a87c73997e1254c059",
+      "translation_text_hash": "54e48a6b32c1d939b04b011cd3ebb5bd03f77f4deb2e94a4ce01c7da51cbb70d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 마음에 기뻐하여 에봇과 드라빔과 새긴 우상을 취하고 그 백성 중으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "54e48a6b32c1d939b04b011cd3ebb5bd03f77f4deb2e94a4ce01c7da51cbb70d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:21",
+      "sequence": 7015,
+      "chapter_label": "JDG 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "So they turned and departed, and put the little ones, the livestock, and the goods before them.",
+      "ko": "그들이 돌이켜서 어린 아이들과 가축과 물품을 앞에 두고 진행하더니",
+      "source_text_hash": "377ff26da771a9cd001c90eff596d26f764e6bc3af44b81b19d5f670daee727c",
+      "translation_text_hash": "c7d865cdfbfa5f67ee9c1280158fba9cd386332d75807e63875a62a3f148c4a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 돌이켜서 어린 아이들과 가축과 물품을 앞에 두고 진행하더니"
+      ],
+      "raw_text_hashes": [
+        "c7d865cdfbfa5f67ee9c1280158fba9cd386332d75807e63875a62a3f148c4a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:22",
+      "sequence": 7016,
+      "chapter_label": "JDG 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "When they were a good way from the house of Micah, the men who were in the houses near Micah’s house gathered together and overtook the children of Dan.",
+      "ko": "미가의 집을 멀리 떠난 때에 미가의 이웃집 사람들이 모여서 단 자손을 따라 미쳐서는",
+      "source_text_hash": "7f942411adaa119bec2c2bb4c245b2921d42debd1db3fbf9e56cc2c017c798e5",
+      "translation_text_hash": "f14d11cf0691180c03384bb4af240f447dd8c20f2e47d89b8b21d59ce40ab341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가의 집을 멀리 떠난 때에 미가의 이웃집 사람들이 모여서 단 자손을 따라 미쳐서는"
+      ],
+      "raw_text_hashes": [
+        "f14d11cf0691180c03384bb4af240f447dd8c20f2e47d89b8b21d59ce40ab341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:23",
+      "sequence": 7017,
+      "chapter_label": "JDG 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "As they called to the children of Dan, they turned their faces, and said to Micah, “What ails you, that you come with such a company?”",
+      "ko": "단 자손을 부르는지라 그들이 낯을 돌이켜 미가에게 이르되 네가 무슨 일로 이같이 모아가지고 왔느냐",
+      "source_text_hash": "030456cd20e3d997b030f5692edf4976af96da6087d0b77588235b6c678dd307",
+      "translation_text_hash": "dc76d9d0eb045c105581e5b1b4c34fc2b412836a90457e9b293125842c21e0ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손을 부르는지라 그들이 낯을 돌이켜 미가에게 이르되 네가 무슨 일로 이같이 모아가지고 왔느냐"
+      ],
+      "raw_text_hashes": [
+        "dc76d9d0eb045c105581e5b1b4c34fc2b412836a90457e9b293125842c21e0ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:24",
+      "sequence": 7018,
+      "chapter_label": "JDG 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "He said, “You have taken away my gods which I made, and the priest, and have gone away! What more do I have? How can you ask me, ‘What ails you?’”",
+      "ko": "미가가 가로되 나의 지은 신들과 제사장을 취하여 갔으니 내게 오히려 있는 것이 무엇이냐 너희가 어찌하여 나더러 무슨 일이냐 하느냐",
+      "source_text_hash": "3756e3abbae35226fb7f47b239eec669ea42e6bd73b44805debcf1f5f930fc1c",
+      "translation_text_hash": "f8cb13d5aa773e91f5fd9c580c503e99c9e8fa803063451b2a757313818f12ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 가로되 나의 지은 신들과 제사장을 취하여 갔으니 내게 오히려 있는 것이 무엇이냐 너희가 어찌하여 나더러 무슨 일이냐 하느냐"
+      ],
+      "raw_text_hashes": [
+        "f8cb13d5aa773e91f5fd9c580c503e99c9e8fa803063451b2a757313818f12ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:25",
+      "sequence": 7019,
+      "chapter_label": "JDG 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "The children of Dan said to him, “Don’t let your voice be heard among us, lest angry fellows fall on you, and you lose your life, with the lives of your household.”",
+      "ko": "단 자손이 그에게 이르되 네 목소리를 우리에게 들리게 말라 노한 자들이 너희를 쳐서 네 생명과 네 가족의 생명을 잃게 할까 하노라 하고",
+      "source_text_hash": "e90fb7616d037128ff47adb8687b9badf13677845cda2e1700859c943bb1353c",
+      "translation_text_hash": "0eee5f442b9686ade3f75e7d230e402e71b20d65416c2dee3d1090d83ffe5de6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손이 그에게 이르되 네 목소리를 우리에게 들리게 말라 노한 자들이 너희를 쳐서 네 생명과 네 가족의 생명을 잃게 할까 하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "0eee5f442b9686ade3f75e7d230e402e71b20d65416c2dee3d1090d83ffe5de6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:26",
+      "sequence": 7020,
+      "chapter_label": "JDG 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "The children of Dan went their way; and when Micah saw that they were too strong for him, he turned and went back to his house.",
+      "ko": "단 자손이 자기 길을 행한지라 미가가 단 자손이 자기보다 강한 것을 보고 돌이켜 집으로 돌아갔더라",
+      "source_text_hash": "cbbe9c2a370d58a27b02643d5756b25cb22ba35552772e1a06c49503d15f7f9c",
+      "translation_text_hash": "1658c8a6edae290deda0dcd3b30b3b082d55675b3b12bde1ca13dbc16e752570",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손이 자기 길을 행한지라 미가가 단 자손이 자기보다 강한 것을 보고 돌이켜 집으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "1658c8a6edae290deda0dcd3b30b3b082d55675b3b12bde1ca13dbc16e752570"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:27",
+      "sequence": 7021,
+      "chapter_label": "JDG 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "They took that which Micah had made, and the priest whom he had, and came to Laish, to a people quiet and unsuspecting, and struck them with the edge of the sword; then they burned the city with fire.",
+      "ko": "단 자손이 미가의 지은 것과 그 제사장을 취하고 라이스에 이르러 한가하고 평안한 백성을 만나 칼날로 그들을 치며 불로 그 성읍을 사르되",
+      "source_text_hash": "bc70fa32b28f1e954718c5e49bf6522e892cddfcb0505873132b73d46af983fd",
+      "translation_text_hash": "1406312f5c65b2ff18d22c7c8dc108894eef791d59da33e4e623e61f46f126e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손이 미가의 지은 것과 그 제사장을 취하고 라이스에 이르러 한가하고 평안한 백성을 만나 칼날로 그들을 치며 불로 그 성읍을 사르되"
+      ],
+      "raw_text_hashes": [
+        "1406312f5c65b2ff18d22c7c8dc108894eef791d59da33e4e623e61f46f126e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:28",
+      "sequence": 7022,
+      "chapter_label": "JDG 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "There was no deliverer, because it was far from Sidon, and they had no dealings with anyone else; and it was in the valley that lies by Beth Rehob. They built the city and lived in it.",
+      "ko": "그들을 구원할 자가 없었으니 그 성읍이 베드르홉 가까운 골짜기에 있어서 시돈과 상거가 멀고 상종하는 사람도 없음이었더라 단 자손이 성읍을 중건하고 거기 거하며",
+      "source_text_hash": "f7aeffa4e6241f776d0c22232ee7f97f6d5e7e974991cdcfef7b4ac607917ab1",
+      "translation_text_hash": "c1fb1411054b8f08cdc1e07115d1c525d081aaa451881fdc6fe74db8ad578da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 구원할 자가 없었으니 그 성읍이 베드르홉 가까운 골짜기에 있어서 시돈과 상거가 멀고 상종하는 사람도 없음이었더라 단 자손이 성읍을 중건하고 거기 거하며"
+      ],
+      "raw_text_hashes": [
+        "c1fb1411054b8f08cdc1e07115d1c525d081aaa451881fdc6fe74db8ad578da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:29",
+      "sequence": 7023,
+      "chapter_label": "JDG 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "They called the name of the city Dan, after the name of Dan their father, who was born to Israel; however the name of the city used to be Laish.",
+      "ko": "이스라엘의 소생 그 조상 단의 이름을 따라 그 성읍을 단이라 하니라 그 성읍의 본 이름은 라이스더라",
+      "source_text_hash": "ab59ac18e38e838363dd172768951f7b906149b1b04e204a129e592c53675a0c",
+      "translation_text_hash": "9b8f14c86b4321ee186591486ab11af9b463f3375dfdfd9d014caade6cf55120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 소생 그 조상 단의 이름을 따라 그 성읍을 단이라 하니라 그 성읍의 본 이름은 라이스더라"
+      ],
+      "raw_text_hashes": [
+        "9b8f14c86b4321ee186591486ab11af9b463f3375dfdfd9d014caade6cf55120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:30",
+      "sequence": 7024,
+      "chapter_label": "JDG 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "The children of Dan set up for themselves the engraved image; and Jonathan, the son of Gershom, the son of Moses, and his sons were priests to the tribe of the Danites until the day of the captivity of the land.",
+      "ko": "단 자손이 자기를 위하여 그 새긴 신상을 세웠고 모세의 손자 게르손의 아들 요나단과 그 자손은 단 지파의 제사장이 되어 이 백성이 사로잡히는 날까지 이르렀더라",
+      "source_text_hash": "6422c6e24bdb3008ac175baa546d7c27be55c5e5bde77672efed020c9586432f",
+      "translation_text_hash": "defc9cc7c3f712ac361312d4534522e256b66d0978698f4eb0c1dbb7a72bb69c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손이 자기를 위하여 그 새긴 신상을 세웠고 모세의 손자 게르손의 아들 요나단과 그 자손은 단 지파의 제사장이 되어 이 백성이 사로잡히는 날까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "defc9cc7c3f712ac361312d4534522e256b66d0978698f4eb0c1dbb7a72bb69c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:18:31",
+      "sequence": 7025,
+      "chapter_label": "JDG 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "So they set up for themselves Micah’s engraved image which he made, and it remained all the time that God’s house was in Shiloh.",
+      "ko": "하나님의 집이 실로에 있을 동안에 미가의 지은바 새긴 신상이 단 자손에게 있었더라",
+      "source_text_hash": "8603b789d159ea5d7cb8ae317c05058c2fe8c5c8c85c087d633c7e81d6a1e597",
+      "translation_text_hash": "edeea4a3faad16b73f7c8dc08323c94f904fa1a3d5a9fc7a7bcfb0ee8171f908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 집이 실로에 있을 동안에 미가의 지은바 새긴 신상이 단 자손에게 있었더라"
+      ],
+      "raw_text_hashes": [
+        "edeea4a3faad16b73f7c8dc08323c94f904fa1a3d5a9fc7a7bcfb0ee8171f908"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:004",
+  "unit_ordinal": 1082,
+  "unit_label": "2CO 4",
+  "book_code": "2CO",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:4:1",
+      "sequence": 28857,
+      "chapter_label": "2CO 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore, seeing we have this ministry, even as we obtained mercy, we don’t faint.",
+      "ko": "이러하므로 우리가 이 직분을 받아 긍휼하심을 입은대로 낙심하지 아니하고",
+      "source_text_hash": "36278ccdb2442c79519279b5aa4353c5acbf582ce8506a7d9bc785ede1298857",
+      "translation_text_hash": "abfaf0ee9191115bd3fb8b80475b3fdf0702ec74099dc6296498c21283173560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 우리가 이 직분을 받아 긍휼하심을 입은대로 낙심하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "abfaf0ee9191115bd3fb8b80475b3fdf0702ec74099dc6296498c21283173560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:2",
+      "sequence": 28858,
+      "chapter_label": "2CO 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "But we have renounced the hidden things of shame, not walking in craftiness nor handling the word of God deceitfully, but by the manifestation of the truth commending ourselves to every man’s conscience in the sight of God.",
+      "ko": "이에 숨은 부끄러움의 일을 버리고 궤휼 가운데 행하지 아니하며 하나님의 말씀을 혼잡케 아니하고 오직 진리를 나타냄으로 하나님 앞에서 각 사람의 양심에 대하여 스스로 천거하노라",
+      "source_text_hash": "3e7b719f7b237d701f9f4ba073ef92c88fddcca3a726e7b21109fa6d1dc124fb",
+      "translation_text_hash": "80035b9c3cb30c8e2487229ea0db850eb220f0cccc4d253e1fbddec37f26cd5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 숨은 부끄러움의 일을 버리고 궤휼 가운데 행하지 아니하며 하나님의 말씀을 혼잡케 아니하고 오직 진리를 나타냄으로 하나님 앞에서 각 사람의 양심에 대하여 스스로 천거하노라"
+      ],
+      "raw_text_hashes": [
+        "80035b9c3cb30c8e2487229ea0db850eb220f0cccc4d253e1fbddec37f26cd5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:3",
+      "sequence": 28859,
+      "chapter_label": "2CO 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Even if our Good News is veiled, it is veiled in those who are dying,",
+      "ko": "만일 우리 복음이 가리웠으면 망하는 자들에게 가리운 것이라",
+      "source_text_hash": "0cf22f2bf3374906c7b7774b91930811971ef012f07e55de24563f5c51e2123a",
+      "translation_text_hash": "447fffe94ed9a0f480974c213ba58afd15034e530e1d72d9ea1008018172acb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리 복음이 가리웠으면 망하는 자들에게 가리운 것이라"
+      ],
+      "raw_text_hashes": [
+        "447fffe94ed9a0f480974c213ba58afd15034e530e1d72d9ea1008018172acb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:4",
+      "sequence": 28860,
+      "chapter_label": "2CO 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "in whom the god of this world has blinded the minds of the unbelieving, that the light of the Good News of the glory of Christ, who is the image of God, should not dawn on them.",
+      "ko": "그 중에 이 세상 신이 믿지 아니하는 자들의 마음을 혼미케 하여 그리스도의 영광의 복음의 광채가 비취지 못하게 함이니 그리스도는 하나님의 형상이니라",
+      "source_text_hash": "b1af7074ffba8d451b6c9b0dfa3fd98daa963950019c189f2549a8ed42ef04fe",
+      "translation_text_hash": "09e6d062b1fa1e9a810ff38f713de4b4fac6bc8e366d48a312917f0b4cffcf92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 이 세상 신이 믿지 아니하는 자들의 마음을 혼미케 하여 그리스도의 영광의 복음의 광채가 비취지 못하게 함이니 그리스도는 하나님의 형상이니라"
+      ],
+      "raw_text_hashes": [
+        "09e6d062b1fa1e9a810ff38f713de4b4fac6bc8e366d48a312917f0b4cffcf92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:5",
+      "sequence": 28861,
+      "chapter_label": "2CO 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "For we don’t preach ourselves, but Christ Jesus as Lord, and ourselves as your servants for Jesus’ sake,",
+      "ko": "우리가 우리를 전파하는 것이 아니라 오직 그리스도 예수의 주 되신 것과 또 예수를 위하여 우리가 너희의 종 된 것을 전파함이라",
+      "source_text_hash": "d3705b49b5a9a187aac428ce68204eba0106ce27782361d0f3324882e4e5681c",
+      "translation_text_hash": "9dd066d922711008bef02ca877aa27353b69ca484a4fe0275d9a435528f243d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리를 전파하는 것이 아니라 오직 그리스도 예수의 주 되신 것과 또 예수를 위하여 우리가 너희의 종 된 것을 전파함이라"
+      ],
+      "raw_text_hashes": [
+        "9dd066d922711008bef02ca877aa27353b69ca484a4fe0275d9a435528f243d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:6",
+      "sequence": 28862,
+      "chapter_label": "2CO 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "seeing it is God who said, “Light will shine out of darkness,” who has shone in our hearts to give the light of the knowledge of the glory of God in the face of Jesus Christ.",
+      "ko": "어두운데서 빛이 비취리라 하시던 그 하나님께서 예수 그리스도의 얼굴에 있는 하나님의 영광을 아는 빛을 우리 마음에 비취셨느니라",
+      "source_text_hash": "f87e567dc4925be19b10bf8c3c7d3dde77515e93218c73b2a0c5b42a50b423b0",
+      "translation_text_hash": "cfdbbeb4dcaad27bd6cc13891d34b1be1427e9588cea6bcdd4183415049fd10a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어두운데서 빛이 비취리라 하시던 그 하나님께서 예수 그리스도의 얼굴에 있는 하나님의 영광을 아는 빛을 우리 마음에 비취셨느니라"
+      ],
+      "raw_text_hashes": [
+        "cfdbbeb4dcaad27bd6cc13891d34b1be1427e9588cea6bcdd4183415049fd10a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:7",
+      "sequence": 28863,
+      "chapter_label": "2CO 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But we have this treasure in clay vessels, that the exceeding greatness of the power may be of God and not from ourselves.",
+      "ko": "우리가 이 보배를 질그릇에 가졌으니 이는 능력의 심히 큰 것이 하나님께 있고 우리에게 있지 아니함을 알게 하려 함이라",
+      "source_text_hash": "067f1542374c0ff9315bd901e6131bbb453196aa63b202d4b5f393e4d47a6e95",
+      "translation_text_hash": "63cb7d57abaaefc8ef935f31bbc59d9595348503fb9677ab94b722deb6bcdb11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 보배를 질그릇에 가졌으니 이는 능력의 심히 큰 것이 하나님께 있고 우리에게 있지 아니함을 알게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "63cb7d57abaaefc8ef935f31bbc59d9595348503fb9677ab94b722deb6bcdb11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:8",
+      "sequence": 28864,
+      "chapter_label": "2CO 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "We are pressed on every side, yet not crushed; perplexed, yet not to despair;",
+      "ko": "우리가 사방으로 우겨쌈을 당하여도 싸이지 아니하며 답답한 일을 당하여도 낙심하지 아니하며",
+      "source_text_hash": "7d94c14c73334308c88500450ff62b5808700cab5d93caf56b9626b07730f8b8",
+      "translation_text_hash": "ecf7a462da27d078d0ace6ab5ee27ef2c4a6e65ffe107ce286bf31b976085546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 사방으로 우겨쌈을 당하여도 싸이지 아니하며 답답한 일을 당하여도 낙심하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "ecf7a462da27d078d0ace6ab5ee27ef2c4a6e65ffe107ce286bf31b976085546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:9",
+      "sequence": 28865,
+      "chapter_label": "2CO 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "pursued, yet not forsaken; struck down, yet not destroyed;",
+      "ko": "핍박을 받아도 버린바 되지 아니하며 거꾸러뜨림을 당하여도 망하지 아니하고",
+      "source_text_hash": "d38ce181f73810f302e017c82e967dda99359a7fa9aae0d7dc6596e581335d1f",
+      "translation_text_hash": "5e1f5d1099f61cb819ee7395f81cb7bbd6e1ed97b10af1c8b13fd5ab46f7409c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "핍박을 받아도 버린바 되지 아니하며 거꾸러뜨림을 당하여도 망하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "5e1f5d1099f61cb819ee7395f81cb7bbd6e1ed97b10af1c8b13fd5ab46f7409c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:10",
+      "sequence": 28866,
+      "chapter_label": "2CO 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "always carrying in the body the putting to death of the Lord Jesus, that the life of Jesus may also be revealed in our body.",
+      "ko": "우리가 항상 예수 죽인 것을 몸에 짊어짐은 예수의 생명도 우리 몸에 나타나게 하려 함이라",
+      "source_text_hash": "23193faff03a98513f7a5b2c39535be0e5a11866b56d65e80ef4b5e154cc00bd",
+      "translation_text_hash": "143f198e6849dd0186bb683d43b7960e7aeb267089ea86a47321ffe305aac596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 항상 예수 죽인 것을 몸에 짊어짐은 예수의 생명도 우리 몸에 나타나게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "143f198e6849dd0186bb683d43b7960e7aeb267089ea86a47321ffe305aac596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:11",
+      "sequence": 28867,
+      "chapter_label": "2CO 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "For we who live are always delivered to death for Jesus’ sake, that the life also of Jesus may be revealed in our mortal flesh.",
+      "ko": "우리 산 자가 항상 예수를 위하여 죽음에 넘기움은 예수의 생명이 또한 우리 죽을 육체에 나타나게 하려 함이니라",
+      "source_text_hash": "eed8890bc002c49e6e878deb8bb13dbcd2a10be7fb76b8bf247168214127cfe4",
+      "translation_text_hash": "c635c543f1b3187f07c464253664c1c9f7452a34d5453c5609fd25a9ae292b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 산 자가 항상 예수를 위하여 죽음에 넘기움은 예수의 생명이 또한 우리 죽을 육체에 나타나게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "c635c543f1b3187f07c464253664c1c9f7452a34d5453c5609fd25a9ae292b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:12",
+      "sequence": 28868,
+      "chapter_label": "2CO 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "So then death works in us, but life in you.",
+      "ko": "그런즉 사망은 우리 안에서 역사하고 생명은 너희 안에서 하느니라",
+      "source_text_hash": "1414798956f2d5838b6a757303ed89d1987e21277c31435c97d9e9a26a8b4fb5",
+      "translation_text_hash": "0bc096f795211c01fbdcba63d5b8a0c2dbd15a44ff1ba5c09cb3294cd8d7adba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 사망은 우리 안에서 역사하고 생명은 너희 안에서 하느니라"
+      ],
+      "raw_text_hashes": [
+        "0bc096f795211c01fbdcba63d5b8a0c2dbd15a44ff1ba5c09cb3294cd8d7adba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:13",
+      "sequence": 28869,
+      "chapter_label": "2CO 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "But having the same spirit of faith, according to that which is written, “I believed, and therefore I spoke.” We also believe, and therefore we also speak,",
+      "ko": "기록한바 내가 믿는 고로 말하였다 한 것 같이 우리가 같은 믿음의 마음을 가졌으니 우리도 믿는 고로 또한 말하노라",
+      "source_text_hash": "8f3100aa14f3c8a396c35f2db7473f8a494b692b838b66a780889dcdef506c6c",
+      "translation_text_hash": "b66db9055f7f7127be676b32ea923e973b272e3af1b8c98413a75e7b90afe05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한바 내가 믿는 고로 말하였다 한 것 같이 우리가 같은 믿음의 마음을 가졌으니 우리도 믿는 고로 또한 말하노라"
+      ],
+      "raw_text_hashes": [
+        "b66db9055f7f7127be676b32ea923e973b272e3af1b8c98413a75e7b90afe05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:14",
+      "sequence": 28870,
+      "chapter_label": "2CO 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "knowing that he who raised the Lord Jesus will raise us also through Jesus, and will present us with you.",
+      "ko": "주 예수를 다시 살리신 이가 예수와 함께 우리도 다시 살리사 너희와 함께 그 앞에 서게 하실 줄을 아노니",
+      "source_text_hash": "43eedba67763b2dc0dc905d7fd690e7254d98d8449c1be3633563cbf788bb2b8",
+      "translation_text_hash": "9798827d3bb320fcf1644c5b11855af0b77d7a9cc534ae3f05d1796ff4f75a6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수를 다시 살리신 이가 예수와 함께 우리도 다시 살리사 너희와 함께 그 앞에 서게 하실 줄을 아노니"
+      ],
+      "raw_text_hashes": [
+        "9798827d3bb320fcf1644c5b11855af0b77d7a9cc534ae3f05d1796ff4f75a6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:15",
+      "sequence": 28871,
+      "chapter_label": "2CO 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "For all things are for your sakes, that the grace, being multiplied through the many, may cause the thanksgiving to abound to the glory of God.",
+      "ko": "모든 것을 너희를 위하여 하는 것은 은혜가 많은 사람의 감사함으로 말미암아 더하여 넘쳐서 하나님께 영광을 돌리게 하려 함이라",
+      "source_text_hash": "a5944a9c7100112832dcee7287a13f69abda590e8d839b8d2558c9bdbda1e1b9",
+      "translation_text_hash": "e100bda184815d69c905fdebd37271c40288300330d7bfefe7ae126f4a7e9808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것을 너희를 위하여 하는 것은 은혜가 많은 사람의 감사함으로 말미암아 더하여 넘쳐서 하나님께 영광을 돌리게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "e100bda184815d69c905fdebd37271c40288300330d7bfefe7ae126f4a7e9808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:16",
+      "sequence": 28872,
+      "chapter_label": "2CO 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore we don’t faint, but though our outward person is decaying, yet our inward person is renewed day by day.",
+      "ko": "그러므로 우리가 낙심하지 아니하노니 겉사람은 후패하나 우리의 속은 날로 새롭도다",
+      "source_text_hash": "609506a0a6754e2f0df4b816383b834e70fa26edd3fefba8bf28895c87afa284",
+      "translation_text_hash": "0adf10164dfd9203cb04b5ea1fd2177b92f3dd3261bf5a782891a633dfa60863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 낙심하지 아니하노니 겉사람은 후패하나 우리의 속은 날로 새롭도다"
+      ],
+      "raw_text_hashes": [
+        "0adf10164dfd9203cb04b5ea1fd2177b92f3dd3261bf5a782891a633dfa60863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:17",
+      "sequence": 28873,
+      "chapter_label": "2CO 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "For our light affliction, which is for the moment, works for us more and more exceedingly an eternal weight of glory,",
+      "ko": "우리의 잠시 받는 환난의 경한 것이 지극히 크고 영원한 영광의 중한 것을 우리에게 이루게 함이니",
+      "source_text_hash": "cdfb5f020dd67f99fd3cc9e86dd5b37813437b2fde39b33b5bcc889c8e15bac2",
+      "translation_text_hash": "e98ad4b24fd50b9f789babd85ff2fdda46902e379441b4c3c41b3d40a873f22c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 잠시 받는 환난의 경한 것이 지극히 크고 영원한 영광의 중한 것을 우리에게 이루게 함이니"
+      ],
+      "raw_text_hashes": [
+        "e98ad4b24fd50b9f789babd85ff2fdda46902e379441b4c3c41b3d40a873f22c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:4:18",
+      "sequence": 28874,
+      "chapter_label": "2CO 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "while we don’t look at the things which are seen, but at the things which are not seen. For the things which are seen are temporal, but the things which are not seen are eternal.",
+      "ko": "우리의 돌아보는 것은 보이는 것이 아니요 보이지 않는 것이니 보이는 것은 잠간이요 보이지 않는 것은 영원함이니라",
+      "source_text_hash": "2eb85991f752dfc548400ce96618ea61677f967edf192db6f38d14ea637a632f",
+      "translation_text_hash": "0fc8ed821d85f070e444306c35931b6a9681e638e73eacaabd94afb46c1d686f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 돌아보는 것은 보이는 것이 아니요 보이지 않는 것이니 보이는 것은 잠간이요 보이지 않는 것은 영원함이니라"
+      ],
+      "raw_text_hashes": [
+        "0fc8ed821d85f070e444306c35931b6a9681e638e73eacaabd94afb46c1d686f"
+      ]
+    }
+  ]
+}

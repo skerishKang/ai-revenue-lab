@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:010",
+  "unit_ordinal": 413,
+  "unit_label": "EZR 10",
+  "book_code": "EZR",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:10:1",
+      "sequence": 12254,
+      "chapter_label": "EZR 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now while Ezra prayed and made confession, weeping and casting himself down before God’s house, there was gathered together to him out of Israel a very great assembly of men and women and children; for the people wept very bitterly.",
+      "ko": "에스라가 하나님의 전 앞에 엎드려 울며 기도하여 죄를 자복할 때에 많은 백성이 심히 통곡하매 이스라엘 중에서 백성의 남녀와 어린 아이의 큰 무리가 그 앞에 모인지라",
+      "source_text_hash": "789eb3b7fe706a1de9e908c167ce983b75c6be703c376c0d67c8346e73f22157",
+      "translation_text_hash": "1749ffc6a1fe5a5fd0e8812e74b0a35c843a52e1e3770b5ee6a4047ba620c8e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스라가 하나님의 전 앞에 엎드려 울며 기도하여 죄를 자복할 때에 많은 백성이 심히 통곡하매 이스라엘 중에서 백성의 남녀와 어린 아이의 큰 무리가 그 앞에 모인지라"
+      ],
+      "raw_text_hashes": [
+        "1749ffc6a1fe5a5fd0e8812e74b0a35c843a52e1e3770b5ee6a4047ba620c8e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:2",
+      "sequence": 12255,
+      "chapter_label": "EZR 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Shecaniah the son of Jehiel, one of the sons of Elam, answered Ezra, “We have trespassed against our God, and have married foreign women of the peoples of the land. Yet now there is hope for Israel concerning this thing.",
+      "ko": "엘람 자손중 여히엘의 아들 스가냐가 에스라에게 이르되 우리가 우리 하나님께 범죄하여 이 땅 이방 여자를 취하여 아내를 삼았으나 이스라엘에게 오히려 소망이 있나니",
+      "source_text_hash": "6ae9249337688b8e38feb8955901a0769c260d835a81817fd2263a610d04413f",
+      "translation_text_hash": "219b2c2e26c3a54934240e6cb1195de415cbe04874ebad3cdb1571e78c6a70ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 자손중 여히엘의 아들 스가냐가 에스라에게 이르되 우리가 우리 하나님께 범죄하여 이 땅 이방 여자를 취하여 아내를 삼았으나 이스라엘에게 오히려 소망이 있나니"
+      ],
+      "raw_text_hashes": [
+        "219b2c2e26c3a54934240e6cb1195de415cbe04874ebad3cdb1571e78c6a70ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:3",
+      "sequence": 12256,
+      "chapter_label": "EZR 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Now therefore let’s make a covenant with our God to put away all the wives and those who are born of them, according to the counsel of my lord and of those who tremble at the commandment of our God. Let it be done according to the law.",
+      "ko": "곧 내 주의 교훈을 좇으며 우리 하나님의 명령을 떨며 준행하는 자의 의논을 좇아 이 모든 아내와 그 소생을 다 내어 보내기로 우리 하나님과 언약을 세우고 율법대로 행할 것이라",
+      "source_text_hash": "9bf5dc8b63a74906b456111c2c0123527909e9245e1a935ed389c3cab45d9fd2",
+      "translation_text_hash": "424e5a15b8a5dc5c5a9f2a8dd63a336e9cb4b83a2e0432d6a0e3ecdbc71bccb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내 주의 교훈을 좇으며 우리 하나님의 명령을 떨며 준행하는 자의 의논을 좇아 이 모든 아내와 그 소생을 다 내어 보내기로 우리 하나님과 언약을 세우고 율법대로 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "424e5a15b8a5dc5c5a9f2a8dd63a336e9cb4b83a2e0432d6a0e3ecdbc71bccb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:4",
+      "sequence": 12257,
+      "chapter_label": "EZR 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Arise, for the matter belongs to you and we are with you. Be courageous, and do it.”",
+      "ko": "이는 당신의 주장할 일이니 일어나소서 우리가 도우리니 힘써 행하소서",
+      "source_text_hash": "fec9ecc2fa33ddfbb0e6c1ee9c9ac18fce0b3af4c31413f7d226d77697520b74",
+      "translation_text_hash": "7257fdb42c8576000c65df174717d2319ce7a6870124e39cedbf5e2ee5fc9310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 당신의 주장할 일이니 일어나소서 우리가 도우리니 힘써 행하소서"
+      ],
+      "raw_text_hashes": [
+        "7257fdb42c8576000c65df174717d2319ce7a6870124e39cedbf5e2ee5fc9310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:5",
+      "sequence": 12258,
+      "chapter_label": "EZR 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Then Ezra arose, and made the chiefs of the priests, the Levites, and all Israel to swear that they would do according to this word. So they swore.",
+      "ko": "이에 에스라가 일어나 제사장들과 레위 사람들과 온 이스라엘에게 이 말대로 행하기를 맹세하게 하매 무리가 맹세하는지라",
+      "source_text_hash": "b5cf9445d1b95ef33e42a3190edd277439ddc9cdec2382181ac0d54b7acb68c7",
+      "translation_text_hash": "95205204de653f90bc8cb66a2ffe9af09d022f5c98f421b875a086b379328d2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 에스라가 일어나 제사장들과 레위 사람들과 온 이스라엘에게 이 말대로 행하기를 맹세하게 하매 무리가 맹세하는지라"
+      ],
+      "raw_text_hashes": [
+        "95205204de653f90bc8cb66a2ffe9af09d022f5c98f421b875a086b379328d2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:6",
+      "sequence": 12259,
+      "chapter_label": "EZR 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Then Ezra rose up from before God’s house, and went into the room of Jehohanan the son of Eliashib. When he came there, he didn’t eat bread or drink water, for he mourned because of the trespass of the exiles.",
+      "ko": "이에 에스라가 하나님의 전 앞에서 일어나 엘리아십의 아들 여호하난의 방으로 들어가니라 저가 들어가서 사로잡혔던 자의 죄를 근심하여 떡도 먹지 아니하며 물도 마시지 아니하더니",
+      "source_text_hash": "e7894eaeb37ed4cca27dceb4deee47fe42ca28e91a9f925f061d110951f5e200",
+      "translation_text_hash": "b88151497261f1ae6d0bbf2ab5a0fe35aa657928466346b8f5d5006843ee0fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 에스라가 하나님의 전 앞에서 일어나 엘리아십의 아들 여호하난의 방으로 들어가니라 저가 들어가서 사로잡혔던 자의 죄를 근심하여 떡도 먹지 아니하며 물도 마시지 아니하더니"
+      ],
+      "raw_text_hashes": [
+        "b88151497261f1ae6d0bbf2ab5a0fe35aa657928466346b8f5d5006843ee0fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:7",
+      "sequence": 12260,
+      "chapter_label": "EZR 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "They made a proclamation throughout Judah and Jerusalem to all the children of the captivity, that they should gather themselves together to Jerusalem;",
+      "ko": "유다와 예루살렘의 사로잡혔던 자의 자손들에게 공포하기를 너희는 예루살렘으로 모이라",
+      "source_text_hash": "b0fdf2580b127e950162c9b006793d4e42354c5d98763b7cce5bb4b53dcc0da0",
+      "translation_text_hash": "e9fe94255455be0969a1fdfd69be94e63c3957b9f1223a714b032f5136f23bb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 예루살렘의 사로잡혔던 자의 자손들에게 공포하기를 너희는 예루살렘으로 모이라"
+      ],
+      "raw_text_hashes": [
+        "e9fe94255455be0969a1fdfd69be94e63c3957b9f1223a714b032f5136f23bb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:8",
+      "sequence": 12261,
+      "chapter_label": "EZR 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "and that whoever didn’t come within three days, according to the counsel of the princes and the elders, all his possessions should be forfeited, and he himself separated from the assembly of the captivity.",
+      "ko": "누구든지 방백들과 장로들의 훈시를 좇아 삼일 내에 오지 아니하면 그 재산을 적몰하고 사로잡혔던 자의 회에서 쫓아 내리라 하매",
+      "source_text_hash": "0f59ef1e9e77e559734fcd98e7c4252b1d4c106dda285764429f336c1d04894d",
+      "translation_text_hash": "bad6c33ccef1d6a811815b837ac42fc782a7ee97bac842c366cf8901980398c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 방백들과 장로들의 훈시를 좇아 삼일 내에 오지 아니하면 그 재산을 적몰하고 사로잡혔던 자의 회에서 쫓아 내리라 하매"
+      ],
+      "raw_text_hashes": [
+        "bad6c33ccef1d6a811815b837ac42fc782a7ee97bac842c366cf8901980398c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:9",
+      "sequence": 12262,
+      "chapter_label": "EZR 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Then all the men of Judah and Benjamin gathered themselves together to Jerusalem within the three days. It was the ninth month, on the twentieth day of the month; and all the people sat in the wide place in front of God’s house, trembling because of this matter, and because of the great rain.",
+      "ko": "유다와 베냐민 모든 사람이 삼일 내에 예루살렘에 모이니 때는 구월 이십일이라 무리가 하나님의 전앞 광장에 앉아서 이 일과 큰 비를 인하여 떨더니",
+      "source_text_hash": "7c66ffab4964708e79da7ad52dd5572263afeb596ccfb9682d3525eca82315ec",
+      "translation_text_hash": "5d17c9e640165da3f2b8ad5e161d5cd08448eee30fc96561307f1f36b6ae56c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 베냐민 모든 사람이 삼일 내에 예루살렘에 모이니 때는 구월 이십일이라 무리가 하나님의 전앞 광장에 앉아서 이 일과 큰 비를 인하여 떨더니"
+      ],
+      "raw_text_hashes": [
+        "5d17c9e640165da3f2b8ad5e161d5cd08448eee30fc96561307f1f36b6ae56c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:10",
+      "sequence": 12263,
+      "chapter_label": "EZR 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "Ezra the priest stood up and said to them, “You have trespassed, and have married foreign women, increasing the guilt of Israel.",
+      "ko": "제사장 에스라가 일어서서 저희에게 이르되 너희가 범죄하여 이방 여자로 아내를 삼아 이스라엘의 죄를 더하게 하였으니",
+      "source_text_hash": "e21f735ded0d1d351067be96379f5637ce9c772c77580416bae35ec3d503834e",
+      "translation_text_hash": "5ff3182e6c4b9415d05c38e4555f0f7fdf0cc23d4b80fd2cf9a9d8d88cbdc1a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 에스라가 일어서서 저희에게 이르되 너희가 범죄하여 이방 여자로 아내를 삼아 이스라엘의 죄를 더하게 하였으니"
+      ],
+      "raw_text_hashes": [
+        "5ff3182e6c4b9415d05c38e4555f0f7fdf0cc23d4b80fd2cf9a9d8d88cbdc1a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:11",
+      "sequence": 12264,
+      "chapter_label": "EZR 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Now therefore make confession to the LORD, the God of your fathers and do his pleasure. Separate yourselves from the peoples of the land and from the foreign women.”",
+      "ko": "이제 너희 열조의 하나님 앞에서 죄를 자복하고 그 뜻대로 행하여 이 땅 족속들과 이방 여인을 끊어 버리라",
+      "source_text_hash": "917ab2354fbb4dc4c004b4f482a81e1471f1ea713e69421013d33d3711367079",
+      "translation_text_hash": "f0e54d415367a66eb5923163e88b656cc02581c1767173aea85018a72f43aecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희 열조의 하나님 앞에서 죄를 자복하고 그 뜻대로 행하여 이 땅 족속들과 이방 여인을 끊어 버리라"
+      ],
+      "raw_text_hashes": [
+        "f0e54d415367a66eb5923163e88b656cc02581c1767173aea85018a72f43aecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:12",
+      "sequence": 12265,
+      "chapter_label": "EZR 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Then all the assembly answered with a loud voice, “We must do as you have said concerning us.",
+      "ko": "회 무리가 큰 소리로 대답하여 가로되 당신의 말씀대로 우리가 마땅히 행할 것이니이다",
+      "source_text_hash": "cfa760194b8880feba3946185208cdbb8a7375fe326b29c6e73fdd1fd5c92f97",
+      "translation_text_hash": "c0a66d3125439d54ccc2265b64cf8b218401db13e228965bfcc0184728c8d243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회 무리가 큰 소리로 대답하여 가로되 당신의 말씀대로 우리가 마땅히 행할 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "c0a66d3125439d54ccc2265b64cf8b218401db13e228965bfcc0184728c8d243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:13",
+      "sequence": 12266,
+      "chapter_label": "EZR 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "But the people are many, and it is a time of much rain, and we are not able to stand outside. This is not a work of one day or two, for we have greatly transgressed in this matter.",
+      "ko": "그러나 백성이 많고 또 큰 비가 내리는 때니 능히 밖에 서지 못할 것이요 우리가 이 일로 크게 범죄하였은즉 하루 이틀에 할 일이 아니오니",
+      "source_text_hash": "2fbcb594919ed064fa93c63e2f3923ae0b99db6d0305083932b9f569caa9de94",
+      "translation_text_hash": "4d2bc51249b39fdbf4f662d43048160e98b707c3f6cc0926660a380721e615c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 백성이 많고 또 큰 비가 내리는 때니 능히 밖에 서지 못할 것이요 우리가 이 일로 크게 범죄하였은즉 하루 이틀에 할 일이 아니오니"
+      ],
+      "raw_text_hashes": [
+        "4d2bc51249b39fdbf4f662d43048160e98b707c3f6cc0926660a380721e615c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:14",
+      "sequence": 12267,
+      "chapter_label": "EZR 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Now let our princes be appointed for all the assembly, and let all those who are in our cities who have married foreign women come at appointed times, and with them the elders of every city and its judges, until the fierce wrath of our God is turned from us, until this matter is resolved.”",
+      "ko": "이제 온 회중을 위하여 우리 방백들을 세우고 우리 모든 성읍에 이방 여자에게 장가든 자는 다 기한에 본성 장로들과 재판장과 함께 오게 하여 우리 하나님의 이 일로 인하신 진노가 우리에게서 떠나게 하소서 하나",
+      "source_text_hash": "980030e540c7171750fdbfc532502a33ee8cd9f225fa88567e3713b8e69e7dd0",
+      "translation_text_hash": "850cfa1325dabd22b533b4a7621839127eb4413ffee0dd40112b591e8fc84316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 온 회중을 위하여 우리 방백들을 세우고 우리 모든 성읍에 이방 여자에게 장가든 자는 다 기한에 본성 장로들과 재판장과 함께 오게 하여 우리 하나님의 이 일로 인하신 진노가 우리에게서 떠나게 하소서 하나"
+      ],
+      "raw_text_hashes": [
+        "850cfa1325dabd22b533b4a7621839127eb4413ffee0dd40112b591e8fc84316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:15",
+      "sequence": 12268,
+      "chapter_label": "EZR 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Only Jonathan the son of Asahel and Jahzeiah the son of Tikvah stood up against this; and Meshullam and Shabbethai the Levite helped them.",
+      "ko": "오직 아사헬의 아들 요나단과 디과의 아들 야스야가 일어나 그 일을 반대하고 므술람과 레위 사람 삽브대가 저희를 돕더라",
+      "source_text_hash": "9634804af5a9a7f8ad3b6920bbc9ac68b7e47b65caa3c926f319a8678d1e5f87",
+      "translation_text_hash": "a7b19dc4d7c3ebd7b728924a55370bee316665449b562cf5af1e584a3de6e4bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 아사헬의 아들 요나단과 디과의 아들 야스야가 일어나 그 일을 반대하고 므술람과 레위 사람 삽브대가 저희를 돕더라"
+      ],
+      "raw_text_hashes": [
+        "a7b19dc4d7c3ebd7b728924a55370bee316665449b562cf5af1e584a3de6e4bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:16",
+      "sequence": 12269,
+      "chapter_label": "EZR 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "The children of the captivity did so. Ezra the priest, with certain heads of fathers’ households, after their fathers’ houses, and all of them by their names, were set apart; and they sat down in the first day of the tenth month to examine the matter.",
+      "ko": "사로잡혔던 자의 자손이 그대로 한지라 제사장 에스라가 그 종족을 따라 각기 지명된 족장 몇 사람을 위임하고 시월 초하루에 앉아 그 일을 조사하여",
+      "source_text_hash": "6b058050661c97f6be97a7329e0a304aefe0b8240e72503c2478b290abf1e9e1",
+      "translation_text_hash": "2f2c1da8d0ba860777aa75cb70452185de8e07ae7c7ee185ddd0090e4f684786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔던 자의 자손이 그대로 한지라 제사장 에스라가 그 종족을 따라 각기 지명된 족장 몇 사람을 위임하고 시월 초하루에 앉아 그 일을 조사하여"
+      ],
+      "raw_text_hashes": [
+        "2f2c1da8d0ba860777aa75cb70452185de8e07ae7c7ee185ddd0090e4f684786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:17",
+      "sequence": 12270,
+      "chapter_label": "EZR 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "They finished with all the men who had married foreign women by the first day of the first month.",
+      "ko": "정월 초하루에 이르러 이방 여인을 취한 자의 일 조사하기를 마치니라",
+      "source_text_hash": "ee0fb3d96f82ca26d679dc4b5058ecf526ad63b8338ce4a5bc5422bd15f40f2a",
+      "translation_text_hash": "047a7dfe74f9060fdc482529c94305aeb118f5085d7c7a185776b96eec26d866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 초하루에 이르러 이방 여인을 취한 자의 일 조사하기를 마치니라"
+      ],
+      "raw_text_hashes": [
+        "047a7dfe74f9060fdc482529c94305aeb118f5085d7c7a185776b96eec26d866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:18",
+      "sequence": 12271,
+      "chapter_label": "EZR 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Among the sons of the priests there were found who had married foreign women: of the sons of Jeshua, the son of Jozadak, and his brothers: Maaseiah, Eliezer, Jarib, and Gedaliah.",
+      "ko": "제사장의 무리 중에 이방 여인을 취한 자는 예수아 자손 중 요사닥의 아들과 그 형제 마아세야와 엘리에셀과 야립과 그달랴라",
+      "source_text_hash": "e844193fb208e643bb8010cee823c4a7457a1c8ada190bd93243168fc5db647d",
+      "translation_text_hash": "5b0f59fa23c0c14b7803bbfcd46927a89828564f724d9591b5e9d4cd8f061252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 무리 중에 이방 여인을 취한 자는 예수아 자손 중 요사닥의 아들과 그 형제 마아세야와 엘리에셀과 야립과 그달랴라"
+      ],
+      "raw_text_hashes": [
+        "5b0f59fa23c0c14b7803bbfcd46927a89828564f724d9591b5e9d4cd8f061252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:19",
+      "sequence": 12272,
+      "chapter_label": "EZR 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "They gave their hand that they would put away their wives; and being guilty, they offered a ram of the flock for their guilt.",
+      "ko": "저희가 다 손을 잡아 맹세하여 그 아내를 보내기로 하고 또 그 죄를 인하여 수양 하나를 속건제로 드렸으며",
+      "source_text_hash": "996c3c60f2f037909a6ec184f264fb2b7a7b6465f9ae75671b90c4e9b01825f2",
+      "translation_text_hash": "e80e876202df4b70282d501cf025c68b12ffa602cf4d784e354e5a644c2c0e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 손을 잡아 맹세하여 그 아내를 보내기로 하고 또 그 죄를 인하여 수양 하나를 속건제로 드렸으며"
+      ],
+      "raw_text_hashes": [
+        "e80e876202df4b70282d501cf025c68b12ffa602cf4d784e354e5a644c2c0e90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:20",
+      "sequence": 12273,
+      "chapter_label": "EZR 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Of the sons of Immer: Hanani and Zebadiah.",
+      "ko": "또 임멜 자손 중에는 하나니와 스바댜요",
+      "source_text_hash": "4ab6a5fe4359e586bf747f6717b7adbc2f52f1eaf16b1962e136436707e17324",
+      "translation_text_hash": "59dbd8693e09f964efe30df3b012d28dac537c0a1b06d4c9d8ffb0713d499dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 임멜 자손 중에는 하나니와 스바댜요"
+      ],
+      "raw_text_hashes": [
+        "59dbd8693e09f964efe30df3b012d28dac537c0a1b06d4c9d8ffb0713d499dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:21",
+      "sequence": 12274,
+      "chapter_label": "EZR 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Of the sons of Harim: Maaseiah, Elijah, Shemaiah, Jehiel, and Uzziah.",
+      "ko": "하림 자손 중에는 마아세야와 엘리야와 스마야와 여히엘과 웃시야요",
+      "source_text_hash": "d20f9a23553485d89e72e9eb3b47c6f77e29109484ffa0cb174275350f75061d",
+      "translation_text_hash": "2ccfdcd212c39ab9ddd79ed3c4eb1855570de5937d2c229ee36a8f7caf5c51f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손 중에는 마아세야와 엘리야와 스마야와 여히엘과 웃시야요"
+      ],
+      "raw_text_hashes": [
+        "2ccfdcd212c39ab9ddd79ed3c4eb1855570de5937d2c229ee36a8f7caf5c51f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:22",
+      "sequence": 12275,
+      "chapter_label": "EZR 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Of the sons of Pashhur: Elioenai, Maaseiah, Ishmael, Nethanel, Jozabad, and Elasah.",
+      "ko": "바스훌 자손 중에는 엘료에내와 마아세야와 이스마엘과 느다넬과 요사밧과 엘라사였더라",
+      "source_text_hash": "fccc27c28b66975184fe68eb5b34e6b89491aa08a12f64a6deaa28febb9c81b3",
+      "translation_text_hash": "3ff1b2c6516297017f2cfc8e0040a7f45840e90b760a29d891c71917c8bd4920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바스훌 자손 중에는 엘료에내와 마아세야와 이스마엘과 느다넬과 요사밧과 엘라사였더라"
+      ],
+      "raw_text_hashes": [
+        "3ff1b2c6516297017f2cfc8e0040a7f45840e90b760a29d891c71917c8bd4920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:23",
+      "sequence": 12276,
+      "chapter_label": "EZR 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Of the Levites: Jozabad, Shimei, Kelaiah (also called Kelita), Pethahiah, Judah, and Eliezer.",
+      "ko": "레위 사람 중에는 요사밧과 시므이와 글라야라 하는 글리다와 브다히야와 유다와 엘리에셀이었더라",
+      "source_text_hash": "f701a349b6bcaf8e8196c01752a56c33202afc897edd50f9bcd3887507eb5584",
+      "translation_text_hash": "f474a8b4978ae5653d3df96055b44b249ba2ee835955e67dd849c858278a1896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 중에는 요사밧과 시므이와 글라야라 하는 글리다와 브다히야와 유다와 엘리에셀이었더라"
+      ],
+      "raw_text_hashes": [
+        "f474a8b4978ae5653d3df96055b44b249ba2ee835955e67dd849c858278a1896"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:24",
+      "sequence": 12277,
+      "chapter_label": "EZR 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Of the singers: Eliashib. Of the gatekeepers: Shallum, Telem, and Uri.",
+      "ko": "노래하는 자 중에는 엘리아십이요 문지기 중에는 살룸과 델렘과 우리였더라",
+      "source_text_hash": "9477078aec119381f93db1832966ae0e325a15de0ff6ef4604d54a0f0bbffb42",
+      "translation_text_hash": "301ed4911d2cd32f5a240a8d5b108f0e802b2a162f716583f93bc896888a88f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자 중에는 엘리아십이요 문지기 중에는 살룸과 델렘과 우리였더라"
+      ],
+      "raw_text_hashes": [
+        "301ed4911d2cd32f5a240a8d5b108f0e802b2a162f716583f93bc896888a88f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:25",
+      "sequence": 12278,
+      "chapter_label": "EZR 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Of Israel: Of the sons of Parosh: Ramiah, Izziah, Malchijah, Mijamin, Eleazar, Malchijah, and Benaiah.",
+      "ko": "이스라엘 중에는 바로스 자손 중 라먀와 잇시야와 말기야와 미야민과 엘르아살과 말기야와 브나야요",
+      "source_text_hash": "4b3a20729f8f2533ba278691a47a307f5ec04f941a2e20befc89f1aadf11f9d1",
+      "translation_text_hash": "027cf44c4d6e95187abba85145a381202ee98058658014e67604d747cf1402b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 중에는 바로스 자손 중 라먀와 잇시야와 말기야와 미야민과 엘르아살과 말기야와 브나야요"
+      ],
+      "raw_text_hashes": [
+        "027cf44c4d6e95187abba85145a381202ee98058658014e67604d747cf1402b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:26",
+      "sequence": 12279,
+      "chapter_label": "EZR 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Of the sons of Elam: Mattaniah, Zechariah, Jehiel, Abdi, Jeremoth, and Elijah.",
+      "ko": "엘람 자손 중 맛다냐와 스가랴와 여히엘과 압디와 여레못과 엘리야요",
+      "source_text_hash": "697069fbb08ab4debece3260044d919bf6a106f0d74356599df7e5c0f37f8715",
+      "translation_text_hash": "e9edecda2a8852077144289963e893891fa30fed383f2c6638b1ae4b2115319a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 자손 중 맛다냐와 스가랴와 여히엘과 압디와 여레못과 엘리야요"
+      ],
+      "raw_text_hashes": [
+        "e9edecda2a8852077144289963e893891fa30fed383f2c6638b1ae4b2115319a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:27",
+      "sequence": 12280,
+      "chapter_label": "EZR 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "Of the sons of Zattu: Elioenai, Eliashib, Mattaniah, Jeremoth, Zabad, and Aziza.",
+      "ko": "삿두 자손 중 엘료에내와 엘리아십과 맛다냐와 여레못과 사밧과 아시사요",
+      "source_text_hash": "7b655233636e28634cb305ea28910e0a50aa10de7723a340d88e30fdb878ae3c",
+      "translation_text_hash": "f9460875c5243eac0130639d9f750656f915c85829d6ddc3fb3ecbe60e21be0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삿두 자손 중 엘료에내와 엘리아십과 맛다냐와 여레못과 사밧과 아시사요"
+      ],
+      "raw_text_hashes": [
+        "f9460875c5243eac0130639d9f750656f915c85829d6ddc3fb3ecbe60e21be0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:28",
+      "sequence": 12281,
+      "chapter_label": "EZR 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Of the sons of Bebai: Jehohanan, Hananiah, Zabbai, and Athlai.",
+      "ko": "베배 자손 중 여호하난과 하나냐와 삽배와 아들래요",
+      "source_text_hash": "1182d5df3b9d1e68d3d4b36ccfb59dd671cac87a1dc06a09c3510df964148e15",
+      "translation_text_hash": "d5d8f0632577760e329bd970c0aec26004bdda89c47ac0c0d69d36adab829d5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베배 자손 중 여호하난과 하나냐와 삽배와 아들래요"
+      ],
+      "raw_text_hashes": [
+        "d5d8f0632577760e329bd970c0aec26004bdda89c47ac0c0d69d36adab829d5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:29",
+      "sequence": 12282,
+      "chapter_label": "EZR 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Of the sons of Bani: Meshullam, Malluch, Adaiah, Jashub, Sheal, and Jeremoth.",
+      "ko": "바니 자손 중 므술람과 말룩과 아다야와 야숩과 스알과 여레못이요",
+      "source_text_hash": "f9e4476fd05675c3762968b04d226635a7ac576d92a18d6f19496a8598b873bb",
+      "translation_text_hash": "1e5721be498bf2b3da1e5e6b9e39624b7f52dae42145e500e7061d33d712eedb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바니 자손 중 므술람과 말룩과 아다야와 야숩과 스알과 여레못이요"
+      ],
+      "raw_text_hashes": [
+        "1e5721be498bf2b3da1e5e6b9e39624b7f52dae42145e500e7061d33d712eedb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:30",
+      "sequence": 12283,
+      "chapter_label": "EZR 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "Of the sons of Pahathmoab: Adna, Chelal, Benaiah, Maaseiah, Mattaniah, Bezalel, Binnui, and Manasseh.",
+      "ko": "바핫모압 자손 중 앗나와 글랄과 브나야와 마아세야와 맛다냐와 브살렐과 빈누이와 므낫세요",
+      "source_text_hash": "42682f205201f5e28b64dc39ecfe8218f6dbbd94e924b67b907289537834bfa1",
+      "translation_text_hash": "2c7f5390411ac69b8fc6e0eebeb1def557cedff0eb31810f29ab7b02ce9bfb8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바핫모압 자손 중 앗나와 글랄과 브나야와 마아세야와 맛다냐와 브살렐과 빈누이와 므낫세요"
+      ],
+      "raw_text_hashes": [
+        "2c7f5390411ac69b8fc6e0eebeb1def557cedff0eb31810f29ab7b02ce9bfb8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:31",
+      "sequence": 12284,
+      "chapter_label": "EZR 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Of the sons of Harim: Eliezer, Isshijah, Malchijah, Shemaiah, Shimeon,",
+      "ko": "하림 자손 중 엘리에셀과 잇시야와 말기야와 스마야와 시므온과",
+      "source_text_hash": "33d5092ab08ebef8980e68c7fc4a85e03d2364adbb33c64d12be2c613ce9f898",
+      "translation_text_hash": "5ce0a913d37061c5fd0a6aac443dd10cc06e7a791db5bf8c25d4a65bdcb29868",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손 중 엘리에셀과 잇시야와 말기야와 스마야와 시므온과"
+      ],
+      "raw_text_hashes": [
+        "5ce0a913d37061c5fd0a6aac443dd10cc06e7a791db5bf8c25d4a65bdcb29868"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:32",
+      "sequence": 12285,
+      "chapter_label": "EZR 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Benjamin, Malluch, and Shemariah.",
+      "ko": "베냐민과 말룩과 스마랴요",
+      "source_text_hash": "2ff396957285f140ab72abed86a4255b8b94d931ef44ddff8f17832a7e5986bb",
+      "translation_text_hash": "b4a8a69fcdda116bc2e5c5f8941679d0b2cecdf05e01627a457a2837931dd9b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민과 말룩과 스마랴요"
+      ],
+      "raw_text_hashes": [
+        "b4a8a69fcdda116bc2e5c5f8941679d0b2cecdf05e01627a457a2837931dd9b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:33",
+      "sequence": 12286,
+      "chapter_label": "EZR 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "Of the sons of Hashum: Mattenai, Mattattah, Zabad, Eliphelet, Jeremai, Manasseh, and Shimei.",
+      "ko": "하숨 자손 중 맛드내와 맛닷다와 사밧과 엘리벨렛과 여레매와 므낫세와 시므이요",
+      "source_text_hash": "62efd4f7eb090ad2d5ec9b32877daae9abafde6efd8c82a27ea0fa2d66251dae",
+      "translation_text_hash": "e9f0efe927a142bc36a1a45f615d19b0d0e17b317abefba7f0545e3d4db4b491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하숨 자손 중 맛드내와 맛닷다와 사밧과 엘리벨렛과 여레매와 므낫세와 시므이요"
+      ],
+      "raw_text_hashes": [
+        "e9f0efe927a142bc36a1a45f615d19b0d0e17b317abefba7f0545e3d4db4b491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:34",
+      "sequence": 12287,
+      "chapter_label": "EZR 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "Of the sons of Bani: Maadai, Amram, Uel,",
+      "ko": "바니 자손 중 마아대와 아므람과 우엘과",
+      "source_text_hash": "47486501dc4c8337a8fbff3995b49a21511bda934ec22f2b1aabfb061ede0a1d",
+      "translation_text_hash": "75ebb2a73df724f725872d7888cfa9dfd905b8e62a38344dbdd46a79693bda48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바니 자손 중 마아대와 아므람과 우엘과"
+      ],
+      "raw_text_hashes": [
+        "75ebb2a73df724f725872d7888cfa9dfd905b8e62a38344dbdd46a79693bda48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:35",
+      "sequence": 12288,
+      "chapter_label": "EZR 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "Benaiah, Bedeiah, Cheluhi,",
+      "ko": "브나야와 베드야와 글루히와",
+      "source_text_hash": "b581559e87d1f421bf9c653e1289e4ad1e5acdee0b0e3c5cd86da0aef7c1c0f7",
+      "translation_text_hash": "beef8cd1eb471ef42d8f7095938412d2e95f33071af22f533b2b0beec2694d8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브나야와 베드야와 글루히와"
+      ],
+      "raw_text_hashes": [
+        "beef8cd1eb471ef42d8f7095938412d2e95f33071af22f533b2b0beec2694d8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:36",
+      "sequence": 12289,
+      "chapter_label": "EZR 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "Vaniah, Meremoth, Eliashib,",
+      "ko": "와냐와 므레못과 에랴십과",
+      "source_text_hash": "08f9373af2e3258d1b466b780a591de882b658a3f11bab817b2d3b50cea14eb3",
+      "translation_text_hash": "39d26a3824ec165c6de78ccfb8f53354e6bc190054f581b68a45100b5e7744db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와냐와 므레못과 에랴십과"
+      ],
+      "raw_text_hashes": [
+        "39d26a3824ec165c6de78ccfb8f53354e6bc190054f581b68a45100b5e7744db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:37",
+      "sequence": 12290,
+      "chapter_label": "EZR 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "Mattaniah, Mattenai, Jaasu,",
+      "ko": "맛다냐와 맛드내와 야아수와",
+      "source_text_hash": "5503c8b682324cf9427bf76882c11393081bc3fc87e5f6b587349cdcfcba0393",
+      "translation_text_hash": "073d1a1e932062ad3745f53c44e14e9ab76ac278bef3fa0cfff0cc4654c07e5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맛다냐와 맛드내와 야아수와"
+      ],
+      "raw_text_hashes": [
+        "073d1a1e932062ad3745f53c44e14e9ab76ac278bef3fa0cfff0cc4654c07e5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:38",
+      "sequence": 12291,
+      "chapter_label": "EZR 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "Bani, Binnui, Shimei,",
+      "ko": "바니와 빈누이와 시므이와",
+      "source_text_hash": "a9d45ac05aaf33557c6404f1dbd5a0c6a5e66bced6422531e3a07537be1fda7f",
+      "translation_text_hash": "86a7a3a2701b5741f4c6e1205a5003d1ee0be5537e2c2598c75f567c9407f3da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바니와 빈누이와 시므이와"
+      ],
+      "raw_text_hashes": [
+        "86a7a3a2701b5741f4c6e1205a5003d1ee0be5537e2c2598c75f567c9407f3da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:39",
+      "sequence": 12292,
+      "chapter_label": "EZR 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "Shelemiah, Nathan, Adaiah,",
+      "ko": "셀레먀와 나단과 아다야와",
+      "source_text_hash": "80011d87e5fbe2476fcf22c7546c534c722a1d0fddd74efa7be767a110640709",
+      "translation_text_hash": "55d65a0b39ba40c750eb83be04bd82edc74eb523fd8e63c663dbe6378a277e9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셀레먀와 나단과 아다야와"
+      ],
+      "raw_text_hashes": [
+        "55d65a0b39ba40c750eb83be04bd82edc74eb523fd8e63c663dbe6378a277e9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:40",
+      "sequence": 12293,
+      "chapter_label": "EZR 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "Machnadebai, Shashai, Sharai,",
+      "ko": "막나드배와 사새와 사래와",
+      "source_text_hash": "7c898a6c22e0447050d64c1f9dab75b39a86f9b4904e39bc571195dc5f17606e",
+      "translation_text_hash": "54daa262dca7bd53abf6b6decc27000fe1ccb64873b94787cdce1aad66eee3d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막나드배와 사새와 사래와"
+      ],
+      "raw_text_hashes": [
+        "54daa262dca7bd53abf6b6decc27000fe1ccb64873b94787cdce1aad66eee3d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:41",
+      "sequence": 12294,
+      "chapter_label": "EZR 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "Azarel, Shelemiah, Shemariah,",
+      "ko": "아사렐과 셀레먀와 스마랴와",
+      "source_text_hash": "48cf0c1677838ae1594c562f0982eee9587b0edf7e347545cbc2c78c8f553074",
+      "translation_text_hash": "072adea20dde06ea46a6390b07be8fa1185c1d7fc209a6b61b9945f595890473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사렐과 셀레먀와 스마랴와"
+      ],
+      "raw_text_hashes": [
+        "072adea20dde06ea46a6390b07be8fa1185c1d7fc209a6b61b9945f595890473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:42",
+      "sequence": 12295,
+      "chapter_label": "EZR 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "Shallum, Amariah, and Joseph.",
+      "ko": "살룸과 아마랴와 요셉이요",
+      "source_text_hash": "781b753339f0b632e2752fd5457655ec1e2064d0a61a06a2837115d89bef3e03",
+      "translation_text_hash": "be917e4d50f0862a842281fab13192b53172b3ce2d7bce417077e00350dd30a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살룸과 아마랴와 요셉이요"
+      ],
+      "raw_text_hashes": [
+        "be917e4d50f0862a842281fab13192b53172b3ce2d7bce417077e00350dd30a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:43",
+      "sequence": 12296,
+      "chapter_label": "EZR 10",
+      "verse_label": "43",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 43
+        }
+      ],
+      "en": "Of the sons of Nebo: Jeiel, Mattithiah, Zabad, Zebina, Iddo, Joel, and Benaiah.",
+      "ko": "느보 자손 중 여이엘과 맛디디야와 사밧과 스비내와 잇도와 요엘과 브나야더라",
+      "source_text_hash": "5dfd96140ed1765ce1285cfca2971836f69a169eb0982ba5c47079c9c887d09a",
+      "translation_text_hash": "ebea9d19dac178c53d231f84015b75f80bad0390135f054611b71909530e31c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느보 자손 중 여이엘과 맛디디야와 사밧과 스비내와 잇도와 요엘과 브나야더라"
+      ],
+      "raw_text_hashes": [
+        "ebea9d19dac178c53d231f84015b75f80bad0390135f054611b71909530e31c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:10:44",
+      "sequence": 12297,
+      "chapter_label": "EZR 10",
+      "verse_label": "44",
+      "locator": {
+        "book": "EZR",
+        "chapter": 10,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 10,
+          "verse": 44
+        }
+      ],
+      "en": "All these had taken foreign wives. Some of them had wives by whom they had children.",
+      "ko": "이상은 모두 이방 여인을 취한 자라 그 중에 자녀를 낳은 여인도 있었더라",
+      "source_text_hash": "f426c2fbbe02d29eea7c5c0fc3e6c66c7b87ff1969e896b8da0412de3f7c7e67",
+      "translation_text_hash": "a1c57feba104969fe1774629cdfeac339535372786372d64460cbb5b405054e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 모두 이방 여인을 취한 자라 그 중에 자녀를 낳은 여인도 있었더라"
+      ],
+      "raw_text_hashes": [
+        "a1c57feba104969fe1774629cdfeac339535372786372d64460cbb5b405054e9"
+      ]
+    }
+  ]
+}

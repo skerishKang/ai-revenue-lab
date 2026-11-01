@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:005",
+  "unit_ordinal": 1124,
+  "unit_label": "1TI 5",
+  "book_code": "1TI",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:5:1",
+      "sequence": 29761,
+      "chapter_label": "1TI 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Don’t rebuke an older man, but exhort him as a father; the younger men as brothers;",
+      "ko": "늙은이를 꾸짖지 말고 권하되 아비에게 하듯하며 젊은이를 형제에게 하듯하고",
+      "source_text_hash": "f9b1052387b5a135504177aa7ad92224f94682db66a827a7dc8568d4ed55f5ef",
+      "translation_text_hash": "4038190f15f95e372ef88ad93babc420cb606da31bae55b8b28a31ac465488f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은이를 꾸짖지 말고 권하되 아비에게 하듯하며 젊은이를 형제에게 하듯하고"
+      ],
+      "raw_text_hashes": [
+        "4038190f15f95e372ef88ad93babc420cb606da31bae55b8b28a31ac465488f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:2",
+      "sequence": 29762,
+      "chapter_label": "1TI 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "the elder women as mothers; the younger as sisters, in all purity.",
+      "ko": "늙은 여자를 어미에게 하듯하며 젊은 여자를 일절 깨끗함으로 자매에게 하듯하라",
+      "source_text_hash": "0ff1a6ecd80c8ea1488ab2f5e1d1c6f17b31b265ec7053c7bbd21f69e597edff",
+      "translation_text_hash": "5fe31dfae054ece6d55a490c8568d71792f2cb7e52eb4b2fd86cb2497a1a22d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 여자를 어미에게 하듯하며 젊은 여자를 일절 깨끗함으로 자매에게 하듯하라"
+      ],
+      "raw_text_hashes": [
+        "5fe31dfae054ece6d55a490c8568d71792f2cb7e52eb4b2fd86cb2497a1a22d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:3",
+      "sequence": 29763,
+      "chapter_label": "1TI 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Honor widows who are widows indeed.",
+      "ko": "참과부인 과부를 경대하라",
+      "source_text_hash": "69c3b9be13f468a39ac0757bfa453b1c712dd27444d6c2a4c1077dbc9874fe94",
+      "translation_text_hash": "cdebad6b00a6257498a50ce52e6fb73b6758ef1def6eb65d0736a0aa1d23b1dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참과부인 과부를 경대하라"
+      ],
+      "raw_text_hashes": [
+        "cdebad6b00a6257498a50ce52e6fb73b6758ef1def6eb65d0736a0aa1d23b1dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:4",
+      "sequence": 29764,
+      "chapter_label": "1TI 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "But if any widow has children or grandchildren, let them learn first to show piety toward their own family and to repay their parents, for this is acceptable in the sight of God.",
+      "ko": "만일 어떤 과부에게 자녀나 손자들이 있거든 저희로 먼저 자기 집에서 효를 행하여 부모에게 보답하기를 배우게 하라 이것이 하나님 앞에 받으실만한 것이니라",
+      "source_text_hash": "2f423ac171351ce5452bb9cbc2583efc20a8b91725e9475ce90cf3f6506e0a25",
+      "translation_text_hash": "975da25c3f4d1b6e9c0014923a2bbf1e3ca5ddda15ff834c1e8fd4200588a19c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 어떤 과부에게 자녀나 손자들이 있거든 저희로 먼저 자기 집에서 효를 행하여 부모에게 보답하기를 배우게 하라 이것이 하나님 앞에 받으실만한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "975da25c3f4d1b6e9c0014923a2bbf1e3ca5ddda15ff834c1e8fd4200588a19c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:5",
+      "sequence": 29765,
+      "chapter_label": "1TI 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Now she who is a widow indeed and desolate, has her hope set on God and continues in petitions and prayers night and day.",
+      "ko": "참과부로서 외로운 자는 하나님께 소망을 두어 주야로 항상 간구와 기도를 하거니와",
+      "source_text_hash": "a6b379ddaf636b93e3664379665d6743b59fda5984c35753f05ddce3c0337fd3",
+      "translation_text_hash": "de16cc94bc1a052ae3bd9de39250cfbd4355fff44d02285d1ee7ce782881a9ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참과부로서 외로운 자는 하나님께 소망을 두어 주야로 항상 간구와 기도를 하거니와"
+      ],
+      "raw_text_hashes": [
+        "de16cc94bc1a052ae3bd9de39250cfbd4355fff44d02285d1ee7ce782881a9ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:6",
+      "sequence": 29766,
+      "chapter_label": "1TI 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "But she who gives herself to pleasure is dead while she lives.",
+      "ko": "일락을 좋아하는 이는 살았으나 죽었느니라",
+      "source_text_hash": "f56b43d7bfa4382897fb2c3064c9d66e0da7de64341e7f9e77b45dd9689dc5e2",
+      "translation_text_hash": "4a36e720332e09b9324209f6ac652a48a4c39315eef014b381dae2d330d33ee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일락을 좋아하는 이는 살았으나 죽었느니라"
+      ],
+      "raw_text_hashes": [
+        "4a36e720332e09b9324209f6ac652a48a4c39315eef014b381dae2d330d33ee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:7",
+      "sequence": 29767,
+      "chapter_label": "1TI 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Also command these things, that they may be without reproach.",
+      "ko": "네가 또한 이것을 명하여 그들로 책망 받을 것이 없게 하라",
+      "source_text_hash": "36da79f6762950fcae4618cd85a1678388f7752dc4ee57e2f3373630249664ba",
+      "translation_text_hash": "b8c0437a6aea4ec2092844b4d4811008127a03f230e0245b55785ad88277c615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 또한 이것을 명하여 그들로 책망 받을 것이 없게 하라"
+      ],
+      "raw_text_hashes": [
+        "b8c0437a6aea4ec2092844b4d4811008127a03f230e0245b55785ad88277c615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:8",
+      "sequence": 29768,
+      "chapter_label": "1TI 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "But if anyone doesn’t provide for his own, and especially his own household, he has denied the faith and is worse than an unbeliever.",
+      "ko": "누구든지 자기 친족 특히 자기 가족을 돌아보지 아니하면 믿음을 배반한 자요 불신자보다 더 악한 자니라",
+      "source_text_hash": "43bcc7f0e149526381ee6cf87f41be1994d8f7378e006ea02716d5840031a74e",
+      "translation_text_hash": "d02303b34aaddfd4db6d82ab4d2b762b8f954d994f2e0da291188ad500d1b581",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 자기 친족 특히 자기 가족을 돌아보지 아니하면 믿음을 배반한 자요 불신자보다 더 악한 자니라"
+      ],
+      "raw_text_hashes": [
+        "d02303b34aaddfd4db6d82ab4d2b762b8f954d994f2e0da291188ad500d1b581"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:9",
+      "sequence": 29769,
+      "chapter_label": "1TI 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Let no one be enrolled as a widow under sixty years old, having been the wife of one man,",
+      "ko": "과부로 명부에 올릴 자는 나이 육십이 덜 되지 아니하고 한 남편의 아내이었던 자로서",
+      "source_text_hash": "911366c65df3004a78dddd07f80710602c5bbfd708c5c53b1562f08f3aa2b605",
+      "translation_text_hash": "81354a7016ae7acf8ceed1dc7ddb4a437e8c7bef62a68ba31a09385eb3938b2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부로 명부에 올릴 자는 나이 육십이 덜 되지 아니하고 한 남편의 아내이었던 자로서"
+      ],
+      "raw_text_hashes": [
+        "81354a7016ae7acf8ceed1dc7ddb4a437e8c7bef62a68ba31a09385eb3938b2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:10",
+      "sequence": 29770,
+      "chapter_label": "1TI 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "being approved by good works, if she has brought up children, if she has been hospitable to strangers, if she has washed the saints’ feet, if she has relieved the afflicted, and if she has diligently followed every good work.",
+      "ko": "선한 행실의 증거가 있어 혹은 자녀를 양육하며 혹은 나그네를 대접하며 혹은 성도들의 발을 씻기며 혹은 환난 당한 자들을 구제하며 혹은 모든 선한 일을 좇은 자라야 할것이요",
+      "source_text_hash": "aceacf94840211c938f4942f564881ac553b12376f12e43b712d42e59838b058",
+      "translation_text_hash": "1fa592528ddc974ad98ca6e2f1702b2554d42f438ae766115ffdea1a68716292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 행실의 증거가 있어 혹은 자녀를 양육하며 혹은 나그네를 대접하며 혹은 성도들의 발을 씻기며 혹은 환난 당한 자들을 구제하며 혹은 모든 선한 일을 좇은 자라야 할것이요"
+      ],
+      "raw_text_hashes": [
+        "1fa592528ddc974ad98ca6e2f1702b2554d42f438ae766115ffdea1a68716292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:11",
+      "sequence": 29771,
+      "chapter_label": "1TI 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "But refuse younger widows, for when they have grown wanton against Christ, they desire to marry,",
+      "ko": "젊은 과부는 거절하라 이는 정욕으로 그리스도를 배반할 때에 시집가고자 함이니",
+      "source_text_hash": "b138a771687ce7dddb59900a3c899ba817cbb622ad6be156628bf4b7a37472bc",
+      "translation_text_hash": "13d0e75412d91c058b3aa39d33a43c5358ecc5e4878fa925768ee130396b161f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 과부는 거절하라 이는 정욕으로 그리스도를 배반할 때에 시집가고자 함이니"
+      ],
+      "raw_text_hashes": [
+        "13d0e75412d91c058b3aa39d33a43c5358ecc5e4878fa925768ee130396b161f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:12",
+      "sequence": 29772,
+      "chapter_label": "1TI 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "having condemnation, because they have rejected their first pledge.",
+      "ko": "처음 믿음을 저버렸으므로 심판을 받느니라",
+      "source_text_hash": "84af682f62dfe7c1474b466e367c69da566e457e992083df3d4b28e8efa162a6",
+      "translation_text_hash": "b7bcf18b625e06246bdb0d25c6618a4523f03e4f96b100df4162cf727184a41f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음 믿음을 저버렸으므로 심판을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "b7bcf18b625e06246bdb0d25c6618a4523f03e4f96b100df4162cf727184a41f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:13",
+      "sequence": 29773,
+      "chapter_label": "1TI 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Besides, they also learn to be idle, going about from house to house. Not only idle, but also gossips and busybodies, saying things which they ought not.",
+      "ko": "또 저희가 게으름을 익혀 집집에 돌아 다니고 게으를뿐 아니라 망령된 폄론을 하며 일을 만들며 마땅히 아니할 말을 하나니",
+      "source_text_hash": "3d70563afd62207c8d3826f2317bbb1c12795751d3c110e447d6d93e791970d3",
+      "translation_text_hash": "83baa489957d3f2a8bb38236dc5d9a69daf2e087246a2c0f867486da7bad2857",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희가 게으름을 익혀 집집에 돌아 다니고 게으를뿐 아니라 망령된 폄론을 하며 일을 만들며 마땅히 아니할 말을 하나니"
+      ],
+      "raw_text_hashes": [
+        "83baa489957d3f2a8bb38236dc5d9a69daf2e087246a2c0f867486da7bad2857"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:14",
+      "sequence": 29774,
+      "chapter_label": "1TI 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "I desire therefore that the younger widows marry, bear children, rule the household, and give no occasion to the adversary for insulting.",
+      "ko": "그러므로 젊은이는 시집가서 아이를 낳고 집을 다스리고 대적에게 훼방할 기회를 조금도 주지 말기를 원하노라",
+      "source_text_hash": "b7e967cf869f92021fcf337d6976b66f890b9a064a45bdb737619603a62b87a1",
+      "translation_text_hash": "f329a8d6b12c6fadfbafcca07f28c2e9cc1bffe636f67a6c92c3e420c97973f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 젊은이는 시집가서 아이를 낳고 집을 다스리고 대적에게 훼방할 기회를 조금도 주지 말기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "f329a8d6b12c6fadfbafcca07f28c2e9cc1bffe636f67a6c92c3e420c97973f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:15",
+      "sequence": 29775,
+      "chapter_label": "1TI 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "For already some have turned away after Satan.",
+      "ko": "이미 사단에게 돌아간 자들도 있도다",
+      "source_text_hash": "7839321be2b3c4420ec020e47f553e5c9a3c8ddf27482f932111a43555eea07d",
+      "translation_text_hash": "233afce452aeb25b06f23109a64900b0881b1ac86d7fa58ecb60b500347346e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 사단에게 돌아간 자들도 있도다"
+      ],
+      "raw_text_hashes": [
+        "233afce452aeb25b06f23109a64900b0881b1ac86d7fa58ecb60b500347346e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:16",
+      "sequence": 29776,
+      "chapter_label": "1TI 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "If any man or woman who believes has widows, let them relieve them, and don’t let the assembly be burdened, that it might relieve those who are widows indeed.",
+      "ko": "만일 믿는 여자에게 과부친척이 있거든 자기가 도와주고 교회로 짐지지 말게 하라 이는 참과부를 도와주게 하려 함이니라",
+      "source_text_hash": "a2c38468cbc209f18d5065e7fe07f6ffa7b3140869131ef6142cf8b0f562bfc7",
+      "translation_text_hash": "493c7e7bd52d0989e97c05cf03a1711b2d16795a5c4b32aba578c4747ea022c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 믿는 여자에게 과부친척이 있거든 자기가 도와주고 교회로 짐지지 말게 하라 이는 참과부를 도와주게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "493c7e7bd52d0989e97c05cf03a1711b2d16795a5c4b32aba578c4747ea022c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:17",
+      "sequence": 29777,
+      "chapter_label": "1TI 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Let the elders who rule well be counted worthy of double honor, especially those who labor in the word and in teaching.",
+      "ko": "잘 다스리는 장로들을 배나 존경할 자로 알되 말씀과 가르침에 수고하는 이들을 더할 것이니라",
+      "source_text_hash": "22e80d5376dcc81995d82fe6e63a395edcc4fc1b88ff41b4a225a1d3914d0d88",
+      "translation_text_hash": "b2dc7e438e88ce5d55dcc7688a4038a9902e6e88957823a337a1581841304051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잘 다스리는 장로들을 배나 존경할 자로 알되 말씀과 가르침에 수고하는 이들을 더할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b2dc7e438e88ce5d55dcc7688a4038a9902e6e88957823a337a1581841304051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:18",
+      "sequence": 29778,
+      "chapter_label": "1TI 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "For the Scripture says, “You shall not muzzle the ox when it treads out the grain.” And, “The laborer is worthy of his wages.”",
+      "ko": "성경에 일렀으되 곡식을 밟아 떠는 소의 입에 망을 씌우지 말라 하였고 또 일군이 그 삯을 받는 것이 마땅하다 하였느니라",
+      "source_text_hash": "5f2e142f20b006a7d5fc00635e856afdd72e08b74d4f98fdf5994980e64d4a53",
+      "translation_text_hash": "cdf195dfcd1a4d04499f14ebb5de39c5035b37624c15608b0b5bb8fccd612caa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경에 일렀으되 곡식을 밟아 떠는 소의 입에 망을 씌우지 말라 하였고 또 일군이 그 삯을 받는 것이 마땅하다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "cdf195dfcd1a4d04499f14ebb5de39c5035b37624c15608b0b5bb8fccd612caa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:19",
+      "sequence": 29779,
+      "chapter_label": "1TI 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Don’t receive an accusation against an elder except at the word of two or three witnesses.",
+      "ko": "장로에 대한 송사는 두 세 증인이 없으면 받지 말 것이요",
+      "source_text_hash": "7cd2248e1a2bdde43f844e2f60f9904b0760587b97884b8c8b67003b2b6399f3",
+      "translation_text_hash": "6c466c715463973809ebe80a5109e35a98cd6abd6649b97ac9fb243ffeda0b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장로에 대한 송사는 두 세 증인이 없으면 받지 말 것이요"
+      ],
+      "raw_text_hashes": [
+        "6c466c715463973809ebe80a5109e35a98cd6abd6649b97ac9fb243ffeda0b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:20",
+      "sequence": 29780,
+      "chapter_label": "1TI 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "Those who sin, reprove in the sight of all, that the rest also may be in fear.",
+      "ko": "범죄한 자들을 모든 사람 앞에 꾸짖어 나머지 사람으로 두려워하게 하라",
+      "source_text_hash": "c627ae3cc5e3f51ef78e47f873b8f21384f7a93b95382c4269dfec8d0596777c",
+      "translation_text_hash": "e2756c796ca4ccded04698d95afc62af3ff7999db02e0ff9b519f7a6f56005e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범죄한 자들을 모든 사람 앞에 꾸짖어 나머지 사람으로 두려워하게 하라"
+      ],
+      "raw_text_hashes": [
+        "e2756c796ca4ccded04698d95afc62af3ff7999db02e0ff9b519f7a6f56005e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:21",
+      "sequence": 29781,
+      "chapter_label": "1TI 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "I command you in the sight of God, and the Lord Jesus Christ, and the chosen angels, that you observe these things without prejudice, doing nothing by partiality.",
+      "ko": "하나님과 그리스도 예수와 택하심을 받은 천사들 앞에서 내가 엄히 명하노니 너는 편견이 없이 이것들을 지켜 아무 일도 편벽되이 하지 말며",
+      "source_text_hash": "acb3e61dd722a947b0d69216b396c85354b2828921524b8986e4bea2faf0b401",
+      "translation_text_hash": "1b863cf7eb9510d8e0d7d0029ca7a4f8aba0daec1149d792b609568c2a666319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님과 그리스도 예수와 택하심을 받은 천사들 앞에서 내가 엄히 명하노니 너는 편견이 없이 이것들을 지켜 아무 일도 편벽되이 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "1b863cf7eb9510d8e0d7d0029ca7a4f8aba0daec1149d792b609568c2a666319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:22",
+      "sequence": 29782,
+      "chapter_label": "1TI 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Lay hands hastily on no one. Don’t be a participant in other people’s sins. Keep yourself pure.",
+      "ko": "아무에게나 경솔히 안수하지 말고 다른 사람의 죄에 간섭지 말고 네 자신을 지켜 정결케 하라",
+      "source_text_hash": "bf5600cc0c802c0a083eca78ba2f52a6b54075fe5f603b29cd907913c2e00ede",
+      "translation_text_hash": "7be143dc832fe4d5d0f0052afd62c9519672210046bb091f8c52dd0fd6a7a6f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무에게나 경솔히 안수하지 말고 다른 사람의 죄에 간섭지 말고 네 자신을 지켜 정결케 하라"
+      ],
+      "raw_text_hashes": [
+        "7be143dc832fe4d5d0f0052afd62c9519672210046bb091f8c52dd0fd6a7a6f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:23",
+      "sequence": 29783,
+      "chapter_label": "1TI 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "Be no longer a drinker of water only, but use a little wine for your stomach’s sake and your frequent infirmities.",
+      "ko": "이제부터는 물만 마시지 말고 네 비위와 자주 나는 병을 인하여 포도주를 조금씩 쓰라",
+      "source_text_hash": "97c33ab76216feb8281c134334cabc74c488c7451a441a4b14ea947cbe1114b8",
+      "translation_text_hash": "306d40efa424212779aa7e92d03a52f20bf8aeab9f45fad0db001216eed2301f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제부터는 물만 마시지 말고 네 비위와 자주 나는 병을 인하여 포도주를 조금씩 쓰라"
+      ],
+      "raw_text_hashes": [
+        "306d40efa424212779aa7e92d03a52f20bf8aeab9f45fad0db001216eed2301f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:24",
+      "sequence": 29784,
+      "chapter_label": "1TI 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Some men’s sins are evident, preceding them to judgment, and some also follow later.",
+      "ko": "어떤 사람들의 죄는 밝히 드러나 먼저 심판에 나아가고 어떤 사람들의 죄는 그 뒤를 좇나니",
+      "source_text_hash": "04de6b1a248a02c96807303709878e66362c5d18f5dfd2f425a531fe22a07559",
+      "translation_text_hash": "f8b0190f9f7901ff945ee30ed18bfbea070b4baee1ce428dd76b5e9be81876f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들의 죄는 밝히 드러나 먼저 심판에 나아가고 어떤 사람들의 죄는 그 뒤를 좇나니"
+      ],
+      "raw_text_hashes": [
+        "f8b0190f9f7901ff945ee30ed18bfbea070b4baee1ce428dd76b5e9be81876f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:5:25",
+      "sequence": 29785,
+      "chapter_label": "1TI 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "1TI",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "In the same way also there are good works that are obvious, and those that are otherwise can’t be hidden.",
+      "ko": "이와 같이 선행도 밝히 드러나고 그렇지 아니한 것도 숨길 수 없느니라",
+      "source_text_hash": "5ce1f2f15b2c89c0c87af5aa59795d827c2b7dd787cacad1177dd645aff98557",
+      "translation_text_hash": "515e9c50dbdbbe5f8b429c3146afbc77d29e584c629616b1614ea282c7fa746b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 선행도 밝히 드러나고 그렇지 아니한 것도 숨길 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "515e9c50dbdbbe5f8b429c3146afbc77d29e584c629616b1614ea282c7fa746b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:036",
+  "unit_ordinal": 514,
+  "unit_label": "PSA 36",
+  "book_code": "PSA",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:36:1",
+      "sequence": 14440,
+      "chapter_label": "PSA 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "A revelation is within my heart about the disobedience of the wicked: There is no fear of God before his eyes.",
+      "ko": "악인의 죄얼이 내 마음에 이르기를 그 목전에는 하나님을 두려워함이 없다 하니",
+      "source_text_hash": "f450bc84fb3111fe81f900b68a05a36bc4d779cc7b54934b9aec5a80f142ea45",
+      "translation_text_hash": "3b986560158fe14deef672fe17d36216c779e28ac6174813114b75c0c8fa824e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 죄얼이 내 마음에 이르기를 그 목전에는 하나님을 두려워함이 없다 하니"
+      ],
+      "raw_text_hashes": [
+        "3b986560158fe14deef672fe17d36216c779e28ac6174813114b75c0c8fa824e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:2",
+      "sequence": 14441,
+      "chapter_label": "PSA 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "For he flatters himself in his own eyes, too much to detect and hate his sin.",
+      "ko": "저가 스스로 자긍하기를 자기 죄악이 드러나지 아니하고 미워함을 받지도 아니하리라 함이로다",
+      "source_text_hash": "7de6ad82c745bba19889dc03943320fe57e95464c15225a5b46cfe4043dcf39c",
+      "translation_text_hash": "948cea6c6b72c18dbc282d6dde50bec6dea2e5f047eae75fcf6cdf8b839c3035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 스스로 자긍하기를 자기 죄악이 드러나지 아니하고 미워함을 받지도 아니하리라 함이로다"
+      ],
+      "raw_text_hashes": [
+        "948cea6c6b72c18dbc282d6dde50bec6dea2e5f047eae75fcf6cdf8b839c3035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:3",
+      "sequence": 14442,
+      "chapter_label": "PSA 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "The words of his mouth are iniquity and deceit. He has ceased to be wise and to do good.",
+      "ko": "그 입의 말은 죄악과 궤휼이라 지혜와 선행을 그쳤도다",
+      "source_text_hash": "64a8ab669b2e92f6505c7433b8f7b30ba734079eaef39d3375140c76bba27ea0",
+      "translation_text_hash": "3af5d6a1198e54f0d1ff515b8c1ab7fb54d5450c458cff8431e35ecac9c531be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입의 말은 죄악과 궤휼이라 지혜와 선행을 그쳤도다"
+      ],
+      "raw_text_hashes": [
+        "3af5d6a1198e54f0d1ff515b8c1ab7fb54d5450c458cff8431e35ecac9c531be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:4",
+      "sequence": 14443,
+      "chapter_label": "PSA 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "He plots iniquity on his bed. He sets himself in a way that is not good. He doesn’t abhor evil.",
+      "ko": "저는 그 침상에서 죄악을 꾀하며 스스로 불선한 길에 서고 악을 싫어하지 아니하는도다",
+      "source_text_hash": "6658d2ecff8b3bf941a66fae611d56e87c436a61f7eb1914cf35d361061ac85e",
+      "translation_text_hash": "19ec4045e790e9df3a638f1ed401b177ef0460404354d60a2312a3276a2729a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 그 침상에서 죄악을 꾀하며 스스로 불선한 길에 서고 악을 싫어하지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "19ec4045e790e9df3a638f1ed401b177ef0460404354d60a2312a3276a2729a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:5",
+      "sequence": 14444,
+      "chapter_label": "PSA 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "Your loving kindness, LORD, is in the heavens. Your faithfulness reaches to the skies.",
+      "ko": "여호와여 주의 인자하심이 하늘에 있고 주의 성실하심이 공중에 사무쳤으며",
+      "source_text_hash": "162d4611ec0453cc5aa6fa6616fbdd589f2cdaac82d72cfe06783c97ef356280",
+      "translation_text_hash": "6cae2957776f0c651a9c32f84d38d88f315ff99c8f8740a5da40c8b729990ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 인자하심이 하늘에 있고 주의 성실하심이 공중에 사무쳤으며"
+      ],
+      "raw_text_hashes": [
+        "6cae2957776f0c651a9c32f84d38d88f315ff99c8f8740a5da40c8b729990ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:6",
+      "sequence": 14445,
+      "chapter_label": "PSA 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Your righteousness is like the mountains of God. Your judgments are like a great deep. LORD, you preserve man and animal.",
+      "ko": "주의 의는 하나님의 산들과 같고 주의 판단은 큰 바다와 일반이라 여호와여 주는 사람과 짐승을 보호하시나이다",
+      "source_text_hash": "86216a1984441fde8da1f503f592050543cd91771cffa89e52478d2dbbec9ff8",
+      "translation_text_hash": "dd02a1483b054d5e53323989538adc9677f1b3866c0af83b8d3f2f7dfe350721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 의는 하나님의 산들과 같고 주의 판단은 큰 바다와 일반이라 여호와여 주는 사람과 짐승을 보호하시나이다"
+      ],
+      "raw_text_hashes": [
+        "dd02a1483b054d5e53323989538adc9677f1b3866c0af83b8d3f2f7dfe350721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:7",
+      "sequence": 14446,
+      "chapter_label": "PSA 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "How precious is your loving kindness, God! The children of men take refuge under the shadow of your wings.",
+      "ko": "하나님이여 주의 인자하심이 어찌 그리 보배로우신지요 인생이 주의 날개 그늘 아래 피하나이다",
+      "source_text_hash": "769588093898eee5491ead3e34bffe6b32d2046dbe43a3b31d6b64e3d48666cd",
+      "translation_text_hash": "013c7b356009f3795cd7c6c92faffc24026719f272ad3cb8949e09056bdfe303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 인자하심이 어찌 그리 보배로우신지요 인생이 주의 날개 그늘 아래 피하나이다"
+      ],
+      "raw_text_hashes": [
+        "013c7b356009f3795cd7c6c92faffc24026719f272ad3cb8949e09056bdfe303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:8",
+      "sequence": 14447,
+      "chapter_label": "PSA 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "They shall be abundantly satisfied with the abundance of your house. You will make them drink of the river of your pleasures.",
+      "ko": "저희가 주의 집의 살찐 것으로 풍족할 것이라 주께서 주의 복락의 강수로 마시우시리이다",
+      "source_text_hash": "af7a9ea9a7b8bff215b280f9a0e1c566d7e5893a3d16df2bf2e2dad812e68082",
+      "translation_text_hash": "a08434a79e5c7b6b0fe0caad4e1207ca3247709dcf697715f9217bd6cf79c06e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 집의 살찐 것으로 풍족할 것이라 주께서 주의 복락의 강수로 마시우시리이다"
+      ],
+      "raw_text_hashes": [
+        "a08434a79e5c7b6b0fe0caad4e1207ca3247709dcf697715f9217bd6cf79c06e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:9",
+      "sequence": 14448,
+      "chapter_label": "PSA 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "For with you is the spring of life. In your light we will see light.",
+      "ko": "대저 생명의 원천이 주께 있사오니 주의 광명 중에 우리가 광명을 보리이다",
+      "source_text_hash": "e8bc679550cbb91aae6cfadcdb48f4464056c83d9aa97cab60da6f256fa703ee",
+      "translation_text_hash": "4d778741ba4fd7445d29b303d31c367216305207097f02d2c790c9cfa18aff16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 생명의 원천이 주께 있사오니 주의 광명 중에 우리가 광명을 보리이다"
+      ],
+      "raw_text_hashes": [
+        "4d778741ba4fd7445d29b303d31c367216305207097f02d2c790c9cfa18aff16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:10",
+      "sequence": 14449,
+      "chapter_label": "PSA 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "Oh continue your loving kindness to those who know you, your righteousness to the upright in heart.",
+      "ko": "주를 아는 자에게 주의 인자하심을 계속하시며 마음이 정직한 자에게 주의 의를 베푸소서",
+      "source_text_hash": "e3ad930c49d1f0490a8447a72d3d71964de460197af8a69e277c4851a2646d96",
+      "translation_text_hash": "a1fd83d499613355df81fd208c6b54bd0935eb039da10f7e1e8e9b536ef89961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 아는 자에게 주의 인자하심을 계속하시며 마음이 정직한 자에게 주의 의를 베푸소서"
+      ],
+      "raw_text_hashes": [
+        "a1fd83d499613355df81fd208c6b54bd0935eb039da10f7e1e8e9b536ef89961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:11",
+      "sequence": 14450,
+      "chapter_label": "PSA 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t let the foot of pride come against me. Don’t let the hand of the wicked drive me away.",
+      "ko": "교만한 자의 발이 내게 미치지 못하게 하시며 악인의 손이 나를 쫓아내지 못하게 하소서",
+      "source_text_hash": "de5a462d7713d846ff934f6b5458c41fe04ca7f6569c61f86c3c4cf31f254dd7",
+      "translation_text_hash": "3b88d95a5f74f29002cb0acf09a2aa6f5f995ce8c3630d5e5c0dba3fad20f28f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만한 자의 발이 내게 미치지 못하게 하시며 악인의 손이 나를 쫓아내지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "3b88d95a5f74f29002cb0acf09a2aa6f5f995ce8c3630d5e5c0dba3fad20f28f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:36:12",
+      "sequence": 14451,
+      "chapter_label": "PSA 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "There the workers of iniquity are fallen. They are thrust down, and shall not be able to rise.",
+      "ko": "죄악을 행하는 자가 거기 넘어졌으니 엎드러지고 다시 일어날 수 없으리이다",
+      "source_text_hash": "367bf52dbaf50745c45fe7c172757888ac63d09e086f3ac5f2bb251eb0f12497",
+      "translation_text_hash": "82bc32fd1662a810142e1e364f59ed1353c85ab89c48cf95bbe1be5ed9e050b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄악을 행하는 자가 거기 넘어졌으니 엎드러지고 다시 일어날 수 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "82bc32fd1662a810142e1e364f59ed1353c85ab89c48cf95bbe1be5ed9e050b0"
+      ]
+    }
+  ]
+}

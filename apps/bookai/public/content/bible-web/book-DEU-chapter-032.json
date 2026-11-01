@@ -1,0 +1,1677 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:032",
+  "unit_ordinal": 185,
+  "unit_label": "DEU 32",
+  "book_code": "DEU",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:32:1",
+      "sequence": 5760,
+      "chapter_label": "DEU 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "Give ear, you heavens, and I will speak. Let the earth hear the words of my mouth.",
+      "ko": "하늘이여 귀를 기울이라 내가 말하리라 땅은 내 입의 말을 들을찌어다",
+      "source_text_hash": "07312ebabdb85e7c91648e6584fef268fc87d6630caae1910216c5a3a9a438f9",
+      "translation_text_hash": "cc90f2362f98772a7d17a0aaa135a347b243d35f6f59fd8f75b409eec01226d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이여 귀를 기울이라 내가 말하리라 땅은 내 입의 말을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "cc90f2362f98772a7d17a0aaa135a347b243d35f6f59fd8f75b409eec01226d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:2",
+      "sequence": 5761,
+      "chapter_label": "DEU 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "My doctrine will drop as the rain. My speech will condense as the dew, as the misty rain on the tender grass, as the showers on the herb.",
+      "ko": "나의 교훈은 내리는 비요 나의 말은 맺히는 이슬이요 연한 풀 위에 가는 비요 채소 위에 단 비로다",
+      "source_text_hash": "62033eabccf31333b3f9cc93da6755207c76018121bcc7c4dd61b83e35b06007",
+      "translation_text_hash": "ec114b568abf6145fb2eb9358292c76c9fa1e910d9f83583ee73cbef3960ca5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 교훈은 내리는 비요 나의 말은 맺히는 이슬이요 연한 풀 위에 가는 비요 채소 위에 단 비로다"
+      ],
+      "raw_text_hashes": [
+        "ec114b568abf6145fb2eb9358292c76c9fa1e910d9f83583ee73cbef3960ca5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:3",
+      "sequence": 5762,
+      "chapter_label": "DEU 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "For I will proclaim the LORD’s name. Ascribe greatness to our God!",
+      "ko": "내가 여호와의 이름을 전파하리니 너희는 위엄을 우리 하나님께 돌릴찌어다",
+      "source_text_hash": "5a7211e04c1dc5bb94172125337ae071f6ba0b28f32e9a2f7bb1845a847ed3b1",
+      "translation_text_hash": "ee7a82ba4b2f6c0327223fadb786250324e4cf2b5866626c1ff2609a011b3ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와의 이름을 전파하리니 너희는 위엄을 우리 하나님께 돌릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "ee7a82ba4b2f6c0327223fadb786250324e4cf2b5866626c1ff2609a011b3ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:4",
+      "sequence": 5763,
+      "chapter_label": "DEU 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "The Rock: his work is perfect, for all his ways are just. A God of faithfulness who does no wrong, just and right is he.",
+      "ko": "그는 반석이시니 그 공덕이 완전하고 그 모든 길이 공평하며 진실무망하신 하나님이시니 공의로우시고 정직하시도다",
+      "source_text_hash": "a684a389be66155cabbfdab9600794e74913429e6af1debd15a748cff20a4b6a",
+      "translation_text_hash": "4a79c7d86a498e8997c2d67f5e2e596a602677b3803219d16c8d7d26b490e0b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 반석이시니 그 공덕이 완전하고 그 모든 길이 공평하며 진실무망하신 하나님이시니 공의로우시고 정직하시도다"
+      ],
+      "raw_text_hashes": [
+        "4a79c7d86a498e8997c2d67f5e2e596a602677b3803219d16c8d7d26b490e0b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:5",
+      "sequence": 5764,
+      "chapter_label": "DEU 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "They have dealt corruptly with him. They are not his children, because of their defect. They are a perverse and crooked generation.",
+      "ko": "그들이 여호와를 향하여 악을 행하니 하나님의 자녀가 아니요 흠이 있는 사곡한 종류로다",
+      "source_text_hash": "09c8766216b2aa79138845e8a3e772a9088071da3124a3a860bea7e86dd3a46d",
+      "translation_text_hash": "7fd23ee536428475216a9cc61ff98a86b22a157798c4a135dfc52e6879aa57d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와를 향하여 악을 행하니 하나님의 자녀가 아니요 흠이 있는 사곡한 종류로다"
+      ],
+      "raw_text_hashes": [
+        "7fd23ee536428475216a9cc61ff98a86b22a157798c4a135dfc52e6879aa57d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:6",
+      "sequence": 5765,
+      "chapter_label": "DEU 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "Is this the way you repay the LORD, foolish and unwise people? Isn’t he your father who has bought you? He has made you and established you.",
+      "ko": "우매무지한 백성아 여호와께 이같이 보답하느냐 그는 너를 얻으신 너의 아버지가 아니시냐 너를 지으시고 세우셨도다",
+      "source_text_hash": "a4d35b781456712bd41d513808bb7f3c630327385935e93094136a7e9eace54c",
+      "translation_text_hash": "acced76d42fb8d7bba1805de01d46f7bdcb4e9dc107529702a212b961267864d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매무지한 백성아 여호와께 이같이 보답하느냐 그는 너를 얻으신 너의 아버지가 아니시냐 너를 지으시고 세우셨도다"
+      ],
+      "raw_text_hashes": [
+        "acced76d42fb8d7bba1805de01d46f7bdcb4e9dc107529702a212b961267864d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:7",
+      "sequence": 5766,
+      "chapter_label": "DEU 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "Remember the days of old. Consider the years of many generations. Ask your father, and he will show you; your elders, and they will tell you.",
+      "ko": "옛날을 기억하라 역대의 연대를 생각하라 네 아비에게 물으라 그가 네게 설명할 것이요 네 어른들에게 물으라 그들이 네게 이르리로다",
+      "source_text_hash": "f06221209b3f7d8e2b3b3e61d4a09f9d9173f5ab7d8a105af0a6b2cfa358d75d",
+      "translation_text_hash": "c215aa3012ba9e571639c8ca1d187466f8c00b48857600f85306f0d6d81c0841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛날을 기억하라 역대의 연대를 생각하라 네 아비에게 물으라 그가 네게 설명할 것이요 네 어른들에게 물으라 그들이 네게 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "c215aa3012ba9e571639c8ca1d187466f8c00b48857600f85306f0d6d81c0841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:8",
+      "sequence": 5767,
+      "chapter_label": "DEU 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "When the Most High gave to the nations their inheritance, when he separated the children of men, he set the bounds of the peoples according to the number of the children of Israel.",
+      "ko": "지극히 높으신 자가 열국의 기업을 주실 때, 인종을 분정하실 때에 이스라엘 자손의 수효대로 민족들의 경계를 정하셨도다",
+      "source_text_hash": "47b41e1845f1c8e6cbece57921471ff9751dac02cfa24b2224eaebc43d122882",
+      "translation_text_hash": "bd959cb5ce839cfa5d581e261e9060e0a5995a2284feab709046ff1564508806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 높으신 자가 열국의 기업을 주실 때, 인종을 분정하실 때에 이스라엘 자손의 수효대로 민족들의 경계를 정하셨도다"
+      ],
+      "raw_text_hashes": [
+        "bd959cb5ce839cfa5d581e261e9060e0a5995a2284feab709046ff1564508806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:9",
+      "sequence": 5768,
+      "chapter_label": "DEU 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "For the LORD’s portion is his people. Jacob is the lot of his inheritance.",
+      "ko": "여호와의 분깃은 자기 백성이라 야곱은 그 택하신 기업이로다",
+      "source_text_hash": "fe4def5bf224b5345d611f9fbe52dc74233cbdf17243b93128cf4ef0aa3b9309",
+      "translation_text_hash": "90cce995bb55022e54eecd54a913ebe4a6000fa536da8fb4b0e3c5fb20270074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 분깃은 자기 백성이라 야곱은 그 택하신 기업이로다"
+      ],
+      "raw_text_hashes": [
+        "90cce995bb55022e54eecd54a913ebe4a6000fa536da8fb4b0e3c5fb20270074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:10",
+      "sequence": 5769,
+      "chapter_label": "DEU 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "He found him in a desert land, in the waste howling wilderness. He surrounded him. He cared for him. He kept him as the apple of his eye.",
+      "ko": "여호와께서 그를 황무지에서, 짐승의 부르짖는 광야에서 만나시고 호위하시며 보호하시며 자기 눈동자 같이 지키셨도다",
+      "source_text_hash": "a64ded856d76f2e4e280cf0913b94996360e5671740e44684a8a807af14c42cb",
+      "translation_text_hash": "99a02dee20b19c7f291e1017ca333ea0c751dd273554691753525067529fe57a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그를 황무지에서, 짐승의 부르짖는 광야에서 만나시고 호위하시며 보호하시며 자기 눈동자 같이 지키셨도다"
+      ],
+      "raw_text_hashes": [
+        "99a02dee20b19c7f291e1017ca333ea0c751dd273554691753525067529fe57a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:11",
+      "sequence": 5770,
+      "chapter_label": "DEU 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "As an eagle that stirs up her nest, that flutters over her young, he spread abroad his wings, he took them, he bore them on his feathers.",
+      "ko": "마치 독수리가 그 보금자리를 어지럽게 하며 그 새끼 위에 너풀거리며 그 날개를 펴서 새끼를 받으며 그 날개 위에 그것을 업는 것 같이",
+      "source_text_hash": "f9471b3a4e12f278df7f4348c6b2d5aa63c68c1d85f25e40f1f76baa447fc72f",
+      "translation_text_hash": "7d8e6666c2c8b98ddb03bdd9034ab5db4ed1ace69806758564d7ca88c8d06d69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 독수리가 그 보금자리를 어지럽게 하며 그 새끼 위에 너풀거리며 그 날개를 펴서 새끼를 받으며 그 날개 위에 그것을 업는 것 같이"
+      ],
+      "raw_text_hashes": [
+        "7d8e6666c2c8b98ddb03bdd9034ab5db4ed1ace69806758564d7ca88c8d06d69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:12",
+      "sequence": 5771,
+      "chapter_label": "DEU 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD alone led him. There was no foreign god with him.",
+      "ko": "여호와께서 홀로 그들을 인도하셨고 함께한 다른 신이 없었도다",
+      "source_text_hash": "60b18b20c3252c9ebde8d0ce31f2861f64aed3ae3ece7c559f4f76176fcc9fef",
+      "translation_text_hash": "1d693cc777b60e0b930913da5db577b76f6d22ef4ba8f2c3ce51238bdbc47d39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 홀로 그들을 인도하셨고 함께한 다른 신이 없었도다"
+      ],
+      "raw_text_hashes": [
+        "1d693cc777b60e0b930913da5db577b76f6d22ef4ba8f2c3ce51238bdbc47d39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:13",
+      "sequence": 5772,
+      "chapter_label": "DEU 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "He made him ride on the high places of the earth. He ate the increase of the field. He caused him to suck honey out of the rock, oil out of the flinty rock;",
+      "ko": "여호와께서 그로 땅의 높은 곳을 타고 다니게 하시며 밭의 소산을 먹게 하시며 반석에서 꿀을, 굳은 반석에서 기름을 빨게 하시며",
+      "source_text_hash": "e78802b6e82c1ab0b414e2a161b59427958b479999c83c307bc260b2e68ea73b",
+      "translation_text_hash": "1e14f50062af36cf9ff6d619597b387a2cb77ca6e4dc9cd3ff427a14791cbbda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그로 땅의 높은 곳을 타고 다니게 하시며 밭의 소산을 먹게 하시며 반석에서 꿀을, 굳은 반석에서 기름을 빨게 하시며"
+      ],
+      "raw_text_hashes": [
+        "1e14f50062af36cf9ff6d619597b387a2cb77ca6e4dc9cd3ff427a14791cbbda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:14",
+      "sequence": 5773,
+      "chapter_label": "DEU 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "butter from the herd, and milk from the flock, with fat of lambs, rams of the breed of Bashan, and goats, with the finest of the wheat. From the blood of the grape, you drank wine.",
+      "ko": "소의 젖 기름과 양의 젖과 어린양의 기름과 바산 소산의 수양과 염소와 지극히 아름다운 밀을 먹이시며 또 포도즙의 붉은 술을 마시우셨도다",
+      "source_text_hash": "05f2d6b8a68e8136408b00d7e64cd0e3e77e61d219cc3443626a6d5169c0fcda",
+      "translation_text_hash": "02f63821a9aa7d5229f0c167af1bdd40119b3b637ffc981cf7d24bbf15da7a0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소의 젖 기름과 양의 젖과 어린양의 기름과 바산 소산의 수양과 염소와 지극히 아름다운 밀을 먹이시며 또 포도즙의 붉은 술을 마시우셨도다"
+      ],
+      "raw_text_hashes": [
+        "02f63821a9aa7d5229f0c167af1bdd40119b3b637ffc981cf7d24bbf15da7a0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:15",
+      "sequence": 5774,
+      "chapter_label": "DEU 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "But Jeshurun grew fat, and kicked. You have grown fat. You have grown thick. You have become sleek. Then he abandoned God who made him, and rejected the Rock of his salvation.",
+      "ko": "그러한데 여수룬이 살찌매 발로 찼도다 네가 살찌고 부대하고 윤택하매 자기를 지으신 하나님을 버리며 자기를 구원하신 반석을 경홀히 여겼도다",
+      "source_text_hash": "bc34b1a24eb0967d285b3a78e5e2d71f85a0027cd56c48c4450490ff27f29d78",
+      "translation_text_hash": "ba02beb80a59c4578be543c87ad52ac19def287b2a9023b712690590eb21d616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러한데 여수룬이 살찌매 발로 찼도다 네가 살찌고 부대하고 윤택하매 자기를 지으신 하나님을 버리며 자기를 구원하신 반석을 경홀히 여겼도다"
+      ],
+      "raw_text_hashes": [
+        "ba02beb80a59c4578be543c87ad52ac19def287b2a9023b712690590eb21d616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:16",
+      "sequence": 5775,
+      "chapter_label": "DEU 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "They moved him to jealousy with strange gods. They provoked him to anger with abominations.",
+      "ko": "그들이 다른 신으로 그의 질투를 일으키며 가증한 것으로 그의 진노를 격발하였도다",
+      "source_text_hash": "130f008623b7860c78848efa100fef0b13d944fc8e7a5e3c967828f5c3433d65",
+      "translation_text_hash": "d18dc3e4e1a4992fb0b4e1922d7964a21ab9b3cc9376dcd124483a785671115f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다른 신으로 그의 질투를 일으키며 가증한 것으로 그의 진노를 격발하였도다"
+      ],
+      "raw_text_hashes": [
+        "d18dc3e4e1a4992fb0b4e1922d7964a21ab9b3cc9376dcd124483a785671115f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:17",
+      "sequence": 5776,
+      "chapter_label": "DEU 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "They sacrificed to demons, not God, to gods that they didn’t know, to new gods that came up recently, which your fathers didn’t dread.",
+      "ko": "그들은 하나님께 제사하지 아니하고 마귀에게 하였으니 곧 그들의 알지 못하던 신, 근래에 일어난 새 신, 너희 열조의 두려워하지 않던 것들이로다",
+      "source_text_hash": "e32a434c35b804958b7083f81fff79107f4c0dec569453c27c843a26e3989303",
+      "translation_text_hash": "78e1f3b5a21dd9372d5ff3e4d91ee400e310cf03a0bfbd64cc4f6df3f8b02c4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 하나님께 제사하지 아니하고 마귀에게 하였으니 곧 그들의 알지 못하던 신, 근래에 일어난 새 신, 너희 열조의 두려워하지 않던 것들이로다"
+      ],
+      "raw_text_hashes": [
+        "78e1f3b5a21dd9372d5ff3e4d91ee400e310cf03a0bfbd64cc4f6df3f8b02c4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:18",
+      "sequence": 5777,
+      "chapter_label": "DEU 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "Of the Rock who became your father, you are unmindful, and have forgotten God who gave you birth.",
+      "ko": "너를 낳은 반석은 네가 상관치 아니하고 너를 내신 하나님은 네가 잊었도다",
+      "source_text_hash": "b4de0567c6bb29d56c140b41b2f7ee8a1175a8b17e6210422ca790493de8f364",
+      "translation_text_hash": "ff811e24a1ac54c2cfd62c7977a51eb212bc90bc4fb6e318bae6db1aaa41f640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 낳은 반석은 네가 상관치 아니하고 너를 내신 하나님은 네가 잊었도다"
+      ],
+      "raw_text_hashes": [
+        "ff811e24a1ac54c2cfd62c7977a51eb212bc90bc4fb6e318bae6db1aaa41f640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:19",
+      "sequence": 5778,
+      "chapter_label": "DEU 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD saw and abhorred, because of the provocation of his sons and his daughters.",
+      "ko": "여호와께서 보시고 미워하셨으니 그 자녀가 그를 격노케 한 연고로다",
+      "source_text_hash": "a69aa000829093d3e21e4341f889386a2fbb179ad73e835900205f377822f75d",
+      "translation_text_hash": "3da931fa8286633f2a3778871d3177f5050906e8d1a66df6674b2ea8231b224b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 보시고 미워하셨으니 그 자녀가 그를 격노케 한 연고로다"
+      ],
+      "raw_text_hashes": [
+        "3da931fa8286633f2a3778871d3177f5050906e8d1a66df6674b2ea8231b224b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:20",
+      "sequence": 5779,
+      "chapter_label": "DEU 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "He said, “I will hide my face from them. I will see what their end will be; for they are a very perverse generation, children in whom is no faithfulness.",
+      "ko": "여호와의 말씀에 내가 내 얼굴을 숨겨 그들에게 보이지 않게 하고 그들의 종말의 어떠함을 보리니 그들은 심히 패역한 종류요 무신한 자녀임이로다",
+      "source_text_hash": "9e6644f00f9c93ea484a261b05853549f816ab7704218c1a93b7aa3bb9f0275a",
+      "translation_text_hash": "6519a15d90182ce2c883d27b6b08c5630dfd4d11385ef546f5537d11a6f86a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 내가 내 얼굴을 숨겨 그들에게 보이지 않게 하고 그들의 종말의 어떠함을 보리니 그들은 심히 패역한 종류요 무신한 자녀임이로다"
+      ],
+      "raw_text_hashes": [
+        "6519a15d90182ce2c883d27b6b08c5630dfd4d11385ef546f5537d11a6f86a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:21",
+      "sequence": 5780,
+      "chapter_label": "DEU 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "They have moved me to jealousy with that which is not God. They have provoked me to anger with their vanities. I will move them to jealousy with those who are not a people. I will provoke them to anger with a foolish nation.",
+      "ko": "그들이 하나님이 아닌 자로 나의 질투를 일으키며 그들의 허무한 것으로 나의 진노를 격발하였으니 나도 백성이 되지 아니한 자로 그들의 시기가 나게 하며 우준한 민족으로 그들의 분노를 격발하리로다",
+      "source_text_hash": "96354ce0568cef677c829e813831255e27d3b75ce93238d3acc6c12428794bd6",
+      "translation_text_hash": "2fdb73935c1b1238108ff175a45b2bd9cef5225e7f739f03a76b172fe6d004ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 하나님이 아닌 자로 나의 질투를 일으키며 그들의 허무한 것으로 나의 진노를 격발하였으니 나도 백성이 되지 아니한 자로 그들의 시기가 나게 하며 우준한 민족으로 그들의 분노를 격발하리로다"
+      ],
+      "raw_text_hashes": [
+        "2fdb73935c1b1238108ff175a45b2bd9cef5225e7f739f03a76b172fe6d004ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:22",
+      "sequence": 5781,
+      "chapter_label": "DEU 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "For a fire is kindled in my anger, that burns to the lowest Sheol, devours the earth with its increase, and sets the foundations of the mountains on fire.",
+      "ko": "내 분노의 불이 일어나서 음부 깊은 곳까지 사르며 땅의 그 소산을 삼키며 산들의 터도 붙게 하는도다",
+      "source_text_hash": "a970c64ada778ff4657bcecd0ab781295b3fafc646e52457a24a03f1ce78bb87",
+      "translation_text_hash": "4c4006afc33cbef5e9e75ed58991be55b5ee07dc203310cd12bfd830a3ef0685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 분노의 불이 일어나서 음부 깊은 곳까지 사르며 땅의 그 소산을 삼키며 산들의 터도 붙게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "4c4006afc33cbef5e9e75ed58991be55b5ee07dc203310cd12bfd830a3ef0685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:23",
+      "sequence": 5782,
+      "chapter_label": "DEU 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "“I will heap evils on them. I will spend my arrows on them.",
+      "ko": "내가 재앙을 그들의 위에 쌓으며 나의 살을 다하여 그들을 쏘리로다",
+      "source_text_hash": "b5154da63a925de3d00d73a5faf60df38d990f0d8bca3dc71a2ae94338c22d36",
+      "translation_text_hash": "1a0eff9ac646834c6855a6a630d41e2e458455dfbd870fbd2f2b89684faac3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 재앙을 그들의 위에 쌓으며 나의 살을 다하여 그들을 쏘리로다"
+      ],
+      "raw_text_hashes": [
+        "1a0eff9ac646834c6855a6a630d41e2e458455dfbd870fbd2f2b89684faac3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:24",
+      "sequence": 5783,
+      "chapter_label": "DEU 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "They shall be wasted with hunger, and devoured with burning heat and bitter destruction. I will send the teeth of animals on them, with the venom of vipers that glide in the dust.",
+      "ko": "그들이 주리므로 파리하며 불 같은 더위와 독한 파멸에게 삼키울 것이라 내가 들짐승의 이와 티끌에 기는 것의 독을 그들에게 보내리로다",
+      "source_text_hash": "2571d319525370118c008bf6377b76bb7e47f6f7bfb6fab95e9cadce069aad32",
+      "translation_text_hash": "5bf1ea9cbd179b4a950c796595bdb7b2662f03c44bc76c9005d3ae56195b3e55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 주리므로 파리하며 불 같은 더위와 독한 파멸에게 삼키울 것이라 내가 들짐승의 이와 티끌에 기는 것의 독을 그들에게 보내리로다"
+      ],
+      "raw_text_hashes": [
+        "5bf1ea9cbd179b4a950c796595bdb7b2662f03c44bc76c9005d3ae56195b3e55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:25",
+      "sequence": 5784,
+      "chapter_label": "DEU 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "Outside the sword will bereave, and in the rooms, terror on both young man and virgin, the nursing infant with the gray-haired man.",
+      "ko": "밖으로는 칼에, 방안에서는 놀람에 멸망하리니 청년 남자와 처녀와 젖 먹는 아이와 백발 노인까지리로다",
+      "source_text_hash": "514d1115722cea2ccd6d7c4ad8e770eef79bd0aca50d3ae7b5594ea78f948792",
+      "translation_text_hash": "f15397f04c3928c76d6923cddcf64a3e112e125ae82a835be56288a14854767e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밖으로는 칼에, 방안에서는 놀람에 멸망하리니 청년 남자와 처녀와 젖 먹는 아이와 백발 노인까지리로다"
+      ],
+      "raw_text_hashes": [
+        "f15397f04c3928c76d6923cddcf64a3e112e125ae82a835be56288a14854767e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:26",
+      "sequence": 5785,
+      "chapter_label": "DEU 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "I said that I would scatter them afar. I would make their memory to cease from among men;",
+      "ko": "내가 그들을 흩어서 인간에서 그 기억이 끊어지게 하리라 하였다마는",
+      "source_text_hash": "e60b8d9bc1e8b4c8a407a89cf961d1e439f8b569df5f90928c0d5127a9df71b1",
+      "translation_text_hash": "bdf6ff7d8d583e0b7c8d06437b51a5ad634c539dacfa65b80dec7871e9ecc813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 흩어서 인간에서 그 기억이 끊어지게 하리라 하였다마는"
+      ],
+      "raw_text_hashes": [
+        "bdf6ff7d8d583e0b7c8d06437b51a5ad634c539dacfa65b80dec7871e9ecc813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:27",
+      "sequence": 5786,
+      "chapter_label": "DEU 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "were it not that I feared the provocation of the enemy, lest their adversaries should judge wrongly, lest they should say, ‘Our hand is exalted; the LORD has not done all this.’”",
+      "ko": "대적을 격동할까 염려라 원수가 오해하고 말하기를 우리 수단이 높음이요 여호와의 행함이 아니라 할까 염려라 하시도다",
+      "source_text_hash": "5481936fb382818d0ba3eb5e4d1105e87f43fe31d053c054caf8f09101801192",
+      "translation_text_hash": "f8a7921c62a8a14d0ec24c5cf6bbf9db1f2185614a63c1ab5c517b7fb5a5742e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적을 격동할까 염려라 원수가 오해하고 말하기를 우리 수단이 높음이요 여호와의 행함이 아니라 할까 염려라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "f8a7921c62a8a14d0ec24c5cf6bbf9db1f2185614a63c1ab5c517b7fb5a5742e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:28",
+      "sequence": 5787,
+      "chapter_label": "DEU 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "For they are a nation void of counsel. There is no understanding in them.",
+      "ko": "그들은 모략이 없는 국민이라 그중에 지식이 없도다",
+      "source_text_hash": "8ca91d07d4a8115564d6fdd9d23d9b3862ee5d57910c6904ec32c1182cf1037c",
+      "translation_text_hash": "4acf991df0013eab74606070d540ec0da0bd25834ea21f89e566bf41e1feaef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 모략이 없는 국민이라 그중에 지식이 없도다"
+      ],
+      "raw_text_hashes": [
+        "4acf991df0013eab74606070d540ec0da0bd25834ea21f89e566bf41e1feaef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:29",
+      "sequence": 5788,
+      "chapter_label": "DEU 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "Oh that they were wise, that they understood this, that they would consider their latter end!",
+      "ko": "그들이 지혜가 있어서 이것을 깨닫고 자기의 종말을 생각하였으면",
+      "source_text_hash": "3d40e32fc2804e5b31cf06cdce102b48ad5c543bab99be72345772a5514cc11a",
+      "translation_text_hash": "727875399972599d5bd6f048f7306bddc23fa4698826c0b0047cdd9f109068d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 지혜가 있어서 이것을 깨닫고 자기의 종말을 생각하였으면"
+      ],
+      "raw_text_hashes": [
+        "727875399972599d5bd6f048f7306bddc23fa4698826c0b0047cdd9f109068d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:30",
+      "sequence": 5789,
+      "chapter_label": "DEU 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "How could one chase a thousand, and two put ten thousand to flight, unless their Rock had sold them, and the LORD had delivered them up?",
+      "ko": "그들의 반석이 그들을 팔지 아니하였고 여호와께서 그들을 내어주지 아니하셨더면 어찌 한 사람이 천을 쫓으며 두 사람이 만을 도망케 하였을까",
+      "source_text_hash": "66e2c35ea893bf208178dcecfa124946241c72b005ddec7769f9a397ab661976",
+      "translation_text_hash": "760f612de5d1173169349debf013f97ca24487fca061373231359b72b76393ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 반석이 그들을 팔지 아니하였고 여호와께서 그들을 내어주지 아니하셨더면 어찌 한 사람이 천을 쫓으며 두 사람이 만을 도망케 하였을까"
+      ],
+      "raw_text_hashes": [
+        "760f612de5d1173169349debf013f97ca24487fca061373231359b72b76393ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:31",
+      "sequence": 5790,
+      "chapter_label": "DEU 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "For their rock is not as our Rock, even our enemies themselves concede.",
+      "ko": "대적의 반석이 우리의 반석과 같지 못하니 대적도 스스로 판단하도다",
+      "source_text_hash": "feb3beeaf5b64b93b95d3b9570ade43346df3e923baa0ed7eabdfbe706c0c431",
+      "translation_text_hash": "173bbef4bb6f2792ab18b2a59c454acfbdf25bae685045929a29ba2cb3c6e5eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적의 반석이 우리의 반석과 같지 못하니 대적도 스스로 판단하도다"
+      ],
+      "raw_text_hashes": [
+        "173bbef4bb6f2792ab18b2a59c454acfbdf25bae685045929a29ba2cb3c6e5eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:32",
+      "sequence": 5791,
+      "chapter_label": "DEU 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "For their vine is of the vine of Sodom, of the fields of Gomorrah. Their grapes are poison grapes. Their clusters are bitter.",
+      "ko": "그들의 포도나무는 소돔의 포도나무요 고모라의 밭의 소산이라 그들의 포도는 쓸개포도니 그 송이는 쓰며",
+      "source_text_hash": "70fb9ece3e43efb6793f614d33bf48fdd0366d3357b18859ad6b59d74548deb6",
+      "translation_text_hash": "50233a78c42b6fc2b1e3df0e9960a49c74bea1119fb519957946b5ea7bffe399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 포도나무는 소돔의 포도나무요 고모라의 밭의 소산이라 그들의 포도는 쓸개포도니 그 송이는 쓰며"
+      ],
+      "raw_text_hashes": [
+        "50233a78c42b6fc2b1e3df0e9960a49c74bea1119fb519957946b5ea7bffe399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:33",
+      "sequence": 5792,
+      "chapter_label": "DEU 32",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 33
+        }
+      ],
+      "en": "Their wine is the poison of serpents, the cruel venom of asps.",
+      "ko": "그들의 포도주는 뱀의 독이요 독사의 악독이라",
+      "source_text_hash": "bb7f0953dbb445c6b7c0f048e1bac765c831b6eb3689bf94b1cb49a16f659f1e",
+      "translation_text_hash": "c3b64497f055a4790a6d219074bb618b86849498e6ec9cd78bbd315e5415caa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 포도주는 뱀의 독이요 독사의 악독이라"
+      ],
+      "raw_text_hashes": [
+        "c3b64497f055a4790a6d219074bb618b86849498e6ec9cd78bbd315e5415caa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:34",
+      "sequence": 5793,
+      "chapter_label": "DEU 32",
+      "verse_label": "34",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 34
+        }
+      ],
+      "en": "“Isn’t this laid up in store with me, sealed up among my treasures?",
+      "ko": "이것이 내게 쌓이고 내 곳간에 봉하여 있지 아니한가",
+      "source_text_hash": "5f192d9de5826533bcfb4ca2a3863d31d293889a0b06537bca8ad9dd08341362",
+      "translation_text_hash": "f35c9fd7a4d9a56e2efa35b3e41279be7d32ae3bd3a2aab388a98095726e1281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 내게 쌓이고 내 곳간에 봉하여 있지 아니한가"
+      ],
+      "raw_text_hashes": [
+        "f35c9fd7a4d9a56e2efa35b3e41279be7d32ae3bd3a2aab388a98095726e1281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:35",
+      "sequence": 5794,
+      "chapter_label": "DEU 32",
+      "verse_label": "35",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 35
+        }
+      ],
+      "en": "Vengeance is mine, and recompense, at the time when their foot slides, for the day of their calamity is at hand. Their doom rushes at them.”",
+      "ko": "보수는 내 것이라 그들의 실족할 그때에 갚으리로다 그들의 환난의 날이 가까우니 당할 그 일이 속히 임하리로다",
+      "source_text_hash": "29c0e6938071111f657343eb43a90495a925b1b7c9e867171a8482a9c0f22fe3",
+      "translation_text_hash": "a6142dc214e20ba994564c93279be8653714dcdb1422951984efe69e3e2c4225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보수는 내 것이라 그들의 실족할 그때에 갚으리로다 그들의 환난의 날이 가까우니 당할 그 일이 속히 임하리로다"
+      ],
+      "raw_text_hashes": [
+        "a6142dc214e20ba994564c93279be8653714dcdb1422951984efe69e3e2c4225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:36",
+      "sequence": 5795,
+      "chapter_label": "DEU 32",
+      "verse_label": "36",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 36
+        }
+      ],
+      "en": "For the LORD will judge his people, and have compassion on his servants, when he sees that their power is gone, that there is no one remaining, shut up or left at large.",
+      "ko": "여호와께서 자기 백성을 판단하시고 그 종들을 인하여 후회하시리니 곧 그들의 무력함과 갇힌 자나 놓인 자가 없음을 보시는 때에로다",
+      "source_text_hash": "eae8917ead9896b21f00bcb80357dc2ccd316542b1fa07c972c57d0316a8e49c",
+      "translation_text_hash": "2ef693409a069e38ab86df01a5b4c300345571b2c3eb28ac042dd8bbefb09532",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기 백성을 판단하시고 그 종들을 인하여 후회하시리니 곧 그들의 무력함과 갇힌 자나 놓인 자가 없음을 보시는 때에로다"
+      ],
+      "raw_text_hashes": [
+        "2ef693409a069e38ab86df01a5b4c300345571b2c3eb28ac042dd8bbefb09532"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:37",
+      "sequence": 5796,
+      "chapter_label": "DEU 32",
+      "verse_label": "37",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 37
+        }
+      ],
+      "en": "He will say, “Where are their gods, the rock in which they took refuge,",
+      "ko": "여호와의 말씀에 그들의 신들이 어디 있으며 그들의 피하던 반석이 어디 있느냐",
+      "source_text_hash": "7b5c2297e692c5d4e3ade0580aa23aa08bc41e010388edb666dd0fc5723e2017",
+      "translation_text_hash": "67e3bdaac0178fe20782dc013358e0797aa34d4b1454c9f57943ea6164851221",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 그들의 신들이 어디 있으며 그들의 피하던 반석이 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "67e3bdaac0178fe20782dc013358e0797aa34d4b1454c9f57943ea6164851221"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:38",
+      "sequence": 5797,
+      "chapter_label": "DEU 32",
+      "verse_label": "38",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 38
+        }
+      ],
+      "en": "which ate the fat of their sacrifices, and drank the wine of their drink offering? Let them rise up and help you! Let them be your protection.",
+      "ko": "그들의 희생의 고기를 먹던 것들, 전제의 술을 마시던 것들로 일어나서 너희를 돕게 하라 너희의 보장이 되게 하라",
+      "source_text_hash": "2df9e4db75a2ab681c32436749afc6f17dbd423a6dee64bdebf498074b428172",
+      "translation_text_hash": "1e4f7d16d3412b848fe24bbdecc55746373ab013738246c27a66df8ff465ae81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 희생의 고기를 먹던 것들, 전제의 술을 마시던 것들로 일어나서 너희를 돕게 하라 너희의 보장이 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "1e4f7d16d3412b848fe24bbdecc55746373ab013738246c27a66df8ff465ae81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:39",
+      "sequence": 5798,
+      "chapter_label": "DEU 32",
+      "verse_label": "39",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 39
+        }
+      ],
+      "en": "“See now that I myself am he. There is no god with me. I kill and I make alive. I wound and I heal. There is no one who can deliver out of my hand.",
+      "ko": "이제는 나 곧 내가 그인줄 알라 나와 함께 하는 신이 없도다 내가 죽이기도 하며 살리기도 하며 상하게도 하며 낫게도 하나니 내 손에서 능히 건질자 없도다",
+      "source_text_hash": "6b029580c8a15837a83eea2370faf025e7b94f9ae498321e3ce933a7d5cb6e66",
+      "translation_text_hash": "19cee6edfdf626fc50a0767040895419307a3368f0253905fa734899f56fca03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 나 곧 내가 그인줄 알라 나와 함께 하는 신이 없도다 내가 죽이기도 하며 살리기도 하며 상하게도 하며 낫게도 하나니 내 손에서 능히 건질자 없도다"
+      ],
+      "raw_text_hashes": [
+        "19cee6edfdf626fc50a0767040895419307a3368f0253905fa734899f56fca03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:40",
+      "sequence": 5799,
+      "chapter_label": "DEU 32",
+      "verse_label": "40",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 40
+        }
+      ],
+      "en": "For I lift up my hand to heaven and declare, as I live forever,",
+      "ko": "내가 하늘을 향하여 내 손을 들고 말하노라 나의 영원히 삶을 두고 맹세하노니",
+      "source_text_hash": "d6c610876dc79384855dae6797780db12c5bd8b66b73a326bf313b6636e78f95",
+      "translation_text_hash": "ae294a076e5252d866ddd7bd61b2bb29a208040a37fb9ae81341040ba25219e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하늘을 향하여 내 손을 들고 말하노라 나의 영원히 삶을 두고 맹세하노니"
+      ],
+      "raw_text_hashes": [
+        "ae294a076e5252d866ddd7bd61b2bb29a208040a37fb9ae81341040ba25219e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:41",
+      "sequence": 5800,
+      "chapter_label": "DEU 32",
+      "verse_label": "41",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 41
+        }
+      ],
+      "en": "if I sharpen my glittering sword, my hand grasps it in judgment; I will take vengeance on my adversaries, and will repay those who hate me.",
+      "ko": "나의 번쩍이는 칼을 갈며 내 손에 심판을 잡고 나의 대적에게 보수하며 나를 미워하는 자에게 보응할 것이라",
+      "source_text_hash": "70855dd270bbb46041c79f156f1538acdf5a0d303781946cdbd72911cc56892f",
+      "translation_text_hash": "b321d91d25ce3207082fb547a4c31a1c4d1a70cba7120860149db179c0590f6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 번쩍이는 칼을 갈며 내 손에 심판을 잡고 나의 대적에게 보수하며 나를 미워하는 자에게 보응할 것이라"
+      ],
+      "raw_text_hashes": [
+        "b321d91d25ce3207082fb547a4c31a1c4d1a70cba7120860149db179c0590f6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:42",
+      "sequence": 5801,
+      "chapter_label": "DEU 32",
+      "verse_label": "42",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 42
+        }
+      ],
+      "en": "I will make my arrows drunk with blood. My sword shall devour flesh with the blood of the slain and the captives, from the head of the leaders of the enemy.”",
+      "ko": "나의 화살로 피에 취하게 하고 나의 칼로 그 고기를 삼키게 하리니 곧 피살자와 포로된 자의 피요 대적의 장관의 머리로다 하시도다",
+      "source_text_hash": "8be7944a182beddec62138f27a2d462ed8e986f161d8db6bfb356163ab373c72",
+      "translation_text_hash": "0ed05e1f2032ec2c7f5f79ac68b236f08d435df5f3006e819daae569bf597529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 화살로 피에 취하게 하고 나의 칼로 그 고기를 삼키게 하리니 곧 피살자와 포로된 자의 피요 대적의 장관의 머리로다 하시도다"
+      ],
+      "raw_text_hashes": [
+        "0ed05e1f2032ec2c7f5f79ac68b236f08d435df5f3006e819daae569bf597529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:43",
+      "sequence": 5802,
+      "chapter_label": "DEU 32",
+      "verse_label": "43",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 43
+        }
+      ],
+      "en": "Rejoice, you nations, with his people, for he will avenge the blood of his servants. He will take vengeance on his adversaries, and will make atonement for his land and for his people.",
+      "ko": "너희 열방은 주의 백성과 즐거워하라 주께서 그 종들의 피를 갚으사 그 대적에게 보수하시고 자기 땅과 백성을 위하여 속죄하시리로다",
+      "source_text_hash": "defe27eee24e7655294c91d0f30f6fed19a0baf3d070daba03fa96c37be07e6f",
+      "translation_text_hash": "702fbe74f683b8bbc5c7c65541d13cf579618bbe8fc8e0b303db060a2090e535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열방은 주의 백성과 즐거워하라 주께서 그 종들의 피를 갚으사 그 대적에게 보수하시고 자기 땅과 백성을 위하여 속죄하시리로다"
+      ],
+      "raw_text_hashes": [
+        "702fbe74f683b8bbc5c7c65541d13cf579618bbe8fc8e0b303db060a2090e535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:44",
+      "sequence": 5803,
+      "chapter_label": "DEU 32",
+      "verse_label": "44",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 44
+        }
+      ],
+      "en": "Moses came and spoke all the words of this song in the ears of the people, he and Joshua the son of Nun.",
+      "ko": "모세와 눈의 아들 호세아가 와서 이 노래의 모든 말씀을 백성에게 말하여 들리니라",
+      "source_text_hash": "457b729ee0009f15de90a0d6ad06a3330e626eadeee35d8297e609c5d3541575",
+      "translation_text_hash": "992952453bc2c16d8ce64a3bf4f4a1e26d2db79a92b54af5b53e4cd868dc25a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 눈의 아들 호세아가 와서 이 노래의 모든 말씀을 백성에게 말하여 들리니라"
+      ],
+      "raw_text_hashes": [
+        "992952453bc2c16d8ce64a3bf4f4a1e26d2db79a92b54af5b53e4cd868dc25a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:45",
+      "sequence": 5804,
+      "chapter_label": "DEU 32",
+      "verse_label": "45",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 45
+        }
+      ],
+      "en": "Moses finished reciting all these words to all Israel.",
+      "ko": "모세가 이 모든 말씀을 온 이스라엘에게 말하기를 마치고",
+      "source_text_hash": "080860217bb68ce8183ebbddf286e8144f5c9dba8d8e8bf64aca4da9e62022a2",
+      "translation_text_hash": "d0758d98a036fb35a2c80dcf0eefbb06932785ed9e47cdad1fe16396a36e9643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이 모든 말씀을 온 이스라엘에게 말하기를 마치고"
+      ],
+      "raw_text_hashes": [
+        "d0758d98a036fb35a2c80dcf0eefbb06932785ed9e47cdad1fe16396a36e9643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:46",
+      "sequence": 5805,
+      "chapter_label": "DEU 32",
+      "verse_label": "46",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 46
+        }
+      ],
+      "en": "He said to them, “Set your heart to all the words which I testify to you today, which you shall command your children to observe to do, all the words of this law.",
+      "ko": "그들에게 이르되 내가 오늘날 너희에게 증거한 모든 말을 너희 마음에 두고 너희 자녀에게 명하여 이 율법의 모든 말씀을 지켜 행하게 하라",
+      "source_text_hash": "10ece969311627c172ca87158319cd7cb51e4357a80fc537ae08b3f1ca34d2ba",
+      "translation_text_hash": "6a6ffd2c1c2f928307fd18675a779b720a43e51ae02f93d0b1dc6c84b41cd9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 내가 오늘날 너희에게 증거한 모든 말을 너희 마음에 두고 너희 자녀에게 명하여 이 율법의 모든 말씀을 지켜 행하게 하라"
+      ],
+      "raw_text_hashes": [
+        "6a6ffd2c1c2f928307fd18675a779b720a43e51ae02f93d0b1dc6c84b41cd9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:47",
+      "sequence": 5806,
+      "chapter_label": "DEU 32",
+      "verse_label": "47",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 47
+        }
+      ],
+      "en": "For it is no vain thing for you, because it is your life, and through this thing you shall prolong your days in the land, where you go over the Jordan to possess it.”",
+      "ko": "이는 너희에게 허사가 아니라 너희의 생명이니 이 일로 인하여 너희가 요단을 건너 얻을 땅에서 너희의 날이 장구하리라",
+      "source_text_hash": "465fe95e90bf018548285a07152bebe40d963cba0b3561f4049ddec7345fcbec",
+      "translation_text_hash": "d76ffe136d35bb5706ef283628bd37c6b1a34587b3831567ec496f638306b122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희에게 허사가 아니라 너희의 생명이니 이 일로 인하여 너희가 요단을 건너 얻을 땅에서 너희의 날이 장구하리라"
+      ],
+      "raw_text_hashes": [
+        "d76ffe136d35bb5706ef283628bd37c6b1a34587b3831567ec496f638306b122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:48",
+      "sequence": 5807,
+      "chapter_label": "DEU 32",
+      "verse_label": "48",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 48
+        }
+      ],
+      "en": "The LORD spoke to Moses that same day, saying,",
+      "ko": "당일에 여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "f0c9c8e86ee3a0f7b83f46f40d8425d6d8466f0c0f326b05e6b23ac4d79707d0",
+      "translation_text_hash": "dc08cd49cb902db3219784c1ce60b20cac5ccb2a28208c93e38a90ecb496f9a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당일에 여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "dc08cd49cb902db3219784c1ce60b20cac5ccb2a28208c93e38a90ecb496f9a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:49",
+      "sequence": 5808,
+      "chapter_label": "DEU 32",
+      "verse_label": "49",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 49
+        }
+      ],
+      "en": "“Go up into this mountain of Abarim, to Mount Nebo, which is in the land of Moab, that is across from Jericho; and see the land of Canaan, which I give to the children of Israel for a possession.",
+      "ko": "너는 여리고 맞은편 모압 땅에 있는 아바림산에 올라 느보산에 이르러 내가 이스라엘 자손에게 기업으로 주는 가나안 땅을 바라보라",
+      "source_text_hash": "c47eb8fb24a25ee5abcfa1985ef39f7bff4e1d4e261704686e0dd0c3fb5f23b1",
+      "translation_text_hash": "8ebbd2b6bcc09e97b8fd4907ad2ecb5b9706248c79a98b4b8000377dde990938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여리고 맞은편 모압 땅에 있는 아바림산에 올라 느보산에 이르러 내가 이스라엘 자손에게 기업으로 주는 가나안 땅을 바라보라"
+      ],
+      "raw_text_hashes": [
+        "8ebbd2b6bcc09e97b8fd4907ad2ecb5b9706248c79a98b4b8000377dde990938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:50",
+      "sequence": 5809,
+      "chapter_label": "DEU 32",
+      "verse_label": "50",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 50
+        }
+      ],
+      "en": "Die on the mountain where you go up, and be gathered to your people, as Aaron your brother died on Mount Hor, and was gathered to his people;",
+      "ko": "네 형 아론이 호르산에서 죽어 그 조상에게로 돌아간것 같이 너도 올라가는 이 산에서 죽어 네 조상에게로 돌아가리니",
+      "source_text_hash": "cc4dcb6516ceabe6e94e34b77cb6fefe2ecae281d1085763e47567cabb410b18",
+      "translation_text_hash": "beb57e6c042927efce3b44181fa9b489091e20aa6fecc402c5541e0394c5a938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형 아론이 호르산에서 죽어 그 조상에게로 돌아간것 같이 너도 올라가는 이 산에서 죽어 네 조상에게로 돌아가리니"
+      ],
+      "raw_text_hashes": [
+        "beb57e6c042927efce3b44181fa9b489091e20aa6fecc402c5541e0394c5a938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:51",
+      "sequence": 5810,
+      "chapter_label": "DEU 32",
+      "verse_label": "51",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 51
+        }
+      ],
+      "en": "because you trespassed against me among the children of Israel at the waters of Meribah of Kadesh, in the wilderness of Zin; because you didn’t uphold my holiness among the children of Israel.",
+      "ko": "이는 너희가 신 광야 가데스의 므리바 물 가에서 이스라엘 자손 중 내게 범죄하여 나의 거룩함을 이스라엘 자손 중에서 나타내지 아니한 연고라",
+      "source_text_hash": "06549bda3e2c1707872998a6c1c1d18e5cd08866cca8fef7a66f6014a4ade59e",
+      "translation_text_hash": "266b3f66557f8ece4b7dfcc13d2dcd1fea993e650acda4f9c34a0bef75c96f9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 신 광야 가데스의 므리바 물 가에서 이스라엘 자손 중 내게 범죄하여 나의 거룩함을 이스라엘 자손 중에서 나타내지 아니한 연고라"
+      ],
+      "raw_text_hashes": [
+        "266b3f66557f8ece4b7dfcc13d2dcd1fea993e650acda4f9c34a0bef75c96f9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:32:52",
+      "sequence": 5811,
+      "chapter_label": "DEU 32",
+      "verse_label": "52",
+      "locator": {
+        "book": "DEU",
+        "chapter": 32,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 32,
+          "verse": 52
+        }
+      ],
+      "en": "For you shall see the land from a distance; but you shall not go there into the land which I give the children of Israel.”",
+      "ko": "내가 이스라엘 자손에게 주는 땅을 네가 바라보기는 하려니와 그리로 들어가지는 못하리라 하시니라",
+      "source_text_hash": "8dc3b80b9423883f399f23f940cc61db32774b5e8ad04809bfa831038acc9da8",
+      "translation_text_hash": "967c53511f6d8497c7032f4b6b3e4b7d26c78cce9f133cbba8045e7251ea3bad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손에게 주는 땅을 네가 바라보기는 하려니와 그리로 들어가지는 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "967c53511f6d8497c7032f4b6b3e4b7d26c78cce9f133cbba8045e7251ea3bad"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:149",
+  "unit_ordinal": 627,
+  "unit_label": "PSA 149",
+  "book_code": "PSA",
+  "chapter_number": 149,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:149:1",
+      "sequence": 16387,
+      "chapter_label": "PSA 149",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Sing to the LORD a new song, his praise in the assembly of the saints.",
+      "ko": "할렐루야 새 노래로 여호와께 노래하며 성도의 회중에서 찬양할찌어다",
+      "source_text_hash": "5e27f37b408dd333dfcdb2ea8493e7da340831b0fa014b7793dee0850d16abd9",
+      "translation_text_hash": "8f02674e8bac95d8dc956e125175676e9987f735c3deec5a6ce90eb868c51d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 새 노래로 여호와께 노래하며 성도의 회중에서 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "8f02674e8bac95d8dc956e125175676e9987f735c3deec5a6ce90eb868c51d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:2",
+      "sequence": 16388,
+      "chapter_label": "PSA 149",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 2
+        }
+      ],
+      "en": "Let Israel rejoice in him who made them. Let the children of Zion be joyful in their King.",
+      "ko": "이스라엘은 자기를 지으신 자로 인하여 즐거워하며 시온의 자민은 저희의 왕으로 인하여 즐거워할찌어다",
+      "source_text_hash": "6ac12e490aa297b415603c6830eb1576a8618726522b325df00afb317667f67d",
+      "translation_text_hash": "cd196de0e47d4f08966985cfae772beb7789eed37f11286988af524613055a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 자기를 지으신 자로 인하여 즐거워하며 시온의 자민은 저희의 왕으로 인하여 즐거워할찌어다"
+      ],
+      "raw_text_hashes": [
+        "cd196de0e47d4f08966985cfae772beb7789eed37f11286988af524613055a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:3",
+      "sequence": 16389,
+      "chapter_label": "PSA 149",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 3
+        }
+      ],
+      "en": "Let them praise his name in the dance! Let them sing praises to him with tambourine and harp!",
+      "ko": "춤 추며 그의 이름을 찬양하며 소고와 수금으로 그를 찬양할찌어다",
+      "source_text_hash": "ce2cc53408056d804924e35c5c35a70cf074bb95594770819b3c4a22c64ee9c6",
+      "translation_text_hash": "54d017f3df5f0514eca81f259c90d9ea0f7bf9d37ab9f00721cc163f21cb8289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "춤 추며 그의 이름을 찬양하며 소고와 수금으로 그를 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "54d017f3df5f0514eca81f259c90d9ea0f7bf9d37ab9f00721cc163f21cb8289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:4",
+      "sequence": 16390,
+      "chapter_label": "PSA 149",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD takes pleasure in his people. He crowns the humble with salvation.",
+      "ko": "여호와께서는 자기 백성을 기뻐하시며 겸손한 자를 구원으로 아름답게 하심이로다",
+      "source_text_hash": "2caf6a471af12d293a5db2b8e1f70ce81ebe83fff0673575bc50f8ede8f52fca",
+      "translation_text_hash": "7546cb6ccf7d876b726c188ffab3cea88fc5c5d08e02787018213515809b7562",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 자기 백성을 기뻐하시며 겸손한 자를 구원으로 아름답게 하심이로다"
+      ],
+      "raw_text_hashes": [
+        "7546cb6ccf7d876b726c188ffab3cea88fc5c5d08e02787018213515809b7562"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:5",
+      "sequence": 16391,
+      "chapter_label": "PSA 149",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 5
+        }
+      ],
+      "en": "Let the saints rejoice in honor. Let them sing for joy on their beds.",
+      "ko": "성도들은 영광 중에 즐거워하며 저희 침상에서 기쁨으로 노래할찌어다",
+      "source_text_hash": "f461267b70f9366844550dcd2c5b1bd9f5b2fc5a14b90bfc72331ff805eb14df",
+      "translation_text_hash": "1f3ac655882cc61418f461743e5867f83bb32984b3f22329d2b9e99ff6cfaa74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도들은 영광 중에 즐거워하며 저희 침상에서 기쁨으로 노래할찌어다"
+      ],
+      "raw_text_hashes": [
+        "1f3ac655882cc61418f461743e5867f83bb32984b3f22329d2b9e99ff6cfaa74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:6",
+      "sequence": 16392,
+      "chapter_label": "PSA 149",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 6
+        }
+      ],
+      "en": "May the high praises of God be in their mouths, and a two-edged sword in their hand,",
+      "ko": "그 입에는 하나님의 존영이요 그 수중에는 두 날 가진 칼이로다",
+      "source_text_hash": "719359d74ff04c82079611982afa7a398151522ebc8e7c6d4553bce9bbd4aa40",
+      "translation_text_hash": "0d0b4f6a28001823ec07f7e0e11dd8bc9c73936acfb64fbe9862a7c9fbe6f2ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에는 하나님의 존영이요 그 수중에는 두 날 가진 칼이로다"
+      ],
+      "raw_text_hashes": [
+        "0d0b4f6a28001823ec07f7e0e11dd8bc9c73936acfb64fbe9862a7c9fbe6f2ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:7",
+      "sequence": 16393,
+      "chapter_label": "PSA 149",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 7
+        }
+      ],
+      "en": "to execute vengeance on the nations, and punishments on the peoples;",
+      "ko": "이것으로 열방에 보수하며 민족들을 벌하며",
+      "source_text_hash": "97e479c19cc1151b4d4f1a025d2bcee6adf7c2957c99357d8d4c7ce2c78b6f5c",
+      "translation_text_hash": "c62e80da0028cda32d4ea8d6051b9c9e3daa391d69fa2a0e531211d0805b0a0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것으로 열방에 보수하며 민족들을 벌하며"
+      ],
+      "raw_text_hashes": [
+        "c62e80da0028cda32d4ea8d6051b9c9e3daa391d69fa2a0e531211d0805b0a0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:8",
+      "sequence": 16394,
+      "chapter_label": "PSA 149",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 8
+        }
+      ],
+      "en": "to bind their kings with chains, and their nobles with fetters of iron;",
+      "ko": "저희 왕들은 사슬로, 저희 귀인은 철고랑으로 결박하고",
+      "source_text_hash": "7a39490e50796b9e86c7bf05cb45a2e26f73aa3375d1cc7f0cdf85f133d3f1ce",
+      "translation_text_hash": "3930b6ee0f211f1d4d410072d7f278c8c6799084c8ecca72e368a94e3fdbeb1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 왕들은 사슬로, 저희 귀인은 철고랑으로 결박하고"
+      ],
+      "raw_text_hashes": [
+        "3930b6ee0f211f1d4d410072d7f278c8c6799084c8ecca72e368a94e3fdbeb1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:149:9",
+      "sequence": 16395,
+      "chapter_label": "PSA 149",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 149,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 149,
+          "verse": 9
+        }
+      ],
+      "en": "to execute on them the written judgment. All his saints have this honor. Praise the LORD!",
+      "ko": "기록한 판단대로 저희에게 시행할찌로다 이런 영광은 그 모든 성도에게 있도다 할렐루야",
+      "source_text_hash": "01b22a4f104de766f754059cf81b60c12b1480a7c1b665be4a64792ee9032805",
+      "translation_text_hash": "cc952fa50f5c332a2d64592b88dd8ab387f20f1b19fdfbcd5a5a1bc59a51e30d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한 판단대로 저희에게 시행할찌로다 이런 영광은 그 모든 성도에게 있도다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "cc952fa50f5c332a2d64592b88dd8ab387f20f1b19fdfbcd5a5a1bc59a51e30d"
+      ]
+    }
+  ]
+}

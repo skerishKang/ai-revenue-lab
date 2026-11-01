@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:048",
+  "unit_ordinal": 727,
+  "unit_label": "ISA 48",
+  "book_code": "ISA",
+  "chapter_number": 48,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:48:1",
+      "sequence": 18616,
+      "chapter_label": "ISA 48",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 1
+        }
+      ],
+      "en": "“Hear this, house of Jacob, you who are called by the name of Israel, and have come out of the waters of Judah. You swear by the LORD’s name, and make mention of the God of Israel, but not in truth, nor in righteousness—",
+      "ko": "야곱 집이여 이스라엘의 이름으로 일컬음을 받으며 유다의 근원에서 나왔으며 거룩한 성 백성이라 칭하며 그 이름이 만군의 여호와이신 이스라엘의 하나님을 의지하면서 성실치 아니하고 의로움이 없이 여호와의 이름으로 맹세하며 이스라엘의 하나님을 부르는 너희는 이를 들을지어다",
+      "source_text_hash": "bff71497f1a9d54ab5b51906a4491341be3638ade372679d27d83f741f1dbc9e",
+      "translation_text_hash": "f4d49d6e18462740f3325cc2164533f753a022a0c59353de1b0b97d7bd36c773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱 집이여 이스라엘의 이름으로 일컬음을 받으며 유다의 근원에서 나왔으며 거룩한 성 백성이라 칭하며 그 이름이 만군의 여호와이신 이스라엘의 하나님을 의지하면서 성실치 아니하고 의로움이 없이 여호와의 이름으로 맹세하며 이스라엘의 하나님을 부르는 너희는 이를 들을지어다"
+      ],
+      "raw_text_hashes": [
+        "f4d49d6e18462740f3325cc2164533f753a022a0c59353de1b0b97d7bd36c773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:2",
+      "sequence": 18617,
+      "chapter_label": "ISA 48",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 2
+        }
+      ],
+      "en": "for they call themselves citizens of the holy city, and rely on the God of Israel; the LORD of Armies is his name.",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "6414357cb0452598ec900a49974273fb2ddf1533f97cfe0fe71f283291044b53",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:3",
+      "sequence": 18618,
+      "chapter_label": "ISA 48",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 3
+        }
+      ],
+      "en": "I have declared the former things from of old. Yes, they went out of my mouth, and I revealed them. I did them suddenly, and they happened.",
+      "ko": "여호와께서 가라사대 내가 옛적에 장래사를 고하였고 내 입에서 내어 보였고 내가 홀연히 그 일을 행하여 이루었느니라",
+      "source_text_hash": "0c594ac9c865c184a16d39a2f87133a414e8656b74f116e2d3e8c3d58ff63d73",
+      "translation_text_hash": "4ed7eb7f207cb164f2bde932541e163cba2ae690f873facb9080005fe6db4725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 옛적에 장래사를 고하였고 내 입에서 내어 보였고 내가 홀연히 그 일을 행하여 이루었느니라"
+      ],
+      "raw_text_hashes": [
+        "4ed7eb7f207cb164f2bde932541e163cba2ae690f873facb9080005fe6db4725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:4",
+      "sequence": 18619,
+      "chapter_label": "ISA 48",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 4
+        }
+      ],
+      "en": "Because I knew that you are obstinate, and your neck is an iron sinew, and your brow bronze;",
+      "ko": "내가 알거니와 너는 완악하며 네 목의 힘줄은 무쇠요 네 이마는 놋이라",
+      "source_text_hash": "76678058b80018731293ef078a18cb35d169138a8921f16f0091c821c6240be1",
+      "translation_text_hash": "0fa1a68cf2581e056e964fffc8420f266905760a73fb1c6edcb30eebac7e84fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 알거니와 너는 완악하며 네 목의 힘줄은 무쇠요 네 이마는 놋이라"
+      ],
+      "raw_text_hashes": [
+        "0fa1a68cf2581e056e964fffc8420f266905760a73fb1c6edcb30eebac7e84fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:5",
+      "sequence": 18620,
+      "chapter_label": "ISA 48",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 5
+        }
+      ],
+      "en": "therefore I have declared it to you from of old; before it came to pass I showed it to you; lest you should say, ‘My idol has done them. My engraved image and my molten image has commanded them.’",
+      "ko": "그러므로 내가 이 일을 옛적부터 네게 고하였고 성사하기 전에 그것을 네게 보였느니라 그렇지 않았더면 네 말이 내 신의 행한바요 내 새긴 신상과 부어만든 신상의 명한바라 하였으리라",
+      "source_text_hash": "14a1f2ff9e33c585fb8f072fceca7229b750dc9c5ba83adf649d6c70b5790679",
+      "translation_text_hash": "9348711198838674bb60cae4a62c4e90318dbcd218bb1013db64134a9bac4d6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이 일을 옛적부터 네게 고하였고 성사하기 전에 그것을 네게 보였느니라 그렇지 않았더면 네 말이 내 신의 행한바요 내 새긴 신상과 부어만든 신상의 명한바라 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "9348711198838674bb60cae4a62c4e90318dbcd218bb1013db64134a9bac4d6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:6",
+      "sequence": 18621,
+      "chapter_label": "ISA 48",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 6
+        }
+      ],
+      "en": "You have heard it. Now see all this. And you, won’t you declare it? “I have shown you new things from this time, even hidden things, which you have not known.",
+      "ko": "네가 이미 들었으니 이것을 다 보라 너희가 선전치 아니하겠느뇨 이제부터 내가 새 일 곧 네가 알지 못하던 은비한 일을 네게 보이노니",
+      "source_text_hash": "f4721e1fdf1f85f5cb2c2a2bd8949613dfb485b0cabbba221ec55b0201e42dfc",
+      "translation_text_hash": "6f893cdf0aa5fcd1618c0d6c1cdd23a3d884745e1407d7331f3a4ffa18b5dc4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이미 들었으니 이것을 다 보라 너희가 선전치 아니하겠느뇨 이제부터 내가 새 일 곧 네가 알지 못하던 은비한 일을 네게 보이노니"
+      ],
+      "raw_text_hashes": [
+        "6f893cdf0aa5fcd1618c0d6c1cdd23a3d884745e1407d7331f3a4ffa18b5dc4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:7",
+      "sequence": 18622,
+      "chapter_label": "ISA 48",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 7
+        }
+      ],
+      "en": "They are created now, and not from of old. Before today, you didn’t hear them, lest you should say, ‘Behold, I knew them.’",
+      "ko": "이 일들은 이제 창조된 것이요 옛적 것이 아니라 오늘 이전에는 네가 듣지 못하였느니라 그렇지 않았더면 네가 말하기를 내가 이미 알았노라 하였으리라",
+      "source_text_hash": "2a0172deadb761a7007ba0b8b31c1a8881ed123d42566398034f8a7bd6a35664",
+      "translation_text_hash": "2a333e423c8301d281bb2b7d9be375f2ac5565f2e6d1eb38860a318ea0bac982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일들은 이제 창조된 것이요 옛적 것이 아니라 오늘 이전에는 네가 듣지 못하였느니라 그렇지 않았더면 네가 말하기를 내가 이미 알았노라 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "2a333e423c8301d281bb2b7d9be375f2ac5565f2e6d1eb38860a318ea0bac982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:8",
+      "sequence": 18623,
+      "chapter_label": "ISA 48",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 8
+        }
+      ],
+      "en": "Yes, you didn’t hear. Yes, you didn’t know. Yes, from of old your ear was not opened, for I knew that you dealt very treacherously, and were called a transgressor from the womb.",
+      "ko": "네가 과연 듣지도 못하였고 알지도 못하였으며 네 귀가 옛적부터 열리지 못하였었나니 이는 네가 궤휼하고 궤휼하여 모태에서부터 패역한 자라 칭함을 입은 줄을 내가 알았음이라",
+      "source_text_hash": "937f02566c8a53f98a7a3e0c7c8206eaa71c3a6001ea6baa2b5f816b9dd12dc4",
+      "translation_text_hash": "029676531bf1f93209865f9834ecac2358c8b2a7509a1eef33e6146c59b92246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 과연 듣지도 못하였고 알지도 못하였으며 네 귀가 옛적부터 열리지 못하였었나니 이는 네가 궤휼하고 궤휼하여 모태에서부터 패역한 자라 칭함을 입은 줄을 내가 알았음이라"
+      ],
+      "raw_text_hashes": [
+        "029676531bf1f93209865f9834ecac2358c8b2a7509a1eef33e6146c59b92246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:9",
+      "sequence": 18624,
+      "chapter_label": "ISA 48",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 9
+        }
+      ],
+      "en": "For my name’s sake, I will defer my anger, and for my praise, I hold it back for you so that I don’t cut you off.",
+      "ko": "내 이름을 위하여 내가 노하기를 더디할 것이며 내 영예를 위하여 내가 참고 너를 멸절하지 아니하리라",
+      "source_text_hash": "791e49900c65527b3dbd53d03289b2b59ab2fb9e42c20b7ab0fa4861a859d308",
+      "translation_text_hash": "37f6a0b0e3d3682d3b5da091a290fb5dbaea5944f5442af6cdcedd1d54fa51af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름을 위하여 내가 노하기를 더디할 것이며 내 영예를 위하여 내가 참고 너를 멸절하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "37f6a0b0e3d3682d3b5da091a290fb5dbaea5944f5442af6cdcedd1d54fa51af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:10",
+      "sequence": 18625,
+      "chapter_label": "ISA 48",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, I have refined you, but not as silver. I have chosen you in the furnace of affliction.",
+      "ko": "보라 내가 너를 연단하였으나 은처럼 하지 아니하고 너를 고난의 풀무에서 택하였노라",
+      "source_text_hash": "60f3df6402062b2b58cb042f8e64ad4280ea6e0085012a3c06b148b8a42721de",
+      "translation_text_hash": "a894b2726d0e01ffde49bb04422dbb707640806df8ab6f526cc7e51106870c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너를 연단하였으나 은처럼 하지 아니하고 너를 고난의 풀무에서 택하였노라"
+      ],
+      "raw_text_hashes": [
+        "a894b2726d0e01ffde49bb04422dbb707640806df8ab6f526cc7e51106870c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:11",
+      "sequence": 18626,
+      "chapter_label": "ISA 48",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 11
+        }
+      ],
+      "en": "For my own sake, for my own sake, I will do it; for how would my name be profaned? I will not give my glory to another.",
+      "ko": "내가 나를 위하며 내가 나를 위하여 이를 이룰 것이라 어찌 내 이름을 욕되게 하리요 내 영광을 다른 자에게 주지 아니하리라",
+      "source_text_hash": "a2e8f4aa649b26c5a76230a48cc06288b9806d66df53400490a53a71c85b45cc",
+      "translation_text_hash": "e959d1eaccf59c84ca0b88ab3de601c5792951001ed54fb121dfc97b8fb06f29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나를 위하며 내가 나를 위하여 이를 이룰 것이라 어찌 내 이름을 욕되게 하리요 내 영광을 다른 자에게 주지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "e959d1eaccf59c84ca0b88ab3de601c5792951001ed54fb121dfc97b8fb06f29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:12",
+      "sequence": 18627,
+      "chapter_label": "ISA 48",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 12
+        }
+      ],
+      "en": "“Listen to me, O Jacob, and Israel my called: I am he. I am the first. I am also the last.",
+      "ko": "야곱아 나의 부른 이스라엘아 나를 들으라 나는 그니 나는 처음이요 또 마지막이라",
+      "source_text_hash": "51b0eda4f1ef91fe898eb3564b7a3c2c651a26672b5a1153819b9c43ec1c2ad7",
+      "translation_text_hash": "436b2ad4e8bd575d0cf46ab88868651f8d0dd208ef9c2bb8eb76823dec3efe38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱아 나의 부른 이스라엘아 나를 들으라 나는 그니 나는 처음이요 또 마지막이라"
+      ],
+      "raw_text_hashes": [
+        "436b2ad4e8bd575d0cf46ab88868651f8d0dd208ef9c2bb8eb76823dec3efe38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:13",
+      "sequence": 18628,
+      "chapter_label": "ISA 48",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 13
+        }
+      ],
+      "en": "Yes, my hand has laid the foundation of the earth, and my right hand has spread out the heavens. when I call to them, they stand up together.",
+      "ko": "과연 내 손이 땅의 기초를 정하였고 내 오른손이 하늘에 폈나니 내가 부르면 천지가 일제히 서느니라",
+      "source_text_hash": "c74a293e13323d45f9c3a988ceba3477e96a08eea92c2ec3fa7abec208c33cfb",
+      "translation_text_hash": "3831bbe455ecfdd14ce399a4f18ce1558f7c2058d35a8f1d2cac58fb3803cd5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 내 손이 땅의 기초를 정하였고 내 오른손이 하늘에 폈나니 내가 부르면 천지가 일제히 서느니라"
+      ],
+      "raw_text_hashes": [
+        "3831bbe455ecfdd14ce399a4f18ce1558f7c2058d35a8f1d2cac58fb3803cd5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:14",
+      "sequence": 18629,
+      "chapter_label": "ISA 48",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 14
+        }
+      ],
+      "en": "“Assemble yourselves, all of you, and hear! Who among them has declared these things? He whom the LORD loves will do what he likes to Babylon, and his arm will be against the Chaldeans.",
+      "ko": "너희는 다 모여 들으라 나 여호와의 사랑하는 자가 나의 뜻을 바벨론에 행하리니 그의 팔이 갈대아인에게 임할 것이라 그들 중에 누가 이 일을 예언하였느뇨",
+      "source_text_hash": "26a061f65e1a38ce2a0cde4f45283004461ed1a1fd7cc616cfa37df796f10103",
+      "translation_text_hash": "077211e5ac0ae18a5e6f7811ecd43145f8d99ac0d34155f54224066b2ed71429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다 모여 들으라 나 여호와의 사랑하는 자가 나의 뜻을 바벨론에 행하리니 그의 팔이 갈대아인에게 임할 것이라 그들 중에 누가 이 일을 예언하였느뇨"
+      ],
+      "raw_text_hashes": [
+        "077211e5ac0ae18a5e6f7811ecd43145f8d99ac0d34155f54224066b2ed71429"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:15",
+      "sequence": 18630,
+      "chapter_label": "ISA 48",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 15
+        }
+      ],
+      "en": "I, even I, have spoken. Yes, I have called him. I have brought him and he shall make his way prosperous.",
+      "ko": "나 곧 내가 말하였고 또 내가 그를 부르며 그를 인도하였나니 그 길이 형통하리라",
+      "source_text_hash": "546799dbcae1b90adfe040912436f4838e85c747804c88ddc57b0e60bb7d7dfd",
+      "translation_text_hash": "86c22f2574094179e597defeaf8493507e54d32f9f2cc56a433f6f1b65563bd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 내가 말하였고 또 내가 그를 부르며 그를 인도하였나니 그 길이 형통하리라"
+      ],
+      "raw_text_hashes": [
+        "86c22f2574094179e597defeaf8493507e54d32f9f2cc56a433f6f1b65563bd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:16",
+      "sequence": 18631,
+      "chapter_label": "ISA 48",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 16
+        }
+      ],
+      "en": "“Come near to me and hear this: “From the beginning I have not spoken in secret; from the time that it happened, I was there.” Now the Lord GOD has sent me with his Spirit.",
+      "ko": "너희는 내게 가까이 나아와 이 말을 들으라 내가 처음부터 그것을 비밀히 말하지 아니하였나니 그 말이 있을 때부터 내가 거기 있었노라 하셨느니라 이제는 주 여호와께서 나와 그 신을 보내셨느니라",
+      "source_text_hash": "4eb99340da889b87d4f6c4a8c24ca53e6f6484dca4380824021e777b32472114",
+      "translation_text_hash": "9bd22cb99d4c84634f745f3513850e21ecfa76976d3cbe4a33ce475e49d8df6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내게 가까이 나아와 이 말을 들으라 내가 처음부터 그것을 비밀히 말하지 아니하였나니 그 말이 있을 때부터 내가 거기 있었노라 하셨느니라 이제는 주 여호와께서 나와 그 신을 보내셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9bd22cb99d4c84634f745f3513850e21ecfa76976d3cbe4a33ce475e49d8df6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:17",
+      "sequence": 18632,
+      "chapter_label": "ISA 48",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD, your Redeemer, the Holy One of Israel, says: “I am the LORD your God, who teaches you to profit, who leads you by the way that you should go.",
+      "ko": "너희의 구속자시요 이스라엘의 거룩하신 자이신 여호와께서 가라사대 나는 네게 유익하도록 가르치고 너를 마땅히 행할 길로 인도하는 너희 하나님 여호와라",
+      "source_text_hash": "eb03e05223cf9abd26fbfeeacfacadcba74dfecbcbe52ca50139478f7be9438f",
+      "translation_text_hash": "21713a8c0b20addb980625ef5fc30b33deff2758e1e2cbeba9753c333cc21688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 구속자시요 이스라엘의 거룩하신 자이신 여호와께서 가라사대 나는 네게 유익하도록 가르치고 너를 마땅히 행할 길로 인도하는 너희 하나님 여호와라"
+      ],
+      "raw_text_hashes": [
+        "21713a8c0b20addb980625ef5fc30b33deff2758e1e2cbeba9753c333cc21688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:18",
+      "sequence": 18633,
+      "chapter_label": "ISA 48",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 18
+        }
+      ],
+      "en": "Oh that you had listened to my commandments! Then your peace would have been like a river and your righteousness like the waves of the sea.",
+      "ko": "슬프다 네가 나의 명령을 듣지 아니하였도다 만일 들었더면 네 평강이 강과 같았겠고 네 의가 바다 물결 같았을 것이며",
+      "source_text_hash": "83bffe08cb5dfdb3e502a041599d5a9d2be1ff568ddc013cb49ccaa664e8a159",
+      "translation_text_hash": "3a1ee249cd71beb3fb4dcf817eef1cf50144c8ef9e2d2b36caa2d6dfd9a2ab82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 네가 나의 명령을 듣지 아니하였도다 만일 들었더면 네 평강이 강과 같았겠고 네 의가 바다 물결 같았을 것이며"
+      ],
+      "raw_text_hashes": [
+        "3a1ee249cd71beb3fb4dcf817eef1cf50144c8ef9e2d2b36caa2d6dfd9a2ab82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:19",
+      "sequence": 18634,
+      "chapter_label": "ISA 48",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 19
+        }
+      ],
+      "en": "Your offspring also would have been as the sand and the descendants of your body like its grains. His name would not be cut off nor destroyed from before me.”",
+      "ko": "네 자손이 모래 같았겠고 네 몸의 소생이 모래 알갱이 같아서 그 이름이 내 앞에서 끊어지지 아니하였겠고 없어지지 아니하였으리라 하셨느니라",
+      "source_text_hash": "e119d82b899190c830addae326b5b5ccf0dc8737d71cabd397bc3b5f5d30d491",
+      "translation_text_hash": "f1d420cd114eae7d2f35e4832e7ab86f10ad543ba60ec89f5001daccccbc79c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자손이 모래 같았겠고 네 몸의 소생이 모래 알갱이 같아서 그 이름이 내 앞에서 끊어지지 아니하였겠고 없어지지 아니하였으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f1d420cd114eae7d2f35e4832e7ab86f10ad543ba60ec89f5001daccccbc79c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:20",
+      "sequence": 18635,
+      "chapter_label": "ISA 48",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 20
+        }
+      ],
+      "en": "Leave Babylon! Flee from the Chaldeans! With the sound of joyful shouting announce this, tell it even to the end of the earth; say, “The LORD has redeemed his servant Jacob!”",
+      "ko": "너희는 바벨론에서 나와서 갈대아인을 피하고 즐거운 소리로 이를 선파하여 들리며 땅 끝까지 반포하여 이르기를 여호와께서 그 종 야곱을 구속하셨다 하라",
+      "source_text_hash": "dec48e5bf5f3088e6899f5bbef1239a45d399c78fafefb114a635813527b939f",
+      "translation_text_hash": "5bc1dab5345da2289cdc293c87680959028e767dd9dc121773dcd4770385628b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 바벨론에서 나와서 갈대아인을 피하고 즐거운 소리로 이를 선파하여 들리며 땅 끝까지 반포하여 이르기를 여호와께서 그 종 야곱을 구속하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "5bc1dab5345da2289cdc293c87680959028e767dd9dc121773dcd4770385628b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:21",
+      "sequence": 18636,
+      "chapter_label": "ISA 48",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 21
+        }
+      ],
+      "en": "They didn’t thirst when he led them through the deserts. He caused the waters to flow out of the rock for them. He also split the rock and the waters gushed out.",
+      "ko": "여호와께서 그들을 사막으로 통과하게 하시던 때에 그들로 목마르지 않게 하시되 그들을 위하여 바위에서 물이 흘러나게 하시며 바위를 쪼개사 물로 솟아나게 하셨느니라",
+      "source_text_hash": "c86624db3f52fda080f816bc500d651f3149461c2825da680aee20fbf35ab044",
+      "translation_text_hash": "5d25af5bef760f091296b9e51409444a27cd3888a14cf5a989c6dac4a05742a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 사막으로 통과하게 하시던 때에 그들로 목마르지 않게 하시되 그들을 위하여 바위에서 물이 흘러나게 하시며 바위를 쪼개사 물로 솟아나게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "5d25af5bef760f091296b9e51409444a27cd3888a14cf5a989c6dac4a05742a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:48:22",
+      "sequence": 18637,
+      "chapter_label": "ISA 48",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 48,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 48,
+          "verse": 22
+        }
+      ],
+      "en": "“There is no peace”, says the LORD, “for the wicked.”",
+      "ko": "여호와께서 말씀하시되 악인에게는 평강이 없다 하셨느니라",
+      "source_text_hash": "9e01a5307513f5ef810a583350fc88cb71dfff5732b7a056b5eb419c5925e8af",
+      "translation_text_hash": "ebc01327f628be715800921286d02a422f565d4580fb5fb4d3e53e327281d0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 악인에게는 평강이 없다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "ebc01327f628be715800921286d02a422f565d4580fb5fb4d3e53e327281d0ac"
+      ]
+    }
+  ]
+}

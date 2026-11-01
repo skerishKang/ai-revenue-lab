@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:019",
+  "unit_ordinal": 230,
+  "unit_label": "JDG 19",
+  "book_code": "JDG",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:19:1",
+      "sequence": 7026,
+      "chapter_label": "JDG 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "In those days, when there was no king in Israel, there was a certain Levite living on the farther side of the hill country of Ephraim, who took for himself a concubine out of Bethlehem Judah.",
+      "ko": "이스라엘에 왕이 없을 그 때에 에브라임 산지 구석에 우거하는 어떤 레위 사람이 유다 베들레헴에서 첩을 취하였더니",
+      "source_text_hash": "4a24b9bf5f39f882e346e13904ff137a801f961d79db0f6c4d1412a853a22435",
+      "translation_text_hash": "7b25646f12c1cf599999fc5b834b88098119efd6b8bafd730b63209303671a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘에 왕이 없을 그 때에 에브라임 산지 구석에 우거하는 어떤 레위 사람이 유다 베들레헴에서 첩을 취하였더니"
+      ],
+      "raw_text_hashes": [
+        "7b25646f12c1cf599999fc5b834b88098119efd6b8bafd730b63209303671a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:2",
+      "sequence": 7027,
+      "chapter_label": "JDG 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "His concubine played the prostitute against him, and went away from him to her father’s house to Bethlehem Judah, and was there for four months.",
+      "ko": "그 첩이 행음하고 남편을 떠나 유다 베들레헴 그 아비의 집에 돌아가서 거기서 넉달의 날을 보내매",
+      "source_text_hash": "a78833daf3e685d2465d1e3061eab31780bade1529f34eadc5cb3d3340c35a1d",
+      "translation_text_hash": "a2f9c8f095f06e8406ccbde09ce5e83e47e5fcde21ffef1c55ddfa5675b93188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첩이 행음하고 남편을 떠나 유다 베들레헴 그 아비의 집에 돌아가서 거기서 넉달의 날을 보내매"
+      ],
+      "raw_text_hashes": [
+        "a2f9c8f095f06e8406ccbde09ce5e83e47e5fcde21ffef1c55ddfa5675b93188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:3",
+      "sequence": 7028,
+      "chapter_label": "JDG 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Her husband arose and went after her to speak kindly to her, to bring her again, having his servant with him and a couple of donkeys. She brought him into her father’s house; and when the father of the young lady saw him, he rejoiced to meet him.",
+      "ko": "그 남편이 그 여자에게 다정히 말하고 그를 데려오고자 하여 하인 하나와 나귀 두필을 데리고 그에게로 가매 여자가 그를 인도하여 아비의 집에 들어가니 그 여자의 아비가 그를 보고 환영하니라",
+      "source_text_hash": "d30b3bc187ba7afa85a57cc2d11ae0604396826f063c60338496839c28fd1380",
+      "translation_text_hash": "ce15ced2a0971dc9fbcf218026674ce691c516f9392715fc1999043a38c28ef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 그 여자에게 다정히 말하고 그를 데려오고자 하여 하인 하나와 나귀 두필을 데리고 그에게로 가매 여자가 그를 인도하여 아비의 집에 들어가니 그 여자의 아비가 그를 보고 환영하니라"
+      ],
+      "raw_text_hashes": [
+        "ce15ced2a0971dc9fbcf218026674ce691c516f9392715fc1999043a38c28ef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:4",
+      "sequence": 7029,
+      "chapter_label": "JDG 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "His father-in-law, the young lady’s father, kept him there; and he stayed with him three days. So they ate and drank, and stayed there.",
+      "ko": "그 첩장인 곧 여자의 아비가 그를 머물리매 그가 삼일을 그와 함께 거하며 먹고 마시며 거기서 유숙하다가",
+      "source_text_hash": "370b55b2c17c117d9f5d4e147385fdaf791fe70725c3a4fcef9d72f4de055a34",
+      "translation_text_hash": "52cd28e61cabe93ad2a539cf21fe3ce50db967fdd2b19be11b07de9ff270369e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첩장인 곧 여자의 아비가 그를 머물리매 그가 삼일을 그와 함께 거하며 먹고 마시며 거기서 유숙하다가"
+      ],
+      "raw_text_hashes": [
+        "52cd28e61cabe93ad2a539cf21fe3ce50db967fdd2b19be11b07de9ff270369e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:5",
+      "sequence": 7030,
+      "chapter_label": "JDG 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "On the fourth day, they got up early in the morning, and he rose up to depart. The young lady’s father said to his son-in-law, “Strengthen your heart with a morsel of bread, and afterward you shall go your way.”",
+      "ko": "나흘만에 일찌기 일어나 떠나고자 하매 여자의 아비가 그 사위에게 이르되 떡을 조금 먹어 그대의 기력을 도운 후에 그대의 길을 행하라",
+      "source_text_hash": "9cc7b42d81789612584fd1be7b05018947765b01ada7d0666193faff7a45f6bc",
+      "translation_text_hash": "2c4363a690778527090421b1007e21aae750de712afe631482c8fd0ceca80515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나흘만에 일찌기 일어나 떠나고자 하매 여자의 아비가 그 사위에게 이르되 떡을 조금 먹어 그대의 기력을 도운 후에 그대의 길을 행하라"
+      ],
+      "raw_text_hashes": [
+        "2c4363a690778527090421b1007e21aae750de712afe631482c8fd0ceca80515"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:6",
+      "sequence": 7031,
+      "chapter_label": "JDG 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "So they sat down, ate, and drank, both of them together. Then the young lady’s father said to the man, “Please be pleased to stay all night, and let your heart be merry.”",
+      "ko": "두 사람이 앉아서 함께 먹고 마시매 여자의 아비가 그 사람에게 이르되 청하노니 이 밤을 여기서 유숙하여 그대의 마음을 즐겁게 하라",
+      "source_text_hash": "8abe84c6967cc6e8ce5654cdc38ab686aae129468051700cdafe80ac6c0e62c6",
+      "translation_text_hash": "68d4dc977f3ad695c9b6300622f45c610fde87814d3ba2e521aa4f142349a026",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 앉아서 함께 먹고 마시매 여자의 아비가 그 사람에게 이르되 청하노니 이 밤을 여기서 유숙하여 그대의 마음을 즐겁게 하라"
+      ],
+      "raw_text_hashes": [
+        "68d4dc977f3ad695c9b6300622f45c610fde87814d3ba2e521aa4f142349a026"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:7",
+      "sequence": 7032,
+      "chapter_label": "JDG 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "The man rose up to depart; but his father-in-law urged him, and he stayed there again.",
+      "ko": "그 사람이 일어나서 가고자 하되 첩장인의 간청으로 다시 유숙하더니",
+      "source_text_hash": "e54bd2839bc8a56a8641c7856417768d3a19c2d1f5d44586b57a4894590dcd9c",
+      "translation_text_hash": "49c15fd847ac8523b0beab5dd918f3d892ddb7acdad1194ae62a6228ff8f8520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 일어나서 가고자 하되 첩장인의 간청으로 다시 유숙하더니"
+      ],
+      "raw_text_hashes": [
+        "49c15fd847ac8523b0beab5dd918f3d892ddb7acdad1194ae62a6228ff8f8520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:8",
+      "sequence": 7033,
+      "chapter_label": "JDG 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He arose early in the morning on the fifth day to depart; and the young lady’s father said, “Please strengthen your heart and stay until the day declines;” and they both ate.",
+      "ko": "다섯째날 아침에 일찌기 일어나 떠나고자 하매 여자의 아비가 이르되 청하노니 그대의 기력을 돕고 해가 기울도록 머물라 하므로 두 사람이 함께 먹고",
+      "source_text_hash": "2e6c3d431a135d215e430e43b9192156fd5c32c7c9b10d34eeae2b312d8f340d",
+      "translation_text_hash": "b67188490b0aec8e25178b5e921e66ef1630e5eaa1a1d812cd1e22b5e0542722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째날 아침에 일찌기 일어나 떠나고자 하매 여자의 아비가 이르되 청하노니 그대의 기력을 돕고 해가 기울도록 머물라 하므로 두 사람이 함께 먹고"
+      ],
+      "raw_text_hashes": [
+        "b67188490b0aec8e25178b5e921e66ef1630e5eaa1a1d812cd1e22b5e0542722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:9",
+      "sequence": 7034,
+      "chapter_label": "JDG 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "When the man rose up to depart, he, and his concubine, and his servant, his father-in-law, the young lady’s father, said to him, “Behold, now the day draws toward evening, please stay all night. Behold, the day is ending. Stay here, that your heart may be merry; and tomorrow go on your way early, that you may go home.”",
+      "ko": "그 사람이 첩과 하인으로 더불어 일어나 떠나고자 하매 그 첩장인 곧 여자의 아비가 그에게 이르되 보라 이제 해가 저물어가니 청컨대 이 밤도 유숙하라 보라 해가 기울었느니라 그대는 여기서 유숙하여 그대의 마음을 즐겁게 하고 내일 일찌기 그대의 길을 행하여 그대의 집으로 돌아가라",
+      "source_text_hash": "f22832ab101bc784a02cd6bf2047ae29a4a835b9cb922f3c780bb4a9bef03ad0",
+      "translation_text_hash": "124317cf4280afad8ef6f90c2aeb7299522222850c3ef58ff6d78944953d32e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 첩과 하인으로 더불어 일어나 떠나고자 하매 그 첩장인 곧 여자의 아비가 그에게 이르되 보라 이제 해가 저물어가니 청컨대 이 밤도 유숙하라 보라 해가 기울었느니라 그대는 여기서 유숙하여 그대의 마음을 즐겁게 하고 내일 일찌기 그대의 길을 행하여 그대의 집으로 돌아가라"
+      ],
+      "raw_text_hashes": [
+        "124317cf4280afad8ef6f90c2aeb7299522222850c3ef58ff6d78944953d32e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:10",
+      "sequence": 7035,
+      "chapter_label": "JDG 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "But the man wouldn’t stay that night, but he rose up and went near Jebus (also called Jerusalem). With him were a couple of saddled donkeys. His concubine also was with him.",
+      "ko": "그 사람이 다시 밤을 지내고자 아니하여 일어나 떠나서 여부스 맞은편에 이르렀으니 여부스는 곧 예루살렘이라 안장 지운 나귀 둘과 첩이 그와 함께 하였더라",
+      "source_text_hash": "6abb6158f8bbdf835c6fa045ce24fbcbb00a51bf7cde44fe360df0e5f67d9620",
+      "translation_text_hash": "191172064280567445e6b987418ebc1a2b0dfff7e59707bb5ba241d2a7087cfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 다시 밤을 지내고자 아니하여 일어나 떠나서 여부스 맞은편에 이르렀으니 여부스는 곧 예루살렘이라 안장 지운 나귀 둘과 첩이 그와 함께 하였더라"
+      ],
+      "raw_text_hashes": [
+        "191172064280567445e6b987418ebc1a2b0dfff7e59707bb5ba241d2a7087cfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:11",
+      "sequence": 7036,
+      "chapter_label": "JDG 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "When they were by Jebus, the day was far spent; and the servant said to his master, “Please come and let’s enter into this city of the Jebusites, and stay in it.”",
+      "ko": "그들이 여부스에 가까왔을 때에 해가 지려하는지라 종이 주인에게 이르되 청컨대 우리가 돌이켜 여부스 사람의 이 성읍에 들어가서 유숙하사이다",
+      "source_text_hash": "aa2ed5be495827eec90344edd6b16e4974563568605ed11a33a40f4f22780376",
+      "translation_text_hash": "1bb0529b6002785ea63052b1bfbf5743fbad925e974ae497e9489a34845cb387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여부스에 가까왔을 때에 해가 지려하는지라 종이 주인에게 이르되 청컨대 우리가 돌이켜 여부스 사람의 이 성읍에 들어가서 유숙하사이다"
+      ],
+      "raw_text_hashes": [
+        "1bb0529b6002785ea63052b1bfbf5743fbad925e974ae497e9489a34845cb387"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:12",
+      "sequence": 7037,
+      "chapter_label": "JDG 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "His master said to him, “We won’t enter into the city of a foreigner that is not of the children of Israel; but we will pass over to Gibeah.”",
+      "ko": "주인이 그에게 이르되 우리가 돌이켜 이스라엘 자손에게 속하지 아니한 외인의 성읍으로 들어갈 것이 아니니 기브아로 나아가리라 하고",
+      "source_text_hash": "45d68e7f607964f8c1d2511489eb1756cf0335d9c2979b8b6502bb9cbd586627",
+      "translation_text_hash": "79bd499c6ccc1cbb4bf31f405d5420684c6281662b9461722278455bf96d86f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 그에게 이르되 우리가 돌이켜 이스라엘 자손에게 속하지 아니한 외인의 성읍으로 들어갈 것이 아니니 기브아로 나아가리라 하고"
+      ],
+      "raw_text_hashes": [
+        "79bd499c6ccc1cbb4bf31f405d5420684c6281662b9461722278455bf96d86f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:13",
+      "sequence": 7038,
+      "chapter_label": "JDG 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "He said to his servant, “Come and let’s draw near to one of these places; and we will lodge in Gibeah, or in Ramah.”",
+      "ko": "또 그 종에게 이르되 우리가 기브아나 라마 중 한 곳에 나아가 거기서 유숙하자 하고",
+      "source_text_hash": "99da15adcbd3558d7e90827290401361d2b1a1620ba08e8fd8564ca2ab1e505e",
+      "translation_text_hash": "1746611f6731f835bb2249fe50165e756b0763a6216342a620641605b37bfc35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 종에게 이르되 우리가 기브아나 라마 중 한 곳에 나아가 거기서 유숙하자 하고"
+      ],
+      "raw_text_hashes": [
+        "1746611f6731f835bb2249fe50165e756b0763a6216342a620641605b37bfc35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:14",
+      "sequence": 7039,
+      "chapter_label": "JDG 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "So they passed on and went their way; and the sun went down on them near Gibeah, which belongs to Benjamin.",
+      "ko": "모두 앞으로 행하더니 베냐민에 속한 기브아에 가까이 이르러는 해가 진지라",
+      "source_text_hash": "17a640bc4627c8557c0b571697a87fd39ef3e6e7c61e0fb648a9f4fc26a79067",
+      "translation_text_hash": "418b1d30ab11a39a7364c2e3cb20121fe3a57e5be0f389a03e5b0d5fb6b6c468",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모두 앞으로 행하더니 베냐민에 속한 기브아에 가까이 이르러는 해가 진지라"
+      ],
+      "raw_text_hashes": [
+        "418b1d30ab11a39a7364c2e3cb20121fe3a57e5be0f389a03e5b0d5fb6b6c468"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:15",
+      "sequence": 7040,
+      "chapter_label": "JDG 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "They went over there, to go in to stay in Gibeah. He went in, and sat down in the street of the city; for there was no one who took them into his house to stay.",
+      "ko": "기브아에 가서 유숙하려고 그리로 돌이켜 들어가서 성읍 거리에 앉았으나 그를 집으로 영접하여 유숙케 하는 자가 없었더라",
+      "source_text_hash": "e58af912b5d0a3eb1039b9333312187d5d03ec46fc06f30c6766b78b205e105e",
+      "translation_text_hash": "2621e9716122c941fb47dacca65d3d206f3618b690997a89a1b52d9c35802deb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브아에 가서 유숙하려고 그리로 돌이켜 들어가서 성읍 거리에 앉았으나 그를 집으로 영접하여 유숙케 하는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "2621e9716122c941fb47dacca65d3d206f3618b690997a89a1b52d9c35802deb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:16",
+      "sequence": 7041,
+      "chapter_label": "JDG 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "Behold, an old man came from his work out of the field at evening. Now the man was from the hill country of Ephraim, and he lived in Gibeah; but the men of the place were Benjamites.",
+      "ko": "이미 저물매 한 노인이 밭에서 일하다가 돌아오니 그 사람은 본래 에브라임 산지 사람으로서 기브아에 우거하는 자요 그곳 사람들은 베냐민 사람이더라",
+      "source_text_hash": "a39c84424c4c1a6205795fca697b4273bb39d5b33e8ef15269d5e6dc85ad4e86",
+      "translation_text_hash": "87aa977571ec98e168dd08d53722389732913b4b1a7ce18dbd958aeb23d6ba0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 저물매 한 노인이 밭에서 일하다가 돌아오니 그 사람은 본래 에브라임 산지 사람으로서 기브아에 우거하는 자요 그곳 사람들은 베냐민 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "87aa977571ec98e168dd08d53722389732913b4b1a7ce18dbd958aeb23d6ba0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:17",
+      "sequence": 7042,
+      "chapter_label": "JDG 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "He lifted up his eyes, and saw the wayfaring man in the street of the city; and the old man said, “Where are you going? Where did you come from?”",
+      "ko": "노인이 눈을 들어 성읍 거리에 행객이 있는 것을 본지라 노인이 묻되 그대는 어디로 가며 어디서 왔느뇨",
+      "source_text_hash": "d1e129e79f254f8bae1d16b09759d8cd4f29012fcb9b64161b5d3f7dd3ce4baf",
+      "translation_text_hash": "bd5df49e7537e74a7ec064f9c794fe2964f40c22d0e9e89955c833aaae96ace4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노인이 눈을 들어 성읍 거리에 행객이 있는 것을 본지라 노인이 묻되 그대는 어디로 가며 어디서 왔느뇨"
+      ],
+      "raw_text_hashes": [
+        "bd5df49e7537e74a7ec064f9c794fe2964f40c22d0e9e89955c833aaae96ace4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:18",
+      "sequence": 7043,
+      "chapter_label": "JDG 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "He said to him, “We are passing from Bethlehem Judah to the farther side of the hill country of Ephraim. I am from there, and I went to Bethlehem Judah. I am going to the LORD’s house; and there is no one who has taken me into his house.",
+      "ko": "그가 그에게 이르되 우리는 유다 베들레헴에서 에브라임 산지 구석으로 가나이다 나는 그곳 사람으로서 유다 베들레헴에 갔다가 이제 여호와의 집으로 가는 중인데 나를 자기 집으로 영접하는 사람이 없나이다",
+      "source_text_hash": "5094993e6714e97833f8179f716bbb5099e0dda63ae6def52650b6243a048349",
+      "translation_text_hash": "5a65aa41214c79f67b16761d633ef8a121ccea503fe9c11061dc320b8a732c58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그에게 이르되 우리는 유다 베들레헴에서 에브라임 산지 구석으로 가나이다 나는 그곳 사람으로서 유다 베들레헴에 갔다가 이제 여호와의 집으로 가는 중인데 나를 자기 집으로 영접하는 사람이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "5a65aa41214c79f67b16761d633ef8a121ccea503fe9c11061dc320b8a732c58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:19",
+      "sequence": 7044,
+      "chapter_label": "JDG 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Yet there is both straw and feed for our donkeys; and there is bread and wine also for me, and for your servant, and for the young man who is with your servants. There is no lack of anything.”",
+      "ko": "우리에게는 나귀들에게 먹일 짚과 보리가 있고 나와 당신의 여종과 당신의 종 우리들과 함께한 소년의 먹을 양식과 포도주가 있어 무엇이든지 부족함이 없나이다",
+      "source_text_hash": "1a460865ec75d4ff7936a9321915da7d9f5ced80f67cdf8d72ab5cbcb0471f61",
+      "translation_text_hash": "f31538f7cdc62609dd597d52c4958332be29a1b2e295cc94d68b377e6c55b64d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게는 나귀들에게 먹일 짚과 보리가 있고 나와 당신의 여종과 당신의 종 우리들과 함께한 소년의 먹을 양식과 포도주가 있어 무엇이든지 부족함이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "f31538f7cdc62609dd597d52c4958332be29a1b2e295cc94d68b377e6c55b64d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:20",
+      "sequence": 7045,
+      "chapter_label": "JDG 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "The old man said, “Peace be to you! Just let me supply all your needs, but don’t sleep in the street.”",
+      "ko": "노인이 가로되 그대는 안심하라 그대의 모든 쓸것은 나의 담책이니 거리에서는 자지 말라 하고",
+      "source_text_hash": "670677c461510ad5d414f1ab516daf12c8362362e6e38b557615327cfb141882",
+      "translation_text_hash": "6687aefc6354928466955314f4ff91862abfb45bb360b1502e8285c4231dc183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노인이 가로되 그대는 안심하라 그대의 모든 쓸것은 나의 담책이니 거리에서는 자지 말라 하고"
+      ],
+      "raw_text_hashes": [
+        "6687aefc6354928466955314f4ff91862abfb45bb360b1502e8285c4231dc183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:21",
+      "sequence": 7046,
+      "chapter_label": "JDG 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "So he brought him into his house, and gave the donkeys fodder. Then they washed their feet, and ate and drank.",
+      "ko": "그를 데리고 자기 집에 들어가서 나귀에게 먹이니 그들이 발을 씻고 먹고 마시니라",
+      "source_text_hash": "04612d7219bc55ecd40bcc20a67767715b5acf4c4ec169af0877593f26bd648b",
+      "translation_text_hash": "3a9e36ec3bfeb767a503787d6d53f6146ff3af6ec9f86be4d406d675d437ea75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 데리고 자기 집에 들어가서 나귀에게 먹이니 그들이 발을 씻고 먹고 마시니라"
+      ],
+      "raw_text_hashes": [
+        "3a9e36ec3bfeb767a503787d6d53f6146ff3af6ec9f86be4d406d675d437ea75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:22",
+      "sequence": 7047,
+      "chapter_label": "JDG 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "As they were making their hearts merry, behold, the men of the city, certain wicked fellows, surrounded the house, beating at the door; and they spoke to the master of the house, the old man, saying, “Bring out the man who came into your house, that we can have sex with him!”",
+      "ko": "그들이 마음을 즐겁게 할 때에 그 성읍의 비류들이 그 집을 에워싸고 문을 두들기며 집 주인 노인에게 말하여 가로되 네 집에 들어온 사람을 끌어내라 우리가 그를 상관하리라",
+      "source_text_hash": "91e5e718095a8af4e8f0df1d61bec69e7bf229c8b3bf689c2868dafdeb709110",
+      "translation_text_hash": "d4fe31840c1ab116cb7aac301eecc81653f232bec819331b469c843b9d62e47c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 마음을 즐겁게 할 때에 그 성읍의 비류들이 그 집을 에워싸고 문을 두들기며 집 주인 노인에게 말하여 가로되 네 집에 들어온 사람을 끌어내라 우리가 그를 상관하리라"
+      ],
+      "raw_text_hashes": [
+        "d4fe31840c1ab116cb7aac301eecc81653f232bec819331b469c843b9d62e47c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:23",
+      "sequence": 7048,
+      "chapter_label": "JDG 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "The man, the master of the house, went out to them, and said to them, “No, my brothers, please don’t act so wickedly; since this man has come into my house, don’t do this folly.",
+      "ko": "집 주인 그 사람이 그들에게로 나와서 이르되 아니라 내 형제들아 청하노니 악을 행치 말라 이 사람이 내 집에 들었으니 이런 망령된 일을 행치 말라",
+      "source_text_hash": "98e59b158fd623b90155a9b7430539102042d48b73d6e33c1faaf7ac0c77a89b",
+      "translation_text_hash": "59337dd789a76a9e68ab15ed4c38b8a14b5b80519e0626547e560924d861dbf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집 주인 그 사람이 그들에게로 나와서 이르되 아니라 내 형제들아 청하노니 악을 행치 말라 이 사람이 내 집에 들었으니 이런 망령된 일을 행치 말라"
+      ],
+      "raw_text_hashes": [
+        "59337dd789a76a9e68ab15ed4c38b8a14b5b80519e0626547e560924d861dbf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:24",
+      "sequence": 7049,
+      "chapter_label": "JDG 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, here is my virgin daughter and his concubine. I will bring them out now. Humble them, and do with them what seems good to you; but to this man don’t do any such folly.”",
+      "ko": "보라 여기 내 처녀 딸과 이 사람의 첩이 있은즉 내가 그들을 끌어내리니 너희가 그들을 욕보이든지 어찌하든지 임의로 하되 오직 이 사람에게는 이런 망령된 일을 행치 말라 하나",
+      "source_text_hash": "3176688da9c05cc53a8794818c2d1972f451e7eba806397a55dcec7d71c9487f",
+      "translation_text_hash": "899ec7f050dc9260dd30b4c5fec51a80ee08adf4a7aab2713dadaa3a8ae9cf07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여기 내 처녀 딸과 이 사람의 첩이 있은즉 내가 그들을 끌어내리니 너희가 그들을 욕보이든지 어찌하든지 임의로 하되 오직 이 사람에게는 이런 망령된 일을 행치 말라 하나"
+      ],
+      "raw_text_hashes": [
+        "899ec7f050dc9260dd30b4c5fec51a80ee08adf4a7aab2713dadaa3a8ae9cf07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:25",
+      "sequence": 7050,
+      "chapter_label": "JDG 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "But the men wouldn’t listen to him; so the man grabbed his concubine, and brought her out to them; and they had sex with her, and abused her all night until the morning. When the day began to dawn, they let her go.",
+      "ko": "무리가 듣지 아니하므로 그 사람이 자기 첩을 무리에게로 붙들어내매 그들이 그에게 행음하여 밤새도록 욕보이다가 새벽 미명에 놓은지라",
+      "source_text_hash": "226a9f94845841652446a2bd8176951aa6f0f48a5bad3a96273e9363ba4f165d",
+      "translation_text_hash": "c43e815aaa64ba72536a9e3dd128447bca6baa3f87ebf2021c0a46232be8168f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 듣지 아니하므로 그 사람이 자기 첩을 무리에게로 붙들어내매 그들이 그에게 행음하여 밤새도록 욕보이다가 새벽 미명에 놓은지라"
+      ],
+      "raw_text_hashes": [
+        "c43e815aaa64ba72536a9e3dd128447bca6baa3f87ebf2021c0a46232be8168f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:26",
+      "sequence": 7051,
+      "chapter_label": "JDG 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "Then the woman came in the dawning of the day, and fell down at the door of the man’s house where her lord was, until it was light.",
+      "ko": "동틀 때에 여인이 그 주인의 우거한 그 사람의 집 문에 이르러 엎드러져 밝기까지 거기 누웠더라",
+      "source_text_hash": "d2932c1426f27fbcee68dbc32eb998a2c18e4530ca0298c8195f7d1153fc060c",
+      "translation_text_hash": "b0a6ee66666df64391b6e312a5c67b3a2de5c559449f7c0924b124a5dcefe545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동틀 때에 여인이 그 주인의 우거한 그 사람의 집 문에 이르러 엎드러져 밝기까지 거기 누웠더라"
+      ],
+      "raw_text_hashes": [
+        "b0a6ee66666df64391b6e312a5c67b3a2de5c559449f7c0924b124a5dcefe545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:27",
+      "sequence": 7052,
+      "chapter_label": "JDG 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "Her lord rose up in the morning and opened the doors of the house, and went out to go his way; and behold, the woman his concubine had fallen down at the door of the house, with her hands on the threshold.",
+      "ko": "그의 주인이 일찌기 일어나 집 문을 열고 떠나고자 하더니 그 여인이 집 문에 엎드러지고 그 두 손이 문지방에 있는 것을 보고",
+      "source_text_hash": "e4f9b535bd2369286e6ed905f4adc0350ff3f66b4951d87f5b29f94a9aa68977",
+      "translation_text_hash": "90492043545f8cd2dd02e2496fb4678e2fea13b05debb0b54293b99d9afa7b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 주인이 일찌기 일어나 집 문을 열고 떠나고자 하더니 그 여인이 집 문에 엎드러지고 그 두 손이 문지방에 있는 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "90492043545f8cd2dd02e2496fb4678e2fea13b05debb0b54293b99d9afa7b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:28",
+      "sequence": 7053,
+      "chapter_label": "JDG 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "He said to her, “Get up, and let’s get going!” but no one answered. Then he took her up on the donkey; and the man rose up, and went to his place.",
+      "ko": "그에게 이르되 일어나라 우리가 떠나가자 하나 아무 대답이 없는지라 이에 그 시체를 나귀에 싣고 행하여 자기 곳에 돌아가서",
+      "source_text_hash": "0585d1765c3012b6d71840106070e19b185a56ea0a2db4078d5beea76767aabd",
+      "translation_text_hash": "a41d523fca88c39143e71c70f0753c24518b5c286266ab4d10388b5116ceb057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르되 일어나라 우리가 떠나가자 하나 아무 대답이 없는지라 이에 그 시체를 나귀에 싣고 행하여 자기 곳에 돌아가서"
+      ],
+      "raw_text_hashes": [
+        "a41d523fca88c39143e71c70f0753c24518b5c286266ab4d10388b5116ceb057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:29",
+      "sequence": 7054,
+      "chapter_label": "JDG 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "When he had come into his house, he took a knife and cut up his concubine, and divided her, limb by limb, into twelve pieces, and sent her throughout all the borders of Israel.",
+      "ko": "그 집에 이르러서는 칼을 취하여 첩의 시체를 붙들어 그 마디를 찍어 열 두덩이에 나누고 그것을 이스라엘 사방에 두루 보내매",
+      "source_text_hash": "ea375610a265b99cd96aa68f813fbd1f77997e73d34f7226f97dfd7ae1a3d830",
+      "translation_text_hash": "fd3280b0c6dabf176292b4bace83d67307051da4416535d3463ad4462c63b4e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집에 이르러서는 칼을 취하여 첩의 시체를 붙들어 그 마디를 찍어 열 두덩이에 나누고 그것을 이스라엘 사방에 두루 보내매"
+      ],
+      "raw_text_hashes": [
+        "fd3280b0c6dabf176292b4bace83d67307051da4416535d3463ad4462c63b4e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:19:30",
+      "sequence": 7055,
+      "chapter_label": "JDG 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "It was so, that all who saw it said, “Such a deed has not been done or seen from the day that the children of Israel came up out of the land of Egypt to this day! Consider it, take counsel, and speak.”",
+      "ko": "그것을 보는 자가 다 가로되 이스라엘 자손이 애굽 땅에서 나온 날부터 오늘날까지 이런 일은 행치도 아니하였고 보지도 못하였도다 생각하고 상의한 후에 말하자 하니라",
+      "source_text_hash": "9db489398f0121f1d28d967961e55430f3a58861f21f47f3bb59a49b9504392c",
+      "translation_text_hash": "f7392e7a6a53a15bd85d2bd7244ada2b7c26975358f2338843444e18c1f55856",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 보는 자가 다 가로되 이스라엘 자손이 애굽 땅에서 나온 날부터 오늘날까지 이런 일은 행치도 아니하였고 보지도 못하였도다 생각하고 상의한 후에 말하자 하니라"
+      ],
+      "raw_text_hashes": [
+        "f7392e7a6a53a15bd85d2bd7244ada2b7c26975358f2338843444e18c1f55856"
+      ]
+    }
+  ]
+}

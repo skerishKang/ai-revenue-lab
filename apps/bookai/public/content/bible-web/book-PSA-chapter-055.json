@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:055",
+  "unit_ordinal": 533,
+  "unit_label": "PSA 55",
+  "book_code": "PSA",
+  "chapter_number": 55,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:55:1",
+      "sequence": 14734,
+      "chapter_label": "PSA 55",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 1
+        }
+      ],
+      "en": "Listen to my prayer, God. Don’t hide yourself from my supplication.",
+      "ko": "하나님이여 내 기도에 귀를 기울이시고 내가 간구할 때에 숨지 마소서",
+      "source_text_hash": "a6769d68d6ee1315a0924ea9ce463a5ecbb76d802ca10ca04baed1bb3ec39fda",
+      "translation_text_hash": "24447a215f7483ad318c2abf83c3d7e1d59a497f7898f2b388483a27975b2bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 기도에 귀를 기울이시고 내가 간구할 때에 숨지 마소서"
+      ],
+      "raw_text_hashes": [
+        "24447a215f7483ad318c2abf83c3d7e1d59a497f7898f2b388483a27975b2bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:2",
+      "sequence": 14735,
+      "chapter_label": "PSA 55",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 2
+        }
+      ],
+      "en": "Attend to me, and answer me. I am restless in my complaint, and moan",
+      "ko": "내게 굽히사 응답하소서 내가 근심으로 편치 못하여 탄식하오니",
+      "source_text_hash": "a9c5243ee6f3ea210ca13ecdf62d38a3262fa456782bbc47930a88e7c6f89020",
+      "translation_text_hash": "59ae706461684178f57b503c737903a0cfe698915c6b9cac9187e0c85c767e40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 굽히사 응답하소서 내가 근심으로 편치 못하여 탄식하오니"
+      ],
+      "raw_text_hashes": [
+        "59ae706461684178f57b503c737903a0cfe698915c6b9cac9187e0c85c767e40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:3",
+      "sequence": 14736,
+      "chapter_label": "PSA 55",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 3
+        }
+      ],
+      "en": "because of the voice of the enemy, because of the oppression of the wicked. For they bring suffering on me. In anger they hold a grudge against me.",
+      "ko": "이는 원수의 소리와 악인의 압제의 연고라 저희가 죄악으로 내게 더하며 노하여 나를 핍박하나이다",
+      "source_text_hash": "b778a3effcaa5223617ed723670fff1aae58f25f409eb22fd55a6aac43b8c6ad",
+      "translation_text_hash": "f2e63b8e431b3bff381548b4e4319500d1a50c5a2d47b0b2410b3252b8c2dbff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 원수의 소리와 악인의 압제의 연고라 저희가 죄악으로 내게 더하며 노하여 나를 핍박하나이다"
+      ],
+      "raw_text_hashes": [
+        "f2e63b8e431b3bff381548b4e4319500d1a50c5a2d47b0b2410b3252b8c2dbff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:4",
+      "sequence": 14737,
+      "chapter_label": "PSA 55",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 4
+        }
+      ],
+      "en": "My heart is severely pained within me. The terrors of death have fallen on me.",
+      "ko": "내 마음이 내 속에서 심히 아파하며 사망의 위험이 내게 미쳤도다",
+      "source_text_hash": "392c8d27cde3b9070aeb8979b48f1c77f5de70fb82115ed16525d85e52ad998a",
+      "translation_text_hash": "eeb45c157f6ad0fdb7b7e69e53a20fba66c3f5d25c1903be0baf1c17f5a56d0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 내 속에서 심히 아파하며 사망의 위험이 내게 미쳤도다"
+      ],
+      "raw_text_hashes": [
+        "eeb45c157f6ad0fdb7b7e69e53a20fba66c3f5d25c1903be0baf1c17f5a56d0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:5",
+      "sequence": 14738,
+      "chapter_label": "PSA 55",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 5
+        }
+      ],
+      "en": "Fearfulness and trembling have come on me. Horror has overwhelmed me.",
+      "ko": "두려움과 떨림이 내게 이르고 황공함이 나를 덮었도다",
+      "source_text_hash": "60d35352dcf6eadd26f2f25d65a255ae171364c1c7684d74d4205647e89c84d7",
+      "translation_text_hash": "f607ec41437cb1ca6215d0fa340582de93a3413b0c4655eed41db8a62f1a2732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려움과 떨림이 내게 이르고 황공함이 나를 덮었도다"
+      ],
+      "raw_text_hashes": [
+        "f607ec41437cb1ca6215d0fa340582de93a3413b0c4655eed41db8a62f1a2732"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:6",
+      "sequence": 14739,
+      "chapter_label": "PSA 55",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 6
+        }
+      ],
+      "en": "I said, “Oh that I had wings like a dove! Then I would fly away, and be at rest.",
+      "ko": "나의 말이 내가 비둘기 같이 날개가 있으면 날아가서 편히 쉬리로다",
+      "source_text_hash": "8edc485a00b7d56b4d7a4f7eda8b62019886ff4d16fc88f212bbe18f62cadcc5",
+      "translation_text_hash": "cf7958abdbd463fcbf7abcdba411c5578520c3a18ba95e9b3cf290728a597eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 말이 내가 비둘기 같이 날개가 있으면 날아가서 편히 쉬리로다"
+      ],
+      "raw_text_hashes": [
+        "cf7958abdbd463fcbf7abcdba411c5578520c3a18ba95e9b3cf290728a597eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:7",
+      "sequence": 14740,
+      "chapter_label": "PSA 55",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, then I would wander far off. I would lodge in the wilderness.” Selah.",
+      "ko": "내가 멀리 날아가서 광야에 거하리로다(셀라)",
+      "source_text_hash": "1f90ad5ac7116b914988ef0c22cc0be22cf8a57e21ce84239645effceafa4ec0",
+      "translation_text_hash": "d8d897cd7f51bf8c36f9346b909b16526352acccbd08e050276ac9af392a964f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 멀리 날아가서 광야에 거하리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "d8d897cd7f51bf8c36f9346b909b16526352acccbd08e050276ac9af392a964f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:8",
+      "sequence": 14741,
+      "chapter_label": "PSA 55",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 8
+        }
+      ],
+      "en": "“I would hurry to a shelter from the stormy wind and storm.”",
+      "ko": "내가 피난처에 속히 가서 폭풍과 광풍을 피하리라 하였도다",
+      "source_text_hash": "0757b66052cc6b118148795a9ffe1d6ac3b2ccf694ea7660d95dd57ab364b86b",
+      "translation_text_hash": "a41241506db4a5b3d18cfa3b5ada65a3a95f0b10fed95413a546a01e11f16b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 피난처에 속히 가서 폭풍과 광풍을 피하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "a41241506db4a5b3d18cfa3b5ada65a3a95f0b10fed95413a546a01e11f16b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:9",
+      "sequence": 14742,
+      "chapter_label": "PSA 55",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 9
+        }
+      ],
+      "en": "Confuse them, Lord, and confound their language, for I have seen violence and strife in the city.",
+      "ko": "내가 성내에서 강포와 분쟁을 보았사오니 주여 저희를 멸하소서 저희 혀를 나누소서",
+      "source_text_hash": "0bd58dc5c365fd0e1783cc1f19979217d8da763e3c4054a27fb1c0bffede5fd5",
+      "translation_text_hash": "c351858f27833e2ace9098d2d1814900c91a091d425295f6b319b5fd5efdd6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 성내에서 강포와 분쟁을 보았사오니 주여 저희를 멸하소서 저희 혀를 나누소서"
+      ],
+      "raw_text_hashes": [
+        "c351858f27833e2ace9098d2d1814900c91a091d425295f6b319b5fd5efdd6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:10",
+      "sequence": 14743,
+      "chapter_label": "PSA 55",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 10
+        }
+      ],
+      "en": "Day and night they prowl around on its walls. Malice and abuse are also within her.",
+      "ko": "저희가 주야로 성벽 위에 두루 다니니 성중에는 죄악과 잔해함이 있으며",
+      "source_text_hash": "ea2f0d8e48aac1c3911bfd8e2809593dca05e61eb38c3c5d05c30e32605f5b53",
+      "translation_text_hash": "8a344d0795c6f0c5d64ebb6a37efafbb608e8a6e394b5c9de01d2e5bbdbb3770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주야로 성벽 위에 두루 다니니 성중에는 죄악과 잔해함이 있으며"
+      ],
+      "raw_text_hashes": [
+        "8a344d0795c6f0c5d64ebb6a37efafbb608e8a6e394b5c9de01d2e5bbdbb3770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:11",
+      "sequence": 14744,
+      "chapter_label": "PSA 55",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 11
+        }
+      ],
+      "en": "Destructive forces are within her. Threats and lies don’t depart from her streets.",
+      "ko": "악독이 그 중에 있고 압박과 궤사가 그 거리를 떠나지 않도다",
+      "source_text_hash": "315e9a42c25f750817d9cb15e7851849f4b4114d9e0af0cc115ca1c3b50605f0",
+      "translation_text_hash": "f068348358a4aed481b06e954fbe6e8426d9c474e9781ce6b16427a7a1ed7a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악독이 그 중에 있고 압박과 궤사가 그 거리를 떠나지 않도다"
+      ],
+      "raw_text_hashes": [
+        "f068348358a4aed481b06e954fbe6e8426d9c474e9781ce6b16427a7a1ed7a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:12",
+      "sequence": 14745,
+      "chapter_label": "PSA 55",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 12
+        }
+      ],
+      "en": "For it was not an enemy who insulted me, then I could have endured it. Neither was it he who hated me who raised himself up against me, then I would have hidden myself from him.",
+      "ko": "나를 책망한 자가 원수가 아니라 원수일찐대 내가 참았으리라 나를 대하여 자기를 높이는 자가 나를 미워하는 자가 아니라 미워하는 자일찐대 내가 그를 피하여 숨었으리라",
+      "source_text_hash": "23d3f3ff58ec85fe202e96a5ad93b8d049269805232395a3389f624b71997889",
+      "translation_text_hash": "9d2beab8d72a0599d458118d46a54002b01ffd4f900ba2797f9ffaf162ddb737",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 책망한 자가 원수가 아니라 원수일찐대 내가 참았으리라 나를 대하여 자기를 높이는 자가 나를 미워하는 자가 아니라 미워하는 자일찐대 내가 그를 피하여 숨었으리라"
+      ],
+      "raw_text_hashes": [
+        "9d2beab8d72a0599d458118d46a54002b01ffd4f900ba2797f9ffaf162ddb737"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:13",
+      "sequence": 14746,
+      "chapter_label": "PSA 55",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 13
+        }
+      ],
+      "en": "But it was you, a man like me, my companion, and my familiar friend.",
+      "ko": "그가 곧 너로다 나의 동류, 나의 동무요 나의 가까운 친우로다",
+      "source_text_hash": "b3468c367a99d470b191d2f368d2bcea4f080981cb2845138e2770b3a7ac0f55",
+      "translation_text_hash": "c293e5755d134bcbfd7317b3c52c7dfe7b401fa6bb15d216fae354ea7d175890",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 곧 너로다 나의 동류, 나의 동무요 나의 가까운 친우로다"
+      ],
+      "raw_text_hashes": [
+        "c293e5755d134bcbfd7317b3c52c7dfe7b401fa6bb15d216fae354ea7d175890"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:14",
+      "sequence": 14747,
+      "chapter_label": "PSA 55",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 14
+        }
+      ],
+      "en": "We took sweet fellowship together. We walked in God’s house with company.",
+      "ko": "우리가 같이 재미롭게 의논하며 무리와 함께하여 하나님의 집안에서 다녔도다",
+      "source_text_hash": "e8ca21adf40f9cc34be305af9ca06c873d3d2a7a373b7de7dbb5f175c10a34fb",
+      "translation_text_hash": "2d38ce95c7e237c52fecc35edb16a3c1fd6202c5714dd821f731e0b17afc8c02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 같이 재미롭게 의논하며 무리와 함께하여 하나님의 집안에서 다녔도다"
+      ],
+      "raw_text_hashes": [
+        "2d38ce95c7e237c52fecc35edb16a3c1fd6202c5714dd821f731e0b17afc8c02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:15",
+      "sequence": 14748,
+      "chapter_label": "PSA 55",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 15
+        }
+      ],
+      "en": "Let death come suddenly on them. Let them go down alive into Sheol. For wickedness is among them, in their dwelling.",
+      "ko": "사망이 홀연히 저희에게 임하여 산채로 음부에 내려갈찌어다 이는 악독이 저희 거처에 있고 저희 가운데 있음이로다",
+      "source_text_hash": "84875a79b3ca82b5516074cf968a449b969b9589ea7aee0fa3e44ec7efc12f2e",
+      "translation_text_hash": "14794b48324d03b3cbb9da5b31037e8dc958fcaf44e575030a9a924c0693d961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망이 홀연히 저희에게 임하여 산채로 음부에 내려갈찌어다 이는 악독이 저희 거처에 있고 저희 가운데 있음이로다"
+      ],
+      "raw_text_hashes": [
+        "14794b48324d03b3cbb9da5b31037e8dc958fcaf44e575030a9a924c0693d961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:16",
+      "sequence": 14749,
+      "chapter_label": "PSA 55",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 16
+        }
+      ],
+      "en": "As for me, I will call on God. The LORD will save me.",
+      "ko": "나는 하나님께 부르짖으리니 여호와께서 나를 구원하시리로다",
+      "source_text_hash": "2d5597ad5a3db8f4b93901c5f4a0365a18e61439f870bacc9ac9bd0fc3506129",
+      "translation_text_hash": "7802bff596d3ca7e61bec8f4a859dceed80f63c87aef5f4647be0c791f4aa7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 하나님께 부르짖으리니 여호와께서 나를 구원하시리로다"
+      ],
+      "raw_text_hashes": [
+        "7802bff596d3ca7e61bec8f4a859dceed80f63c87aef5f4647be0c791f4aa7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:17",
+      "sequence": 14750,
+      "chapter_label": "PSA 55",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 17
+        }
+      ],
+      "en": "Evening, morning, and at noon, I will cry out in distress. He will hear my voice.",
+      "ko": "저녁과 아침과 정오에 내가 근심하여 탄식하리니 여호와께서 내 소리를 들으시리로다",
+      "source_text_hash": "eff685181316069618a855df94c13907e552f4bc1064281508f064ea4a9e3091",
+      "translation_text_hash": "92ce0c060a6264cd9da798523f9d3ce4611c7707e9f67b2c6e545eacb80844c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁과 아침과 정오에 내가 근심하여 탄식하리니 여호와께서 내 소리를 들으시리로다"
+      ],
+      "raw_text_hashes": [
+        "92ce0c060a6264cd9da798523f9d3ce4611c7707e9f67b2c6e545eacb80844c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:18",
+      "sequence": 14751,
+      "chapter_label": "PSA 55",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 18
+        }
+      ],
+      "en": "He has redeemed my soul in peace from the battle that was against me, although there are many who oppose me.",
+      "ko": "나를 대적하는 자 많더니 나를 치는 전쟁에서 저가 내 생명을 구속하사 평안하게 하셨도다",
+      "source_text_hash": "3d380f85de4d9763173c51195ba87d0d8fa2e1de601d874d7b03e9521ed1ba32",
+      "translation_text_hash": "12955fd12e3ad85cb6065297a8008bd705b0c752752cba1b34b4d5359e59e0db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 대적하는 자 많더니 나를 치는 전쟁에서 저가 내 생명을 구속하사 평안하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "12955fd12e3ad85cb6065297a8008bd705b0c752752cba1b34b4d5359e59e0db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:19",
+      "sequence": 14752,
+      "chapter_label": "PSA 55",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 19
+        }
+      ],
+      "en": "God, who is enthroned forever, will hear and answer them. Selah. They never change and don’t fear God.",
+      "ko": "태고부터 계신 하나님이 들으시고(셀라) 변치 아니하며 하나님을 경외치 아니하는 자에게 보응하시리로다",
+      "source_text_hash": "5cc935cacc4fe8702ec6cbd38bcb796b27a02fabc0ab120e665ee39d30aab3de",
+      "translation_text_hash": "e8fd1076e0568f1155faa9745403b3e416df63cac9b7c5ab28eea6f4cae212de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태고부터 계신 하나님이 들으시고(셀라) 변치 아니하며 하나님을 경외치 아니하는 자에게 보응하시리로다"
+      ],
+      "raw_text_hashes": [
+        "e8fd1076e0568f1155faa9745403b3e416df63cac9b7c5ab28eea6f4cae212de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:20",
+      "sequence": 14753,
+      "chapter_label": "PSA 55",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 20
+        }
+      ],
+      "en": "He raises his hands against his friends. He has violated his covenant.",
+      "ko": "저는 손을 들어 자기와 화목한 자를 치고 그 언약을 배반하였도다",
+      "source_text_hash": "b55f78db68196a5e5ed026d362c64e7f5516dc3cc76e30786c90db431f7494ef",
+      "translation_text_hash": "3a5681d46078229d2c2e651c13afb0ae250d2b37a4231004f65e07595d30da50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 손을 들어 자기와 화목한 자를 치고 그 언약을 배반하였도다"
+      ],
+      "raw_text_hashes": [
+        "3a5681d46078229d2c2e651c13afb0ae250d2b37a4231004f65e07595d30da50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:21",
+      "sequence": 14754,
+      "chapter_label": "PSA 55",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 21
+        }
+      ],
+      "en": "His mouth was smooth as butter, but his heart was war. His words were softer than oil, yet they were drawn swords.",
+      "ko": "그 입은 우유 기름보다 미끄러워도 그 마음은 전쟁이요 그 말은 기름보다 유하여도 실상은 뽑힌 칼이로다",
+      "source_text_hash": "2f5f889d5a755e2e6e22b47caf80c9d01533e01eecd181ce9c97738720be7f94",
+      "translation_text_hash": "0d1209d1bc88bf81e58c46365c71c65d358686fdd7ee9a72e3dff08feba65a8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입은 우유 기름보다 미끄러워도 그 마음은 전쟁이요 그 말은 기름보다 유하여도 실상은 뽑힌 칼이로다"
+      ],
+      "raw_text_hashes": [
+        "0d1209d1bc88bf81e58c46365c71c65d358686fdd7ee9a72e3dff08feba65a8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:22",
+      "sequence": 14755,
+      "chapter_label": "PSA 55",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 22
+        }
+      ],
+      "en": "Cast your burden on the LORD and he will sustain you. He will never allow the righteous to be moved.",
+      "ko": "네 짐을 여호와께 맡겨 버리라 너를 붙드시고 의인의 요동함을 영영히 허락지 아니하시리로다",
+      "source_text_hash": "22ab7c37fc89a59e5d9a35c79046a2f6405d298947737d5fb291e0fa5cfd70e8",
+      "translation_text_hash": "336c5d91ef90a348fee73b1b37a2e4844250919444b6d7a96114cbe7d6a5c930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 짐을 여호와께 맡겨 버리라 너를 붙드시고 의인의 요동함을 영영히 허락지 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "336c5d91ef90a348fee73b1b37a2e4844250919444b6d7a96114cbe7d6a5c930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:55:23",
+      "sequence": 14756,
+      "chapter_label": "PSA 55",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 55,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 55,
+          "verse": 23
+        }
+      ],
+      "en": "But you, God, will bring them down into the pit of destruction. Bloodthirsty and deceitful men shall not live out half their days, but I will trust in you.",
+      "ko": "하나님이여 주께서 저희로 파멸의 웅덩이에 빠지게 하시리이다 피를 흘리게 하며 속이는 자들은 저희 날의 반도 살지 못할 것이나 나는 주를 의지하리이다",
+      "source_text_hash": "6907344bf47106d8e4bf1722909105efc9852d0693f3fc86d75d836732d0a88c",
+      "translation_text_hash": "0baf7024e7aeccb11dda5ac68bbf0367165325b815a87a1015a2916a6d4b75a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 저희로 파멸의 웅덩이에 빠지게 하시리이다 피를 흘리게 하며 속이는 자들은 저희 날의 반도 살지 못할 것이나 나는 주를 의지하리이다"
+      ],
+      "raw_text_hashes": [
+        "0baf7024e7aeccb11dda5ac68bbf0367165325b815a87a1015a2916a6d4b75a1"
+      ]
+    }
+  ]
+}

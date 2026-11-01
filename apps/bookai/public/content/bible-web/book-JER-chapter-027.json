@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:027",
+  "unit_ordinal": 772,
+  "unit_label": "JER 27",
+  "book_code": "JER",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:27:1",
+      "sequence": 19598,
+      "chapter_label": "JER 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "In the beginning of the reign of Jehoiakim the son of Josiah, king of Judah, this word came to Jeremiah from the LORD, saying,",
+      "ko": "유다 왕 요시야의 아들 여호야김의 즉위한지 오래지 아니하여서 여호와께서 말씀으로 나 예레미야에게 이르시니라",
+      "source_text_hash": "3601fe21b47086ece685a343501b58bfbfdc281f7e337ec111e0edeb9bef806f",
+      "translation_text_hash": "ce8647924fe29e95c6568805287fa62f699d9f91809cd391d31479d3ccb76071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요시야의 아들 여호야김의 즉위한지 오래지 아니하여서 여호와께서 말씀으로 나 예레미야에게 이르시니라"
+      ],
+      "raw_text_hashes": [
+        "ce8647924fe29e95c6568805287fa62f699d9f91809cd391d31479d3ccb76071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:2",
+      "sequence": 19599,
+      "chapter_label": "JER 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "the LORD says to me: “Make bonds and bars, and put them on your neck.",
+      "ko": "여호와께서 이같이 내게 이르시되 너는 줄과 멍에를 만들어 네 목에 얹고",
+      "source_text_hash": "103f156eb11c57233541b9792c1e228cae65d24e50209f316e97eff2a37d2538",
+      "translation_text_hash": "ed1fe2ab710569915f2b48d0fc0f1854db78f28a2c7855772bc626e63d2fc5fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 내게 이르시되 너는 줄과 멍에를 만들어 네 목에 얹고"
+      ],
+      "raw_text_hashes": [
+        "ed1fe2ab710569915f2b48d0fc0f1854db78f28a2c7855772bc626e63d2fc5fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:3",
+      "sequence": 19600,
+      "chapter_label": "JER 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "Then send them to the king of Edom, to the king of Moab, to the king of the children of Ammon, to the king of Tyre, and to the king of Sidon, by the hand of the messengers who come to Jerusalem to Zedekiah king of Judah.",
+      "ko": "유다 왕 시드기야를 보러 예루살렘에 온 사신들의 손에도 그것을 붙여 에돔 왕과 모압 왕과 암몬 자손의 왕과 두로 왕과 시돈 왕에게 보내며",
+      "source_text_hash": "7f56dfe656f5bc8dabbc857c065cc7c864066b77f4d5dccb26e35eeee20af5db",
+      "translation_text_hash": "d1b882fd0819dce7bb174bd661481035ffd32713698b0285582d8e35ee122362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 시드기야를 보러 예루살렘에 온 사신들의 손에도 그것을 붙여 에돔 왕과 모압 왕과 암몬 자손의 왕과 두로 왕과 시돈 왕에게 보내며"
+      ],
+      "raw_text_hashes": [
+        "d1b882fd0819dce7bb174bd661481035ffd32713698b0285582d8e35ee122362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:4",
+      "sequence": 19601,
+      "chapter_label": "JER 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Give them a command to their masters, saying, ‘The LORD of Armies, the God of Israel says, “You shall tell your masters:",
+      "ko": "그들에게 명하여 그 주에게 이르게 하기를 만군의 여호와 이스라엘의 하나님이 말씀하시되 너희는 너희 주에게 이같이 고하라",
+      "source_text_hash": "330ee6f9ee2de100b84fabb102a7fc9a62151090217923e224276d794956fad3",
+      "translation_text_hash": "ae9a20d2d68496ae5740b17a6bdec545dfda04e17a81b5d7d6e5167a68ad9046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 명하여 그 주에게 이르게 하기를 만군의 여호와 이스라엘의 하나님이 말씀하시되 너희는 너희 주에게 이같이 고하라"
+      ],
+      "raw_text_hashes": [
+        "ae9a20d2d68496ae5740b17a6bdec545dfda04e17a81b5d7d6e5167a68ad9046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:5",
+      "sequence": 19602,
+      "chapter_label": "JER 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "‘I have made the earth, the men, and the animals that are on the surface of the earth by my great power and by my outstretched arm. I give it to whom it seems right to me.",
+      "ko": "나는 내 큰 능과 나의 든 팔로 땅과 그 위에 있는 사람과 짐승들을 만들고 나의 소견에 옳은대로 땅을 사람에게 주었노라",
+      "source_text_hash": "fa3a1e6ef9b8ea2e0c0b460cad8010aa7ec0491c42a604dc5d96b7b53f3ef5f3",
+      "translation_text_hash": "7013e2488bb0423a645936b6523afcc999329ea170f65e7c1e67705481f3e351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 큰 능과 나의 든 팔로 땅과 그 위에 있는 사람과 짐승들을 만들고 나의 소견에 옳은대로 땅을 사람에게 주었노라"
+      ],
+      "raw_text_hashes": [
+        "7013e2488bb0423a645936b6523afcc999329ea170f65e7c1e67705481f3e351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:6",
+      "sequence": 19603,
+      "chapter_label": "JER 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "Now I have given all these lands into the hand of Nebuchadnezzar the king of Babylon, my servant. I have also given the animals of the field to him to serve him.",
+      "ko": "이제 내가 이 모든 땅을 내 종 바벨론 왕 느부갓네살의 손에 주고 또 들짐승들을 그에게 주어서 부리게 하였나니",
+      "source_text_hash": "2f08f099d2a0c46016d40dea9f8ab65eed529d67a157e6b60766cd791144d68c",
+      "translation_text_hash": "1a92c6c63128c6182b6703852de31603a5cef352c7dc03e148af119090282209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 이 모든 땅을 내 종 바벨론 왕 느부갓네살의 손에 주고 또 들짐승들을 그에게 주어서 부리게 하였나니"
+      ],
+      "raw_text_hashes": [
+        "1a92c6c63128c6182b6703852de31603a5cef352c7dc03e148af119090282209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:7",
+      "sequence": 19604,
+      "chapter_label": "JER 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "All the nations will serve him, his son, and his son’s son, until the time of his own land comes. Then many nations and great kings will make him their bondservant.",
+      "ko": "열방이 그와 그 아들과 손자를 섬기리라 그의 땅의 기한이 이르면 여러 나라와 큰 왕이 그로 자기를 섬기게 하리라 마는",
+      "source_text_hash": "9971405c2b74b8be6aa1e14b6cd8cd37337d86d62b07aadb2030af1d7a179b19",
+      "translation_text_hash": "bfe028aacf7dfc99898594ac2a44bdef4cc24b6b5a5243813210d610619dc456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이 그와 그 아들과 손자를 섬기리라 그의 땅의 기한이 이르면 여러 나라와 큰 왕이 그로 자기를 섬기게 하리라 마는"
+      ],
+      "raw_text_hashes": [
+        "bfe028aacf7dfc99898594ac2a44bdef4cc24b6b5a5243813210d610619dc456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:8",
+      "sequence": 19605,
+      "chapter_label": "JER 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "“‘“‘It will happen that I will punish the nation and the kingdom which will not serve the same Nebuchadnezzar king of Babylon, and that will not put their neck under the yoke of the king of Babylon,’ says the LORD, ‘with the sword, with famine, and with pestilence, until I have consumed them by his hand.",
+      "ko": "나 여호와가 이르노라 바벨론 왕 느부갓네살을 섬기지 아니하는 국민이나 그 목으로 바벨론 왕의 멍에를 메지 아니하는 백성은 내가 그의 손으로 진멸시키기까지 칼과 기근과 염병으로 벌하리라",
+      "source_text_hash": "1ff940b085673c485c93ddc55a776b8c2763b7688cb94b45c8ca80bbd265eb50",
+      "translation_text_hash": "83c639a88d3e0a5ae780e6adb935f768fa400a492b8681ccee3533bbfa6e3ad1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이르노라 바벨론 왕 느부갓네살을 섬기지 아니하는 국민이나 그 목으로 바벨론 왕의 멍에를 메지 아니하는 백성은 내가 그의 손으로 진멸시키기까지 칼과 기근과 염병으로 벌하리라"
+      ],
+      "raw_text_hashes": [
+        "83c639a88d3e0a5ae780e6adb935f768fa400a492b8681ccee3533bbfa6e3ad1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:9",
+      "sequence": 19606,
+      "chapter_label": "JER 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "But as for you, don’t listen to your prophets, to your diviners, to your dreams, to your soothsayers, or to your sorcerers, who speak to you, saying, “You shall not serve the king of Babylon;”",
+      "ko": "너희는 너희 선지자나 너희 복술이나 너희 꿈꾸는 자나 너희 술사나 너희 요술객이 너희에게 이르기를 너희가 바벨론 왕을 섬기지 아니하리라 하여도 듣지 말라",
+      "source_text_hash": "183a26d61cee25a52a025f796e34f85375371e7a12eebb73c985b28f07da2fdd",
+      "translation_text_hash": "f072c93ee2f7d1574624e9e3c4f6838a543ea17ddf0e986d0a63f122ea9b85fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 선지자나 너희 복술이나 너희 꿈꾸는 자나 너희 술사나 너희 요술객이 너희에게 이르기를 너희가 바벨론 왕을 섬기지 아니하리라 하여도 듣지 말라"
+      ],
+      "raw_text_hashes": [
+        "f072c93ee2f7d1574624e9e3c4f6838a543ea17ddf0e986d0a63f122ea9b85fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:10",
+      "sequence": 19607,
+      "chapter_label": "JER 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "for they prophesy a lie to you, to remove you far from your land, so that I would drive you out, and you would perish.",
+      "ko": "그들은 너희에게 거짓을 예언하여서 너희로 너희 땅에서 멀리 떠나게 하며 또 나로 너희를 몰아내게 하며 너희를 멸하게 하느니라",
+      "source_text_hash": "cf9f75570767638d7e924f59b41c113ffee5d122732cb059ac91e1fce2172e17",
+      "translation_text_hash": "308d3be3f81541398b348f77fb55e4f34b46825b180cfd33882be392eebd6f9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 너희에게 거짓을 예언하여서 너희로 너희 땅에서 멀리 떠나게 하며 또 나로 너희를 몰아내게 하며 너희를 멸하게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "308d3be3f81541398b348f77fb55e4f34b46825b180cfd33882be392eebd6f9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:11",
+      "sequence": 19608,
+      "chapter_label": "JER 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "But the nation that brings their neck under the yoke of the king of Babylon and serves him, that nation I will let remain in their own land,’ says the LORD; ‘and they will till it and dwell in it.’”’”",
+      "ko": "오직 그 목으로 바벨론 왕의 멍에를 메고 그를 섬기는 나라는 내가 그들을 그 땅에 머물러서 밭을 갈며 거기 거하게 하리라 하셨다 하라 여호와의 말이니라",
+      "source_text_hash": "cd298b274cd06445716801b9243faef9b78c1e2eb97bbb5a8e45b6cc02dc6482",
+      "translation_text_hash": "efaf9c13e67d3caf3a7d64894f7f10135782a9459a251dc29d2e6d69fbd0fd45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 목으로 바벨론 왕의 멍에를 메고 그를 섬기는 나라는 내가 그들을 그 땅에 머물러서 밭을 갈며 거기 거하게 하리라 하셨다 하라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "efaf9c13e67d3caf3a7d64894f7f10135782a9459a251dc29d2e6d69fbd0fd45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:12",
+      "sequence": 19609,
+      "chapter_label": "JER 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "I spoke to Zedekiah king of Judah according to all these words, saying, “Bring your necks under the yoke of the king of Babylon, and serve him and his people, and live.",
+      "ko": "내가 이 모든 말씀대로 유다 왕 시드기야에게 고하여 가로되 왕과 백성은 목으로 바벨론 왕의 멍에를 메고 그와 그 백성을 섬기소서 그리하면 살리이다",
+      "source_text_hash": "6553e31ce949a0b25a851dc1d90fc4a9ecd7fdcd5b13a71ebe5eff5d83af192b",
+      "translation_text_hash": "e59132e25f7cf02dfbc267058df559177f5cc3e9748507ed2151d36fd39735e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 모든 말씀대로 유다 왕 시드기야에게 고하여 가로되 왕과 백성은 목으로 바벨론 왕의 멍에를 메고 그와 그 백성을 섬기소서 그리하면 살리이다"
+      ],
+      "raw_text_hashes": [
+        "e59132e25f7cf02dfbc267058df559177f5cc3e9748507ed2151d36fd39735e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:13",
+      "sequence": 19610,
+      "chapter_label": "JER 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "Why will you die, you and your people, by the sword, by the famine, and by the pestilence, as the LORD has spoken concerning the nation that will not serve the king of Babylon?",
+      "ko": "어찌하여 왕과 왕의 백성이 여호와께서 바벨론 왕을 섬기지 아니하는 나라에 대하여 하신 말씀 같이 칼과 기근과 염병에 죽으려 하나이까",
+      "source_text_hash": "b161bdae34747b3aca5bfb6283839d03930f770a7181d5cd1f9506f5659812b7",
+      "translation_text_hash": "2c574c01bbb6d534aaddecf091f05ba1468bf43ecb253116eb53a88ebeda575a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 왕과 왕의 백성이 여호와께서 바벨론 왕을 섬기지 아니하는 나라에 대하여 하신 말씀 같이 칼과 기근과 염병에 죽으려 하나이까"
+      ],
+      "raw_text_hashes": [
+        "2c574c01bbb6d534aaddecf091f05ba1468bf43ecb253116eb53a88ebeda575a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:14",
+      "sequence": 19611,
+      "chapter_label": "JER 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t listen to the words of the prophets who speak to you, saying, ‘You shall not serve the king of Babylon;’ for they prophesy a lie to you.",
+      "ko": "왕과 백성에게 바벨론 왕을 섬기지 아니하리라 하는 선지자의 말을 듣지 마소서 그들은 거짓을 예언하나이다",
+      "source_text_hash": "6122154af9bf5024f959b15bdf759739d9e19035f1323f6940272851f6ea8445",
+      "translation_text_hash": "90b12d451a4f7683f92133fd4c248c4395ad52a8ab42c794999032a53521685a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 백성에게 바벨론 왕을 섬기지 아니하리라 하는 선지자의 말을 듣지 마소서 그들은 거짓을 예언하나이다"
+      ],
+      "raw_text_hashes": [
+        "90b12d451a4f7683f92133fd4c248c4395ad52a8ab42c794999032a53521685a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:15",
+      "sequence": 19612,
+      "chapter_label": "JER 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "For I have not sent them,” says the LORD, “but they prophesy falsely in my name; that I may drive you out, and that you may perish, you, and the prophets who prophesy to you.”",
+      "ko": "여호와께서 말씀하시되 내가 그들을 보내지 아니하였거늘 그들이 내 이름으로 거짓을 예언하니 내가 너희를 몰아 내며 너희와 너희에게 예언하는 선지자들을 멸망시키기에 이르리라 하셨나이다",
+      "source_text_hash": "ee5e14f7a3d0341036d598886ed23a70f0bd5fbc82b7a2f1de15f86323c0ddf9",
+      "translation_text_hash": "3daf762cb0015b090368dc28c6065a157f80b5866085cfd3536af71d76530773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 내가 그들을 보내지 아니하였거늘 그들이 내 이름으로 거짓을 예언하니 내가 너희를 몰아 내며 너희와 너희에게 예언하는 선지자들을 멸망시키기에 이르리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3daf762cb0015b090368dc28c6065a157f80b5866085cfd3536af71d76530773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:16",
+      "sequence": 19613,
+      "chapter_label": "JER 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "Also I spoke to the priests and to all this people, saying, the LORD says, “Don’t listen to the words of your prophets who prophesy to you, saying, ‘Behold, the vessels of the LORD’s house will now shortly be brought again from Babylon;’ for they prophesy a lie to you.",
+      "ko": "내가 또 제사장들과 그 모든 백성에게 고하여 가로되 여호와께서 이같이 말씀하시되 여호와의 집 기구를 이제 바벨론에서 속히 돌려오리라고 너희에게 예언하는 선지자들의 말을 듣지 말라 이는 그들이 거짓을 예언함이니라 하셨나니",
+      "source_text_hash": "e7cdccd0bcf2816b86a6a732f89de37582d5a8133a114b9ef02aadb67cfc63ee",
+      "translation_text_hash": "9039476ac3975a321c77e736ab3d14c71b67963d170d1f4003e5ad533c5db596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 제사장들과 그 모든 백성에게 고하여 가로되 여호와께서 이같이 말씀하시되 여호와의 집 기구를 이제 바벨론에서 속히 돌려오리라고 너희에게 예언하는 선지자들의 말을 듣지 말라 이는 그들이 거짓을 예언함이니라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "9039476ac3975a321c77e736ab3d14c71b67963d170d1f4003e5ad533c5db596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:17",
+      "sequence": 19614,
+      "chapter_label": "JER 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t listen to them. Serve the king of Babylon, and live. Why should this city become a desolation?",
+      "ko": "너희는 그들을 듣지 말고 바벨론 왕을 섬기라 그리하면 살리라 어찌하여 이 성으로 황무지가 되게 하겠느냐",
+      "source_text_hash": "c13cdaec2558385dea2383d01a77a6dadafd2e322590d6cfbdd70c11223bbb73",
+      "translation_text_hash": "8812dddfb7521b1757f36553858ad677883cf4308b3accd925ed6cfab33f3077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그들을 듣지 말고 바벨론 왕을 섬기라 그리하면 살리라 어찌하여 이 성으로 황무지가 되게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8812dddfb7521b1757f36553858ad677883cf4308b3accd925ed6cfab33f3077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:18",
+      "sequence": 19615,
+      "chapter_label": "JER 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "But if they are prophets, and if the LORD’s word is with them, let them now make intercession to the LORD of Armies, that the vessels which are left in the LORD’s house, in the house of the king of Judah, and at Jerusalem, don’t go to Babylon.",
+      "ko": "만일 그들이 선지자이고 여호와의 말씀이 그들에게 있을찐대 그들이 여호와의 집에와 유다 왕의 집에와 예루살렘에 남아 있는 기구가 바벨론으로 옮겨가지 않도록 만군의 여호와께 구하여야 할 것이니라",
+      "source_text_hash": "cc1cf8befa9b3d9e5bc642c84fcbd273b8e742f9ddc4279a89748fe4a7d7e823",
+      "translation_text_hash": "214069f0540cc11dea7ef679541b18edbe8b39beef703c1a2ee71c6af4b91adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그들이 선지자이고 여호와의 말씀이 그들에게 있을찐대 그들이 여호와의 집에와 유다 왕의 집에와 예루살렘에 남아 있는 기구가 바벨론으로 옮겨가지 않도록 만군의 여호와께 구하여야 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "214069f0540cc11dea7ef679541b18edbe8b39beef703c1a2ee71c6af4b91adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:19",
+      "sequence": 19616,
+      "chapter_label": "JER 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "For the LORD of Armies says concerning the pillars, concerning the sea, concerning the bases, and concerning the rest of the vessels that are left in this city,",
+      "ko": "만군의 여호와께서 기둥들과 놋바다와 받침들과 및 이 성에 남아 있는 기구에 대하여 이같이 말씀하시나니",
+      "source_text_hash": "e0d3aeb2f32208e639e1629e2b6ac51e6c1b575659a657d5a94ce4359a593332",
+      "translation_text_hash": "a7a11deed582234695da68c8b2c63f697eceef2b9325a87b4ee71ef4fed6bbe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 기둥들과 놋바다와 받침들과 및 이 성에 남아 있는 기구에 대하여 이같이 말씀하시나니"
+      ],
+      "raw_text_hashes": [
+        "a7a11deed582234695da68c8b2c63f697eceef2b9325a87b4ee71ef4fed6bbe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:20",
+      "sequence": 19617,
+      "chapter_label": "JER 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "which Nebuchadnezzar king of Babylon didn’t take when he carried away captive Jeconiah the son of Jehoiakim, king of Judah, from Jerusalem to Babylon, and all the nobles of Judah and Jerusalem—",
+      "ko": "이것은 바벨론 왕 느부갓네살이 유다 왕 여호야김의 아들 여고니야와 유다와 예루살렘 모든 귀족을 예루살렘에서 바벨론으로 사로잡아 옮길 때에 취하지 아니하였던 것이라",
+      "source_text_hash": "c3876807e58063b738e2db3bb3fae9de5b60df7c0342e2a775d0e05f10014b80",
+      "translation_text_hash": "4b633eabde667aedc3debc7a407dc92b0180cbf081de60fe426dea1af2084b7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 바벨론 왕 느부갓네살이 유다 왕 여호야김의 아들 여고니야와 유다와 예루살렘 모든 귀족을 예루살렘에서 바벨론으로 사로잡아 옮길 때에 취하지 아니하였던 것이라"
+      ],
+      "raw_text_hashes": [
+        "4b633eabde667aedc3debc7a407dc92b0180cbf081de60fe426dea1af2084b7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:21",
+      "sequence": 19618,
+      "chapter_label": "JER 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "yes, the LORD of Armies, the God of Israel, says concerning the vessels that are left in the LORD’s house, and in the house of the king of Judah, and at Jerusalem:",
+      "ko": "만군의 여호와 이스라엘의 하나님이 여호와의 집에와 유다 왕의 집에와 예루살렘에 남아 있는 그 기구에 대하여 이같이 말씀하시되",
+      "source_text_hash": "0d1ca61f0d4985a6a73fc7f494116547352f3478f7a40f8319e98ef58bfa6ae6",
+      "translation_text_hash": "1e99f666319d880e10a104984124afebd82c6b0e98c193915cda56673ce48a77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 여호와의 집에와 유다 왕의 집에와 예루살렘에 남아 있는 그 기구에 대하여 이같이 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "1e99f666319d880e10a104984124afebd82c6b0e98c193915cda56673ce48a77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:27:22",
+      "sequence": 19619,
+      "chapter_label": "JER 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "‘They will be carried to Babylon, and there they will be, until the day that I visit them,’ says the LORD; ‘then I will bring them up, and restore them to this place.’”",
+      "ko": "그것들이 바벨론으로 옮김을 입고 내가 이것을 돌아보는 날까지 거기 있을 것이니라 그 후에 내가 그것을 옮겨 이곳에 다시 두리라 여호와의 말이니라",
+      "source_text_hash": "7b2ecedc40fc34c67cc13b486cde3ad89fa7c9196d9b1a07e80a43bead76a18c",
+      "translation_text_hash": "737fdfbb7cf084b73d63b45032ac4a10f725f533b2b67a9402d2a3074d70064e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들이 바벨론으로 옮김을 입고 내가 이것을 돌아보는 날까지 거기 있을 것이니라 그 후에 내가 그것을 옮겨 이곳에 다시 두리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "737fdfbb7cf084b73d63b45032ac4a10f725f533b2b67a9402d2a3074d70064e"
+      ]
+    }
+  ]
+}

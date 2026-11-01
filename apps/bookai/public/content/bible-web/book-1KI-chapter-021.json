@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:021",
+  "unit_ordinal": 312,
+  "unit_label": "1KI 21",
+  "book_code": "1KI",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:21:1",
+      "sequence": 9453,
+      "chapter_label": "1KI 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, Naboth the Jezreelite had a vineyard which was in Jezreel, next to the palace of Ahab king of Samaria.",
+      "ko": "그 후에 이 일이 있으니라 이스르엘 사람 나봇이 이스르엘에 포도원이 있어 사마리아 왕 아합의 궁에서 가깝더니",
+      "source_text_hash": "2f71fe7d4f0af3f1a1c91f78d8f54d4dc5d9917056affa83d3523d3f5b019a82",
+      "translation_text_hash": "336bbb22dbda4a0f6c2adb21f1982f9dff872e2ced1ffd7f12f736316674e54f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 이 일이 있으니라 이스르엘 사람 나봇이 이스르엘에 포도원이 있어 사마리아 왕 아합의 궁에서 가깝더니"
+      ],
+      "raw_text_hashes": [
+        "336bbb22dbda4a0f6c2adb21f1982f9dff872e2ced1ffd7f12f736316674e54f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:2",
+      "sequence": 9454,
+      "chapter_label": "1KI 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "Ahab spoke to Naboth, saying, “Give me your vineyard, that I may have it for a garden of herbs, because it is near my house; and I will give you for it a better vineyard than it. Or, if it seems good to you, I will give you its worth in money.”",
+      "ko": "아합이 나봇에게 일러 가로되 네 포도원이 내 궁 곁에 가까이 있으니 내게 주어 나물 밭을 삼게 하라 내가 그 대신에 그보다 더 아름다운 포도원을 네게 줄 것이요 만일 합의하면 그 값을 돈으로 네게 주리라",
+      "source_text_hash": "42888da07f54d0a5eedcf2cd87c8f30147447d931f8d48b6a73f31f3a960ba81",
+      "translation_text_hash": "af5b37c441252d9257d8a5ab2ec27d694f847f0b71d4cabc2b1e53fb68888bc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 나봇에게 일러 가로되 네 포도원이 내 궁 곁에 가까이 있으니 내게 주어 나물 밭을 삼게 하라 내가 그 대신에 그보다 더 아름다운 포도원을 네게 줄 것이요 만일 합의하면 그 값을 돈으로 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "af5b37c441252d9257d8a5ab2ec27d694f847f0b71d4cabc2b1e53fb68888bc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:3",
+      "sequence": 9455,
+      "chapter_label": "1KI 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Naboth said to Ahab, “May the LORD forbid me, that I should give the inheritance of my fathers to you!”",
+      "ko": "나봇이 아합에게 말하되 내 열조의 유업을 왕에게 주기를 여호와께서 금하실찌로다 하니",
+      "source_text_hash": "569727049727f6a2dc4067ee5601f949765156a9e903aed59c3bc39aca60e241",
+      "translation_text_hash": "33e7611e964d4ca812db6feb6e57e26c0bb3aa9a294ff680af34ba4500825a99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나봇이 아합에게 말하되 내 열조의 유업을 왕에게 주기를 여호와께서 금하실찌로다 하니"
+      ],
+      "raw_text_hashes": [
+        "33e7611e964d4ca812db6feb6e57e26c0bb3aa9a294ff680af34ba4500825a99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:4",
+      "sequence": 9456,
+      "chapter_label": "1KI 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Ahab came into his house sullen and angry because of the word which Naboth the Jezreelite had spoken to him, for he had said, “I will not give you the inheritance of my fathers.” He laid himself down on his bed, and turned away his face, and would eat no bread.",
+      "ko": "이스르엘 사람 나봇이 아합에게 대답하여 이르기를 내 조상의 유업을 왕께 줄 수 없다 함을 인하여 아합이 근심하고 답답하여 궁으로 돌아와서 침상에 누워 얼굴을 돌이키고 식사를 아니하니",
+      "source_text_hash": "879b232cb35ef88029517f74506b7d4421e2ae8227ad655f64b198a05577b495",
+      "translation_text_hash": "adf1eb95c09299682e11b0f97816babd0e2217793ff1e044fd224edc088895b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스르엘 사람 나봇이 아합에게 대답하여 이르기를 내 조상의 유업을 왕께 줄 수 없다 함을 인하여 아합이 근심하고 답답하여 궁으로 돌아와서 침상에 누워 얼굴을 돌이키고 식사를 아니하니"
+      ],
+      "raw_text_hashes": [
+        "adf1eb95c09299682e11b0f97816babd0e2217793ff1e044fd224edc088895b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:5",
+      "sequence": 9457,
+      "chapter_label": "1KI 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "But Jezebel his wife came to him, and said to him, “Why is your spirit so sad that you eat no bread?”",
+      "ko": "그 아내 이세벨이 저에게 나아와 가로되 왕의 마음에 무엇을 근심하여 식사를 아니하나이까",
+      "source_text_hash": "ae6702b49184822bf0c228aaf6b5eab048784d222c71d920d86f65888f6f59c2",
+      "translation_text_hash": "1425680ed538f87dc6e42bba6142b4d0d3725f81eaff4bd131e50fc5b1480c6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내 이세벨이 저에게 나아와 가로되 왕의 마음에 무엇을 근심하여 식사를 아니하나이까"
+      ],
+      "raw_text_hashes": [
+        "1425680ed538f87dc6e42bba6142b4d0d3725f81eaff4bd131e50fc5b1480c6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:6",
+      "sequence": 9458,
+      "chapter_label": "1KI 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "He said to her, “Because I spoke to Naboth the Jezreelite, and said to him, ‘Give me your vineyard for money; or else, if it pleases you, I will give you another vineyard for it.’ He answered, ‘I will not give you my vineyard.’”",
+      "ko": "왕이 이르되 내가 이스르엘 사람 나봇에게 말하여 이르기를 네 포도원을 내게 주되 돈으로 바꾸거나 만일 네가 좋아하면 내가 그 대신에 포도원을 네게 주리라 한즉 저가 대답하기를 내가 내 포도원을 네게 주지 않겠노라 함을 인함이로라",
+      "source_text_hash": "ddb05eaed797f45ea7d10ab16434f111022391dd749dbde6324602e80e1ce17d",
+      "translation_text_hash": "0461aa6ab0ea960bb8eaf93734e7985c1fc0caf4a8d08b703ebb55d19a6d38a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이르되 내가 이스르엘 사람 나봇에게 말하여 이르기를 네 포도원을 내게 주되 돈으로 바꾸거나 만일 네가 좋아하면 내가 그 대신에 포도원을 네게 주리라 한즉 저가 대답하기를 내가 내 포도원을 네게 주지 않겠노라 함을 인함이로라"
+      ],
+      "raw_text_hashes": [
+        "0461aa6ab0ea960bb8eaf93734e7985c1fc0caf4a8d08b703ebb55d19a6d38a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:7",
+      "sequence": 9459,
+      "chapter_label": "1KI 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "Jezebel his wife said to him, “Do you now govern the kingdom of Israel? Arise, and eat bread, and let your heart be merry. I will give you the vineyard of Naboth the Jezreelite.”",
+      "ko": "그 아내 이세벨이 저에게 이르되 왕이 이제 이스라엘 나라를 다스리시나이까 일어나 식사를 하시고 마음을 즐겁게 하소서 내가 이스르엘 사람 나봇의 포도원을 왕께 드리리이다 하고",
+      "source_text_hash": "16065819f40960cd484744d4246ed062fcd6acfda3f84f1aee8371c195b33831",
+      "translation_text_hash": "da3b0ad854a18e9dc92e228d861e8c89db6df5d553b2a2d7f227ccb7d1aa9ac0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내 이세벨이 저에게 이르되 왕이 이제 이스라엘 나라를 다스리시나이까 일어나 식사를 하시고 마음을 즐겁게 하소서 내가 이스르엘 사람 나봇의 포도원을 왕께 드리리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "da3b0ad854a18e9dc92e228d861e8c89db6df5d553b2a2d7f227ccb7d1aa9ac0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:8",
+      "sequence": 9460,
+      "chapter_label": "1KI 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "So she wrote letters in Ahab’s name and sealed them with his seal, and sent the letters to the elders and to the nobles who were in his city, who lived with Naboth.",
+      "ko": "아합의 이름으로 편지들을 쓰고 그 인을 쳐서 그 성에서 나봇과 함께 사는 장로와 귀인들에게 보내니",
+      "source_text_hash": "4ee1bbca7208e3dd1cd557c7629e943619920fe3e82ee4650e96ef1408833890",
+      "translation_text_hash": "06b3f3f569994d9d1f84fe3639edb15e98c5caba1cadca96c6b9da92104d1875",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합의 이름으로 편지들을 쓰고 그 인을 쳐서 그 성에서 나봇과 함께 사는 장로와 귀인들에게 보내니"
+      ],
+      "raw_text_hashes": [
+        "06b3f3f569994d9d1f84fe3639edb15e98c5caba1cadca96c6b9da92104d1875"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:9",
+      "sequence": 9461,
+      "chapter_label": "1KI 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "She wrote in the letters, saying, “Proclaim a fast, and set Naboth on high among the people.",
+      "ko": "그 편지 사연에 이르기를 금식을 선포하고 나봇을 백성 가운데 높이 앉힌 후에",
+      "source_text_hash": "7e4e3ce03e4a9463835f76f642590e5d006ca044a8dda324e230a162c16433a5",
+      "translation_text_hash": "262558e97447e33861f4e13dcb5373e4fc25210946f6dd16247a6431999c256e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 편지 사연에 이르기를 금식을 선포하고 나봇을 백성 가운데 높이 앉힌 후에"
+      ],
+      "raw_text_hashes": [
+        "262558e97447e33861f4e13dcb5373e4fc25210946f6dd16247a6431999c256e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:10",
+      "sequence": 9462,
+      "chapter_label": "1KI 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "Set two men, wicked fellows, before him, and let them testify against him, saying, ‘You cursed God and the king!’ Then carry him out, and stone him to death.”",
+      "ko": "비류 두 사람을 그 앞에 마주 앉히고 저에게 대하여 증거하기를 네가 하나님과 왕을 저주하였다 하게 하고 곧 저를 끌고 나가서 돌로 쳐 죽이라 하였더라",
+      "source_text_hash": "62647a9b4f840aa276aab4b7b139f880e9f1eedbafc0201273e150876580cd3a",
+      "translation_text_hash": "ae74360e56e7da8a541fe475936843a3bd68953c2f054255a67f252765c032d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비류 두 사람을 그 앞에 마주 앉히고 저에게 대하여 증거하기를 네가 하나님과 왕을 저주하였다 하게 하고 곧 저를 끌고 나가서 돌로 쳐 죽이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ae74360e56e7da8a541fe475936843a3bd68953c2f054255a67f252765c032d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:11",
+      "sequence": 9463,
+      "chapter_label": "1KI 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "The men of his city, even the elders and the nobles who lived in his city, did as Jezebel had instructed them in the letters which she had written and sent to them.",
+      "ko": "그 성 사람 곧 그 성에 사는 장로와 귀인들이 이세벨의 분부 곧 저가 자기들에게 보낸 편지에 쓴대로 하여",
+      "source_text_hash": "93ebffa9cabafacc98f0581d5402a3543b01a2d5aaffdf06c99e5a000ac01145",
+      "translation_text_hash": "f0fbddf3fc0ac40c330961ec1143b91a90ec12162d670ba521e67fc463615c03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성 사람 곧 그 성에 사는 장로와 귀인들이 이세벨의 분부 곧 저가 자기들에게 보낸 편지에 쓴대로 하여"
+      ],
+      "raw_text_hashes": [
+        "f0fbddf3fc0ac40c330961ec1143b91a90ec12162d670ba521e67fc463615c03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:12",
+      "sequence": 9464,
+      "chapter_label": "1KI 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "They proclaimed a fast, and set Naboth on high among the people.",
+      "ko": "금식을 선포하고 나봇을 백성 가운데 높이 앉히매",
+      "source_text_hash": "a49afe9bf1a8a3c86b06c49111fbfd1ae167f5c734b5d25cb202e5a1ad63e19a",
+      "translation_text_hash": "2734f1dff13709d64627be180893f51c9d989c5974f75139c99f60f998ba75e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금식을 선포하고 나봇을 백성 가운데 높이 앉히매"
+      ],
+      "raw_text_hashes": [
+        "2734f1dff13709d64627be180893f51c9d989c5974f75139c99f60f998ba75e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:13",
+      "sequence": 9465,
+      "chapter_label": "1KI 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "The two men, the wicked fellows, came in and sat before him. The wicked fellows testified against him, even against Naboth, in the presence of the people, saying, “Naboth cursed God and the king!” Then they carried him out of the city and stoned him to death with stones.",
+      "ko": "때에 비류 두 사람이 들어와서 그 앞에 앉고 백성 앞에서 나봇에게 대하여 증거를 지어 이르기를 나봇이 하나님과 왕을 저주하였다 하매 무리가 저를 성 밖으로 끌고 나가서 돌로 쳐 죽이고",
+      "source_text_hash": "56d7647946794594636643b299c8b814105b4eb0ae49a213cee88046283fd04a",
+      "translation_text_hash": "6ab43c3308abf590aad0f368a6bd6497ec9c7c71fc2fdcba8503ba3f83c7f072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 비류 두 사람이 들어와서 그 앞에 앉고 백성 앞에서 나봇에게 대하여 증거를 지어 이르기를 나봇이 하나님과 왕을 저주하였다 하매 무리가 저를 성 밖으로 끌고 나가서 돌로 쳐 죽이고"
+      ],
+      "raw_text_hashes": [
+        "6ab43c3308abf590aad0f368a6bd6497ec9c7c71fc2fdcba8503ba3f83c7f072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:14",
+      "sequence": 9466,
+      "chapter_label": "1KI 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Then they sent to Jezebel, saying, “Naboth has been stoned and is dead.”",
+      "ko": "이세벨에게 통보하기를 나봇이 돌에 맞아 죽었나이다 하니",
+      "source_text_hash": "1f1b14eed965d9bd995cd3f2d8c9e75f5f3cb199fd283fcd39b20ba8260d3eb6",
+      "translation_text_hash": "14a61f2759c2c32df3bf099a8e584fc4c3c6703ca312eda6ad7dabbf73271841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨에게 통보하기를 나봇이 돌에 맞아 죽었나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "14a61f2759c2c32df3bf099a8e584fc4c3c6703ca312eda6ad7dabbf73271841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:15",
+      "sequence": 9467,
+      "chapter_label": "1KI 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "When Jezebel heard that Naboth had been stoned and was dead, Jezebel said to Ahab, “Arise, take possession of the vineyard of Naboth the Jezreelite, which he refused to give you for money; for Naboth is not alive, but dead.”",
+      "ko": "이세벨이 나봇이 돌에 맞아 죽었다 함을 듣고 아합에게 이르되 일어나서 그 이스르엘 사람 나봇이 돈으로 바꾸어 주기를 싫어하던 포도원을 취하소서 나봇이 살아 있지 아니하고 죽었나이다",
+      "source_text_hash": "484fc53254230415498d806c6a96e864783d6435df3d171085c02b93d3fd773f",
+      "translation_text_hash": "f8abb6d33db01b74b5774947ccda5ee8a29d3988ba2294ff430ba854464d9942",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨이 나봇이 돌에 맞아 죽었다 함을 듣고 아합에게 이르되 일어나서 그 이스르엘 사람 나봇이 돈으로 바꾸어 주기를 싫어하던 포도원을 취하소서 나봇이 살아 있지 아니하고 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "f8abb6d33db01b74b5774947ccda5ee8a29d3988ba2294ff430ba854464d9942"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:16",
+      "sequence": 9468,
+      "chapter_label": "1KI 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "When Ahab heard that Naboth was dead, Ahab rose up to go down to the vineyard of Naboth the Jezreelite, to take possession of it.",
+      "ko": "아합이 나봇의 죽었다 함을 듣고 곧 일어나 이스르엘 사람 나봇의 포도원을 취하러 그리로 내려갔더라",
+      "source_text_hash": "655053ce9fd4b3d0da27cbc8992ecffca8951587e99f3c5674f12478d5b9d35d",
+      "translation_text_hash": "af4bd8ffd2c735252901925a717945db9dccaecbbf12bc4424c5d38f4ae4d1e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 나봇의 죽었다 함을 듣고 곧 일어나 이스르엘 사람 나봇의 포도원을 취하러 그리로 내려갔더라"
+      ],
+      "raw_text_hashes": [
+        "af4bd8ffd2c735252901925a717945db9dccaecbbf12bc4424c5d38f4ae4d1e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:17",
+      "sequence": 9469,
+      "chapter_label": "1KI 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD’s word came to Elijah the Tishbite, saying,",
+      "ko": "여호와의 말씀이 디셉 사람 엘리야에게 임하여 가라사대",
+      "source_text_hash": "8eb713c7a28b430d6c16371196a8c370679713a61714b28eac7a3f59ea70d4ca",
+      "translation_text_hash": "6830c44ed20deba0ff29708af5c68da13e67109650ffa80add4b0c4e3b45f799",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 디셉 사람 엘리야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6830c44ed20deba0ff29708af5c68da13e67109650ffa80add4b0c4e3b45f799"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:18",
+      "sequence": 9470,
+      "chapter_label": "1KI 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "“Arise, go down to meet Ahab king of Israel, who dwells in Samaria. Behold, he is in the vineyard of Naboth, where he has gone down to take possession of it.",
+      "ko": "너는 일어나 내려가서 사마리아에 거하는 이스라엘 왕 아합을 만나라 저가 나봇의 포도원을 취하러 그리로 내려갔나니",
+      "source_text_hash": "46af00eac85ed86aa403a5c41400bf90d40d7db0dd6c2783b8789d65575d2939",
+      "translation_text_hash": "19727a5a7923a7d2c32cecaf1c3c50c385525cc75cc0096f1cff68752c61768e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 내려가서 사마리아에 거하는 이스라엘 왕 아합을 만나라 저가 나봇의 포도원을 취하러 그리로 내려갔나니"
+      ],
+      "raw_text_hashes": [
+        "19727a5a7923a7d2c32cecaf1c3c50c385525cc75cc0096f1cff68752c61768e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:19",
+      "sequence": 9471,
+      "chapter_label": "1KI 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "You shall speak to him, saying, ‘The LORD says, “Have you killed and also taken possession?”’ You shall speak to him, saying, ‘The LORD says, “In the place where dogs licked the blood of Naboth, dogs will lick your blood, even yours.”’”",
+      "ko": "너는 저에게 말하여 이르기를 여호와의 말씀이 네가 죽이고 또 빼앗았느냐 하셨다 하고 또 저에게 이르기를 여호와의 말씀이 개들이 나봇의 피를 핥은 곳에서 개들이 네 피 곧 네 몸의 피도 핥으리라 하셨다 하라",
+      "source_text_hash": "da7cf9c525ca4c6970cefb232c4e44861a3363e79f1afdca877a6d4c4db35de0",
+      "translation_text_hash": "b937243121808655ee95640d960bba39f4cf3acd90ea56ccd37d9851c0f3071c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 저에게 말하여 이르기를 여호와의 말씀이 네가 죽이고 또 빼앗았느냐 하셨다 하고 또 저에게 이르기를 여호와의 말씀이 개들이 나봇의 피를 핥은 곳에서 개들이 네 피 곧 네 몸의 피도 핥으리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "b937243121808655ee95640d960bba39f4cf3acd90ea56ccd37d9851c0f3071c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:20",
+      "sequence": 9472,
+      "chapter_label": "1KI 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "Ahab said to Elijah, “Have you found me, my enemy?” He answered, “I have found you, because you have sold yourself to do that which is evil in the LORD’s sight.",
+      "ko": "아합이 엘리야에게 이르되 나의 대적이여 네가 나를 찾았느냐 대답하되 내가 찾았노라 네가 스스로 팔려 여호와 보시기에 악을 행하였으므로",
+      "source_text_hash": "c007a0994e8f329d39733cca48101ef6eaf0d25f792f46eebf6362ba3a4b597c",
+      "translation_text_hash": "bd459d45d25ab700082f3a8cfeab1ff702c48defb03c0fe0326a8068bbd7f05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 엘리야에게 이르되 나의 대적이여 네가 나를 찾았느냐 대답하되 내가 찾았노라 네가 스스로 팔려 여호와 보시기에 악을 행하였으므로"
+      ],
+      "raw_text_hashes": [
+        "bd459d45d25ab700082f3a8cfeab1ff702c48defb03c0fe0326a8068bbd7f05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:21",
+      "sequence": 9473,
+      "chapter_label": "1KI 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Behold, I will bring evil on you, and will utterly sweep you away and will cut off from Ahab everyone who urinates against a wall, and him who is shut up and him who is left at large in Israel.",
+      "ko": "여호와의 말씀이 내가 재앙을 네게 내려 너를 쓸어 버리되 네게 속한 남자는 이스라엘 가운데 매인 자나 놓인 자를 다 멸할 것이요",
+      "source_text_hash": "9017cf145232eaba8943891ac3078726baa0638162788d0bcc76c55d58fa3025",
+      "translation_text_hash": "3ea4140ee6d40d252799b42314931dd2b3e0f4423686dcdef41dc2174fa1a24a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내가 재앙을 네게 내려 너를 쓸어 버리되 네게 속한 남자는 이스라엘 가운데 매인 자나 놓인 자를 다 멸할 것이요"
+      ],
+      "raw_text_hashes": [
+        "3ea4140ee6d40d252799b42314931dd2b3e0f4423686dcdef41dc2174fa1a24a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:22",
+      "sequence": 9474,
+      "chapter_label": "1KI 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "I will make your house like the house of Jeroboam the son of Nebat, and like the house of Baasha the son of Ahijah, for the provocation with which you have provoked me to anger, and have made Israel to sin.”",
+      "ko": "또 네 집으로 느밧의 아들 여로보암의 집처럼 되게 하고 아히야의 아들 바아사의 집처럼 되게 하리니 이는 네가 나의 노를 격동하고 이스라엘로 범죄케 한 까닭이니라 하셨고",
+      "source_text_hash": "bacea838d4c2d9e3b307e9ee2b7832c84196b876d8759bcf595d9593a2eea9ec",
+      "translation_text_hash": "0101d82eaabf72a9d90e658ae8119769045831b8f36b399e2f879ff25f03e030",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 집으로 느밧의 아들 여로보암의 집처럼 되게 하고 아히야의 아들 바아사의 집처럼 되게 하리니 이는 네가 나의 노를 격동하고 이스라엘로 범죄케 한 까닭이니라 하셨고"
+      ],
+      "raw_text_hashes": [
+        "0101d82eaabf72a9d90e658ae8119769045831b8f36b399e2f879ff25f03e030"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:23",
+      "sequence": 9475,
+      "chapter_label": "1KI 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD also spoke of Jezebel, saying, “The dogs will eat Jezebel by the rampart of Jezreel.",
+      "ko": "이세벨에게 대하여도 여호와께서 말씀하여 가라사대 개들이 이스르엘 성 곁에서 이세벨을 먹을찌라",
+      "source_text_hash": "b820285e93f2f8c6d9da1ed33f9aaf4db1dacf3f0842ba4f4ec99698944731d9",
+      "translation_text_hash": "3045754d0e8b2947ae820d3706c46a7ecbcf3ed7c56e4b8aab8548e3af2f89a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨에게 대하여도 여호와께서 말씀하여 가라사대 개들이 이스르엘 성 곁에서 이세벨을 먹을찌라"
+      ],
+      "raw_text_hashes": [
+        "3045754d0e8b2947ae820d3706c46a7ecbcf3ed7c56e4b8aab8548e3af2f89a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:24",
+      "sequence": 9476,
+      "chapter_label": "1KI 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "The dogs will eat whoever dies of Ahab in the city; and the birds of the sky will eat whoever dies in the field.”",
+      "ko": "아합에게 속한 자로서 성읍에서 죽은 자는 개들이 먹고 들에서 죽은 자는 공중의 새가 먹으리라 하셨느니라 하니",
+      "source_text_hash": "4329d0d92ea25f20f32785d2d6c67871aeb8c0f9a69eec9c51736fe43acc5cad",
+      "translation_text_hash": "84ec651eec99f7a695ec1eb20d947920cc12bc7db91f35941ee8c0cab2556035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합에게 속한 자로서 성읍에서 죽은 자는 개들이 먹고 들에서 죽은 자는 공중의 새가 먹으리라 하셨느니라 하니"
+      ],
+      "raw_text_hashes": [
+        "84ec651eec99f7a695ec1eb20d947920cc12bc7db91f35941ee8c0cab2556035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:25",
+      "sequence": 9477,
+      "chapter_label": "1KI 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "But there was no one like Ahab, who sold himself to do that which was evil in the LORD’s sight, whom Jezebel his wife stirred up.",
+      "ko": "예로부터 아합과 같이 스스로 팔려 여호와 보시기에 악을 행한 자가 없음은 저가 그 아내 이세벨에게 충동되었음이라",
+      "source_text_hash": "c28c48e743187fcf5eeda3d3bb9439326710d04f5d2d61fe939bab776d56b3e3",
+      "translation_text_hash": "a7402e8fee69587626824ae862550e0e6cbc8e2157ce76f22c4888fcf6bda171",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예로부터 아합과 같이 스스로 팔려 여호와 보시기에 악을 행한 자가 없음은 저가 그 아내 이세벨에게 충동되었음이라"
+      ],
+      "raw_text_hashes": [
+        "a7402e8fee69587626824ae862550e0e6cbc8e2157ce76f22c4888fcf6bda171"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:26",
+      "sequence": 9478,
+      "chapter_label": "1KI 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "He did very abominably in following idols, according to all that the Amorites did, whom the LORD cast out before the children of Israel.",
+      "ko": "저가 여호와께서 이스라엘 자손 앞에서 쫓아내신 아모리 사람의 모든 행한것 같이 우상에게 복종하여 심히 가증하게 행하였더라",
+      "source_text_hash": "7bf7915a5acc6b46eefcb2e099df99ced6cfe4b64f702584b078410f63a2a747",
+      "translation_text_hash": "2f4e158c6723d7a860bfc8ed13ae4d38b9235ed66d730a178b0f6e45e6a28d8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와께서 이스라엘 자손 앞에서 쫓아내신 아모리 사람의 모든 행한것 같이 우상에게 복종하여 심히 가증하게 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "2f4e158c6723d7a860bfc8ed13ae4d38b9235ed66d730a178b0f6e45e6a28d8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:27",
+      "sequence": 9479,
+      "chapter_label": "1KI 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "When Ahab heard those words, he tore his clothes, put sackcloth on his body, fasted, lay in sackcloth, and went about despondently.",
+      "ko": "아합이 이 모든 말씀을 들을 때에 그 옷을 찢고 굵은 베로 몸을 동이고 금식하고 굵은 베에 누우며 행보도 천천히 한지라",
+      "source_text_hash": "65ef97fc7515b8b4facd48a6a42fba275c03368a7d8b3f5dd713eb1cc6605631",
+      "translation_text_hash": "d1c017c9c22b7ace47cfb6d521b69ce01a960319da74acb534255696e3e6b71f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 이 모든 말씀을 들을 때에 그 옷을 찢고 굵은 베로 몸을 동이고 금식하고 굵은 베에 누우며 행보도 천천히 한지라"
+      ],
+      "raw_text_hashes": [
+        "d1c017c9c22b7ace47cfb6d521b69ce01a960319da74acb534255696e3e6b71f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:28",
+      "sequence": 9480,
+      "chapter_label": "1KI 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD’s word came to Elijah the Tishbite, saying,",
+      "ko": "여호와의 말씀이 디셉 사람 엘리야에게 임하여 가라사대",
+      "source_text_hash": "8eb713c7a28b430d6c16371196a8c370679713a61714b28eac7a3f59ea70d4ca",
+      "translation_text_hash": "6830c44ed20deba0ff29708af5c68da13e67109650ffa80add4b0c4e3b45f799",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 디셉 사람 엘리야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6830c44ed20deba0ff29708af5c68da13e67109650ffa80add4b0c4e3b45f799"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:21:29",
+      "sequence": 9481,
+      "chapter_label": "1KI 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "“See how Ahab humbles himself before me? Because he humbles himself before me, I will not bring the evil in his days; but I will bring the evil on his house in his son’s day.”",
+      "ko": "아합이 내 앞에서 겸비함을 네가 보느냐 저가 내 앞에서 겸비함을 인하여 내가 재앙을 저의 시대에 내리지 아니하고 그 아들의 시대에야 그 집에 재앙을 내리리라 하셨더라",
+      "source_text_hash": "240b6be9669e0068a393403f6a0fe3043b95697b031d81dfdbee719e79248235",
+      "translation_text_hash": "43b91aeeb2e8bcd9391f7c18e7dce6bd9486abd5b263f5db2e678138ac2fbfe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 내 앞에서 겸비함을 네가 보느냐 저가 내 앞에서 겸비함을 인하여 내가 재앙을 저의 시대에 내리지 아니하고 그 아들의 시대에야 그 집에 재앙을 내리리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "43b91aeeb2e8bcd9391f7c18e7dce6bd9486abd5b263f5db2e678138ac2fbfe8"
+      ]
+    }
+  ]
+}

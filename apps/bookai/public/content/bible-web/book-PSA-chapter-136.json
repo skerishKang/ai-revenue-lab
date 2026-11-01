@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:136",
+  "unit_ordinal": 614,
+  "unit_label": "PSA 136",
+  "book_code": "PSA",
+  "chapter_number": 136,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:136:1",
+      "sequence": 16198,
+      "chapter_label": "PSA 136",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 1
+        }
+      ],
+      "en": "Give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "5952864712492c7c4000fb1ee544c2bd85ba0d5c398afae1e166342fe07a5263",
+      "translation_text_hash": "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:2",
+      "sequence": 16199,
+      "chapter_label": "PSA 136",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 2
+        }
+      ],
+      "en": "Give thanks to the God of gods, for his loving kindness endures forever.",
+      "ko": "모든 신에 뛰어나신 하나님께 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "741569c72e95ed7e9d6ce3b19c7e7b4a997f114de4c492da041c54cfa7267229",
+      "translation_text_hash": "9deaba1284897e307fbd5fc74ea096024f20e4cd4b28ff4f8f1c4d493246e4f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 신에 뛰어나신 하나님께 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "9deaba1284897e307fbd5fc74ea096024f20e4cd4b28ff4f8f1c4d493246e4f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:3",
+      "sequence": 16200,
+      "chapter_label": "PSA 136",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 3
+        }
+      ],
+      "en": "Give thanks to the Lord of lords, for his loving kindness endures forever;",
+      "ko": "모든 주에 뛰어나신 주께 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "9c8242645d5c4adc1c2b0ea3e3aa8ba3b27160fa180cd3502f3b78c62de73021",
+      "translation_text_hash": "060ec5caa1626133631f79fd68b50e68b4c36e3256182569de1c35265a7346b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 주에 뛰어나신 주께 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "060ec5caa1626133631f79fd68b50e68b4c36e3256182569de1c35265a7346b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:4",
+      "sequence": 16201,
+      "chapter_label": "PSA 136",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 4
+        }
+      ],
+      "en": "to him who alone does great wonders, for his loving kindness endures forever;",
+      "ko": "홀로 큰 기사를 행하시는이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "aba6cecbc2c19f025b3f4ba19fe6c7e273231e9ddb3ac8558d814af441559ff0",
+      "translation_text_hash": "fcadbeffdeb9f8932c519d1e99773bb892f811673bf852908bb31f1b61a70dfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀로 큰 기사를 행하시는이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "fcadbeffdeb9f8932c519d1e99773bb892f811673bf852908bb31f1b61a70dfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:5",
+      "sequence": 16202,
+      "chapter_label": "PSA 136",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 5
+        }
+      ],
+      "en": "to him who by understanding made the heavens, for his loving kindness endures forever;",
+      "ko": "지혜로 하늘을 지으신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "aed47c7ce23e1e9c8ca58aa716da92e4202f63372e16ba0fee05b74d7c5021eb",
+      "translation_text_hash": "aa58685e7ed82b15efcd06d8fff9430627bc05d8b42977d38d89064ef204949d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜로 하늘을 지으신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "aa58685e7ed82b15efcd06d8fff9430627bc05d8b42977d38d89064ef204949d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:6",
+      "sequence": 16203,
+      "chapter_label": "PSA 136",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 6
+        }
+      ],
+      "en": "to him who spread out the earth above the waters, for his loving kindness endures forever;",
+      "ko": "땅을 물 위에 펴신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "1e2e2b0dbfc1fd728d0891983684ceda764713af13b901239cb41b0428b77225",
+      "translation_text_hash": "37ab49d21c9613b9673eb32f642fb16a1bd55c3a48ac7d08f9499637a68090f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅을 물 위에 펴신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "37ab49d21c9613b9673eb32f642fb16a1bd55c3a48ac7d08f9499637a68090f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:7",
+      "sequence": 16204,
+      "chapter_label": "PSA 136",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 7
+        }
+      ],
+      "en": "to him who made the great lights, for his loving kindness endures forever;",
+      "ko": "큰 빛들을 지으신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "a97f1df848c7a1077ae1db4c70fc89d75c8943da4ccfc61c04d9f8c44830e300",
+      "translation_text_hash": "3602ad2756cac9155e8b5f018364a9f3f1bc7709915763218dbcef08ab82de07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 빛들을 지으신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "3602ad2756cac9155e8b5f018364a9f3f1bc7709915763218dbcef08ab82de07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:8",
+      "sequence": 16205,
+      "chapter_label": "PSA 136",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 8
+        }
+      ],
+      "en": "the sun to rule by day, for his loving kindness endures forever;",
+      "ko": "해로 낮을 주관케 하신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "09044ac8980554d96382b5585083f8683da9c7de2a803bdc3b4fc8fc48464eeb",
+      "translation_text_hash": "f124112e84fe8bddfeb93e72918deea3faaca541b5cba99d2e7c8e2c05d431e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해로 낮을 주관케 하신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "f124112e84fe8bddfeb93e72918deea3faaca541b5cba99d2e7c8e2c05d431e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:9",
+      "sequence": 16206,
+      "chapter_label": "PSA 136",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 9
+        }
+      ],
+      "en": "the moon and stars to rule by night, for his loving kindness endures forever;",
+      "ko": "달과 별들로 밤을 주관케 하신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "b7512b7c03a70ef502eba6011c8053828b9108cccf52142c148a51f1563f6d44",
+      "translation_text_hash": "613fa228c54bd7f75a307299a3c460f6e3fd4bea75709224197c5af1148c0229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "달과 별들로 밤을 주관케 하신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "613fa228c54bd7f75a307299a3c460f6e3fd4bea75709224197c5af1148c0229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:10",
+      "sequence": 16207,
+      "chapter_label": "PSA 136",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 10
+        }
+      ],
+      "en": "to him who struck down the Egyptian firstborn, for his loving kindness endures forever;",
+      "ko": "애굽의 장자를 치신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "69022c7bdbcd6da4b728fe577218b443d9d65afda485f1b6f9e3b35d89babf85",
+      "translation_text_hash": "fdbee85f8fc60153419d828499ac6ea6011a5b7c88be13d2dbdb128de5755280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 장자를 치신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "fdbee85f8fc60153419d828499ac6ea6011a5b7c88be13d2dbdb128de5755280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:11",
+      "sequence": 16208,
+      "chapter_label": "PSA 136",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 11
+        }
+      ],
+      "en": "and brought out Israel from among them, for his loving kindness endures forever;",
+      "ko": "이스라엘을 저희 중에서 인도하여 내신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "b0b3669f16e2518130d2c884f7ccc508e4f4f4ef07b55987537bbf50d16501e5",
+      "translation_text_hash": "af737e45d613b2a0a9c42b6e7dfd5c3686f54ddf636ba21d0db927fa9edd0c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 저희 중에서 인도하여 내신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "af737e45d613b2a0a9c42b6e7dfd5c3686f54ddf636ba21d0db927fa9edd0c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:12",
+      "sequence": 16209,
+      "chapter_label": "PSA 136",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 12
+        }
+      ],
+      "en": "with a strong hand, and with an outstretched arm, for his loving kindness endures forever;",
+      "ko": "강한 손과 펴신 팔로 인도하여 내신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "2cefd4ed8bf213cf5f1aa0098251aeaf5f3b0507b647b2fa02625c83e52a953c",
+      "translation_text_hash": "78928c79edb2571908b23d609a6242614771f7c09619cf6c73bef1f0ed346e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강한 손과 펴신 팔로 인도하여 내신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "78928c79edb2571908b23d609a6242614771f7c09619cf6c73bef1f0ed346e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:13",
+      "sequence": 16210,
+      "chapter_label": "PSA 136",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 13
+        }
+      ],
+      "en": "to him who divided the Red Sea apart, for his loving kindness endures forever;",
+      "ko": "홍해를 가르신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "c13573d2a85d5135a09025b18e968f09fc0958056f08f137a72509001eec534d",
+      "translation_text_hash": "2aebc95e6e5eb1a05d3fbcb4585a8fa7688e7997d4ce53677473afd906419bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍해를 가르신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "2aebc95e6e5eb1a05d3fbcb4585a8fa7688e7997d4ce53677473afd906419bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:14",
+      "sequence": 16211,
+      "chapter_label": "PSA 136",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 14
+        }
+      ],
+      "en": "and made Israel to pass through the middle of it, for his loving kindness endures forever;",
+      "ko": "이스라엘로 그 가운데로 통과케 하신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "0e6fbab0404e02c51610741d99bb87855315196fa48943d84d23b55a064ec356",
+      "translation_text_hash": "6b26931753d796d6c36801c5f9ef40421a5775e3b0c91a077914d27b06741993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘로 그 가운데로 통과케 하신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "6b26931753d796d6c36801c5f9ef40421a5775e3b0c91a077914d27b06741993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:15",
+      "sequence": 16212,
+      "chapter_label": "PSA 136",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 15
+        }
+      ],
+      "en": "but overthrew Pharaoh and his army in the Red Sea, for his loving kindness endures forever;",
+      "ko": "바로와 그 군대를 홍해에 엎드러뜨리신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "3446af66314d36ea43d9b6981a02dda7ab614f46af40c7a57f6feb4be7d64b68",
+      "translation_text_hash": "4d1a38f9b0c3ed2cb0ce65894577891eec52344b37744ac65e838b203b072b6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로와 그 군대를 홍해에 엎드러뜨리신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "4d1a38f9b0c3ed2cb0ce65894577891eec52344b37744ac65e838b203b072b6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:16",
+      "sequence": 16213,
+      "chapter_label": "PSA 136",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 16
+        }
+      ],
+      "en": "to him who led his people through the wilderness, for his loving kindness endures forever;",
+      "ko": "그 백성을 인도하여 광야로 통과케 하신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "457280072965d54799628abf66b4a742684028c12a89238c758e44ad3eaa4177",
+      "translation_text_hash": "9666f270920c14394ff6d626f3045ef0a08c9a6f5ba2f89097b3f25cdddb8bea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성을 인도하여 광야로 통과케 하신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "9666f270920c14394ff6d626f3045ef0a08c9a6f5ba2f89097b3f25cdddb8bea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:17",
+      "sequence": 16214,
+      "chapter_label": "PSA 136",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 17
+        }
+      ],
+      "en": "to him who struck great kings, for his loving kindness endures forever;",
+      "ko": "큰 왕들을 치신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "de7c3f1f3384453f35ac1710123bb9195cb9f639e2685dbbed34616a7e17a139",
+      "translation_text_hash": "9c0103e8f8ca1dde2cd4351be35716dc55282c989c5c28911b185d071937a449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 왕들을 치신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "9c0103e8f8ca1dde2cd4351be35716dc55282c989c5c28911b185d071937a449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:18",
+      "sequence": 16215,
+      "chapter_label": "PSA 136",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 18
+        }
+      ],
+      "en": "and killed mighty kings, for his loving kindness endures forever;",
+      "ko": "유명한 왕들을 죽이신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "b9a0fd339e771fcfe42f75b1b4409f21da60eef45165705b5d5326d2d044d4df",
+      "translation_text_hash": "61d32d9bf9747252ce4f175de23baa50df37b130a77cc20f05149a1be4d31732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유명한 왕들을 죽이신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "61d32d9bf9747252ce4f175de23baa50df37b130a77cc20f05149a1be4d31732"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:19",
+      "sequence": 16216,
+      "chapter_label": "PSA 136",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 19
+        }
+      ],
+      "en": "Sihon king of the Amorites, for his loving kindness endures forever;",
+      "ko": "아모리인의 왕 시혼을 죽이신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "241830004add98b9719271a64ab0d06d227ce4a294f7a3597bb57fd8e1fafd9f",
+      "translation_text_hash": "55b01f7e922144819f40bb8f1964b9c89e9f75ded6059daaa0d8676d1fc624e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모리인의 왕 시혼을 죽이신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "55b01f7e922144819f40bb8f1964b9c89e9f75ded6059daaa0d8676d1fc624e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:20",
+      "sequence": 16217,
+      "chapter_label": "PSA 136",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 20
+        }
+      ],
+      "en": "Og king of Bashan, for his loving kindness endures forever;",
+      "ko": "바산왕 옥을 죽이신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "9aa3b270db132daf129a61ca3e5544dd28fde5639fea85c1962abacc9d82caa3",
+      "translation_text_hash": "6fb9797b8c1c181e742e396cc0f71b004d629af96f5a2ed906dad9df3de15c80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바산왕 옥을 죽이신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "6fb9797b8c1c181e742e396cc0f71b004d629af96f5a2ed906dad9df3de15c80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:21",
+      "sequence": 16218,
+      "chapter_label": "PSA 136",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 21
+        }
+      ],
+      "en": "and gave their land as an inheritance, for his loving kindness endures forever;",
+      "ko": "저희의 땅을 기업으로 주신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "30015f9fc228d6123bbd00dcd223b2cfa868ca5257e105e2c7a8bd18f5429a01",
+      "translation_text_hash": "96545dd193177fbd3b64068cfd18c0f0fc3dfdb5c51dfcb402a506b4b160a89b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 땅을 기업으로 주신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "96545dd193177fbd3b64068cfd18c0f0fc3dfdb5c51dfcb402a506b4b160a89b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:22",
+      "sequence": 16219,
+      "chapter_label": "PSA 136",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 22
+        }
+      ],
+      "en": "even a heritage to Israel his servant, for his loving kindness endures forever;",
+      "ko": "곧 그 종 이스라엘에게 기업으로 주신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "94f81ee792e3361c81f3d74dc14298e4f0a5d799f536d48023edf99d558488a3",
+      "translation_text_hash": "39d0a76e0d914308f20c6f94a0fd36d540033057909c962f0b21db5335c257b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 종 이스라엘에게 기업으로 주신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "39d0a76e0d914308f20c6f94a0fd36d540033057909c962f0b21db5335c257b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:23",
+      "sequence": 16220,
+      "chapter_label": "PSA 136",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 23
+        }
+      ],
+      "en": "who remembered us in our low estate, for his loving kindness endures forever;",
+      "ko": "우리를 비천한데서 기념하신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "03d5a60e90f906ba8b7ffb897071bf05ee88f4e5bef5e69e796f1831a018fc05",
+      "translation_text_hash": "f8c5b7d29e332ab39838b279fbaa2d9bb5e6d5e434c632710a159bd862288dc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 비천한데서 기념하신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "f8c5b7d29e332ab39838b279fbaa2d9bb5e6d5e434c632710a159bd862288dc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:24",
+      "sequence": 16221,
+      "chapter_label": "PSA 136",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 24
+        }
+      ],
+      "en": "and has delivered us from our adversaries, for his loving kindness endures forever;",
+      "ko": "우리를 우리 대적에게서 건지신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "3225ef34cbb33a993961f5d833d35feab99638e98d5ab42d5a3f94c48d4b580a",
+      "translation_text_hash": "7464247ff28a819b1034795aea836f079c801779ad932e19c19045f2660f45e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 우리 대적에게서 건지신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "7464247ff28a819b1034795aea836f079c801779ad932e19c19045f2660f45e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:25",
+      "sequence": 16222,
+      "chapter_label": "PSA 136",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 25
+        }
+      ],
+      "en": "who gives food to every creature, for his loving kindness endures forever.",
+      "ko": "모든 육체에게 식물을 주신이에게 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "21f42e6102144726ea2d7536d1d5f24c293a47d56f25a17af3372a1f8d493391",
+      "translation_text_hash": "2d1d132eb3f0ffa5b6541bb3fa1dcf058d8b09dc1f3af32f46ae96a72bc9738b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 육체에게 식물을 주신이에게 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "2d1d132eb3f0ffa5b6541bb3fa1dcf058d8b09dc1f3af32f46ae96a72bc9738b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:136:26",
+      "sequence": 16223,
+      "chapter_label": "PSA 136",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 136,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 136,
+          "verse": 26
+        }
+      ],
+      "en": "Oh give thanks to the God of heaven, for his loving kindness endures forever.",
+      "ko": "하늘의 하나님께 감사하라 그 인자하심이 영원함이로다",
+      "source_text_hash": "0a93eddd92c0ead5d52f2599663b356581fafe25d0ed77f0070d3f362cb3cd40",
+      "translation_text_hash": "d790781ef752fe648ec7ac031c7a56761e5ab04e83bc5e7d0327d42027a06c12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 하나님께 감사하라 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "d790781ef752fe648ec7ac031c7a56761e5ab04e83bc5e7d0327d42027a06c12"
+      ]
+    }
+  ]
+}

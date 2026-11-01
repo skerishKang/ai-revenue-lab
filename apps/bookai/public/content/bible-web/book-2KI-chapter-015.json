@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:015",
+  "unit_ordinal": 328,
+  "unit_label": "2KI 15",
+  "book_code": "2KI",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:15:1",
+      "sequence": 9927,
+      "chapter_label": "2KI 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "In the twenty-seventh year of Jeroboam king of Israel, Azariah son of Amaziah king of Judah began to reign.",
+      "ko": "이스라엘 왕 여로보암 이십 칠년에 유다 왕 아마샤의 아들 아사랴가 왕이 되니",
+      "source_text_hash": "b4fc3523fb353bc486b0e51bf5eba42365c861511fe799292576da86e48dccb5",
+      "translation_text_hash": "d53799c7948b6770798be50120a5c1d09c89625e28fc02b64ead1461e196ec58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 여로보암 이십 칠년에 유다 왕 아마샤의 아들 아사랴가 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "d53799c7948b6770798be50120a5c1d09c89625e28fc02b64ead1461e196ec58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:2",
+      "sequence": 9928,
+      "chapter_label": "2KI 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "He was sixteen years old when he began to reign, and he reigned fifty-two years in Jerusalem. His mother’s name was Jecoliah of Jerusalem.",
+      "ko": "위에 나아갈 때에 나이 십 륙세라 예루살렘에서 오십 이년을 치리하니라 그 모친의 이름은 여골리야라 예루살렘 사람이더라",
+      "source_text_hash": "473cf869710a3b280f6eecf4d79033f84be666c642137d7a578daa434a8ec5d8",
+      "translation_text_hash": "c9f9af640b57e14c6c6bd32dabb9675c81cc7bd64aada909aad24b882b017a8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에 나아갈 때에 나이 십 륙세라 예루살렘에서 오십 이년을 치리하니라 그 모친의 이름은 여골리야라 예루살렘 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "c9f9af640b57e14c6c6bd32dabb9675c81cc7bd64aada909aad24b882b017a8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:3",
+      "sequence": 9929,
+      "chapter_label": "2KI 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, according to all that his father Amaziah had done.",
+      "ko": "아사랴가 그 부친 아마샤의 모든 행위대로 여호와 보시기에 정직히 행하였으나",
+      "source_text_hash": "bc25ea7363ddc6b972ae521a5af665bd16841ed5e5bdf61f7b97e8a3ed796035",
+      "translation_text_hash": "296ecc9e6a4196679e464191d1c969fc53b36896a79046cf48d6bfb0d3626537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴가 그 부친 아마샤의 모든 행위대로 여호와 보시기에 정직히 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "296ecc9e6a4196679e464191d1c969fc53b36896a79046cf48d6bfb0d3626537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:4",
+      "sequence": 9930,
+      "chapter_label": "2KI 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "However, the high places were not taken away. The people still sacrificed and burned incense in the high places.",
+      "ko": "오직 산당은 제하지 아니하였으므로 백성이 오히려 그 산당에서 제사를 드리며 분향하였고",
+      "source_text_hash": "759351a55363dc62783d705704d23ced6745532817f85b30f7221d08bd61f5cd",
+      "translation_text_hash": "f9416693f978f4af11a02e07b74aebddf217ba5d5e40c9ce0b6388c5c97f246b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 산당은 제하지 아니하였으므로 백성이 오히려 그 산당에서 제사를 드리며 분향하였고"
+      ],
+      "raw_text_hashes": [
+        "f9416693f978f4af11a02e07b74aebddf217ba5d5e40c9ce0b6388c5c97f246b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:5",
+      "sequence": 9931,
+      "chapter_label": "2KI 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD struck the king, so that he was a leper to the day of his death, and lived in a separate house. Jotham, the king’s son, was over the household, judging the people of the land.",
+      "ko": "여호와께서 왕을 치셨으므로 그 죽는 날까지 문둥이가 되어 별궁에 거하고 왕자 요담이 궁중 일을 다스리며 국민을 치리하였더라",
+      "source_text_hash": "69c3c6a405a5c3f4f64af50f1977dfaf2159e02524ae50a69a6a56bc0dcc22d3",
+      "translation_text_hash": "d9b173873e928517431be66ed89fc85b860e45162d29f613668ba9a2f98c98a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 왕을 치셨으므로 그 죽는 날까지 문둥이가 되어 별궁에 거하고 왕자 요담이 궁중 일을 다스리며 국민을 치리하였더라"
+      ],
+      "raw_text_hashes": [
+        "d9b173873e928517431be66ed89fc85b860e45162d29f613668ba9a2f98c98a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:6",
+      "sequence": 9932,
+      "chapter_label": "2KI 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Now the rest of the acts of Azariah, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "아사랴의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "52b0a35bf9a25a9ba533713406559136de3152e9e456d5d905481f7d2b21a303",
+      "translation_text_hash": "cfb0a9276ad504acfcfbbe0c8cf923d5d85159cf2305e376baead9f367c10bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴의 남은 사적과 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "cfb0a9276ad504acfcfbbe0c8cf923d5d85159cf2305e376baead9f367c10bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:7",
+      "sequence": 9933,
+      "chapter_label": "2KI 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "Azariah slept with his fathers; and they buried him with his fathers in David’s city; and Jotham his son reigned in his place.",
+      "ko": "아사랴가 그 열조와 함께 자매 다윗성에 그 열조와 함께 장사되고 그 아들 요담이 대신하여 왕이 되니라",
+      "source_text_hash": "f7acb207025acca6fc4f6b7c5c9314e62d395084ca934892da8f92f31d1ca656",
+      "translation_text_hash": "9627a09c585cff9661a19fb1a924de3b594fbf464a663b102e8ab712efe46cff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴가 그 열조와 함께 자매 다윗성에 그 열조와 함께 장사되고 그 아들 요담이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "9627a09c585cff9661a19fb1a924de3b594fbf464a663b102e8ab712efe46cff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:8",
+      "sequence": 9934,
+      "chapter_label": "2KI 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "In the thirty-eighth year of Azariah king of Judah, Zechariah the son of Jeroboam reigned over Israel in Samaria six months.",
+      "ko": "유다 왕 아사랴의 삼십 팔년에 여로보암의 아들 스가랴가 사마리아에서 이스라엘 왕이 되어 여섯달을 치리하며",
+      "source_text_hash": "791f25dee81ca0f087c859860a6cd1e82db91ffd8e7ffb089c13c8d8ca1519c4",
+      "translation_text_hash": "7872d61c982a493ac5ef2f3eb1739cfe2119e4ba27f15d3454a88133aacfb29f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사랴의 삼십 팔년에 여로보암의 아들 스가랴가 사마리아에서 이스라엘 왕이 되어 여섯달을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "7872d61c982a493ac5ef2f3eb1739cfe2119e4ba27f15d3454a88133aacfb29f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:9",
+      "sequence": 9935,
+      "chapter_label": "2KI 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, as his fathers had done. He didn’t depart from the sins of Jeroboam the son of Nebat, with which he made Israel to sin.",
+      "ko": "그 열조의 행위대로 여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니한지라",
+      "source_text_hash": "ecd7b77c1211434775d929531e2b618a1b3167448709c75e7e72bd2575c2246f",
+      "translation_text_hash": "4678e44d185dcfa12a358546b236895b9790b5f88837503c28991781e8b71b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열조의 행위대로 여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "4678e44d185dcfa12a358546b236895b9790b5f88837503c28991781e8b71b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:10",
+      "sequence": 9936,
+      "chapter_label": "2KI 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Shallum the son of Jabesh conspired against him, and struck him before the people and killed him, and reigned in his place.",
+      "ko": "야베스의 아들 살룸이 저를 모반하여 백성 앞에서 쳐 죽이고 대신하여 왕이 되니라",
+      "source_text_hash": "5f09e0843b8ec7b6886b2be8c4c9a5bec4a194f9d4003b2137b7b615eb271ec8",
+      "translation_text_hash": "bd46a82094568ebc56016828d736342b647c06472f6932ab4ba15ad02214f7a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야베스의 아들 살룸이 저를 모반하여 백성 앞에서 쳐 죽이고 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "bd46a82094568ebc56016828d736342b647c06472f6932ab4ba15ad02214f7a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:11",
+      "sequence": 9937,
+      "chapter_label": "2KI 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Now the rest of the acts of Zechariah, behold, they are written in the book of the chronicles of the kings of Israel.",
+      "ko": "스가랴의 남은 사적은 이스라엘 왕 역대지략에 기록되니라",
+      "source_text_hash": "404ef362b7230bca50664465da4ab94d841e30f0faa4440e1ea9c8d190319c8a",
+      "translation_text_hash": "0274fd971f7c6509c57aecd3733851293d5778628adab2f152b3cb1d8d04d96f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스가랴의 남은 사적은 이스라엘 왕 역대지략에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "0274fd971f7c6509c57aecd3733851293d5778628adab2f152b3cb1d8d04d96f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:12",
+      "sequence": 9938,
+      "chapter_label": "2KI 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "This was the LORD’s word which he spoke to Jehu, saying, “Your sons to the fourth generation shall sit on the throne of Israel.” So it came to pass.",
+      "ko": "여호와께서 예후에게 말씀하여 이르시기를 네 자손이 이스라엘 위를 이어 사대까지 이르리라 하신 그 말씀대로 과연 그렇게 되니라",
+      "source_text_hash": "1c565b910f85fc15e08b10c5958aee8fb3d7737643d12dfd75181fa16819cbc6",
+      "translation_text_hash": "9bd19e70c305a40a0d464c2f3dd02dc8e1cf85eb38f4d54f59114a7624b8d9a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 예후에게 말씀하여 이르시기를 네 자손이 이스라엘 위를 이어 사대까지 이르리라 하신 그 말씀대로 과연 그렇게 되니라"
+      ],
+      "raw_text_hashes": [
+        "9bd19e70c305a40a0d464c2f3dd02dc8e1cf85eb38f4d54f59114a7624b8d9a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:13",
+      "sequence": 9939,
+      "chapter_label": "2KI 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "Shallum the son of Jabesh began to reign in the thirty-ninth year of Uzziah king of Judah, and he reigned for a month in Samaria.",
+      "ko": "유다 왕 웃시야 삼십 구년에 야베스의 아들 살룸이 사마리아에서 왕이 되어 한달을 치리하니라",
+      "source_text_hash": "6ed1f4a0e0f6ff1968b845c111fbcff84add4693b38bc6f49e80014f62a58aed",
+      "translation_text_hash": "d9964e77514ca38ee3527dae28d88e15f770766d5a9212521f3e3d835f86209c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 웃시야 삼십 구년에 야베스의 아들 살룸이 사마리아에서 왕이 되어 한달을 치리하니라"
+      ],
+      "raw_text_hashes": [
+        "d9964e77514ca38ee3527dae28d88e15f770766d5a9212521f3e3d835f86209c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:14",
+      "sequence": 9940,
+      "chapter_label": "2KI 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Menahem the son of Gadi went up from Tirzah, came to Samaria, struck Shallum the son of Jabesh in Samaria, killed him, and reigned in his place.",
+      "ko": "가디의 아들 므나헴이 디르사에서부터 사마리아로 올라가서 야베스의 아들 살룸을 거기서 쳐 죽이고 대신하여 왕이 되니라",
+      "source_text_hash": "88e6eeae916a00e70266617141c12ba55471396fe921da250861c92f65b20281",
+      "translation_text_hash": "6f2420b22986608b512bf68a68a7ae055368547275161c99e64b2f9e46f3a027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가디의 아들 므나헴이 디르사에서부터 사마리아로 올라가서 야베스의 아들 살룸을 거기서 쳐 죽이고 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "6f2420b22986608b512bf68a68a7ae055368547275161c99e64b2f9e46f3a027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:15",
+      "sequence": 9941,
+      "chapter_label": "2KI 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Now the rest of the acts of Shallum, and his conspiracy which he made, behold, they are written in the book of the chronicles of the kings of Israel.",
+      "ko": "살룸의 남은 사적과 그 모반한 일은 이스라엘 왕 역대지략에 기록되니라",
+      "source_text_hash": "f0b1ec5a2d6f82fd4bdb285041bbd08928f94c670ff4844dc1fa6456442d60a4",
+      "translation_text_hash": "5d889214f07adf926cc1d1a6ecfa58786c731b69617172bc1656c9b981fbc947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살룸의 남은 사적과 그 모반한 일은 이스라엘 왕 역대지략에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "5d889214f07adf926cc1d1a6ecfa58786c731b69617172bc1656c9b981fbc947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:16",
+      "sequence": 9942,
+      "chapter_label": "2KI 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Then Menahem attacked Tiphsah and all who were in it and its border areas, from Tirzah. He attacked it because they didn’t open their gates to him, and he ripped up all their women who were with child.",
+      "ko": "그 때에 므나헴이 디르사에서 와서 딥사와 그 가운데 있는 모든 사람과 그 사방을 쳤으니 이는 저희가 성문을 열지 아니하였음이라 그러므로 치고 그 가운데 아이 밴 부녀를 갈랐더라",
+      "source_text_hash": "28b17ce9ddf341afd55e33a330493837eeae8147edc5913e8341afce52bbe7a5",
+      "translation_text_hash": "b1f5b1b5894e2309ec8c402256d2d535eeec1e1c8f5a8db52c91a5847bb57311",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 므나헴이 디르사에서 와서 딥사와 그 가운데 있는 모든 사람과 그 사방을 쳤으니 이는 저희가 성문을 열지 아니하였음이라 그러므로 치고 그 가운데 아이 밴 부녀를 갈랐더라"
+      ],
+      "raw_text_hashes": [
+        "b1f5b1b5894e2309ec8c402256d2d535eeec1e1c8f5a8db52c91a5847bb57311"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:17",
+      "sequence": 9943,
+      "chapter_label": "2KI 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "In the thirty ninth year of Azariah king of Judah, Menahem the son of Gadi began to reign over Israel for ten years in Samaria.",
+      "ko": "유다 왕 아사랴 삼십 구년에 가디의 아들 므나헴이 이스라엘 왕이 되어 사마리아에서 십년을 치리하며",
+      "source_text_hash": "79129113555e3420f0bf49d012eae0d38c0819b88a6af6f68fbc7c675c27e276",
+      "translation_text_hash": "2c2749a3a87bc2828cfc4ecd851d72e10c9d0d3c8112df9984dd87d276dd476d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사랴 삼십 구년에 가디의 아들 므나헴이 이스라엘 왕이 되어 사마리아에서 십년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "2c2749a3a87bc2828cfc4ecd851d72e10c9d0d3c8112df9984dd87d276dd476d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:18",
+      "sequence": 9944,
+      "chapter_label": "2KI 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight. He didn’t depart all his days from the sins of Jeroboam the son of Nebat, with which he made Israel to sin.",
+      "ko": "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 평생 떠나지 아니하였더라",
+      "source_text_hash": "bb13e4a73ae0811049422c6e171f6d8f046b4499bd7acbd14b994c72da714393",
+      "translation_text_hash": "d1e397f78a10992616ded265434cb6027e5bd987a2f5329ac1666a66a7ed4f01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 평생 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "d1e397f78a10992616ded265434cb6027e5bd987a2f5329ac1666a66a7ed4f01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:19",
+      "sequence": 9945,
+      "chapter_label": "2KI 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "Pul the king of Assyria came against the land, and Menahem gave Pul one thousand talents of silver, that his hand might be with him to confirm the kingdom in his hand.",
+      "ko": "앗수르 왕 불이 와서 그 땅을 치려 하매 므나헴이 은 일천 달란트를 불에게 주어서 저로 자기를 도와주게 함으로 나라를 자기 손에 굳게 세우고자 하여",
+      "source_text_hash": "dd6cb3ad5189de3fd1050f176c04c4522ce5c1395e4775f3c3bc05161eb93f37",
+      "translation_text_hash": "b2437ca42955b1b036d85a29235959330b44a34df62fcd5fe48f7567b346b326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕 불이 와서 그 땅을 치려 하매 므나헴이 은 일천 달란트를 불에게 주어서 저로 자기를 도와주게 함으로 나라를 자기 손에 굳게 세우고자 하여"
+      ],
+      "raw_text_hashes": [
+        "b2437ca42955b1b036d85a29235959330b44a34df62fcd5fe48f7567b346b326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:20",
+      "sequence": 9946,
+      "chapter_label": "2KI 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Menahem exacted the money from Israel, even from all the mighty men of wealth, from each man fifty shekels of silver, to give to the king of Assyria. So the king of Assyria turned back, and didn’t stay there in the land.",
+      "ko": "그 은을 이스라엘 모든 큰 부자에게서 토색하여 각 사람에게 은 오십 세겔씩 내게 하여 앗수르 왕에게 주었더니 이에 앗수르 왕이 돌이키고 그 땅에 머물지 아니하였더라",
+      "source_text_hash": "7e8a0e5e429ed32ae75a7326025117caa47fb62435266ffe54f454382b6bf2d2",
+      "translation_text_hash": "93702b43eeef077407c9758e0352ea3051410be431ea73f46d57d60735ed976a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 은을 이스라엘 모든 큰 부자에게서 토색하여 각 사람에게 은 오십 세겔씩 내게 하여 앗수르 왕에게 주었더니 이에 앗수르 왕이 돌이키고 그 땅에 머물지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "93702b43eeef077407c9758e0352ea3051410be431ea73f46d57d60735ed976a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:21",
+      "sequence": 9947,
+      "chapter_label": "2KI 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Now the rest of the acts of Menahem, and all that he did, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "므나헴의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "1bcbcd01d8d750ffa3bd8083a7cf6096fc39eeab1ff2f1d92f117cc7d21f9382",
+      "translation_text_hash": "30690e8793205c58b2e43254e62cdadde2a856197e24709fb7b251c2d4458a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므나헴의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "30690e8793205c58b2e43254e62cdadde2a856197e24709fb7b251c2d4458a1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:22",
+      "sequence": 9948,
+      "chapter_label": "2KI 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Menahem slept with his fathers, and Pekahiah his son reigned in his place.",
+      "ko": "므나헴이 그 열조와 함께 자고 그 아들 브가히야가 대신하여 왕이 되니라",
+      "source_text_hash": "71208640c89dfa04947e851b6bcd18c3dedf63194cbc2a890cf12cea1a68524b",
+      "translation_text_hash": "c80fdd914cfdb783d9ca7ba2dc6b8c2cea9cf88ec0dedf33f06dc11023e721a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므나헴이 그 열조와 함께 자고 그 아들 브가히야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "c80fdd914cfdb783d9ca7ba2dc6b8c2cea9cf88ec0dedf33f06dc11023e721a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:23",
+      "sequence": 9949,
+      "chapter_label": "2KI 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "In the fiftieth year of Azariah king of Judah, Pekahiah the son of Menahem began to reign over Israel in Samaria for two years.",
+      "ko": "유다 왕 아사랴 오십년에 므나헴의 아들 브가히야가 사마리아에서 이스라엘 왕이 되어 이년을 치리하며",
+      "source_text_hash": "b8a6298dec8428e27348b76740962e5acb538e28d2841499a2b1314832298af9",
+      "translation_text_hash": "cc922ea06246b4482eabac699fa01455de462ebb740cdd811a60f1cbc69569bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사랴 오십년에 므나헴의 아들 브가히야가 사마리아에서 이스라엘 왕이 되어 이년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "cc922ea06246b4482eabac699fa01455de462ebb740cdd811a60f1cbc69569bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:24",
+      "sequence": 9950,
+      "chapter_label": "2KI 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight. He didn’t depart from the sins of Jeroboam the son of Nebat, with which he made Israel to sin.",
+      "ko": "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니한지라",
+      "source_text_hash": "177ee9636810d2c85e24b874b0db1660780fa9e79ba46ccfc2b33cf10a1b77d4",
+      "translation_text_hash": "da3a5bdf7e8b03a706f6723ec3a95a99e8966247c50ac1b49cc5426778602f66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "da3a5bdf7e8b03a706f6723ec3a95a99e8966247c50ac1b49cc5426778602f66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:25",
+      "sequence": 9951,
+      "chapter_label": "2KI 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "Pekah the son of Remaliah, his captain, conspired against him and attacked him in Samaria, in the fortress of the king’s house, with Argob and Arieh; and with him were fifty men of the Gileadites. He killed him, and reigned in his place.",
+      "ko": "그 장관 르말랴의 아들 베가가 반역하여 사마리아 왕궁 호위소에서 왕과 아르곱과 아리에를 죽이되 길르앗 사람 오십명으로 더불어 죽이고 대신하여 왕이 되었더라",
+      "source_text_hash": "e704edb1ac4100a75225af55b550c41627ae85b8e5286a516cb3f77db2c84780",
+      "translation_text_hash": "9f0fb556be8082df825eb99270c2900308820c51cca077c3ae9812c4b161c1b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장관 르말랴의 아들 베가가 반역하여 사마리아 왕궁 호위소에서 왕과 아르곱과 아리에를 죽이되 길르앗 사람 오십명으로 더불어 죽이고 대신하여 왕이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "9f0fb556be8082df825eb99270c2900308820c51cca077c3ae9812c4b161c1b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:26",
+      "sequence": 9952,
+      "chapter_label": "2KI 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "Now the rest of the acts of Pekahiah, and all that he did, behold, they are written in the book of the chronicles of the kings of Israel.",
+      "ko": "브가히야의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되니라",
+      "source_text_hash": "fa52188a2f0a795b6320c5f894304ba871a5828f5d475fec2353ce981560839a",
+      "translation_text_hash": "a97a1d7f4c3f56d824a9c722d48f47c13cd47cfb269f8db39b0b0a1970da2401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브가히야의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "a97a1d7f4c3f56d824a9c722d48f47c13cd47cfb269f8db39b0b0a1970da2401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:27",
+      "sequence": 9953,
+      "chapter_label": "2KI 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "In the fifty-second year of Azariah king of Judah, Pekah the son of Remaliah began to reign over Israel in Samaria for twenty years.",
+      "ko": "유다 왕 아사랴 오십 이년에 르말랴의 아들 베가가 이스라엘 왕이 되어 사마리아에서 이십년을 치리하며",
+      "source_text_hash": "82e487658bf70c0d118143d2c0242ff16c4826c8b128e18aa52a9b42358ec8c1",
+      "translation_text_hash": "7d2dfd067294582ea1a5e20b4587d0d2638b565ce2dc3d7ee19ae56d5320f861",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아사랴 오십 이년에 르말랴의 아들 베가가 이스라엘 왕이 되어 사마리아에서 이십년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "7d2dfd067294582ea1a5e20b4587d0d2638b565ce2dc3d7ee19ae56d5320f861"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:28",
+      "sequence": 9954,
+      "chapter_label": "2KI 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight. He didn’t depart from the sins of Jeroboam the son of Nebat, with which he made Israel to sin.",
+      "ko": "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니하였더라",
+      "source_text_hash": "177ee9636810d2c85e24b874b0db1660780fa9e79ba46ccfc2b33cf10a1b77d4",
+      "translation_text_hash": "332caf9a688639ccf7e5aec89137423f7e8473c955ab2f32333f1adc37d13fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 보시기에 악을 행하여 이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄에서 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "332caf9a688639ccf7e5aec89137423f7e8473c955ab2f32333f1adc37d13fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:29",
+      "sequence": 9955,
+      "chapter_label": "2KI 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "In the days of Pekah king of Israel, Tiglath Pileser king of Assyria came and took Ijon, Abel Beth Maacah, Janoah, Kedesh, Hazor, Gilead, and Galilee, all the land of Naphtali; and he carried them captive to Assyria.",
+      "ko": "이스라엘 왕 베가 때에 앗수르 왕 디글랏 빌레셀이 와서 이욘과 아벨벳마아가와 야노아와 게데스와 하솔과 길르앗과 갈릴리와 납달리 온 땅을 취하고 그 백성을 사로잡아 앗수르로 옮겼더라",
+      "source_text_hash": "51a32d30df25dc9db5e3bed895c5e86493bd7b5f5cff87cbde2e4cb4177940ed",
+      "translation_text_hash": "33cceabe677434e9034b7b3d59e91a2a3ed6fe54a919f005e379f88b25859272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 베가 때에 앗수르 왕 디글랏 빌레셀이 와서 이욘과 아벨벳마아가와 야노아와 게데스와 하솔과 길르앗과 갈릴리와 납달리 온 땅을 취하고 그 백성을 사로잡아 앗수르로 옮겼더라"
+      ],
+      "raw_text_hashes": [
+        "33cceabe677434e9034b7b3d59e91a2a3ed6fe54a919f005e379f88b25859272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:30",
+      "sequence": 9956,
+      "chapter_label": "2KI 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Hoshea the son of Elah made a conspiracy against Pekah the son of Remaliah, attacked him, killed him, and reigned in his place, in the twentieth year of Jotham the son of Uzziah.",
+      "ko": "웃시야의 아들 요담 이십년에 엘라의 아들 호세아가 반역하여 르말랴의 아들 베가를 쳐서 죽이고 대신하여 왕이 되니라",
+      "source_text_hash": "51f73cdbf38bbba8356998cf8dfeb36693a4df7cb76fb83f9f08e523a3256cba",
+      "translation_text_hash": "6ca8d71bf814facd48648e8d649c14157603a28e92d7595cdd2e6a671678a4f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야의 아들 요담 이십년에 엘라의 아들 호세아가 반역하여 르말랴의 아들 베가를 쳐서 죽이고 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "6ca8d71bf814facd48648e8d649c14157603a28e92d7595cdd2e6a671678a4f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:31",
+      "sequence": 9957,
+      "chapter_label": "2KI 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Now the rest of the acts of Pekah, and all that he did, behold, they are written in the book of the chronicles of the kings of Israel.",
+      "ko": "베가의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되니라",
+      "source_text_hash": "bbf863fdb3ff8c1ed7ff0f987282bb361ba63e713ba90c37fa859adb6cf3d594",
+      "translation_text_hash": "6a4862129398e926dda65050e7466d4ea755743c96520492f4a56e8d9118d1c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베가의 남은 사적과 그 모든 행한 일은 이스라엘 왕 역대지략에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "6a4862129398e926dda65050e7466d4ea755743c96520492f4a56e8d9118d1c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:32",
+      "sequence": 9958,
+      "chapter_label": "2KI 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "In the second year of Pekah the son of Remaliah king of Israel, Jotham the son of Uzziah king of Judah began to reign.",
+      "ko": "이스라엘 왕 르말랴의 아들 베가 이년에 유다 왕 웃시야의 아들 요담이 왕이 되니",
+      "source_text_hash": "d308e8618422f7ac51b32348325bd99ef13e7e0ad44915cc7798676fb62c7186",
+      "translation_text_hash": "2a02a7a8ac0cad0cdc0627e689f016162a8f3c0a7da543e12d6c8ff9a9c8ebc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 르말랴의 아들 베가 이년에 유다 왕 웃시야의 아들 요담이 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "2a02a7a8ac0cad0cdc0627e689f016162a8f3c0a7da543e12d6c8ff9a9c8ebc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:33",
+      "sequence": 9959,
+      "chapter_label": "2KI 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "He was twenty-five years old when he began to reign, and he reigned sixteen years in Jerusalem. His mother’s name was Jerusha the daughter of Zadok.",
+      "ko": "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 십 륙년을 치리하니라 그 모친의 이름은 여루사라 사독의 딸이더라",
+      "source_text_hash": "5f6e51a4b0b7a585805a8abb5ea49f4d623a8260b88b0297836ade3d74aaf305",
+      "translation_text_hash": "577eb78272c962a1551d9151eb15cf3cedab146e8d9eee5eb2fb08c70e97e1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 십 륙년을 치리하니라 그 모친의 이름은 여루사라 사독의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "577eb78272c962a1551d9151eb15cf3cedab146e8d9eee5eb2fb08c70e97e1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:34",
+      "sequence": 9960,
+      "chapter_label": "2KI 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes. He did according to all that his father Uzziah had done.",
+      "ko": "요담이 그 부친 웃시야의 모든 행위대로 여호와 보시기에 정직히 행하였으나",
+      "source_text_hash": "154f62f2f887b8f909daf68150387ecb466be560565067148183ad25615c284d",
+      "translation_text_hash": "69f95c6421849a6a124f56e3b9d3df540b746b583348e4718fbaf69188e987b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요담이 그 부친 웃시야의 모든 행위대로 여호와 보시기에 정직히 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "69f95c6421849a6a124f56e3b9d3df540b746b583348e4718fbaf69188e987b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:35",
+      "sequence": 9961,
+      "chapter_label": "2KI 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "However the high places were not taken away. The people still sacrificed and burned incense in the high places. He built the upper gate of the LORD’s house.",
+      "ko": "오직 산당을 제하지 아니하였으므로 백성이 오히려 그 산당에서 제사를 드리며 분향하였더라 요담이 여호와의 전의 윗문을 건축하니라",
+      "source_text_hash": "e7080c8d4d2c2c7212aa36bd922b1d990a1046468a2c70d625aef2691d551a31",
+      "translation_text_hash": "0a9b4d48ee8b527f83839c209206c7ff8dc76ba7e5748889e456695f55c3b644",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 산당을 제하지 아니하였으므로 백성이 오히려 그 산당에서 제사를 드리며 분향하였더라 요담이 여호와의 전의 윗문을 건축하니라"
+      ],
+      "raw_text_hashes": [
+        "0a9b4d48ee8b527f83839c209206c7ff8dc76ba7e5748889e456695f55c3b644"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:36",
+      "sequence": 9962,
+      "chapter_label": "2KI 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "Now the rest of the acts of Jotham, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "요담의 남은 사적과 그 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "258287ebd21cd3a59ff74251009c3ac0deb178021874e20e43a26a094c7cfcdf",
+      "translation_text_hash": "65972dae636e990ba97a2d4c49572760b212388a03e886e4cd2082c6bc6712ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요담의 남은 사적과 그 모든 행한 일은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "65972dae636e990ba97a2d4c49572760b212388a03e886e4cd2082c6bc6712ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:37",
+      "sequence": 9963,
+      "chapter_label": "2KI 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "In those days, the LORD began to send Rezin the king of Syria and Pekah the son of Remaliah against Judah.",
+      "ko": "그 때에 여호와께서 비로소 아람 왕 르신과 르말랴의 아들 베가를 보내어 유다를 치게 하셨더라",
+      "source_text_hash": "26fc321b43d094f3dfef66535176338a0795c60533b33b998167f1635443a64e",
+      "translation_text_hash": "d7530732a554406a3b21582d0c9422e858961a4849a1086251548a38ccfdf9d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 비로소 아람 왕 르신과 르말랴의 아들 베가를 보내어 유다를 치게 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "d7530732a554406a3b21582d0c9422e858961a4849a1086251548a38ccfdf9d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:15:38",
+      "sequence": 9964,
+      "chapter_label": "2KI 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "2KI",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "Jotham slept with his fathers, and was buried with his fathers in his father David’s city; and Ahaz his son reigned in his place.",
+      "ko": "요담이 그 열조와 함께 자매 그 조상 다윗성에 열조와 함께 장사되고 그 아들 아하스가 대신하여 왕이 되니라",
+      "source_text_hash": "ad1c7a240e2860a5b32047fc87293e126d59416bd2f12fa3ddf9cd088fa7f45d",
+      "translation_text_hash": "c6e424b1ec8d910b0b537847cfdcc835b12ad40bdea4b7a1508ff7f773ed0216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요담이 그 열조와 함께 자매 그 조상 다윗성에 열조와 함께 장사되고 그 아들 아하스가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "c6e424b1ec8d910b0b537847cfdcc835b12ad40bdea4b7a1508ff7f773ed0216"
+      ]
+    }
+  ]
+}

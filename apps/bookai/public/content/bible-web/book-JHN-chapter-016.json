@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:016",
+  "unit_ordinal": 1013,
+  "unit_label": "JHN 16",
+  "book_code": "JHN",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:16:1",
+      "sequence": 26727,
+      "chapter_label": "JHN 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "“I have said these things to you so that you wouldn’t be caused to stumble.",
+      "ko": "내가 이것을 너희에게 이름은 너희로 실족지 않게 하려 함이니",
+      "source_text_hash": "01b92d07aa69a396a6db27dc075066705eaf4deee83d8aac298575df806215b6",
+      "translation_text_hash": "c9918f6f3ca5da2a6b8e207ccd2180df84516f5292e41d302bdb009ffc83a370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이것을 너희에게 이름은 너희로 실족지 않게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "c9918f6f3ca5da2a6b8e207ccd2180df84516f5292e41d302bdb009ffc83a370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:2",
+      "sequence": 26728,
+      "chapter_label": "JHN 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "They will put you out of the synagogues. Yes, the time is coming that whoever kills you will think that he offers service to God.",
+      "ko": "사람들이 너희를 출회할 뿐아니라 때가 이르면 무릇 너희를 죽이는 자가 생각하기를 이것이 하나님을 섬기는 예라하리라",
+      "source_text_hash": "bb15059f96882fc9ade5b6c51a148cc4998518dbea60acf54a05117374197b26",
+      "translation_text_hash": "a95380e13d15eaf4995a67e5927112202c0971c102fd8997ebfc7ccd9a5e402d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 너희를 출회할 뿐아니라 때가 이르면 무릇 너희를 죽이는 자가 생각하기를 이것이 하나님을 섬기는 예라하리라"
+      ],
+      "raw_text_hashes": [
+        "a95380e13d15eaf4995a67e5927112202c0971c102fd8997ebfc7ccd9a5e402d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:3",
+      "sequence": 26729,
+      "chapter_label": "JHN 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "They will do these thingsbecause they have not known the Father nor me.",
+      "ko": "저희가 이런 일을 할 것은 아버지와 나를 알지 못함이라",
+      "source_text_hash": "31c9afde7f131f4bc9272442bc69733c065626df2ba040c47d24a12b60dd3759",
+      "translation_text_hash": "3808a9f85fbf21b35f29e3713c5dcdf043d24cbb05f8206252be45083dd9d605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이런 일을 할 것은 아버지와 나를 알지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "3808a9f85fbf21b35f29e3713c5dcdf043d24cbb05f8206252be45083dd9d605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:4",
+      "sequence": 26730,
+      "chapter_label": "JHN 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "But I have told you these things so that when the time comes, you may remember that I told you about them. I didn’t tell you these things from the beginning, because I was with you.",
+      "ko": "오직 너희에게 이 말을 이른 것은 너희로 그 때를 당하면 내가 너희에게 이 말 한 것을 기억나게 하려 함이요 처음부터 이 말을 하지 아니한 것은 내가 너희와 함께 있었음이니라",
+      "source_text_hash": "60416872c51d5925afb103586f5bd199c790788bd216297c0eef518d85127826",
+      "translation_text_hash": "49f21021f8ea66eaaf892f9d046b8339cd36ab487847884ea8770f6c8be6067c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희에게 이 말을 이른 것은 너희로 그 때를 당하면 내가 너희에게 이 말 한 것을 기억나게 하려 함이요 처음부터 이 말을 하지 아니한 것은 내가 너희와 함께 있었음이니라"
+      ],
+      "raw_text_hashes": [
+        "49f21021f8ea66eaaf892f9d046b8339cd36ab487847884ea8770f6c8be6067c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:5",
+      "sequence": 26731,
+      "chapter_label": "JHN 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "But now I am going to him who sent me, and none of you asks me, ‘Where are you going?’",
+      "ko": "지금 내가 나를 보내신 이에게로 가는데 너희 중에서 나더러 어디로 가느냐 묻는 자가 없고",
+      "source_text_hash": "1eedbf631b11e327bdb76d305f88a93e20f9007f56659dd20ad1e99575884a71",
+      "translation_text_hash": "38d6368b0ec9e5ba6a3a7fd30d0ca78f440ba9d00f4570d140a5d43abe433182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 내가 나를 보내신 이에게로 가는데 너희 중에서 나더러 어디로 가느냐 묻는 자가 없고"
+      ],
+      "raw_text_hashes": [
+        "38d6368b0ec9e5ba6a3a7fd30d0ca78f440ba9d00f4570d140a5d43abe433182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:6",
+      "sequence": 26732,
+      "chapter_label": "JHN 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "But because I have told you these things, sorrow has filled your heart.",
+      "ko": "도리어 내가 이 말을 하므로 너희 마음에 근심이 가득하였도다",
+      "source_text_hash": "2bb5e2ca16b683da764e2bb47c7e37ab47ed0a2c2a78a300f6c7d400235a8ae0",
+      "translation_text_hash": "9471add171de63073727de76cbec74c63499e7ee98a5930b9c12c798a30e41ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 내가 이 말을 하므로 너희 마음에 근심이 가득하였도다"
+      ],
+      "raw_text_hashes": [
+        "9471add171de63073727de76cbec74c63499e7ee98a5930b9c12c798a30e41ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:7",
+      "sequence": 26733,
+      "chapter_label": "JHN 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Nevertheless I tell you the truth: It is to your advantage that I go away; for if I don’t go away, the Counselor won’t come to you. But if I go, I will send him to you.",
+      "ko": "그러하나 내가 너희에게 실상을 말하노니 내가 떠나가는 것이 너희에게 유익이라 내가 떠나가지 아니하면 보혜사가 너희에게로 오시지 아니할 것이요 가면 내가 그를 너희에게로 보내리니",
+      "source_text_hash": "069acd372af1085e64fced9dca7fc300204c10add70834d78e5ab36310fc4142",
+      "translation_text_hash": "e9be141ce73e6540ccac8d1f6dd7df7bf47670d71c4a1993cfcd7dd654daf8f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하나 내가 너희에게 실상을 말하노니 내가 떠나가는 것이 너희에게 유익이라 내가 떠나가지 아니하면 보혜사가 너희에게로 오시지 아니할 것이요 가면 내가 그를 너희에게로 보내리니"
+      ],
+      "raw_text_hashes": [
+        "e9be141ce73e6540ccac8d1f6dd7df7bf47670d71c4a1993cfcd7dd654daf8f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:8",
+      "sequence": 26734,
+      "chapter_label": "JHN 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "When he has come, he will convict the world about sin, about righteousness, and about judgment;",
+      "ko": "그가 와서 죄에 대하여, 의에 대하여, 심판에 대하여 세상을 책망하시리라",
+      "source_text_hash": "7136fbd91ae46ff1461741cc7c8fbae05d982c2d2ab85f07635a44ed91c0176f",
+      "translation_text_hash": "78346d8cfd08ef3c7baaec371befea14cc5a49c4d828c384813cdb44e6f5ea9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 와서 죄에 대하여, 의에 대하여, 심판에 대하여 세상을 책망하시리라"
+      ],
+      "raw_text_hashes": [
+        "78346d8cfd08ef3c7baaec371befea14cc5a49c4d828c384813cdb44e6f5ea9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:9",
+      "sequence": 26735,
+      "chapter_label": "JHN 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "about sin, because they don’t believe in me;",
+      "ko": "죄에 대하여라 함은 저희가 나를 믿지 아니함이요",
+      "source_text_hash": "122ca929623fa0e2f5e58639d6bce4468ca081a69bfa37092970bbad91679c2e",
+      "translation_text_hash": "d5129257e5fae754b51d5333a1da0ade21c19a51d60e613cb3b6cdbd22be18c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄에 대하여라 함은 저희가 나를 믿지 아니함이요"
+      ],
+      "raw_text_hashes": [
+        "d5129257e5fae754b51d5333a1da0ade21c19a51d60e613cb3b6cdbd22be18c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:10",
+      "sequence": 26736,
+      "chapter_label": "JHN 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "about righteousness, because I am going to my Father, and you won’t see me any more;",
+      "ko": "의에 대하여라 함은 내가 아버지께로 가니 너희가 다시 나를 보지 못함이요",
+      "source_text_hash": "0836a94cc575cb53469bd47738224a06629b805abbb3600c69e55573471b25bf",
+      "translation_text_hash": "d40605c56c8fc2fe033dd9a0455532607521995048b042d5723ba64cd6bcfbf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의에 대하여라 함은 내가 아버지께로 가니 너희가 다시 나를 보지 못함이요"
+      ],
+      "raw_text_hashes": [
+        "d40605c56c8fc2fe033dd9a0455532607521995048b042d5723ba64cd6bcfbf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:11",
+      "sequence": 26737,
+      "chapter_label": "JHN 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "about judgment, because the prince of this world has been judged.",
+      "ko": "심판에 대하여라 함은 이 세상 임금이 심판을 받았음이니라",
+      "source_text_hash": "062b205d9f7620565a5f3df67a6ebcfc225330e2fad54e1a33e9c37251a17eb3",
+      "translation_text_hash": "20b42309f81a0c7b4223fee3d2aa4d6b0355a75b56ba91b82c835bd84e508e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판에 대하여라 함은 이 세상 임금이 심판을 받았음이니라"
+      ],
+      "raw_text_hashes": [
+        "20b42309f81a0c7b4223fee3d2aa4d6b0355a75b56ba91b82c835bd84e508e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:12",
+      "sequence": 26738,
+      "chapter_label": "JHN 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "“I still have many things to tell you, but you can’t bear them now.",
+      "ko": "내가 아직도 너희에게 이를 것이 많으나 지금은 너희가 감당치 못하리라",
+      "source_text_hash": "c99d8179452f5580692eb4e018f36caeb3a01eb157326c1dd26d9ca0a72037fe",
+      "translation_text_hash": "c65f9131db215b6d523985a4989f45dfc09b414306ed41608b86df90fd19af9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아직도 너희에게 이를 것이 많으나 지금은 너희가 감당치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "c65f9131db215b6d523985a4989f45dfc09b414306ed41608b86df90fd19af9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:13",
+      "sequence": 26739,
+      "chapter_label": "JHN 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "However, when he, the Spirit of truth, has come, he will guide you into all truth, for he will not speak from himself; but whatever he hears, he will speak. He will declare to you things that are coming.",
+      "ko": "그러하나 진리의 성령이 오시면 그가 너희를 모든 진리 가운데로 인도하시리니 그가 자의로 말하지 않고 오직 듣는 것을 말하시며 장래 일을 너희에게 알리시리라",
+      "source_text_hash": "1e0edd5de5020fc0056520d4d2922983d874ed554646f5e04074849e73bdf244",
+      "translation_text_hash": "b4b35e56ae3abe8ea69bc9fa0d2dfa2bef6545466621e8e41182df143778fcf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하나 진리의 성령이 오시면 그가 너희를 모든 진리 가운데로 인도하시리니 그가 자의로 말하지 않고 오직 듣는 것을 말하시며 장래 일을 너희에게 알리시리라"
+      ],
+      "raw_text_hashes": [
+        "b4b35e56ae3abe8ea69bc9fa0d2dfa2bef6545466621e8e41182df143778fcf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:14",
+      "sequence": 26740,
+      "chapter_label": "JHN 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "He will glorify me, for he will take from what is mine and will declare it to you.",
+      "ko": "그가 내 영광을 나타내리니 내 것을 가지고 너희에게 알리겠음이니라",
+      "source_text_hash": "ec751c40242fe0504896add87923606851ac2ada5c01e989eb3c10a49cecaefe",
+      "translation_text_hash": "a2606b48b080bf7dc14e405c69a3d3154ddcd29d543f7a7cb22cd77ff89a432b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내 영광을 나타내리니 내 것을 가지고 너희에게 알리겠음이니라"
+      ],
+      "raw_text_hashes": [
+        "a2606b48b080bf7dc14e405c69a3d3154ddcd29d543f7a7cb22cd77ff89a432b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:15",
+      "sequence": 26741,
+      "chapter_label": "JHN 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "All things that the Father has are mine; therefore I said that he takesof mine and will declare it to you.",
+      "ko": "무릇 아버지께 있는 것은 다 내 것이라 그러므로 내가 말하기를 그가 내 것을 가지고 너희에게 알리리라 하였노라",
+      "source_text_hash": "c81fd3cc9107dfbcf57fb2d9c190171d318415270164021b4cfacf30f8b7df27",
+      "translation_text_hash": "f9fede62bad6dfeede3863ca4598006ebf3d234cadef0c75d38e9fb8bb1c2e03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 아버지께 있는 것은 다 내 것이라 그러므로 내가 말하기를 그가 내 것을 가지고 너희에게 알리리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "f9fede62bad6dfeede3863ca4598006ebf3d234cadef0c75d38e9fb8bb1c2e03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:16",
+      "sequence": 26742,
+      "chapter_label": "JHN 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "“A little while, and you will not see me. Again a little while, and you will see me.”",
+      "ko": "조금 있으면 너희가 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하신대",
+      "source_text_hash": "e7420fd1144628fca20b3e8cf8940308e544590583477edcb17dcd6b3605e52a",
+      "translation_text_hash": "d5d8e751483a8c435247909af75d9bcc15a008172261ada2509f550c83de9139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 있으면 너희가 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "d5d8e751483a8c435247909af75d9bcc15a008172261ada2509f550c83de9139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:17",
+      "sequence": 26743,
+      "chapter_label": "JHN 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Some of his disciples therefore said to one another, “What is this that he says to us, ‘A little while, and you won’t see me, and again a little while, and you will see me;’and, ‘Because I go to the Father’?”",
+      "ko": "제자 중에서 서로 말하되 우리에게 말씀하신바 조금 있으면 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하시며 또 내가 아버지께로 감이라 하신 것이 무슨 말씀이뇨 하고",
+      "source_text_hash": "435b77f2e6397ac1523c307f5854dd3ed79c93c9f5f31153822adb30435637f7",
+      "translation_text_hash": "bb640437cf7403feebad4ae13de21a0e0aeb74a3d414f93745d382f3dfb322ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중에서 서로 말하되 우리에게 말씀하신바 조금 있으면 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하시며 또 내가 아버지께로 감이라 하신 것이 무슨 말씀이뇨 하고"
+      ],
+      "raw_text_hashes": [
+        "bb640437cf7403feebad4ae13de21a0e0aeb74a3d414f93745d382f3dfb322ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:18",
+      "sequence": 26744,
+      "chapter_label": "JHN 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "They said therefore, “What is this that he says, ‘A little while’? We don’t know what he is saying.”",
+      "ko": "또 말하되 조금 있으면이라한 말씀이 무슨 말씀이뇨 무엇을 말씀하시는지 알지 못하노라 하거늘",
+      "source_text_hash": "f1df68ec243c66fed66ab62eb134be060532c667a9eee3e7ac432de9fb44986d",
+      "translation_text_hash": "0d628b0478164dc09b91e4e88f3aed58fd8f79826be307716768b8d1b3615b5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하되 조금 있으면이라한 말씀이 무슨 말씀이뇨 무엇을 말씀하시는지 알지 못하노라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "0d628b0478164dc09b91e4e88f3aed58fd8f79826be307716768b8d1b3615b5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:19",
+      "sequence": 26745,
+      "chapter_label": "JHN 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore Jesus perceived that they wanted to ask him, and he said to them, “Do you inquire among yourselves concerning this, that I said, ‘A little while, and you won’t see me, and again a little while, and you will see me’?",
+      "ko": "예수께서 그 묻고자 함을 아시고 가라사대 내 말이 조금 있으면 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하므로 서로 문의하느냐",
+      "source_text_hash": "4ad6c2a8cb2b7f2daee9ef8ea051ff07bb433efe471f9f3a7d41c586f9e05b90",
+      "translation_text_hash": "b756d45219ab4a83876554c795f774a7f11f460be316272a9901d997673acaf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 묻고자 함을 아시고 가라사대 내 말이 조금 있으면 나를 보지 못하겠고 또 조금 있으면 나를 보리라 하므로 서로 문의하느냐"
+      ],
+      "raw_text_hashes": [
+        "b756d45219ab4a83876554c795f774a7f11f460be316272a9901d997673acaf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:20",
+      "sequence": 26746,
+      "chapter_label": "JHN 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Most certainly I tell you that you will weep and lament, but the world will rejoice. You will be sorrowful, but your sorrow will be turned into joy.",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 너희는 곡하고 애통하리니 세상이 기뻐하리라 너희는 근심하겠으나 너희 근심이 도리어 기쁨이 되리라",
+      "source_text_hash": "817a42c29025b99c622838618a8bdb6833ce3e0110c6785d2d541fc8234f5b63",
+      "translation_text_hash": "f27216a66dff2809953309b8124baf1a1e79a5631426468d12fbeb54524b072d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 너희는 곡하고 애통하리니 세상이 기뻐하리라 너희는 근심하겠으나 너희 근심이 도리어 기쁨이 되리라"
+      ],
+      "raw_text_hashes": [
+        "f27216a66dff2809953309b8124baf1a1e79a5631426468d12fbeb54524b072d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:21",
+      "sequence": 26747,
+      "chapter_label": "JHN 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "A woman, when she gives birth, has sorrow because her time has come. But when she has delivered the child, she doesn’t remember the anguish any more, for the joy that a human being is born into the world.",
+      "ko": "여자가 해산하게 되면 그 때가 이르렀으므로 근심하나 아이를 낳으면 세상에 사람 난 기쁨을 인하여 그 고통을 다시 기억지 아니하느니라",
+      "source_text_hash": "8d05d03b4beda0763cb1ac57f8d4fcfe287ee35ac76372e45fa4ac02c5234499",
+      "translation_text_hash": "b22ddb9cccd15c906c9bb195fcaf78e25b4688b3239747441d35df2eb7569f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 해산하게 되면 그 때가 이르렀으므로 근심하나 아이를 낳으면 세상에 사람 난 기쁨을 인하여 그 고통을 다시 기억지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "b22ddb9cccd15c906c9bb195fcaf78e25b4688b3239747441d35df2eb7569f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:22",
+      "sequence": 26748,
+      "chapter_label": "JHN 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore you now have sorrow, but I will see you again, and your heart will rejoice, and no one will take your joy away from you.",
+      "ko": "지금은 너희가 근심하나 내가 다시 너희를 보리니 너희 마음이 기쁠 것이요 너희 기쁨을 빼앗을 자가 없느니라",
+      "source_text_hash": "c335faaeea60a3ca6406cba2d7b38814e69ad01a71bcba50b38d3f171adeb5fe",
+      "translation_text_hash": "058e2e17f8d01f372b6bd517f85193a339bc40792bf1acad8eb6869460be9908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금은 너희가 근심하나 내가 다시 너희를 보리니 너희 마음이 기쁠 것이요 너희 기쁨을 빼앗을 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "058e2e17f8d01f372b6bd517f85193a339bc40792bf1acad8eb6869460be9908"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:23",
+      "sequence": 26749,
+      "chapter_label": "JHN 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "“In that day you will ask me no questions. Most certainly I tell you, whatever you may ask of the Father in my name, he will give it to you.",
+      "ko": "그 날에는 너희가 아무 것도 내게 묻지 아니하리라 내가 진실로 진실로 너희에게 이르노니 너희가 무엇이든지 아버지께 구하는 것을 내 이름으로 주시리라",
+      "source_text_hash": "26941aae9f043becce72a492c1757fa58caa4edd62d28eec9d241c52d8c786c0",
+      "translation_text_hash": "fca304417601052db269b1585c9979e9f42de87eaf86dce53760e2dfc9199bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 너희가 아무 것도 내게 묻지 아니하리라 내가 진실로 진실로 너희에게 이르노니 너희가 무엇이든지 아버지께 구하는 것을 내 이름으로 주시리라"
+      ],
+      "raw_text_hashes": [
+        "fca304417601052db269b1585c9979e9f42de87eaf86dce53760e2dfc9199bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:24",
+      "sequence": 26750,
+      "chapter_label": "JHN 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "Until now, you have asked nothing in my name. Ask, and you will receive, that your joy may be made full.",
+      "ko": "지금까지는 너희가 내 이름으로 아무 것도 구하지 아니하였으나 구하라 그리하면 받으리니 너희 기쁨이 충만하리라",
+      "source_text_hash": "4427aec1c465c19723ee6c51fa154273cc186a554847958557532814917a4edd",
+      "translation_text_hash": "f29686ab60a8baaf00821b209d9d66023ece104065af151889e5398997cb3d6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금까지는 너희가 내 이름으로 아무 것도 구하지 아니하였으나 구하라 그리하면 받으리니 너희 기쁨이 충만하리라"
+      ],
+      "raw_text_hashes": [
+        "f29686ab60a8baaf00821b209d9d66023ece104065af151889e5398997cb3d6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:25",
+      "sequence": 26751,
+      "chapter_label": "JHN 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "“I have spoken these things to you in figures of speech. But the time is coming when I will no more speak to you in figures of speech, but will tell you plainly about the Father.",
+      "ko": "이것을 비사로 너희에게 일렀거니와 때가 이르면 다시 비사로 너희에게 이르지 않고 아버지에 대한 것을 밝히 이르리라",
+      "source_text_hash": "bddcc04fad0751a6098933cde02e7085c3963f4c9e8a88cbad5ebdf7bec90c65",
+      "translation_text_hash": "05f3fd146ebd117b77da0e249d1423b5b67d0a0dbff8bcc7b4b9a12d07c6b0fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 비사로 너희에게 일렀거니와 때가 이르면 다시 비사로 너희에게 이르지 않고 아버지에 대한 것을 밝히 이르리라"
+      ],
+      "raw_text_hashes": [
+        "05f3fd146ebd117b77da0e249d1423b5b67d0a0dbff8bcc7b4b9a12d07c6b0fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:26",
+      "sequence": 26752,
+      "chapter_label": "JHN 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "In that day you will ask in my name; and I don’t say to you that I will pray to the Father for you,",
+      "ko": "그 날에 너희가 내 이름으로 구할 것이요 내가 너희를 위하여 아버지께 구하겠다 하는 말이 아니니",
+      "source_text_hash": "d6d907ad9cb179746fe3b8fbd72e00791e5d4baa0b2dd62c66baa998cfb3a01a",
+      "translation_text_hash": "36b48fdcaf3fb79f4bbb16eb2bf3b07c8a0cd2e3756e22dc348be92a7e38bad9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 너희가 내 이름으로 구할 것이요 내가 너희를 위하여 아버지께 구하겠다 하는 말이 아니니"
+      ],
+      "raw_text_hashes": [
+        "36b48fdcaf3fb79f4bbb16eb2bf3b07c8a0cd2e3756e22dc348be92a7e38bad9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:27",
+      "sequence": 26753,
+      "chapter_label": "JHN 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "for the Father himself loves you, because you have loved me, and have believed that I came from God.",
+      "ko": "이는 너희가 나를 사랑하고 또 나를 하나님께로서 온줄 믿은 고로 아버지께서 친히 너희를 사랑하심이니라",
+      "source_text_hash": "6e7764ecf4eafa2052ba3267d03a3928818549de9bdeadf1535e47ed7f8bc8d0",
+      "translation_text_hash": "afbcb6f5440f9bcc3df5bcde2c6a1b0dd94d76e317f3974758f21e33adc1bdae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 나를 사랑하고 또 나를 하나님께로서 온줄 믿은 고로 아버지께서 친히 너희를 사랑하심이니라"
+      ],
+      "raw_text_hashes": [
+        "afbcb6f5440f9bcc3df5bcde2c6a1b0dd94d76e317f3974758f21e33adc1bdae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:28",
+      "sequence": 26754,
+      "chapter_label": "JHN 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "I came from the Father and have come into the world. Again, I leave the world and go to the Father.”",
+      "ko": "내가 아버지께로 나와서 세상에 왔고 다시 세상을 떠나 아버지께로 가노라 하시니",
+      "source_text_hash": "be136cfa60c0ef4abfaef0beb5d60b46a2aab7f4b91d9b954ad6dff318b9923b",
+      "translation_text_hash": "8b15645b47ce66622abb168e240904fa3367b82abb4bdb005b70ceb8d675894e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아버지께로 나와서 세상에 왔고 다시 세상을 떠나 아버지께로 가노라 하시니"
+      ],
+      "raw_text_hashes": [
+        "8b15645b47ce66622abb168e240904fa3367b82abb4bdb005b70ceb8d675894e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:29",
+      "sequence": 26755,
+      "chapter_label": "JHN 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "His disciples said to him, “Behold, now you are speaking plainly, and using no figures of speech.",
+      "ko": "제자들이 말하되 지금은 밝히 말씀하시고 아무 비사도 하지 아니하시니",
+      "source_text_hash": "477cd430743a0ffca0e3fbbde282f854c85fc7f8d44378399b7501421420786c",
+      "translation_text_hash": "49865d9c15c68bdea700b06076706bf4d66443544eb4be733e0ef27e61a98065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 말하되 지금은 밝히 말씀하시고 아무 비사도 하지 아니하시니"
+      ],
+      "raw_text_hashes": [
+        "49865d9c15c68bdea700b06076706bf4d66443544eb4be733e0ef27e61a98065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:30",
+      "sequence": 26756,
+      "chapter_label": "JHN 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "Now we know that you know all things, and don’t need for anyone to question you. By this we believe that you came from God.”",
+      "ko": "우리가 지금에야 주께서 모든 것을 아시고 또 사람의 물음을 기다리시지 않는줄 아나이다 이로써 하나님께로서 나오심을 우리가 믿삽나이다",
+      "source_text_hash": "e748006cb09d7b1d1de107e5d4b5d30d49fb7eab1110c896f449152f08aef1cf",
+      "translation_text_hash": "0af544008fd3ff991b90876e0d536cca036d02ab98680991db2816cf8c4cffa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 지금에야 주께서 모든 것을 아시고 또 사람의 물음을 기다리시지 않는줄 아나이다 이로써 하나님께로서 나오심을 우리가 믿삽나이다"
+      ],
+      "raw_text_hashes": [
+        "0af544008fd3ff991b90876e0d536cca036d02ab98680991db2816cf8c4cffa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:31",
+      "sequence": 26757,
+      "chapter_label": "JHN 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "Jesus answered them, “Do you now believe?",
+      "ko": "예수께서 대답하시되 이제는 너희가 믿느냐",
+      "source_text_hash": "e56c1414173e92f80b85259b02cfe3e4f0218c44bd7c7261fde4c1f3404613a2",
+      "translation_text_hash": "a58f4ebcc6a218ef9eff1285247fd42d5068e28ea2bbc723e64b07544abdb457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 이제는 너희가 믿느냐"
+      ],
+      "raw_text_hashes": [
+        "a58f4ebcc6a218ef9eff1285247fd42d5068e28ea2bbc723e64b07544abdb457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:32",
+      "sequence": 26758,
+      "chapter_label": "JHN 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "Behold, the time is coming, yes, and has now come, that you will be scattered, everyone to his own place, and you will leave me alone. Yet I am not alone, because the Father is with me.",
+      "ko": "보라 너희가 다 각각 제 곳으로 흩어지고 나를 혼자 둘 때가 오나니 벌써 왔도다 그러나 내가 혼자 있는 것이 아니라 아버지께서 나와 함께 계시느니라",
+      "source_text_hash": "2285de4ef7fce0a41235afd73c12cc0a10dc222bdb77eec5e9630f432c491e0b",
+      "translation_text_hash": "dd62f73e863c24af626074b37f5771dadbfc45d01143d8c8cc574690d2b9cd82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희가 다 각각 제 곳으로 흩어지고 나를 혼자 둘 때가 오나니 벌써 왔도다 그러나 내가 혼자 있는 것이 아니라 아버지께서 나와 함께 계시느니라"
+      ],
+      "raw_text_hashes": [
+        "dd62f73e863c24af626074b37f5771dadbfc45d01143d8c8cc574690d2b9cd82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:16:33",
+      "sequence": 26759,
+      "chapter_label": "JHN 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "I have told you these things, that in me you may have peace. In the world you have trouble; but cheer up! I have overcome the world.”",
+      "ko": "이것을 너희에게 이름은 너희로 내 안에서 평안을 누리게 하려함이라 세상에서는 너희가 환난을 당하나 담대하라 내가 세상을 이기었노라 하시니라",
+      "source_text_hash": "dcb6f5af9705f5b1acfed5a42d6333301cbe7862b553ba570cd9c35099c3cdbe",
+      "translation_text_hash": "6498f4cad6a51a43dabddd3c0d6d84a544fc87484a68ecf517d84dafeecb725a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 너희에게 이름은 너희로 내 안에서 평안을 누리게 하려함이라 세상에서는 너희가 환난을 당하나 담대하라 내가 세상을 이기었노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6498f4cad6a51a43dabddd3c0d6d84a544fc87484a68ecf517d84dafeecb725a"
+      ]
+    }
+  ]
+}

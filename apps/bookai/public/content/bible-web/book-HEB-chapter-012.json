@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:012",
+  "unit_ordinal": 1145,
+  "unit_label": "HEB 12",
+  "book_code": "HEB",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:12:1",
+      "sequence": 30210,
+      "chapter_label": "HEB 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore let’s also, seeing we are surrounded by so great a cloud of witnesses, lay aside every weight and the sin which so easily entangles us, and let’s run with perseverance the race that is set before us,",
+      "ko": "이러므로 우리에게 구름 같이 둘러싼 허다한 증인들이 있으니 모든 무거운 것과 얽매이기 쉬운 죄를 벗어 버리고 인내로써 우리 앞에 당한 경주를 경주하며",
+      "source_text_hash": "26e2a1cbc260ab214931bd8b2264ecfc8d2fa82a5a02dbe05351c0660ee80735",
+      "translation_text_hash": "f4533084ccb5a3f21ffb8aafb576d259e082e0a802ae4e2ad36a2beaf113f4ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리에게 구름 같이 둘러싼 허다한 증인들이 있으니 모든 무거운 것과 얽매이기 쉬운 죄를 벗어 버리고 인내로써 우리 앞에 당한 경주를 경주하며"
+      ],
+      "raw_text_hashes": [
+        "f4533084ccb5a3f21ffb8aafb576d259e082e0a802ae4e2ad36a2beaf113f4ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:2",
+      "sequence": 30211,
+      "chapter_label": "HEB 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "looking to Jesus, the author and perfecter of faith, who for the joy that was set before him endured the cross, despising its shame, and has sat down at the right hand of the throne of God.",
+      "ko": "믿음의 주요 또 온전케 하시는 이인 예수를 바라보자 저는 그 앞에 있는 즐거움을 위하여 십자가를 참으사 부끄러움을 개의치 아니하시더니 하나님 보좌 우편에 앉으셨느니라",
+      "source_text_hash": "403fe0b184938e01a70a7187c90a2bd81d6de9da87edf950a2d96722d2b05714",
+      "translation_text_hash": "fe41499f29115d7b9b2aea0591c8d01418c92f0f9867fd5fa3242175af763303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음의 주요 또 온전케 하시는 이인 예수를 바라보자 저는 그 앞에 있는 즐거움을 위하여 십자가를 참으사 부끄러움을 개의치 아니하시더니 하나님 보좌 우편에 앉으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "fe41499f29115d7b9b2aea0591c8d01418c92f0f9867fd5fa3242175af763303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:3",
+      "sequence": 30212,
+      "chapter_label": "HEB 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "For consider him who has endured such contradiction of sinners against himself, that you don’t grow weary, fainting in your souls.",
+      "ko": "너희가 피곤하여 낙심치 않기 위하여 죄인들의 이같이 자기에게 거역한 일을 참으신 자를 생각하라",
+      "source_text_hash": "e1a4a041de6ab8cec40655efcee98948c55d9f99befa9a875b10f8b2b5f01b39",
+      "translation_text_hash": "5a69b6af3b194002d1bc53b6693ffe497b9e72f73ea70512db86d794361c2b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 피곤하여 낙심치 않기 위하여 죄인들의 이같이 자기에게 거역한 일을 참으신 자를 생각하라"
+      ],
+      "raw_text_hashes": [
+        "5a69b6af3b194002d1bc53b6693ffe497b9e72f73ea70512db86d794361c2b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:4",
+      "sequence": 30213,
+      "chapter_label": "HEB 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "You have not yet resisted to blood, striving against sin.",
+      "ko": "너희가 죄와 싸우되 아직 피흘리기까지는 대항치 아니하고",
+      "source_text_hash": "23aed23fc81310f8d268c73fc0b536cfe93b559c7623ac692ca317f3be3f89da",
+      "translation_text_hash": "abb4370f3bd86017ceb68236964a453f152afadcd361b27c862cb3ed20438c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 죄와 싸우되 아직 피흘리기까지는 대항치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "abb4370f3bd86017ceb68236964a453f152afadcd361b27c862cb3ed20438c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:5",
+      "sequence": 30214,
+      "chapter_label": "HEB 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "You have forgotten the exhortation which reasons with you as with children, “My son, don’t take lightly the chastening of the Lord, nor faint when you are reproved by him;",
+      "ko": "또 아들들에게 권하는것 같이 너희에게 권면하신 말씀을 잊었도다 일렀으되 내 아들아 주의 징계하심을 경히 여기지 말며 그에게 꾸지람을 받을 때에 낙심하지 말라",
+      "source_text_hash": "4cc5d9dc3cd72f2c467a91626679e47b38ec4f153c7b38b5eea0c32bb6b9efe4",
+      "translation_text_hash": "cd5145f1d6ec648a71b7928a0d9f29d53f6b329e7c19548bcde298dbbdb9ab1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아들들에게 권하는것 같이 너희에게 권면하신 말씀을 잊었도다 일렀으되 내 아들아 주의 징계하심을 경히 여기지 말며 그에게 꾸지람을 받을 때에 낙심하지 말라"
+      ],
+      "raw_text_hashes": [
+        "cd5145f1d6ec648a71b7928a0d9f29d53f6b329e7c19548bcde298dbbdb9ab1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:6",
+      "sequence": 30215,
+      "chapter_label": "HEB 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "for whom the Lord loves, he disciplines, and chastises every son whom he receives.”",
+      "ko": "주께서 그 사랑하시는 자를 징계하시고 그의 받으시는 아들마다 채찍질하심이니라 하였으니",
+      "source_text_hash": "4a5c3488598da15a791d45340fd928efa2407e19df336929c8a65ca1763c9660",
+      "translation_text_hash": "31d39bb9682bd337cb49a909f0662ab074f246f0793f7cb0592aa5e8ff5aaa34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그 사랑하시는 자를 징계하시고 그의 받으시는 아들마다 채찍질하심이니라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "31d39bb9682bd337cb49a909f0662ab074f246f0793f7cb0592aa5e8ff5aaa34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:7",
+      "sequence": 30216,
+      "chapter_label": "HEB 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "It is for discipline that you endure. God deals with you as with children, for what son is there whom his father doesn’t discipline?",
+      "ko": "너희가 참음은 징계를 받기 위함이라 하나님이 아들과 같이 너희를 대우하시나니 어찌 아비가 징계하지 않는 아들이 있으리요",
+      "source_text_hash": "3e30c57a15c120c47f8dce085c0db7fbbf392db8dc7507f54691fb197dab652d",
+      "translation_text_hash": "f18c93a3d7e335806109b7248c3d781c8910d7fe227bbddd7319956c09f6b793",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 참음은 징계를 받기 위함이라 하나님이 아들과 같이 너희를 대우하시나니 어찌 아비가 징계하지 않는 아들이 있으리요"
+      ],
+      "raw_text_hashes": [
+        "f18c93a3d7e335806109b7248c3d781c8910d7fe227bbddd7319956c09f6b793"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:8",
+      "sequence": 30217,
+      "chapter_label": "HEB 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "But if you are without discipline, of which all have been made partakers, then you are illegitimate, and not children.",
+      "ko": "징계는 다 받는 것이거늘 너희에게 없으면 사생자요 참 아들이 아니니라",
+      "source_text_hash": "99e06663fddd8e5015a24ec806f941f0a7374171ed283a7a5c439ab64806c86c",
+      "translation_text_hash": "ea19c6fc9d42f42605300c65ebc96b0686cc61a00f13c94644b3f3be6d78d978",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "징계는 다 받는 것이거늘 너희에게 없으면 사생자요 참 아들이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "ea19c6fc9d42f42605300c65ebc96b0686cc61a00f13c94644b3f3be6d78d978"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:9",
+      "sequence": 30218,
+      "chapter_label": "HEB 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Furthermore, we had the fathers of our flesh to chasten us, and we paid them respect. Shall we not much rather be in subjection to the Father of spirits and live?",
+      "ko": "또 우리 육체의 아버지가 우리를 징계하여도 공경하였거든 하물며 모든 영의 아버지께 더욱 복종하여 살려 하지 않겠느냐",
+      "source_text_hash": "d2bd97190bca8d302afb50f5555848294f90f315f63e158077cb08f29434db06",
+      "translation_text_hash": "f44c15c25c744b9b9a40d82d23349e2de7b60a680c26dde82c79ae3458fde3be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리 육체의 아버지가 우리를 징계하여도 공경하였거든 하물며 모든 영의 아버지께 더욱 복종하여 살려 하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f44c15c25c744b9b9a40d82d23349e2de7b60a680c26dde82c79ae3458fde3be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:10",
+      "sequence": 30219,
+      "chapter_label": "HEB 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "For they indeed for a few days disciplined us as seemed good to them, but he for our profit, that we may be partakers of his holiness.",
+      "ko": "저희는 잠시 자기의 뜻대로 우리를 징계하였거니와 오직 하나님은 우리의 유익을 위하여 그의 거룩하심에 참예케 하시느니라",
+      "source_text_hash": "c1032aeb48323b76309698d517975cfc55e549fd8a1011710caed33e2a3eab85",
+      "translation_text_hash": "7bbd291005d076a29a478a33efca9a85d612bd7aee6838611d10208ad8312e39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 잠시 자기의 뜻대로 우리를 징계하였거니와 오직 하나님은 우리의 유익을 위하여 그의 거룩하심에 참예케 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "7bbd291005d076a29a478a33efca9a85d612bd7aee6838611d10208ad8312e39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:11",
+      "sequence": 30220,
+      "chapter_label": "HEB 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "All chastening seems for the present to be not joyous but grievous; yet afterward it yields the peaceful fruit of righteousness to those who have been trained by it.",
+      "ko": "무릇 징계가 당시에는 즐거워 보이지 않고 슬퍼 보이나 후에 그로 말미암아 연달한 자에게는 의의 평강한 열매를 맺나니",
+      "source_text_hash": "212b187a15cff6607b987e529a6b98cf3ca679269bdea12a538b4bb45a72a034",
+      "translation_text_hash": "ef6776a1f0fd8688ac929decc892bc92450d42fee4037cf59fd41f8685891c88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 징계가 당시에는 즐거워 보이지 않고 슬퍼 보이나 후에 그로 말미암아 연달한 자에게는 의의 평강한 열매를 맺나니"
+      ],
+      "raw_text_hashes": [
+        "ef6776a1f0fd8688ac929decc892bc92450d42fee4037cf59fd41f8685891c88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:12",
+      "sequence": 30221,
+      "chapter_label": "HEB 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore lift up the hands that hang down and the feeble knees,",
+      "ko": "그러므로 피곤한 손과 연약한 무릎을 일으켜 세우고",
+      "source_text_hash": "4af5e53cb055439797c07d7c4f770773a4d64fefea3c8fbee9e0bf23278e1e3e",
+      "translation_text_hash": "622add900a3b2513ac4932c723cbe8161a0492a5b2587c5da7a5d756d46346f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 피곤한 손과 연약한 무릎을 일으켜 세우고"
+      ],
+      "raw_text_hashes": [
+        "622add900a3b2513ac4932c723cbe8161a0492a5b2587c5da7a5d756d46346f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:13",
+      "sequence": 30222,
+      "chapter_label": "HEB 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "and make straight paths for your feet, so what is lame may not be dislocated, but rather be healed.",
+      "ko": "너희 발을 위하여 곧은 길을 만들어 저는 다리로 하여금 어그러지지 않고 고침을 받게 하라",
+      "source_text_hash": "2f38adb13d391e23f18d8f8a53ac459c9826c4f9ed3856226e981ec4c4c19f56",
+      "translation_text_hash": "6e2f8e4c644044698388b688c22988887ad70bba9000a29d268eb50bdc3b2bb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 발을 위하여 곧은 길을 만들어 저는 다리로 하여금 어그러지지 않고 고침을 받게 하라"
+      ],
+      "raw_text_hashes": [
+        "6e2f8e4c644044698388b688c22988887ad70bba9000a29d268eb50bdc3b2bb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:14",
+      "sequence": 30223,
+      "chapter_label": "HEB 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Follow after peace with all men, and the sanctification without which no man will see the Lord,",
+      "ko": "모든 사람으로 더불어 화평함과 거룩함을 좇으라 이것이 없이는 아무도 주를 보지 못하리라",
+      "source_text_hash": "d82daf2443275972ef03ad8d3f21d780a76b427057b9bfab04ca594a6a8dbf5a",
+      "translation_text_hash": "4166859c3e13f163c8c214e675157695962c45e86e7236e827cb9b5383bcdb6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람으로 더불어 화평함과 거룩함을 좇으라 이것이 없이는 아무도 주를 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "4166859c3e13f163c8c214e675157695962c45e86e7236e827cb9b5383bcdb6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:15",
+      "sequence": 30224,
+      "chapter_label": "HEB 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "looking carefully lest there be any man who falls short of the grace of God, lest any root of bitterness springing up trouble you and many be defiled by it,",
+      "ko": "너희는 돌아보아 하나님 은혜에 이르지 못하는 자가 있는가 두려워하고 또 쓴 뿌리가 나서 괴롭게 하고 많은 사람이 이로 말미암아 더러움을 입을까 두려워하고",
+      "source_text_hash": "0975888100071237c02535a059a687da7d1f38116fcb4e1e1c60117fe5f054e4",
+      "translation_text_hash": "29bdb5b52aaa20bafbd0256b5fa35e7977bcfad932c5f9d456b5fc851a2a9dda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 돌아보아 하나님 은혜에 이르지 못하는 자가 있는가 두려워하고 또 쓴 뿌리가 나서 괴롭게 하고 많은 사람이 이로 말미암아 더러움을 입을까 두려워하고"
+      ],
+      "raw_text_hashes": [
+        "29bdb5b52aaa20bafbd0256b5fa35e7977bcfad932c5f9d456b5fc851a2a9dda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:16",
+      "sequence": 30225,
+      "chapter_label": "HEB 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "lest there be any sexually immoral person or profane person, like Esau, who sold his birthright for one meal.",
+      "ko": "음행하는 자와 혹 한 그릇 식물을 위하여 장자의 명분을 판 에서와 같이 망령된 자가 있을까 두려워하라",
+      "source_text_hash": "7c7814c4ad0fda36fe5bdc54e3ca1f746e8e130cdf270ef993576ca40fa6eaf3",
+      "translation_text_hash": "8969e9373301f41a602236599eab3bb3f5b12ab9697afa7d16f0b62499060520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행하는 자와 혹 한 그릇 식물을 위하여 장자의 명분을 판 에서와 같이 망령된 자가 있을까 두려워하라"
+      ],
+      "raw_text_hashes": [
+        "8969e9373301f41a602236599eab3bb3f5b12ab9697afa7d16f0b62499060520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:17",
+      "sequence": 30226,
+      "chapter_label": "HEB 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "For you know that even when he afterward desired to inherit the blessing, he was rejected, for he found no place for a change of mind though he sought it diligently with tears.",
+      "ko": "너희의 아는 바와 같이 저가 그 후에 축복을 기업으로 받으려고 눈물을 흘리며 구하되 버린 바가 되어 회개할 기회를 얻지 못하였느니라",
+      "source_text_hash": "4c42f235f5381a96b49e46e3dc6d3c48a270891c7172d43f8bac1fb06832b66b",
+      "translation_text_hash": "44440fad37bd4862cd14589cc86e7a08afea9d1b615fcb16536b66e8acd49cb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 아는 바와 같이 저가 그 후에 축복을 기업으로 받으려고 눈물을 흘리며 구하되 버린 바가 되어 회개할 기회를 얻지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "44440fad37bd4862cd14589cc86e7a08afea9d1b615fcb16536b66e8acd49cb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:18",
+      "sequence": 30227,
+      "chapter_label": "HEB 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "For you have not come to a mountain that might be touched and that burned with fire, and to blackness, darkness, storm,",
+      "ko": "너희의 이른 곳은 만질만한 불 붙는 산과 흑운과 흑암과 폭풍과",
+      "source_text_hash": "97efece18816a30292884d28157b108e1012a51e8c6214697eba4247c6a9e087",
+      "translation_text_hash": "8646bcf9694f1fef149d25d83d621f94133c56532cbabca61a498d54a874226e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 이른 곳은 만질만한 불 붙는 산과 흑운과 흑암과 폭풍과"
+      ],
+      "raw_text_hashes": [
+        "8646bcf9694f1fef149d25d83d621f94133c56532cbabca61a498d54a874226e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:19",
+      "sequence": 30228,
+      "chapter_label": "HEB 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "the sound of a trumpet, and the voice of words; which those who heard it begged that not one more word should be spoken to them,",
+      "ko": "나팔 소리와 말하는 소리가 아니라 그 소리를 듣는 자들은 더 말씀하지 아니하시기를 구하였으니",
+      "source_text_hash": "c7288180cce40cb3095326012f9936a62c51a52f692b6e1e219884168f054ad3",
+      "translation_text_hash": "07e510514a84d09481155548a242ebd3ef7317e5eacf333d4c5e5b93f61939db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리와 말하는 소리가 아니라 그 소리를 듣는 자들은 더 말씀하지 아니하시기를 구하였으니"
+      ],
+      "raw_text_hashes": [
+        "07e510514a84d09481155548a242ebd3ef7317e5eacf333d4c5e5b93f61939db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:20",
+      "sequence": 30229,
+      "chapter_label": "HEB 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "for they could not stand that which was commanded, “If even an animal touches the mountain, it shall be stoned”.",
+      "ko": "이는 짐승이라도 산에 이르거든 돌로 침을 당하리라 하신 명을 저희가 견디지 못함이라",
+      "source_text_hash": "c97a396e1d3d4cef3edfd2aaf94b3ce9a8a7752c87cb077d1ddc41bbbca43586",
+      "translation_text_hash": "19213cfe10ffeb760dae295d89217848ae0a966bf91942480309c60d6330940e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 짐승이라도 산에 이르거든 돌로 침을 당하리라 하신 명을 저희가 견디지 못함이라"
+      ],
+      "raw_text_hashes": [
+        "19213cfe10ffeb760dae295d89217848ae0a966bf91942480309c60d6330940e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:21",
+      "sequence": 30230,
+      "chapter_label": "HEB 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "So fearful was the appearance that Moses said, “I am terrified and trembling.”",
+      "ko": "그 보이는바가 이렇듯이 무섭기로 모세도 이르되 내가 심히 두렵고 떨린다 하였으나",
+      "source_text_hash": "2aba18833e0ed2efcb5456069504a05ac7f1cca762f1dbe6d566274a9884a787",
+      "translation_text_hash": "af3f802715d94dc6881e4bf2c2ecd09431ee52ab92643be752ac6b353ec88623",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 보이는바가 이렇듯이 무섭기로 모세도 이르되 내가 심히 두렵고 떨린다 하였으나"
+      ],
+      "raw_text_hashes": [
+        "af3f802715d94dc6881e4bf2c2ecd09431ee52ab92643be752ac6b353ec88623"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:22",
+      "sequence": 30231,
+      "chapter_label": "HEB 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "But you have come to Mount Zion and to the city of the living God, the heavenly Jerusalem, and to innumerable multitudes of angels,",
+      "ko": "그러나 너희가 이른 곳은 시온산과 살아계신 하나님의 도성인 하늘의 예루살렘과 천만 천사와",
+      "source_text_hash": "ae024f38508d6ab292c83bb42424f4d81598e7e123d291ae07e362f2a173f19b",
+      "translation_text_hash": "5dc94195d18374e669f960d357031b3844168e00467ea554e3e1237a3e77f047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 이른 곳은 시온산과 살아계신 하나님의 도성인 하늘의 예루살렘과 천만 천사와"
+      ],
+      "raw_text_hashes": [
+        "5dc94195d18374e669f960d357031b3844168e00467ea554e3e1237a3e77f047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:23",
+      "sequence": 30232,
+      "chapter_label": "HEB 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "to the festal gathering and assembly of the firstborn who are enrolled in heaven, to God the Judge of all, to the spirits of just men made perfect,",
+      "ko": "하늘에 기록한 장자들의 총회와 교회와 만민의 심판자이신 하나님과 및 온전케 된 의인의 영들과",
+      "source_text_hash": "ff4c927e4d5fefb73cfb7f54d66980611224556182207050417d777dc0ff5fce",
+      "translation_text_hash": "33f819abb1f7dec001939ba0b7282bfd874c262cf7456fe91e8ca5606635f692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 기록한 장자들의 총회와 교회와 만민의 심판자이신 하나님과 및 온전케 된 의인의 영들과"
+      ],
+      "raw_text_hashes": [
+        "33f819abb1f7dec001939ba0b7282bfd874c262cf7456fe91e8ca5606635f692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:24",
+      "sequence": 30233,
+      "chapter_label": "HEB 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "to Jesus, the mediator of a new covenant, and to the blood of sprinkling that speaks better than that of Abel.",
+      "ko": "새 언약의 중보이신 예수와 및 아벨의 피보다 더 낫게 말하는 뿌린 피니라",
+      "source_text_hash": "35ddecba35599ec1f9d8ce9cd5ac9857a1e4a5611c49208624f90c813d85d645",
+      "translation_text_hash": "68d27e09e8837b62984fb5160fb4aa67a3ec39df555bd993598ef04a3785a2fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 언약의 중보이신 예수와 및 아벨의 피보다 더 낫게 말하는 뿌린 피니라"
+      ],
+      "raw_text_hashes": [
+        "68d27e09e8837b62984fb5160fb4aa67a3ec39df555bd993598ef04a3785a2fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:25",
+      "sequence": 30234,
+      "chapter_label": "HEB 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "See that you don’t refuse him who speaks. For if they didn’t escape when they refused him who warned on the earth, how much more will we not escape who turn away from him who warns from heaven,",
+      "ko": "너희는 삼가 말하신 자를 거역하지 말라 땅에서 경고하신 자를 거역한 저희가 피하지 못하였거든 하물며 하늘로 좇아 경고하신 자를 배반하는 우리일까보냐",
+      "source_text_hash": "90b579e179c515b3a00de6dae5f8578e6406c6c115a8ad81f65f037441f1cf03",
+      "translation_text_hash": "01cfa1f90341b1fcedb1d71aff0e95d0534104ce5228dd35b8fde4390b831aa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 삼가 말하신 자를 거역하지 말라 땅에서 경고하신 자를 거역한 저희가 피하지 못하였거든 하물며 하늘로 좇아 경고하신 자를 배반하는 우리일까보냐"
+      ],
+      "raw_text_hashes": [
+        "01cfa1f90341b1fcedb1d71aff0e95d0534104ce5228dd35b8fde4390b831aa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:26",
+      "sequence": 30235,
+      "chapter_label": "HEB 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "whose voice shook the earth then, but now he has promised, saying, “Yet once more I will shake not only the earth, but also the heavens.”",
+      "ko": "그 때에는 그 소리가 땅을 진동하였거니와 이제는 약속하여 가라사대 내가 또 한번 땅만 아니라 하늘도 진동하리라 하셨느니라",
+      "source_text_hash": "d9df23f9a9eaef5b39990e20f26f39ebe2c391037aa9d08cfad73c59836138d4",
+      "translation_text_hash": "2929c78b2c6758d25cd2cc6604d9bdb716948140b8194f1ee7dc3475faf0c9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 그 소리가 땅을 진동하였거니와 이제는 약속하여 가라사대 내가 또 한번 땅만 아니라 하늘도 진동하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2929c78b2c6758d25cd2cc6604d9bdb716948140b8194f1ee7dc3475faf0c9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:27",
+      "sequence": 30236,
+      "chapter_label": "HEB 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "This phrase, “Yet once more” signifies the removing of those things that are shaken, as of things that have been made, that those things which are not shaken may remain.",
+      "ko": "이 또 한번이라 하심은 진동치 아니하는 것을 영존케 하기 위하여 진동할 것들 곧 만든 것들의 변동될 것을 나타내심이니라",
+      "source_text_hash": "b7f1df97638ed161e6c53b5303008e6b43da4f9495a2ff5daba15d43eda4fb9d",
+      "translation_text_hash": "66640238c35d02a8de2a8bc4ad11bc319e55c5e9320d5a2b79e6579d6550e195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 또 한번이라 하심은 진동치 아니하는 것을 영존케 하기 위하여 진동할 것들 곧 만든 것들의 변동될 것을 나타내심이니라"
+      ],
+      "raw_text_hashes": [
+        "66640238c35d02a8de2a8bc4ad11bc319e55c5e9320d5a2b79e6579d6550e195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:28",
+      "sequence": 30237,
+      "chapter_label": "HEB 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "Therefore, receiving a Kingdom that can’t be shaken, let’s have grace, through which we serve God acceptably, with reverence and awe,",
+      "ko": "그러므로 우리가 진동치 못할 나라를 받았은즉 은혜를 받자 이로 말미암아 경건함과 두려움으로 하나님을 기쁘시게 섬길찌니",
+      "source_text_hash": "2b56d1f639034d43225a7ccad11d6d8c0d830babb96c10586eb3c741952b16e6",
+      "translation_text_hash": "2a7fb9adbef43fab395337d1574017ed1735926df7b3cb02944887e3a6c89193",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 진동치 못할 나라를 받았은즉 은혜를 받자 이로 말미암아 경건함과 두려움으로 하나님을 기쁘시게 섬길찌니"
+      ],
+      "raw_text_hashes": [
+        "2a7fb9adbef43fab395337d1574017ed1735926df7b3cb02944887e3a6c89193"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:12:29",
+      "sequence": 30238,
+      "chapter_label": "HEB 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "HEB",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "for our God is a consuming fire.",
+      "ko": "우리 하나님은 소멸하는 불이심이니라",
+      "source_text_hash": "ebbb9776ee81e6639e0dd3a8f28dfe833b303e8dad30cd6bc860a0313ec0f71d",
+      "translation_text_hash": "ca7e1e7dddbca5b18b63566b666060a546280354756b99fe2de9f50c5d3fbf11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님은 소멸하는 불이심이니라"
+      ],
+      "raw_text_hashes": [
+        "ca7e1e7dddbca5b18b63566b666060a546280354756b99fe2de9f50c5d3fbf11"
+      ]
+    }
+  ]
+}

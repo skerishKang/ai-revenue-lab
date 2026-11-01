@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:013",
+  "unit_ordinal": 130,
+  "unit_label": "NUM 13",
+  "book_code": "NUM",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:13:1",
+      "sequence": 4077,
+      "chapter_label": "NUM 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:2",
+      "sequence": 4078,
+      "chapter_label": "NUM 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "“Send men, that they may spy out the land of Canaan, which I give to the children of Israel. Of every tribe of their fathers, you shall send a man, every one a prince among them.”",
+      "ko": "사람을 보내어 내가 이스라엘 자손에게 주는 가나안 땅을 탐지하게 하되 그 종족의 각 지파 중에서 족장 된 자 한 사람씩 보내라",
+      "source_text_hash": "48d0aac681a7724e25a4f37e6204bd739bf6be20d4cd222a4e4beb277127b797",
+      "translation_text_hash": "53c4255e0cafd02303b30d9e5c694fa5dc1288f07a679696a5332b20b36152e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 보내어 내가 이스라엘 자손에게 주는 가나안 땅을 탐지하게 하되 그 종족의 각 지파 중에서 족장 된 자 한 사람씩 보내라"
+      ],
+      "raw_text_hashes": [
+        "53c4255e0cafd02303b30d9e5c694fa5dc1288f07a679696a5332b20b36152e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:3",
+      "sequence": 4079,
+      "chapter_label": "NUM 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Moses sent them from the wilderness of Paran according to the commandment of the LORD. All of them were men who were heads of the children of Israel.",
+      "ko": "모세가 여호와의 명을 좇아 바란 광야에서 그들을 보내었으니 그들은 다 이스라엘 자손의 두령된 사람이라",
+      "source_text_hash": "c2f23f2981a1253ed52d9c5076e363520806764cd357a6cbd79516c846445ed7",
+      "translation_text_hash": "486282abf17073f98ad16c622eb605b2f33e3d57f1c3af1eab6769b8be552aa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 명을 좇아 바란 광야에서 그들을 보내었으니 그들은 다 이스라엘 자손의 두령된 사람이라"
+      ],
+      "raw_text_hashes": [
+        "486282abf17073f98ad16c622eb605b2f33e3d57f1c3af1eab6769b8be552aa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:4",
+      "sequence": 4080,
+      "chapter_label": "NUM 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "These were their names: Of the tribe of Reuben, Shammua the son of Zaccur.",
+      "ko": "그들의 이름은 이러하니라 르우벤 지파에서는 삭굴의 아들 삼무아요",
+      "source_text_hash": "47a8d02b3d4efe75cd39a164252887a009cb3a9ae302853b4bd7bb09c94ee93a",
+      "translation_text_hash": "7bb82ddb6ef7c2574cb50574121f7850246d1ff0dd37dec0ec0fa9e3d05ab35f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 이름은 이러하니라 르우벤 지파에서는 삭굴의 아들 삼무아요"
+      ],
+      "raw_text_hashes": [
+        "7bb82ddb6ef7c2574cb50574121f7850246d1ff0dd37dec0ec0fa9e3d05ab35f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:5",
+      "sequence": 4081,
+      "chapter_label": "NUM 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Of the tribe of Simeon, Shaphat the son of Hori.",
+      "ko": "시므온 지파에서는 호리의 아들 사밧이요",
+      "source_text_hash": "befe97281d58fb769e351f3d777b8ca44adae143e2d0d6f4a4e01cfb76383548",
+      "translation_text_hash": "63dbef377a2a9a5cff0f2eb48bb344dd552c988971a3b70fbf8d84323d24d06a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 지파에서는 호리의 아들 사밧이요"
+      ],
+      "raw_text_hashes": [
+        "63dbef377a2a9a5cff0f2eb48bb344dd552c988971a3b70fbf8d84323d24d06a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:6",
+      "sequence": 4082,
+      "chapter_label": "NUM 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Of the tribe of Judah, Caleb the son of Jephunneh.",
+      "ko": "유다 지파에서는 여분네의 아들 갈렙이요",
+      "source_text_hash": "1460087df1e65f7d97c4508b44f0fd099703f0843a711a818d9fcbe0c82d925c",
+      "translation_text_hash": "948b6c2e3d47416d7c191f71b20fcf3ef635f239dfaf5bd11c23f77985e25f4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 지파에서는 여분네의 아들 갈렙이요"
+      ],
+      "raw_text_hashes": [
+        "948b6c2e3d47416d7c191f71b20fcf3ef635f239dfaf5bd11c23f77985e25f4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:7",
+      "sequence": 4083,
+      "chapter_label": "NUM 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Of the tribe of Issachar, Igal the son of Joseph.",
+      "ko": "잇사갈 지파에서는 요셉의 아들 이갈이요",
+      "source_text_hash": "bedc1b3e2fc4fcaa5a3d853868880d21748cb2723129d5fa3fea5bd44723d2b8",
+      "translation_text_hash": "22880efec9096f593d7a5feb9be6eb3005b624780d0a0eb720be94a18f1fd25e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 지파에서는 요셉의 아들 이갈이요"
+      ],
+      "raw_text_hashes": [
+        "22880efec9096f593d7a5feb9be6eb3005b624780d0a0eb720be94a18f1fd25e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:8",
+      "sequence": 4084,
+      "chapter_label": "NUM 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Of the tribe of Ephraim, Hoshea the son of Nun.",
+      "ko": "에브라임 지파에서는 눈의 아들 호세아요",
+      "source_text_hash": "54253be4f293507e135bb786aa0a156cc560829120e18db978c755f279360e98",
+      "translation_text_hash": "be7b1bc54196c284b004337c1e9b5e669a49310ab7ab21d471eb9c8de29f8c18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 지파에서는 눈의 아들 호세아요"
+      ],
+      "raw_text_hashes": [
+        "be7b1bc54196c284b004337c1e9b5e669a49310ab7ab21d471eb9c8de29f8c18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:9",
+      "sequence": 4085,
+      "chapter_label": "NUM 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Of the tribe of Benjamin, Palti the son of Raphu.",
+      "ko": "베냐민 지파에서는 라부의 아들 발디요",
+      "source_text_hash": "0d398fdbd34e9db0396cc90f1f9501caa18d128d79771012f7c4418dcd608060",
+      "translation_text_hash": "00fb24cb0ff3b2b3d16366a1c55ead64a84c60411e4c8c00948c1fc659ddc2ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 지파에서는 라부의 아들 발디요"
+      ],
+      "raw_text_hashes": [
+        "00fb24cb0ff3b2b3d16366a1c55ead64a84c60411e4c8c00948c1fc659ddc2ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:10",
+      "sequence": 4086,
+      "chapter_label": "NUM 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "Of the tribe of Zebulun, Gaddiel the son of Sodi.",
+      "ko": "스불론 지파에서는 소디의 아들 갓디엘이요",
+      "source_text_hash": "bc20b3923005691881925afb407645156a12f26b6372d44dfa5c6e13e962d149",
+      "translation_text_hash": "192fcb0b3f0c64010d58bdbdb6614c1402e6471c0ecf62293bab7be8dcd4f242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 지파에서는 소디의 아들 갓디엘이요"
+      ],
+      "raw_text_hashes": [
+        "192fcb0b3f0c64010d58bdbdb6614c1402e6471c0ecf62293bab7be8dcd4f242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:11",
+      "sequence": 4087,
+      "chapter_label": "NUM 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Of the tribe of Joseph, of the tribe of Manasseh, Gaddi the son of Susi.",
+      "ko": "요셉 지파 곧 므낫세 지파에서는 수시의 아들 갓디요",
+      "source_text_hash": "3607c9f47c2ff798f733912e05c7899502d7b0f538da5b17cd0c5e3d17e46cee",
+      "translation_text_hash": "8c849a24e145efcb449dd16ea7294bc7e6caacf618d8a298cc3a8d54102a54b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 지파 곧 므낫세 지파에서는 수시의 아들 갓디요"
+      ],
+      "raw_text_hashes": [
+        "8c849a24e145efcb449dd16ea7294bc7e6caacf618d8a298cc3a8d54102a54b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:12",
+      "sequence": 4088,
+      "chapter_label": "NUM 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Of the tribe of Dan, Ammiel the son of Gemalli.",
+      "ko": "단 지파에서는 그말리의 아들 암미엘이요",
+      "source_text_hash": "bc0186c65421463e6880accb6f5954a4a0f2ad687a3bd66d7ebf8c505fa81fff",
+      "translation_text_hash": "21ac9936bb820d19a0ae70b3bd81969728982ec7896f34f87c88109d89d88577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 지파에서는 그말리의 아들 암미엘이요"
+      ],
+      "raw_text_hashes": [
+        "21ac9936bb820d19a0ae70b3bd81969728982ec7896f34f87c88109d89d88577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:13",
+      "sequence": 4089,
+      "chapter_label": "NUM 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Of the tribe of Asher, Sethur the son of Michael.",
+      "ko": "아셀 지파에서는 미가엘의 아들 스둘이요",
+      "source_text_hash": "ac31ab963943eed58624121e01f8b38712adcb2f3a1e91c9d0269d08c30a56d0",
+      "translation_text_hash": "f21ec5547917c6a2d1e4d7b44f5e71e6ac389ef7191f9c223c9e34f3d7d59f58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지파에서는 미가엘의 아들 스둘이요"
+      ],
+      "raw_text_hashes": [
+        "f21ec5547917c6a2d1e4d7b44f5e71e6ac389ef7191f9c223c9e34f3d7d59f58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:14",
+      "sequence": 4090,
+      "chapter_label": "NUM 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "Of the tribe of Naphtali, Nahbi the son of Vophsi.",
+      "ko": "납달리 지파에서는 웝시의 아들 나비요",
+      "source_text_hash": "33cf234a6ba48140685992f0750d66d9acd879d690e24ba511a71c952528eddd",
+      "translation_text_hash": "60585f34e0bd41fc3bdafb8b9ffe033778a3dd6e6d4b3660e63cda99f0b531a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 지파에서는 웝시의 아들 나비요"
+      ],
+      "raw_text_hashes": [
+        "60585f34e0bd41fc3bdafb8b9ffe033778a3dd6e6d4b3660e63cda99f0b531a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:15",
+      "sequence": 4091,
+      "chapter_label": "NUM 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Of the tribe of Gad, Geuel the son of Machi.",
+      "ko": "갓 지파에서는 마기의 아들 그우엘이니",
+      "source_text_hash": "3691a4656253972f5e66f82ff79ce08c4e1fb4497187a2d15fb6704ce557248e",
+      "translation_text_hash": "84fba66400a54349d30358c9308e9128dcb203692e827e7d2b73c2806407a301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 지파에서는 마기의 아들 그우엘이니"
+      ],
+      "raw_text_hashes": [
+        "84fba66400a54349d30358c9308e9128dcb203692e827e7d2b73c2806407a301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:16",
+      "sequence": 4092,
+      "chapter_label": "NUM 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "These are the names of the men who Moses sent to spy out the land. Moses called Hoshea the son of Nun Joshua.",
+      "ko": "이는 모세가 땅을 탐지하러 보낸 자들의 이름이라 모세가 눈의 아들 호세아를 여호수아라 칭하였더라",
+      "source_text_hash": "0f9037e54adfb029553a5c55d7bae922213ebcc8c1e76d2a0d0122aa17e7853f",
+      "translation_text_hash": "58f0c4fcec3a2efe1ff46c4d3711a4688c1bf73992425454833fc6f0db2ac2fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세가 땅을 탐지하러 보낸 자들의 이름이라 모세가 눈의 아들 호세아를 여호수아라 칭하였더라"
+      ],
+      "raw_text_hashes": [
+        "58f0c4fcec3a2efe1ff46c4d3711a4688c1bf73992425454833fc6f0db2ac2fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:17",
+      "sequence": 4093,
+      "chapter_label": "NUM 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Moses sent them to spy out the land of Canaan, and said to them, “Go up this way by the South, and go up into the hill country.",
+      "ko": "모세가 가나안 땅을 탐지하러 그들을 보내며 이르되 너희는 남방 길로 행하여 산지로 올라가서",
+      "source_text_hash": "bbe8df60c7ab6030ed76f88ef9ffaf26a5d350b278cc56063e355ff68b7aa180",
+      "translation_text_hash": "4785f03b814a80852350bd5e4c3be9e170c688d25bb88c79e12fea5bf041743c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가나안 땅을 탐지하러 그들을 보내며 이르되 너희는 남방 길로 행하여 산지로 올라가서"
+      ],
+      "raw_text_hashes": [
+        "4785f03b814a80852350bd5e4c3be9e170c688d25bb88c79e12fea5bf041743c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:18",
+      "sequence": 4094,
+      "chapter_label": "NUM 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "See the land, what it is; and the people who dwell therein, whether they are strong or weak, whether they are few or many;",
+      "ko": "그 땅의 어떠함을 탐지하라 곧 그 땅 거민의 강약과 다소와",
+      "source_text_hash": "a125219352cc9a3adc9e0702bd01205bfca0146f72f5c0a5aff3c9aed611f510",
+      "translation_text_hash": "3a3c084ad4b9d3dfd80a118a0ccb2fa8f9d216fec0c4c8a4e836a235acd60612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 어떠함을 탐지하라 곧 그 땅 거민의 강약과 다소와"
+      ],
+      "raw_text_hashes": [
+        "3a3c084ad4b9d3dfd80a118a0ccb2fa8f9d216fec0c4c8a4e836a235acd60612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:19",
+      "sequence": 4095,
+      "chapter_label": "NUM 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "and what the land is that they dwell in, whether it is good or bad; and what cities they are that they dwell in, whether in camps, or in strongholds;",
+      "ko": "그들의 거하는 땅의 호 불호와 거하는 성읍이 진영인지 산성인지와",
+      "source_text_hash": "ef248bee68629b1bb35ecf8f5c4bfec42208676060c301b6357402972e9aa9ca",
+      "translation_text_hash": "eba9e848facb7a96e9b93959f735797e20441f3bce2ef0e76597140686803ce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 거하는 땅의 호 불호와 거하는 성읍이 진영인지 산성인지와"
+      ],
+      "raw_text_hashes": [
+        "eba9e848facb7a96e9b93959f735797e20441f3bce2ef0e76597140686803ce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:20",
+      "sequence": 4096,
+      "chapter_label": "NUM 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "and what the land is, whether it is fertile or poor, whether there is wood therein, or not. Be courageous, and bring some of the fruit of the land.” Now the time was the time of the first-ripe grapes.",
+      "ko": "토지의 후박과 수목의 유무니라 담대하라 또 그 땅 실과를 가져오라 하니 그 때는 포도가 처음 익을 즈음이었더라",
+      "source_text_hash": "d663f7271bdd2dc2c4205cd070a972456200a6a602c0a01dd2e652d35721f983",
+      "translation_text_hash": "0208292f58e3097c4f5228cab1e795dc0975f99118e410296ab5c4e5ff6115c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토지의 후박과 수목의 유무니라 담대하라 또 그 땅 실과를 가져오라 하니 그 때는 포도가 처음 익을 즈음이었더라"
+      ],
+      "raw_text_hashes": [
+        "0208292f58e3097c4f5228cab1e795dc0975f99118e410296ab5c4e5ff6115c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:21",
+      "sequence": 4097,
+      "chapter_label": "NUM 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "So they went up, and spied out the land from the wilderness of Zin to Rehob, to the entrance of Hamath.",
+      "ko": "이에 그들이 올라가서 땅을 탐지하되 신 광야에서부터 하맛 어귀 르홉에 이르렀고",
+      "source_text_hash": "748aba0acb9b7fc0fb3824a000bd27ff5dd2faaf4d62d6ff006d73ba5f331a9e",
+      "translation_text_hash": "417cb15f05ae9323b02ebfc3d853914195494025c1cbfc7ff44353d9822434a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들이 올라가서 땅을 탐지하되 신 광야에서부터 하맛 어귀 르홉에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "417cb15f05ae9323b02ebfc3d853914195494025c1cbfc7ff44353d9822434a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:22",
+      "sequence": 4098,
+      "chapter_label": "NUM 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "They went up by the South, and came to Hebron; and Ahiman, Sheshai, and Talmai, the children of Anak, were there. (Now Hebron was built seven years before Zoan in Egypt.)",
+      "ko": "또 남방으로 올라가서 헤브론에 이르렀으니 헤브론은 애굽 소안보다 칠년 전에 세운 곳이라 그곳에 아낙 자손 아히만과 세새와 달매가 있었더라",
+      "source_text_hash": "f02b23fb0e8f2b7fd1fdd186e09669556bba659bdff9b899f664fa48a9a1ed4e",
+      "translation_text_hash": "78e55e6c2fa3d6c3df74247653cdd7addd267eb82fe70843453f6781e4e53b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 남방으로 올라가서 헤브론에 이르렀으니 헤브론은 애굽 소안보다 칠년 전에 세운 곳이라 그곳에 아낙 자손 아히만과 세새와 달매가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "78e55e6c2fa3d6c3df74247653cdd7addd267eb82fe70843453f6781e4e53b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:23",
+      "sequence": 4099,
+      "chapter_label": "NUM 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "They came to the valley of Eshcol, and cut down from there a branch with one cluster of grapes, and they bore it on a staff between two. They also brought some of the pomegranates and figs.",
+      "ko": "또 에스골 골짜기에 이르러 거기서 포도 한 송이 달린 가지를 베어 둘이 막대기에 꿰어 메고 또 석류와 무화과를 취하니라",
+      "source_text_hash": "2e5ba3eeca9579422ed6a268ec7a56fc5dd82fe585d17c4ed51d20e0890ae25b",
+      "translation_text_hash": "39148e967ef5a67e1aa91f40ab1fef56931c6e4248585fe4dbdf913537ab07dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 에스골 골짜기에 이르러 거기서 포도 한 송이 달린 가지를 베어 둘이 막대기에 꿰어 메고 또 석류와 무화과를 취하니라"
+      ],
+      "raw_text_hashes": [
+        "39148e967ef5a67e1aa91f40ab1fef56931c6e4248585fe4dbdf913537ab07dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:24",
+      "sequence": 4100,
+      "chapter_label": "NUM 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "That place was called the valley of Eshcol, because of the cluster which the children of Israel cut down from there.",
+      "ko": "이스라엘 자손이 거기서 포도송이를 벤 고로 그곳을 에스골 골짜기라 칭하였더라",
+      "source_text_hash": "c02e9027c645e24358047f0c30e0bf9e4b7d671f069c1aed68dd8d4ec620c40c",
+      "translation_text_hash": "dc6b9d48ea97f1c43e89762e3177e872f40a3999270fef947e917e59df9292ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 거기서 포도송이를 벤 고로 그곳을 에스골 골짜기라 칭하였더라"
+      ],
+      "raw_text_hashes": [
+        "dc6b9d48ea97f1c43e89762e3177e872f40a3999270fef947e917e59df9292ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:25",
+      "sequence": 4101,
+      "chapter_label": "NUM 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "They returned from spying out the land at the end of forty days.",
+      "ko": "사십 일 동안에 땅을 탐지하기를 마치고 돌아와",
+      "source_text_hash": "ad7425a88f8aac8390533690a405073a5f42d8df2cacff84af5f68c15d9725f1",
+      "translation_text_hash": "e9ca047f3a6d309fee3a3ed77d6f95aaf629ea60a60262031f41f4d8b74f39b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십 일 동안에 땅을 탐지하기를 마치고 돌아와"
+      ],
+      "raw_text_hashes": [
+        "e9ca047f3a6d309fee3a3ed77d6f95aaf629ea60a60262031f41f4d8b74f39b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:26",
+      "sequence": 4102,
+      "chapter_label": "NUM 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "They went and came to Moses, to Aaron, and to all the congregation of the children of Israel, to the wilderness of Paran, to Kadesh; and brought back word to them and to all the congregation. They showed them the fruit of the land.",
+      "ko": "바란 광야 가데스에 이르러 모세와 아론과 이스라엘 자손의 온 회중에게 나아와 그들에게 회보하고 그 땅 실과를 보이고",
+      "source_text_hash": "9b34191068660095666555757d6bb2e2c4b28ae863d99e221080dc28fa97bdc5",
+      "translation_text_hash": "fa456ce0e2039076c3cccc2da25e40d6a0ef6ddd68558d3fdf53c33a8c2d83be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바란 광야 가데스에 이르러 모세와 아론과 이스라엘 자손의 온 회중에게 나아와 그들에게 회보하고 그 땅 실과를 보이고"
+      ],
+      "raw_text_hashes": [
+        "fa456ce0e2039076c3cccc2da25e40d6a0ef6ddd68558d3fdf53c33a8c2d83be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:27",
+      "sequence": 4103,
+      "chapter_label": "NUM 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "They told him, and said, “We came to the land where you sent us. Surely it flows with milk and honey, and this is its fruit.",
+      "ko": "모세에게 보고하여 가로되 당신이 우리를 보낸 땅에 간즉 과연 젖과 꿀이 그 땅에 흐르고 이것은 그 땅의 실과니이다",
+      "source_text_hash": "e652c7c18b3e228e52a70f3e1cc1ddba5d9834a0d5bbfd0ff940e14cf4502dbd",
+      "translation_text_hash": "5c0991133014e32e431fe893076191ee52e7e08abe27ef4c2a969b1dcc8467d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 보고하여 가로되 당신이 우리를 보낸 땅에 간즉 과연 젖과 꿀이 그 땅에 흐르고 이것은 그 땅의 실과니이다"
+      ],
+      "raw_text_hashes": [
+        "5c0991133014e32e431fe893076191ee52e7e08abe27ef4c2a969b1dcc8467d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:28",
+      "sequence": 4104,
+      "chapter_label": "NUM 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "However, the people who dwell in the land are strong, and the cities are fortified and very large. Moreover, we saw the children of Anak there.",
+      "ko": "그러나 그 땅 거민은 강하고 성읍은 견고하고 심히 클뿐 아니라 거기서 아낙 자손을 보았으며",
+      "source_text_hash": "e42d88c2bc250fa43ae3a437d5e49df6dbdeb205cf48b5b226c534f64c11af7e",
+      "translation_text_hash": "febe6e9dae5f0d05003b0bf9fa32474bd7da7cbd9436cb780d5a34468930e053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 땅 거민은 강하고 성읍은 견고하고 심히 클뿐 아니라 거기서 아낙 자손을 보았으며"
+      ],
+      "raw_text_hashes": [
+        "febe6e9dae5f0d05003b0bf9fa32474bd7da7cbd9436cb780d5a34468930e053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:29",
+      "sequence": 4105,
+      "chapter_label": "NUM 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "Amalek dwells in the land of the South. The Hittite, the Jebusite, and the Amorite dwell in the hill country. The Canaanite dwells by the sea, and along the side of the Jordan.”",
+      "ko": "아말렉인은 남방 땅에 거하고 헷인과 여부스인과 아모리인은 산지에 거하고 가나안인은 해변과 요단 가에 거하더이다",
+      "source_text_hash": "bb7b8f7d9034b1891108bc341cdadc693e22eced1bedf81f6c8dad1539f978ab",
+      "translation_text_hash": "f69c85b85a573fd8a7e0ef415b734e89b6f752c6450cac561fd5037e4520662a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아말렉인은 남방 땅에 거하고 헷인과 여부스인과 아모리인은 산지에 거하고 가나안인은 해변과 요단 가에 거하더이다"
+      ],
+      "raw_text_hashes": [
+        "f69c85b85a573fd8a7e0ef415b734e89b6f752c6450cac561fd5037e4520662a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:30",
+      "sequence": 4106,
+      "chapter_label": "NUM 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Caleb stilled the people before Moses, and said, “Let’s go up at once, and possess it; for we are well able to overcome it!”",
+      "ko": "갈렙이 모세 앞에서 백성을 안돈시켜 가로되 우리가 곧 올라가서 그 땅을 취하자 능히 이기리라 하나",
+      "source_text_hash": "e52c08efce06c58e89cfa9785a21fa2f23d84916d6e33aa877bd877e53a858f2",
+      "translation_text_hash": "f9284c941fd0e4f0924eefbc6c2ec24d795407052e71f63df10b2891b4b9deff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙이 모세 앞에서 백성을 안돈시켜 가로되 우리가 곧 올라가서 그 땅을 취하자 능히 이기리라 하나"
+      ],
+      "raw_text_hashes": [
+        "f9284c941fd0e4f0924eefbc6c2ec24d795407052e71f63df10b2891b4b9deff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:31",
+      "sequence": 4107,
+      "chapter_label": "NUM 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "But the men who went up with him said, “We aren’t able to go up against the people; for they are stronger than we.”",
+      "ko": "그와 함께 올라갔던 사람들은 가로되 우리는 능히 올라가서 그 백성을 치지 못하리라 그들은 우리보다 강하니라 하고",
+      "source_text_hash": "5ee2428875a23eda422584e7d066bfa97710ae8c3c42602e0a9139aa6ced9bb1",
+      "translation_text_hash": "e7baf8c23b642ec6c797add5e72683e9b9a955e1022a4ca03ade96ea97e1fdbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 함께 올라갔던 사람들은 가로되 우리는 능히 올라가서 그 백성을 치지 못하리라 그들은 우리보다 강하니라 하고"
+      ],
+      "raw_text_hashes": [
+        "e7baf8c23b642ec6c797add5e72683e9b9a955e1022a4ca03ade96ea97e1fdbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:32",
+      "sequence": 4108,
+      "chapter_label": "NUM 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "They brought up an evil report of the land which they had spied out to the children of Israel, saying, “The land, through which we have gone to spy it out, is a land that eats up its inhabitants; and all the people who we saw in it are men of great stature.",
+      "ko": "이스라엘 자손 앞에서 그 탐지한 땅을 악평하여 가로되 우리가 두루 다니며 탐지한 땅은 그 거민을 삼키는 땅이요 거기서 본 모든 백성은 신장이 장대한 자들이며",
+      "source_text_hash": "29cde757721d4f48a356d179bbd2c048c48d204fc0499708470ef3cea800503f",
+      "translation_text_hash": "9e083430e93cc1a65536e0d41270b7abfb52cfe25c0496e6e6c45b9514705312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 앞에서 그 탐지한 땅을 악평하여 가로되 우리가 두루 다니며 탐지한 땅은 그 거민을 삼키는 땅이요 거기서 본 모든 백성은 신장이 장대한 자들이며"
+      ],
+      "raw_text_hashes": [
+        "9e083430e93cc1a65536e0d41270b7abfb52cfe25c0496e6e6c45b9514705312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:13:33",
+      "sequence": 4109,
+      "chapter_label": "NUM 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "There we saw the Nephilim, the sons of Anak, who come from the Nephilim. We were in our own sight as grasshoppers, and so we were in their sight.”",
+      "ko": "거기서 또 네피림 후손 아낙 자손 대장부들을 보았나니 우리는 스스로 보기에도 메뚜기 같으니 그들의 보기에도 그와 같았을 것이니라",
+      "source_text_hash": "d33413629abc37f8b8f860d1930717c10115e269076b39d39ae3d86f27e2d187",
+      "translation_text_hash": "546e1644b844c26f61cbe70922a1cbc8d38bb23a54c45e5b3945fe9714f3042f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 또 네피림 후손 아낙 자손 대장부들을 보았나니 우리는 스스로 보기에도 메뚜기 같으니 그들의 보기에도 그와 같았을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "546e1644b844c26f61cbe70922a1cbc8d38bb23a54c45e5b3945fe9714f3042f"
+      ]
+    }
+  ]
+}

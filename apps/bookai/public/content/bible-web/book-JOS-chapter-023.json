@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:023",
+  "unit_ordinal": 210,
+  "unit_label": "JOS 23",
+  "book_code": "JOS",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:23:1",
+      "sequence": 6462,
+      "chapter_label": "JOS 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "After many days, when the LORD had given rest to Israel from their enemies all around, and Joshua was old and well advanced in years,",
+      "ko": "여호와께서 이스라엘의 사방 대적을 다 멸하시고 안식을 이스라엘에게 주신지 오랜 후에 여호수아가 나이 많아 늙은지라",
+      "source_text_hash": "c63da4ceca3fe10327c89425626120c363686695c54f2f4efcd34ae638ba7516",
+      "translation_text_hash": "8ebb0bbd4be69fb4b0edd9484ef576291a054f0aa7bdf1a79f87cade78d73263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘의 사방 대적을 다 멸하시고 안식을 이스라엘에게 주신지 오랜 후에 여호수아가 나이 많아 늙은지라"
+      ],
+      "raw_text_hashes": [
+        "8ebb0bbd4be69fb4b0edd9484ef576291a054f0aa7bdf1a79f87cade78d73263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:2",
+      "sequence": 6463,
+      "chapter_label": "JOS 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "Joshua called for all Israel, for their elders and for their heads, and for their judges and for their officers, and said to them, “I am old and well advanced in years.",
+      "ko": "여호수아가 온 이스라엘 곧 그 장로들과 두령들과 재판장들과 유사들을 불러다가 그들에게 이르되 나는 나이 많아 늙었도다",
+      "source_text_hash": "8ac04471ab44d4d3571b62db779260d641d9a2ae7a16cc8419c7dbb700847364",
+      "translation_text_hash": "30ecc3d06a90221a52df8da59ce34fd0ee9bb5aef803c48ab8624181be53af0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘 곧 그 장로들과 두령들과 재판장들과 유사들을 불러다가 그들에게 이르되 나는 나이 많아 늙었도다"
+      ],
+      "raw_text_hashes": [
+        "30ecc3d06a90221a52df8da59ce34fd0ee9bb5aef803c48ab8624181be53af0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:3",
+      "sequence": 6464,
+      "chapter_label": "JOS 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "You have seen all that the LORD your God has done to all these nations because of you; for it is the LORD your God who has fought for you.",
+      "ko": "너희 하나님 여호와께서 너희를 위하여 이 모든 나라에 행하신 일을 너희가 다 보았거니와 너희 하나님 여호와 그는 너희를 위하여 싸우신 자시니라",
+      "source_text_hash": "32eacdf41872bf7879347bfbee2cbaf316d042ac08b77a22504a3b1f2c46f8b3",
+      "translation_text_hash": "21a120749a4c45614eafdd0194bb7e3171401703cbb8a2c243211e26f312ba6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 너희를 위하여 이 모든 나라에 행하신 일을 너희가 다 보았거니와 너희 하나님 여호와 그는 너희를 위하여 싸우신 자시니라"
+      ],
+      "raw_text_hashes": [
+        "21a120749a4c45614eafdd0194bb7e3171401703cbb8a2c243211e26f312ba6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:4",
+      "sequence": 6465,
+      "chapter_label": "JOS 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, I have allotted to you these nations that remain, to be an inheritance for your tribes, from the Jordan, with all the nations that I have cut off, even to the great sea toward the going down of the sun.",
+      "ko": "보라 내가 요단에서부터 해 지는편 대해까지의 남아 있는 나라들과 이미 멸한 모든 나라를 내가 너희를 위하여 제비뽑아 너희 지파에게 기업이 되게 하였느니라",
+      "source_text_hash": "34edeac03651d99c6477e6a977ab991d6281d51998248b3b7829855bf8718a37",
+      "translation_text_hash": "e42079963b2e97d0d219eeba1d0f5e08aa28bd5633276c19a39e2cbdd24dec01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 요단에서부터 해 지는편 대해까지의 남아 있는 나라들과 이미 멸한 모든 나라를 내가 너희를 위하여 제비뽑아 너희 지파에게 기업이 되게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e42079963b2e97d0d219eeba1d0f5e08aa28bd5633276c19a39e2cbdd24dec01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:5",
+      "sequence": 6466,
+      "chapter_label": "JOS 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD your God will thrust them out from before you, and drive them from out of your sight. You shall possess their land, as the LORD your God spoke to you.",
+      "ko": "너희 하나님 여호와 그가 너희 앞에서 그들을 쫓으사 너희 목전에서 떠나게 하시리니 너희 하나님 여호와께서 너희에게 말씀하신대로 너희가 그 땅을 차지할 것이라",
+      "source_text_hash": "bdf3944957f15e6f5b9fb963db401a2b6803e5ab92e6a97ef5b8929e427a9903",
+      "translation_text_hash": "37bd0317edd37e48ee0a2e922110de59b411c8d7adc69e8c9106c33243f32095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와 그가 너희 앞에서 그들을 쫓으사 너희 목전에서 떠나게 하시리니 너희 하나님 여호와께서 너희에게 말씀하신대로 너희가 그 땅을 차지할 것이라"
+      ],
+      "raw_text_hashes": [
+        "37bd0317edd37e48ee0a2e922110de59b411c8d7adc69e8c9106c33243f32095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:6",
+      "sequence": 6467,
+      "chapter_label": "JOS 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "“Therefore be very courageous to keep and to do all that is written in the book of the law of Moses, that you not turn away from it to the right hand or to the left;",
+      "ko": "그러므로 너희는 크게 힘써 모세의 율법 책에 기록된 것을 다 지켜 행하라 그것을 떠나 좌로나 우로나 치우치지 말라",
+      "source_text_hash": "3ad646fd11c7924cbfef5fcfaff47451deac837e904770439c0bcdeb9b313e17",
+      "translation_text_hash": "055c1d031adbe466b9de8ac36078089d81d2021c127597320f81148f89800a5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 크게 힘써 모세의 율법 책에 기록된 것을 다 지켜 행하라 그것을 떠나 좌로나 우로나 치우치지 말라"
+      ],
+      "raw_text_hashes": [
+        "055c1d031adbe466b9de8ac36078089d81d2021c127597320f81148f89800a5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:7",
+      "sequence": 6468,
+      "chapter_label": "JOS 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "that you not come among these nations, these that remain among you; neither make mention of the name of their gods, nor cause to swear by them, neither serve them, nor bow down yourselves to them;",
+      "ko": "너희 중에 남아 있는 이 나라들 중에 가지 말라 그 신들의 이름을 부르지 말라 그것을 가리켜 맹세하지 말라 또 그것을 섬겨서 그것에게 절하지 말라",
+      "source_text_hash": "1356960c7b02d63a59ce10fab9ccdc2389273baf82c1c9243f8ceb66a30c08e8",
+      "translation_text_hash": "d1afc11cf19b86e0371ffa834f8669e1604ae96d5fa56214f4db39afb78a1174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 남아 있는 이 나라들 중에 가지 말라 그 신들의 이름을 부르지 말라 그것을 가리켜 맹세하지 말라 또 그것을 섬겨서 그것에게 절하지 말라"
+      ],
+      "raw_text_hashes": [
+        "d1afc11cf19b86e0371ffa834f8669e1604ae96d5fa56214f4db39afb78a1174"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:8",
+      "sequence": 6469,
+      "chapter_label": "JOS 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "but hold fast to the LORD your God, as you have done to this day.",
+      "ko": "오직 너희 하나님 여호와를 친근히 하기를 오늘날까지 행한 것 같이 하라",
+      "source_text_hash": "3d93204363239fe4c49dbc1e886b9a7a057b09206de35716f96fcfa10ffb4922",
+      "translation_text_hash": "d551e4bb3e37393cb207b851a989456ec15c352436776f70ce13f359b981818f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희 하나님 여호와를 친근히 하기를 오늘날까지 행한 것 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "d551e4bb3e37393cb207b851a989456ec15c352436776f70ce13f359b981818f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:9",
+      "sequence": 6470,
+      "chapter_label": "JOS 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "“For the LORD has driven great and strong nations out from before you. But as for you, no man has stood before you to this day.",
+      "ko": "대저 여호와께서 강대한 나라들을 너희 앞에서 쫓아내셨으므로 오늘날까지 너희를 당한 자가 하나도 없었느니라",
+      "source_text_hash": "4a073c4d5772e7c2e0d4c24b58414e644522010282f18ba8466e9646c33a1974",
+      "translation_text_hash": "9550b59f9b3fab3c197f30c4d65d3ec117c8efd2351bc56ffecc2d24d44c2d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 강대한 나라들을 너희 앞에서 쫓아내셨으므로 오늘날까지 너희를 당한 자가 하나도 없었느니라"
+      ],
+      "raw_text_hashes": [
+        "9550b59f9b3fab3c197f30c4d65d3ec117c8efd2351bc56ffecc2d24d44c2d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:10",
+      "sequence": 6471,
+      "chapter_label": "JOS 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "One man of you shall chase a thousand; for it is the LORD your God who fights for you, as he spoke to you.",
+      "ko": "너희 중 한 사람이 천명을 쫓으리니 이는 너희 하나님 여호와 그가 너희에게 말씀하신 것 같이 너희를 위하여 싸우심이라",
+      "source_text_hash": "d1adf4dd7c6a4f0451ef0cde7c4174f850fd09d50a054c5dfdfba85a158aeca2",
+      "translation_text_hash": "b015b179e18452d4383a008ca1a9651266d2f33c575d70310029a964b8bbc770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 한 사람이 천명을 쫓으리니 이는 너희 하나님 여호와 그가 너희에게 말씀하신 것 같이 너희를 위하여 싸우심이라"
+      ],
+      "raw_text_hashes": [
+        "b015b179e18452d4383a008ca1a9651266d2f33c575d70310029a964b8bbc770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:11",
+      "sequence": 6472,
+      "chapter_label": "JOS 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "Take good heed therefore to yourselves, that you love the LORD your God.",
+      "ko": "그러므로 스스로 조심하여 너희 하나님 여호와를 사랑하라",
+      "source_text_hash": "643ff4ca2195fa8a20744e7765f35753c0fd4b147a6afcecfd8d55f4ab6f1b7a",
+      "translation_text_hash": "0d61e21de886d48b526290356111581d7b9c84b18c6c45306a098a435eb47915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 스스로 조심하여 너희 하나님 여호와를 사랑하라"
+      ],
+      "raw_text_hashes": [
+        "0d61e21de886d48b526290356111581d7b9c84b18c6c45306a098a435eb47915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:12",
+      "sequence": 6473,
+      "chapter_label": "JOS 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "“But if you do at all go back, and hold fast to the remnant of these nations, even these who remain among you, and make marriages with them, and go in to them, and they to you;",
+      "ko": "너희가 만일 퇴보하여 너희 중에 빠져 남아 있는 이 민족들을 친근히 하여 더불어 혼인하며 피차 왕래하면",
+      "source_text_hash": "271af5557b7612cff1da83a06836df96d689d08d2e4f7caee0bb8bd05356eaea",
+      "translation_text_hash": "4d1f26da5111877e2339a4d32d9893795c8855d96e88122155d2d3d3af3ff677",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 퇴보하여 너희 중에 빠져 남아 있는 이 민족들을 친근히 하여 더불어 혼인하며 피차 왕래하면"
+      ],
+      "raw_text_hashes": [
+        "4d1f26da5111877e2339a4d32d9893795c8855d96e88122155d2d3d3af3ff677"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:13",
+      "sequence": 6474,
+      "chapter_label": "JOS 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "know for a certainty that the LORD your God will no longer drive these nations from out of your sight; but they shall be a snare and a trap to you, a scourge in your sides, and thorns in your eyes, until you perish from off this good land which the LORD your God has given you.",
+      "ko": "정녕히 알라 너희 하나님 여호와께서 이 민족들을 너희 목전에서 다시는 쫓아내지 아니하시리니 그들이 너희에게 올무가 되며 덫이 되며 너희 옆구리에 채찍이 되며 너희 눈에 가시가 되어서 너희가 필경은 너희 하나님 여호와께서 너희에게 주신 이 아름다운 땅에서 멸절하리라",
+      "source_text_hash": "9bc2c1c36f701907b90dac1b1a36fdf61f7fb3e8d95a59de585079f3bc8c8b6d",
+      "translation_text_hash": "6fd8978ce1cb679346267c61ce22700f24803bfab2e23951e22e0c08db8b723a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정녕히 알라 너희 하나님 여호와께서 이 민족들을 너희 목전에서 다시는 쫓아내지 아니하시리니 그들이 너희에게 올무가 되며 덫이 되며 너희 옆구리에 채찍이 되며 너희 눈에 가시가 되어서 너희가 필경은 너희 하나님 여호와께서 너희에게 주신 이 아름다운 땅에서 멸절하리라"
+      ],
+      "raw_text_hashes": [
+        "6fd8978ce1cb679346267c61ce22700f24803bfab2e23951e22e0c08db8b723a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:14",
+      "sequence": 6475,
+      "chapter_label": "JOS 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "“Behold, today I am going the way of all the earth. You know in all your hearts and in all your souls that not one thing has failed of all the good things which the LORD your God spoke concerning you. All have happened to you. Not one thing has failed of it.",
+      "ko": "보라 나는 오늘날 온 세상이 가는 길로 가려니와 너희 하나님 여호와께서 너희에게 대하여 말씀하신 모든 선한 일이 하나도 틀리지 아니하고 다 너희에게 응하여 그 중에 하나도 어김이 없음을 너희 모든 사람의 마음과 뜻에 아는 바라",
+      "source_text_hash": "7e3fd2abc84de3542bbcadb4455c91174cdb59cb47cb3695d8c0df0414b68a90",
+      "translation_text_hash": "fc577088f93f9566da61457cef63933ba994c4727ffd1cac5cceb7434afa20b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나는 오늘날 온 세상이 가는 길로 가려니와 너희 하나님 여호와께서 너희에게 대하여 말씀하신 모든 선한 일이 하나도 틀리지 아니하고 다 너희에게 응하여 그 중에 하나도 어김이 없음을 너희 모든 사람의 마음과 뜻에 아는 바라"
+      ],
+      "raw_text_hashes": [
+        "fc577088f93f9566da61457cef63933ba994c4727ffd1cac5cceb7434afa20b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:15",
+      "sequence": 6476,
+      "chapter_label": "JOS 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "It shall happen that as all the good things have come on you of which the LORD your God spoke to you, so the LORD will bring on you all the evil things, until he has destroyed you from off this good land which the LORD your God has given you,",
+      "ko": "너희 하나님 여호와께서 너희에게 말씀하신 모든 선한 일이 너희에게 임한것 같이 여호와께서 모든 불길한 일도 너희에게 임하게 하사 너희 하나님 여호와께서 너희에게 주신 이 아름다운 땅에서 너희를 멸절하기까지 하실 것이라",
+      "source_text_hash": "3cad8bec33a8c93f16b6150d188f3c37dd81a0fe256a4803d69e01ff0ac0af92",
+      "translation_text_hash": "630ba9ffe0fb83f54cf4f51fece0d3eb4e13a1c49c8777c355d66bb29bb4887f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 너희에게 말씀하신 모든 선한 일이 너희에게 임한것 같이 여호와께서 모든 불길한 일도 너희에게 임하게 하사 너희 하나님 여호와께서 너희에게 주신 이 아름다운 땅에서 너희를 멸절하기까지 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "630ba9ffe0fb83f54cf4f51fece0d3eb4e13a1c49c8777c355d66bb29bb4887f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:23:16",
+      "sequence": 6477,
+      "chapter_label": "JOS 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "when you disobey the covenant of the LORD your God, which he commanded you, and go and serve other gods, and bow down yourselves to them. Then the LORD’s anger will be kindled against you, and you will perish quickly from off the good land which he has given to you.”",
+      "ko": "만일 너희가 너희 하나님 여호와께서 너희에게 명하신 언약을 범하고 가서 다른 신들을 섬겨 그에게 절하면 여호와의 진노가 너희에게 미치리니 너희에게 주신 아름다운 땅에서 너희가 속히 망하리라",
+      "source_text_hash": "7eccb95ec5b205575ec4c40c0570504fac10c390803f38dfb567d79f0868a8b1",
+      "translation_text_hash": "8dca68c09b71f9f082e7440333adab2b219c65008f0e1d708275d45655cefee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 너희 하나님 여호와께서 너희에게 명하신 언약을 범하고 가서 다른 신들을 섬겨 그에게 절하면 여호와의 진노가 너희에게 미치리니 너희에게 주신 아름다운 땅에서 너희가 속히 망하리라"
+      ],
+      "raw_text_hashes": [
+        "8dca68c09b71f9f082e7440333adab2b219c65008f0e1d708275d45655cefee0"
+      ]
+    }
+  ]
+}

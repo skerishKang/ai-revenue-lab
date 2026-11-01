@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:033",
+  "unit_ordinal": 469,
+  "unit_label": "JOB 33",
+  "book_code": "JOB",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:33:1",
+      "sequence": 13652,
+      "chapter_label": "JOB 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "“However, Job, please hear my speech, and listen to all my words.",
+      "ko": "그런즉 욥이여 내 말을 들으며 나의 모든 말에 귀를 기울이기를 원하노라",
+      "source_text_hash": "474269bab734c2a24cfa0d0fdff588aae809b62afc2dd2250472c961ebf8fcd6",
+      "translation_text_hash": "a18b7f69e2cb29bb9f1dc29f427c921b4f81880875c051b7b4349fcbf31d5aef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 욥이여 내 말을 들으며 나의 모든 말에 귀를 기울이기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "a18b7f69e2cb29bb9f1dc29f427c921b4f81880875c051b7b4349fcbf31d5aef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:2",
+      "sequence": 13653,
+      "chapter_label": "JOB 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "See now, I have opened my mouth. My tongue has spoken in my mouth.",
+      "ko": "내가 입을 여니 내 혀가 입에서 동하는구나",
+      "source_text_hash": "af8925aaec48d116bd805533a5aa6ed006a1ce54e8e28f5b21a9992cfc862f8e",
+      "translation_text_hash": "eccbc4c0bb4970dc548a185ee1e03b545fabed25bf34ccfda6fc25db08a0bbd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 입을 여니 내 혀가 입에서 동하는구나"
+      ],
+      "raw_text_hashes": [
+        "eccbc4c0bb4970dc548a185ee1e03b545fabed25bf34ccfda6fc25db08a0bbd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:3",
+      "sequence": 13654,
+      "chapter_label": "JOB 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "My words will utter the uprightness of my heart. That which my lips know they will speak sincerely.",
+      "ko": "내 말이 내 마음의 정직함을 나타내고 내 입술이 아는바를 진실히 말하리라",
+      "source_text_hash": "8098208b12c79cef024b7c2cd26495c254656418fc554afc9c9250f42eed9db6",
+      "translation_text_hash": "375066f97fb43b3fe2a528d70f8a48c88c4b3550e12dda6d7b3e1365b581e23c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 말이 내 마음의 정직함을 나타내고 내 입술이 아는바를 진실히 말하리라"
+      ],
+      "raw_text_hashes": [
+        "375066f97fb43b3fe2a528d70f8a48c88c4b3550e12dda6d7b3e1365b581e23c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:4",
+      "sequence": 13655,
+      "chapter_label": "JOB 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "The Spirit of God has made me, and the breath of the Almighty gives me life.",
+      "ko": "하나님의 신이 나를 지으셨고 전능자의 기운이 나를 살리시느니라",
+      "source_text_hash": "f3a45f2d29b1f9563a1fdb2da748f7a1bef7efbe67b4ce0eae0cd9baafadc365",
+      "translation_text_hash": "ec5949a13c76841c31e2a4f9b7c01e7a4518b9e2f47f69987da978d3a6c2dd36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 신이 나를 지으셨고 전능자의 기운이 나를 살리시느니라"
+      ],
+      "raw_text_hashes": [
+        "ec5949a13c76841c31e2a4f9b7c01e7a4518b9e2f47f69987da978d3a6c2dd36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:5",
+      "sequence": 13656,
+      "chapter_label": "JOB 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "If you can, answer me. Set your words in order before me, and stand up.",
+      "ko": "네가 할 수 있거든 일어서서 내게 대답하고 내 앞에 진술하라",
+      "source_text_hash": "336ca274688ceef0279f3b7c5031244f23e41bbbbae335c58c09d41019913a97",
+      "translation_text_hash": "c2eb0d0cb3a5c03d89557173f88be4aa8d0bac2f65c4858124f54994a8c4b2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 할 수 있거든 일어서서 내게 대답하고 내 앞에 진술하라"
+      ],
+      "raw_text_hashes": [
+        "c2eb0d0cb3a5c03d89557173f88be4aa8d0bac2f65c4858124f54994a8c4b2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:6",
+      "sequence": 13657,
+      "chapter_label": "JOB 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, I am toward God even as you are. I am also formed out of the clay.",
+      "ko": "나와 네가 하나님 앞에서 일반이니 나도 흙으로 지으심을 입었은즉",
+      "source_text_hash": "f31adc3311c48afbea7e5fa327251cddea4870a5004a55d3d16e0c85b0211636",
+      "translation_text_hash": "3bbee9c80eb632ff537ace108bcc9214df5bd4dde4119dfb4178e85ad5651c34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 네가 하나님 앞에서 일반이니 나도 흙으로 지으심을 입었은즉"
+      ],
+      "raw_text_hashes": [
+        "3bbee9c80eb632ff537ace108bcc9214df5bd4dde4119dfb4178e85ad5651c34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:7",
+      "sequence": 13658,
+      "chapter_label": "JOB 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, my terror will not make you afraid, neither will my pressure be heavy on you.",
+      "ko": "내 위엄으로는 너를 두렵게 하지 못하고 내 권세로는 너를 누르지 못하느니라",
+      "source_text_hash": "09a66a3a4c415ef8b8d9755d4984b7d298141bb53bb0d3cc86cb3fb408a75b96",
+      "translation_text_hash": "ae7fe7ded477aeada6a1304eab2ab081a862bf43432d493ea92b6a0c04b9522e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 위엄으로는 너를 두렵게 하지 못하고 내 권세로는 너를 누르지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "ae7fe7ded477aeada6a1304eab2ab081a862bf43432d493ea92b6a0c04b9522e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:8",
+      "sequence": 13659,
+      "chapter_label": "JOB 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "“Surely you have spoken in my hearing, I have heard the voice of your words, saying,",
+      "ko": "네가 실로 나의 듣는데 말하였고 나는 네 말소리를 들었느니라 이르기를",
+      "source_text_hash": "1a25b4a62ba4aabfbb88020c743c6121101024258de7199609629a8e1f2b51b8",
+      "translation_text_hash": "3688233428d3bf2286dcc9bc6abc0027f558961ff4dbac9f0df819f29b90cc2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 실로 나의 듣는데 말하였고 나는 네 말소리를 들었느니라 이르기를"
+      ],
+      "raw_text_hashes": [
+        "3688233428d3bf2286dcc9bc6abc0027f558961ff4dbac9f0df819f29b90cc2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:9",
+      "sequence": 13660,
+      "chapter_label": "JOB 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "‘I am clean, without disobedience. I am innocent, neither is there iniquity in me.",
+      "ko": "나는 깨끗하여 죄가 없고 허물이 없으며 불의도 없거늘",
+      "source_text_hash": "208356d0313cee94280614ac16d3ff698f823c13e25b43632a9fe01415607656",
+      "translation_text_hash": "8ae42f6790e5f155da7ee3eaf9d6891e2e5dc718818f401d291ec4acd2ae1ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 깨끗하여 죄가 없고 허물이 없으며 불의도 없거늘"
+      ],
+      "raw_text_hashes": [
+        "8ae42f6790e5f155da7ee3eaf9d6891e2e5dc718818f401d291ec4acd2ae1ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:10",
+      "sequence": 13661,
+      "chapter_label": "JOB 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, he finds occasions against me. He counts me for his enemy.",
+      "ko": "하나님이 나를 칠 틈을 찾으시며 나를 대적으로 여기사",
+      "source_text_hash": "6d37328f50c9dacbfbc084de142c5d5d1108ec351b694fa15392eae52375d30d",
+      "translation_text_hash": "d41a44ded3f7488f331a8769a48230fc340c11902c416be3a10edaff22edc692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나를 칠 틈을 찾으시며 나를 대적으로 여기사"
+      ],
+      "raw_text_hashes": [
+        "d41a44ded3f7488f331a8769a48230fc340c11902c416be3a10edaff22edc692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:11",
+      "sequence": 13662,
+      "chapter_label": "JOB 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "He puts my feet in the stocks. He marks all my paths.’",
+      "ko": "내 발을 착고에 채우시고 나의 모든 길을 감시하신다 하였느니라",
+      "source_text_hash": "5fff71c0f16cc125774a5d4ef1e54d9c6dd2ede6073342692c8c2238d3209e24",
+      "translation_text_hash": "a8f60aa762a3e4ef035f9e92d6d0b5d1e475e7bd37aaaab3864542389c8e60da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 발을 착고에 채우시고 나의 모든 길을 감시하신다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a8f60aa762a3e4ef035f9e92d6d0b5d1e475e7bd37aaaab3864542389c8e60da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:12",
+      "sequence": 13663,
+      "chapter_label": "JOB 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "“Behold, I will answer you. In this you are not just, for God is greater than man.",
+      "ko": "내가 네게 대답하리라 이 말에 네가 의롭지 못하니 하나님은 사람보다 크심이니라",
+      "source_text_hash": "9ae37bdb728d04a18e6def9872b9a8af2dbca8d6a63c6edf5547ef31572e3ebe",
+      "translation_text_hash": "fc705c0df906e88eb79f762c460f67e21ecf10ccec352ac8db53a599bf851ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 대답하리라 이 말에 네가 의롭지 못하니 하나님은 사람보다 크심이니라"
+      ],
+      "raw_text_hashes": [
+        "fc705c0df906e88eb79f762c460f67e21ecf10ccec352ac8db53a599bf851ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:13",
+      "sequence": 13664,
+      "chapter_label": "JOB 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "Why do you strive against him, because he doesn’t give account of any of his matters?",
+      "ko": "하나님은 모든 행하시는 것을 스스로 진술치 아니하시나니 네가 하나님과 변쟁함은 어찜이뇨",
+      "source_text_hash": "8b7a64eecceb58c19fffc1cfe43db9145572f4e0ab5cf12aac6421f50eb4a4b6",
+      "translation_text_hash": "50701c653eac4a08b2813d302c9df51d6b1f40792b03228f98153eaafb60d1b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 모든 행하시는 것을 스스로 진술치 아니하시나니 네가 하나님과 변쟁함은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "50701c653eac4a08b2813d302c9df51d6b1f40792b03228f98153eaafb60d1b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:14",
+      "sequence": 13665,
+      "chapter_label": "JOB 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "For God speaks once, yes twice, though man pays no attention.",
+      "ko": "사람은 무관히 여겨도 하나님은 한번 말씀하시고 다시 말씀하시되",
+      "source_text_hash": "c8015dc9ca4c49560a401e953651653ae543a4756ff57c5e2ac180b0ac9b85b9",
+      "translation_text_hash": "7cc18cb39bd19f2fc88b6ceb46c2785054d12d3c39d567c42e9738cf2d6deccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 무관히 여겨도 하나님은 한번 말씀하시고 다시 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "7cc18cb39bd19f2fc88b6ceb46c2785054d12d3c39d567c42e9738cf2d6deccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:15",
+      "sequence": 13666,
+      "chapter_label": "JOB 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "In a dream, in a vision of the night, when deep sleep falls on men, in slumbering on the bed,",
+      "ko": "사람이 침상에서 졸며 깊이 잠들 때에나 꿈에나 밤의 이상 중에",
+      "source_text_hash": "009395a76e75c259af34d33966f11a8131b6de2e291f9dd52f529b0992344a5c",
+      "translation_text_hash": "9d6c87c2502c2ee736f3a580a6760980e6cb855e33cb3a8e25fdf237afd085aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 침상에서 졸며 깊이 잠들 때에나 꿈에나 밤의 이상 중에"
+      ],
+      "raw_text_hashes": [
+        "9d6c87c2502c2ee736f3a580a6760980e6cb855e33cb3a8e25fdf237afd085aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:16",
+      "sequence": 13667,
+      "chapter_label": "JOB 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "then he opens the ears of men, and seals their instruction,",
+      "ko": "사람의 귀를 여시고 인치듯 교훈하시나니",
+      "source_text_hash": "b559dc23cede9eaecab95d736a13588b3116fb524d166c39333cd5e98adcabf1",
+      "translation_text_hash": "0dca50f998056232093476ec2611b54df9624d9cc80b1036a60fdc6d3eaf8b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 귀를 여시고 인치듯 교훈하시나니"
+      ],
+      "raw_text_hashes": [
+        "0dca50f998056232093476ec2611b54df9624d9cc80b1036a60fdc6d3eaf8b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:17",
+      "sequence": 13668,
+      "chapter_label": "JOB 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "that he may withdraw man from his purpose, and hide pride from man.",
+      "ko": "이는 사람으로 그 꾀를 버리게 하려 하심이며 사람에게 교만을 막으려 하심이라",
+      "source_text_hash": "a6f6485c11974043d1a0b8b6bfd8b948faea39940e2c631b55a541fcf1fff444",
+      "translation_text_hash": "999c83df3dd1c6f676ce54eb3baf0a6c536a83a12d7878c938f6750d1077cc98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 사람으로 그 꾀를 버리게 하려 하심이며 사람에게 교만을 막으려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "999c83df3dd1c6f676ce54eb3baf0a6c536a83a12d7878c938f6750d1077cc98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:18",
+      "sequence": 13669,
+      "chapter_label": "JOB 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "He keeps back his soul from the pit, and his life from perishing by the sword.",
+      "ko": "그는 사람의 혼으로 구덩이에 빠지지 않게 하시며 그 생명으로 칼에 멸망치 않게 하시느니라",
+      "source_text_hash": "2bfff19d8897a3b108d3ee1983c1bb071e3c418c3186c6edc026fc49222b19fd",
+      "translation_text_hash": "9f83367a7350056c173ab9b21c8c8584af7873186b69fff6b23fdb4295220972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 사람의 혼으로 구덩이에 빠지지 않게 하시며 그 생명으로 칼에 멸망치 않게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "9f83367a7350056c173ab9b21c8c8584af7873186b69fff6b23fdb4295220972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:19",
+      "sequence": 13670,
+      "chapter_label": "JOB 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "“He is chastened also with pain on his bed, with continual strife in his bones,",
+      "ko": "혹시는 사람이 병상의 고통과 뼈가 늘 쑤심의 징계를 받나니",
+      "source_text_hash": "9c9cae8c1ee26e7efc2d91e4a0af0ea1df0be73af9d5212dcbe8c232adb8133f",
+      "translation_text_hash": "aa72fff9e6fb458800468fe257941075e5a83419b8dcaf7e00b18acd4d740c29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시는 사람이 병상의 고통과 뼈가 늘 쑤심의 징계를 받나니"
+      ],
+      "raw_text_hashes": [
+        "aa72fff9e6fb458800468fe257941075e5a83419b8dcaf7e00b18acd4d740c29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:20",
+      "sequence": 13671,
+      "chapter_label": "JOB 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "so that his life abhors bread, and his soul dainty food.",
+      "ko": "그의 마음은 식물을 싫어하고 그의 혼은 별미를 싫어하며",
+      "source_text_hash": "7b3f8be4a62a03f3399b3d7d114da6ef986b3b0d2d53d8c3634773d6b72af514",
+      "translation_text_hash": "d9d7af327a953b2040d175f4cabc948585fde21775085d54dd9bf99fb12fe631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 마음은 식물을 싫어하고 그의 혼은 별미를 싫어하며"
+      ],
+      "raw_text_hashes": [
+        "d9d7af327a953b2040d175f4cabc948585fde21775085d54dd9bf99fb12fe631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:21",
+      "sequence": 13672,
+      "chapter_label": "JOB 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "His flesh is so consumed away that it can’t be seen. His bones that were not seen stick out.",
+      "ko": "그의 살은 파리하여 보이지 아니하고 보이지 않던 뼈가 드러나서",
+      "source_text_hash": "52fc5afe1000e27bcd829d870448360da9c9b0207602641fe37d60f61391a2ce",
+      "translation_text_hash": "d64460712ad3f58f20c1180d601c4785f2fed8a4a81d7711051c2a35903e9b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 살은 파리하여 보이지 아니하고 보이지 않던 뼈가 드러나서"
+      ],
+      "raw_text_hashes": [
+        "d64460712ad3f58f20c1180d601c4785f2fed8a4a81d7711051c2a35903e9b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:22",
+      "sequence": 13673,
+      "chapter_label": "JOB 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "Yes, his soul draws near to the pit, and his life to the destroyers.",
+      "ko": "그의 혼이 구덩이에, 그의 생명이 멸하는 자에게 가까와지느니라",
+      "source_text_hash": "a6bb70a6dc19ed087b1a18be040801435b64a83dfde7fabbaadd2ffb02459e02",
+      "translation_text_hash": "b39fea64ae78aeb36df129abb54bf6464c020427854673a3da211735b0ef0a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 혼이 구덩이에, 그의 생명이 멸하는 자에게 가까와지느니라"
+      ],
+      "raw_text_hashes": [
+        "b39fea64ae78aeb36df129abb54bf6464c020427854673a3da211735b0ef0a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:23",
+      "sequence": 13674,
+      "chapter_label": "JOB 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "“If there is beside him an angel, an interpreter, one among a thousand, to show to man what is right for him,",
+      "ko": "그럴 때에 만일 일천 천사 가운데 하나가 그 사람의 해석자로 함께 있어서 그 정당히 행할 것을 보일찐대",
+      "source_text_hash": "4befe0c05a834f845867acdc8b0e2238d7a9a9f358515f848cf7dcfb45f4ad27",
+      "translation_text_hash": "3f0f1a9f0f2d5539768409b2dda9a359100edd28e23b33c33257e792594b02cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴 때에 만일 일천 천사 가운데 하나가 그 사람의 해석자로 함께 있어서 그 정당히 행할 것을 보일찐대"
+      ],
+      "raw_text_hashes": [
+        "3f0f1a9f0f2d5539768409b2dda9a359100edd28e23b33c33257e792594b02cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:24",
+      "sequence": 13675,
+      "chapter_label": "JOB 33",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 24
+        }
+      ],
+      "en": "then God is gracious to him, and says, ‘Deliver him from going down to the pit, I have found a ransom.’",
+      "ko": "하나님이 그 사람을 긍휼히 여기사 이르시기를 그를 건져서 구덩이에 내려가지 않게 하라 내가 대속물을 얻었다 하시리라",
+      "source_text_hash": "8d251c573acefa384377ceade878c702073c5738eee33bca82bf7c6aaf4dc0d5",
+      "translation_text_hash": "459b1ff68bd8c80375b17874af2cbe772201f2298f0aaf345d2cbdcf69cc9ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 사람을 긍휼히 여기사 이르시기를 그를 건져서 구덩이에 내려가지 않게 하라 내가 대속물을 얻었다 하시리라"
+      ],
+      "raw_text_hashes": [
+        "459b1ff68bd8c80375b17874af2cbe772201f2298f0aaf345d2cbdcf69cc9ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:25",
+      "sequence": 13676,
+      "chapter_label": "JOB 33",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 25
+        }
+      ],
+      "en": "His flesh will be fresher than a child’s. He returns to the days of his youth.",
+      "ko": "그런즉 그 살이 어린 아이보다 연하여져서 소년 때를 회복할 것이요",
+      "source_text_hash": "12906f317530a3792beb3eaa3e7b6f620588811d7e43157c705b4a921104be9d",
+      "translation_text_hash": "9db372bb96387d3d6af306dfd315ad19446bbad757189131fc027b580522c413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 그 살이 어린 아이보다 연하여져서 소년 때를 회복할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9db372bb96387d3d6af306dfd315ad19446bbad757189131fc027b580522c413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:26",
+      "sequence": 13677,
+      "chapter_label": "JOB 33",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 26
+        }
+      ],
+      "en": "He prays to God, and he is favorable to him, so that he sees his face with joy. He restores to man his righteousness.",
+      "ko": "그는 하나님께 기도하므로 하나님이 은혜를 베푸사 그로 자기의 얼굴을 즐거이 보게 하시고 사람에게 그 의를 회복시키시느니라",
+      "source_text_hash": "4fe893a209d1df903b2bc951e428842ef1a91c967f768e71bef9238a04f8caa1",
+      "translation_text_hash": "823992ceb290741d1e7c1c729f151d4aa58b8fa22c2672a5c3a69e2396a3d952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 하나님께 기도하므로 하나님이 은혜를 베푸사 그로 자기의 얼굴을 즐거이 보게 하시고 사람에게 그 의를 회복시키시느니라"
+      ],
+      "raw_text_hashes": [
+        "823992ceb290741d1e7c1c729f151d4aa58b8fa22c2672a5c3a69e2396a3d952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:27",
+      "sequence": 13678,
+      "chapter_label": "JOB 33",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 27
+        }
+      ],
+      "en": "He sings before men, and says, ‘I have sinned, and perverted that which was right, and it didn’t profit me.",
+      "ko": "그가 사람 앞에서 노래하여 이르기를 내가 전에 범죄하여 시비를 바꾸었으나 내게 무익하였었구나",
+      "source_text_hash": "a7e9c1cfe057120c10ab0815c43baec02e788c41a24c76fe1df42e458b495b2f",
+      "translation_text_hash": "3b8979098e45cd5a5cab6ab74484cd8cf0d892ba1d73f351d16de6f07497a9cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 사람 앞에서 노래하여 이르기를 내가 전에 범죄하여 시비를 바꾸었으나 내게 무익하였었구나"
+      ],
+      "raw_text_hashes": [
+        "3b8979098e45cd5a5cab6ab74484cd8cf0d892ba1d73f351d16de6f07497a9cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:28",
+      "sequence": 13679,
+      "chapter_label": "JOB 33",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 28
+        }
+      ],
+      "en": "He has redeemed my soul from going into the pit. My life will see the light.’",
+      "ko": "하나님이 내 영혼을 건지사 구덩이에 내려가지 않게 하셨으니 내 생명이 빛을 보겠구나 하리라",
+      "source_text_hash": "a935cfcf94175817274d0cd7272dec0ba51663dc90bd4f5d8a5fea617909e984",
+      "translation_text_hash": "75ff8c346d0e74637313ceb7ce54c66c395ffd28068251166956b82d9be42a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 내 영혼을 건지사 구덩이에 내려가지 않게 하셨으니 내 생명이 빛을 보겠구나 하리라"
+      ],
+      "raw_text_hashes": [
+        "75ff8c346d0e74637313ceb7ce54c66c395ffd28068251166956b82d9be42a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:29",
+      "sequence": 13680,
+      "chapter_label": "JOB 33",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 29
+        }
+      ],
+      "en": "“Behold, God does all these things, twice, yes three times, with a man,",
+      "ko": "하나님이 사람에게 이 모든 일을 재삼 행하심은",
+      "source_text_hash": "69731b5287aa29ac3cae37787b10a2d5fb9e031eb97d8327c59d804b8527057a",
+      "translation_text_hash": "24b54c5b2bfa772aca389aa11eb229ed2999c6e619e073f1b0d4a32e81918e1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 사람에게 이 모든 일을 재삼 행하심은"
+      ],
+      "raw_text_hashes": [
+        "24b54c5b2bfa772aca389aa11eb229ed2999c6e619e073f1b0d4a32e81918e1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:30",
+      "sequence": 13681,
+      "chapter_label": "JOB 33",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 30
+        }
+      ],
+      "en": "to bring back his soul from the pit, that he may be enlightened with the light of the living.",
+      "ko": "그 영혼을 구덩이에서 끌어 돌이키고 생명의 빛으로 그에게 비취려 하심이니라",
+      "source_text_hash": "ca284fc025c2b0735d3a66cdad77e31337ab63fc232c23b3354b064eac0c78a1",
+      "translation_text_hash": "b774a81889b95edfce1c026e42b39ef6609e95880330f0a63d46b4b6543cd9e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영혼을 구덩이에서 끌어 돌이키고 생명의 빛으로 그에게 비취려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "b774a81889b95edfce1c026e42b39ef6609e95880330f0a63d46b4b6543cd9e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:31",
+      "sequence": 13682,
+      "chapter_label": "JOB 33",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 31
+        }
+      ],
+      "en": "Mark well, Job, and listen to me. Hold your peace, and I will speak.",
+      "ko": "욥이여 귀를 기울여 내게 들으라 잠잠하라 내가 말하리라",
+      "source_text_hash": "41de7f9cc980c7c06afcfebe8e6400ba14dca6a5197a7a088818ea96b6866658",
+      "translation_text_hash": "57e9c89992fac1fcb9473f8db4acbf528842e16e405e812f787ee9dbfcb49d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이여 귀를 기울여 내게 들으라 잠잠하라 내가 말하리라"
+      ],
+      "raw_text_hashes": [
+        "57e9c89992fac1fcb9473f8db4acbf528842e16e405e812f787ee9dbfcb49d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:32",
+      "sequence": 13683,
+      "chapter_label": "JOB 33",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 32
+        }
+      ],
+      "en": "If you have anything to say, answer me. Speak, for I desire to justify you.",
+      "ko": "만일 할 말이 있거든 대답하라 내가 너를 의롭게 하려 하노니 말하라",
+      "source_text_hash": "6019359f58ecd884b2d15e69f5632166609506b808c37b8e41fdf3460b02019e",
+      "translation_text_hash": "b20de419b21815995f97dfb43956703cd8cb143a0b868a36e74cf0d2bcfb5d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 할 말이 있거든 대답하라 내가 너를 의롭게 하려 하노니 말하라"
+      ],
+      "raw_text_hashes": [
+        "b20de419b21815995f97dfb43956703cd8cb143a0b868a36e74cf0d2bcfb5d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:33:33",
+      "sequence": 13684,
+      "chapter_label": "JOB 33",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 33,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 33,
+          "verse": 33
+        }
+      ],
+      "en": "If not, listen to me. Hold your peace, and I will teach you wisdom.”",
+      "ko": "만일 없으면 내 말을 들으라 잠잠하라 내가 지혜로 너를 가르치리라",
+      "source_text_hash": "cc8add0b9d6111d5a3e2ba36a88b5d1be458b2778c78c238c34c006f176d4750",
+      "translation_text_hash": "e374e5baac52e08b2cf5536db46b16decc0b0f6b37cb57dcfbb12c3cbbf79058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 없으면 내 말을 들으라 잠잠하라 내가 지혜로 너를 가르치리라"
+      ],
+      "raw_text_hashes": [
+        "e374e5baac52e08b2cf5536db46b16decc0b0f6b37cb57dcfbb12c3cbbf79058"
+      ]
+    }
+  ]
+}

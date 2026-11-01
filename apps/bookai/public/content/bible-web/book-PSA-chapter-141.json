@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:141",
+  "unit_ordinal": 619,
+  "unit_label": "PSA 141",
+  "book_code": "PSA",
+  "chapter_number": 141,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:141:1",
+      "sequence": 16278,
+      "chapter_label": "PSA 141",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, I have called on you. Come to me quickly! Listen to my voice when I call to you.",
+      "ko": "여호와여 내가 주를 불렀사오니 속히 내게 임하소서 내가 주께 부르짖을 때에 내 음성에 귀를 기울이소서",
+      "source_text_hash": "f51f83740858f8b52145f51e6cdb01b93e7a1471163ae2bccc4207239573ece0",
+      "translation_text_hash": "0f937c70f5cb6bfd27d9374ab6fb31e1becc09165d121a68e454ec6a1fffd0d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주를 불렀사오니 속히 내게 임하소서 내가 주께 부르짖을 때에 내 음성에 귀를 기울이소서"
+      ],
+      "raw_text_hashes": [
+        "0f937c70f5cb6bfd27d9374ab6fb31e1becc09165d121a68e454ec6a1fffd0d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:2",
+      "sequence": 16279,
+      "chapter_label": "PSA 141",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 2
+        }
+      ],
+      "en": "Let my prayer be set before you like incense; the lifting up of my hands like the evening sacrifice.",
+      "ko": "나의 기도가 주의 앞에 분향함과 같이 되며 나의 손 드는 것이 저녁 제사 같이 되게 하소서",
+      "source_text_hash": "5367db188e3dd4cab186f5eb2042a551db5a81624721fe0e95eaab9772f2fa66",
+      "translation_text_hash": "285c5c5564d49ced342a9c2ff9026c7ad8b4765f2d7c96b3e2a2a80753e9dcac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 기도가 주의 앞에 분향함과 같이 되며 나의 손 드는 것이 저녁 제사 같이 되게 하소서"
+      ],
+      "raw_text_hashes": [
+        "285c5c5564d49ced342a9c2ff9026c7ad8b4765f2d7c96b3e2a2a80753e9dcac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:3",
+      "sequence": 16280,
+      "chapter_label": "PSA 141",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 3
+        }
+      ],
+      "en": "Set a watch, LORD, before my mouth. Keep the door of my lips.",
+      "ko": "여호와여 내 입 앞에 파숫군을 세우시고 내 입술의 문을 지키소서",
+      "source_text_hash": "5299dd10e183f0e37bcdba61661671e506e3fefd931b20bae6a815d5787eb940",
+      "translation_text_hash": "fdd00279c8c231d53eabe4feecd31ee61eb528352cfc6c431d0b74ac179e4466",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 입 앞에 파숫군을 세우시고 내 입술의 문을 지키소서"
+      ],
+      "raw_text_hashes": [
+        "fdd00279c8c231d53eabe4feecd31ee61eb528352cfc6c431d0b74ac179e4466"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:4",
+      "sequence": 16281,
+      "chapter_label": "PSA 141",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 4
+        }
+      ],
+      "en": "Don’t incline my heart to any evil thing, to practice deeds of wickedness with men who work iniquity. Don’t let me eat of their delicacies.",
+      "ko": "내 마음이 악한 일에 기울어 죄악을 행하는 자와 함께 악을 행치 말게하시며 저희 진수를 먹지 말게 하소서",
+      "source_text_hash": "7262a592b8ef0d464af06a00e45327a2d3db5f4cdb42042426ec7045c067d0bf",
+      "translation_text_hash": "2998f8b6e849d229994f3ad894bbbe47c7836154859b1321fe84908d657cca55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 악한 일에 기울어 죄악을 행하는 자와 함께 악을 행치 말게하시며 저희 진수를 먹지 말게 하소서"
+      ],
+      "raw_text_hashes": [
+        "2998f8b6e849d229994f3ad894bbbe47c7836154859b1321fe84908d657cca55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:5",
+      "sequence": 16282,
+      "chapter_label": "PSA 141",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 5
+        }
+      ],
+      "en": "Let the righteous strike me, it is kindness; let him reprove me, it is like oil on the head; don’t let my head refuse it; Yet my prayer is always against evil deeds.",
+      "ko": "의인이 나를 칠찌라도 은혜로 여기며 책망할찌라도 머리의 기름 같이 여겨서 내 머리가 이를 거절치 아니할찌라 저희의 재난 중에라도 내가 항상 기도하리로다",
+      "source_text_hash": "837d9926db2ca500622be59e49208d1489c93f34b3a7937c40d5d6f718325640",
+      "translation_text_hash": "a3f4333ad0f0659a0be597983eb73eb58e0df7c21c1a4f467508613971ad9f8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 나를 칠찌라도 은혜로 여기며 책망할찌라도 머리의 기름 같이 여겨서 내 머리가 이를 거절치 아니할찌라 저희의 재난 중에라도 내가 항상 기도하리로다"
+      ],
+      "raw_text_hashes": [
+        "a3f4333ad0f0659a0be597983eb73eb58e0df7c21c1a4f467508613971ad9f8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:6",
+      "sequence": 16283,
+      "chapter_label": "PSA 141",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 6
+        }
+      ],
+      "en": "Their judges are thrown down by the sides of the rock. They will hear my words, for they are well spoken.",
+      "ko": "저희의 관장들이 바위 곁에 내려 던지웠도다 내 말이 달므로 무리가 들으리로다",
+      "source_text_hash": "6a8679bbb3b4ddae576e7a094ad3498b504a5b6aa5cb7ec67420db76dc7bd5f4",
+      "translation_text_hash": "ecc27144c4b4b8d13610c27cb50927e88b821c041c3b56da57276a5cfe7422ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 관장들이 바위 곁에 내려 던지웠도다 내 말이 달므로 무리가 들으리로다"
+      ],
+      "raw_text_hashes": [
+        "ecc27144c4b4b8d13610c27cb50927e88b821c041c3b56da57276a5cfe7422ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:7",
+      "sequence": 16284,
+      "chapter_label": "PSA 141",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 7
+        }
+      ],
+      "en": "“As when one plows and breaks up the earth, our bones are scattered at the mouth of Sheol.”",
+      "ko": "사람이 밭 갈아 흙을 부스러뜨림 같이 우리의 해골이 음부 문에 흩어졌도다",
+      "source_text_hash": "de65252aed8bf6598da286bf109ccfab175d6c36fce04e0a1f85422a1afbf3c3",
+      "translation_text_hash": "0eb1e41663305526e8604046f95db00da7d58abe2baeb390071c3841694b44d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 밭 갈아 흙을 부스러뜨림 같이 우리의 해골이 음부 문에 흩어졌도다"
+      ],
+      "raw_text_hashes": [
+        "0eb1e41663305526e8604046f95db00da7d58abe2baeb390071c3841694b44d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:8",
+      "sequence": 16285,
+      "chapter_label": "PSA 141",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 8
+        }
+      ],
+      "en": "For my eyes are on you, LORD, the Lord. I take refuge in you. Don’t leave my soul destitute.",
+      "ko": "주 여호와여 내 눈이 주께 향하며 내가 주께 피하오니 내 영혼을 빈궁한대로 버려두지 마옵소서",
+      "source_text_hash": "00fe91ea29834ae42279eb63176dd00c11a1dbf3e1dede778b4d5c94bab582e1",
+      "translation_text_hash": "0fe24cb72668b79ed7a2786041a1917353b3a6e263d0cd2da8624c39d1afbbb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 내 눈이 주께 향하며 내가 주께 피하오니 내 영혼을 빈궁한대로 버려두지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "0fe24cb72668b79ed7a2786041a1917353b3a6e263d0cd2da8624c39d1afbbb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:9",
+      "sequence": 16286,
+      "chapter_label": "PSA 141",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 9
+        }
+      ],
+      "en": "Keep me from the snare which they have laid for me, from the traps of the workers of iniquity.",
+      "ko": "나를 지키사 저희가 나를 잡으려고 놓은 올무와 행악자의 함정에서 벗어나게 하옵소서",
+      "source_text_hash": "05c57361f5538f8abae3d342ea73113d807cbd4d51153c4ae795af59ed676fbf",
+      "translation_text_hash": "5c9b4bf9ac33d9243da1de63f5720c0b645400b13cb6335a7e2a25acede408ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 지키사 저희가 나를 잡으려고 놓은 올무와 행악자의 함정에서 벗어나게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "5c9b4bf9ac33d9243da1de63f5720c0b645400b13cb6335a7e2a25acede408ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:141:10",
+      "sequence": 16287,
+      "chapter_label": "PSA 141",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 141,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 141,
+          "verse": 10
+        }
+      ],
+      "en": "Let the wicked fall together into their own nets while I pass by.",
+      "ko": "악인은 자기 그물에 걸리게 하시고 나는 온전히 면하게 하소서",
+      "source_text_hash": "f1248db5a1adacbe84324ab8cb7b9d00b0d963f52191ff950d01f0b68c42321b",
+      "translation_text_hash": "60f10f51a5ce7edf6f09597292d6688cb5335cea8f4894d132dad59a3f4ec9b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 자기 그물에 걸리게 하시고 나는 온전히 면하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "60f10f51a5ce7edf6f09597292d6688cb5335cea8f4894d132dad59a3f4ec9b4"
+      ]
+    }
+  ]
+}

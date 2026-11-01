@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:006",
+  "unit_ordinal": 6,
+  "unit_label": "GEN 6",
+  "book_code": "GEN",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:6:1",
+      "sequence": 139,
+      "chapter_label": "GEN 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "When men began to multiply on the surface of the ground, and daughters were born to them,",
+      "ko": "사람이 땅위에 번성하기 시작할 때에 그들에게서 딸들이 나니",
+      "source_text_hash": "3c4ef613844b320fea331080fc40c2cf0229ef66c442d8524739f136b3fddef3",
+      "translation_text_hash": "f72efb1cdf8b9e6902560ec8f8ebe200ff0bce28cc17b01bca3d618a6af6cc61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 땅위에 번성하기 시작할 때에 그들에게서 딸들이 나니"
+      ],
+      "raw_text_hashes": [
+        "f72efb1cdf8b9e6902560ec8f8ebe200ff0bce28cc17b01bca3d618a6af6cc61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:2",
+      "sequence": 140,
+      "chapter_label": "GEN 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "God’s sons saw that men’s daughters were beautiful, and they took any that they wanted for themselves as wives.",
+      "ko": "하나님의 아들들이 사람의 딸들의 아름다움을 보고 자기들의 좋아하는 모든 자로 아내를 삼는지라",
+      "source_text_hash": "7b4a40a913306ea37c325e45cc3c3f4817829c980b21a3c0ee4a5522ab33f6f9",
+      "translation_text_hash": "11b00566ac01727b6b15cb31ecc22aade3b46607e5234a06c18621d23ce091d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 아들들이 사람의 딸들의 아름다움을 보고 자기들의 좋아하는 모든 자로 아내를 삼는지라"
+      ],
+      "raw_text_hashes": [
+        "11b00566ac01727b6b15cb31ecc22aade3b46607e5234a06c18621d23ce091d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:3",
+      "sequence": 141,
+      "chapter_label": "GEN 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD said, “My Spirit will not strive with man forever, because he also is flesh; so his days will be one hundred twenty years.”",
+      "ko": "여호와께서 가라사대 나의 신이 영원히 사람과 함께 하지 아니하리니 이는 그들이 육체가 됨이라 그러나 그들의 날은 일백 이십년이 되리라 하시니라",
+      "source_text_hash": "86fecb86d79e4c7bccc83ad012e340bd9ffbe714e2f6dd9f6163aeb7d70d86d2",
+      "translation_text_hash": "608ecd55c28983913e6a6216365706afe8641209087fb579956e91cd1f6267d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 나의 신이 영원히 사람과 함께 하지 아니하리니 이는 그들이 육체가 됨이라 그러나 그들의 날은 일백 이십년이 되리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "608ecd55c28983913e6a6216365706afe8641209087fb579956e91cd1f6267d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:4",
+      "sequence": 142,
+      "chapter_label": "GEN 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "The Nephilim were on the earth in those days, and also after that, when God’s sons came in to men’s daughters and had children with them. Those were the mighty men who were of old, men of renown.",
+      "ko": "당시에 땅에 네피림이 있었고 그 후에도 하나님의 아들들이 사람의 딸들을 취하여 자식을 낳았으니 그들이 용사라 고대에 유명한 사람이었더라",
+      "source_text_hash": "d37a39f240c99b9d236ad007edabcf2f16b2ab87d4f51851048104037b1985be",
+      "translation_text_hash": "9f29d61bc2b71e2395d9e3e985a690e413dfecb41d2d30341011f23e20a54382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당시에 땅에 네피림이 있었고 그 후에도 하나님의 아들들이 사람의 딸들을 취하여 자식을 낳았으니 그들이 용사라 고대에 유명한 사람이었더라"
+      ],
+      "raw_text_hashes": [
+        "9f29d61bc2b71e2395d9e3e985a690e413dfecb41d2d30341011f23e20a54382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:5",
+      "sequence": 143,
+      "chapter_label": "GEN 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD saw that the wickedness of man was great on the earth, and that every imagination of the thoughts of man’s heart was continually only evil.",
+      "ko": "여호와께서 사람의 죄악이 세상에 관영함과 그 마음의 생각의 모든 계획이 항상 악할 뿐임을 보시고",
+      "source_text_hash": "16eba30671f4c87a67c16e5ff44d0d4c790110b6081f622395cf43a8ab69a1b0",
+      "translation_text_hash": "0063f8f81211a789d796227e42046cc741a761ccaaa1daed8094e706fe0e007d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사람의 죄악이 세상에 관영함과 그 마음의 생각의 모든 계획이 항상 악할 뿐임을 보시고"
+      ],
+      "raw_text_hashes": [
+        "0063f8f81211a789d796227e42046cc741a761ccaaa1daed8094e706fe0e007d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:6",
+      "sequence": 144,
+      "chapter_label": "GEN 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD was sorry that he had made man on the earth, and it grieved him in his heart.",
+      "ko": "땅위에 사람 지으셨음을 한탄하사 마음에 근심하시고",
+      "source_text_hash": "30031656b3c31c7defbcb33567d85cc4f896999bdbcb114bc390e810d2859a11",
+      "translation_text_hash": "477a134ddf73cecd6830b21ecaf73fa33f37bd30812bf34b6bf9b1ffc0fddd5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅위에 사람 지으셨음을 한탄하사 마음에 근심하시고"
+      ],
+      "raw_text_hashes": [
+        "477a134ddf73cecd6830b21ecaf73fa33f37bd30812bf34b6bf9b1ffc0fddd5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:7",
+      "sequence": 145,
+      "chapter_label": "GEN 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD said, “I will destroy man whom I have created from the surface of the ground—man, along with animals, creeping things, and birds of the sky—for I am sorry that I have made them.”",
+      "ko": "가라사대 나의 창조한 사람을 내가 지면에서 쓸어 버리되 사람으로부터 육축과 기는 것과 공중의 새까지 그리하리니 이는 내가 그것을 지었음을 한탄함이니라 하시니라",
+      "source_text_hash": "78d7ad6c7553d8143007f029030df57546035491d8870c8746571930d25d062b",
+      "translation_text_hash": "515bc9faa31f3ab2fe1adc333cb4a2bb7ea6b3606e473e40e031ae66b9fe1644",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 나의 창조한 사람을 내가 지면에서 쓸어 버리되 사람으로부터 육축과 기는 것과 공중의 새까지 그리하리니 이는 내가 그것을 지었음을 한탄함이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "515bc9faa31f3ab2fe1adc333cb4a2bb7ea6b3606e473e40e031ae66b9fe1644"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:8",
+      "sequence": 146,
+      "chapter_label": "GEN 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "But Noah found favor in the LORD’s eyes.",
+      "ko": "그러나 노아는 여호와께 은혜를 입었더라",
+      "source_text_hash": "a838d3587a984d11f30a731b3531f0b4d05cb55086edfed9d98fd89ffbb1a62c",
+      "translation_text_hash": "782608bc88c3be0c3bff399293b215578fb5b719b520546185148eb7d546768b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 노아는 여호와께 은혜를 입었더라"
+      ],
+      "raw_text_hashes": [
+        "782608bc88c3be0c3bff399293b215578fb5b719b520546185148eb7d546768b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:9",
+      "sequence": 147,
+      "chapter_label": "GEN 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "This is the history of the generations of Noah: Noah was a righteous man, blameless among the people of his time. Noah walked with God.",
+      "ko": "노아의 사적은 이러하니라 노아는 의인이요 당세에 완전한 자라 그가 하나님과 동행하였으며",
+      "source_text_hash": "fbb604f7924b32646660fe4e66c0eb4ca7ea9ef729a24c17f6dabae427bc1e75",
+      "translation_text_hash": "8e2e1a40c54a31e8bc2975cc01a1de6bdf133d2b7c1a70169ef96c38ff675e64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아의 사적은 이러하니라 노아는 의인이요 당세에 완전한 자라 그가 하나님과 동행하였으며"
+      ],
+      "raw_text_hashes": [
+        "8e2e1a40c54a31e8bc2975cc01a1de6bdf133d2b7c1a70169ef96c38ff675e64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:10",
+      "sequence": 148,
+      "chapter_label": "GEN 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Noah became the father of three sons: Shem, Ham, and Japheth.",
+      "ko": "그가 세 아들을 낳았으니 셈과 함과 야벳이라",
+      "source_text_hash": "f335980a9b08f6d1a10de58cc92382503206a390495967ddfee893ebd393d522",
+      "translation_text_hash": "702b7108cbd17ea619a64584c831cdeceb92fb6d5741118a58d689a1e9d4c0fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 세 아들을 낳았으니 셈과 함과 야벳이라"
+      ],
+      "raw_text_hashes": [
+        "702b7108cbd17ea619a64584c831cdeceb92fb6d5741118a58d689a1e9d4c0fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:11",
+      "sequence": 149,
+      "chapter_label": "GEN 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The earth was corrupt before God, and the earth was filled with violence.",
+      "ko": "때에 온 땅이 하나님 앞에 패괴하여 강포가 땅에 충만한지라",
+      "source_text_hash": "b5c713fe3d302c55ef51bbdd8b82c2d125110896ba7f7ad77023af4e7b7b880d",
+      "translation_text_hash": "7c12291d2cd29c478ab47c84a99153b488faf444ee6f9584f6877fcb004f64e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 온 땅이 하나님 앞에 패괴하여 강포가 땅에 충만한지라"
+      ],
+      "raw_text_hashes": [
+        "7c12291d2cd29c478ab47c84a99153b488faf444ee6f9584f6877fcb004f64e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:12",
+      "sequence": 150,
+      "chapter_label": "GEN 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "God saw the earth, and saw that it was corrupt, for all flesh had corrupted their way on the earth.",
+      "ko": "하나님이 보신즉 땅이 패괴하였으니 이는 땅에서 모든 혈육 있는 자의 행위가 패괴함이었더라",
+      "source_text_hash": "30438f642059ade131553a5a7d402f49376eeb28cd74ce9b1f9bba9a86231de2",
+      "translation_text_hash": "61e9efcf247ed115b51e45a0e482ee803418525bf5301cecf413df6d5b9b6a6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 보신즉 땅이 패괴하였으니 이는 땅에서 모든 혈육 있는 자의 행위가 패괴함이었더라"
+      ],
+      "raw_text_hashes": [
+        "61e9efcf247ed115b51e45a0e482ee803418525bf5301cecf413df6d5b9b6a6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:13",
+      "sequence": 151,
+      "chapter_label": "GEN 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "God said to Noah, “I will bring an end to all flesh, for the earth is filled with violence through them. Behold, I will destroy them and the earth.",
+      "ko": "하나님이 노아에게 이르시되 모든 혈육 있는 자의 강포가 땅에 가득하므로 그 끝날이 내 앞에 이르렀으니 내가 그들을 땅과 함께 멸하리라",
+      "source_text_hash": "fbec56b20e989e9ee9eb406b0fdc21f6b76d8a8122ac578824ee24edac50072d",
+      "translation_text_hash": "1e74317ce05e2b6916c7d21553b6686f2671d87733a04b35529cd67a7b7b97d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아에게 이르시되 모든 혈육 있는 자의 강포가 땅에 가득하므로 그 끝날이 내 앞에 이르렀으니 내가 그들을 땅과 함께 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "1e74317ce05e2b6916c7d21553b6686f2671d87733a04b35529cd67a7b7b97d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:14",
+      "sequence": 152,
+      "chapter_label": "GEN 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Make a ship of gopher wood. You shall make rooms in the ship, and shall seal it inside and outside with pitch.",
+      "ko": "너는 잣나무로 너를 위하여 방주를 짓되 그 안에 간들을 막고 역청으로 그 안팎에 칠하라",
+      "source_text_hash": "607e46db0573bd0ab215076565ffef269ded19778c5fa33f18d1de70694ea2df",
+      "translation_text_hash": "c08a2a1bba0dcf041c3882bf54d36a6f8a54e6d9d62a59dc16eb73bc205fc6da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 잣나무로 너를 위하여 방주를 짓되 그 안에 간들을 막고 역청으로 그 안팎에 칠하라"
+      ],
+      "raw_text_hashes": [
+        "c08a2a1bba0dcf041c3882bf54d36a6f8a54e6d9d62a59dc16eb73bc205fc6da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:15",
+      "sequence": 153,
+      "chapter_label": "GEN 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "This is how you shall make it. The length of the ship shall be three hundred cubits, its width fifty cubits, and its height thirty cubits.",
+      "ko": "그 방주의 제도는 이러하니 장이 삼백 규빗, 광이 오십 규빗, 고가 삼십 규빗이며",
+      "source_text_hash": "462badbd3e2fc9b1b86c3181fd0181fe287cc4da505193325ce1b2c821bf3571",
+      "translation_text_hash": "e44dae297f87deac0bc846107e8c8a5fc218092fd6cf5f15bfe9b50e52dd42d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 방주의 제도는 이러하니 장이 삼백 규빗, 광이 오십 규빗, 고가 삼십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "e44dae297f87deac0bc846107e8c8a5fc218092fd6cf5f15bfe9b50e52dd42d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:16",
+      "sequence": 154,
+      "chapter_label": "GEN 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "You shall make a roof in the ship, and you shall finish it to a cubit upward. You shall set the door of the ship in its side. You shall make it with lower, second, and third levels.",
+      "ko": "거기 창을 내되 위에서부터 한 규빗에 내고 그 문은 옆으로 내고 상 중 하 삼층으로 할찌니라",
+      "source_text_hash": "cdedab4b36ff5beec3bc35c17a3b7e5b8391a479421f34f22089fd7e82b54e65",
+      "translation_text_hash": "21f284985313b058d8dad7829c7b7208eee4914ae9d07f4bd09ebdec49acbd68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 창을 내되 위에서부터 한 규빗에 내고 그 문은 옆으로 내고 상 중 하 삼층으로 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "21f284985313b058d8dad7829c7b7208eee4914ae9d07f4bd09ebdec49acbd68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:17",
+      "sequence": 155,
+      "chapter_label": "GEN 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "I, even I, will bring the flood of waters on this earth, to destroy all flesh having the breath of life from under the sky. Everything that is on the earth will die.",
+      "ko": "내가 홍수를 땅에 일으켜 무릇 생명의 기식 있는 육체를 천하에서 멸절하리니 땅에 있는 자가 다 죽으리라",
+      "source_text_hash": "947fca0c0d5bb4cb7a4c1322b7e7532b2c2fc93130b339cbbd69a47f0fa26318",
+      "translation_text_hash": "18ce439ab534b6a5eaaac5c140058e6dd60c87b113ae143eac339ab081f1abb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 홍수를 땅에 일으켜 무릇 생명의 기식 있는 육체를 천하에서 멸절하리니 땅에 있는 자가 다 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "18ce439ab534b6a5eaaac5c140058e6dd60c87b113ae143eac339ab081f1abb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:18",
+      "sequence": 156,
+      "chapter_label": "GEN 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "But I will establish my covenant with you. You shall come into the ship, you, your sons, your wife, and your sons’ wives with you.",
+      "ko": "그러나 너와는 내가 내 언약을 세우리니 너는 네 아들들과 네 아내와 네 자부들과 함께 그 방주로 들어가고",
+      "source_text_hash": "12a59ddd402a8cc82b12588bec7af950e8588ab73a6110c55d5bfb5b9e081f02",
+      "translation_text_hash": "6f8d4a442059f8dfedabc787c2e9517968cd5e09445779e07d3b4bddde3c0665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너와는 내가 내 언약을 세우리니 너는 네 아들들과 네 아내와 네 자부들과 함께 그 방주로 들어가고"
+      ],
+      "raw_text_hashes": [
+        "6f8d4a442059f8dfedabc787c2e9517968cd5e09445779e07d3b4bddde3c0665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:19",
+      "sequence": 157,
+      "chapter_label": "GEN 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Of every living thing of all flesh, you shall bring two of every sort into the ship, to keep them alive with you. They shall be male and female.",
+      "ko": "혈육 있는 모든 생물을 너는 각기 암 수 한쌍씩 방주로 이끌어 들여 너와 함께 생명을 보존케 하되",
+      "source_text_hash": "e5b6e032cb51569aa88f8ab2f0bd7f381262e565b7fe510a4fcd7d823757c302",
+      "translation_text_hash": "8156042e21be0782dce1e1077175fcd65cbe1ca2f8303cb96561af2fe3d5751c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혈육 있는 모든 생물을 너는 각기 암 수 한쌍씩 방주로 이끌어 들여 너와 함께 생명을 보존케 하되"
+      ],
+      "raw_text_hashes": [
+        "8156042e21be0782dce1e1077175fcd65cbe1ca2f8303cb96561af2fe3d5751c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:20",
+      "sequence": 158,
+      "chapter_label": "GEN 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Of the birds after their kind, of the livestock after their kind, of every creeping thing of the ground after its kind, two of every sort will come to you, to keep them alive.",
+      "ko": "새가 그 종류대로, 육축이 그 종류대로, 땅에 기는 모든 것이 그 종류대로 각기 둘씩 네게로 나아오리니 그 생명을 보존케 하라",
+      "source_text_hash": "6c2744e01d1d6079b4a1d9e2403ff74a4cb515cd61a5db5fb5fbb370e7ca3a18",
+      "translation_text_hash": "de028b7256d22fe919faead72bcd8fce63a6cf85cb31bdb39481571cf2175566",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새가 그 종류대로, 육축이 그 종류대로, 땅에 기는 모든 것이 그 종류대로 각기 둘씩 네게로 나아오리니 그 생명을 보존케 하라"
+      ],
+      "raw_text_hashes": [
+        "de028b7256d22fe919faead72bcd8fce63a6cf85cb31bdb39481571cf2175566"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:21",
+      "sequence": 159,
+      "chapter_label": "GEN 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Take with you some of all food that is eaten, and gather it to yourself; and it will be for food for you, and for them.”",
+      "ko": "너는 먹을 모든 식물을 네게로 가져다가 저축하라 이것이 너와 그들의 식물이 되리라",
+      "source_text_hash": "c223fc484633f6af619e61cf85f34f8c8feb6e3b2e6a6615aa910a53efea581c",
+      "translation_text_hash": "5e321336a87a8b712ba1583745d446f78061dca586158ec0cb46709f61260558",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 먹을 모든 식물을 네게로 가져다가 저축하라 이것이 너와 그들의 식물이 되리라"
+      ],
+      "raw_text_hashes": [
+        "5e321336a87a8b712ba1583745d446f78061dca586158ec0cb46709f61260558"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:6:22",
+      "sequence": 160,
+      "chapter_label": "GEN 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "Thus Noah did. He did all that God commanded him.",
+      "ko": "노아가 그와 같이 하되 하나님이 자기에게 명하신대로 다 준행하였더라",
+      "source_text_hash": "500efbc79724ee86d80170da4b971a4948595b5e0a63208d0c1ab4d445e18339",
+      "translation_text_hash": "c4ac2885d926d8e58281183dc684e02e312a16b0ca25e34eb47a3df159413d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 그와 같이 하되 하나님이 자기에게 명하신대로 다 준행하였더라"
+      ],
+      "raw_text_hashes": [
+        "c4ac2885d926d8e58281183dc684e02e312a16b0ca25e34eb47a3df159413d77"
+      ]
+    }
+  ]
+}

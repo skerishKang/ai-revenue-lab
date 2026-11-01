@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:010",
+  "unit_ordinal": 221,
+  "unit_label": "JDG 10",
+  "book_code": "JDG",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:10:1",
+      "sequence": 6813,
+      "chapter_label": "JDG 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "After Abimelech, Tola the son of Puah, the son of Dodo, a man of Issachar, arose to save Israel. He lived in Shamir in the hill country of Ephraim.",
+      "ko": "아비멜렉의 후에 잇사갈 사람 도도의 손자 부아의 아들 돌라가 일어나서 이스라엘을 구원하니라 그가 에브라임 산지 사밀에 거하여",
+      "source_text_hash": "0c0bb19a255921aa96a0a86bb945f12570a7f1417df989214e8990141a5b90f7",
+      "translation_text_hash": "fcf2ca23cbbe8539805f6c702445ede7c2f33b8f21223e61c8689939739a8a17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉의 후에 잇사갈 사람 도도의 손자 부아의 아들 돌라가 일어나서 이스라엘을 구원하니라 그가 에브라임 산지 사밀에 거하여"
+      ],
+      "raw_text_hashes": [
+        "fcf2ca23cbbe8539805f6c702445ede7c2f33b8f21223e61c8689939739a8a17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:2",
+      "sequence": 6814,
+      "chapter_label": "JDG 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "He judged Israel twenty-three years, and died, and was buried in Shamir.",
+      "ko": "이스라엘의 사사가 된지 이십 삼년만에 죽으매 사밀에 장사되었더라",
+      "source_text_hash": "8c4b16ae419726fb82d5822113429d79fcaaf77e8155228e2db64a74cd9bb833",
+      "translation_text_hash": "2222b159a715423b1e68c080707ef672ffd7390caf9ffa1b38f3635b6e483779",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 사사가 된지 이십 삼년만에 죽으매 사밀에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "2222b159a715423b1e68c080707ef672ffd7390caf9ffa1b38f3635b6e483779"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:3",
+      "sequence": 6815,
+      "chapter_label": "JDG 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "After him Jair, the Gileadite, arose. He judged Israel twenty-two years.",
+      "ko": "그 후에 길르앗 사람 야일이 일어나서 이십 이년 동안 이스라엘의 사사가 되니라",
+      "source_text_hash": "08720b9d0a74354b35f6fa7eeb7a6b1f66616b636dd193e7a7d74eb8aa4c417a",
+      "translation_text_hash": "f9d077332f0b2babac382d1f1b85182f96dc31d51ec35659ef7b5c22544b19bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 길르앗 사람 야일이 일어나서 이십 이년 동안 이스라엘의 사사가 되니라"
+      ],
+      "raw_text_hashes": [
+        "f9d077332f0b2babac382d1f1b85182f96dc31d51ec35659ef7b5c22544b19bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:4",
+      "sequence": 6816,
+      "chapter_label": "JDG 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "He had thirty sons who rode on thirty donkey colts. They had thirty cities, which are called Havvoth Jair to this day, which are in the land of Gilead.",
+      "ko": "그에게 아들 삼십이 있어 어린 나귀 삼십을 탔고 성읍 삼십을 두었었는데 그 성들은 길르앗 땅에 있고 오늘까지 하봇야일이라 칭하더라",
+      "source_text_hash": "e29e05a48cc2dbe911689c9306ab251d7b8fe3dbe940499b0c20f6cbf2b4e47e",
+      "translation_text_hash": "e6137ebc8fae25dc34c4fff7e62b683b4114ec87d4fe1b97257d79a1ac846705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 아들 삼십이 있어 어린 나귀 삼십을 탔고 성읍 삼십을 두었었는데 그 성들은 길르앗 땅에 있고 오늘까지 하봇야일이라 칭하더라"
+      ],
+      "raw_text_hashes": [
+        "e6137ebc8fae25dc34c4fff7e62b683b4114ec87d4fe1b97257d79a1ac846705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:5",
+      "sequence": 6817,
+      "chapter_label": "JDG 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Jair died, and was buried in Kamon.",
+      "ko": "야일이 죽으매 가몬에 장사되었더라",
+      "source_text_hash": "a0f1cf8440d48f99065a103a0227eda0e3a02f71989078eea59f29e23a5b0dcc",
+      "translation_text_hash": "daf1a7cbc97084b91cb1407fa3a6be4dc0e37b64901bb9d2add49dbf75093037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야일이 죽으매 가몬에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "daf1a7cbc97084b91cb1407fa3a6be4dc0e37b64901bb9d2add49dbf75093037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:6",
+      "sequence": 6818,
+      "chapter_label": "JDG 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Israel again did that which was evil in the LORD’s sight, and served the Baals, the Ashtaroth, the gods of Syria, the gods of Sidon, the gods of Moab, the gods of the children of Ammon, and the gods of the Philistines. They abandoned the LORD, and didn’t serve him.",
+      "ko": "이스라엘 자손이 다시 여호와의 목전에 악을 행하여 바알들과 아스다롯과 아람의 신들과 시돈의 신들과 모압의 신들과 암몬 자손의 신들과 블레셋 사람의 신들을 섬기고 여호와를 버려 그를 섬기지 아니하므로",
+      "source_text_hash": "72b1a7a1766592428a75ffcec243c8f9346ac886dd115f91685b30b32273379b",
+      "translation_text_hash": "5d1bacbf3345b5b031a72efc9061b11e4f842e321570df3ac6a42537d96a67d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 다시 여호와의 목전에 악을 행하여 바알들과 아스다롯과 아람의 신들과 시돈의 신들과 모압의 신들과 암몬 자손의 신들과 블레셋 사람의 신들을 섬기고 여호와를 버려 그를 섬기지 아니하므로"
+      ],
+      "raw_text_hashes": [
+        "5d1bacbf3345b5b031a72efc9061b11e4f842e321570df3ac6a42537d96a67d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:7",
+      "sequence": 6819,
+      "chapter_label": "JDG 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s anger burned against Israel, and he sold them into the hand of the Philistines and into the hand of the children of Ammon.",
+      "ko": "여호와께서 이스라엘에게 진노하사 블레셋 사람의 손과 암몬 자손의 손에 파시매",
+      "source_text_hash": "9ecd91b151783fbd195c7090ab7753adb3c5a3c6e7d4ebdea5e7b1ee7ec83c6e",
+      "translation_text_hash": "0a48203cd0030188c19df470dc06fe6c62512d8ee1c8518dfb55235ea23d1a72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘에게 진노하사 블레셋 사람의 손과 암몬 자손의 손에 파시매"
+      ],
+      "raw_text_hashes": [
+        "0a48203cd0030188c19df470dc06fe6c62512d8ee1c8518dfb55235ea23d1a72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:8",
+      "sequence": 6820,
+      "chapter_label": "JDG 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "They troubled and oppressed the children of Israel that year. For eighteen years they oppressed all the children of Israel that were beyond the Jordan in the land of the Amorites, which is in Gilead.",
+      "ko": "그들이 그 해부터 이스라엘 자손을 학대하니 요단 저편 길르앗 아모리 사람의 땅에 거한 이스라엘 자손이 십 팔년 동안 학대를 당하였고",
+      "source_text_hash": "9367161def5c67839ea5cea80e21bfb7240593c0c461390ba64a98b4902cf69c",
+      "translation_text_hash": "8abe11007a40cad5a2b01c49422554f91ddb2fd7c7343aedf2b225ad4ae460ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 해부터 이스라엘 자손을 학대하니 요단 저편 길르앗 아모리 사람의 땅에 거한 이스라엘 자손이 십 팔년 동안 학대를 당하였고"
+      ],
+      "raw_text_hashes": [
+        "8abe11007a40cad5a2b01c49422554f91ddb2fd7c7343aedf2b225ad4ae460ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:9",
+      "sequence": 6821,
+      "chapter_label": "JDG 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Ammon passed over the Jordan to fight also against Judah, and against Benjamin, and against the house of Ephraim, so that Israel was very distressed.",
+      "ko": "암몬 자손이 또 요단을 건너서 유다와 베냐민과 에브라임 족속을 치므로 이스라엘의 곤고가 심하였더라",
+      "source_text_hash": "f9244836ebd2f5c62a9b9bc06f5ecc173e098592a31c23408fac1206ae4ee405",
+      "translation_text_hash": "d8039ec960b976fe312d16cb47a6866f9c72b2c0bcba942d998e59cc0d5c2b89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손이 또 요단을 건너서 유다와 베냐민과 에브라임 족속을 치므로 이스라엘의 곤고가 심하였더라"
+      ],
+      "raw_text_hashes": [
+        "d8039ec960b976fe312d16cb47a6866f9c72b2c0bcba942d998e59cc0d5c2b89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:10",
+      "sequence": 6822,
+      "chapter_label": "JDG 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The children of Israel cried to the LORD, saying, “We have sinned against you, even because we have forsaken our God, and have served the Baals.”",
+      "ko": "이스라엘 자손이 여호와께 부르짖어 가로되 우리가 우리 하나님을 버리고 바알들을 섬김으로 주께 범죄하였나이다",
+      "source_text_hash": "8244dbe35613bf7f1ae436626ec3a4417b5c67f64fe4fc4d65524f9e7b4e2f19",
+      "translation_text_hash": "e05b210f24ce6e57feb2780b0f62aa1541e6f626d0ff9dbea2b261b3de7a3c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 부르짖어 가로되 우리가 우리 하나님을 버리고 바알들을 섬김으로 주께 범죄하였나이다"
+      ],
+      "raw_text_hashes": [
+        "e05b210f24ce6e57feb2780b0f62aa1541e6f626d0ff9dbea2b261b3de7a3c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:11",
+      "sequence": 6823,
+      "chapter_label": "JDG 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to the children of Israel, “Didn’t I save you from the Egyptians, and from the Amorites, from the children of Ammon, and from the Philistines?",
+      "ko": "여호와께서 이스라엘 자손에게 이르시되 내가 애굽 사람과 아모리 사람과 암몬 자손과 블레셋 사람에게서 너희를 구원하지 아니하였느냐",
+      "source_text_hash": "f3d52405a5b168c00ee4d6d0ec7df42cea05930a7c89fa7cc5887b4df5ed1c8f",
+      "translation_text_hash": "83aa7bea56c7917de0549335acc70cf6287330cb69ed3c49010db6f68a2c7023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘 자손에게 이르시되 내가 애굽 사람과 아모리 사람과 암몬 자손과 블레셋 사람에게서 너희를 구원하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "83aa7bea56c7917de0549335acc70cf6287330cb69ed3c49010db6f68a2c7023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:12",
+      "sequence": 6824,
+      "chapter_label": "JDG 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "The Sidonians also, and the Amalekites, and the Maonites, oppressed you; and you cried to me, and I saved you out of their hand.",
+      "ko": "또 시돈 사람과 아말렉 사람과 마온 사람이 너희를 압제할 때에 너희가 내게 부르짖으므로 내가 너희를 그들의 손에서 구원하였거늘",
+      "source_text_hash": "afdd09b53430694f71048a96bc6fceff03b5d08e6b50c53bd0c26cfaab03b27d",
+      "translation_text_hash": "c8c4bfe217d0065130365692630e82b33426c089b7faff4eaa77e143a842cd2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 시돈 사람과 아말렉 사람과 마온 사람이 너희를 압제할 때에 너희가 내게 부르짖으므로 내가 너희를 그들의 손에서 구원하였거늘"
+      ],
+      "raw_text_hashes": [
+        "c8c4bfe217d0065130365692630e82b33426c089b7faff4eaa77e143a842cd2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:13",
+      "sequence": 6825,
+      "chapter_label": "JDG 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Yet you have forsaken me and served other gods. Therefore I will save you no more.",
+      "ko": "너희가 나를 버리고 다른 신들을 섬기니 그러므로 내가 다시는 너희를 구원치 아니하리라",
+      "source_text_hash": "85f7847706a4549bb6c73d3feb2bff063ba2abe7ae9b7058e46cd604556347dd",
+      "translation_text_hash": "77a6a04062bfad09a99fe60f2e88234d2c9c1cf9ad7d1e2cf30e3aadcb1b3136",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 버리고 다른 신들을 섬기니 그러므로 내가 다시는 너희를 구원치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "77a6a04062bfad09a99fe60f2e88234d2c9c1cf9ad7d1e2cf30e3aadcb1b3136"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:14",
+      "sequence": 6826,
+      "chapter_label": "JDG 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Go and cry to the gods which you have chosen. Let them save you in the time of your distress!”",
+      "ko": "가서 너희가 택한 신들에게 부르짖어서 너희 환난 때에 그들로 너희를 구원하게 하라",
+      "source_text_hash": "d5cc04d3c27d0742491cc31bf9b1ef9a856b3b4214ade63c242d753b01d8abab",
+      "translation_text_hash": "b4ac8f69ee35761d5b07c21ef92e00404c9bdc97c0fd5e558942ee82437170ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 너희가 택한 신들에게 부르짖어서 너희 환난 때에 그들로 너희를 구원하게 하라"
+      ],
+      "raw_text_hashes": [
+        "b4ac8f69ee35761d5b07c21ef92e00404c9bdc97c0fd5e558942ee82437170ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:15",
+      "sequence": 6827,
+      "chapter_label": "JDG 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "The children of Israel said to the LORD, “We have sinned! Do to us whatever seems good to you; only deliver us, please, today.”",
+      "ko": "이스라엘 자손이 여호와께 여짜오되 우리가 범죄하였사오니 주의 보시기에 좋은대로 우리에게 행하시려니와 오직 주께 구하옵나니 오늘날 우리를 건져내옵소서 하고",
+      "source_text_hash": "6bcd57f88d1edb56a62f282584fcc64c66d85e6f5bb6534b4f156e7817dc1ff3",
+      "translation_text_hash": "2bc907e876d3c48dd6897480cd5391c96a27b696c4b0204a694a4596d465794a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 여짜오되 우리가 범죄하였사오니 주의 보시기에 좋은대로 우리에게 행하시려니와 오직 주께 구하옵나니 오늘날 우리를 건져내옵소서 하고"
+      ],
+      "raw_text_hashes": [
+        "2bc907e876d3c48dd6897480cd5391c96a27b696c4b0204a694a4596d465794a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:16",
+      "sequence": 6828,
+      "chapter_label": "JDG 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "They put away the foreign gods from among them and served the LORD; and his soul was grieved for the misery of Israel.",
+      "ko": "자기 가운데서 이방 신들을 제하여 버리고 여호와를 섬기매 여호와께서 이스라엘의 곤고를 인하여 마음에 근심하시니라",
+      "source_text_hash": "65f26e4bd7c45bec4198c3fba588b26a91754a89283463f0533c81d58d855fb0",
+      "translation_text_hash": "240c99d4df01f6e3f32a20e6b3662fc5ad5715e5b11652263cb407f04a7efa94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 가운데서 이방 신들을 제하여 버리고 여호와를 섬기매 여호와께서 이스라엘의 곤고를 인하여 마음에 근심하시니라"
+      ],
+      "raw_text_hashes": [
+        "240c99d4df01f6e3f32a20e6b3662fc5ad5715e5b11652263cb407f04a7efa94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:17",
+      "sequence": 6829,
+      "chapter_label": "JDG 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Then the children of Ammon were gathered together and encamped in Gilead. The children of Israel assembled themselves together and encamped in Mizpah.",
+      "ko": "그 때에 암몬 자손이 모여서 길르앗에 진 쳤으므로 이스라엘 자손도 모여서 미스바에 진 치고",
+      "source_text_hash": "4ac9f8b6fbef306cdc926790db577ebb8aff43e6889dbf72f9d007baaba919d2",
+      "translation_text_hash": "f8f3816b2421a45e66fc6944ed5f16774379ca10a5140c39f0914c66c27ac712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 암몬 자손이 모여서 길르앗에 진 쳤으므로 이스라엘 자손도 모여서 미스바에 진 치고"
+      ],
+      "raw_text_hashes": [
+        "f8f3816b2421a45e66fc6944ed5f16774379ca10a5140c39f0914c66c27ac712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:10:18",
+      "sequence": 6830,
+      "chapter_label": "JDG 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "The people, the princes of Gilead, said to one another, “Who is the man who will begin to fight against the children of Ammon? He shall be head over all the inhabitants of Gilead.”",
+      "ko": "길르앗 백성과 방백들이 서로 이르되 누가 먼저 나가서 암몬 자손과 싸움을 시작할꼬 그가 길르앗 모든 거민의 머리가 되리라 하니라",
+      "source_text_hash": "fc116b2d0fc4da7f1ce0bc2f8a7a1ca5c56631c19d177d1b501c65ed52f34d65",
+      "translation_text_hash": "102200f2b8f3a26ae905d3d2308fbaae2310124dfdaa83d32786ec9a08204449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 백성과 방백들이 서로 이르되 누가 먼저 나가서 암몬 자손과 싸움을 시작할꼬 그가 길르앗 모든 거민의 머리가 되리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "102200f2b8f3a26ae905d3d2308fbaae2310124dfdaa83d32786ec9a08204449"
+      ]
+    }
+  ]
+}

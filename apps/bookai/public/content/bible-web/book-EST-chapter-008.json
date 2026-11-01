@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:008",
+  "unit_ordinal": 434,
+  "unit_label": "EST 8",
+  "book_code": "EST",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:8:1",
+      "sequence": 12819,
+      "chapter_label": "EST 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "On that day, King Ahasuerus gave the house of Haman, the Jews’ enemy, to Esther the queen. Mordecai came before the king; for Esther had told what he was to her.",
+      "ko": "당일에 아하수에로왕이 유다인의 대적 하만의 집을 왕후 에스더에게 주니라 에스더가 모르드개는 자기에게 어떻게 관계됨을 왕께 고한고로 모르드개가 왕의 앞에 나아오니",
+      "source_text_hash": "cc27b1946e988f47b19904defff4f581021109f0a92ad5dbcfe0a83ee67bbad2",
+      "translation_text_hash": "aa5b466727bfb468c65f8fe769962646dc73d9e1122e8c4c9ac126e102b2566e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당일에 아하수에로왕이 유다인의 대적 하만의 집을 왕후 에스더에게 주니라 에스더가 모르드개는 자기에게 어떻게 관계됨을 왕께 고한고로 모르드개가 왕의 앞에 나아오니"
+      ],
+      "raw_text_hashes": [
+        "aa5b466727bfb468c65f8fe769962646dc73d9e1122e8c4c9ac126e102b2566e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:2",
+      "sequence": 12820,
+      "chapter_label": "EST 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "The king took off his ring, which he had taken from Haman, and gave it to Mordecai. Esther set Mordecai over the house of Haman.",
+      "ko": "왕이 하만에게 거둔 반지를 빼어 모르드개에게 준지라 에스더가 모르드개로 하만의 집을 주관하게 하니라",
+      "source_text_hash": "62a601603c941b858005b5ce31e9e0ba62b8675e213cdcb5f9619f679127fa0a",
+      "translation_text_hash": "bef15309ddde2c3cf75dd311e735eaee73a5938bd343bbf227bf84a6f3e3ac1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 하만에게 거둔 반지를 빼어 모르드개에게 준지라 에스더가 모르드개로 하만의 집을 주관하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "bef15309ddde2c3cf75dd311e735eaee73a5938bd343bbf227bf84a6f3e3ac1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:3",
+      "sequence": 12821,
+      "chapter_label": "EST 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Esther spoke yet again before the king, and fell down at his feet and begged him with tears to put away the mischief of Haman the Agagite, and his plan that he had planned against the Jews.",
+      "ko": "에스더가 다시 왕의 앞에서 말씀하며 왕의 발아래 엎드려 아각 사람 하만이 유다인을 해하려 한 악한 꾀를 제하기를 울며 구하니",
+      "source_text_hash": "7792c4ab80f6fef634f5a319186e5cd2a2b7bbb1d4b2036a9e1d8625fd9b5f47",
+      "translation_text_hash": "808f47e0d5977a39a14c6a4435f5c01d952219cacbbef4a51d64ac5514662b2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 다시 왕의 앞에서 말씀하며 왕의 발아래 엎드려 아각 사람 하만이 유다인을 해하려 한 악한 꾀를 제하기를 울며 구하니"
+      ],
+      "raw_text_hashes": [
+        "808f47e0d5977a39a14c6a4435f5c01d952219cacbbef4a51d64ac5514662b2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:4",
+      "sequence": 12822,
+      "chapter_label": "EST 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Then the king held out to Esther the golden scepter. So Esther arose, and stood before the king.",
+      "ko": "왕이 에스더를 향하여 금홀을 내어미는지라 에스더가 일어나 왕의 앞에 서서",
+      "source_text_hash": "6fd49fa823e79ef73d4f56d0aee49e72769b2a1fcc32ec985c0ee2dcc1a6c93e",
+      "translation_text_hash": "7326661b0151ce0f2017bf4dc27aa36b3064ced7cd280d6047489e28388c8627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 에스더를 향하여 금홀을 내어미는지라 에스더가 일어나 왕의 앞에 서서"
+      ],
+      "raw_text_hashes": [
+        "7326661b0151ce0f2017bf4dc27aa36b3064ced7cd280d6047489e28388c8627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:5",
+      "sequence": 12823,
+      "chapter_label": "EST 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "She said, “If it pleases the king, and if I have found favor in his sight, and the thing seems right to the king, and I am pleasing in his eyes, let it be written to reverse the letters devised by Haman, the son of Hammedatha the Agagite, which he wrote to destroy the Jews who are in all the king’s provinces.",
+      "ko": "가로되 왕이 만일 즐겨하시며 내가 왕의 목전에 은혜를 입었고 또 왕이 이 일을 선히 여기시며 나를 기쁘게 보실찐대 조서를 내리사 아각 사람 함므다다의 아들 하만이 왕의 각 도에 있는 유다인을 멸하려고 꾀하고 쓴 조서를 취소하소서",
+      "source_text_hash": "0824c425da767d6f1838808fbeb6c6e6437477b44eaa0f8df399912d173eb074",
+      "translation_text_hash": "0765bcefa3c688cc275948278d24016bd759d63cf50029c95c39ae80a258883c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 왕이 만일 즐겨하시며 내가 왕의 목전에 은혜를 입었고 또 왕이 이 일을 선히 여기시며 나를 기쁘게 보실찐대 조서를 내리사 아각 사람 함므다다의 아들 하만이 왕의 각 도에 있는 유다인을 멸하려고 꾀하고 쓴 조서를 취소하소서"
+      ],
+      "raw_text_hashes": [
+        "0765bcefa3c688cc275948278d24016bd759d63cf50029c95c39ae80a258883c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:6",
+      "sequence": 12824,
+      "chapter_label": "EST 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "For how can I endure to see the evil that would come to my people? How can I endure to see the destruction of my relatives?”",
+      "ko": "내가 어찌 내 민족의 화 당함을 참아 보며 내 친척의 멸망함을 참아 보리이까",
+      "source_text_hash": "763e6c37bebbfdd9fc1a88790228bd110b9c43d26ac3e2ff49c0d58dd1a5cc50",
+      "translation_text_hash": "4cc1044294d90828557ad0fe52278a9518122d031ff15a2b524439a662b0785b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌 내 민족의 화 당함을 참아 보며 내 친척의 멸망함을 참아 보리이까"
+      ],
+      "raw_text_hashes": [
+        "4cc1044294d90828557ad0fe52278a9518122d031ff15a2b524439a662b0785b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:7",
+      "sequence": 12825,
+      "chapter_label": "EST 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Then King Ahasuerus said to Esther the queen and to Mordecai the Jew, “See, I have given Esther the house of Haman, and they have hanged him on the gallows because he laid his hand on the Jews.",
+      "ko": "아하수에로왕이 왕후 에스더와 유다인 모르드개에게 이르되 하만이 유다인을 살해하려 하므로 나무에 달렸고 내가 그 집으로 에스더에게 주었으니",
+      "source_text_hash": "c22db7cbe4661e3f4b2301fd40c8cf4663bf295a61dc731dc9482fd8c9d66c0d",
+      "translation_text_hash": "75fedf6636bc1efa814c0cf864aea3d08faf5dc7a77ba28a1ef02395500e2cc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕이 왕후 에스더와 유다인 모르드개에게 이르되 하만이 유다인을 살해하려 하므로 나무에 달렸고 내가 그 집으로 에스더에게 주었으니"
+      ],
+      "raw_text_hashes": [
+        "75fedf6636bc1efa814c0cf864aea3d08faf5dc7a77ba28a1ef02395500e2cc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:8",
+      "sequence": 12826,
+      "chapter_label": "EST 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Write also to the Jews as it pleases you, in the king’s name, and seal it with the king’s ring; for the writing which is written in the king’s name, and sealed with the king’s ring, may not be reversed by any man.”",
+      "ko": "너희는 왕의 명의로 유다인에게 조서를 뜻대로 쓰고 왕의 반지로 인을 칠찌어다 왕의 이름을 쓰고 왕의 반지로 인친 조서는 누구든지 취소할 수 없음이니라",
+      "source_text_hash": "488cd535c9c8f03ebc5319019f297998f07bd021a352afcf5776f0ec7f068f57",
+      "translation_text_hash": "f22eeaee10a2862eea03eeba55e3faf27cc44c33c41e6aaa9f525455161fc016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 왕의 명의로 유다인에게 조서를 뜻대로 쓰고 왕의 반지로 인을 칠찌어다 왕의 이름을 쓰고 왕의 반지로 인친 조서는 누구든지 취소할 수 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "f22eeaee10a2862eea03eeba55e3faf27cc44c33c41e6aaa9f525455161fc016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:9",
+      "sequence": 12827,
+      "chapter_label": "EST 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Then the king’s scribes were called at that time, in the third month, which is the month Sivan, on the twenty-third day of the month; and it was written according to all that Mordecai commanded to the Jews, and to the local governors, and the governors and princes of the provinces which are from India to Ethiopia, one hundred twenty-seven provinces, to every province according to its writing, and to every people in their language, and to the Jews in their writing, and in their language.",
+      "ko": "그 때 시완월 곧 삼월 이십 삼일에 왕의 서기관이 소집되고 무릇 모르드개의 시키는대로 조서를 써서 인도로부터 구스까지의 일백 이십 칠도 유다인과 대신과 방백과 관원에게 전할쌔 각 도의 문자와 각 민족의 방언과 유다인의 문자와 방언대로 쓰되",
+      "source_text_hash": "a93199c61733dd8a71d7127454158cc6be477054619e2009e8278129ced33acb",
+      "translation_text_hash": "ced8316335775292eb5496e20b0c16b932d567d6f3c7dc1effbd8ea35aab1af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때 시완월 곧 삼월 이십 삼일에 왕의 서기관이 소집되고 무릇 모르드개의 시키는대로 조서를 써서 인도로부터 구스까지의 일백 이십 칠도 유다인과 대신과 방백과 관원에게 전할쌔 각 도의 문자와 각 민족의 방언과 유다인의 문자와 방언대로 쓰되"
+      ],
+      "raw_text_hashes": [
+        "ced8316335775292eb5496e20b0c16b932d567d6f3c7dc1effbd8ea35aab1af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:10",
+      "sequence": 12828,
+      "chapter_label": "EST 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "He wrote in the name of King Ahasuerus, and sealed it with the king’s ring, and sent letters by courier on horseback, riding on royal horses that were bred from swift steeds.",
+      "ko": "아하수에로왕의 명의로 쓰고 왕의 반지로 인을 치고 그 조서를 역졸들에게 부쳐 전하게 하니 저희는 왕궁에서 길러서 왕의 일에 쓰는 준마를 타는 자들이라",
+      "source_text_hash": "047182a2523db91acdbfd9788a710e23d82a618bad095d0c0038d30924ca5c8e",
+      "translation_text_hash": "bb997f6dfd3b2ddee67b8fdb3f1777fead6ce3b99369e1ccb07cad4070d938f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕의 명의로 쓰고 왕의 반지로 인을 치고 그 조서를 역졸들에게 부쳐 전하게 하니 저희는 왕궁에서 길러서 왕의 일에 쓰는 준마를 타는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "bb997f6dfd3b2ddee67b8fdb3f1777fead6ce3b99369e1ccb07cad4070d938f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:11",
+      "sequence": 12829,
+      "chapter_label": "EST 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "In those letters, the king granted the Jews who were in every city to gather themselves together and to defend their lives—to destroy, to kill, and to cause to perish all the power of the people and province that would assault them, their little ones and women, and to plunder their possessions,",
+      "ko": "조서에는 왕이 여러 고을에 있는 유다인에게 허락하여 저희로 함께 모여 스스로 생명을 보호하여 각 도의 백성 중 세력을 가지고 저희를 치려하는 자와 그 처자를 죽이고 도륙하고 진멸하고 그 재산을 탈취하게 하되",
+      "source_text_hash": "a069a2890aab1097359f820caf77d0b9c71eff83d31163da6c874cd54a902035",
+      "translation_text_hash": "f537cedc5105865cd9cf9a8d7e21f108ad4c4041dceaf3bfd26e98100eef2f30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조서에는 왕이 여러 고을에 있는 유다인에게 허락하여 저희로 함께 모여 스스로 생명을 보호하여 각 도의 백성 중 세력을 가지고 저희를 치려하는 자와 그 처자를 죽이고 도륙하고 진멸하고 그 재산을 탈취하게 하되"
+      ],
+      "raw_text_hashes": [
+        "f537cedc5105865cd9cf9a8d7e21f108ad4c4041dceaf3bfd26e98100eef2f30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:12",
+      "sequence": 12830,
+      "chapter_label": "EST 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "on one day in all the provinces of King Ahasuerus, on the thirteenth day of the twelfth month, which is the month Adar.",
+      "ko": "아하수에로왕의 각 도에서 아달월 곧 십이월 십 삼일 하루 동안에 하게 하였고",
+      "source_text_hash": "c48039c0cce2f10f1fb0cba81caec725758456dcff27022e9c8133d26c6c8fc3",
+      "translation_text_hash": "6a8a5442a9c9fe485ea8236b6a7519897ad361154a305467a359a6af38ee3001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕의 각 도에서 아달월 곧 십이월 십 삼일 하루 동안에 하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "6a8a5442a9c9fe485ea8236b6a7519897ad361154a305467a359a6af38ee3001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:13",
+      "sequence": 12831,
+      "chapter_label": "EST 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "A copy of the letter, that the decree should be given out in every province, was published to all the peoples, that the Jews should be ready for that day to avenge themselves on their enemies.",
+      "ko": "이 조서 초본을 각 도에 전하고 각 민족에게 반포하고 유다인으로 예비하였다가 그 날에 대적에게 원수를 갚게 한지라",
+      "source_text_hash": "192aec0906798716c37952f247a1e97ea412415ce527ec962a50c232db646e60",
+      "translation_text_hash": "03e98652c2626193399b79e4027b662c208b47a56c656734a93f25736ec809b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 조서 초본을 각 도에 전하고 각 민족에게 반포하고 유다인으로 예비하였다가 그 날에 대적에게 원수를 갚게 한지라"
+      ],
+      "raw_text_hashes": [
+        "03e98652c2626193399b79e4027b662c208b47a56c656734a93f25736ec809b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:14",
+      "sequence": 12832,
+      "chapter_label": "EST 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "So the couriers who rode on royal horses went out, hastened and pressed on by the king’s commandment. The decree was given out in the citadel of Susa.",
+      "ko": "왕의 명이 심히 급하매 역졸이 왕의 일에 쓰는 준마를 타고 빨리 나가고 그 조서가 도성 수산에도 반포되니라",
+      "source_text_hash": "fd282c375b846029bbd7746533bfcf4ffd151af95312f4804d47314c8a518009",
+      "translation_text_hash": "af4b8fdb7ac6d416bd4de9902c61d79a1523c1dbd46e852b6cd280a64245fa29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명이 심히 급하매 역졸이 왕의 일에 쓰는 준마를 타고 빨리 나가고 그 조서가 도성 수산에도 반포되니라"
+      ],
+      "raw_text_hashes": [
+        "af4b8fdb7ac6d416bd4de9902c61d79a1523c1dbd46e852b6cd280a64245fa29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:15",
+      "sequence": 12833,
+      "chapter_label": "EST 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Mordecai went out of the presence of the king in royal clothing of blue and white, and with a great crown of gold, and with a robe of fine linen and purple; and the city of Susa shouted and was glad.",
+      "ko": "모르드개가 푸르고 흰 조복을 입고 큰 금면류관을 쓰고 자색 가는 베 겉옷을 입고 왕의 앞에서 나오니 수산성이 즐거이 부르며 기뻐하고",
+      "source_text_hash": "8654225dca937213f95722ba9cb377590dc228771b498e286e3d269cc37a12ce",
+      "translation_text_hash": "7c9e0a6f1bbf0bad6ca0ac35a51b8eb2142fadcbaefef80a923c7a6ee1f8cb67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 푸르고 흰 조복을 입고 큰 금면류관을 쓰고 자색 가는 베 겉옷을 입고 왕의 앞에서 나오니 수산성이 즐거이 부르며 기뻐하고"
+      ],
+      "raw_text_hashes": [
+        "7c9e0a6f1bbf0bad6ca0ac35a51b8eb2142fadcbaefef80a923c7a6ee1f8cb67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:16",
+      "sequence": 12834,
+      "chapter_label": "EST 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "The Jews had light, gladness, joy, and honor.",
+      "ko": "유다인에게는 영광과 즐거움과 기쁨과 존귀함이 있는지라",
+      "source_text_hash": "f5e65ad86473407d7f2c80766c0c010b2789b5906b406aea7c512931c3fbc7d7",
+      "translation_text_hash": "f588fd35c2787caf1fa7dde3bc42453d1f1e99e97ee7b220b5bbcf0ee5f75dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인에게는 영광과 즐거움과 기쁨과 존귀함이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "f588fd35c2787caf1fa7dde3bc42453d1f1e99e97ee7b220b5bbcf0ee5f75dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:8:17",
+      "sequence": 12835,
+      "chapter_label": "EST 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "EST",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "In every province and in every city, wherever the king’s commandment and his decree came, the Jews had gladness, joy, a feast and a holiday. Many from among the peoples of the land became Jews, for the fear of the Jews had fallen on them.",
+      "ko": "왕의 조명이 이르는 각 도, 각 읍에서 유다인이 즐기고 기뻐하여 잔치를 베풀고 그 날로 경절을 삼으니 본토 백성이 유다인을 두려워하여 유다인 되는 자가 많더라",
+      "source_text_hash": "382b66e45148bdaa07db331b2a21924da3d2ece56ba6a0370b035aa24d8a5878",
+      "translation_text_hash": "5ebde249a8f4ed2d3dd4b24aab7ebe5f499117ae32350161bf25a76cdc8fe7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 조명이 이르는 각 도, 각 읍에서 유다인이 즐기고 기뻐하여 잔치를 베풀고 그 날로 경절을 삼으니 본토 백성이 유다인을 두려워하여 유다인 되는 자가 많더라"
+      ],
+      "raw_text_hashes": [
+        "5ebde249a8f4ed2d3dd4b24aab7ebe5f499117ae32350161bf25a76cdc8fe7c0"
+      ]
+    }
+  ]
+}

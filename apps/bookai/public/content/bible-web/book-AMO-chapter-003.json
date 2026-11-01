@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:003",
+  "unit_ordinal": 882,
+  "unit_label": "AMO 3",
+  "book_code": "AMO",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:3:1",
+      "sequence": 22397,
+      "chapter_label": "AMO 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Hear this word that the LORD has spoken against you, children of Israel, against the whole family which I brought up out of the land of Egypt, saying:",
+      "ko": "이스라엘 자손들아 여호와께서 너희를 쳐서 이르시는 이 말씀을 들으라 애굽 땅에서 인도하여 올리신 온 족속을 쳐서 이르시기를",
+      "source_text_hash": "bb5974ef42525e0bb8a7d589efc39198cbd23099f3c2e2a7f1cb5fcaa0501d5e",
+      "translation_text_hash": "f72f53f18ba305f5b274ab0f31fa4675658caeb5e221bee990d613c4aa025db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들아 여호와께서 너희를 쳐서 이르시는 이 말씀을 들으라 애굽 땅에서 인도하여 올리신 온 족속을 쳐서 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "f72f53f18ba305f5b274ab0f31fa4675658caeb5e221bee990d613c4aa025db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:2",
+      "sequence": 22398,
+      "chapter_label": "AMO 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "“I have chosen only you of all the families of the earth. Therefore I will punish you for all of your sins.”",
+      "ko": "내가 땅의 모든 족속 중에 너희만 알았나니 그러므로 내가 너희 모든 죄악을 너희에게 보응하리라 하셨나니",
+      "source_text_hash": "a41ad2eaecfbf502ca3b181944f044ad747ebc4d9247ce2fda5b470da6aee06b",
+      "translation_text_hash": "3f4298505806a666f93452b433b924cbde48898a5295724fa68b899156fe0435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅의 모든 족속 중에 너희만 알았나니 그러므로 내가 너희 모든 죄악을 너희에게 보응하리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "3f4298505806a666f93452b433b924cbde48898a5295724fa68b899156fe0435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:3",
+      "sequence": 22399,
+      "chapter_label": "AMO 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Do two walk together, unless they have agreed?",
+      "ko": "두 사람이 의합지 못하고야 어찌 동행하겠으며",
+      "source_text_hash": "cee8a32ba8cc315f1920ceb820b3d617d517ce2080ae68f3d4688bf4bf14c3d3",
+      "translation_text_hash": "e7209dbf998019e6695e382016666293df05169f20b5bf48d6b0946cafa968cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 의합지 못하고야 어찌 동행하겠으며"
+      ],
+      "raw_text_hashes": [
+        "e7209dbf998019e6695e382016666293df05169f20b5bf48d6b0946cafa968cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:4",
+      "sequence": 22400,
+      "chapter_label": "AMO 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Will a lion roar in the thicket, when he has no prey? Does a young lion cry out of his den, if he has caught nothing?",
+      "ko": "사자가 움킨 것이 없고야 어찌 수풀에서 부르짖겠으며 젊은 사자가 잡은 것이 없고야 어찌 굴에서 소리를 내겠느냐",
+      "source_text_hash": "3e33e1baf35ec7f3a3b4505dad95f98b269cb6e886a85af3d249d28b7aa6111e",
+      "translation_text_hash": "c3bab6efafddbd23e5d10e2ecb76eacf900157e0326f63640a6bbbf040ea3f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 움킨 것이 없고야 어찌 수풀에서 부르짖겠으며 젊은 사자가 잡은 것이 없고야 어찌 굴에서 소리를 내겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c3bab6efafddbd23e5d10e2ecb76eacf900157e0326f63640a6bbbf040ea3f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:5",
+      "sequence": 22401,
+      "chapter_label": "AMO 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Can a bird fall in a trap on the earth, where no snare is set for him? Does a snare spring up from the ground, when there is nothing to catch?",
+      "ko": "창애를 땅에 베풀지 아니하고야 새가 어찌 거기 치이겠으며 아무 잡힌 것이 없고야 창애가 어찌 땅에서 뛰겠느냐",
+      "source_text_hash": "2ec5ae652e5789b2721451f7db5889689003cb4645645c30e4ed717d7cfa2238",
+      "translation_text_hash": "1b8f77cbb5976df2eefc8088fdff8301ec7fc9d38894aa883560b2b914716b02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창애를 땅에 베풀지 아니하고야 새가 어찌 거기 치이겠으며 아무 잡힌 것이 없고야 창애가 어찌 땅에서 뛰겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1b8f77cbb5976df2eefc8088fdff8301ec7fc9d38894aa883560b2b914716b02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:6",
+      "sequence": 22402,
+      "chapter_label": "AMO 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Does the trumpet alarm sound in a city, without the people being afraid? Does evil happen to a city, and the LORD hasn’t done it?",
+      "ko": "성읍에서 나팔을 불게 되고야 백성이 어찌 두려워하지 아니하겠으며 여호와의 시키심이 아니고야 재앙이 어찌 성읍에 임하겠느냐",
+      "source_text_hash": "29dd1e4966b36e303f5c39ee14e8d723f0beb44eb489ca4160ecf63744912751",
+      "translation_text_hash": "fce07247c523a83e2c9b3644f1cf99ad39e34358e164dd279b86f77acda7d3c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍에서 나팔을 불게 되고야 백성이 어찌 두려워하지 아니하겠으며 여호와의 시키심이 아니고야 재앙이 어찌 성읍에 임하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "fce07247c523a83e2c9b3644f1cf99ad39e34358e164dd279b86f77acda7d3c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:7",
+      "sequence": 22403,
+      "chapter_label": "AMO 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Surely the Lord GOD will do nothing, unless he reveals his secret to his servants the prophets.",
+      "ko": "주 여호와께서는 자기의 비밀을 그 종 선지자들에게 보이지 아니하시고는 결코 행하심이 없으시리라",
+      "source_text_hash": "8c108ba06b8c59d34a83958dbf29bcc783feb53df5178ffabe4a38565a0cf11b",
+      "translation_text_hash": "764da4e475d56eabf055f80d412d5315ba17878b1af5443e1ccfe358307efc3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서는 자기의 비밀을 그 종 선지자들에게 보이지 아니하시고는 결코 행하심이 없으시리라"
+      ],
+      "raw_text_hashes": [
+        "764da4e475d56eabf055f80d412d5315ba17878b1af5443e1ccfe358307efc3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:8",
+      "sequence": 22404,
+      "chapter_label": "AMO 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "The lion has roared. Who will not fear? The Lord GOD has spoken. Who can but prophesy?",
+      "ko": "사자가 부르짖은즉 누가 두려워하지 아니하겠느냐 주 여호와께서 말씀하신즉 누가 예언하지 아니하겠느냐",
+      "source_text_hash": "e5a0089584f404d93e6afe8aa0704fa6e175e08b7dd638d62a4caa53c90b6bfe",
+      "translation_text_hash": "301c7c6e6daddaa3c6f4f25fe05edc80a125488a648ac002731a378a6383cd28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 부르짖은즉 누가 두려워하지 아니하겠느냐 주 여호와께서 말씀하신즉 누가 예언하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "301c7c6e6daddaa3c6f4f25fe05edc80a125488a648ac002731a378a6383cd28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:9",
+      "sequence": 22405,
+      "chapter_label": "AMO 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Proclaim in the palaces at Ashdod, and in the palaces in the land of Egypt, and say, “Assemble yourselves on the mountains of Samaria, and see what unrest is in her, and what oppression is among them.”",
+      "ko": "아스돗의 궁들과 애굽 땅 궁들에 광포하여 이르기를 너희는 사마리아 산들에 모여 그 성중에서 얼마나 큰 요란함과 학대함이 있나 보라 하라",
+      "source_text_hash": "5ccd3d9d2eac8e93c6dd49e6f503fd3928f9e495d29f30ddf37a39a54dc9d92c",
+      "translation_text_hash": "67608f05a669b1f763552959d789d03a40bb5ceb6aaa6820967941e801eb94ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스돗의 궁들과 애굽 땅 궁들에 광포하여 이르기를 너희는 사마리아 산들에 모여 그 성중에서 얼마나 큰 요란함과 학대함이 있나 보라 하라"
+      ],
+      "raw_text_hashes": [
+        "67608f05a669b1f763552959d789d03a40bb5ceb6aaa6820967941e801eb94ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:10",
+      "sequence": 22406,
+      "chapter_label": "AMO 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "“Indeed they don’t know to do right,” says the LORD, “Who hoard plunder and loot in their palaces.”",
+      "ko": "자기 궁궐에서 포학과 겁탈을 쌓는 자들이 바른 일 행할줄을 모르느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "9fadf77a7d34ad213ea78949c479a76a8ac411050de6ac7a6a2478fd92a77d7f",
+      "translation_text_hash": "ec7209a54155db35374b160fc44ecef3ed2fd3a70e2b89a04f92220d01f602fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 궁궐에서 포학과 겁탈을 쌓는 자들이 바른 일 행할줄을 모르느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "ec7209a54155db35374b160fc44ecef3ed2fd3a70e2b89a04f92220d01f602fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:11",
+      "sequence": 22407,
+      "chapter_label": "AMO 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore the Lord GOD says: “An adversary will overrun the land; and he will pull down your strongholds, and your fortresses will be plundered.”",
+      "ko": "그러므로 주 여호와께서 가라사대 이 땅 사면에 대적이 있어 네 힘을 쇠하게 하며 네 궁궐을 약탈하리라",
+      "source_text_hash": "6a46b9a6cf8cdff0272dc0e084da762534fa79ad6ad62468fd44ad45cdc8e477",
+      "translation_text_hash": "17615a702a3df778a2997d363732ea76053ebf98b8df25ff6532606f46bf2631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와께서 가라사대 이 땅 사면에 대적이 있어 네 힘을 쇠하게 하며 네 궁궐을 약탈하리라"
+      ],
+      "raw_text_hashes": [
+        "17615a702a3df778a2997d363732ea76053ebf98b8df25ff6532606f46bf2631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:12",
+      "sequence": 22408,
+      "chapter_label": "AMO 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD says: “As the shepherd rescues out of the mouth of the lion two legs, or a piece of an ear, so shall the children of Israel be rescued who sit in Samaria on the corner of a couch, and on the silken cushions of a bed.”",
+      "ko": "여호와께서 가라사대 목자가 사자 입에서 양의 두 다리나 귀 조각을 건져냄과 같이 사마리아에서 침상 모퉁이에나 걸상에 비단 방석에 앉은 이스라엘 자손이 건져냄을 입으리라",
+      "source_text_hash": "7429704b2b7b997c140e5155e06c7de97c9aaf7611ab993fad88b9c036230420",
+      "translation_text_hash": "9eb9d31cab9e63f389289b241120e0e4608f34b188e1fa4db6bc687e3a7b7153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 목자가 사자 입에서 양의 두 다리나 귀 조각을 건져냄과 같이 사마리아에서 침상 모퉁이에나 걸상에 비단 방석에 앉은 이스라엘 자손이 건져냄을 입으리라"
+      ],
+      "raw_text_hashes": [
+        "9eb9d31cab9e63f389289b241120e0e4608f34b188e1fa4db6bc687e3a7b7153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:13",
+      "sequence": 22409,
+      "chapter_label": "AMO 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "“Listen, and testify against the house of Jacob,” says the Lord GOD, the God of Armies.",
+      "ko": "주 여호와 만군의 하나님이 가라사대 너희는 듣고 야곱의 족속에게 증거하라",
+      "source_text_hash": "6be623be608ab8a44e207aea2d0202d1bcc847b26bc234c4a0b3d22dba98eedd",
+      "translation_text_hash": "78448a740ddd22961c8ae535e5bb52a939ce8cf13e812c6e7d187c0de6a01d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와 만군의 하나님이 가라사대 너희는 듣고 야곱의 족속에게 증거하라"
+      ],
+      "raw_text_hashes": [
+        "78448a740ddd22961c8ae535e5bb52a939ce8cf13e812c6e7d187c0de6a01d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:14",
+      "sequence": 22410,
+      "chapter_label": "AMO 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "“For in the day that I visit the transgressions of Israel on him, I will also visit the altars of Bethel; and the horns of the altar will be cut off, and fall to the ground.",
+      "ko": "내가 이스라엘의 모든 죄를 보응하는 날에 벧엘의 단들을 벌하여 그 단의 뿔들을 꺾어 땅에 떨어뜨리고",
+      "source_text_hash": "951ed0a550f19c88ad4f6a6b944c8f2055fe2916ed89e8316debfa68f8f493d2",
+      "translation_text_hash": "ff5a679ead434f1d16c831085c7c2615395cc3717285f724eee01c9bdab1d5f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘의 모든 죄를 보응하는 날에 벧엘의 단들을 벌하여 그 단의 뿔들을 꺾어 땅에 떨어뜨리고"
+      ],
+      "raw_text_hashes": [
+        "ff5a679ead434f1d16c831085c7c2615395cc3717285f724eee01c9bdab1d5f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:3:15",
+      "sequence": 22411,
+      "chapter_label": "AMO 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "AMO",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "I will strike the winter house with the summer house; and the houses of ivory will perish, and the great houses will have an end,” says the LORD.",
+      "ko": "겨울 궁과 여름 궁을 치리니 상아궁들이 파멸되며 큰 궁들이 결딴나리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "d01fb73c820190f18fe668ecfe84eddfec958b24d7951b066069d5e3d84346dd",
+      "translation_text_hash": "1d6ceabd7cd1a2c25b7e6f6036ad754f77612e932305b00ddc8b83d51af00a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겨울 궁과 여름 궁을 치리니 상아궁들이 파멸되며 큰 궁들이 결딴나리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "1d6ceabd7cd1a2c25b7e6f6036ad754f77612e932305b00ddc8b83d51af00a13"
+      ]
+    }
+  ]
+}

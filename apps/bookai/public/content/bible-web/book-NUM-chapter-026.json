@@ -1,0 +1,2093 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:026",
+  "unit_ordinal": 143,
+  "unit_label": "NUM 26",
+  "book_code": "NUM",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:26:1",
+      "sequence": 4491,
+      "chapter_label": "NUM 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "After the plague, the LORD spoke to Moses and to Eleazar the son of Aaron the priest, saying,",
+      "ko": "염병 후에 여호와께서 모세와 제사장 아론의 아들 엘르아살에게 일러 가라사대",
+      "source_text_hash": "e48ee9fcbe3eb6a5a709e1ee5823f8366d3b0c4a1cfa04845bedc4d5f6808274",
+      "translation_text_hash": "dc372dcb7a888b74b3d77b5db70925c29ea37734ed72e842df7e029b84cd3755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염병 후에 여호와께서 모세와 제사장 아론의 아들 엘르아살에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "dc372dcb7a888b74b3d77b5db70925c29ea37734ed72e842df7e029b84cd3755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:2",
+      "sequence": 4492,
+      "chapter_label": "NUM 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“Take a census of all the congregation of the children of Israel, from twenty years old and upward, by their fathers’ houses, all who are able to go out to war in Israel.”",
+      "ko": "이스라엘 자손의 온 회중의 총수를 그 조상의 집을 따라 조사하되 이스라엘 중에 무릇 이십세 이상으로 능히 싸움에 나갈만한 자를 계수하라 하시니",
+      "source_text_hash": "6e56cfbdc52ce90e27a5362bee4bbd14898731fbf16dc0c7b9bd2858cb0de529",
+      "translation_text_hash": "47b982f6f721157c7f6c9ae57770e0b10de8896f770f9b8b9ff49907ad40f184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중의 총수를 그 조상의 집을 따라 조사하되 이스라엘 중에 무릇 이십세 이상으로 능히 싸움에 나갈만한 자를 계수하라 하시니"
+      ],
+      "raw_text_hashes": [
+        "47b982f6f721157c7f6c9ae57770e0b10de8896f770f9b8b9ff49907ad40f184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:3",
+      "sequence": 4493,
+      "chapter_label": "NUM 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Moses and Eleazar the priest spoke with them in the plains of Moab by the Jordan at Jericho, saying,",
+      "ko": "모세와 제사장 엘르아살이 여리고 맞은편 요단 가 모압 평지에서 그들에게 고하여 가로되",
+      "source_text_hash": "f7a8267a69c8eca54f7c83dd065da7b382d69f4c82f4f8657088c81195018171",
+      "translation_text_hash": "5443227fe73c64ab81b67d81d8cab22e6a6af7904dd776a10dc9e657c2525351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 엘르아살이 여리고 맞은편 요단 가 모압 평지에서 그들에게 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "5443227fe73c64ab81b67d81d8cab22e6a6af7904dd776a10dc9e657c2525351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:4",
+      "sequence": 4494,
+      "chapter_label": "NUM 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "“Take a census, from twenty years old and upward, as the LORD commanded Moses and the children of Israel.” These are those who came out of the land of Egypt.",
+      "ko": "여호와께서 애굽 땅에서 나온 모세와 이스라엘 자손에게 명하신대로 너희는 이십세 이상된 자를 계수하라 하니라",
+      "source_text_hash": "eed29d0a488cb39d1a3298d08124e4047530cd0fdb737bad724824dd3e1fc40c",
+      "translation_text_hash": "daa60164deccc2f0c9e056a82820b1e74bed6c015ada46ed5b019e4eb8e8606f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 땅에서 나온 모세와 이스라엘 자손에게 명하신대로 너희는 이십세 이상된 자를 계수하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "daa60164deccc2f0c9e056a82820b1e74bed6c015ada46ed5b019e4eb8e8606f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:5",
+      "sequence": 4495,
+      "chapter_label": "NUM 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "Reuben, the firstborn of Israel; the sons of Reuben: of Hanoch, the family of the Hanochites; of Pallu, the family of the Palluites;",
+      "ko": "이스라엘의 장자는 르우벤이라 르우벤 자손은 하녹에게서 난 하녹 가족과 발루에게서 난 발루 가족과",
+      "source_text_hash": "1381335de7287d2887e4ef9e10487b6d7e28511c4aaa9962246b8ac109b2c4ef",
+      "translation_text_hash": "e07a3cb811dad3b8bc740f74b4bc4c162af321ba79c50c90e1400b74d218a80b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 장자는 르우벤이라 르우벤 자손은 하녹에게서 난 하녹 가족과 발루에게서 난 발루 가족과"
+      ],
+      "raw_text_hashes": [
+        "e07a3cb811dad3b8bc740f74b4bc4c162af321ba79c50c90e1400b74d218a80b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:6",
+      "sequence": 4496,
+      "chapter_label": "NUM 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "of Hezron, the family of the Hezronites; of Carmi, the family of the Carmites.",
+      "ko": "헤스론에게서 난 헤스론 가족과 갈미에게서 난 갈미 가족이니",
+      "source_text_hash": "65e630bcbf78ba856c810adeb6c6aa3187d444fdecdf7b1102a24ac13f276751",
+      "translation_text_hash": "6cb301a0e129f9ce06a8d880326c7d9d8fc284c68c1fec4a231bfb9e3e0f5036",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론에게서 난 헤스론 가족과 갈미에게서 난 갈미 가족이니"
+      ],
+      "raw_text_hashes": [
+        "6cb301a0e129f9ce06a8d880326c7d9d8fc284c68c1fec4a231bfb9e3e0f5036"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:7",
+      "sequence": 4497,
+      "chapter_label": "NUM 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "These are the families of the Reubenites; and those who were counted of them were forty-three thousand seven hundred thirty.",
+      "ko": "이는 르우벤 가족들이라 계수함을 입은 자가 사만 삼천 칠백 삼십명이요",
+      "source_text_hash": "8128555e19bb83e344069bb95dcb7c3a8efe35d965e4c5752e18c9c0c9af00eb",
+      "translation_text_hash": "130a4e79c4df9919cf8e03f1dad187bac35f7fbcad66175e101d2b132bf3bb1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 르우벤 가족들이라 계수함을 입은 자가 사만 삼천 칠백 삼십명이요"
+      ],
+      "raw_text_hashes": [
+        "130a4e79c4df9919cf8e03f1dad187bac35f7fbcad66175e101d2b132bf3bb1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:8",
+      "sequence": 4498,
+      "chapter_label": "NUM 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "The son of Pallu: Eliab.",
+      "ko": "발루의 아들은 엘리압이요",
+      "source_text_hash": "1a70b064d4a399709d34e0ffca507db86c23726a55fbcd1c7a393137b5e6e0e6",
+      "translation_text_hash": "aa63eedd97c2a8a40372142b0c7c04a8c776b1c454d36ca536b2ea65ef2bffa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발루의 아들은 엘리압이요"
+      ],
+      "raw_text_hashes": [
+        "aa63eedd97c2a8a40372142b0c7c04a8c776b1c454d36ca536b2ea65ef2bffa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:9",
+      "sequence": 4499,
+      "chapter_label": "NUM 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "The sons of Eliab: Nemuel, Dathan, and Abiram. These are that Dathan and Abiram who were called by the congregation, who rebelled against Moses and against Aaron in the company of Korah when they rebelled against the LORD;",
+      "ko": "엘리압의 아들은 느무엘과 다단과 아비람이라 이 다단과 아비람은 회중 가운데서 부름을 받은 자러니 고라의 무리에 들어가서 모세와 아론을 거스려 여호와께 패역할 때에",
+      "source_text_hash": "068b6b9b452b07be1ac539757812e17adddc37c00bdd63df95a0b120b1f17830",
+      "translation_text_hash": "f9b6426cd98e04b9e83bdc7be9c9abc26430da6aab6daea7112c5a4f30eea18b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리압의 아들은 느무엘과 다단과 아비람이라 이 다단과 아비람은 회중 가운데서 부름을 받은 자러니 고라의 무리에 들어가서 모세와 아론을 거스려 여호와께 패역할 때에"
+      ],
+      "raw_text_hashes": [
+        "f9b6426cd98e04b9e83bdc7be9c9abc26430da6aab6daea7112c5a4f30eea18b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:10",
+      "sequence": 4500,
+      "chapter_label": "NUM 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "and the earth opened its mouth, and swallowed them up together with Korah when that company died; at the time the fire devoured two hundred fifty men, and they became a sign.",
+      "ko": "땅이 그 입을 열어서 그 무리와 고라를 삼키매 그들이 죽었고 당시에 불이 이백 오십명을 삼켜 징계가 되게 하였으나",
+      "source_text_hash": "5becd2436f3c6deab1f3ee086e0772a638c2b2d71385722747f850534f453d08",
+      "translation_text_hash": "d12992dca1a43fbd4cfa0928fb4474a50a13e37624ecb98af6bed339ba1612c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그 입을 열어서 그 무리와 고라를 삼키매 그들이 죽었고 당시에 불이 이백 오십명을 삼켜 징계가 되게 하였으나"
+      ],
+      "raw_text_hashes": [
+        "d12992dca1a43fbd4cfa0928fb4474a50a13e37624ecb98af6bed339ba1612c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:11",
+      "sequence": 4501,
+      "chapter_label": "NUM 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Notwithstanding, the sons of Korah didn’t die.",
+      "ko": "그러나 고라의 아들들은 죽지 아니하였더라",
+      "source_text_hash": "82b1537d6f92a10289f1d4a5072fe19dc4dee683e1ecca90c1ae09134eb62bdc",
+      "translation_text_hash": "bbd61dc5739bc8135cd7b1781e10e87a1d1a109d6ed1cc35691671ecaca61786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 고라의 아들들은 죽지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "bbd61dc5739bc8135cd7b1781e10e87a1d1a109d6ed1cc35691671ecaca61786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:12",
+      "sequence": 4502,
+      "chapter_label": "NUM 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "The sons of Simeon after their families: of Nemuel, the family of the Nemuelites; of Jamin, the family of the Jaminites; of Jachin, the family of the Jachinites;",
+      "ko": "시므온 자손은 그 종족대로 이러하니 느무엘에게서 난 느무엘 가족과 야민에게서 난 야민 가족과 야긴에게서 난 야긴 가족과",
+      "source_text_hash": "87518ca72c192367f5f6329286502939bc82bf079e325ca51fd863add05c6fc5",
+      "translation_text_hash": "7acbab80bd351d1d886fbc29daa78cc26a7af1cdcd3c21d70ca3802c48e7d651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 자손은 그 종족대로 이러하니 느무엘에게서 난 느무엘 가족과 야민에게서 난 야민 가족과 야긴에게서 난 야긴 가족과"
+      ],
+      "raw_text_hashes": [
+        "7acbab80bd351d1d886fbc29daa78cc26a7af1cdcd3c21d70ca3802c48e7d651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:13",
+      "sequence": 4503,
+      "chapter_label": "NUM 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "of Zerah, the family of the Zerahites; of Shaul, the family of the Shaulites.",
+      "ko": "세라에게서 난 세라 가족과 사울에게서 난 사울 가족이라",
+      "source_text_hash": "061dc0becd67adbd675a2475130ba5760de6b63fde9ab04da04d53115e415c75",
+      "translation_text_hash": "bfef751e4b02ad1517196c1351efd4e592228512b2273231569ffc574006aeb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세라에게서 난 세라 가족과 사울에게서 난 사울 가족이라"
+      ],
+      "raw_text_hashes": [
+        "bfef751e4b02ad1517196c1351efd4e592228512b2273231569ffc574006aeb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:14",
+      "sequence": 4504,
+      "chapter_label": "NUM 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "These are the families of the Simeonites, twenty-two thousand two hundred.",
+      "ko": "이는 시므온 종족들이니 계수함을 입은 자가 이만 이천 이백명이었더라",
+      "source_text_hash": "e535560d3574b619b10c5c700467e57ad45e2aea44a35c87d1a4c429b8620670",
+      "translation_text_hash": "09bd23f7ff2284b8a243452442ffca0aad82c39b6a831ec2edd5d0b8ac12355d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 시므온 종족들이니 계수함을 입은 자가 이만 이천 이백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "09bd23f7ff2284b8a243452442ffca0aad82c39b6a831ec2edd5d0b8ac12355d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:15",
+      "sequence": 4505,
+      "chapter_label": "NUM 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "The sons of Gad after their families: of Zephon, the family of the Zephonites; of Haggi, the family of the Haggites; of Shuni, the family of the Shunites;",
+      "ko": "갓 자손은 그 종족대로 이러하니 스본에게서 난 스본 가족과 학기에게서 난 학기 가족과 수니에게서 난 수니 가족과",
+      "source_text_hash": "7b0197003d9bd5e23af6ebe4b4aa3a41be946070bc42f0c00b5f5638e0c8084c",
+      "translation_text_hash": "cccf7131839a623449111c31614359a10859b56f046e284693c3e074ecf9422e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손은 그 종족대로 이러하니 스본에게서 난 스본 가족과 학기에게서 난 학기 가족과 수니에게서 난 수니 가족과"
+      ],
+      "raw_text_hashes": [
+        "cccf7131839a623449111c31614359a10859b56f046e284693c3e074ecf9422e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:16",
+      "sequence": 4506,
+      "chapter_label": "NUM 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "of Ozni, the family of the Oznites; of Eri, the family of the Erites;",
+      "ko": "오스니에게서 난 오스니 가족과 에리에게서 난 에리 가족과",
+      "source_text_hash": "919f23409b5a2cbf7511bbf2529d52d9f235ca8e522400319683fc70ad064393",
+      "translation_text_hash": "e2d5e8c29694fc648c6432345a0a58fff8c501ac8c6dd1121aa67b27b9d4c9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오스니에게서 난 오스니 가족과 에리에게서 난 에리 가족과"
+      ],
+      "raw_text_hashes": [
+        "e2d5e8c29694fc648c6432345a0a58fff8c501ac8c6dd1121aa67b27b9d4c9aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:17",
+      "sequence": 4507,
+      "chapter_label": "NUM 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "of Arod, the family of the Arodites; of Areli, the family of the Arelites.",
+      "ko": "아롯에게서 난 아롯 가족과 아렐리에게서 난 아렐리 가족이라",
+      "source_text_hash": "52dae73374ecf6133a44a71fb6bf556077a76ec8e6364a41bbcc2c10d146d68d",
+      "translation_text_hash": "cf6bfdb2f86bfc5ef0a93946464a2eff21de41cd79f448be60c8ff2358f9fe4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아롯에게서 난 아롯 가족과 아렐리에게서 난 아렐리 가족이라"
+      ],
+      "raw_text_hashes": [
+        "cf6bfdb2f86bfc5ef0a93946464a2eff21de41cd79f448be60c8ff2358f9fe4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:18",
+      "sequence": 4508,
+      "chapter_label": "NUM 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "These are the families of the sons of Gad according to those who were counted of them, forty thousand and five hundred.",
+      "ko": "이는 갓 자손의 종족들이니 계수함을 입은 자가 사만 오백명이었더라",
+      "source_text_hash": "6db84157acf397c3d75d8c522f2d1d7d26ba9c3d51036c4cc837e4e3384c90b6",
+      "translation_text_hash": "acbe316c5ad084ff6d9290a4f8cedf1c3314d5a31ad140b0719c40d982accef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 갓 자손의 종족들이니 계수함을 입은 자가 사만 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "acbe316c5ad084ff6d9290a4f8cedf1c3314d5a31ad140b0719c40d982accef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:19",
+      "sequence": 4509,
+      "chapter_label": "NUM 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Judah: Er and Onan. Er and Onan died in the land of Canaan.",
+      "ko": "유다의 아들은 에르와 오난이라 이 에르와 오난은 가나안 땅에서 죽었고",
+      "source_text_hash": "ae5d7e1ceff3f8bc1b88c465922bc7804733bf5036cf54169f9433918d16bc64",
+      "translation_text_hash": "ad0309fa74e097245d9573e321d1ad2c5462612ce87996966d83896cc811aa0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들은 에르와 오난이라 이 에르와 오난은 가나안 땅에서 죽었고"
+      ],
+      "raw_text_hashes": [
+        "ad0309fa74e097245d9573e321d1ad2c5462612ce87996966d83896cc811aa0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:20",
+      "sequence": 4510,
+      "chapter_label": "NUM 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "The sons of Judah after their families were: of Shelah, the family of the Shelanites; of Perez, the family of the Perezites; of Zerah, the family of the Zerahites.",
+      "ko": "유다의 자손은 그 종족대로 이러하니 셀라에게서 난 셀라 가족과 베레스에게서 난 베레스 가족과 세라에게서 난 세라 가족이며",
+      "source_text_hash": "8f9fdc22577687ad9ef61cb5a06675c819e2de919e73ec694bcd0d3ecc3e1b16",
+      "translation_text_hash": "f2e2265f74429bb9fc7dd60b7637aed590ca387fc1b860ef7db8cabce0b6d656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 자손은 그 종족대로 이러하니 셀라에게서 난 셀라 가족과 베레스에게서 난 베레스 가족과 세라에게서 난 세라 가족이며"
+      ],
+      "raw_text_hashes": [
+        "f2e2265f74429bb9fc7dd60b7637aed590ca387fc1b860ef7db8cabce0b6d656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:21",
+      "sequence": 4511,
+      "chapter_label": "NUM 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Perez were: of Hezron, the family of the Hezronites; of Hamul, the family of the Hamulites.",
+      "ko": "또 베레스 자손은 이러하니 헤스론에게서 난 헤스론 가족과 하물에게서 난 하물 가족이라",
+      "source_text_hash": "48855596c7e8da85aaf12dc68de49701e63257a1e4618310ec419449879a77cc",
+      "translation_text_hash": "39b050514aea8723fbbb673271d5a4504678b1fbbe3d7420d8f869f779e94b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베레스 자손은 이러하니 헤스론에게서 난 헤스론 가족과 하물에게서 난 하물 가족이라"
+      ],
+      "raw_text_hashes": [
+        "39b050514aea8723fbbb673271d5a4504678b1fbbe3d7420d8f869f779e94b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:22",
+      "sequence": 4512,
+      "chapter_label": "NUM 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "These are the families of Judah according to those who were counted of them, seventy-six thousand five hundred.",
+      "ko": "이는 유다 종족들이니 계수함을 입은 자가 칠만 육천 오백명이었더라",
+      "source_text_hash": "dc70e2cadb870e16ee6169b16a848aca62be4e12edf6209e2afcc5e7331e2c63",
+      "translation_text_hash": "dddb4c5778198e7081359ccd289d0f2915323698e7c69cbfae144b05956803c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 유다 종족들이니 계수함을 입은 자가 칠만 육천 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "dddb4c5778198e7081359ccd289d0f2915323698e7c69cbfae144b05956803c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:23",
+      "sequence": 4513,
+      "chapter_label": "NUM 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Issachar after their families: of Tola, the family of the Tolaites; of Puvah, the family of the Punites;",
+      "ko": "잇사갈 자손은 그 종족대로 이러하니 돌라에게서 난 돌라 가족과 부와에게서 난 부니 가족과",
+      "source_text_hash": "cc8aa88be605278b4438a7f567a4dde0dba5f584b231a987c76f180c328225d1",
+      "translation_text_hash": "4a01a4f2925c9cf0632c23b42bb6034ca0c90181b95ad84cab93cc5388893cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 자손은 그 종족대로 이러하니 돌라에게서 난 돌라 가족과 부와에게서 난 부니 가족과"
+      ],
+      "raw_text_hashes": [
+        "4a01a4f2925c9cf0632c23b42bb6034ca0c90181b95ad84cab93cc5388893cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:24",
+      "sequence": 4514,
+      "chapter_label": "NUM 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "of Jashub, the family of the Jashubites; of Shimron, the family of the Shimronites.",
+      "ko": "야숩에게서 난 야숩 가족과 시므론에게서 난 시므론 가족이라",
+      "source_text_hash": "3941583275b56e290027a814b602c04790122f32b3e3c0d1bd115933fc5ab321",
+      "translation_text_hash": "f4a8736d729fbf928ed59caac887d7311ff5b370fcc4be6d509a5ab9b2c37a9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야숩에게서 난 야숩 가족과 시므론에게서 난 시므론 가족이라"
+      ],
+      "raw_text_hashes": [
+        "f4a8736d729fbf928ed59caac887d7311ff5b370fcc4be6d509a5ab9b2c37a9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:25",
+      "sequence": 4515,
+      "chapter_label": "NUM 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "These are the families of Issachar according to those who were counted of them, sixty-four thousand three hundred.",
+      "ko": "이는 잇사갈 종족들이니 계수함을 입은 자가 육만 사천 삼백명이었더라",
+      "source_text_hash": "8cf182fea7d17b1f8df52dc5cbe550cabffaf1ffdf9ae2c03551680a150444eb",
+      "translation_text_hash": "b5b3b3388144c91b25565cb0e4da41be8f918a6ea40dcead5aff3aef4fb4ec43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 잇사갈 종족들이니 계수함을 입은 자가 육만 사천 삼백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "b5b3b3388144c91b25565cb0e4da41be8f918a6ea40dcead5aff3aef4fb4ec43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:26",
+      "sequence": 4516,
+      "chapter_label": "NUM 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "The sons of Zebulun after their families: of Sered, the family of the Seredites; of Elon, the family of the Elonites; of Jahleel, the family of the Jahleelites.",
+      "ko": "스불론 자손은 그 종족대로 이러하니 세렛에게서 난 세렛 가족과 엘론에게서 난 엘론 가족과 얄르엘에게서 난 얄르엘 가족이라",
+      "source_text_hash": "4068c241e0e8e11dacaf556b28cfba19eaeff604708bae1cfc24da999290bdd9",
+      "translation_text_hash": "b4eed076e2e295d2dc7d2079adb56c1a9606fec60c01839c2f660aa23d91d675",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 자손은 그 종족대로 이러하니 세렛에게서 난 세렛 가족과 엘론에게서 난 엘론 가족과 얄르엘에게서 난 얄르엘 가족이라"
+      ],
+      "raw_text_hashes": [
+        "b4eed076e2e295d2dc7d2079adb56c1a9606fec60c01839c2f660aa23d91d675"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:27",
+      "sequence": 4517,
+      "chapter_label": "NUM 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "These are the families of the Zebulunites according to those who were counted of them, sixty thousand five hundred.",
+      "ko": "이는 스불론 종족들이니 계수함을 입은 자가 육만 오백명이었더라",
+      "source_text_hash": "5c08a87328c82d3929b7ee85bbb4c2701b16fe148ee61b2a7e1f35129b26e9e8",
+      "translation_text_hash": "4e30b1c4d35b32e6308fcb3c3a7235d40b1be0565b7aeb7009c6da08ac0dca60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 스불론 종족들이니 계수함을 입은 자가 육만 오백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "4e30b1c4d35b32e6308fcb3c3a7235d40b1be0565b7aeb7009c6da08ac0dca60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:28",
+      "sequence": 4518,
+      "chapter_label": "NUM 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "The sons of Joseph after their families: Manasseh and Ephraim.",
+      "ko": "요셉의 아들들은 그 종족대로 므낫세와 에브라임이요",
+      "source_text_hash": "894cfea643e906bdebe7c6eb0804bbee08c5bb96f243dfdad7859ba027f2ae9d",
+      "translation_text_hash": "27fc6b8be7b63477cade1f4eae6b3b8bcdfe53774fbfcf98a07fdc9e3027f353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 아들들은 그 종족대로 므낫세와 에브라임이요"
+      ],
+      "raw_text_hashes": [
+        "27fc6b8be7b63477cade1f4eae6b3b8bcdfe53774fbfcf98a07fdc9e3027f353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:29",
+      "sequence": 4519,
+      "chapter_label": "NUM 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "The sons of Manasseh: of Machir, the family of the Machirites; and Machir became the father of Gilead; of Gilead, the family of the Gileadites.",
+      "ko": "므낫세의 자손 중 마길에게서 난 것은 마길 가족이라 마길이 길르앗을 낳았고 길르앗에게서 난 것은 길르앗 가족이라",
+      "source_text_hash": "05094a44ccdd167e1ca45908e8c8a556d085a4e07ba78dfd6b01245be97a182b",
+      "translation_text_hash": "24cd243c2f882e499094af54a44cb0bf3dc74a18aae0e01506e872a241326995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 자손 중 마길에게서 난 것은 마길 가족이라 마길이 길르앗을 낳았고 길르앗에게서 난 것은 길르앗 가족이라"
+      ],
+      "raw_text_hashes": [
+        "24cd243c2f882e499094af54a44cb0bf3dc74a18aae0e01506e872a241326995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:30",
+      "sequence": 4520,
+      "chapter_label": "NUM 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "These are the sons of Gilead: of Iezer, the family of the Iezerites; of Helek, the family of the Helekites;",
+      "ko": "길르앗 자손은 이러하니 이에셀에게서 난 이에셀 가족과 헬렉에게서 난 헬렉 가족과",
+      "source_text_hash": "df71b08e377cc1f809c6c6a2615f603873825656e695aaed7b7f5f98678b5900",
+      "translation_text_hash": "0336365009aaa18b26a867b9144d52030cd391054f2fb890daeabc9b7a0547fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 자손은 이러하니 이에셀에게서 난 이에셀 가족과 헬렉에게서 난 헬렉 가족과"
+      ],
+      "raw_text_hashes": [
+        "0336365009aaa18b26a867b9144d52030cd391054f2fb890daeabc9b7a0547fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:31",
+      "sequence": 4521,
+      "chapter_label": "NUM 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "and Asriel, the family of the Asrielites; and Shechem, the family of the Shechemites;",
+      "ko": "아스리엘에게서 난 아스리엘 가족과 세겜에게서 난 세겜 가족과",
+      "source_text_hash": "484a95b348fed061d597ff4ae7ac4d62d0aadf7ef5841115d12b2efd07aa5c73",
+      "translation_text_hash": "74b56baafb547aa297b72422a5b7c48861e7639454ed3ddfd6387b78cd3a7909",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스리엘에게서 난 아스리엘 가족과 세겜에게서 난 세겜 가족과"
+      ],
+      "raw_text_hashes": [
+        "74b56baafb547aa297b72422a5b7c48861e7639454ed3ddfd6387b78cd3a7909"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:32",
+      "sequence": 4522,
+      "chapter_label": "NUM 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "and Shemida, the family of the Shemidaites; and Hepher, the family of the Hepherites.",
+      "ko": "스미다에게서 난 스미다 가족과 헤벨에게서 난 헤벨 가족이며",
+      "source_text_hash": "cbcab62a52be473c15d98df5c86584a6e1d53c4d91b2952bc33f7a896517fa62",
+      "translation_text_hash": "510c1015e64b4a1a748ee321074cca3533630d07ee2eb1fe709bba1b81ba82f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스미다에게서 난 스미다 가족과 헤벨에게서 난 헤벨 가족이며"
+      ],
+      "raw_text_hashes": [
+        "510c1015e64b4a1a748ee321074cca3533630d07ee2eb1fe709bba1b81ba82f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:33",
+      "sequence": 4523,
+      "chapter_label": "NUM 26",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 33
+        }
+      ],
+      "en": "Zelophehad the son of Hepher had no sons, but daughters: and the names of the daughters of Zelophehad were Mahlah, Noah, Hoglah, Milcah, and Tirzah.",
+      "ko": "헤벨의 아들 슬로브핫은 아들이 없고 딸뿐이라 그 딸의 이름은 말라와 노아와 호글라와 밀가와 디르사니",
+      "source_text_hash": "3715af878b468cbbde1ee47147550cf5f5768b95dd106d2a1bc2d81c62afc2c3",
+      "translation_text_hash": "8ab1bc53a8bc95162e7afb9134c01538992b57e9b2faa3588a120d3920714da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤벨의 아들 슬로브핫은 아들이 없고 딸뿐이라 그 딸의 이름은 말라와 노아와 호글라와 밀가와 디르사니"
+      ],
+      "raw_text_hashes": [
+        "8ab1bc53a8bc95162e7afb9134c01538992b57e9b2faa3588a120d3920714da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:34",
+      "sequence": 4524,
+      "chapter_label": "NUM 26",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 34
+        }
+      ],
+      "en": "These are the families of Manasseh. Those who were counted of them were fifty-two thousand seven hundred.",
+      "ko": "이는 므낫세의 종족들이라 계수함을 입은 자가 오만 이천 칠백명이었더라",
+      "source_text_hash": "ba0845d778b46592566e596f5bd7fdc13b319d3430998b5f3e5b7692c38884d0",
+      "translation_text_hash": "b82fbe083d8bb30bab55eae997d6ab9e45779302a17bd950e93f3c2ba233bfa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 므낫세의 종족들이라 계수함을 입은 자가 오만 이천 칠백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "b82fbe083d8bb30bab55eae997d6ab9e45779302a17bd950e93f3c2ba233bfa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:35",
+      "sequence": 4525,
+      "chapter_label": "NUM 26",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 35
+        }
+      ],
+      "en": "These are the sons of Ephraim after their families: of Shuthelah, the family of the Shuthelahites; of Becher, the family of the Becherites; of Tahan, the family of the Tahanites.",
+      "ko": "에브라임 자손은 그 종족대로 이러하니 수델라에게서 난 수델라 가족과 베겔에게서 난 베겔 가족과 다한에게서 난 다한 가족이며",
+      "source_text_hash": "7cc1762a78bdc54c631365fc3197fefe610734dc4f423e7ee8e099357e9b7559",
+      "translation_text_hash": "af706f8ef2644ed2f433f0b1f5219fce40c4f6e25d3edfc3cff6925b3ade6b98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손은 그 종족대로 이러하니 수델라에게서 난 수델라 가족과 베겔에게서 난 베겔 가족과 다한에게서 난 다한 가족이며"
+      ],
+      "raw_text_hashes": [
+        "af706f8ef2644ed2f433f0b1f5219fce40c4f6e25d3edfc3cff6925b3ade6b98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:36",
+      "sequence": 4526,
+      "chapter_label": "NUM 26",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 36
+        }
+      ],
+      "en": "These are the sons of Shuthelah: of Eran, the family of the Eranites.",
+      "ko": "수델라 자손은 이러하니 에란에게서 난 에란 가족이라",
+      "source_text_hash": "cb4ec469e36b1210c0842109e10efd1394b2d6c54e98ad7201447179d551efbc",
+      "translation_text_hash": "48705b0bfbfb1f7849a84ae21d2fb5fef324bee2f1818b3a1945d3b72483d1a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수델라 자손은 이러하니 에란에게서 난 에란 가족이라"
+      ],
+      "raw_text_hashes": [
+        "48705b0bfbfb1f7849a84ae21d2fb5fef324bee2f1818b3a1945d3b72483d1a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:37",
+      "sequence": 4527,
+      "chapter_label": "NUM 26",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 37
+        }
+      ],
+      "en": "These are the families of the sons of Ephraim according to those who were counted of them, thirty-two thousand five hundred. These are the sons of Joseph after their families.",
+      "ko": "이는 에브라임 자손의 종족들이니 계수함을 입은 자가 삼만 이천 오백명이라 이상은 그 종족을 따른 요셉 자손이었더라",
+      "source_text_hash": "1aa21cfad8ad6ff21aa08c620479b193097edd693524a3c195c2afeba63206f3",
+      "translation_text_hash": "63eb6d20de88ee2cdcf36bea19ec25788334c68b5d6f1992b81577cbbbd1c103",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 에브라임 자손의 종족들이니 계수함을 입은 자가 삼만 이천 오백명이라 이상은 그 종족을 따른 요셉 자손이었더라"
+      ],
+      "raw_text_hashes": [
+        "63eb6d20de88ee2cdcf36bea19ec25788334c68b5d6f1992b81577cbbbd1c103"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:38",
+      "sequence": 4528,
+      "chapter_label": "NUM 26",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 38
+        }
+      ],
+      "en": "The sons of Benjamin after their families: of Bela, the family of the Belaites; of Ashbel, the family of the Ashbelites; of Ahiram, the family of the Ahiramites;",
+      "ko": "베냐민 자손은 그 종족대로 이러하니 벨라에게서 난 벨라 가족과 아스벨에게서 난 아스벨 가족과 아히람에게서 난 아히람 가족과",
+      "source_text_hash": "fbeed6fe7d405d0f1935cad05a869fdb04dec4f23181b0d2b3baaf6c3cd0fe07",
+      "translation_text_hash": "f0aac6ff652001a52df63b34241e22b4984aa1eb6fc7e7bc03d9f52be9c87fe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손은 그 종족대로 이러하니 벨라에게서 난 벨라 가족과 아스벨에게서 난 아스벨 가족과 아히람에게서 난 아히람 가족과"
+      ],
+      "raw_text_hashes": [
+        "f0aac6ff652001a52df63b34241e22b4984aa1eb6fc7e7bc03d9f52be9c87fe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:39",
+      "sequence": 4529,
+      "chapter_label": "NUM 26",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 39
+        }
+      ],
+      "en": "of Shephupham, the family of the Shuphamites; of Hupham, the family of the Huphamites.",
+      "ko": "스부밤에게서 난 스부밤 가족과 후밤에게서 난 후밤 가족이며",
+      "source_text_hash": "7da98449b6f4202509807fef8a6b97339a5c7c5938979306b1617b8f5c6343ac",
+      "translation_text_hash": "28a2130c205cfbc2fb72b056d77c1c78da7ee70b5fc1143208be22e368d3f4b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스부밤에게서 난 스부밤 가족과 후밤에게서 난 후밤 가족이며"
+      ],
+      "raw_text_hashes": [
+        "28a2130c205cfbc2fb72b056d77c1c78da7ee70b5fc1143208be22e368d3f4b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:40",
+      "sequence": 4530,
+      "chapter_label": "NUM 26",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 40
+        }
+      ],
+      "en": "The sons of Bela were Ard and Naaman: the family of the Ardites; and of Naaman, the family of the Naamites.",
+      "ko": "벨라의 아들은 아릇과 나아만이라 아릇에게서 아릇 가족과 나아만에게서 나아만 가족이 났으니",
+      "source_text_hash": "92392e27a630411b32755bf289d443b7af6bf8dadec01984e04855a14a9295e5",
+      "translation_text_hash": "f3e759ec38b734f191565ee8ff39a026d2bbfc90d8931fa6f1f44a0334bcc984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨라의 아들은 아릇과 나아만이라 아릇에게서 아릇 가족과 나아만에게서 나아만 가족이 났으니"
+      ],
+      "raw_text_hashes": [
+        "f3e759ec38b734f191565ee8ff39a026d2bbfc90d8931fa6f1f44a0334bcc984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:41",
+      "sequence": 4531,
+      "chapter_label": "NUM 26",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 41
+        }
+      ],
+      "en": "These are the sons of Benjamin after their families; and those who were counted of them were forty-five thousand six hundred.",
+      "ko": "이는 그들의 종족을 따른 베냐민 자손이라 계수함을 입은 자가 사만 오천 육백명이었더라",
+      "source_text_hash": "9eee5bacbe59a1e292d2ca95be9c4de4bdfee1eda00088e75abb3cc53b1524ca",
+      "translation_text_hash": "dcc063f8eb4ea31916c71843e7fd4eb6d5d6c1dbce30858afdb8f57176c78561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들의 종족을 따른 베냐민 자손이라 계수함을 입은 자가 사만 오천 육백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "dcc063f8eb4ea31916c71843e7fd4eb6d5d6c1dbce30858afdb8f57176c78561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:42",
+      "sequence": 4532,
+      "chapter_label": "NUM 26",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 42
+        }
+      ],
+      "en": "These are the sons of Dan after their families: of Shuham, the family of the Shuhamites. These are the families of Dan after their families.",
+      "ko": "단 자손은 그 종족대로 이러하니라 수함에게서 수함 가족이 났으니 이는 그들의 종족을 따른 단 가족들이라",
+      "source_text_hash": "158288a926261002bd4467c60f0063e4b40fa0efa9a2824ec9aa02f0bf3338a1",
+      "translation_text_hash": "c66a7d814efd85c2d1d142db8290d25212899fd4d3532213f7ef6b48ce990f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손은 그 종족대로 이러하니라 수함에게서 수함 가족이 났으니 이는 그들의 종족을 따른 단 가족들이라"
+      ],
+      "raw_text_hashes": [
+        "c66a7d814efd85c2d1d142db8290d25212899fd4d3532213f7ef6b48ce990f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:43",
+      "sequence": 4533,
+      "chapter_label": "NUM 26",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 43
+        }
+      ],
+      "en": "All the families of the Shuhamites, according to those who were counted of them, were sixty-four thousand four hundred.",
+      "ko": "수함 모든 가족의 계수함을 입은 자가 육만 사천 사백명이었더라",
+      "source_text_hash": "4940be135a9b45b7adb5afb47e8261c10550df54fa350ecbd2b6f73a59d2ea22",
+      "translation_text_hash": "611ae9b834a758d7992b43faa68a5c0b9500180494d285aaa45e4ce4cd010a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수함 모든 가족의 계수함을 입은 자가 육만 사천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "611ae9b834a758d7992b43faa68a5c0b9500180494d285aaa45e4ce4cd010a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:44",
+      "sequence": 4534,
+      "chapter_label": "NUM 26",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 44
+        }
+      ],
+      "en": "The sons of Asher after their families: of Imnah, the family of the Imnites; of Ishvi, the family of the Ishvites; of Beriah, the family of the Berites.",
+      "ko": "아셀 자손은 그 종족대로 이러하니 임나에게서 난 임나 가족과 이스위에게서 난 이스위 가족과 브리아에게서 난 브리아 가족이며",
+      "source_text_hash": "46383519563e983dfd591939cb5197b5e8c24cb749bffa62cceee5f6e9464178",
+      "translation_text_hash": "b238049399e82bc41fadb08fe40589a06d4f62a903d551d14bfb957fe50c0a9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 자손은 그 종족대로 이러하니 임나에게서 난 임나 가족과 이스위에게서 난 이스위 가족과 브리아에게서 난 브리아 가족이며"
+      ],
+      "raw_text_hashes": [
+        "b238049399e82bc41fadb08fe40589a06d4f62a903d551d14bfb957fe50c0a9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:45",
+      "sequence": 4535,
+      "chapter_label": "NUM 26",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 45
+        }
+      ],
+      "en": "Of the sons of Beriah: of Heber, the family of the Heberites; of Malchiel, the family of the Malchielites.",
+      "ko": "브리아의 자손 중 헤벨에게서 난 헤벨 가족과 말기엘에게서 난 말기엘 가족이며",
+      "source_text_hash": "03fd9aa0bc83ecc50824644d9dbcd5fd7f8b89bf32abea173086bc982b7b24f1",
+      "translation_text_hash": "1cbdca9f37611e168bdb8a78c22266d140718b2f675a5c5dbf4dab128e282543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브리아의 자손 중 헤벨에게서 난 헤벨 가족과 말기엘에게서 난 말기엘 가족이며"
+      ],
+      "raw_text_hashes": [
+        "1cbdca9f37611e168bdb8a78c22266d140718b2f675a5c5dbf4dab128e282543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:46",
+      "sequence": 4536,
+      "chapter_label": "NUM 26",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 46
+        }
+      ],
+      "en": "The name of the daughter of Asher was Serah.",
+      "ko": "아셀의 딸의 이름은 세라라",
+      "source_text_hash": "9c4cbba36df81ee6e536178f2c68ed652c29ea142c5f9258e71cc0da874e86da",
+      "translation_text_hash": "ca17e7ec02fd4ef5bdd71f4fb5acf3b8784c0bb944b23611dbe7ae5c98f03a8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀의 딸의 이름은 세라라"
+      ],
+      "raw_text_hashes": [
+        "ca17e7ec02fd4ef5bdd71f4fb5acf3b8784c0bb944b23611dbe7ae5c98f03a8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:47",
+      "sequence": 4537,
+      "chapter_label": "NUM 26",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 47
+        }
+      ],
+      "en": "These are the families of the sons of Asher according to those who were counted of them, fifty-three thousand four hundred.",
+      "ko": "이는 아셀 자손의 종족들이니 계수함을 입은 자가 오만 삼천 사백명이었더라",
+      "source_text_hash": "3389fb00fe0fc4c60807c17e0b9acf8d49bc1c22d23c5b9de68a8e0eaabec16d",
+      "translation_text_hash": "99bf6b63d15c9969fa805964b3a91ab278cc795d341d0627676613d6a3634816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아셀 자손의 종족들이니 계수함을 입은 자가 오만 삼천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "99bf6b63d15c9969fa805964b3a91ab278cc795d341d0627676613d6a3634816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:48",
+      "sequence": 4538,
+      "chapter_label": "NUM 26",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 48
+        }
+      ],
+      "en": "The sons of Naphtali after their families: of Jahzeel, the family of the Jahzeelites; of Guni, the family of the Gunites;",
+      "ko": "납달리 자손은 그 종족대로 이러하니 야셀에게서 난 야셀 가족과 구니에게서 난 구니 가족과",
+      "source_text_hash": "b5e40984e5eb78f21a9fa6148060d51467b8d21570a327da122a14e5b7d0779e",
+      "translation_text_hash": "8aa29729f0e13903014f82ed8e2fa33192053a88ab5aa8b2418d40e73708da94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 자손은 그 종족대로 이러하니 야셀에게서 난 야셀 가족과 구니에게서 난 구니 가족과"
+      ],
+      "raw_text_hashes": [
+        "8aa29729f0e13903014f82ed8e2fa33192053a88ab5aa8b2418d40e73708da94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:49",
+      "sequence": 4539,
+      "chapter_label": "NUM 26",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 49
+        }
+      ],
+      "en": "of Jezer, the family of the Jezerites; of Shillem, the family of the Shillemites.",
+      "ko": "예셀에게서 난 예셀 가족과 실렘에게서 난 실렘 가족이라",
+      "source_text_hash": "38b9e0f405dfdfedaa9f72d8a719ca3173c6abb99cada39e51d7f43a663a06db",
+      "translation_text_hash": "31ed4c5f6507820df64a5741fce64603a7910f7987fc18a67bc90f6e2cdfa56e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예셀에게서 난 예셀 가족과 실렘에게서 난 실렘 가족이라"
+      ],
+      "raw_text_hashes": [
+        "31ed4c5f6507820df64a5741fce64603a7910f7987fc18a67bc90f6e2cdfa56e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:50",
+      "sequence": 4540,
+      "chapter_label": "NUM 26",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 50
+        }
+      ],
+      "en": "These are the families of Naphtali according to their families; and those who were counted of them were forty-five thousand four hundred.",
+      "ko": "이는 그 종족을 따른 납달리 가족들이니 계수함을 입은 자가 사만 오천 사백명이었더라",
+      "source_text_hash": "0a176d396f27a39cd5b220eaccec931605a920c2b7e86650f93b9a554085c34d",
+      "translation_text_hash": "2eda6574679ff5ae70b7a79029c288561c9cb6006fe54afab8f22d5c5b9bf8ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 종족을 따른 납달리 가족들이니 계수함을 입은 자가 사만 오천 사백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "2eda6574679ff5ae70b7a79029c288561c9cb6006fe54afab8f22d5c5b9bf8ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:51",
+      "sequence": 4541,
+      "chapter_label": "NUM 26",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 51
+        }
+      ],
+      "en": "These are those who were counted of the children of Israel, six hundred one thousand seven hundred thirty.",
+      "ko": "이스라엘 자손의 계수함을 입은 자가 육십만 일천 칠백 삼십명이었더라",
+      "source_text_hash": "6ed9d26e9aaba5bc0f0a29d3ade5a7e54b1a6a11d45b72b47fa6e4babe55c4f0",
+      "translation_text_hash": "cbb545f4121612e09721e5c38b3780a5b0b208fd73207171f74bcce52e07b1da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 계수함을 입은 자가 육십만 일천 칠백 삼십명이었더라"
+      ],
+      "raw_text_hashes": [
+        "cbb545f4121612e09721e5c38b3780a5b0b208fd73207171f74bcce52e07b1da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:52",
+      "sequence": 4542,
+      "chapter_label": "NUM 26",
+      "verse_label": "52",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 52
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:53",
+      "sequence": 4543,
+      "chapter_label": "NUM 26",
+      "verse_label": "53",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 53
+        }
+      ],
+      "en": "“To these the land shall be divided for an inheritance according to the number of names.",
+      "ko": "이 명수대로 땅을 나눠주어 기업을 삼게 하라",
+      "source_text_hash": "916df5a54d5fa869044704140dd7258a4e644a8f71ec7daf0f00f1ff25e484f0",
+      "translation_text_hash": "a19f38672af761faa75a518b89b449e82c0936313a448c3b87566f447a17ac9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 명수대로 땅을 나눠주어 기업을 삼게 하라"
+      ],
+      "raw_text_hashes": [
+        "a19f38672af761faa75a518b89b449e82c0936313a448c3b87566f447a17ac9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:54",
+      "sequence": 4544,
+      "chapter_label": "NUM 26",
+      "verse_label": "54",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 54
+        }
+      ],
+      "en": "To the more you shall give the more inheritance, and to the fewer you shall give the less inheritance. To everyone according to those who were counted of him shall his inheritance be given.",
+      "ko": "수가 많은 자에게는 기업을 많이 줄것이요 수가 적은 자에게는 기업을 적게 줄것이니 그들의 계수함을 입은 수대로 각기 기업을 주되",
+      "source_text_hash": "da72ddb26622dd6ce3524dbe4e68491e37abc5eb5d5c8ff783796836080dcc11",
+      "translation_text_hash": "0362730d90a8bb74f7d050404822c46f5f41b9efc0a5680cee44c0020a448704",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수가 많은 자에게는 기업을 많이 줄것이요 수가 적은 자에게는 기업을 적게 줄것이니 그들의 계수함을 입은 수대로 각기 기업을 주되"
+      ],
+      "raw_text_hashes": [
+        "0362730d90a8bb74f7d050404822c46f5f41b9efc0a5680cee44c0020a448704"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:55",
+      "sequence": 4545,
+      "chapter_label": "NUM 26",
+      "verse_label": "55",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 55
+        }
+      ],
+      "en": "Notwithstanding, the land shall be divided by lot. According to the names of the tribes of their fathers they shall inherit.",
+      "ko": "오직 그 땅을 제비 뽑아 나누어 그들의 조상 지파의 이름을 따라 얻게 할찌니라",
+      "source_text_hash": "80070ee76744639a0cb2e7534c4d132c51b4957271e623190d5d426efe566369",
+      "translation_text_hash": "26faa6ad97519c9ca8332dae8a101b300402b91f61f7ed67da36185a1b34989a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 땅을 제비 뽑아 나누어 그들의 조상 지파의 이름을 따라 얻게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "26faa6ad97519c9ca8332dae8a101b300402b91f61f7ed67da36185a1b34989a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:56",
+      "sequence": 4546,
+      "chapter_label": "NUM 26",
+      "verse_label": "56",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 56
+        }
+      ],
+      "en": "According to the lot shall their inheritance be divided between the more and the fewer.”",
+      "ko": "그 다소를 물론하고 그 기업을 제비 뽑아 나눌찌니라",
+      "source_text_hash": "2427a8c61fdde1ef8e2f1c848f0831acb1e2fc0e017e90b2295c634ddc446d0d",
+      "translation_text_hash": "05fb32879e5d48d9eb60d5b61cc270b3e820961352e9da918455145ed71b6e55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다소를 물론하고 그 기업을 제비 뽑아 나눌찌니라"
+      ],
+      "raw_text_hashes": [
+        "05fb32879e5d48d9eb60d5b61cc270b3e820961352e9da918455145ed71b6e55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:57",
+      "sequence": 4547,
+      "chapter_label": "NUM 26",
+      "verse_label": "57",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 57
+        }
+      ],
+      "en": "These are those who were counted of the Levites after their families: of Gershon, the family of the Gershonites; of Kohath, the family of the Kohathites; of Merari, the family of the Merarites.",
+      "ko": "레위인의 계수함을 입은 자는 그 종족대로 이러하니 게르손에게서 난 게르손 가족과 고핫에게서 난 고핫 가족과 므라리에게서 난 므라리 가족이며",
+      "source_text_hash": "ef39057e0c537c23be824dfff8f99106598f2d4fa2f960b6b4f2dcddf09e6a2b",
+      "translation_text_hash": "253c69473117cf773fffa9cf224b806526ac5d391df0dbf59a2ca3f5b2ade03a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인의 계수함을 입은 자는 그 종족대로 이러하니 게르손에게서 난 게르손 가족과 고핫에게서 난 고핫 가족과 므라리에게서 난 므라리 가족이며"
+      ],
+      "raw_text_hashes": [
+        "253c69473117cf773fffa9cf224b806526ac5d391df0dbf59a2ca3f5b2ade03a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:58",
+      "sequence": 4548,
+      "chapter_label": "NUM 26",
+      "verse_label": "58",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 58
+        }
+      ],
+      "en": "These are the families of Levi: the family of the Libnites, the family of the Hebronites, the family of the Mahlites, the family of the Mushites, and the family of the Korahites. Kohath became the father of Amram.",
+      "ko": "레위 종족들은 이러하니 립니 가족과 헤브론 가족과 말리 가족과 무시 가족과 고라 가족이라 고핫은 아므람을 낳았으며",
+      "source_text_hash": "994df4cfe36a8964179b22068b80136bcd3182ab34f701a51b4bab8763198ea0",
+      "translation_text_hash": "c3a17aa303490c1b91edcf09dac8ee4a9557907b17947c9aab704c39929a7ccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 종족들은 이러하니 립니 가족과 헤브론 가족과 말리 가족과 무시 가족과 고라 가족이라 고핫은 아므람을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "c3a17aa303490c1b91edcf09dac8ee4a9557907b17947c9aab704c39929a7ccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:59",
+      "sequence": 4549,
+      "chapter_label": "NUM 26",
+      "verse_label": "59",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 59
+        }
+      ],
+      "en": "The name of Amram’s wife was Jochebed, the daughter of Levi, who was born to Levi in Egypt. She bore to Amram Aaron and Moses, and Miriam their sister.",
+      "ko": "아므람의 처의 이름은 요게벳이니 레위의 딸이요 애굽에서 레위에게서 난 자라 그가 아므람에게서 아론과 모세와 그 누이 미리암을 낳았고",
+      "source_text_hash": "dcbb7f8f830c4148856981fbd4b59632863cd18242f39bea30f6494a8f9339e1",
+      "translation_text_hash": "d795620ce206edac970dbb7fc4adbd75afcbeaa205be2e77adbc0638b26196b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아므람의 처의 이름은 요게벳이니 레위의 딸이요 애굽에서 레위에게서 난 자라 그가 아므람에게서 아론과 모세와 그 누이 미리암을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "d795620ce206edac970dbb7fc4adbd75afcbeaa205be2e77adbc0638b26196b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:60",
+      "sequence": 4550,
+      "chapter_label": "NUM 26",
+      "verse_label": "60",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 60
+        }
+      ],
+      "en": "To Aaron were born Nadab and Abihu, Eleazar and Ithamar.",
+      "ko": "아론에게서는 나답과 아비후와 엘르아살과 이다말이 났더니",
+      "source_text_hash": "23ae92d0710532360d10a72e399dc1b4556da365d2ef922fd62677167f5ba4b5",
+      "translation_text_hash": "ed6bbb0085c784126187c09c9e877b3d389139047d20b0c04b23184a349136dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게서는 나답과 아비후와 엘르아살과 이다말이 났더니"
+      ],
+      "raw_text_hashes": [
+        "ed6bbb0085c784126187c09c9e877b3d389139047d20b0c04b23184a349136dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:61",
+      "sequence": 4551,
+      "chapter_label": "NUM 26",
+      "verse_label": "61",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 61
+        }
+      ],
+      "en": "Nadab and Abihu died when they offered strange fire before the LORD.",
+      "ko": "나답과 아비후는 다른 불을 여호와 앞에 드리다가 죽었더라",
+      "source_text_hash": "c9934a16cc6fea5d72c04685897b393a59003c54561cc61701d1d6cf14a2b615",
+      "translation_text_hash": "1eae0eda2dc67a58e8f0c7b547293d49a683f349f5c045315805ff43aafb93e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나답과 아비후는 다른 불을 여호와 앞에 드리다가 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "1eae0eda2dc67a58e8f0c7b547293d49a683f349f5c045315805ff43aafb93e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:62",
+      "sequence": 4552,
+      "chapter_label": "NUM 26",
+      "verse_label": "62",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 62
+        }
+      ],
+      "en": "Those who were counted of them were twenty-three thousand, every male from a month old and upward; for they were not counted among the children of Israel, because there was no inheritance given them among the children of Israel.",
+      "ko": "레위인의 일개월 이상으로 계수함을 입은 모든 남자가 이만 삼천명이었더라 그들은 이스라엘 자손 중 계수에 들지 아니하였으니 이는 이스라엘 자손 중에서 그들에게 준 기업이 없음이었더라",
+      "source_text_hash": "bdeb623db9efb3f823e0f28a3d80b619eaae036d8b10250ec975f1c73176e042",
+      "translation_text_hash": "853069bc138d5f4bae2bb6dde973801ef1f1f61c3bb8dfb561ba03e38afa32d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인의 일개월 이상으로 계수함을 입은 모든 남자가 이만 삼천명이었더라 그들은 이스라엘 자손 중 계수에 들지 아니하였으니 이는 이스라엘 자손 중에서 그들에게 준 기업이 없음이었더라"
+      ],
+      "raw_text_hashes": [
+        "853069bc138d5f4bae2bb6dde973801ef1f1f61c3bb8dfb561ba03e38afa32d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:63",
+      "sequence": 4553,
+      "chapter_label": "NUM 26",
+      "verse_label": "63",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 63
+        }
+      ],
+      "en": "These are those who were counted by Moses and Eleazar the priest, who counted the children of Israel in the plains of Moab by the Jordan at Jericho.",
+      "ko": "이는 모세와 제사장 엘르아살의 계수한 자라 그들이 여리고 맞은편 요단 가 모압 평지에서 이스라엘 자손을 계수한 중에는",
+      "source_text_hash": "30a700f61a7ab8b335f093aa5fd7d3daca6ca0bb43081a32ff4cd397762af231",
+      "translation_text_hash": "605b9aa39f4112ccf5da9e182e9a748af40384c71138f026e82c6078f27b04d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세와 제사장 엘르아살의 계수한 자라 그들이 여리고 맞은편 요단 가 모압 평지에서 이스라엘 자손을 계수한 중에는"
+      ],
+      "raw_text_hashes": [
+        "605b9aa39f4112ccf5da9e182e9a748af40384c71138f026e82c6078f27b04d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:64",
+      "sequence": 4554,
+      "chapter_label": "NUM 26",
+      "verse_label": "64",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 64
+        }
+      ],
+      "en": "But among these there was not a man of them who were counted by Moses and Aaron the priest, who counted the children of Israel in the wilderness of Sinai.",
+      "ko": "모세와 제사장 아론이 시내 광야에서 계수한 이스라엘 자손은 한 사람도 들지 못하였으니",
+      "source_text_hash": "9c5805c033a82de37a4f8f6790182e0f0c88f420e52c62e718481dee9c825c1e",
+      "translation_text_hash": "81f48bafada0ebaf55fa7afbe7bfd05a4177557307724aa8ad1572bc736e5a40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 제사장 아론이 시내 광야에서 계수한 이스라엘 자손은 한 사람도 들지 못하였으니"
+      ],
+      "raw_text_hashes": [
+        "81f48bafada0ebaf55fa7afbe7bfd05a4177557307724aa8ad1572bc736e5a40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:26:65",
+      "sequence": 4555,
+      "chapter_label": "NUM 26",
+      "verse_label": "65",
+      "locator": {
+        "book": "NUM",
+        "chapter": 26,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 26,
+          "verse": 65
+        }
+      ],
+      "en": "For the LORD had said of them, “They shall surely die in the wilderness.” There was not a man left of them, except Caleb the son of Jephunneh, and Joshua the son of Nun.",
+      "ko": "이는 여호와께서 그들에게 대하여 말씀하시기를 그들이 반드시 광야에서 죽으리라 하셨음이라 이러므로 여분네의 아들 갈렙과 눈의 아들 여호수아 외에는 한 사람도 남지 아니하였더라",
+      "source_text_hash": "066d56ec6f391174d66736b3a9daafbe7d40734b998c2a687d7eebeea7e949c3",
+      "translation_text_hash": "9af737051f0c61b874c9b643efa2c15321853f1fdb9a2bae79cf3acd1c2d6685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 그들에게 대하여 말씀하시기를 그들이 반드시 광야에서 죽으리라 하셨음이라 이러므로 여분네의 아들 갈렙과 눈의 아들 여호수아 외에는 한 사람도 남지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "9af737051f0c61b874c9b643efa2c15321853f1fdb9a2bae79cf3acd1c2d6685"
+      ]
+    }
+  ]
+}

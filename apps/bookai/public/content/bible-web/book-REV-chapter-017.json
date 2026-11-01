@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:017",
+  "unit_ordinal": 1184,
+  "unit_label": "REV 17",
+  "book_code": "REV",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:17:1",
+      "sequence": 30973,
+      "chapter_label": "REV 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "One of the seven angels who had the seven bowls came and spoke with me, saying, “Come here. I will show you the judgment of the great prostitute who sits on many waters,",
+      "ko": "또 일곱 대접을 가진 일곱 천사 중 하나가 와서 내게 말하여 가로되 이리 오라 많은 물위에 앉은 큰 음녀의 받을 심판을 네게 보이리라",
+      "source_text_hash": "72e889a1f081e789f19185732fd6ebd6ef0223b555a403d7b79236e03abde725",
+      "translation_text_hash": "95ff62c710ad5179e0ff93323196ab7e4b7aebb788d4a55522af734d69eeb2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 일곱 대접을 가진 일곱 천사 중 하나가 와서 내게 말하여 가로되 이리 오라 많은 물위에 앉은 큰 음녀의 받을 심판을 네게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "95ff62c710ad5179e0ff93323196ab7e4b7aebb788d4a55522af734d69eeb2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:2",
+      "sequence": 30974,
+      "chapter_label": "REV 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "with whom the kings of the earth committed sexual immorality. Those who dwell on the earth were made drunken with the wine of her sexual immorality.”",
+      "ko": "땅의 임금들도 그로 더불어 음행하였고 땅에 거하는 자들도 그 음행의 포도주에 취하였다 하고",
+      "source_text_hash": "e61abc6b0a5d7fcfb5e60d2994824b22e9d6002f0b7ad930b8ed794d3a895047",
+      "translation_text_hash": "d6c9bc27a5f8ddf517981fa361f6ea1c3dca1e4ba2477905d711976e41d80484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 임금들도 그로 더불어 음행하였고 땅에 거하는 자들도 그 음행의 포도주에 취하였다 하고"
+      ],
+      "raw_text_hashes": [
+        "d6c9bc27a5f8ddf517981fa361f6ea1c3dca1e4ba2477905d711976e41d80484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:3",
+      "sequence": 30975,
+      "chapter_label": "REV 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "He carried me away in the Spirit into a wilderness. I saw a woman sitting on a scarlet-colored beast, full of blasphemous names, having seven heads and ten horns.",
+      "ko": "곧 성령으로 나를 데리고 광야로 가니라 내가 보니 여자가 붉은 빛 짐승을 탔는데 그 짐승의 몸에 참람된 이름들이 가득하고 일곱 머리와 열 뿔이 있으며",
+      "source_text_hash": "66574db54afb2731ef45bcbb9e5a23123bb60149e0bd0e7338fbdb101de59a1e",
+      "translation_text_hash": "884fa0c9901ec54eafd635bb0668378955976c83a3ae83e895cd83357faab82c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 성령으로 나를 데리고 광야로 가니라 내가 보니 여자가 붉은 빛 짐승을 탔는데 그 짐승의 몸에 참람된 이름들이 가득하고 일곱 머리와 열 뿔이 있으며"
+      ],
+      "raw_text_hashes": [
+        "884fa0c9901ec54eafd635bb0668378955976c83a3ae83e895cd83357faab82c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:4",
+      "sequence": 30976,
+      "chapter_label": "REV 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "The woman was dressed in purple and scarlet, and decked with gold and precious stones and pearls, having in her hand a golden cup full of abominations and the impurities of the sexual immorality of the earth.",
+      "ko": "그 여자는 자주 빛과 붉은 빛 옷을 입고 금과 보석과 진주로 꾸미고 손에 금잔을 가졌는데 가증한 물건과 그의 음행의 더러운 것들이 가득하더라",
+      "source_text_hash": "fb6081aed919d375a240c9388d29e7d13159147db3cee3f189994c43c370bfb0",
+      "translation_text_hash": "1d9399bce882eab85556c2447bd86ed861b201a156fb057cf1228afc55411616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자는 자주 빛과 붉은 빛 옷을 입고 금과 보석과 진주로 꾸미고 손에 금잔을 가졌는데 가증한 물건과 그의 음행의 더러운 것들이 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "1d9399bce882eab85556c2447bd86ed861b201a156fb057cf1228afc55411616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:5",
+      "sequence": 30977,
+      "chapter_label": "REV 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "And on her forehead a name was written, “MYSTERY, BABYLON THE GREAT, THE MOTHER OF THE PROSTITUTES AND OF THE ABOMINATIONS OF THE EARTH.”",
+      "ko": "그 이마에 이름이 기록되었으니 비밀이라, 큰 바벨론이라, 땅의 음녀들과 가증한 것들의 어미라 하였더라",
+      "source_text_hash": "56f1bba01b72aef63995aa63013abdc653bc08fbea2a812c853900130b310821",
+      "translation_text_hash": "ec3b8f514d8cbdefea723e4b5f197daced965e6a34c6a21ffbfbf25907cdb542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이마에 이름이 기록되었으니 비밀이라, 큰 바벨론이라, 땅의 음녀들과 가증한 것들의 어미라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ec3b8f514d8cbdefea723e4b5f197daced965e6a34c6a21ffbfbf25907cdb542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:6",
+      "sequence": 30978,
+      "chapter_label": "REV 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "I saw the woman drunken with the blood of the saints and with the blood of the martyrs of Jesus. When I saw her, I wondered with great amazement.",
+      "ko": "또 내가 보매 이 여자가 성도들의 피와 예수의 증인들의 피에 취한지라 내가 그 여자를 보고 기이히 여기고 크게 기이히 여기니",
+      "source_text_hash": "c43ccd18ed132ec9f8511ab0da8bc3bfeb29cbb8551a5a6c2b016a23c8369eb6",
+      "translation_text_hash": "323f178441ee9677826b2844b56956121134fb70ebbd72b9d4bb7534221eecea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보매 이 여자가 성도들의 피와 예수의 증인들의 피에 취한지라 내가 그 여자를 보고 기이히 여기고 크게 기이히 여기니"
+      ],
+      "raw_text_hashes": [
+        "323f178441ee9677826b2844b56956121134fb70ebbd72b9d4bb7534221eecea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:7",
+      "sequence": 30979,
+      "chapter_label": "REV 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "The angel said to me, “Why do you wonder? I will tell you the mystery of the woman and of the beast that carries her, which has the seven heads and the ten horns.",
+      "ko": "천사가 가로되 왜 기이히 여기느냐 내가 여자와 그의 탄바 일곱 머리와 열 뿔 가진 짐승의 비밀을 네게 이르리라",
+      "source_text_hash": "87f57364275a2feba45e84d094ab21cbe7280c69cb71e23bdb63992cdc51e6fb",
+      "translation_text_hash": "c15e8fab3964b4cf10ee154330870525dbf71b3265f12538f44e6ef54a9a7299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 가로되 왜 기이히 여기느냐 내가 여자와 그의 탄바 일곱 머리와 열 뿔 가진 짐승의 비밀을 네게 이르리라"
+      ],
+      "raw_text_hashes": [
+        "c15e8fab3964b4cf10ee154330870525dbf71b3265f12538f44e6ef54a9a7299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:8",
+      "sequence": 30980,
+      "chapter_label": "REV 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "The beast that you saw was, and is not; and is about to come up out of the abyss and to go into destruction. Those who dwell on the earth and whose names have not been written in the book of life from the foundation of the world will marvel when they see that the beast was, and is not, and shall be present.",
+      "ko": "네가 본 짐승은 전에 있었다가 시방 없으나 장차 무저갱으로부터 올라와 멸망으로 들어갈 자니 땅에 거하는 자들로서 창세 이후로 생명책에 녹명되지 못한 자들이 이전에 있었다가 시방 없으나 장차 나올 짐승을 보고 기이히 여기리라",
+      "source_text_hash": "b0fbfd3d7e1c92aa252ec4dafee7e9904fa35c30634a6bdc5e7322fae98c7de2",
+      "translation_text_hash": "f836048a048c9deee526f031f98ba9aef41bd28980c454edd87c455ba9e034e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 본 짐승은 전에 있었다가 시방 없으나 장차 무저갱으로부터 올라와 멸망으로 들어갈 자니 땅에 거하는 자들로서 창세 이후로 생명책에 녹명되지 못한 자들이 이전에 있었다가 시방 없으나 장차 나올 짐승을 보고 기이히 여기리라"
+      ],
+      "raw_text_hashes": [
+        "f836048a048c9deee526f031f98ba9aef41bd28980c454edd87c455ba9e034e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:9",
+      "sequence": 30981,
+      "chapter_label": "REV 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "Here is the mind that has wisdom. The seven heads are seven mountains on which the woman sits.",
+      "ko": "지혜 있는 뜻이 여기 있으니 그 일곱 머리는 여자가 앉은 일곱 산이요",
+      "source_text_hash": "41e110c484629ea56f9a9a465ccbad672639fdb4ab03f130bac5920fd626b87d",
+      "translation_text_hash": "c7733afb4e418513ed7a016db1b59e0af9e991532e6379e1ffecd0dd05943ac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 뜻이 여기 있으니 그 일곱 머리는 여자가 앉은 일곱 산이요"
+      ],
+      "raw_text_hashes": [
+        "c7733afb4e418513ed7a016db1b59e0af9e991532e6379e1ffecd0dd05943ac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:10",
+      "sequence": 30982,
+      "chapter_label": "REV 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "They are seven kings. Five have fallen, the one is, and the other has not yet come. When he comes, he must continue a little while.",
+      "ko": "또 일곱 왕이라 다섯은 망하였고 하나는 있고 다른이는 아직 이르지 아니하였으나 이르면 반드시 잠간 동안 계속하리라",
+      "source_text_hash": "a1a00e00ced294a32c461d3c1e1aa2a2131beb9c24411544f5d6d2887bf5150d",
+      "translation_text_hash": "734a318512b135d06b333b7f4769a948c56488699ee7f159c11887668c882927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 일곱 왕이라 다섯은 망하였고 하나는 있고 다른이는 아직 이르지 아니하였으나 이르면 반드시 잠간 동안 계속하리라"
+      ],
+      "raw_text_hashes": [
+        "734a318512b135d06b333b7f4769a948c56488699ee7f159c11887668c882927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:11",
+      "sequence": 30983,
+      "chapter_label": "REV 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "The beast that was, and is not, is himself also an eighth, and is of the seven; and he goes to destruction.",
+      "ko": "전에 있었다가 시방 없어진 짐승은 여덟째 왕이니 일곱 중에 속한 자라 저가 멸망으로 들어가리라",
+      "source_text_hash": "86519d2e7d3d56c95e6b4b9b933e58bf6174a76325772d1a480af80defa9815e",
+      "translation_text_hash": "c3819b8961b9e2434158950fc0bf228cd5a47e904616dede9c4c24e42c640e17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 있었다가 시방 없어진 짐승은 여덟째 왕이니 일곱 중에 속한 자라 저가 멸망으로 들어가리라"
+      ],
+      "raw_text_hashes": [
+        "c3819b8961b9e2434158950fc0bf228cd5a47e904616dede9c4c24e42c640e17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:12",
+      "sequence": 30984,
+      "chapter_label": "REV 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "The ten horns that you saw are ten kings who have received no kingdom as yet, but they receive authority as kings with the beast for one hour.",
+      "ko": "네가 보던 열 뿔은 열 왕이니 아직 나라를 얻지 못하였으나 다만 짐승으로 더불어 임금처럼 권세를 일시 동안 받으리라",
+      "source_text_hash": "cb072559b191ae749c6231619ad56a5cb1acf22e9b66045d2157fb623c8365d0",
+      "translation_text_hash": "d84569bb15963bef92fbfa5f7b6dc1a8c0f28a2ccaf476c858783ea9918dc330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 보던 열 뿔은 열 왕이니 아직 나라를 얻지 못하였으나 다만 짐승으로 더불어 임금처럼 권세를 일시 동안 받으리라"
+      ],
+      "raw_text_hashes": [
+        "d84569bb15963bef92fbfa5f7b6dc1a8c0f28a2ccaf476c858783ea9918dc330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:13",
+      "sequence": 30985,
+      "chapter_label": "REV 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "These have one mind, and they give their power and authority to the beast.",
+      "ko": "저희가 한 뜻을 가지고 자기의 능력과 권세를 짐승에게 주더라",
+      "source_text_hash": "04d626207ad20b320eac7824d2caab353dbb3fb29a88c4c021bd36a95c22bf75",
+      "translation_text_hash": "78a55c33c4ef588e2c44e83aae41966a8096a001f965b9719910bfa632f5e7fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 한 뜻을 가지고 자기의 능력과 권세를 짐승에게 주더라"
+      ],
+      "raw_text_hashes": [
+        "78a55c33c4ef588e2c44e83aae41966a8096a001f965b9719910bfa632f5e7fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:14",
+      "sequence": 30986,
+      "chapter_label": "REV 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "These will war against the Lamb, and the Lamb will overcome them, for he is Lord of lords and King of kings; and those who are with him are called, chosen, and faithful.”",
+      "ko": "저희가 어린 양으로 더불어 싸우려니와 어린 양은 만주의 주시요 만왕의 왕이시므로 저희를 이기실터이요 또 그와 함께 있는 자들 곧 부르심을 입고 빼내심을 얻고 진실한 자들은 이기리로다",
+      "source_text_hash": "7b08cba9307da9f0604c205a2b777e7184a12df1a19155f34fe62f2f1bab79e4",
+      "translation_text_hash": "e0cef0fe56aaf0b459313988e641c4397de10df31f4ebbfbc68bc0141c8c79fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 어린 양으로 더불어 싸우려니와 어린 양은 만주의 주시요 만왕의 왕이시므로 저희를 이기실터이요 또 그와 함께 있는 자들 곧 부르심을 입고 빼내심을 얻고 진실한 자들은 이기리로다"
+      ],
+      "raw_text_hashes": [
+        "e0cef0fe56aaf0b459313988e641c4397de10df31f4ebbfbc68bc0141c8c79fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:15",
+      "sequence": 30987,
+      "chapter_label": "REV 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "He said to me, “The waters which you saw, where the prostitute sits, are peoples, multitudes, nations, and languages.",
+      "ko": "또 천사가 내게 말하되 네가 본바 음녀의 앉은 물은 백성과 무리와 열국과 방언들이니라",
+      "source_text_hash": "751cf10b6fdfdb9e680bcda1fc356cbb7e213e16228960cc79b1f9e86d6fcc58",
+      "translation_text_hash": "44811e589c3c59535d0203f187447f50a545391877cc258aa48d4bd6ad0d04ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 천사가 내게 말하되 네가 본바 음녀의 앉은 물은 백성과 무리와 열국과 방언들이니라"
+      ],
+      "raw_text_hashes": [
+        "44811e589c3c59535d0203f187447f50a545391877cc258aa48d4bd6ad0d04ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:16",
+      "sequence": 30988,
+      "chapter_label": "REV 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "The ten horns which you saw, they and the beast will hate the prostitute, will make her desolate, will strip her naked, will eat her flesh, and will burn her utterly with fire.",
+      "ko": "네가 본바 이 열 뿔과 짐승이 음녀를 미워하여 망하게 하고 벌거벗게 하고 그 살을 먹고 불로 아주 사르리라",
+      "source_text_hash": "cea1f2e542e4855169f81ad6d0758c5ea1b6c2365e9930a347a3ad6a1839d6c6",
+      "translation_text_hash": "0822151185fd67ea36def27718fa5b46eafe433aba8d97ff20187c60116a43db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 본바 이 열 뿔과 짐승이 음녀를 미워하여 망하게 하고 벌거벗게 하고 그 살을 먹고 불로 아주 사르리라"
+      ],
+      "raw_text_hashes": [
+        "0822151185fd67ea36def27718fa5b46eafe433aba8d97ff20187c60116a43db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:17",
+      "sequence": 30989,
+      "chapter_label": "REV 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "For God has put in their hearts to do what he has in mind, to be of one mind, and to give their kingdom to the beast, until the words of God should be accomplished.",
+      "ko": "하나님이 자기 뜻대로 할 마음을 저희에게 주사 한 뜻을 이루게 하시고 저희 나라를 그 짐승에게 주게 하시되 하나님 말씀이 응하기까지 하심이니라",
+      "source_text_hash": "73b380426a37b6ae29fe27da208039369e3e1889d21bc1816dae6aea74935ca9",
+      "translation_text_hash": "99ff10dc5c1ee7bcae5168185f17337f103367c698f4a86a884c0ad6f92e254d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 자기 뜻대로 할 마음을 저희에게 주사 한 뜻을 이루게 하시고 저희 나라를 그 짐승에게 주게 하시되 하나님 말씀이 응하기까지 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "99ff10dc5c1ee7bcae5168185f17337f103367c698f4a86a884c0ad6f92e254d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:17:18",
+      "sequence": 30990,
+      "chapter_label": "REV 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "The woman whom you saw is the great city which reigns over the kings of the earth.”",
+      "ko": "또 네가 본바 여자는 땅의 임금들을 다스리는 큰 성이라 하더라",
+      "source_text_hash": "2cc3014c35c2b1db76233bcb7d8f1d7a7e8c78de010215e35e9ad939e7a8db67",
+      "translation_text_hash": "2296544e7e4bc41cac9bdaf4d817dea067422de394b5001306db68e0ef85dd9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 본바 여자는 땅의 임금들을 다스리는 큰 성이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "2296544e7e4bc41cac9bdaf4d817dea067422de394b5001306db68e0ef85dd9b"
+      ]
+    }
+  ]
+}
