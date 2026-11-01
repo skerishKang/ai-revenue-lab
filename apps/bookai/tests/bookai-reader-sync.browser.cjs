@@ -141,7 +141,11 @@ async function migration(browser) {
     'storymemory.auditMigration.v1':JSON.stringify({text:'알 수 없는 이전 기록도 보존',array:[1,2,3]})
   };
   // An init script runs before any application script, on the same origin.
+  // It also runs on the context's fresh about:blank pages, where localStorage itself throws
+  // ("Access is denied for this document") and turned into a page error the acceptance check
+  // refuses. Seed only real http(s) documents.
   await context.addInitScript(data => {
+    if (!/^https?:$/.test(location.protocol)) return;
     if (!localStorage.getItem('__bookai_acceptance_seed')) {
       for (const [key,value] of Object.entries(data)) localStorage.setItem(key,value);
       localStorage.setItem('__bookai_acceptance_seed','1');

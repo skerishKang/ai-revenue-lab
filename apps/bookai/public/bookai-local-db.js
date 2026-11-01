@@ -49,6 +49,11 @@
       let conflict=false,migrated=false;
       marker.onsuccess=()=>{
         if(marker.result)return;
+        // A pass that finds nothing to fold in must not close the migration: the marker
+        // promises 'legacy storage is already inside', so writing it on an empty pass
+        // dropped legacy values that appeared later (for example from another tab of an
+        // older build) and hid real conflicts from the next pass.
+        if(!entries.length)return;
         migrated=true;
         const store=tx.objectStore(STORE);
         for(const [key,value] of entries) {
