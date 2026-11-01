@@ -35,14 +35,17 @@ def headers(index: int, at: int) -> dict[str, str]:
             "x-padiem-edge-tls": "TLSv1.3", "x-padiem-edge-proof": proof}
 
 
-def run(mode: str, db: Path) -> list[float]:
+def run(mode: str, db: Path, warmup: int = 20) -> list[float]:
     verifier = EdgeProofVerifier(SECRET, str(db), sync_mode=mode)
     at = int(time.time())
     samples: list[float] = []
-    for index in range(REQUESTS):
+    for index in range(REQUESTS + warmup):
         started = time.perf_counter()
         assert verifier.verify(method="GET", path=PATH, headers=headers(index, at), now=at) is True
-        samples.append((time.perf_counter() - started) * 1000.0)
+        elapsed = (time.perf_counter() - started) * 1000.0
+        if index >= warmup:                     # the warm-up is not measured
+            samples.append(elapsed)
+    verifier.close()
     return samples
 
 
@@ -55,7 +58,9 @@ def summary(label: str, samples: list[float]) -> str:
 
 
 def main() -> int:
-    with tempfile.TemporaryDirectory() as tmp:
+    # A PASSIVE checkpoint may still be finishing when the run ends; its own
+    # connection is not the measured one, so leave the temp files to the OS.
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         root = Path(tmp)
         full = run("full", root / "full.sqlite3")
         normal = run("normal", root / "normal.sqlite3")

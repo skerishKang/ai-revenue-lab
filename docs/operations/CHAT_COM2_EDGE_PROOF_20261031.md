@@ -19,12 +19,18 @@ replay check. When the mode is off, the existing host behavior is unchanged.
 ## Replay store durability
 
 `PADIEM_EDGE_REPLAY_SYNC_MODE` chooses how the replay database commits. `full`
-(unset, empty, or any unknown value) is the unchanged behavior: rollback journal
-and `synchronous=FULL`, one fsync per signed request. `normal` holds the store in
-WAL with `synchronous=NORMAL` and takes that fsync off the request path; the
-per-request `BEGIN IMMEDIATE` / `INSERT` / `COMMIT`, the unique request ID and
-the one-verify-at-a-time order are unchanged, so a replayed proof is refused the
+(unset, empty, or any unknown value) is the unchanged behavior: one connection
+per request, rollback journal and `synchronous=FULL`, one fsync per signed
+request. `normal` keeps one connection open for the process in WAL with
+`synchronous=NORMAL` and takes that fsync off the request path; the per-request
+`BEGIN IMMEDIATE` / `INSERT` / `COMMIT`, the unique request ID and the
+one-verify-at-a-time order are unchanged, so a replayed proof is refused the
 same way in both modes.
+
+`normal` turns SQLite's automatic checkpoint off for that connection and takes a
+`PASSIVE` checkpoint every 200 committed requests or 30 seconds, on a connection
+of its own, so no signed request waits for one. The connection is opened lazily,
+reopened once if it is lost, and closed at process exit.
 
 The trade is the newest writes: an abrupt power loss (not a process crash) can
 drop the last few commits, so a proof consumed seconds before the loss could be
