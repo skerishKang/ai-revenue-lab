@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:008",
+  "unit_ordinal": 411,
+  "unit_label": "EZR 8",
+  "book_code": "EZR",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:8:1",
+      "sequence": 12203,
+      "chapter_label": "EZR 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the heads of their fathers’ households, and this is the genealogy of those who went up with me from Babylon, in the reign of Artaxerxes the king:",
+      "ko": "아닥사스다왕이 위에 있을 때에 나와 함께 바벨론에서 올라온 족장들과 그들의 보계가 이러하니라",
+      "source_text_hash": "7237dfdeb159db054cd1ee40865ba7f325fcf25e0ee4fb0a30a1c5884f4400cb",
+      "translation_text_hash": "589f80a103d3ba84527f70c0bf1248506ede20c8567b4815385d715e12395ea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다왕이 위에 있을 때에 나와 함께 바벨론에서 올라온 족장들과 그들의 보계가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "589f80a103d3ba84527f70c0bf1248506ede20c8567b4815385d715e12395ea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:2",
+      "sequence": 12204,
+      "chapter_label": "EZR 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Of the sons of Phinehas, Gershom. Of the sons of Ithamar, Daniel. Of the sons of David, Hattush.",
+      "ko": "비느하스 자손 중에서는 게르솜이요 이다말 자손 중에서는 다니엘이요 다윗 자손 중에서는 핫두스요",
+      "source_text_hash": "61a9b6afc2838207c216ef4ccd18d679bab0971b012b63679d3a5a0284009a85",
+      "translation_text_hash": "f8f36584b37ec17ac8b7a59440fe174ab3dcc5d99f6453e7fd9b11e67213d3f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비느하스 자손 중에서는 게르솜이요 이다말 자손 중에서는 다니엘이요 다윗 자손 중에서는 핫두스요"
+      ],
+      "raw_text_hashes": [
+        "f8f36584b37ec17ac8b7a59440fe174ab3dcc5d99f6453e7fd9b11e67213d3f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:3",
+      "sequence": 12205,
+      "chapter_label": "EZR 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Of the sons of Shecaniah, of the sons of Parosh, Zechariah; and with him were listed by genealogy of the males one hundred fifty.",
+      "ko": "스가냐 자손 곧 바로스 자손 중에서는 스가랴니 그와 함께 족보에 기록된 남자가 일백 오십명이요",
+      "source_text_hash": "9dc156fa55b02666ae230f5cbda9b68d7196e6ce4b6379841347da9266818249",
+      "translation_text_hash": "a1949011ad8e152806d61a6dc928d7e873908649afdba04f98dcc78254d5784a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스가냐 자손 곧 바로스 자손 중에서는 스가랴니 그와 함께 족보에 기록된 남자가 일백 오십명이요"
+      ],
+      "raw_text_hashes": [
+        "a1949011ad8e152806d61a6dc928d7e873908649afdba04f98dcc78254d5784a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:4",
+      "sequence": 12206,
+      "chapter_label": "EZR 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Of the sons of Pahathmoab, Eliehoenai the son of Zerahiah; and with him two hundred males.",
+      "ko": "바핫모압 자손 중에서는 스라히야의 아들 엘여호에내니 그와 함께한 남자가 이백명이요",
+      "source_text_hash": "ef6ea3f22576fc29cef2cc58fa191188137646cfdcb5f44dd4b3a40d0d4e113e",
+      "translation_text_hash": "ece2278bb6b246c26bd638fb02ecbc9cd66bc390705f41a9145b43f2acc77431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바핫모압 자손 중에서는 스라히야의 아들 엘여호에내니 그와 함께한 남자가 이백명이요"
+      ],
+      "raw_text_hashes": [
+        "ece2278bb6b246c26bd638fb02ecbc9cd66bc390705f41a9145b43f2acc77431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:5",
+      "sequence": 12207,
+      "chapter_label": "EZR 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Of the sons of Shecaniah, the son of Jahaziel; and with him three hundred males.",
+      "ko": "스가냐 자손 중에서는 야하시엘의 아들이니 그와 함께한 남자가 삼백명이요",
+      "source_text_hash": "5b276db4f6db79824f5aa8db8deeb76243b18a2f016b681c56d0de217f6bf52c",
+      "translation_text_hash": "5008542b1c8db447ea50b045b714ca422f475e4e0e9a454857c636f551669080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스가냐 자손 중에서는 야하시엘의 아들이니 그와 함께한 남자가 삼백명이요"
+      ],
+      "raw_text_hashes": [
+        "5008542b1c8db447ea50b045b714ca422f475e4e0e9a454857c636f551669080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:6",
+      "sequence": 12208,
+      "chapter_label": "EZR 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Of the sons of Adin, Ebed the son of Jonathan; and with him fifty males.",
+      "ko": "아딘 자손 중에서는 요나단의 아들 에벳이니 그와 함께한 남자가 오십명이요",
+      "source_text_hash": "e34e1b231669995fa167c12f0e2805017be6b591d792cb49beea39e08e37f795",
+      "translation_text_hash": "47ce5c0384a48aed55dd5fb8153d168a67b16db4a139f43427f6024a2b73821a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아딘 자손 중에서는 요나단의 아들 에벳이니 그와 함께한 남자가 오십명이요"
+      ],
+      "raw_text_hashes": [
+        "47ce5c0384a48aed55dd5fb8153d168a67b16db4a139f43427f6024a2b73821a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:7",
+      "sequence": 12209,
+      "chapter_label": "EZR 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Of the sons of Elam, Jeshaiah the son of Athaliah; and with him seventy males.",
+      "ko": "엘람 자손 중에서는 아달리야의 아들 여사야니 그와 함께한 남자가 칠십명이요",
+      "source_text_hash": "6de31f672cc76aa31c703684f1b131493a186eb70954498df8a46ca67bb618b6",
+      "translation_text_hash": "e0f19522110b45f75adf742059fe459246038a0ba0db74ad087087795d584af5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 자손 중에서는 아달리야의 아들 여사야니 그와 함께한 남자가 칠십명이요"
+      ],
+      "raw_text_hashes": [
+        "e0f19522110b45f75adf742059fe459246038a0ba0db74ad087087795d584af5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:8",
+      "sequence": 12210,
+      "chapter_label": "EZR 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Of the sons of Shephatiah, Zebadiah the son of Michael; and with him eighty males.",
+      "ko": "스바댜 자손 중에서는 미가엘의 아들 스바댜니 그와 함께한 남자가 팔십명이요",
+      "source_text_hash": "ded417d224a406c2a1a583af3491b846de8765a4f6781995548be45435587630",
+      "translation_text_hash": "2a99ba4d361731f8858ef2ecb0d572ad18b2a1448baeb9b4300dd95fc96e3fbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜 자손 중에서는 미가엘의 아들 스바댜니 그와 함께한 남자가 팔십명이요"
+      ],
+      "raw_text_hashes": [
+        "2a99ba4d361731f8858ef2ecb0d572ad18b2a1448baeb9b4300dd95fc96e3fbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:9",
+      "sequence": 12211,
+      "chapter_label": "EZR 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Of the sons of Joab, Obadiah the son of Jehiel; and with him two hundred eighteen males.",
+      "ko": "요압 자손 중에서는 여히엘의 아들 오바댜니 그와 함께한 남자가 이백 십 팔명이요",
+      "source_text_hash": "d69b10aaa7d297972da63254bdfb6c706acf219a821a5334010971da11e7e0df",
+      "translation_text_hash": "2a3d5b3d99933143c6f9775514ca02510c93a3b9705c40119a189c3718d28197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압 자손 중에서는 여히엘의 아들 오바댜니 그와 함께한 남자가 이백 십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "2a3d5b3d99933143c6f9775514ca02510c93a3b9705c40119a189c3718d28197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:10",
+      "sequence": 12212,
+      "chapter_label": "EZR 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Of the sons of Shelomith, the son of Josiphiah; and with him one hundred sixty males.",
+      "ko": "슬로밋 자손 중에서는 요시뱌의 아들이니 그와 함께한 남자가 일백 육십명이요",
+      "source_text_hash": "6b51567c2789c0beda5f7c784e47c58bdfb073c341ddfd7cce2e0e831e3769e9",
+      "translation_text_hash": "1c5bc3c75f0467b33e8b58133df9d3e1c3ef7290b49136c4cc8d715b2c9faa2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬로밋 자손 중에서는 요시뱌의 아들이니 그와 함께한 남자가 일백 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "1c5bc3c75f0467b33e8b58133df9d3e1c3ef7290b49136c4cc8d715b2c9faa2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:11",
+      "sequence": 12213,
+      "chapter_label": "EZR 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Of the sons of Bebai, Zechariah the son of Bebai; and with him twenty-eight males.",
+      "ko": "베배 자손 중에서는 베배의 아들 스가랴니 그와 함께한 남자가 이십 팔명이요",
+      "source_text_hash": "36475b042899fce3ff3d1a9d65847319b2dbeb877ee8d22175f365870e2a5a86",
+      "translation_text_hash": "6239e31ec70fdd2debb98793d30d7e9bb204174a2b23d264cd84764af205753c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베배 자손 중에서는 베배의 아들 스가랴니 그와 함께한 남자가 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "6239e31ec70fdd2debb98793d30d7e9bb204174a2b23d264cd84764af205753c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:12",
+      "sequence": 12214,
+      "chapter_label": "EZR 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Of the sons of Azgad, Johanan the son of Hakkatan; and with him one hundred ten males.",
+      "ko": "아스갓 자손 중에서는 학가단의 아들 요하난이니 그와 함께한 남자가 일백 십명이요",
+      "source_text_hash": "3e3bc2851e443cb4861ed9ac7d8db47531cd0891e79247fb621ddde1533b3ca2",
+      "translation_text_hash": "9a5d7f4586701db3e763d905927c24f386643112dd8a1c04d814892674cc5c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스갓 자손 중에서는 학가단의 아들 요하난이니 그와 함께한 남자가 일백 십명이요"
+      ],
+      "raw_text_hashes": [
+        "9a5d7f4586701db3e763d905927c24f386643112dd8a1c04d814892674cc5c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:13",
+      "sequence": 12215,
+      "chapter_label": "EZR 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Of the sons of Adonikam, who were the last, their names are: Eliphelet, Jeuel, and Shemaiah; and with them sixty males.",
+      "ko": "아도니감 자손 중에 나중된 자의 이름은 엘리벨렛과 여우엘과 스마야니 그와 함께한 남자가 육십명이요",
+      "source_text_hash": "314370cfcc7c57b793a97c2738fe132934d9a0edb00c9b7b1c5d31732c5f02c6",
+      "translation_text_hash": "749f01a0b68ca177e80cf4fc7560b9c0c8480ba0faa402f064ec1177634eafcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니감 자손 중에 나중된 자의 이름은 엘리벨렛과 여우엘과 스마야니 그와 함께한 남자가 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "749f01a0b68ca177e80cf4fc7560b9c0c8480ba0faa402f064ec1177634eafcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:14",
+      "sequence": 12216,
+      "chapter_label": "EZR 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Of the sons of Bigvai, Uthai and Zabbud; and with them seventy males.",
+      "ko": "비그왜 자손 중에서는 우대와 사붓이니 그와 함께한 남자가 칠십명이었느니라",
+      "source_text_hash": "fada91905ae56f1710f03fb39a395060ebaa7e021f5cd558f36201e7fad3a612",
+      "translation_text_hash": "d71bf571f2dfe992e731a583aed4c902169e87b6ddc8c2ad205842bfc6e07c57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비그왜 자손 중에서는 우대와 사붓이니 그와 함께한 남자가 칠십명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "d71bf571f2dfe992e731a583aed4c902169e87b6ddc8c2ad205842bfc6e07c57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:15",
+      "sequence": 12217,
+      "chapter_label": "EZR 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "I gathered them together to the river that runs to Ahava; and there we encamped three days. Then I looked around at the people and the priests, and found there were none of the sons of Levi.",
+      "ko": "내가 무리를 아하와로 흐르는 강가에 모으고 거기서 삼일 동안 장막에 유하며 백성과 제사장들을 살핀즉 그 중에 레위 자손이 하나도 없는지라",
+      "source_text_hash": "e7a35fb9a3a1ea2e21e6778b997700328d1b9f6f6ae521d5dc2449965e87982e",
+      "translation_text_hash": "ba69ad1f64010451ff1bf24a3c506a85ecf8ae1ada47c496ed89e31ce286821a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무리를 아하와로 흐르는 강가에 모으고 거기서 삼일 동안 장막에 유하며 백성과 제사장들을 살핀즉 그 중에 레위 자손이 하나도 없는지라"
+      ],
+      "raw_text_hashes": [
+        "ba69ad1f64010451ff1bf24a3c506a85ecf8ae1ada47c496ed89e31ce286821a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:16",
+      "sequence": 12218,
+      "chapter_label": "EZR 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "Then I sent for Eliezer, for Ariel, for Shemaiah, for Elnathan, for Jarib, for Elnathan, for Nathan, for Zechariah, and for Meshullam, chief men; also for Joiarib and for Elnathan, who were teachers.",
+      "ko": "이에 모든 족장 곧 엘리에셀과 아리엘과 스마야와 엘라단과 야립과 엘라단과 나단과 스가랴와 므술람을 부르고 또 명철한 사람 요야립과 엘라단을 불러",
+      "source_text_hash": "9a36cf75c8ca2483c368c04d49bd38e64bfe4d8cd4676cbe462619fc6f954c62",
+      "translation_text_hash": "85088a0dd9d995567fc1083495bc2318f96e7549eee5e849c9f0f5a57fbf38e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모든 족장 곧 엘리에셀과 아리엘과 스마야와 엘라단과 야립과 엘라단과 나단과 스가랴와 므술람을 부르고 또 명철한 사람 요야립과 엘라단을 불러"
+      ],
+      "raw_text_hashes": [
+        "85088a0dd9d995567fc1083495bc2318f96e7549eee5e849c9f0f5a57fbf38e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:17",
+      "sequence": 12219,
+      "chapter_label": "EZR 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "I sent them out to Iddo the chief at the place Casiphia; and I told them what they should tell Iddo and his brothers the temple servants at the place Casiphia, that they should bring to us ministers for the house of our God.",
+      "ko": "가시뱌 지방으로 보내어 그곳 족장 잇도에게 나아가게 하고 잇도와 그 형제 곧 가시뱌 지방에 거한 느디님 사람들에게 할 말을 일러주고 우리 하나님의 전을 위하여 수종들 자를 데리고 오라 하였더니",
+      "source_text_hash": "188be9609c303210f26e3567295d626ee4d51755f6d050fed373c4e8146ebe83",
+      "translation_text_hash": "ada2d62dd82dff9d33666b847108c9414139b7b3473d13e12a4d37892902347a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가시뱌 지방으로 보내어 그곳 족장 잇도에게 나아가게 하고 잇도와 그 형제 곧 가시뱌 지방에 거한 느디님 사람들에게 할 말을 일러주고 우리 하나님의 전을 위하여 수종들 자를 데리고 오라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "ada2d62dd82dff9d33666b847108c9414139b7b3473d13e12a4d37892902347a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:18",
+      "sequence": 12220,
+      "chapter_label": "EZR 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "According to the good hand of our God on us they brought us a man of discretion, of the sons of Mahli, the son of Levi, the son of Israel, namely Sherebiah, with his sons and his brothers, eighteen;",
+      "ko": "우리 하나님의 선한 손의 도우심을 입고 저희가 이스라엘의 손자 레위의 아들 말리의 자손 중에서 한 명철한 사람을 데려오고 또 세레뱌와 그 아들들과 형제 십 팔명과",
+      "source_text_hash": "8e67f1f0f9837174ed66d6d5948da0b3c23daa202cf6804fd337b3af29d53f31",
+      "translation_text_hash": "5a7609c75eff760f3a2e4812eeb6607796b943fe3c396bec9ad498fee9a2de6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님의 선한 손의 도우심을 입고 저희가 이스라엘의 손자 레위의 아들 말리의 자손 중에서 한 명철한 사람을 데려오고 또 세레뱌와 그 아들들과 형제 십 팔명과"
+      ],
+      "raw_text_hashes": [
+        "5a7609c75eff760f3a2e4812eeb6607796b943fe3c396bec9ad498fee9a2de6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:19",
+      "sequence": 12221,
+      "chapter_label": "EZR 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "and Hashabiah, and with him Jeshaiah of the sons of Merari, his brothers and their sons, twenty;",
+      "ko": "하사뱌와 므라리 자손 중 여사야와 그 형제와 저의 아들들 이십명을 데려오고",
+      "source_text_hash": "4060ab794a067d7c2dc228961fc6f12264d245f5283599f8dc22746725defca6",
+      "translation_text_hash": "e01f83ed569eafc37f50ff36c5187afe85329bfa74bd595157427112363eb2d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하사뱌와 므라리 자손 중 여사야와 그 형제와 저의 아들들 이십명을 데려오고"
+      ],
+      "raw_text_hashes": [
+        "e01f83ed569eafc37f50ff36c5187afe85329bfa74bd595157427112363eb2d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:20",
+      "sequence": 12222,
+      "chapter_label": "EZR 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "and of the temple servants, whom David and the princes had given for the service of the Levites, two hundred twenty temple servants. All of them were mentioned by name.",
+      "ko": "또 느디님 사람 곧 다윗과 방백들이 주어 레위 사람에게 수종들게 한 그 느디님 사람 중 이백 이십명을 데려왔으니 그 이름이 다 기록되었느니라",
+      "source_text_hash": "246da25a0cdbb7c510d2573b7fc93903c5cd1e0f29168703c593d105b4786374",
+      "translation_text_hash": "facf1ccb46777aa39cfda9358efa7a07b9b7536417762174ab53679fc32ab34a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 느디님 사람 곧 다윗과 방백들이 주어 레위 사람에게 수종들게 한 그 느디님 사람 중 이백 이십명을 데려왔으니 그 이름이 다 기록되었느니라"
+      ],
+      "raw_text_hashes": [
+        "facf1ccb46777aa39cfda9358efa7a07b9b7536417762174ab53679fc32ab34a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:21",
+      "sequence": 12223,
+      "chapter_label": "EZR 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Then I proclaimed a fast there at the river Ahava, that we might humble ourselves before our God, to seek from him a straight way for us, for our little ones, and for all our possessions.",
+      "ko": "때에 내가 아하와강 가에서 금식을 선포하고 우리 하나님 앞에서 스스로 겸비하여 우리와 우리 어린것과 모든 소유를 위하여 평탄한 길을 그에게 간구하였으니",
+      "source_text_hash": "ddefdfd443eb0125e2169213a470553e1070919e181c16284f78141703281ea3",
+      "translation_text_hash": "33d07446643471c477e1156db4f10b11f956fcf40f93b3ea05465257dfb5f64a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 내가 아하와강 가에서 금식을 선포하고 우리 하나님 앞에서 스스로 겸비하여 우리와 우리 어린것과 모든 소유를 위하여 평탄한 길을 그에게 간구하였으니"
+      ],
+      "raw_text_hashes": [
+        "33d07446643471c477e1156db4f10b11f956fcf40f93b3ea05465257dfb5f64a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:22",
+      "sequence": 12224,
+      "chapter_label": "EZR 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "For I was ashamed to ask of the king a band of soldiers and horsemen to help us against the enemy on the way, because we had spoken to the king, saying, “The hand of our God is on all those who seek him, for good; but his power and his wrath is against all those who forsake him.”",
+      "ko": "이는 우리가 전에 왕에게 고하기를 우리 하나님의 손은 자기를 찾는 모든 자에게 선을 베푸시고 자기를 배반하는 모든 자에게는 권능과 진노를 베푸신다 하였으므로 길에서 적군을 막고 우리를 도울 보병과 마병을 왕에게 구하기를 부끄러워 하였음이라",
+      "source_text_hash": "ec651f48829176e73a472a05c5865172fcb27440c00630e9a11a2b683e892d5d",
+      "translation_text_hash": "1405f886f9b28b19dc78e8f7d19504ef3223f5ad546a33481bdff106f1e5f714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 전에 왕에게 고하기를 우리 하나님의 손은 자기를 찾는 모든 자에게 선을 베푸시고 자기를 배반하는 모든 자에게는 권능과 진노를 베푸신다 하였으므로 길에서 적군을 막고 우리를 도울 보병과 마병을 왕에게 구하기를 부끄러워 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "1405f886f9b28b19dc78e8f7d19504ef3223f5ad546a33481bdff106f1e5f714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:23",
+      "sequence": 12225,
+      "chapter_label": "EZR 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "So we fasted and begged our God for this, and he granted our request.",
+      "ko": "그러므로 우리가 이를 위하여 금식하며 우리 하나님께 간구하였더니 그 응낙하심을 입었느니라",
+      "source_text_hash": "0693ec10e38df921c2d06bd81bb6dbde2f7a94856ebb6a7a01cb8efa70971f68",
+      "translation_text_hash": "bccd77b71b3226b81dfee82a2df8f1df01aeda4d383d48cb7dd3e673dac2cc77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 이를 위하여 금식하며 우리 하나님께 간구하였더니 그 응낙하심을 입었느니라"
+      ],
+      "raw_text_hashes": [
+        "bccd77b71b3226b81dfee82a2df8f1df01aeda4d383d48cb7dd3e673dac2cc77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:24",
+      "sequence": 12226,
+      "chapter_label": "EZR 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Then I set apart twelve of the chiefs of the priests, even Sherebiah, Hashabiah, and ten of their brothers with them,",
+      "ko": "그 때에 내가 제사장의 두목 중 십 이인 곧 세레뱌와 하사뱌와 그 형제 십인을 따로 세우고",
+      "source_text_hash": "8cb3aaf65d379b958b949e6ba78e71342e84404b947c820a59217df050d8b502",
+      "translation_text_hash": "ad1bcc69a954ef5e4d94723a3abe2f0e80c14e77d07547675f225df6796efade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 제사장의 두목 중 십 이인 곧 세레뱌와 하사뱌와 그 형제 십인을 따로 세우고"
+      ],
+      "raw_text_hashes": [
+        "ad1bcc69a954ef5e4d94723a3abe2f0e80c14e77d07547675f225df6796efade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:25",
+      "sequence": 12227,
+      "chapter_label": "EZR 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "and weighed to them the silver, the gold, and the vessels, even the offering for the house of our God, which the king, his counselors, his princes, and all Israel there present, had offered.",
+      "ko": "저희에게 왕과 모사들과 방백들과 또 그곳에 있는 이스라엘 무리가 우리 하나님의 전을 위하여 드린 은과 금과 기명들을 달아서 주었으니",
+      "source_text_hash": "f16938f35521afb6116e0635e04fc9f12716fd646888ce925b7d301bf63849b5",
+      "translation_text_hash": "d26a99bc779c5b9f7f4e3b955dba67578dda4c3e06abf70bd5c04eacf1dd7264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 왕과 모사들과 방백들과 또 그곳에 있는 이스라엘 무리가 우리 하나님의 전을 위하여 드린 은과 금과 기명들을 달아서 주었으니"
+      ],
+      "raw_text_hashes": [
+        "d26a99bc779c5b9f7f4e3b955dba67578dda4c3e06abf70bd5c04eacf1dd7264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:26",
+      "sequence": 12228,
+      "chapter_label": "EZR 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "I weighed into their hand six hundred fifty talents of silver, one hundred talents of silver vessels, one hundred talents of gold,",
+      "ko": "내가 달아서 저희 손에 준 것은 은이 육백 오십 달란트요 은 기명이 일백 달란트요 금이 일백 달란트며",
+      "source_text_hash": "194a690ede607d989a8627b64b98c5aa15b4335e812eebbd507f8f0442427563",
+      "translation_text_hash": "c8864e4b61938ec13026e8a78e2a81d248ef06a13d8d4aeb9a69d86016f38330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 달아서 저희 손에 준 것은 은이 육백 오십 달란트요 은 기명이 일백 달란트요 금이 일백 달란트며"
+      ],
+      "raw_text_hashes": [
+        "c8864e4b61938ec13026e8a78e2a81d248ef06a13d8d4aeb9a69d86016f38330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:27",
+      "sequence": 12229,
+      "chapter_label": "EZR 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "twenty bowls of gold weighing one thousand darics, and two vessels of fine bright bronze, precious as gold.",
+      "ko": "또 금잔이 이십개라 중수는 일천 다릭이요 또 아름답고 빛나 금 같이 보배로운 놋그릇이 두개라",
+      "source_text_hash": "64f556c04b1ee8765df505c871bacc05b42a5ee57b3cba2aa7fce9ef81b9fde0",
+      "translation_text_hash": "0d2bc34b649f705fdf06628e2afbfb1275006c20789b7a88a7c4c14960b891fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금잔이 이십개라 중수는 일천 다릭이요 또 아름답고 빛나 금 같이 보배로운 놋그릇이 두개라"
+      ],
+      "raw_text_hashes": [
+        "0d2bc34b649f705fdf06628e2afbfb1275006c20789b7a88a7c4c14960b891fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:28",
+      "sequence": 12230,
+      "chapter_label": "EZR 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "I said to them, “You are holy to the LORD, and the vessels are holy. The silver and the gold are a free will offering to the LORD, the God of your fathers.",
+      "ko": "내가 저희에게 이르되 너희는 여호와께 거룩한 자요 이 기명들도 거룩하고 그 은과 금은 너희 열조의 하나님 여호와께 즐거이 드린 예물이니",
+      "source_text_hash": "744569152a06b43a3f56ee176df2e0cd40e58f0eb5abdcbd2f39acb410a020c8",
+      "translation_text_hash": "00b8e0cfb080471580d54cdb623efd896aac753b77ff29c908de4e2e81645f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희에게 이르되 너희는 여호와께 거룩한 자요 이 기명들도 거룩하고 그 은과 금은 너희 열조의 하나님 여호와께 즐거이 드린 예물이니"
+      ],
+      "raw_text_hashes": [
+        "00b8e0cfb080471580d54cdb623efd896aac753b77ff29c908de4e2e81645f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:29",
+      "sequence": 12231,
+      "chapter_label": "EZR 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "Watch and keep them until you weigh them before the chiefs of the priests, the Levites, and the princes of the fathers’ households of Israel at Jerusalem, in the rooms of the LORD’s house.”",
+      "ko": "너희는 예루살렘 여호와의 전 골방에 이르러 제사장의 두목들과 레위 사람의 두목들과 이스라엘 족장 앞에서 이 기명을 달기까지 삼가 지키라",
+      "source_text_hash": "9e662db33c80cd593235fab24d255d1d6f877fef9a4b5de7ecd3a7066d1c3460",
+      "translation_text_hash": "b5ef3571222dbd7bd4432e377e8878e19825bb14d7d704b367032ed3f84956c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 예루살렘 여호와의 전 골방에 이르러 제사장의 두목들과 레위 사람의 두목들과 이스라엘 족장 앞에서 이 기명을 달기까지 삼가 지키라"
+      ],
+      "raw_text_hashes": [
+        "b5ef3571222dbd7bd4432e377e8878e19825bb14d7d704b367032ed3f84956c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:30",
+      "sequence": 12232,
+      "chapter_label": "EZR 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "So the priests and the Levites received the weight of the silver, the gold, and the vessels, to bring them to Jerusalem to the house of our God.",
+      "ko": "이에 제사장들과 레위 사람들이 은과 금과 기명을 예루살렘 우리 하나님의 전으로 가져가려 하여 그 중수대로 받으니라",
+      "source_text_hash": "4461066662949a97120e655584037c5abe2e01020461274fdc515114140f8a74",
+      "translation_text_hash": "a96b478480d0b7c257fab0621a7496d0d26466d4ae5adcb370844548c9ff5950",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제사장들과 레위 사람들이 은과 금과 기명을 예루살렘 우리 하나님의 전으로 가져가려 하여 그 중수대로 받으니라"
+      ],
+      "raw_text_hashes": [
+        "a96b478480d0b7c257fab0621a7496d0d26466d4ae5adcb370844548c9ff5950"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:31",
+      "sequence": 12233,
+      "chapter_label": "EZR 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "Then we departed from the river Ahava on the twelfth day of the first month, to go to Jerusalem. The hand of our God was on us, and he delivered us from the hand of the enemy and the bandits by the way.",
+      "ko": "정월 십 이일에 우리가 아하와강을 떠나 예루살렘으로 갈쌔 우리 하나님의 손이 우리를 도우사 대적과 길에 매복한 자의 손에서 건지신지라",
+      "source_text_hash": "8cd42ad294891a6e74b03fe2b2c81e03659c666dd96db500b0718fdce5a993a7",
+      "translation_text_hash": "aea347d14f0bcb7b921e73ad69e69309c9897e6017f96a2c0cd457fbbf2e9307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 십 이일에 우리가 아하와강을 떠나 예루살렘으로 갈쌔 우리 하나님의 손이 우리를 도우사 대적과 길에 매복한 자의 손에서 건지신지라"
+      ],
+      "raw_text_hashes": [
+        "aea347d14f0bcb7b921e73ad69e69309c9897e6017f96a2c0cd457fbbf2e9307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:32",
+      "sequence": 12234,
+      "chapter_label": "EZR 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "We came to Jerusalem, and stayed there three days.",
+      "ko": "이에 예루살렘에 이르러 거기서 삼일을 유하고",
+      "source_text_hash": "4ded27990b107e5711ae1a30670b370ffc528c4d3501e857a48b3e5f8af45a70",
+      "translation_text_hash": "524834d7e26ef0bac3844e210086458e432197bc8f72e32a60f7566114a46f52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예루살렘에 이르러 거기서 삼일을 유하고"
+      ],
+      "raw_text_hashes": [
+        "524834d7e26ef0bac3844e210086458e432197bc8f72e32a60f7566114a46f52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:33",
+      "sequence": 12235,
+      "chapter_label": "EZR 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "On the fourth day the silver and the gold and the vessels were weighed in the house of our God into the hand of Meremoth the son of Uriah the priest; and with him was Eleazar the son of Phinehas; and with them were Jozabad the son of Jeshua, and Noadiah the son of Binnui, the Levites.",
+      "ko": "제 사일에 우리 하나님의 전에서 은과 금과 기명을 달아서 제사장 우리아의 아들 므레못의 손에 붙이니 비느하스의 아들 엘르아살과 레위 사람 예수아의 아들 요사밧과 빈누이의 아들 노아댜가 함께 있어",
+      "source_text_hash": "6dcd943a4357ff81495f0814ec826beb7112a7d94359649ea6b384828bc54052",
+      "translation_text_hash": "3e168921f9011b9301ab6f152037187e4149a54988d8b23961a5cab0d7909b17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사일에 우리 하나님의 전에서 은과 금과 기명을 달아서 제사장 우리아의 아들 므레못의 손에 붙이니 비느하스의 아들 엘르아살과 레위 사람 예수아의 아들 요사밧과 빈누이의 아들 노아댜가 함께 있어"
+      ],
+      "raw_text_hashes": [
+        "3e168921f9011b9301ab6f152037187e4149a54988d8b23961a5cab0d7909b17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:34",
+      "sequence": 12236,
+      "chapter_label": "EZR 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Everything was counted and weighed; and all the weight was written at that time.",
+      "ko": "모든 것을 다 계수하고 달아보고 그 중수를 당장에 책에 기록하였느니라",
+      "source_text_hash": "cc8ffbe43e1351b76e51daca457b28111e9601e74c9fd897db0dc12b3a03df53",
+      "translation_text_hash": "61ab48cc56f6e045b96a2af706e52f27bb6d58ab04c0cb89e333bc77fca1ccd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것을 다 계수하고 달아보고 그 중수를 당장에 책에 기록하였느니라"
+      ],
+      "raw_text_hashes": [
+        "61ab48cc56f6e045b96a2af706e52f27bb6d58ab04c0cb89e333bc77fca1ccd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:35",
+      "sequence": 12237,
+      "chapter_label": "EZR 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "The children of the captivity, who had come out of exile, offered burnt offerings to the God of Israel: twelve bulls for all Israel, ninety-six rams, seventy-seven lambs, and twelve male goats for a sin offering. All this was a burnt offering to the LORD.",
+      "ko": "사로잡혔던 자의 자손 곧 이방에서 돌아온 자들이 이스라엘 하나님께 번제를 드렸는데 이스라엘 전체를 위한 수송아지가 열 둘이요 또 수양이 아흔 여섯이요 어린 양이 일흔 일곱이요 또 속죄제의 수염소가 열 둘이니 모두 여호와께 드린 번제물이라",
+      "source_text_hash": "8601ef781cf180db51e6dd88a0d603024bfcdea65e04a79a3ca95e1f188f2ea4",
+      "translation_text_hash": "c5f92560ffab44a3c0b6b5923e5e5ada3781342ad64cd1c8e18db5fe86fe1e1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔던 자의 자손 곧 이방에서 돌아온 자들이 이스라엘 하나님께 번제를 드렸는데 이스라엘 전체를 위한 수송아지가 열 둘이요 또 수양이 아흔 여섯이요 어린 양이 일흔 일곱이요 또 속죄제의 수염소가 열 둘이니 모두 여호와께 드린 번제물이라"
+      ],
+      "raw_text_hashes": [
+        "c5f92560ffab44a3c0b6b5923e5e5ada3781342ad64cd1c8e18db5fe86fe1e1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:8:36",
+      "sequence": 12238,
+      "chapter_label": "EZR 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZR",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "They delivered the king’s commissions to the king’s local governors and to the governors beyond the River. So they supported the people and God’s house.",
+      "ko": "무리가 또 왕의 조서를 왕의 관원과 강 서편 총독들에게 부치매 저희가 백성과 하나님의 전을 도왔느니라",
+      "source_text_hash": "b9bce10d5a26dbf5a98964887c4482e347311c48cb4275e768cefc82cd2f1262",
+      "translation_text_hash": "f470601a0c3a62098d341758ce2e1727b16c64ac37fb7c9914fa338fbbd36bcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 또 왕의 조서를 왕의 관원과 강 서편 총독들에게 부치매 저희가 백성과 하나님의 전을 도왔느니라"
+      ],
+      "raw_text_hashes": [
+        "f470601a0c3a62098d341758ce2e1727b16c64ac37fb7c9914fa338fbbd36bcb"
+      ]
+    }
+  ]
+}

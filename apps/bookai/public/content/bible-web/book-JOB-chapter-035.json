@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:035",
+  "unit_ordinal": 471,
+  "unit_label": "JOB 35",
+  "book_code": "JOB",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:35:1",
+      "sequence": 13722,
+      "chapter_label": "JOB 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover Elihu answered,",
+      "ko": "엘리후가 말을 이어 가로되",
+      "source_text_hash": "b20553332783a4d2722be367506d01ec5289454ea2abb21f32de4aac4fec0a80",
+      "translation_text_hash": "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리후가 말을 이어 가로되"
+      ],
+      "raw_text_hashes": [
+        "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:2",
+      "sequence": 13723,
+      "chapter_label": "JOB 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "“Do you think this to be your right, or do you say, ‘My righteousness is more than God’s,’",
+      "ko": "네가 이것을 합리하게 여기느냐 네 생각에 네가 하나님보다 의롭다 하여",
+      "source_text_hash": "f901aeaab4d6eff864e492cb4fcd8e2d421d0261a9e51e061725ed3437e27445",
+      "translation_text_hash": "a67ca82d113b3d5fcb3c3e97d212c88bb0e9bab7da4b6e232c14928cfbc1d815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이것을 합리하게 여기느냐 네 생각에 네가 하나님보다 의롭다 하여"
+      ],
+      "raw_text_hashes": [
+        "a67ca82d113b3d5fcb3c3e97d212c88bb0e9bab7da4b6e232c14928cfbc1d815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:3",
+      "sequence": 13724,
+      "chapter_label": "JOB 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "that you ask, ‘What advantage will it be to you? What profit will I have, more than if I had sinned?’",
+      "ko": "이르기를 유익이 무엇인고 범죄한 것보다 내게 이익이 무엇인고 하는구나",
+      "source_text_hash": "ec38e6011d4411392b627e83e569eb336005c53000bb71300f3e62c41de44c18",
+      "translation_text_hash": "b3a0ae7ae1e86bb174faee487a02103735459c2f593631e4971eb54c80840575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 유익이 무엇인고 범죄한 것보다 내게 이익이 무엇인고 하는구나"
+      ],
+      "raw_text_hashes": [
+        "b3a0ae7ae1e86bb174faee487a02103735459c2f593631e4971eb54c80840575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:4",
+      "sequence": 13725,
+      "chapter_label": "JOB 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "I will answer you, and your companions with you.",
+      "ko": "내가 너와 및 너와 함께 있는 네 동무들에게 대답하리라",
+      "source_text_hash": "e9bd7e743fde9dea60c2a627415e8372cc5677304117778ee8f79abe4bacdad3",
+      "translation_text_hash": "3f4d7458f59471377dfedf8d3c51ab4ca8a1d093ee24d7f7b16dd641d3e8a4da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 및 너와 함께 있는 네 동무들에게 대답하리라"
+      ],
+      "raw_text_hashes": [
+        "3f4d7458f59471377dfedf8d3c51ab4ca8a1d093ee24d7f7b16dd641d3e8a4da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:5",
+      "sequence": 13726,
+      "chapter_label": "JOB 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "Look to the skies, and see. See the skies, which are higher than you.",
+      "ko": "너는 하늘을 우러러 보라 네 위의 높은 궁창을 바라보라",
+      "source_text_hash": "706012c7216c5f96ad207480cd3546f56b460920827dea34ccf2fdc6fabfc59e",
+      "translation_text_hash": "4902e6c75f18e5aaec4918974a6e61e85c8b36b127803b2380e36b7792a25798",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 하늘을 우러러 보라 네 위의 높은 궁창을 바라보라"
+      ],
+      "raw_text_hashes": [
+        "4902e6c75f18e5aaec4918974a6e61e85c8b36b127803b2380e36b7792a25798"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:6",
+      "sequence": 13727,
+      "chapter_label": "JOB 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "If you have sinned, what effect do you have against him? If your transgressions are multiplied, what do you do to him?",
+      "ko": "네가 범죄한들 하나님께 무슨 영향이 있겠으며 네 죄악이 관영한들 하나님께 무슨 관계가 있겠으며",
+      "source_text_hash": "104151cd49976e605de88a4ce42c412cce7f4367da6f2b7f839be7c4d1c81084",
+      "translation_text_hash": "5cd06fe046e1ce2cd439de4071eb12bc605f39fbf3cb94f95c96381979233ef0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 범죄한들 하나님께 무슨 영향이 있겠으며 네 죄악이 관영한들 하나님께 무슨 관계가 있겠으며"
+      ],
+      "raw_text_hashes": [
+        "5cd06fe046e1ce2cd439de4071eb12bc605f39fbf3cb94f95c96381979233ef0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:7",
+      "sequence": 13728,
+      "chapter_label": "JOB 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "If you are righteous, what do you give him? Or what does he receive from your hand?",
+      "ko": "네가 의로운들 하나님께 무엇을 드리겠으며 그가 네 손에서 무엇을 받으시겠느냐",
+      "source_text_hash": "b29cc9229be2f1af044b73319f00d4ab9a78a4773a4c0dd338a55676bfe105c7",
+      "translation_text_hash": "44eae5f3acb5c4fc338546b5cc260629d944a95a985bd6c4593acaf6ca80d6d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 의로운들 하나님께 무엇을 드리겠으며 그가 네 손에서 무엇을 받으시겠느냐"
+      ],
+      "raw_text_hashes": [
+        "44eae5f3acb5c4fc338546b5cc260629d944a95a985bd6c4593acaf6ca80d6d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:8",
+      "sequence": 13729,
+      "chapter_label": "JOB 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "Your wickedness may hurt a man as you are, and your righteousness may profit a son of man.",
+      "ko": "네 악은 너와 같은 사람이나 해할 따름이요 네 의는 인생이나 유익하게 할 뿐이니라",
+      "source_text_hash": "b109be0a712822b36499c7066418baad6d0286a6e93f069625ed2dc15a16296e",
+      "translation_text_hash": "89a0c859efb76bc98c5f31867b9903e2ee26a51845208b29023137e4742d1d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 악은 너와 같은 사람이나 해할 따름이요 네 의는 인생이나 유익하게 할 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "89a0c859efb76bc98c5f31867b9903e2ee26a51845208b29023137e4742d1d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:9",
+      "sequence": 13730,
+      "chapter_label": "JOB 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "“By reason of the multitude of oppressions they cry out. They cry for help by reason of the arm of the mighty.",
+      "ko": "사람은 학대가 많으므로 부르짖으며 세력 있는 자의 팔에 눌리므로 도움을 부르짖으나",
+      "source_text_hash": "0c77c6d92ee16eb29795d71040c521691f67414463953e98ae0e84eae3abc729",
+      "translation_text_hash": "37876471c9a1618a32e62f8fdf071a44aba397ccd6cbf85af1674e7e126d3ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 학대가 많으므로 부르짖으며 세력 있는 자의 팔에 눌리므로 도움을 부르짖으나"
+      ],
+      "raw_text_hashes": [
+        "37876471c9a1618a32e62f8fdf071a44aba397ccd6cbf85af1674e7e126d3ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:10",
+      "sequence": 13731,
+      "chapter_label": "JOB 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "But no one says, ‘Where is God my Maker, who gives songs in the night,",
+      "ko": "나를 지으신 하나님 곧 사람으로 밤중에 노래하게 하시며 우리를 교육하시기를 땅의 짐승에게 하심보다 더하게 하시며 우리에게 지혜 주시기를 공중의 새에게 주심보다 더하시는 이가 어디 계신가 말하는 자가 한 사람도 없구나",
+      "source_text_hash": "f372ff501fa90ba5e904351119f72f42382edc4148f85901f9faa207bc3ba24f",
+      "translation_text_hash": "f5c5b91c8f78b24fe91599cfdcd881ecace155ac80a6abb2c6fb76ce23193ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 지으신 하나님 곧 사람으로 밤중에 노래하게 하시며 우리를 교육하시기를 땅의 짐승에게 하심보다 더하게 하시며 우리에게 지혜 주시기를 공중의 새에게 주심보다 더하시는 이가 어디 계신가 말하는 자가 한 사람도 없구나"
+      ],
+      "raw_text_hashes": [
+        "f5c5b91c8f78b24fe91599cfdcd881ecace155ac80a6abb2c6fb76ce23193ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:11",
+      "sequence": 13732,
+      "chapter_label": "JOB 35",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 11
+        }
+      ],
+      "en": "who teaches us more than the animals of the earth, and makes us wiser than the birds of the sky?’",
+      "ko": "(10절에 포함되어 있음)",
+      "source_text_hash": "c01b33e8a60688362dc9833657dd3729fc787ba5b69cfad1ddf806ca91f752c4",
+      "translation_text_hash": "d60a8ca49970d0aa3f9973e0db98efaf50dfeefe0ccc7afcd67a980d4490ff07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(10절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "d60a8ca49970d0aa3f9973e0db98efaf50dfeefe0ccc7afcd67a980d4490ff07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:12",
+      "sequence": 13733,
+      "chapter_label": "JOB 35",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 12
+        }
+      ],
+      "en": "There they cry, but no one answers, because of the pride of evil men.",
+      "ko": "그들이 악인의 교만을 인하여 거기서 부르짖으나 응락하는 자가 없음은",
+      "source_text_hash": "95c5cdc96c55e9027e0a16d1349eae2e107a5e514da286f5698ba4781002e300",
+      "translation_text_hash": "cb6bbf3f3a1c556bb20a7c38fa809c14f98f260e79081a7ddbe22a990ce6b497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 악인의 교만을 인하여 거기서 부르짖으나 응락하는 자가 없음은"
+      ],
+      "raw_text_hashes": [
+        "cb6bbf3f3a1c556bb20a7c38fa809c14f98f260e79081a7ddbe22a990ce6b497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:13",
+      "sequence": 13734,
+      "chapter_label": "JOB 35",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 13
+        }
+      ],
+      "en": "Surely God will not hear an empty cry, neither will the Almighty regard it.",
+      "ko": "헛된 부르짖음은 하나님이 결코 듣지 아니하시며 전능자가 돌아보지 아니 하심이라",
+      "source_text_hash": "84833c4e5a22f73abc67c04b70b88a6c1e7c6a2c3ae13c7124b468ed29fafb4f",
+      "translation_text_hash": "d0cf06912eebc5d451df9af4bb3fc35a840b773ddc5e55efd9428878daa1194a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헛된 부르짖음은 하나님이 결코 듣지 아니하시며 전능자가 돌아보지 아니 하심이라"
+      ],
+      "raw_text_hashes": [
+        "d0cf06912eebc5d451df9af4bb3fc35a840b773ddc5e55efd9428878daa1194a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:14",
+      "sequence": 13735,
+      "chapter_label": "JOB 35",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 14
+        }
+      ],
+      "en": "How much less when you say you don’t see him. The cause is before him, and you wait for him!",
+      "ko": "하물며 말하기를 하나님은 뵈올 수 없고 일의 시비는 그 앞에 있으니 나는 그를 기다릴 뿐이라 하는 너랴",
+      "source_text_hash": "4fb30ea90f0170867ecdf1b92174f55977c5a5d6258e0757be26abed09cdfe8d",
+      "translation_text_hash": "e118fe52e9054f2b0f46d12b732d24236383f412ad91c24c83512416e9bd847d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 말하기를 하나님은 뵈올 수 없고 일의 시비는 그 앞에 있으니 나는 그를 기다릴 뿐이라 하는 너랴"
+      ],
+      "raw_text_hashes": [
+        "e118fe52e9054f2b0f46d12b732d24236383f412ad91c24c83512416e9bd847d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:15",
+      "sequence": 13736,
+      "chapter_label": "JOB 35",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 15
+        }
+      ],
+      "en": "But now, because he has not visited in his anger, neither does he greatly regard arrogance,",
+      "ko": "하나님이 진노하심으로 벌을 주지 아니하셨고 횡포를 심히 살피지 아니하셨으므로",
+      "source_text_hash": "b158e0ab620d9cb2110e28640ecc5a7f770b2cc98e306b7910ea77d468b15d56",
+      "translation_text_hash": "e84a1123f3e7f36a9db62b08e55fd371def4f7b088b50f0c9239775dcac1e9fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 진노하심으로 벌을 주지 아니하셨고 횡포를 심히 살피지 아니하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "e84a1123f3e7f36a9db62b08e55fd371def4f7b088b50f0c9239775dcac1e9fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:35:16",
+      "sequence": 13737,
+      "chapter_label": "JOB 35",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 35,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 35,
+          "verse": 16
+        }
+      ],
+      "en": "therefore Job opens his mouth with empty talk, and he multiplies words without knowledge.”",
+      "ko": "이제 너 욥이 헛되이 입을 열어 지식 없는 말을 많이 하는구나",
+      "source_text_hash": "88a3152969b3f93af93cbf07281a8ff30025613b39bc9aefb182bcd14b390932",
+      "translation_text_hash": "727f41aba4aeea47d80b2ac2f669f6cb7436948ea39aa77bc3c22653e104bac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너 욥이 헛되이 입을 열어 지식 없는 말을 많이 하는구나"
+      ],
+      "raw_text_hashes": [
+        "727f41aba4aeea47d80b2ac2f669f6cb7436948ea39aa77bc3c22653e104bac1"
+      ]
+    }
+  ]
+}

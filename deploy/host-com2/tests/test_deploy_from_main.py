@@ -85,6 +85,9 @@ BASE_FILES = {
     "apps/padiem-ai-engine/migrations/placeholder": "migrations",
     "apps/padiem-ai-engine/worker.py": "# worker\n",
     "apps/padiem-ai-engine/worker_identity.py": "# identity\n",
+    "packages/padiem-ai-core/padiem_ai_core/__init__.py": "# core\n",
+    "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
+    "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     "apps/korean-ai-platform/asgi.py": "# b14\n",
     "packages/shared/placeholder.txt": "shared\n",
 }
@@ -92,6 +95,7 @@ BASE_FILES = {
 # The second commit decides which service the change belongs to.
 CHANGES = {
     "chat": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
+    "council": ("apps/padiem-council-apps/static/index.html", "council update\n"),
     "p01": ("apps/padiem-ai-engine/asgi.py", "# engine 2\n"),
     "b14": ("apps/korean-ai-platform/asgi.py", "# b14 2\n"),
     "migration": (
@@ -136,6 +140,12 @@ class DeployHarness(unittest.TestCase):
         (self.p01 / "rollback").mkdir(parents=True)
         release = self.p01 / "releases" / "initial"
         shutil.copytree(self.ops / "apps/padiem-ai-engine", release)
+        for source, name in (
+            ("packages/padiem-ai-core/padiem_ai_core", "padiem_ai_core"),
+            ("packages/padiem-control-plane/padiem_control_plane", "padiem_control_plane"),
+            ("apps/korean-ai-code-agent/src/kagent", "kagent"),
+        ):
+            shutil.copytree(self.ops / source, release / name)
         (self.p01 / "app").symlink_to(release, target_is_directory=True)
         self.b14 = self.tmp / "b14-app"
         self.b14.mkdir()
@@ -422,6 +432,19 @@ class ChatScenarioTest(DeployHarness):
         self.assertEqual(self._calls(), [])
 
 
+class CouncilAssetScenarioTest(DeployHarness):
+    scenario = "council"
+
+    def test_council_asset_change_selects_chat_deploy(self):
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", result.stdout)
+
+
 class MigrationScenarioTest(DeployHarness):
     scenario = "migration"
 
@@ -465,6 +488,15 @@ class P01ScenarioTest(DeployHarness):
         moved = list((self.p01 / "releases").glob("p01.displaced.*/marker"))
         self.assertEqual(len(moved), 1)
         self.assertEqual(moved[0].read_text(encoding="utf-8"), "current")
+
+    def test_shared_package_drift_is_not_skipped(self) -> None:
+        release = (self.p01 / "app").resolve()
+        (release / "padiem_ai_core" / "__init__.py").write_text("# stale\n", encoding="utf-8")
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_P01_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", result.stdout)
+        self.assertIn("p01:PASS", result.stdout)
 
     def test_p01_running_link_mismatch_is_not_skipped(self) -> None:
         release = (self.p01 / "app").resolve()

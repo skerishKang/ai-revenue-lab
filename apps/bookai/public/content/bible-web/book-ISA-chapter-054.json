@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:054",
+  "unit_ordinal": 733,
+  "unit_label": "ISA 54",
+  "book_code": "ISA",
+  "chapter_number": 54,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:54:1",
+      "sequence": 18725,
+      "chapter_label": "ISA 54",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 1
+        }
+      ],
+      "en": "“Sing, barren, you who didn’t give birth! Break out into singing, and cry aloud, you who didn’t travail with child! For more are the children of the desolate than the children of the married wife,” says the LORD.",
+      "ko": "잉태치 못하며 생산치 못한 너는 노래할찌어다 구로치 못한 너는 외쳐 노래할찌어다 홀로 된 여인의 자식이 남편 있는 자의 자식보다 많음이니라 여호와의 말이니라",
+      "source_text_hash": "3042d448bb2e585f4c97a19f8dd65373904f78f0ee132bec5e45f54ecad8b014",
+      "translation_text_hash": "4e48e38cadd89735c8883918317b71b759f311c4631f2e084403785122ce3dd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잉태치 못하며 생산치 못한 너는 노래할찌어다 구로치 못한 너는 외쳐 노래할찌어다 홀로 된 여인의 자식이 남편 있는 자의 자식보다 많음이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "4e48e38cadd89735c8883918317b71b759f311c4631f2e084403785122ce3dd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:2",
+      "sequence": 18726,
+      "chapter_label": "ISA 54",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 2
+        }
+      ],
+      "en": "“Enlarge the place of your tent, and let them stretch out the curtains of your habitations; don’t spare; lengthen your cords, and strengthen your stakes.",
+      "ko": "네 장막터를 넓히며 네 처소의 휘장을 아끼지 말고 널리 펴되 너의 줄을 길게 하며 너의 말뚝을 견고히 할찌어다",
+      "source_text_hash": "64a9928466ffaf4f28f0f0bab659b2f334ee28d7c216f4cf70b9beca98453c4f",
+      "translation_text_hash": "d691f456c8e77644fbb38ac98f344a061f8e6ea5f72c1afb51e5ead91b3c9fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 장막터를 넓히며 네 처소의 휘장을 아끼지 말고 널리 펴되 너의 줄을 길게 하며 너의 말뚝을 견고히 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "d691f456c8e77644fbb38ac98f344a061f8e6ea5f72c1afb51e5ead91b3c9fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:3",
+      "sequence": 18727,
+      "chapter_label": "ISA 54",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 3
+        }
+      ],
+      "en": "For you will spread out on the right hand and on the left; and your offspring will possess the nations and settle in desolate cities.",
+      "ko": "이는 네가 좌우로 퍼지며 네 자손은 열방을 얻으며 황폐한 성읍들로 사람 살 곳이 되게 할 것임이니라",
+      "source_text_hash": "bab71e9d2bb30bd33579bc0a3bc2f8e0431373a1b3618432c2537c12de4d0e9b",
+      "translation_text_hash": "81b7c39a8793d3082a0cf836a6a2b9e56455c0d1078db382b61a9b12f7212715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네가 좌우로 퍼지며 네 자손은 열방을 얻으며 황폐한 성읍들로 사람 살 곳이 되게 할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "81b7c39a8793d3082a0cf836a6a2b9e56455c0d1078db382b61a9b12f7212715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:4",
+      "sequence": 18728,
+      "chapter_label": "ISA 54",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 4
+        }
+      ],
+      "en": "“Don’t be afraid, for you will not be ashamed. Don’t be confounded, for you will not be disappointed. For you will forget the shame of your youth. You will remember the reproach of your widowhood no more.",
+      "ko": "두려워 말라 네가 수치를 당치 아니하리라 놀라지 말라 네가 부끄러움을 보지 아니하리라 네가 네 청년 때의 수치를 잊겠고 과부 때의 치욕을 다시 기억함이 없으리니",
+      "source_text_hash": "7006010d7d9e3882cd6547d8235595d3a65b2f1506d30ab492c9a1808fdc6953",
+      "translation_text_hash": "fd1c3de0622ce3098dc9282d9a125c4d0673de4a4af435d55ac1780568839dd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워 말라 네가 수치를 당치 아니하리라 놀라지 말라 네가 부끄러움을 보지 아니하리라 네가 네 청년 때의 수치를 잊겠고 과부 때의 치욕을 다시 기억함이 없으리니"
+      ],
+      "raw_text_hashes": [
+        "fd1c3de0622ce3098dc9282d9a125c4d0673de4a4af435d55ac1780568839dd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:5",
+      "sequence": 18729,
+      "chapter_label": "ISA 54",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 5
+        }
+      ],
+      "en": "For your Maker is your husband; the LORD of Armies is his name. The Holy One of Israel is your Redeemer. He will be called the God of the whole earth.",
+      "ko": "이는 너를 지으신 자는 네 남편이시라 그 이름은 만군의 여호와시며 네 구속자는 이스라엘의 거룩한 자시라 온 세상의 하나님이라 칭함을 받으실 것이며",
+      "source_text_hash": "a2b2e5bcfaaf5789e4163d3e8c479677e66d280758b404dce46f06575729fc57",
+      "translation_text_hash": "c046af5134b0003fa74c532eec6281dcfb8b38df17acf3e2aa554d6b4daf8cfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너를 지으신 자는 네 남편이시라 그 이름은 만군의 여호와시며 네 구속자는 이스라엘의 거룩한 자시라 온 세상의 하나님이라 칭함을 받으실 것이며"
+      ],
+      "raw_text_hashes": [
+        "c046af5134b0003fa74c532eec6281dcfb8b38df17acf3e2aa554d6b4daf8cfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:6",
+      "sequence": 18730,
+      "chapter_label": "ISA 54",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 6
+        }
+      ],
+      "en": "For the LORD has called you as a wife forsaken and grieved in spirit, even a wife of youth, when she is cast off,” says your God.",
+      "ko": "여호와께서 너를 부르시되 마치 버림을 입어 마음에 근심하는 아내 곧 소시에 아내 되었다가 버림을 입은 자에게 함같이 하실 것임이니라 네 하나님의 말씀이니라",
+      "source_text_hash": "d0b1213f93ece3da73c9fd943069217b431b227a04dbfd2c68d0cd1c43e85d97",
+      "translation_text_hash": "531e5d17c99d2365f86da86134925b2f0c7c59dc63ee8d59c283eb12884b220a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 부르시되 마치 버림을 입어 마음에 근심하는 아내 곧 소시에 아내 되었다가 버림을 입은 자에게 함같이 하실 것임이니라 네 하나님의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "531e5d17c99d2365f86da86134925b2f0c7c59dc63ee8d59c283eb12884b220a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:7",
+      "sequence": 18731,
+      "chapter_label": "ISA 54",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 7
+        }
+      ],
+      "en": "“For a small moment I have forsaken you, but I will gather you with great mercies.",
+      "ko": "내가 잠시 너를 버렸으나 큰 긍휼로 너를 모을 것이요",
+      "source_text_hash": "23c220bb34d6c5fd2561928c69a48cdc4f2fe9e6d6dd172705fef839f431ae9d",
+      "translation_text_hash": "d93e0941c10e8f2d66c409e5cc039cc18f0d05ce0bb17a6b7dce4a9df69de129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 잠시 너를 버렸으나 큰 긍휼로 너를 모을 것이요"
+      ],
+      "raw_text_hashes": [
+        "d93e0941c10e8f2d66c409e5cc039cc18f0d05ce0bb17a6b7dce4a9df69de129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:8",
+      "sequence": 18732,
+      "chapter_label": "ISA 54",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 8
+        }
+      ],
+      "en": "In overflowing wrath I hid my face from you for a moment, but with everlasting loving kindness I will have mercy on you,” says the LORD your Redeemer.",
+      "ko": "내가 넘치는 진노로 내 얼굴을 네게서 잠시 가리웠으나 영원한 자비로 너를 긍휼히 여기리라 네 구속자 여호와의 말이니라",
+      "source_text_hash": "0e0dd7d7a62348853da1eb2ff8cc07dd7dc1bf216ba4328afb33fee3cab1aed6",
+      "translation_text_hash": "eccb77823d87c8825d7c99193ab5bbb4c282765cd5b27bd2aa11909b2dc10e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 넘치는 진노로 내 얼굴을 네게서 잠시 가리웠으나 영원한 자비로 너를 긍휼히 여기리라 네 구속자 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "eccb77823d87c8825d7c99193ab5bbb4c282765cd5b27bd2aa11909b2dc10e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:9",
+      "sequence": 18733,
+      "chapter_label": "ISA 54",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 9
+        }
+      ],
+      "en": "“For this is like the waters of Noah to me; for as I have sworn that the waters of Noah will no more go over the earth, so I have sworn that I will not be angry with you, nor rebuke you.",
+      "ko": "이는 노아의 홍수에 비하리로다 내가 다시는 노아의 홍수로 땅 위에 범람치 않게 하리라 맹세한것 같이 내가 다시는 너를 노하지 아니하며 다시는 너를 책망하지 아니하기로 맹세하였노니",
+      "source_text_hash": "7c06451c50512ade6b9d35b5b338200d1dc9805ad0a3735c5b4a370b25f75984",
+      "translation_text_hash": "2f0a49c0340ee12736c2191f714771c4b6912e60bca1ebbe5524878a8b4a575f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 노아의 홍수에 비하리로다 내가 다시는 노아의 홍수로 땅 위에 범람치 않게 하리라 맹세한것 같이 내가 다시는 너를 노하지 아니하며 다시는 너를 책망하지 아니하기로 맹세하였노니"
+      ],
+      "raw_text_hashes": [
+        "2f0a49c0340ee12736c2191f714771c4b6912e60bca1ebbe5524878a8b4a575f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:10",
+      "sequence": 18734,
+      "chapter_label": "ISA 54",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 10
+        }
+      ],
+      "en": "For the mountains may depart, and the hills be removed, but my loving kindness will not depart from you, and my covenant of peace will not be removed,” says the LORD who has mercy on you.",
+      "ko": "산들은 떠나며 작은 산들은 옮길찌라도 나의 인자는 네게서 떠나지 아니하며 화평케 하는 나의 언약은 옮기지 아니하리라 너를 긍휼히 여기는 여호와의 말이니라",
+      "source_text_hash": "20a59e876b212c29d1236823144b30e4e4afec9f6245fa7e0cc091efd8961ca4",
+      "translation_text_hash": "ee39e60bdf461a150405cb4903995c0fd1f6cab26a1f43a14bf76da385cd748c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들은 떠나며 작은 산들은 옮길찌라도 나의 인자는 네게서 떠나지 아니하며 화평케 하는 나의 언약은 옮기지 아니하리라 너를 긍휼히 여기는 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "ee39e60bdf461a150405cb4903995c0fd1f6cab26a1f43a14bf76da385cd748c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:11",
+      "sequence": 18735,
+      "chapter_label": "ISA 54",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 11
+        }
+      ],
+      "en": "“You afflicted, tossed with storms, and not comforted, behold, I will set your stones in beautiful colors, and lay your foundations with sapphires.",
+      "ko": "너 곤고하며 광풍에 요동하여 안위를 받지 못한 자여 보라 내가 화려한 채색으로 네 돌 사이에 더하며 청옥으로 네 기초를 쌓으며",
+      "source_text_hash": "17e90658710838172f7f05e7164c385ff43a853c3cd8ac3aff1d9d384d0f192f",
+      "translation_text_hash": "7a4fc5ba9ce0b3a14f4f54d09610c1a069b415ae5856c51fb953ee44f5b63275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 곤고하며 광풍에 요동하여 안위를 받지 못한 자여 보라 내가 화려한 채색으로 네 돌 사이에 더하며 청옥으로 네 기초를 쌓으며"
+      ],
+      "raw_text_hashes": [
+        "7a4fc5ba9ce0b3a14f4f54d09610c1a069b415ae5856c51fb953ee44f5b63275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:12",
+      "sequence": 18736,
+      "chapter_label": "ISA 54",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 12
+        }
+      ],
+      "en": "I will make your pinnacles of rubies, your gates of sparkling jewels, and all your walls of precious stones.",
+      "ko": "홍보석으로 네 성첩을 지으며 석류석으로 네 성문을 만들고 네 지경을 다 보석으로 꾸밀 것이며",
+      "source_text_hash": "29914264d89070823a7ed165f5306c0a90b1a815293d39256a25da805740d18f",
+      "translation_text_hash": "60693fa37012aa614724c6982c166708bb407c255a4b6e5d0a3aa60435860731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍보석으로 네 성첩을 지으며 석류석으로 네 성문을 만들고 네 지경을 다 보석으로 꾸밀 것이며"
+      ],
+      "raw_text_hashes": [
+        "60693fa37012aa614724c6982c166708bb407c255a4b6e5d0a3aa60435860731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:13",
+      "sequence": 18737,
+      "chapter_label": "ISA 54",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 13
+        }
+      ],
+      "en": "All your children will be taught by the LORD, and your children’s peace will be great.",
+      "ko": "네 모든 자녀는 여호와의 교훈을 받을 것이니 네 자녀는 크게 평강할 것이며",
+      "source_text_hash": "7226567dc6a82da316d6cdc87a502d8b8d8ef529eb5e9d97e8dd5308948e7737",
+      "translation_text_hash": "de85d26198e33f8658581606d01d17e5bb467a1723318490cd4d575f70c9190a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 자녀는 여호와의 교훈을 받을 것이니 네 자녀는 크게 평강할 것이며"
+      ],
+      "raw_text_hashes": [
+        "de85d26198e33f8658581606d01d17e5bb467a1723318490cd4d575f70c9190a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:14",
+      "sequence": 18738,
+      "chapter_label": "ISA 54",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 14
+        }
+      ],
+      "en": "You will be established in righteousness. You will be far from oppression, for you will not be afraid, and far from terror, for it shall not come near you.",
+      "ko": "너는 의로 설 것이며 학대가 네게서 멀어질 것인즉 네가 두려워 아니할 것이며 공포 그것도 너를 가까이 못할 것이라",
+      "source_text_hash": "fcf7ee224f8798ef1490e6395619cbc940e42a61b36d85a3a6044c1a7bd3751a",
+      "translation_text_hash": "c09a1e8959588308c53d4e9ee3c3f7245e883dd8a2fbd462463801e777dc6a49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 의로 설 것이며 학대가 네게서 멀어질 것인즉 네가 두려워 아니할 것이며 공포 그것도 너를 가까이 못할 것이라"
+      ],
+      "raw_text_hashes": [
+        "c09a1e8959588308c53d4e9ee3c3f7245e883dd8a2fbd462463801e777dc6a49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:15",
+      "sequence": 18739,
+      "chapter_label": "ISA 54",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, they may gather together, but not by me. Whoever gathers together against you will fall because of you.",
+      "ko": "그들이 모일찌라도 나로 말미암지 아니한 것이니 누구든지 모여 너를 치는 자는 너를 인하여 패망하리라",
+      "source_text_hash": "d1cc51ddbc5f0075d2dfbd53ca3f6c71f930f9065a230f193004aa56352a635c",
+      "translation_text_hash": "78a10703a03a67bed4c27e79441de3e0ae68914da58933b6683ce5b18beee44e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모일찌라도 나로 말미암지 아니한 것이니 누구든지 모여 너를 치는 자는 너를 인하여 패망하리라"
+      ],
+      "raw_text_hashes": [
+        "78a10703a03a67bed4c27e79441de3e0ae68914da58933b6683ce5b18beee44e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:16",
+      "sequence": 18740,
+      "chapter_label": "ISA 54",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 16
+        }
+      ],
+      "en": "“Behold, I have created the blacksmith who fans the coals into flame, and forges a weapon for his work; and I have created the destroyer to destroy.",
+      "ko": "숯불을 불어서 자기가 쓸만한 기계를 제조하는 장인도 내가 창조하였고 파괴하며 진멸하는 자도 내가 창조하였은즉",
+      "source_text_hash": "34648cc0b103eec3a2d15ebee00272ec095fed061648438d9a9ece6bd89116bf",
+      "translation_text_hash": "126be3136529896b1c2294ca56722ce35c3dbed5591ce32dd992f4129fc4d1c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숯불을 불어서 자기가 쓸만한 기계를 제조하는 장인도 내가 창조하였고 파괴하며 진멸하는 자도 내가 창조하였은즉"
+      ],
+      "raw_text_hashes": [
+        "126be3136529896b1c2294ca56722ce35c3dbed5591ce32dd992f4129fc4d1c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:54:17",
+      "sequence": 18741,
+      "chapter_label": "ISA 54",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 54,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 54,
+          "verse": 17
+        }
+      ],
+      "en": "No weapon that is formed against you will prevail; and you will condemn every tongue that rises against you in judgment. This is the heritage of the LORD’s servants, and their righteousness is of me,” says the LORD.",
+      "ko": "무릇 너를 치려고 제조된 기계가 날카롭지 못할 것이라 무릇 일어나 너를 대적하여 송사하는 혀는 네게 정죄를 당하리니 이는 여호와의 종들의 기업이요 이는 그들이 내게서 얻은 의니라 여호와의 말이니라",
+      "source_text_hash": "a4b63bf20bf65a9561be76a440c40edf9e6211b7d233d2d7d29d46c9b2514c42",
+      "translation_text_hash": "268d235de586a4f4574f5307b9169895327b0133b06613733331fd5d43d52c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 너를 치려고 제조된 기계가 날카롭지 못할 것이라 무릇 일어나 너를 대적하여 송사하는 혀는 네게 정죄를 당하리니 이는 여호와의 종들의 기업이요 이는 그들이 내게서 얻은 의니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "268d235de586a4f4574f5307b9169895327b0133b06613733331fd5d43d52c8a"
+      ]
+    }
+  ]
+}

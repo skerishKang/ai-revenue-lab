@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:004",
+  "unit_ordinal": 54,
+  "unit_label": "EXO 4",
+  "book_code": "EXO",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:4:1",
+      "sequence": 1603,
+      "chapter_label": "EXO 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Moses answered, “But, behold, they will not believe me, nor listen to my voice; for they will say, ‘The LORD has not appeared to you.’”",
+      "ko": "모세가 대답하여 가로되 그러나 그들이 나를 믿지 아니하며 내 말을 듣지 아니하고 이르기를 여호와께서 네게 나타나지 아니하셨다 하리이다",
+      "source_text_hash": "ecde54937cfaad86c9caf745ce26a9f71cf35f448accc24e5a03b945bcfe88ae",
+      "translation_text_hash": "513f19c99971a930e7c636311c0c46dbf28ca8536b69b846d2c173bf97a77bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 대답하여 가로되 그러나 그들이 나를 믿지 아니하며 내 말을 듣지 아니하고 이르기를 여호와께서 네게 나타나지 아니하셨다 하리이다"
+      ],
+      "raw_text_hashes": [
+        "513f19c99971a930e7c636311c0c46dbf28ca8536b69b846d2c173bf97a77bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:2",
+      "sequence": 1604,
+      "chapter_label": "EXO 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to him, “What is that in your hand?” He said, “A rod.”",
+      "ko": "여호와께서 그에게 이르시되 네 손에 있는 것이 무엇이냐 그가 가로되 지팡이니이다",
+      "source_text_hash": "7127e32bb7ecdfcf13ca82496b54c81331e6db31935ade6eeaabc3c2a88dc784",
+      "translation_text_hash": "125a2ade0ea71b7ae18278877b380fd8020f7e78d35954ce4b464f116732d462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 네 손에 있는 것이 무엇이냐 그가 가로되 지팡이니이다"
+      ],
+      "raw_text_hashes": [
+        "125a2ade0ea71b7ae18278877b380fd8020f7e78d35954ce4b464f116732d462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:3",
+      "sequence": 1605,
+      "chapter_label": "EXO 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "He said, “Throw it on the ground.” He threw it on the ground, and it became a snake; and Moses ran away from it.",
+      "ko": "여호와께서 가라사대 그것을 땅에 던지라 곧 땅에 던지니 그것이 뱀이 된지라 모세가 뱀 앞에서 피하매",
+      "source_text_hash": "c662c254a9fffbc831eb0cfae93430c3e517a50c07e98c5446961c97ac9eccb2",
+      "translation_text_hash": "a09720ff8e1a44864e6a6a653069c135c4d1e518356fef327f8594a77862689e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 그것을 땅에 던지라 곧 땅에 던지니 그것이 뱀이 된지라 모세가 뱀 앞에서 피하매"
+      ],
+      "raw_text_hashes": [
+        "a09720ff8e1a44864e6a6a653069c135c4d1e518356fef327f8594a77862689e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:4",
+      "sequence": 1606,
+      "chapter_label": "EXO 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD said to Moses, “Stretch out your hand, and take it by the tail.” He stretched out his hand, and took hold of it, and it became a rod in his hand.",
+      "ko": "여호와께서 모세에게 이르시되 네 손을 내밀어 그 꼬리를 잡으라 그가 손을 내밀어 잡으니 그 손에서 지팡이가 된지라",
+      "source_text_hash": "ac779c8d8e842d54728be3d3cbeb9a72987956c41df518d137af0c29429d790d",
+      "translation_text_hash": "b3d9f1993298119851a89ad89e1744086cf3d6304dd0779de551238bba5df35f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 네 손을 내밀어 그 꼬리를 잡으라 그가 손을 내밀어 잡으니 그 손에서 지팡이가 된지라"
+      ],
+      "raw_text_hashes": [
+        "b3d9f1993298119851a89ad89e1744086cf3d6304dd0779de551238bba5df35f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:5",
+      "sequence": 1607,
+      "chapter_label": "EXO 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "“This is so that they may believe that the LORD, the God of their fathers, the God of Abraham, the God of Isaac, and the God of Jacob, has appeared to you.”",
+      "ko": "또 가라사대 이는 그들로 그 조상의 하나님 곧 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님 여호와가 네게 나타난 줄을 믿게 함이니라 하시고",
+      "source_text_hash": "e2b241743cb2a89a2ed27899c7e714e4ad0d0e81d9b97c8d1ee615c5d391796a",
+      "translation_text_hash": "eac1bd36a15ce1ce421d2cf3e4bb6422ba5ee248ad300ed1fe0f299530eb2bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 이는 그들로 그 조상의 하나님 곧 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님 여호와가 네게 나타난 줄을 믿게 함이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "eac1bd36a15ce1ce421d2cf3e4bb6422ba5ee248ad300ed1fe0f299530eb2bf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:6",
+      "sequence": 1608,
+      "chapter_label": "EXO 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD said furthermore to him, “Now put your hand inside your cloak.” He put his hand inside his cloak, and when he took it out, behold, his hand was leprous, as white as snow.",
+      "ko": "여호와께서 또 가라사대 네 손을 품에 넣으라 하시매 손을 품에 넣었다가 내어보니 그 손에 문둥병이 발하여 눈 같이 흰지라",
+      "source_text_hash": "4d2f2395d0cd10ecff7f157593c8a63e0552c461f8f57ee8ec8adf48984529b6",
+      "translation_text_hash": "c40094394663ca1101f04da9fc645e17a3df6be9ca3ac00b7839fd47d81f660e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 가라사대 네 손을 품에 넣으라 하시매 손을 품에 넣었다가 내어보니 그 손에 문둥병이 발하여 눈 같이 흰지라"
+      ],
+      "raw_text_hashes": [
+        "c40094394663ca1101f04da9fc645e17a3df6be9ca3ac00b7839fd47d81f660e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:7",
+      "sequence": 1609,
+      "chapter_label": "EXO 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "He said, “Put your hand inside your cloak again.” He put his hand inside his cloak again, and when he took it out of his cloak, behold, it had turned again as his other flesh.",
+      "ko": "가라사대 네 손을 다시 품에 넣으라 하시매 그가 다시 손을 품에 넣었다가 내어보니 손이 여상하더라",
+      "source_text_hash": "c498ceb6c3948798e4ee183190b080ff3b15ae1939c8cb4b66480bd134b49987",
+      "translation_text_hash": "399e26bd1e05f8cafdd7d07626091619215346b7d28e6cc0a7ef7e837ad369e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 네 손을 다시 품에 넣으라 하시매 그가 다시 손을 품에 넣었다가 내어보니 손이 여상하더라"
+      ],
+      "raw_text_hashes": [
+        "399e26bd1e05f8cafdd7d07626091619215346b7d28e6cc0a7ef7e837ad369e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:8",
+      "sequence": 1610,
+      "chapter_label": "EXO 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "“It will happen, if they will not believe you or listen to the voice of the first sign, that they will believe the voice of the latter sign.",
+      "ko": "여호와께서 가라사대 그들이 너를 믿지 아니하며 그 처음 이적의 표징을 받지 아니하여도 둘째 이적의 표징은 믿으리라",
+      "source_text_hash": "73062e28dc1905f99547a783ccd95aa6b65b374c566ce7851af1bbaa031289d2",
+      "translation_text_hash": "a2e36813691a60018586cd3da2395a2aae644bea496bd7cfa9be80d2bfe99d99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 그들이 너를 믿지 아니하며 그 처음 이적의 표징을 받지 아니하여도 둘째 이적의 표징은 믿으리라"
+      ],
+      "raw_text_hashes": [
+        "a2e36813691a60018586cd3da2395a2aae644bea496bd7cfa9be80d2bfe99d99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:9",
+      "sequence": 1611,
+      "chapter_label": "EXO 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "It will happen, if they will not believe even these two signs or listen to your voice, that you shall take of the water of the river, and pour it on the dry land. The water which you take out of the river will become blood on the dry land.”",
+      "ko": "그들이 이 두 이적을 믿지 아니하며 네 말을 듣지 아니하거든 너는 하수를 조금 취하여다가 육지에 부으라 네가 취한 하수가 육지에서 피가 되리라",
+      "source_text_hash": "d3032da865638eda28bb1d9dd0aecabe0beecf871df932edb7e4de87e8f232f3",
+      "translation_text_hash": "3a2c149a2b07c665a0ba1ab88f74c33f4a7474aadd3d6b973c17802e81cdc82c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이 두 이적을 믿지 아니하며 네 말을 듣지 아니하거든 너는 하수를 조금 취하여다가 육지에 부으라 네가 취한 하수가 육지에서 피가 되리라"
+      ],
+      "raw_text_hashes": [
+        "3a2c149a2b07c665a0ba1ab88f74c33f4a7474aadd3d6b973c17802e81cdc82c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:10",
+      "sequence": 1612,
+      "chapter_label": "EXO 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Moses said to the LORD, “O Lord, I am not eloquent, neither before now, nor since you have spoken to your servant; for I am slow of speech, and of a slow tongue.”",
+      "ko": "모세가 여호와께 고하되 주여 나는 본래 말에 능치 못한 자라 주께서 주의 종에게 명하신 후에도 그러하니 나는 입이 뻣뻣하고 혀가 둔한 자니이다",
+      "source_text_hash": "514e3d88055b3f6016f96e799d3469bf7195dd7eadcd4caea4c42a1b09a82378",
+      "translation_text_hash": "513babee143f389d263043f80c99fca3c6dd38851a16805de588570544a1fdc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 고하되 주여 나는 본래 말에 능치 못한 자라 주께서 주의 종에게 명하신 후에도 그러하니 나는 입이 뻣뻣하고 혀가 둔한 자니이다"
+      ],
+      "raw_text_hashes": [
+        "513babee143f389d263043f80c99fca3c6dd38851a16805de588570544a1fdc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:11",
+      "sequence": 1613,
+      "chapter_label": "EXO 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to him, “Who made man’s mouth? Or who makes one mute, or deaf, or seeing, or blind? Isn’t it I, the LORD?",
+      "ko": "여호와께서 그에게 이르시되 누가 사람의 입을 지었느뇨 누가 벙어리나 귀머거리나 눈 밝은 자나 소경이 되게 하였느뇨 나 여호와가 아니뇨",
+      "source_text_hash": "c0d5cf63eb163c8e407cfc2ff49d64795b97e6adb1e9638431c427f2cc25c964",
+      "translation_text_hash": "bf8486eb63d76b339a38069b830c2d261e9721752220e4754c0e044ad5f369ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 누가 사람의 입을 지었느뇨 누가 벙어리나 귀머거리나 눈 밝은 자나 소경이 되게 하였느뇨 나 여호와가 아니뇨"
+      ],
+      "raw_text_hashes": [
+        "bf8486eb63d76b339a38069b830c2d261e9721752220e4754c0e044ad5f369ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:12",
+      "sequence": 1614,
+      "chapter_label": "EXO 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Now therefore go, and I will be with your mouth, and teach you what you shall speak.”",
+      "ko": "이제 가라 내가 네 입과 함께 있어서 할 말을 가르치리라",
+      "source_text_hash": "920e41302245d2691fe1ddd69a0fb1c8af4f39085a3e56f08ff5e049716bb73b",
+      "translation_text_hash": "09b9fc2407a172676bff27313a7067048cffadfe2c5377481b1e9d970095bc65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 가라 내가 네 입과 함께 있어서 할 말을 가르치리라"
+      ],
+      "raw_text_hashes": [
+        "09b9fc2407a172676bff27313a7067048cffadfe2c5377481b1e9d970095bc65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:13",
+      "sequence": 1615,
+      "chapter_label": "EXO 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Moses said, “Oh, Lord, please send someone else.”",
+      "ko": "모세가 가로되 주여 보낼 만한 자를 보내소서",
+      "source_text_hash": "57290746dde8adce7e784b4c0a22059ae405c3b25a993a91b3e0929a6af345cd",
+      "translation_text_hash": "b829beded5e0c544f5669cb8441b070cdcbc8cee1de735f31eb44217207ac332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 주여 보낼 만한 자를 보내소서"
+      ],
+      "raw_text_hashes": [
+        "b829beded5e0c544f5669cb8441b070cdcbc8cee1de735f31eb44217207ac332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:14",
+      "sequence": 1616,
+      "chapter_label": "EXO 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD’s anger burned against Moses, and he said, “What about Aaron, your brother, the Levite? I know that he can speak well. Also, behold, he is coming out to meet you. When he sees you, he will be glad in his heart.",
+      "ko": "여호와께서 모세를 향하여 노를 발하시고 가라사대 레위 사람 네 형 아론이 있지 아니하뇨 그의 말 잘함을 내가 아노라 그가 너를 만나러 나오나니 그가 너를 볼 때에 마음에 기뻐할 것이라",
+      "source_text_hash": "28b193d2e3af44858c72fa4b1f74455c4bb59101dbe40a2d426926363805d44d",
+      "translation_text_hash": "aa7bbd14294494fc3de661f6817cd669bff769f4eadfbe8419d247f95edd165b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세를 향하여 노를 발하시고 가라사대 레위 사람 네 형 아론이 있지 아니하뇨 그의 말 잘함을 내가 아노라 그가 너를 만나러 나오나니 그가 너를 볼 때에 마음에 기뻐할 것이라"
+      ],
+      "raw_text_hashes": [
+        "aa7bbd14294494fc3de661f6817cd669bff769f4eadfbe8419d247f95edd165b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:15",
+      "sequence": 1617,
+      "chapter_label": "EXO 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "You shall speak to him, and put the words in his mouth. I will be with your mouth, and with his mouth, and will teach you what you shall do.",
+      "ko": "너는 그에게 말하고 그 입에 말을 주라 내가 네 입과 그의 입에 함께 있어서 너의 행할 일을 가르치리라",
+      "source_text_hash": "acc4c84c7428eeed33918541ae95e841e2c15cb179d6d5ae3b4b2ac8d110db8f",
+      "translation_text_hash": "da9c54e8626186c09c1c7be8f7deb6ef3345e278804a3eb3d3ea0df7f3831365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그에게 말하고 그 입에 말을 주라 내가 네 입과 그의 입에 함께 있어서 너의 행할 일을 가르치리라"
+      ],
+      "raw_text_hashes": [
+        "da9c54e8626186c09c1c7be8f7deb6ef3345e278804a3eb3d3ea0df7f3831365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:16",
+      "sequence": 1618,
+      "chapter_label": "EXO 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "He will be your spokesman to the people. It will happen that he will be to you a mouth, and you will be to him as God.",
+      "ko": "그가 너를 대신하여 백성에게 말할 것이니 그는 네 입을 대신할 것이요 너는 그에게 하나님 같이 되리라",
+      "source_text_hash": "018d14abe72e7d67db1b62f2c6a10485135d368703af71b23442e8dd120c8699",
+      "translation_text_hash": "a5553d4d6cac7a44a18f426cdabf08d9bf9f6d81205683ab403c07df3ca9f52d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 너를 대신하여 백성에게 말할 것이니 그는 네 입을 대신할 것이요 너는 그에게 하나님 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "a5553d4d6cac7a44a18f426cdabf08d9bf9f6d81205683ab403c07df3ca9f52d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:17",
+      "sequence": 1619,
+      "chapter_label": "EXO 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "You shall take this rod in your hand, with which you shall do the signs.”",
+      "ko": "너는 이 지팡이를 손에 잡고 이것으로 이적을 행할찌니라",
+      "source_text_hash": "c99c728a42ea2c7924b5eb2d347d8b5f8135ef1d3fa1d1d1e1c218d627d2b0fc",
+      "translation_text_hash": "d8356663909ac74c0264557b8f1845abe746d516dd29375830def61e027c877f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 지팡이를 손에 잡고 이것으로 이적을 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "d8356663909ac74c0264557b8f1845abe746d516dd29375830def61e027c877f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:18",
+      "sequence": 1620,
+      "chapter_label": "EXO 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Moses went and returned to Jethro his father-in-law, and said to him, “Please let me go and return to my brothers who are in Egypt, and see whether they are still alive.” Jethro said to Moses, “Go in peace.”",
+      "ko": "모세가 장인 이드로에게로 돌아가서 그에게 이르되 내가 애굽에 있는 내 형제들에게로 돌아가서 그들이 생존하였는지 보려하오니 나로 가게 하소서 이드로가 그에게 평안히 가라 하니라",
+      "source_text_hash": "8d620ad201ff8041e87a9a95c234b048b4dabed389e6016703b8fbcb5d8e4e23",
+      "translation_text_hash": "049017674aaaea81c3b12868c47f4f75d5fd474d812816e8c10b3663bcffdb1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 장인 이드로에게로 돌아가서 그에게 이르되 내가 애굽에 있는 내 형제들에게로 돌아가서 그들이 생존하였는지 보려하오니 나로 가게 하소서 이드로가 그에게 평안히 가라 하니라"
+      ],
+      "raw_text_hashes": [
+        "049017674aaaea81c3b12868c47f4f75d5fd474d812816e8c10b3663bcffdb1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:19",
+      "sequence": 1621,
+      "chapter_label": "EXO 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD said to Moses in Midian, “Go, return into Egypt; for all the men who sought your life are dead.”",
+      "ko": "여호와께서 미디안에서 모세에게 이르시되 애굽으로 돌아가라 네 생명을 찾던 자가 다 죽었느니라",
+      "source_text_hash": "b3b7e6741768a6538ee8522d811655bda1df14ee49e23694b82bcd6e1c16152d",
+      "translation_text_hash": "4415126b9d78d4b672d35ab8ee9520a70bbd4dbf2d4bbdaa0f593d600b545969",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 미디안에서 모세에게 이르시되 애굽으로 돌아가라 네 생명을 찾던 자가 다 죽었느니라"
+      ],
+      "raw_text_hashes": [
+        "4415126b9d78d4b672d35ab8ee9520a70bbd4dbf2d4bbdaa0f593d600b545969"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:20",
+      "sequence": 1622,
+      "chapter_label": "EXO 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Moses took his wife and his sons, and set them on a donkey, and he returned to the land of Egypt. Moses took God’s rod in his hand.",
+      "ko": "모세가 그 아내와 아들들을 나귀에 태우고 애굽으로 돌아가는데 하나님의 지팡이를 손에 잡았더라",
+      "source_text_hash": "1de7e16892d26d4511c953b75226164542e1ae2bef5af78b85214f8fc838af50",
+      "translation_text_hash": "69434aa6e1de332207d2de2b3f44171664775bcf9396311b7b906e65713ab25d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 아내와 아들들을 나귀에 태우고 애굽으로 돌아가는데 하나님의 지팡이를 손에 잡았더라"
+      ],
+      "raw_text_hashes": [
+        "69434aa6e1de332207d2de2b3f44171664775bcf9396311b7b906e65713ab25d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:21",
+      "sequence": 1623,
+      "chapter_label": "EXO 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD said to Moses, “When you go back into Egypt, see that you do before Pharaoh all the wonders which I have put in your hand, but I will harden his heart and he will not let the people go.",
+      "ko": "여호와께서 모세에게 이르시되 네가 애굽으로 돌아가거든 내가 네 손에 준 이적을 바로 앞에서 다 행하라 그러나 내가 그의 마음을 강퍅케 한즉 그가 백성을 놓지 아니하리니",
+      "source_text_hash": "0ddb9cc4d0ea5cefe30a078d56c23680c7133735503d19d39baf229ce1e5ad7b",
+      "translation_text_hash": "b6934bf3a5058f3659778507d9d3ba30731320e5f5735d3bb9db207151b7aeb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 네가 애굽으로 돌아가거든 내가 네 손에 준 이적을 바로 앞에서 다 행하라 그러나 내가 그의 마음을 강퍅케 한즉 그가 백성을 놓지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "b6934bf3a5058f3659778507d9d3ba30731320e5f5735d3bb9db207151b7aeb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:22",
+      "sequence": 1624,
+      "chapter_label": "EXO 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "You shall tell Pharaoh, ‘The LORD says, Israel is my son, my firstborn,",
+      "ko": "너는 바로에게 이르기를 여호와의 말씀에 이스라엘은 내 아들 내 장자라",
+      "source_text_hash": "8405c9a10c218c9a151093944dd6b2847f1196bf4dfcb1eb0f2a5281e15e9cb3",
+      "translation_text_hash": "70d9e88fcf346635a362fe69fdbd1113ea7a62486006fb1f4e73be4456caff02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 바로에게 이르기를 여호와의 말씀에 이스라엘은 내 아들 내 장자라"
+      ],
+      "raw_text_hashes": [
+        "70d9e88fcf346635a362fe69fdbd1113ea7a62486006fb1f4e73be4456caff02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:23",
+      "sequence": 1625,
+      "chapter_label": "EXO 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "and I have said to you, “Let my son go, that he may serve me;” and you have refused to let him go. Behold, I will kill your firstborn son.’”",
+      "ko": "내가 네게 이르기를 내 아들을 놓아서 나를 섬기게 하라 하여도 네가 놓기를 거절하니 내가 네 아들 네 장자를 죽이리라 하셨다 하라 하시니라",
+      "source_text_hash": "e1ddff05ee130d3cff46c692e031e742e16dd760f457ba111bbc2ad44a70eed2",
+      "translation_text_hash": "bee6430b77e2f9971356a9817363ecdf729969649a71206bfe18fe3caff005ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 이르기를 내 아들을 놓아서 나를 섬기게 하라 하여도 네가 놓기를 거절하니 내가 네 아들 네 장자를 죽이리라 하셨다 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "bee6430b77e2f9971356a9817363ecdf729969649a71206bfe18fe3caff005ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:24",
+      "sequence": 1626,
+      "chapter_label": "EXO 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "On the way at a lodging place, the LORD met Moses and wanted to kill him.",
+      "ko": "여호와께서 길의 숙소에서 모세를 만나사 그를 죽이려하시는지라",
+      "source_text_hash": "70bc1d337437cb4305b8924c415b0523eefa69f4a70ea939025b2f9861214741",
+      "translation_text_hash": "cbc7c1073178d04abffcd53913f3d215b1cf25ce1f08259331b604befb97bb77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 길의 숙소에서 모세를 만나사 그를 죽이려하시는지라"
+      ],
+      "raw_text_hashes": [
+        "cbc7c1073178d04abffcd53913f3d215b1cf25ce1f08259331b604befb97bb77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:25",
+      "sequence": 1627,
+      "chapter_label": "EXO 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Then Zipporah took a flint, and cut off the foreskin of her son, and cast it at his feet; and she said, “Surely you are a bridegroom of blood to me.”",
+      "ko": "십보라가 차돌을 취하여 그 아들의 양피를 베어 모세의 발 앞에 던지며 가로되 당신은 참으로 내게 피 남편이로다 하니",
+      "source_text_hash": "b1afbb8955ec9ca0f1aa6184dbaaabc8a034742f4e6fd81e3657fc2ed1368c89",
+      "translation_text_hash": "0fe031dd1b4bde08b9cbee0c33a44ca22bcb8b66e7aa1993ec3c01c20204076d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십보라가 차돌을 취하여 그 아들의 양피를 베어 모세의 발 앞에 던지며 가로되 당신은 참으로 내게 피 남편이로다 하니"
+      ],
+      "raw_text_hashes": [
+        "0fe031dd1b4bde08b9cbee0c33a44ca22bcb8b66e7aa1993ec3c01c20204076d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:26",
+      "sequence": 1628,
+      "chapter_label": "EXO 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "So he let him alone. Then she said, “You are a bridegroom of blood,” because of the circumcision.",
+      "ko": "여호와께서 모세를 놓으시니라 그 때에 십보라가 피 남편이라 함은 할례를 인함이었더라",
+      "source_text_hash": "e37a583dcca497576523a2c0d08b449667ed491ea40a52591fe7b54e17d9a81b",
+      "translation_text_hash": "11409a36439529b97aae795ff006b064ba8b4361a2916e90d41cb8dbb2bfa91b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세를 놓으시니라 그 때에 십보라가 피 남편이라 함은 할례를 인함이었더라"
+      ],
+      "raw_text_hashes": [
+        "11409a36439529b97aae795ff006b064ba8b4361a2916e90d41cb8dbb2bfa91b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:27",
+      "sequence": 1629,
+      "chapter_label": "EXO 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD said to Aaron, “Go into the wilderness to meet Moses.” He went, and met him on God’s mountain, and kissed him.",
+      "ko": "여호와께서 아론에게 이르시되 광야에 가서 모세를 맞으라 하시매 그가 가서 하나님의 산에서 모세를 만나 그에게 입맞추니",
+      "source_text_hash": "674f9851d915fd271bfabf815f377a2c9652d1ebb6f3a4a60c62f63eba08f1ee",
+      "translation_text_hash": "af0c983c9a1b4ce431b29b8aeaa97665814906207a500234c992c5ac38e2f3ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아론에게 이르시되 광야에 가서 모세를 맞으라 하시매 그가 가서 하나님의 산에서 모세를 만나 그에게 입맞추니"
+      ],
+      "raw_text_hashes": [
+        "af0c983c9a1b4ce431b29b8aeaa97665814906207a500234c992c5ac38e2f3ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:28",
+      "sequence": 1630,
+      "chapter_label": "EXO 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "Moses told Aaron all the LORD’s words with which he had sent him, and all the signs with which he had instructed him.",
+      "ko": "모세가 여호와께서 자기에게 부탁하여 보내신 모든 말씀과 여호와께서 자기에게 명하신 모든 이적을 아론에게 고하니라",
+      "source_text_hash": "9675cdeda9f90c137f33f4db676a557944ae5b135b496111162c4ff285021e53",
+      "translation_text_hash": "ae7432a59cb3c71615efd2a357ba145339ecbf0ae552cadf6cc6ba3d7cb1cf7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께서 자기에게 부탁하여 보내신 모든 말씀과 여호와께서 자기에게 명하신 모든 이적을 아론에게 고하니라"
+      ],
+      "raw_text_hashes": [
+        "ae7432a59cb3c71615efd2a357ba145339ecbf0ae552cadf6cc6ba3d7cb1cf7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:29",
+      "sequence": 1631,
+      "chapter_label": "EXO 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "Moses and Aaron went and gathered together all the elders of the children of Israel.",
+      "ko": "모세와 아론이 가서 이스라엘 자손의 모든 장로를 모으고",
+      "source_text_hash": "7aab608e8aab9c1df3691cadffa18d36c79835b8ec2fc8055675535af45b3aec",
+      "translation_text_hash": "8152184d51cdf89a8ea96c290c43c9813b431939c1f50a52e28a30d4fb09392d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 가서 이스라엘 자손의 모든 장로를 모으고"
+      ],
+      "raw_text_hashes": [
+        "8152184d51cdf89a8ea96c290c43c9813b431939c1f50a52e28a30d4fb09392d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:30",
+      "sequence": 1632,
+      "chapter_label": "EXO 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "Aaron spoke all the words which the LORD had spoken to Moses, and did the signs in the sight of the people.",
+      "ko": "아론이 여호와께서 모세에게 명하신 모든 말씀을 전하고 백성 앞에서 이적을 행하니",
+      "source_text_hash": "f6dfc661364bf31e414e7c85368fcfffa05b8d0cee1f0c0b5cc4bf6e8b64ade1",
+      "translation_text_hash": "b40b4df5c1a34f2eaf624a7a1d55692156af33dda0c2760c4f1b55ffe9a50bf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 여호와께서 모세에게 명하신 모든 말씀을 전하고 백성 앞에서 이적을 행하니"
+      ],
+      "raw_text_hashes": [
+        "b40b4df5c1a34f2eaf624a7a1d55692156af33dda0c2760c4f1b55ffe9a50bf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:4:31",
+      "sequence": 1633,
+      "chapter_label": "EXO 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "The people believed, and when they heard that the LORD had visited the children of Israel, and that he had seen their affliction, then they bowed their heads and worshiped.",
+      "ko": "백성이 믿으며 여호와께서 이스라엘 자손을 돌아보시고 그 고난을 감찰하셨다 함을 듣고 머리 숙여 경배하였더라",
+      "source_text_hash": "c5e4150a8429c84b4624506158e0ff6a7286df5a1dfb876afc5ed1f1039de895",
+      "translation_text_hash": "208f85263d7c3102c58c5bc83fa5f0bf83d4ca3e7561e2853b7d6884a704df58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 믿으며 여호와께서 이스라엘 자손을 돌아보시고 그 고난을 감찰하셨다 함을 듣고 머리 숙여 경배하였더라"
+      ],
+      "raw_text_hashes": [
+        "208f85263d7c3102c58c5bc83fa5f0bf83d4ca3e7561e2853b7d6884a704df58"
+      ]
+    }
+  ]
+}

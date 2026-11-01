@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:023",
+  "unit_ordinal": 140,
+  "unit_label": "NUM 23",
+  "book_code": "NUM",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:23:1",
+      "sequence": 4418,
+      "chapter_label": "NUM 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Balaam said to Balak, “Build here seven altars for me, and prepare here seven bulls and seven rams for me.”",
+      "ko": "발람이 발락에게 이르되 나를 위하여 여기 일곱 단을 쌓고 거기 수송아지 일곱과 수양 일곱을 준비하소서 하매",
+      "source_text_hash": "1e6b89c592c2531e1bb34973a3ffde26437ec9f9a8398295a85b8ceb2cedddb7",
+      "translation_text_hash": "1bf24f270ab1103b6648da7fbfdb8411d956607d2341066c5d83f481caffd8e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 나를 위하여 여기 일곱 단을 쌓고 거기 수송아지 일곱과 수양 일곱을 준비하소서 하매"
+      ],
+      "raw_text_hashes": [
+        "1bf24f270ab1103b6648da7fbfdb8411d956607d2341066c5d83f481caffd8e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:2",
+      "sequence": 4419,
+      "chapter_label": "NUM 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "Balak did as Balaam had spoken; and Balak and Balaam offered on every altar a bull and a ram.",
+      "ko": "발락이 발람의 말대로 준비한 후에 발락과 발람이 매단에 수송아지 하나와 수양 하나를 드리니라",
+      "source_text_hash": "ea1de3889ed20cd7d2707f6eb979623cfc78780b8da98a4bf7c1de59591300aa",
+      "translation_text_hash": "d5417127d4e82f789c27769e3ac39fcd436719eb87806827bd8b617ed3597d23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람의 말대로 준비한 후에 발락과 발람이 매단에 수송아지 하나와 수양 하나를 드리니라"
+      ],
+      "raw_text_hashes": [
+        "d5417127d4e82f789c27769e3ac39fcd436719eb87806827bd8b617ed3597d23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:3",
+      "sequence": 4420,
+      "chapter_label": "NUM 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Balaam said to Balak, “Stand by your burnt offering, and I will go. Perhaps the LORD will come to meet me. Whatever he shows me I will tell you.” He went to a bare height.",
+      "ko": "발람이 발락에게 이르되 당신의 번제물 곁에 서소서 나는 저리로 갈찌라 여호와께서 혹시 오셔서 나를 만나시리니 그가 내게 지시하시는 것은 다 당신에게 고하리이다 하고 사태난 산에 이른즉",
+      "source_text_hash": "1264830ce7b65616d6c59b09ff763d678f06af87376ecaf4d4a9422e83244733",
+      "translation_text_hash": "041806f6cea70a7952e35a2df5ff74b13fc7ad3b89de714e35e755e7cf30aeff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 당신의 번제물 곁에 서소서 나는 저리로 갈찌라 여호와께서 혹시 오셔서 나를 만나시리니 그가 내게 지시하시는 것은 다 당신에게 고하리이다 하고 사태난 산에 이른즉"
+      ],
+      "raw_text_hashes": [
+        "041806f6cea70a7952e35a2df5ff74b13fc7ad3b89de714e35e755e7cf30aeff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:4",
+      "sequence": 4421,
+      "chapter_label": "NUM 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "God met Balaam, and he said to him, “I have prepared the seven altars, and I have offered up a bull and a ram on every altar.”",
+      "ko": "하나님이 발람에게 임하시는지라 발람이 고하되 내가 일곱 단을 베풀고 매단에 수송아지 하나와 수양 하나를 드렸나이다",
+      "source_text_hash": "6eaa08e93acb64657fd5bc041ab4b9a6440b0e79546386aed12fc10411be93be",
+      "translation_text_hash": "a9ab3def662e9ff7bf3200ae64902b3d52cbbbea1d8d8b3193b5316ff5b0dbc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 발람에게 임하시는지라 발람이 고하되 내가 일곱 단을 베풀고 매단에 수송아지 하나와 수양 하나를 드렸나이다"
+      ],
+      "raw_text_hashes": [
+        "a9ab3def662e9ff7bf3200ae64902b3d52cbbbea1d8d8b3193b5316ff5b0dbc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:5",
+      "sequence": 4422,
+      "chapter_label": "NUM 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD put a word in Balaam’s mouth, and said, “Return to Balak, and thus you shall speak.”",
+      "ko": "여호와께서 발람의 입에 말씀을 주어 가라사대 발락에게 돌아가서 이렇게 말할찌니라",
+      "source_text_hash": "89a48d31d99ed0e2f922f3dd10c1584f1238a799ef2d2260300df25eff5c432f",
+      "translation_text_hash": "c1de7971e419b065735caeb7ccdd4f7a1bcd12c13177fe47a2b938f87a25e5f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 발람의 입에 말씀을 주어 가라사대 발락에게 돌아가서 이렇게 말할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c1de7971e419b065735caeb7ccdd4f7a1bcd12c13177fe47a2b938f87a25e5f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:6",
+      "sequence": 4423,
+      "chapter_label": "NUM 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "He returned to him, and behold, he was standing by his burnt offering, he, and all the princes of Moab.",
+      "ko": "그가 발락에게로 돌아간즉 발락과 모압 모든 귀족이 번제물 곁에 함께 섰더라",
+      "source_text_hash": "a6566fb87047e4874a172600a205e7b5911f3badd20af8fd0b653381b97c0fdf",
+      "translation_text_hash": "602a7c984b9fb5f4f23ca2def8f67d6cc17cba7756d2bf45d3cae374faa96067",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 발락에게로 돌아간즉 발락과 모압 모든 귀족이 번제물 곁에 함께 섰더라"
+      ],
+      "raw_text_hashes": [
+        "602a7c984b9fb5f4f23ca2def8f67d6cc17cba7756d2bf45d3cae374faa96067"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:7",
+      "sequence": 4424,
+      "chapter_label": "NUM 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "He took up his parable, and said, “From Aram has Balak brought me, the king of Moab from the mountains of the East. Come, curse Jacob for me. Come, defy Israel.",
+      "ko": "발람이 노래를 지어 가로되 발락이 나를 아람에서, 모압 왕이 동편 산에서 데려다가 이르기를 와서 나를 위하여 야곱을 저주하라, 와서 이스라엘을 꾸짖으라 하도다",
+      "source_text_hash": "9343e66eca42312c146b3a048acada17becba9ecce0f017054ccb4f0d2fc17f1",
+      "translation_text_hash": "59679b9d339a29870b9a67b22778b15014c83a65740586e249a3350a740d5f85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 노래를 지어 가로되 발락이 나를 아람에서, 모압 왕이 동편 산에서 데려다가 이르기를 와서 나를 위하여 야곱을 저주하라, 와서 이스라엘을 꾸짖으라 하도다"
+      ],
+      "raw_text_hashes": [
+        "59679b9d339a29870b9a67b22778b15014c83a65740586e249a3350a740d5f85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:8",
+      "sequence": 4425,
+      "chapter_label": "NUM 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "How shall I curse whom God has not cursed? How shall I defy whom the LORD has not defied?",
+      "ko": "하나님이 저주치 않으신 자를 내 어찌 저주하며 여호와께서 꾸짖지 않으신 자를 내 어찌 꾸짖을꼬",
+      "source_text_hash": "192e02398398f802194303cf7029ece95a7dec9005c5d8bc2d439de3baa2f9fa",
+      "translation_text_hash": "d956c3170d0af386bfadd4c16e1f0a3b1ff22df51ab0dd5bd4d8e0bd44c1bf38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 저주치 않으신 자를 내 어찌 저주하며 여호와께서 꾸짖지 않으신 자를 내 어찌 꾸짖을꼬"
+      ],
+      "raw_text_hashes": [
+        "d956c3170d0af386bfadd4c16e1f0a3b1ff22df51ab0dd5bd4d8e0bd44c1bf38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:9",
+      "sequence": 4426,
+      "chapter_label": "NUM 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "For from the top of the rocks I see him. From the hills I see him. Behold, it is a people that dwells alone, and shall not be listed among the nations.",
+      "ko": "내가 바위 위에서 그들을 보며 작은 산에서 그들을 바라보니 이 백성은 홀로 처할 것이라 그를 열방 중의 하나로 여기지 않으리로다",
+      "source_text_hash": "2b202c574cda9b4a668b40b40c976fc6be34e75feff7e2df043d961757337bc1",
+      "translation_text_hash": "611d381e0acf7d1b2a6616052ff0bca684a3397942f6bfcbabddebbf2eb0e7af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바위 위에서 그들을 보며 작은 산에서 그들을 바라보니 이 백성은 홀로 처할 것이라 그를 열방 중의 하나로 여기지 않으리로다"
+      ],
+      "raw_text_hashes": [
+        "611d381e0acf7d1b2a6616052ff0bca684a3397942f6bfcbabddebbf2eb0e7af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:10",
+      "sequence": 4427,
+      "chapter_label": "NUM 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "Who can count the dust of Jacob, or count the fourth part of Israel? Let me die the death of the righteous! Let my last end be like his!”",
+      "ko": "야곱의 티끌을 뉘 능히 계산하며 이스라엘 사분지 일을 뉘 능히 계수할꼬 나는 의인의 죽음 같이 죽기를 원하며 나의 종말이 그와 같기를 바라도다 하매",
+      "source_text_hash": "de2d3ca762f0237840f142c322670d531262d51f28f8a49ca1cd100879c0f8b4",
+      "translation_text_hash": "63605c5698651b10614d65101d4b12f9211fe0d428e6d138f1de4e757c0ac5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 티끌을 뉘 능히 계산하며 이스라엘 사분지 일을 뉘 능히 계수할꼬 나는 의인의 죽음 같이 죽기를 원하며 나의 종말이 그와 같기를 바라도다 하매"
+      ],
+      "raw_text_hashes": [
+        "63605c5698651b10614d65101d4b12f9211fe0d428e6d138f1de4e757c0ac5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:11",
+      "sequence": 4428,
+      "chapter_label": "NUM 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "Balak said to Balaam, “What have you done to me? I took you to curse my enemies, and behold, you have blessed them altogether.”",
+      "ko": "발락이 발람에게 이르되 그대가 어찌 내게 이같이 행하느냐 나의 원수를 저주하라고 그대를 데려왔거늘 그대가 온전히 축복하였도다",
+      "source_text_hash": "75f459bff1d906fe810dbe6119f1105d87c4eb477074bae6422ae4571a4ca0ab",
+      "translation_text_hash": "6a72ba31201dd461c5b9a93a9a46f3feb3fbe4aa82f7e6b814a1078d5c94a4dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람에게 이르되 그대가 어찌 내게 이같이 행하느냐 나의 원수를 저주하라고 그대를 데려왔거늘 그대가 온전히 축복하였도다"
+      ],
+      "raw_text_hashes": [
+        "6a72ba31201dd461c5b9a93a9a46f3feb3fbe4aa82f7e6b814a1078d5c94a4dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:12",
+      "sequence": 4429,
+      "chapter_label": "NUM 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "He answered and said, “Must I not take heed to speak that which the LORD puts in my mouth?”",
+      "ko": "대답하여 가로되 여호와께서 내 입에 주신 말씀을 내가 어찌 말하지 아니할 수 있으리이까",
+      "source_text_hash": "06c0f2a6d7feddd625092a2a7a567a10a12d14538ed1429424b7ecb75a90329e",
+      "translation_text_hash": "f818f462e5b876c8f98d0d769232954435711a7a6e0a861d4df80a32c578cef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 여호와께서 내 입에 주신 말씀을 내가 어찌 말하지 아니할 수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "f818f462e5b876c8f98d0d769232954435711a7a6e0a861d4df80a32c578cef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:13",
+      "sequence": 4430,
+      "chapter_label": "NUM 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "Balak said to him, “Please come with me to another place, where you may see them. You shall see just part of them, and shall not see them all. Curse them from there for me.”",
+      "ko": "발락이 가로되 나와 함께 그들을 달리 볼 곳으로 가자 거기서는 그들을 다 보지 못하고 그 끝만 보리니 거기서 나를 위하여 그들을 저주하라 하고",
+      "source_text_hash": "d80358705b6cceb5bd22166f56e1698584f32ed2e8493f63a49563b96dc11db5",
+      "translation_text_hash": "27bfafad7d51e59ab84cc84a078608a4d0d220638f3dc5a8ed3c4b69e849b9e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 가로되 나와 함께 그들을 달리 볼 곳으로 가자 거기서는 그들을 다 보지 못하고 그 끝만 보리니 거기서 나를 위하여 그들을 저주하라 하고"
+      ],
+      "raw_text_hashes": [
+        "27bfafad7d51e59ab84cc84a078608a4d0d220638f3dc5a8ed3c4b69e849b9e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:14",
+      "sequence": 4431,
+      "chapter_label": "NUM 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "He took him into the field of Zophim, to the top of Pisgah, and built seven altars, and offered up a bull and a ram on every altar.",
+      "ko": "소빔 들로 인도하여 비스가 꼭대기에 이르러 일곱 단을 쌓고 매단에 수송아지 하나와 수양 하나를 드리니",
+      "source_text_hash": "4bdd451ad38de9b6b441b2573049df0c256a7cb4633441d0efd72b55c29fdee2",
+      "translation_text_hash": "ff80c13fb18874c1f1c3ceef41e9d4941477715deb8c8b1dae0227edd0135315",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소빔 들로 인도하여 비스가 꼭대기에 이르러 일곱 단을 쌓고 매단에 수송아지 하나와 수양 하나를 드리니"
+      ],
+      "raw_text_hashes": [
+        "ff80c13fb18874c1f1c3ceef41e9d4941477715deb8c8b1dae0227edd0135315"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:15",
+      "sequence": 4432,
+      "chapter_label": "NUM 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "He said to Balak, “Stand here by your burnt offering, while I meet God over there.”",
+      "ko": "발람이 발락에게 이르되 내가 저기서 여호와를 만날 동안에 여기 당신의 번제물 곁에 서소서 하니라",
+      "source_text_hash": "406320f8eab23a0b8ef8fd5b704d6399f01ff767c91fccfe5e8857692fea670a",
+      "translation_text_hash": "55670ef671c697dc682532b12e1927902e48c004233180ffb7306c495fd8a159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 내가 저기서 여호와를 만날 동안에 여기 당신의 번제물 곁에 서소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "55670ef671c697dc682532b12e1927902e48c004233180ffb7306c495fd8a159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:16",
+      "sequence": 4433,
+      "chapter_label": "NUM 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD met Balaam, and put a word in his mouth, and said, “Return to Balak, and say this.”",
+      "ko": "여호와께서 발람에게 임하사 그 입에 말씀을 주어 가라사대 발락에게로 돌아가서 이렇게 말할찌니라",
+      "source_text_hash": "fa7da7542e3cc26a71fa9378aff21c039361aa6d6f206a58e5734b0c1f2b4372",
+      "translation_text_hash": "b91c19ba58519a1de20a8e995391498e7b3268b6cde425b689f37b15d52ae44c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 발람에게 임하사 그 입에 말씀을 주어 가라사대 발락에게로 돌아가서 이렇게 말할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b91c19ba58519a1de20a8e995391498e7b3268b6cde425b689f37b15d52ae44c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:17",
+      "sequence": 4434,
+      "chapter_label": "NUM 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "He came to him, and behold, he was standing by his burnt offering, and the princes of Moab with him. Balak said to him, “What has the LORD spoken?”",
+      "ko": "발람이 와서 본즉 발락이 번제물 곁에 섰고 모압 귀족들이 함께 있더라 발락이 발람에게 이르되 여호와께서 무슨 말씀을 하시더냐",
+      "source_text_hash": "320fcd8d97c0108f0865bc8a409dd23c08507bac812d5e727139c1d51b3380cd",
+      "translation_text_hash": "6af4d341f3b27027822322bdb60a429a47a9ad2886058149d9d2b35963dcb9ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 와서 본즉 발락이 번제물 곁에 섰고 모압 귀족들이 함께 있더라 발락이 발람에게 이르되 여호와께서 무슨 말씀을 하시더냐"
+      ],
+      "raw_text_hashes": [
+        "6af4d341f3b27027822322bdb60a429a47a9ad2886058149d9d2b35963dcb9ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:18",
+      "sequence": 4435,
+      "chapter_label": "NUM 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "He took up his parable, and said, “Rise up, Balak, and hear! Listen to me, you son of Zippor.",
+      "ko": "발람이 노래를 지어 가로되 발락이여 일어나 들을찌어다 십볼의 아들이여 나를 자세히 들으라",
+      "source_text_hash": "48de23305b08d48e022b959bdb182314406173957e2ef4ccc6366cac17347529",
+      "translation_text_hash": "84d7062547f2684083c07bab74d455a75370aa03bd97d771298995515a27c14a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 노래를 지어 가로되 발락이여 일어나 들을찌어다 십볼의 아들이여 나를 자세히 들으라"
+      ],
+      "raw_text_hashes": [
+        "84d7062547f2684083c07bab74d455a75370aa03bd97d771298995515a27c14a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:19",
+      "sequence": 4436,
+      "chapter_label": "NUM 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "God is not a man, that he should lie, nor a son of man, that he should repent. Has he said, and he won’t do it? Or has he spoken, and he won’t make it good?",
+      "ko": "하나님은 인생이 아니시니 식언치 않으시고 인자가 아니시니 후회가 없으시도다 어찌 그 말씀하신 바를 행치 않으시며 하신 말씀을 실행치 않으시랴",
+      "source_text_hash": "965c3c6b478649e8cc4df46a49565a1ba737fa972b038bfb1a93b6caeee1510d",
+      "translation_text_hash": "0724edc04f9bc50b8da891cfdbf01a42a9bd1f572130d4e1ee49613b960e20dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 인생이 아니시니 식언치 않으시고 인자가 아니시니 후회가 없으시도다 어찌 그 말씀하신 바를 행치 않으시며 하신 말씀을 실행치 않으시랴"
+      ],
+      "raw_text_hashes": [
+        "0724edc04f9bc50b8da891cfdbf01a42a9bd1f572130d4e1ee49613b960e20dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:20",
+      "sequence": 4437,
+      "chapter_label": "NUM 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "Behold, I have received a command to bless. He has blessed, and I can’t reverse it.",
+      "ko": "내가 축복의 명을 받았으니 그가 하신 축복을 내가 돌이킬수 없도다",
+      "source_text_hash": "d53630e10108f42849cd5987b05e322579d4367a2f41cbfe6cd892a39855b766",
+      "translation_text_hash": "28d615bb691274ed7cc3d62aacc4cdf5f692c037493cac1f56df28e158415af3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 축복의 명을 받았으니 그가 하신 축복을 내가 돌이킬수 없도다"
+      ],
+      "raw_text_hashes": [
+        "28d615bb691274ed7cc3d62aacc4cdf5f692c037493cac1f56df28e158415af3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:21",
+      "sequence": 4438,
+      "chapter_label": "NUM 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "He has not seen iniquity in Jacob. Neither has he seen perverseness in Israel. The LORD his God is with him. The shout of a king is among them.",
+      "ko": "여호와는 야곱의 허물을 보지 아니하시며 이스라엘의 패역을 보지 아니하시는도다 여호와 그의 하나님이 그와 함께 계시니 왕을 부르는 소리가 그 중에 있도다",
+      "source_text_hash": "2845d17a1783c1f25fb79f2ece0d810e73856e9e954b2b7931dda3e9e664297d",
+      "translation_text_hash": "725d751af181f209610e3231b765514850131055340a526276c10caa2b7c71cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 야곱의 허물을 보지 아니하시며 이스라엘의 패역을 보지 아니하시는도다 여호와 그의 하나님이 그와 함께 계시니 왕을 부르는 소리가 그 중에 있도다"
+      ],
+      "raw_text_hashes": [
+        "725d751af181f209610e3231b765514850131055340a526276c10caa2b7c71cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:22",
+      "sequence": 4439,
+      "chapter_label": "NUM 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "God brings them out of Egypt. He has as it were the strength of the wild ox.",
+      "ko": "하나님이 그들을 애굽에서 인도하여 내셨으니 그 힘이 들소와 같도다",
+      "source_text_hash": "92b942778fcbb71f12c84500d0f4789b1dcfd7d751d523ac241657443eb49487",
+      "translation_text_hash": "77f6c291ab27a5d5943d84a89c8de824cb80222c1db606f2dd0631ff46c76a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그들을 애굽에서 인도하여 내셨으니 그 힘이 들소와 같도다"
+      ],
+      "raw_text_hashes": [
+        "77f6c291ab27a5d5943d84a89c8de824cb80222c1db606f2dd0631ff46c76a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:23",
+      "sequence": 4440,
+      "chapter_label": "NUM 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "Surely there is no enchantment with Jacob; neither is there any divination with Israel. Now it shall be said of Jacob and of Israel, ‘What has God done!’",
+      "ko": "야곱을 해할 사술이 없고 이스라엘을 해할 복술이 없도다 이 때에 야곱과 이스라엘에 대하여 논할찐대 하나님의 행하신 일이 어찌 그리 크뇨 하리로다",
+      "source_text_hash": "f1e1a935d015503c359c2c6436c6091a9fdec86f1bb73f6933dfc51693e0931b",
+      "translation_text_hash": "f7df2f1dfcfaa0c34ee9cf621f02ebfcf32084d79fa44ac61f575dcc6063a9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱을 해할 사술이 없고 이스라엘을 해할 복술이 없도다 이 때에 야곱과 이스라엘에 대하여 논할찐대 하나님의 행하신 일이 어찌 그리 크뇨 하리로다"
+      ],
+      "raw_text_hashes": [
+        "f7df2f1dfcfaa0c34ee9cf621f02ebfcf32084d79fa44ac61f575dcc6063a9aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:24",
+      "sequence": 4441,
+      "chapter_label": "NUM 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, a people rises up as a lioness. As a lion he lifts himself up. He shall not lie down until he eats of the prey, and drinks the blood of the slain.”",
+      "ko": "이 백성이 암사자 같이 일어나고 수사자 같이 일어나서 움킨 것을 먹으며 죽인 피를 마시기 전에는 눕지 아니하리로다 하매",
+      "source_text_hash": "3119ac42b300d8447cafd86877e68d32629be883c08021813fe84cd2572712ef",
+      "translation_text_hash": "4a09e84238f7ccd72fb808f13616b393c32ee83c0bb90e70878f6ad080185a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 암사자 같이 일어나고 수사자 같이 일어나서 움킨 것을 먹으며 죽인 피를 마시기 전에는 눕지 아니하리로다 하매"
+      ],
+      "raw_text_hashes": [
+        "4a09e84238f7ccd72fb808f13616b393c32ee83c0bb90e70878f6ad080185a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:25",
+      "sequence": 4442,
+      "chapter_label": "NUM 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "Balak said to Balaam, “Neither curse them at all, nor bless them at all.”",
+      "ko": "발락이 발람에게 이르되 그들을 저주하지도 말고 축복하지도 말라",
+      "source_text_hash": "e0ad9e2ad1d97a722f65a832b8c64f775d77dabff4f616a0dbcc71129ec3000b",
+      "translation_text_hash": "49b09581b7d6859df5d8545e2cbf2ad7a332a955c816f7dac469ede7dd5d1aa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람에게 이르되 그들을 저주하지도 말고 축복하지도 말라"
+      ],
+      "raw_text_hashes": [
+        "49b09581b7d6859df5d8545e2cbf2ad7a332a955c816f7dac469ede7dd5d1aa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:26",
+      "sequence": 4443,
+      "chapter_label": "NUM 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "But Balaam answered Balak, “Didn’t I tell you, saying, ‘All that the LORD speaks, that I must do’?”",
+      "ko": "발람이 발락에게 대답하여 가로되 내가 당신에게 고하여 이르기를 여호와께서 말씀하신 것은 내가 그대로 하지 않을수 없다고 하지 아니하더이까",
+      "source_text_hash": "308e146251550145b110f4528e6ac317b84d43f5e86ca42bb7de6a2d84a825f6",
+      "translation_text_hash": "5d0221e989017cfd786731201c0cfa258f0cf04413956a1238511cdd9f22acea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 대답하여 가로되 내가 당신에게 고하여 이르기를 여호와께서 말씀하신 것은 내가 그대로 하지 않을수 없다고 하지 아니하더이까"
+      ],
+      "raw_text_hashes": [
+        "5d0221e989017cfd786731201c0cfa258f0cf04413956a1238511cdd9f22acea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:27",
+      "sequence": 4444,
+      "chapter_label": "NUM 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "Balak said to Balaam, “Come now, I will take you to another place; perhaps it will please God that you may curse them for me from there.”",
+      "ko": "발락이 발람에게 또 이르되 오라 내가 너를 다른 곳으로 인도하리니 네가 거기서 나를 위하여 그들을 저주하기를 하나님이 혹시 기뻐하시리라 하고",
+      "source_text_hash": "5bad606c88e7995a6960f79d858881cb14e6d0066eba3329a83e6ef9b81a6214",
+      "translation_text_hash": "cf7ca46a48ce6a83d9746ec4b5768116c821efb9315f426dbaac6a95ceb1de42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람에게 또 이르되 오라 내가 너를 다른 곳으로 인도하리니 네가 거기서 나를 위하여 그들을 저주하기를 하나님이 혹시 기뻐하시리라 하고"
+      ],
+      "raw_text_hashes": [
+        "cf7ca46a48ce6a83d9746ec4b5768116c821efb9315f426dbaac6a95ceb1de42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:28",
+      "sequence": 4445,
+      "chapter_label": "NUM 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Balak took Balaam to the top of Peor, that looks down on the desert.",
+      "ko": "발락이 발람을 인도하여 광야가 내려다 보이는 브올산 꼭대기에 이르니",
+      "source_text_hash": "12a8e18370e93039624c5e2d2cc16f677f52e26c7e378cc172757206be4dcf22",
+      "translation_text_hash": "b6ba69cbe71a40901080887a33f0b91d2946bb722915efcf7cb3c958f07bd4a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람을 인도하여 광야가 내려다 보이는 브올산 꼭대기에 이르니"
+      ],
+      "raw_text_hashes": [
+        "b6ba69cbe71a40901080887a33f0b91d2946bb722915efcf7cb3c958f07bd4a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:29",
+      "sequence": 4446,
+      "chapter_label": "NUM 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "Balaam said to Balak, “Build seven altars for me here, and prepare seven bulls and seven rams for me here.”",
+      "ko": "발람이 발락에게 이르되 나를 위하여 여기 일곱 단을 쌓고 거기 수송아지 일곱과 수양 일곱을 준비하소서",
+      "source_text_hash": "bf722538f956efac16719dbf9f063848a7789ceeaef089b25fbbd2ca9a9027c2",
+      "translation_text_hash": "5535569c53f0acd959af77aa271bdbbabf9a5f60fc66ffaaab7f15d4a8b126f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 나를 위하여 여기 일곱 단을 쌓고 거기 수송아지 일곱과 수양 일곱을 준비하소서"
+      ],
+      "raw_text_hashes": [
+        "5535569c53f0acd959af77aa271bdbbabf9a5f60fc66ffaaab7f15d4a8b126f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:23:30",
+      "sequence": 4447,
+      "chapter_label": "NUM 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Balak did as Balaam had said, and offered up a bull and a ram on every altar.",
+      "ko": "발락이 발람의 말대로 행하여 매단에 수송아지 하나와 수양 하나를 드리니라",
+      "source_text_hash": "acb33be4ed1de293ad98a176af128ef8dad86a596d8752a301ccd11952662b7e",
+      "translation_text_hash": "36d95aed9f72ef92becbdb4acf3e818ac0cfb0ebb38e8670ce72c88cb006dd00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람의 말대로 행하여 매단에 수송아지 하나와 수양 하나를 드리니라"
+      ],
+      "raw_text_hashes": [
+        "36d95aed9f72ef92becbdb4acf3e818ac0cfb0ebb38e8670ce72c88cb006dd00"
+      ]
+    }
+  ]
+}

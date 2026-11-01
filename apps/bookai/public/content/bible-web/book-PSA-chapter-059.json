@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:059",
+  "unit_ordinal": 537,
+  "unit_label": "PSA 59",
+  "book_code": "PSA",
+  "chapter_number": 59,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:59:1",
+      "sequence": 14792,
+      "chapter_label": "PSA 59",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 1
+        }
+      ],
+      "en": "Deliver me from my enemies, my God. Set me on high from those who rise up against me.",
+      "ko": "나의 하나님이여 내 원수에게서 나를 건지시고 일어나 치려는 자에게서 나를 높이 드소서",
+      "source_text_hash": "0fba5c4764df734be03978927e4991d711eaea6c3b44dcda33105502d32adf26",
+      "translation_text_hash": "91e32a7df015d9687ee64a4b85ed170c71f31b4c76b4e72c920fd01d8da6a500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 내 원수에게서 나를 건지시고 일어나 치려는 자에게서 나를 높이 드소서"
+      ],
+      "raw_text_hashes": [
+        "91e32a7df015d9687ee64a4b85ed170c71f31b4c76b4e72c920fd01d8da6a500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:2",
+      "sequence": 14793,
+      "chapter_label": "PSA 59",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 2
+        }
+      ],
+      "en": "Deliver me from the workers of iniquity. Save me from the bloodthirsty men.",
+      "ko": "사악을 행하는 자에게서 나를 건지시고 피흘리기를 즐기는 자에게서 나를 구원하소서",
+      "source_text_hash": "3cac1a33eb3c1f90804070a40f27c20772c9db315a1eeaa4d8e16e275db9f5df",
+      "translation_text_hash": "74cbd06f08779bb281fc5c9cc924809567ea8c98339f31e71f5396000e63439c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사악을 행하는 자에게서 나를 건지시고 피흘리기를 즐기는 자에게서 나를 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "74cbd06f08779bb281fc5c9cc924809567ea8c98339f31e71f5396000e63439c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:3",
+      "sequence": 14794,
+      "chapter_label": "PSA 59",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 3
+        }
+      ],
+      "en": "For, behold, they lie in wait for my soul. The mighty gather themselves together against me, not for my disobedience, nor for my sin, LORD.",
+      "ko": "저희가 나의 생명을 해하려고 엎드려 기다리고 강한 자가 모여 나를 치려 하오니 여호와여 이는 나의 범과를 인함이 아니요 나의 죄를 인함도 아니로소이다",
+      "source_text_hash": "ded488cb7afba3a787f9cdb0654e4c94370b7ee3a74aa9efbc3950b04468d22e",
+      "translation_text_hash": "e3abaf7ddb7418319cae69d21a152474c3af9f6fc639f1d2c7fa79db905b7ba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나의 생명을 해하려고 엎드려 기다리고 강한 자가 모여 나를 치려 하오니 여호와여 이는 나의 범과를 인함이 아니요 나의 죄를 인함도 아니로소이다"
+      ],
+      "raw_text_hashes": [
+        "e3abaf7ddb7418319cae69d21a152474c3af9f6fc639f1d2c7fa79db905b7ba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:4",
+      "sequence": 14795,
+      "chapter_label": "PSA 59",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 4
+        }
+      ],
+      "en": "I have done no wrong, yet they are ready to attack me. Rise up, behold, and help me!",
+      "ko": "내가 허물이 없으나 저희가 달려와서 스스로 준비하오니 주여 나를 도우시기 위하여 깨사 감찰하소서",
+      "source_text_hash": "2c2645790b4cb66b55e56b15a1828ac470406cef26b22a8e934e8da26bc5f65b",
+      "translation_text_hash": "17e3a9aa59db0db7d02fe1f6721084fedc758a19c47b2ad96120662ea262b888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 허물이 없으나 저희가 달려와서 스스로 준비하오니 주여 나를 도우시기 위하여 깨사 감찰하소서"
+      ],
+      "raw_text_hashes": [
+        "17e3a9aa59db0db7d02fe1f6721084fedc758a19c47b2ad96120662ea262b888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:5",
+      "sequence": 14796,
+      "chapter_label": "PSA 59",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 5
+        }
+      ],
+      "en": "You, LORD God of Armies, the God of Israel, rouse yourself to punish the nations. Show no mercy to the wicked traitors. Selah.",
+      "ko": "만군의 하나님 여호와, 이스라엘의 하나님이여 일어나 열방을 벌하소서 무릇 간사한 악인을 긍휼히 여기지 마소서(셀라)",
+      "source_text_hash": "6301c86aad450dac2c550828ff680a3826c56835129c78c8dc646a8d0070af33",
+      "translation_text_hash": "266cbf53e6b5d1710f7a0df0170f2e96d17ef683bd55aa94a2eda0ec905d3109",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 하나님 여호와, 이스라엘의 하나님이여 일어나 열방을 벌하소서 무릇 간사한 악인을 긍휼히 여기지 마소서(셀라)"
+      ],
+      "raw_text_hashes": [
+        "266cbf53e6b5d1710f7a0df0170f2e96d17ef683bd55aa94a2eda0ec905d3109"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:6",
+      "sequence": 14797,
+      "chapter_label": "PSA 59",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 6
+        }
+      ],
+      "en": "They return at evening, howling like dogs, and prowl around the city.",
+      "ko": "저희가 저물게 돌아와서 개처럼 울며 성으로 두루 다니고",
+      "source_text_hash": "96739875a85018e765c28730c3e9260a87c01a50781d266dbcc42f0c4a4f4f1a",
+      "translation_text_hash": "b18a8bd39cb2c7e23c2369621e7755e3c8882c09b3a920c005be51225dea30cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 저물게 돌아와서 개처럼 울며 성으로 두루 다니고"
+      ],
+      "raw_text_hashes": [
+        "b18a8bd39cb2c7e23c2369621e7755e3c8882c09b3a920c005be51225dea30cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:7",
+      "sequence": 14798,
+      "chapter_label": "PSA 59",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, they spew with their mouth. Swords are in their lips, “For”, they say, “who hears us?”",
+      "ko": "그 입으로 악을 토하며 그 입술에는 칼이 있어 이르기를 누가 들으리요 하나이다",
+      "source_text_hash": "379e174225ec366a5060cf11713363257a14f8d0d180140dcd6242697807b93e",
+      "translation_text_hash": "e21ac62fc9bdc08b2abb836e972d42a032dbd0a09b11b538c2e47ec194e7b4d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입으로 악을 토하며 그 입술에는 칼이 있어 이르기를 누가 들으리요 하나이다"
+      ],
+      "raw_text_hashes": [
+        "e21ac62fc9bdc08b2abb836e972d42a032dbd0a09b11b538c2e47ec194e7b4d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:8",
+      "sequence": 14799,
+      "chapter_label": "PSA 59",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 8
+        }
+      ],
+      "en": "But you, LORD, laugh at them. You scoff at all the nations.",
+      "ko": "여호와여 주께서 저희를 웃으시리니 모든 열방을 비웃으시리이다",
+      "source_text_hash": "b33eab7d6190fa921f86a90752c74710ce473008b0dafdb7c835ee085902cd1b",
+      "translation_text_hash": "76d042d41c9764c9733f08ef9d330513016f7b0d0804ad280418d01722923d0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 저희를 웃으시리니 모든 열방을 비웃으시리이다"
+      ],
+      "raw_text_hashes": [
+        "76d042d41c9764c9733f08ef9d330513016f7b0d0804ad280418d01722923d0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:9",
+      "sequence": 14800,
+      "chapter_label": "PSA 59",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 9
+        }
+      ],
+      "en": "Oh, my Strength, I watch for you, for God is my high tower.",
+      "ko": "하나님은 나의 산성이시니 저의 힘을 인하여 내가 주를 바라리이다",
+      "source_text_hash": "ac29ed99140bbbb1c940bfe3d9cfaa1e0cb1da33fc10367f2b8146d80106ce8b",
+      "translation_text_hash": "533f027c14d318777404e379640d1ceaa0dc67ca024fe885c22c6321085967c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 나의 산성이시니 저의 힘을 인하여 내가 주를 바라리이다"
+      ],
+      "raw_text_hashes": [
+        "533f027c14d318777404e379640d1ceaa0dc67ca024fe885c22c6321085967c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:10",
+      "sequence": 14801,
+      "chapter_label": "PSA 59",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 10
+        }
+      ],
+      "en": "My God will go before me with his loving kindness. God will let me look at my enemies in triumph.",
+      "ko": "나의 하나님이 그 인자하심으로 나를 영접하시며 내 원수의 보응 받는 것을 나로 목도케 하시리이다",
+      "source_text_hash": "8215e834784cc56fe060320e9745895c0301f21843503d753e1e600f9d80f0be",
+      "translation_text_hash": "01b7dc4d8d0433035ca2115495d162be88aa5d99311258f988dd7dd187447243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이 그 인자하심으로 나를 영접하시며 내 원수의 보응 받는 것을 나로 목도케 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "01b7dc4d8d0433035ca2115495d162be88aa5d99311258f988dd7dd187447243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:11",
+      "sequence": 14802,
+      "chapter_label": "PSA 59",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t kill them, or my people may forget. Scatter them by your power, and bring them down, Lord our shield.",
+      "ko": "저희를 죽이지 마옵소서 나의 백성이 잊을까 하나이다 우리 방패되신 주여 주의 능력으로 저희를 흩으시고 낮추소서",
+      "source_text_hash": "a802a0afb2b9245267a77607872b4b20f90fab81a1950f73f56491b9031ffc8d",
+      "translation_text_hash": "c0617de2338d814e0f83e34c68af04234987152b20df5d733719512104618bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 죽이지 마옵소서 나의 백성이 잊을까 하나이다 우리 방패되신 주여 주의 능력으로 저희를 흩으시고 낮추소서"
+      ],
+      "raw_text_hashes": [
+        "c0617de2338d814e0f83e34c68af04234987152b20df5d733719512104618bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:12",
+      "sequence": 14803,
+      "chapter_label": "PSA 59",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 12
+        }
+      ],
+      "en": "For the sin of their mouth, and the words of their lips, let them be caught in their pride, for the curses and lies which they utter.",
+      "ko": "저희 입술의 말은 곧 그 입의 죄라 저희의 저주와 거짓말을 인하여 저희로 그 교만한 중에서 사로잡히게 하소서",
+      "source_text_hash": "0b28ff2db7c097de08a4680c77b081e9dc12af81adbce27a5241d1aafa597820",
+      "translation_text_hash": "06f0e33703713d263f6edb6fe5e15e9501b7ef4352030a503830bedfe2161451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 입술의 말은 곧 그 입의 죄라 저희의 저주와 거짓말을 인하여 저희로 그 교만한 중에서 사로잡히게 하소서"
+      ],
+      "raw_text_hashes": [
+        "06f0e33703713d263f6edb6fe5e15e9501b7ef4352030a503830bedfe2161451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:13",
+      "sequence": 14804,
+      "chapter_label": "PSA 59",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 13
+        }
+      ],
+      "en": "Consume them in wrath. Consume them, and they will be no more. Let them know that God rules in Jacob, to the ends of the earth. Selah.",
+      "ko": "진노하심으로 소멸하시되 없기까지 소멸하사 하나님이 야곱 중에 다스리심을 땅끝까지 알게 하소서(셀라)",
+      "source_text_hash": "e3bd0bd6932d54f8fc6b9286b10252bf1ad46da31e398712ff23086d8496426b",
+      "translation_text_hash": "4713342393feeac04c2cd46cd42fecc25f2d0b0ffb65eaa8c3b5dc61012567b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진노하심으로 소멸하시되 없기까지 소멸하사 하나님이 야곱 중에 다스리심을 땅끝까지 알게 하소서(셀라)"
+      ],
+      "raw_text_hashes": [
+        "4713342393feeac04c2cd46cd42fecc25f2d0b0ffb65eaa8c3b5dc61012567b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:14",
+      "sequence": 14805,
+      "chapter_label": "PSA 59",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 14
+        }
+      ],
+      "en": "At evening let them return. Let them howl like a dog, and go around the city.",
+      "ko": "저희로 저물게 돌아와서 개처럼 울며 성으로 두루 다니게 하소서",
+      "source_text_hash": "43ff3f9a1317e346948e7bde6d364691c59fa652c18f9a5878c67ee7edab1e84",
+      "translation_text_hash": "a651dd1db5f90bd997310616abedad5ad349e8e405989c134be494035196e514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 저물게 돌아와서 개처럼 울며 성으로 두루 다니게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a651dd1db5f90bd997310616abedad5ad349e8e405989c134be494035196e514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:15",
+      "sequence": 14806,
+      "chapter_label": "PSA 59",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 15
+        }
+      ],
+      "en": "They shall wander up and down for food, and wait all night if they aren’t satisfied.",
+      "ko": "저희는 식물을 위하여 유리하다가 배부름을 얻지 못하면 밤을 새우려니와",
+      "source_text_hash": "826dd2d1f55fb9def4e2e013fe322f3565b8f0e95adcd647fec7caca27d78b1f",
+      "translation_text_hash": "d0514804075e3cb9afee302ab7969768e402c7d953b6532af23c50eb0fc3ec28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 식물을 위하여 유리하다가 배부름을 얻지 못하면 밤을 새우려니와"
+      ],
+      "raw_text_hashes": [
+        "d0514804075e3cb9afee302ab7969768e402c7d953b6532af23c50eb0fc3ec28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:16",
+      "sequence": 14807,
+      "chapter_label": "PSA 59",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 16
+        }
+      ],
+      "en": "But I will sing of your strength. Yes, I will sing aloud of your loving kindness in the morning. For you have been my high tower, a refuge in the day of my distress.",
+      "ko": "나는 주의 힘을 노래하며 아침에 주의 인자하심을 높이 부르오리니 주는 나의 산성이시며 나의 환난 날에 피난처심이니이다",
+      "source_text_hash": "09b9c8d5441c54653048ac0830f5cc8bde41034d24837ccea3a755d7ee56d112",
+      "translation_text_hash": "46aa7a0ae01ca48ef8993502fc177f89a998f985e7107c0628d3d85eb91fa366",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주의 힘을 노래하며 아침에 주의 인자하심을 높이 부르오리니 주는 나의 산성이시며 나의 환난 날에 피난처심이니이다"
+      ],
+      "raw_text_hashes": [
+        "46aa7a0ae01ca48ef8993502fc177f89a998f985e7107c0628d3d85eb91fa366"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:59:17",
+      "sequence": 14808,
+      "chapter_label": "PSA 59",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 59,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 59,
+          "verse": 17
+        }
+      ],
+      "en": "To you, my strength, I will sing praises. For God is my high tower, the God of my mercy.",
+      "ko": "나의 힘이시여 내가 주께 찬송하오리니 하나님은 나의 산성이시며 나를 긍휼히 여기시는 하나님이심이니이다",
+      "source_text_hash": "03e58d44557bb5240a55ca78cb1e81efe87aae17ad0c9332264cfab1f82cae03",
+      "translation_text_hash": "9419cb0da09e4070d026575f020031d62837fef9c745f20d39305bfc2acef92d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 힘이시여 내가 주께 찬송하오리니 하나님은 나의 산성이시며 나를 긍휼히 여기시는 하나님이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "9419cb0da09e4070d026575f020031d62837fef9c745f20d39305bfc2acef92d"
+      ]
+    }
+  ]
+}

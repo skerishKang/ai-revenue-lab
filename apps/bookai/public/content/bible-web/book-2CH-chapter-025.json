@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:025",
+  "unit_ordinal": 392,
+  "unit_label": "2CH 25",
+  "book_code": "2CH",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:25:1",
+      "sequence": 11706,
+      "chapter_label": "2CH 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "Amaziah was twenty-five years old when he began to reign, and he reigned twenty-nine years in Jerusalem. His mother’s name was Jehoaddan, of Jerusalem.",
+      "ko": "아마샤가 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 여호앗단이라 예루살렘 사람이더라",
+      "source_text_hash": "1a3336cd88e1fdf6e4b2466a9be84b2af5cebb9f3d0171fa065384888e3e471b",
+      "translation_text_hash": "a6f0e0480b58c70c44bf13ac4e3184ec5739ccd0b5d7fa3f6fec5c3f769f7607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 여호앗단이라 예루살렘 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "a6f0e0480b58c70c44bf13ac4e3184ec5739ccd0b5d7fa3f6fec5c3f769f7607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:2",
+      "sequence": 11707,
+      "chapter_label": "2CH 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, but not with a perfect heart.",
+      "ko": "아마샤가 여호와 보시기에 정직히 행하기는 하였으나 온전한 마음으로 행치 아니하였더라",
+      "source_text_hash": "ccf1822bc4ecc8f4c0575b823a6baec8de8accad8f6c4ebb2171f7b799dfed9f",
+      "translation_text_hash": "5dd0e9dfa1daac72e06c1ac68bea1621b4a1ec0df50f495b22f357978c4f42a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 여호와 보시기에 정직히 행하기는 하였으나 온전한 마음으로 행치 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "5dd0e9dfa1daac72e06c1ac68bea1621b4a1ec0df50f495b22f357978c4f42a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:3",
+      "sequence": 11708,
+      "chapter_label": "2CH 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Now when the kingdom was established to him, he killed his servants who had killed his father the king.",
+      "ko": "그 나라가 굳게 서매 그 부왕을 죽인 신복들을 죽였으나",
+      "source_text_hash": "ad278d85deb34e36c66008448a55c304c2c3ba99824dfc46ea896f797610cf83",
+      "translation_text_hash": "ddaae37479659270d684fe5e9db86f247e4ba8aee5a3240ecb27585f327ae1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나라가 굳게 서매 그 부왕을 죽인 신복들을 죽였으나"
+      ],
+      "raw_text_hashes": [
+        "ddaae37479659270d684fe5e9db86f247e4ba8aee5a3240ecb27585f327ae1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:4",
+      "sequence": 11709,
+      "chapter_label": "2CH 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "But he didn’t put their children to death, but did according to that which is written in the law in the book of Moses, as the LORD commanded, saying, “The fathers shall not die for the children, neither shall the children die for the fathers; but every man shall die for his own sin.”",
+      "ko": "저희 자녀는 죽이지 아니하였으니 이는 모세 율법 책에 기록한대로 함이라 곧 여호와께서 명하여 이르시기를 자녀로 인하여 아비를 죽이지 말 것이요 아비로 인하여 자녀를 죽이지 말 것이라 오직 각 사람은 자기의 죄로 인하여 죽을 것이니라 하셨더라",
+      "source_text_hash": "51315b4718007bbbb45fa107c495d2209b0db9785a9dc8d11874092b42dbfd7a",
+      "translation_text_hash": "744ebdde5d7574ec2064eb43f5fec0d3cd60d8e68125e01f0f0bf4325f96c457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 자녀는 죽이지 아니하였으니 이는 모세 율법 책에 기록한대로 함이라 곧 여호와께서 명하여 이르시기를 자녀로 인하여 아비를 죽이지 말 것이요 아비로 인하여 자녀를 죽이지 말 것이라 오직 각 사람은 자기의 죄로 인하여 죽을 것이니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "744ebdde5d7574ec2064eb43f5fec0d3cd60d8e68125e01f0f0bf4325f96c457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:5",
+      "sequence": 11710,
+      "chapter_label": "2CH 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Moreover Amaziah gathered Judah together and ordered them according to their fathers’ houses, under captains of thousands and captains of hundreds, even all Judah and Benjamin. He counted them from twenty years old and upward, and found that there were three hundred thousand chosen men, able to go out to war, who could handle spear and shield.",
+      "ko": "아마샤가 유다 사람을 모으고 그 여러 족속을 따라 천부장과 백부장을 세우되 유다와 베냐민을 함께 그리하고 이십세 이상으로 계수하여 창과 방패를 잡고 능히 전장에 나갈만한 자 삼십만을 얻고",
+      "source_text_hash": "6f20802d08bc449e63b49f0e4bf640cfe4ac99a9680136449b5268fe8a8add57",
+      "translation_text_hash": "7d1179093525a830605170ee3c14c3eb20dc7b547766ec668dc030eba1055940",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 유다 사람을 모으고 그 여러 족속을 따라 천부장과 백부장을 세우되 유다와 베냐민을 함께 그리하고 이십세 이상으로 계수하여 창과 방패를 잡고 능히 전장에 나갈만한 자 삼십만을 얻고"
+      ],
+      "raw_text_hashes": [
+        "7d1179093525a830605170ee3c14c3eb20dc7b547766ec668dc030eba1055940"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:6",
+      "sequence": 11711,
+      "chapter_label": "2CH 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "He also hired one hundred thousand mighty men of valor out of Israel for one hundred talents of silver.",
+      "ko": "또 은 일백 달란트로 이스라엘 나라에서 큰 용사 십만을 삯내었더니",
+      "source_text_hash": "0d174ac01b4e832f722f4f12f881ea8cf1e99964f4dee7f6bb5d22e8e8427502",
+      "translation_text_hash": "2567296f6455bfb8489a28f57c24374ca8df31728d798532829cc5301ae3cd2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 은 일백 달란트로 이스라엘 나라에서 큰 용사 십만을 삯내었더니"
+      ],
+      "raw_text_hashes": [
+        "2567296f6455bfb8489a28f57c24374ca8df31728d798532829cc5301ae3cd2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:7",
+      "sequence": 11712,
+      "chapter_label": "2CH 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "A man of God came to him, saying, “O king, don’t let the army of Israel go with you, for the LORD is not with Israel, with all the children of Ephraim.",
+      "ko": "어떤 하나님의 사람이 아마샤에게 나아와서 이르되 왕이여 이스라엘 군대로 왕과 함께 가게 마옵소서 여호와께서는 이스라엘 곧 온 에브라임 자손과 함께하지 아니하시나니",
+      "source_text_hash": "3138f5a95c571535dd19cafeb77bb5b95593e65b05d01fd196169df33b30e4de",
+      "translation_text_hash": "a88fa7e815e62b243a55731c6c7a5783245566a04cad100ae193d9be190c5ee2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 하나님의 사람이 아마샤에게 나아와서 이르되 왕이여 이스라엘 군대로 왕과 함께 가게 마옵소서 여호와께서는 이스라엘 곧 온 에브라임 자손과 함께하지 아니하시나니"
+      ],
+      "raw_text_hashes": [
+        "a88fa7e815e62b243a55731c6c7a5783245566a04cad100ae193d9be190c5ee2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:8",
+      "sequence": 11713,
+      "chapter_label": "2CH 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "But if you will go, take action, and be strong for the battle. God will overthrow you before the enemy; for God has power to help, and to overthrow.”",
+      "ko": "왕이 만일 가시거든 힘써 싸우소서 하나님이 왕을 대적 앞에 엎드러지게 하시리이다 하나님은 능히 돕기도 하시고 능히 패하게도 하시나이다",
+      "source_text_hash": "677ec8cd54266f484f6987b859cd159b3cc6a2451ef9017acfed5727196917e7",
+      "translation_text_hash": "2b00ecea9eb3db1cc2b628b4328d533200cc49786c4551bd326581686094476e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 만일 가시거든 힘써 싸우소서 하나님이 왕을 대적 앞에 엎드러지게 하시리이다 하나님은 능히 돕기도 하시고 능히 패하게도 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "2b00ecea9eb3db1cc2b628b4328d533200cc49786c4551bd326581686094476e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:9",
+      "sequence": 11714,
+      "chapter_label": "2CH 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Amaziah said to the man of God, “But what shall we do for the hundred talents which I have given to the army of Israel?” The man of God answered, “The LORD is able to give you much more than this.”",
+      "ko": "아마샤가 하나님의 사람에게 이르되 내가 일백 달란트를 이스라엘 군대에게 주었으니 어찌할꼬 하나님의 사람이 대답하되 여호와께서 능히 이보다 많은 것으로 왕에게 주실수 있나이다",
+      "source_text_hash": "01f127adc3910ddfffd185fee1055707b8e56ad63223b773e77caafa0d88cc7b",
+      "translation_text_hash": "49245fcf172c19af9330b93bcfacad3632f68ef4d7aea7e4dc269403c071f88b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 하나님의 사람에게 이르되 내가 일백 달란트를 이스라엘 군대에게 주었으니 어찌할꼬 하나님의 사람이 대답하되 여호와께서 능히 이보다 많은 것으로 왕에게 주실수 있나이다"
+      ],
+      "raw_text_hashes": [
+        "49245fcf172c19af9330b93bcfacad3632f68ef4d7aea7e4dc269403c071f88b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:10",
+      "sequence": 11715,
+      "chapter_label": "2CH 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "Then Amaziah separated them, the army that had come to him out of Ephraim, to go home again. Therefore their anger was greatly kindled against Judah, and they returned home in fierce anger.",
+      "ko": "아마샤가 이에 에브라임에서 자기에게 나아온 군대를 구별하여 본곳으로 돌아가게 하였더니 저희 무리가 유다 사람을 심히 노하여 분연히 본곳으로 돌아갔더라",
+      "source_text_hash": "3310349572598a00fe4b319c23079e86708401c4d9812ee66a6dba5ab6614a9b",
+      "translation_text_hash": "05e322221d7c36ac42acc1d55e71215ffb05bf4745b23e6d7c408d06dca9a601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 이에 에브라임에서 자기에게 나아온 군대를 구별하여 본곳으로 돌아가게 하였더니 저희 무리가 유다 사람을 심히 노하여 분연히 본곳으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "05e322221d7c36ac42acc1d55e71215ffb05bf4745b23e6d7c408d06dca9a601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:11",
+      "sequence": 11716,
+      "chapter_label": "2CH 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "Amaziah took courage, and led his people out and went to the Valley of Salt, and struck ten thousand of the children of Seir.",
+      "ko": "아마샤가 담력을 내어 그 백성을 거느리고 염곡에 이르러 세일 자손 일만을 죽이고",
+      "source_text_hash": "3ee63a4398fb7d567266a521d123dde13627ff02209ef1fd8e7a6e4d35e8c6c0",
+      "translation_text_hash": "82acda50509562f2fe9e8f6adffa0760453d1449e691ce989c92a30e19037f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 담력을 내어 그 백성을 거느리고 염곡에 이르러 세일 자손 일만을 죽이고"
+      ],
+      "raw_text_hashes": [
+        "82acda50509562f2fe9e8f6adffa0760453d1449e691ce989c92a30e19037f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:12",
+      "sequence": 11717,
+      "chapter_label": "2CH 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Judah carried away ten thousand alive, and brought them to the top of the rock, and threw them down from the top of the rock, so that they all were broken in pieces.",
+      "ko": "유다 자손이 또 일만을 사로잡아 가지고 바위 꼭대기에 올라가서 거기서 밀쳐 내려뜨려서 그 몸이 부숴지게 하였더라",
+      "source_text_hash": "e3ea96c6e6641cbd7bd34805a32ce86176be095358b152267a1b19156bfa93a8",
+      "translation_text_hash": "0c084fb4f6b4fd01b86668eb1deccc72e71d2bfe810db73872b987ace28679bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손이 또 일만을 사로잡아 가지고 바위 꼭대기에 올라가서 거기서 밀쳐 내려뜨려서 그 몸이 부숴지게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "0c084fb4f6b4fd01b86668eb1deccc72e71d2bfe810db73872b987ace28679bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:13",
+      "sequence": 11718,
+      "chapter_label": "2CH 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "But the men of the army whom Amaziah sent back, that they should not go with him to battle, fell on the cities of Judah from Samaria even to Beth Horon, and struck of them three thousand, and took much plunder.",
+      "ko": "아마샤가 자기와 함께 전장에 나가지 못하게 하고 돌려 보낸 군사들이 사마리아에서부터 벧호론까지 유다 성읍을 엄습하고 사람 삼천을 죽이고 물건을 많이 노략하였더라",
+      "source_text_hash": "d5fa1df1d671b3053a66ff2578a4be13487a6b393125d3db58795e36c4b8930f",
+      "translation_text_hash": "0705a1d4dc5730dd127b83824b37124c81eee7eedc8eedbe805d9d05d8342931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 자기와 함께 전장에 나가지 못하게 하고 돌려 보낸 군사들이 사마리아에서부터 벧호론까지 유다 성읍을 엄습하고 사람 삼천을 죽이고 물건을 많이 노략하였더라"
+      ],
+      "raw_text_hashes": [
+        "0705a1d4dc5730dd127b83824b37124c81eee7eedc8eedbe805d9d05d8342931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:14",
+      "sequence": 11719,
+      "chapter_label": "2CH 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "Now after Amaziah had come from the slaughter of the Edomites, he brought the gods of the children of Seir, and set them up to be his gods, and bowed down himself before them and burned incense to them.",
+      "ko": "아마샤가 에돔 사람을 도륙하고 돌아올 때에 세일 자손의 우상들을 가져다가 자기의 신으로 세우고 그 앞에 경배하며 분향한지라",
+      "source_text_hash": "cbe32fd8bd0c9d87b96f441250ece1664f2a49114051805a213c4688c5eb839f",
+      "translation_text_hash": "3fde1329ef6e470f23e861cd18940eec5514bb3dbbf8f3fdabc7482e055e00ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 에돔 사람을 도륙하고 돌아올 때에 세일 자손의 우상들을 가져다가 자기의 신으로 세우고 그 앞에 경배하며 분향한지라"
+      ],
+      "raw_text_hashes": [
+        "3fde1329ef6e470f23e861cd18940eec5514bb3dbbf8f3fdabc7482e055e00ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:15",
+      "sequence": 11720,
+      "chapter_label": "2CH 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore the LORD’s anger burned against Amaziah, and he sent to him a prophet who said to him, “Why have you sought after the gods of the people, which have not delivered their own people out of your hand?”",
+      "ko": "그러므로 여호와께서 아마샤에게 진노하사 한 선지자를 보내시니 나아가 가로되 저 백성의 신들이 자기 백성을 왕의 손에서 능히 구원하지 못하였거늘 왕은 어찌하여 그 신들에게 구하나이까 하며",
+      "source_text_hash": "b2747c6edcd6d4cdc8bc8c45fb5c2f50cd51e20a002c51cc76509b2bc361068b",
+      "translation_text_hash": "3819f5a40c595d018d5b4e1e42e8f1e89c1eff45dc22ed4171192e72a70ee38e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 아마샤에게 진노하사 한 선지자를 보내시니 나아가 가로되 저 백성의 신들이 자기 백성을 왕의 손에서 능히 구원하지 못하였거늘 왕은 어찌하여 그 신들에게 구하나이까 하며"
+      ],
+      "raw_text_hashes": [
+        "3819f5a40c595d018d5b4e1e42e8f1e89c1eff45dc22ed4171192e72a70ee38e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:16",
+      "sequence": 11721,
+      "chapter_label": "2CH 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "As he talked with him, the king said to him, “Have we made you one of the king’s counselors? Stop! Why should you be struck down?” Then the prophet stopped, and said, “I know that God has determined to destroy you, because you have done this and have not listened to my counsel.”",
+      "ko": "선지자가 오히려 말할 때에 왕이 이르되 우리가 너로 왕의 모사를 삼았느냐 그치라 어찌하여 맞으려 하느냐 선지자가 그치며 가로되 왕이 이 일을 행하고 나의 경고를 듣지 아니하니 하나님이 왕을 멸하시기로 결정하신줄 아노라 하였더라",
+      "source_text_hash": "8171392b9c531e6b7f4fda4dae197d35dc8b4d7a237a2bc2d1d8539861fbb4e5",
+      "translation_text_hash": "d70df60ebf80336227df2d32602ecd16f4570cb7f2e229137c1ee8b0462b0d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자가 오히려 말할 때에 왕이 이르되 우리가 너로 왕의 모사를 삼았느냐 그치라 어찌하여 맞으려 하느냐 선지자가 그치며 가로되 왕이 이 일을 행하고 나의 경고를 듣지 아니하니 하나님이 왕을 멸하시기로 결정하신줄 아노라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d70df60ebf80336227df2d32602ecd16f4570cb7f2e229137c1ee8b0462b0d77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:17",
+      "sequence": 11722,
+      "chapter_label": "2CH 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "Then Amaziah king of Judah consulted his advisers, and sent to Joash, the son of Jehoahaz, the son of Jehu, king of Israel, saying, “Come! Let’s look one another in the face.”",
+      "ko": "유다 왕 아마샤가 상의하고 예후의 손자 여호아하스의 아들 이스라엘 왕 요아스에게 사자를 보내어 이르되 오라 서로 대면하자 한지라",
+      "source_text_hash": "9fb5db872a0add1c9437536beb6da0b49066fc24206eb1b9d0e033af5d9cf916",
+      "translation_text_hash": "89454e097eb7cde287a9760cae8fc24ae87da25535ce883c9d87b933a1cb68d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아마샤가 상의하고 예후의 손자 여호아하스의 아들 이스라엘 왕 요아스에게 사자를 보내어 이르되 오라 서로 대면하자 한지라"
+      ],
+      "raw_text_hashes": [
+        "89454e097eb7cde287a9760cae8fc24ae87da25535ce883c9d87b933a1cb68d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:18",
+      "sequence": 11723,
+      "chapter_label": "2CH 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "Joash king of Israel sent to Amaziah king of Judah, saying, “The thistle that was in Lebanon sent to the cedar that was in Lebanon, saying, ‘Give your daughter to my son as his wife. Then a wild animal that was in Lebanon passed by and trampled down the thistle.",
+      "ko": "이스라엘 왕 요아스가 유다 왕 아마샤에게 보내어 이르되 레바논 가시나무가 레바논 백향목에게 보내어 이르기를 네 딸을 내 아들에게 주어 아내를 삼게 하라 하였더니 레바논 짐승이 지나가다가 그 가시나무를 짓밟았느니라",
+      "source_text_hash": "064872197cec304935664359f13a8a6d2fcce4b9dbae06e9ff929b34666d2022",
+      "translation_text_hash": "15db33c2752e322449a528ed26215f9aeb635652888d02ec01b7584bd2ba738e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아스가 유다 왕 아마샤에게 보내어 이르되 레바논 가시나무가 레바논 백향목에게 보내어 이르기를 네 딸을 내 아들에게 주어 아내를 삼게 하라 하였더니 레바논 짐승이 지나가다가 그 가시나무를 짓밟았느니라"
+      ],
+      "raw_text_hashes": [
+        "15db33c2752e322449a528ed26215f9aeb635652888d02ec01b7584bd2ba738e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:19",
+      "sequence": 11724,
+      "chapter_label": "2CH 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "You say to yourself that you have struck Edom; and your heart lifts you up to boast. Now stay at home. Why should you meddle with trouble, that you should fall, even you and Judah with you?’”",
+      "ko": "네가 에돔 사람을 쳤다 하고 네 마음이 교만하여 자긍하는도다 네 궁에나 편히 거하라 어찌하여 화를 자취하여 너와 유다가 함께 망하고자 하느냐 하나",
+      "source_text_hash": "65bb2771f9f1ae245526b2df09904365d72d77211d4e6e4fc76a116a7728c630",
+      "translation_text_hash": "da70ee4566d3e30a059a497edca900e1b4e70b655397e8956259a886fcf21831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 에돔 사람을 쳤다 하고 네 마음이 교만하여 자긍하는도다 네 궁에나 편히 거하라 어찌하여 화를 자취하여 너와 유다가 함께 망하고자 하느냐 하나"
+      ],
+      "raw_text_hashes": [
+        "da70ee4566d3e30a059a497edca900e1b4e70b655397e8956259a886fcf21831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:20",
+      "sequence": 11725,
+      "chapter_label": "2CH 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "But Amaziah would not listen; for it was of God, that he might deliver them into the hand of their enemies, because they had sought after the gods of Edom.",
+      "ko": "아마샤가 듣지 아니하였으니 이는 하나님께로 말미암은 것이라 저희가 에돔 신들에게 구하였으므로 그 대적의 손에 붙이려 하심이더라",
+      "source_text_hash": "4d31c5e5bf543971d1bcd5540a1f5d1acecf72d65b302f18bbb966ca83eee19d",
+      "translation_text_hash": "5b2f412dba41b179ee9c173ff5a053d8daead61b2b2ff000980be6754e773312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 듣지 아니하였으니 이는 하나님께로 말미암은 것이라 저희가 에돔 신들에게 구하였으므로 그 대적의 손에 붙이려 하심이더라"
+      ],
+      "raw_text_hashes": [
+        "5b2f412dba41b179ee9c173ff5a053d8daead61b2b2ff000980be6754e773312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:21",
+      "sequence": 11726,
+      "chapter_label": "2CH 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "So Joash king of Israel went up, and he and Amaziah king of Judah looked one another in the face at Beth Shemesh, which belongs to Judah.",
+      "ko": "이스라엘 왕 요아스가 올라와서 유다 왕 아마샤로 더불어 유다의 벧세메스에서 대면하였더니",
+      "source_text_hash": "2daba207492ac9e6873b663b3fe6544173f3f0936480a9a0c29bca38d61b9226",
+      "translation_text_hash": "8683ee5c0466efba99380a6d8090d213148e06a87e4079b50fffb2748aeda13c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아스가 올라와서 유다 왕 아마샤로 더불어 유다의 벧세메스에서 대면하였더니"
+      ],
+      "raw_text_hashes": [
+        "8683ee5c0466efba99380a6d8090d213148e06a87e4079b50fffb2748aeda13c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:22",
+      "sequence": 11727,
+      "chapter_label": "2CH 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "Judah was defeated by Israel; so every man fled to his tent.",
+      "ko": "유다가 이스라엘 앞에서 패하여 각기 장막으로 도망한지라",
+      "source_text_hash": "5d1507f58ea116a0c71aecd043f4ac50bd420c22a8bd5506db3b6defb8369586",
+      "translation_text_hash": "5f1b510a64b5106f4fcf7d0443096c20c4b1bb99e1614dfc4800e639de22f09f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 이스라엘 앞에서 패하여 각기 장막으로 도망한지라"
+      ],
+      "raw_text_hashes": [
+        "5f1b510a64b5106f4fcf7d0443096c20c4b1bb99e1614dfc4800e639de22f09f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:23",
+      "sequence": 11728,
+      "chapter_label": "2CH 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "Joash king of Israel took Amaziah king of Judah, the son of Joash the son of Jehoahaz, at Beth Shemesh and brought him to Jerusalem, and broke down the wall of Jerusalem from the gate of Ephraim to the corner gate, four hundred cubits.",
+      "ko": "이스라엘 왕 요아스가 벧세메스에서 여호아하스의 손자 요아스의 아들 유다 왕 아마샤를 사로잡고 예루살렘에 이르러 예루살렘 성벽을 에브라임 문에서부터 성 모퉁이 문까지 사백 규빗을 헐고",
+      "source_text_hash": "60500a4b638bcbc96bcbc0f28256fba724e848fe4f1b68e3c4f205e4c20047f3",
+      "translation_text_hash": "87e057aaa71050e9d7ef6a30138623f7ae7881fdbfd2f751c2bd87ef565d9c25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아스가 벧세메스에서 여호아하스의 손자 요아스의 아들 유다 왕 아마샤를 사로잡고 예루살렘에 이르러 예루살렘 성벽을 에브라임 문에서부터 성 모퉁이 문까지 사백 규빗을 헐고"
+      ],
+      "raw_text_hashes": [
+        "87e057aaa71050e9d7ef6a30138623f7ae7881fdbfd2f751c2bd87ef565d9c25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:24",
+      "sequence": 11729,
+      "chapter_label": "2CH 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "He took all the gold and silver, and all the vessels that were found in God’s house with Obed-Edom, and the treasures of the king’s house, and the hostages, and returned to Samaria.",
+      "ko": "또 하나님의 전 안에 오벧에돔의 지키는 모든 금은과 기명과 왕궁의 재물을 취하고 또 사람을 볼모로 잡아가지고 사마리아로 돌아갔더라",
+      "source_text_hash": "6f7b336a720fdb5c6cf1097ffa5ce4979bd3555790afdfbac3077489bfb7fc8e",
+      "translation_text_hash": "2ff5509b8d1c2c80ea56aa267f4527432df2fb70413f1f3889446aec98247dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님의 전 안에 오벧에돔의 지키는 모든 금은과 기명과 왕궁의 재물을 취하고 또 사람을 볼모로 잡아가지고 사마리아로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "2ff5509b8d1c2c80ea56aa267f4527432df2fb70413f1f3889446aec98247dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:25",
+      "sequence": 11730,
+      "chapter_label": "2CH 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "Amaziah the son of Joash, king of Judah, lived for fifteen years after the death of Joash, son of Jehoahaz, king of Israel.",
+      "ko": "이스라엘 왕 요아하스의 아들 요아스가 죽은 후에도 유다 왕 요아스의 아들 아마샤가 십 오년을 생존하였더라",
+      "source_text_hash": "5fdd287b361140fe08fd89176f0d8408e25c9063bc57b30d21e77de7a71d36b3",
+      "translation_text_hash": "2dc4864031ca2c7b99b315af533ac8b8779423bf2a5b0a89da104a8f2da66ff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 요아하스의 아들 요아스가 죽은 후에도 유다 왕 요아스의 아들 아마샤가 십 오년을 생존하였더라"
+      ],
+      "raw_text_hashes": [
+        "2dc4864031ca2c7b99b315af533ac8b8779423bf2a5b0a89da104a8f2da66ff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:26",
+      "sequence": 11731,
+      "chapter_label": "2CH 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "Now the rest of the acts of Amaziah, first and last, behold, aren’t they written in the book of the kings of Judah and Israel?",
+      "ko": "아마샤의 이 외의 시종 행적은 유다와 이스라엘 열왕기에 기록되지 아니하였느냐",
+      "source_text_hash": "f81c6b3fa0dc8a9b06c4f68f45c9a0e768becd010ee050a56e7dbaac8cabbc91",
+      "translation_text_hash": "f4b884a8046a8891b21ee00f77c24ca1e90fa2bb9f1b4f11717666540ba1fc15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤의 이 외의 시종 행적은 유다와 이스라엘 열왕기에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "f4b884a8046a8891b21ee00f77c24ca1e90fa2bb9f1b4f11717666540ba1fc15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:27",
+      "sequence": 11732,
+      "chapter_label": "2CH 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "Now from the time that Amaziah turned away from following the LORD, they made a conspiracy against him in Jerusalem. He fled to Lachish, but they sent after him to Lachish and killed him there.",
+      "ko": "아마샤가 돌이켜 여호와를 버린 후로부터 예루살렘에서 무리가 저를 모반한고로 저가 라기스로 도망하였더니 모반한 무리가 사람을 라기스로 따라 보내어 저를 거기서 죽이게 하고",
+      "source_text_hash": "696167c852ca8e57f7f49bea0ae34f1eb788f5188559680694839cf5553d5b03",
+      "translation_text_hash": "4acc0434dce51ab7f4b2a86d42fc4860fcd6323799fa36f0ab5c6c3a3cdd3da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 돌이켜 여호와를 버린 후로부터 예루살렘에서 무리가 저를 모반한고로 저가 라기스로 도망하였더니 모반한 무리가 사람을 라기스로 따라 보내어 저를 거기서 죽이게 하고"
+      ],
+      "raw_text_hashes": [
+        "4acc0434dce51ab7f4b2a86d42fc4860fcd6323799fa36f0ab5c6c3a3cdd3da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:25:28",
+      "sequence": 11733,
+      "chapter_label": "2CH 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "2CH",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "They brought him on horses and buried him with his fathers in the City of Judah.",
+      "ko": "그 시체를 말에 실어다가 그 열조와 함께 유다 성읍에 장사하였더라",
+      "source_text_hash": "aaf75bd626d55433d46e48c310bdfdbe68f17685ed9c057f4b9ac7e8f749294d",
+      "translation_text_hash": "eec72aeba7a0a738ec0f4c161090a96460481b38139b138b269bd0f807696bd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시체를 말에 실어다가 그 열조와 함께 유다 성읍에 장사하였더라"
+      ],
+      "raw_text_hashes": [
+        "eec72aeba7a0a738ec0f4c161090a96460481b38139b138b269bd0f807696bd4"
+      ]
+    }
+  ]
+}

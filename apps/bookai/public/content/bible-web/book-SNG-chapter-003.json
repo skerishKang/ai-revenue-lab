@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:003",
+  "unit_ordinal": 674,
+  "unit_label": "SNG 3",
+  "book_code": "SNG",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:3:1",
+      "sequence": 17573,
+      "chapter_label": "SNG 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "By night on my bed, I sought him whom my soul loves. I sought him, but I didn’t find him.",
+      "ko": "내가 밤에 침상에서 마음에 사랑하는 자를 찾았구나 찾아도 발견치 못하였구나",
+      "source_text_hash": "a75f82543e959979369f7d14d203bfb592f7d0f5549b9ac500c067a2f2060b47",
+      "translation_text_hash": "79c56be14d55a070c928e00984ba42b3ce1f40e63e29f17e7cafff226ac69fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 밤에 침상에서 마음에 사랑하는 자를 찾았구나 찾아도 발견치 못하였구나"
+      ],
+      "raw_text_hashes": [
+        "79c56be14d55a070c928e00984ba42b3ce1f40e63e29f17e7cafff226ac69fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:2",
+      "sequence": 17574,
+      "chapter_label": "SNG 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "I will get up now, and go about the city; in the streets and in the squares I will seek him whom my soul loves. I sought him, but I didn’t find him.",
+      "ko": "이에 내가 일어나서 성중으로 돌아다니며 마음에 사랑하는 자를 거리에서나 큰 길에서나 찾으리라 하고 찾으나 만나지 못하였구나",
+      "source_text_hash": "8e40edca3e33d15ed4c5e1af9c60ea2cff7b80ce7098174010713642e1a5a4ac",
+      "translation_text_hash": "d5ca31c283c7e1e9e4d7ebc3b0454317a7344a9f9f674a2e061d7ac5f598bde1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 일어나서 성중으로 돌아다니며 마음에 사랑하는 자를 거리에서나 큰 길에서나 찾으리라 하고 찾으나 만나지 못하였구나"
+      ],
+      "raw_text_hashes": [
+        "d5ca31c283c7e1e9e4d7ebc3b0454317a7344a9f9f674a2e061d7ac5f598bde1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:3",
+      "sequence": 17575,
+      "chapter_label": "SNG 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "The watchmen who go about the city found me; “Have you seen him whom my soul loves?”",
+      "ko": "성중의 행순하는 자들을 만나서 묻기를 내 마음에 사랑하는 자를 너희가 보았느냐 하고",
+      "source_text_hash": "7cb20696e744a4a030519edf17bd154b110865fe1484666c34a8cd9302342a3a",
+      "translation_text_hash": "f4a5e6cdf4f4a767c540698819349c4ca46c03af5c1c61786632b9c3643cee04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성중의 행순하는 자들을 만나서 묻기를 내 마음에 사랑하는 자를 너희가 보았느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "f4a5e6cdf4f4a767c540698819349c4ca46c03af5c1c61786632b9c3643cee04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:4",
+      "sequence": 17576,
+      "chapter_label": "SNG 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "I had scarcely passed from them, when I found him whom my soul loves. I held him, and would not let him go, until I had brought him into my mother’s house, into the room of her who conceived me.",
+      "ko": "그들을 떠나자마자 마음에 사랑하는 자를 만나서 그를 붙잡고 내 어미 집으로, 나를 잉태한 자의 방으로 가기까지 놓지 아니하였노라",
+      "source_text_hash": "6caeb3e55d4101e45cbac33f9472980b69f9817db137a391b48e98fb0e0fa2f7",
+      "translation_text_hash": "fb2120921ce15a2c1d51830f00a1287a905c6832452472e2ccd9cf3d9cbdd088",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 떠나자마자 마음에 사랑하는 자를 만나서 그를 붙잡고 내 어미 집으로, 나를 잉태한 자의 방으로 가기까지 놓지 아니하였노라"
+      ],
+      "raw_text_hashes": [
+        "fb2120921ce15a2c1d51830f00a1287a905c6832452472e2ccd9cf3d9cbdd088"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:5",
+      "sequence": 17577,
+      "chapter_label": "SNG 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "I adjure you, daughters of Jerusalem, by the roes, or by the hinds of the field, that you not stir up nor awaken love, until it so desires.",
+      "ko": "예루살렘 여자들아 내가 노루와 들 사슴으로 너희에게 부탁한다 사랑하는 자가 원하기 전에는 흔들지 말고 깨우지 말찌니라",
+      "source_text_hash": "e2a1da3c45f260917198775f1dddce468fd5da7ae9a85f7e86d634f5f11a029a",
+      "translation_text_hash": "67f06012a4738070098333eead646d8c1666eeda527ddae1468559aea821d1e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 여자들아 내가 노루와 들 사슴으로 너희에게 부탁한다 사랑하는 자가 원하기 전에는 흔들지 말고 깨우지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "67f06012a4738070098333eead646d8c1666eeda527ddae1468559aea821d1e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:6",
+      "sequence": 17578,
+      "chapter_label": "SNG 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Who is this who comes up from the wilderness like pillars of smoke, perfumed with myrrh and frankincense, with all spices of the merchant?",
+      "ko": "연기 기둥과도 같고 몰약과 유향과 장사의 여러가지 향품으로 향기롭게도 하고 거친 들에서 오는 자가 누구인고",
+      "source_text_hash": "1e9dc0aca3f39e79c65525415ab2ae42aadf152387ca83586f1d687c372db84e",
+      "translation_text_hash": "3250c18678111a9908ffe0e9b8983f6f619dca217034fc26fa8b55ea60accf4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연기 기둥과도 같고 몰약과 유향과 장사의 여러가지 향품으로 향기롭게도 하고 거친 들에서 오는 자가 누구인고"
+      ],
+      "raw_text_hashes": [
+        "3250c18678111a9908ffe0e9b8983f6f619dca217034fc26fa8b55ea60accf4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:7",
+      "sequence": 17579,
+      "chapter_label": "SNG 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, it is Solomon’s carriage! Sixty mighty men are around it, of the mighty men of Israel.",
+      "ko": "이는 솔로몬의 연이라 이스라엘 용사 중 육십인이 옹위하였는데",
+      "source_text_hash": "193512d93c791a539579fa3852a66171372ea9bbe29622908c83460058a629d9",
+      "translation_text_hash": "940394eaacea9ea41901c5889b40a9d16c697e5cd7f18044df8598cef21de995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 솔로몬의 연이라 이스라엘 용사 중 육십인이 옹위하였는데"
+      ],
+      "raw_text_hashes": [
+        "940394eaacea9ea41901c5889b40a9d16c697e5cd7f18044df8598cef21de995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:8",
+      "sequence": 17580,
+      "chapter_label": "SNG 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "They all handle the sword, and are expert in war. Every man has his sword on his thigh, because of fear in the night.",
+      "ko": "다 칼을 잡고 싸움에 익숙한 사람들이라 밤의 두려움을 인하여 각기 허리에 칼을 찼느니라",
+      "source_text_hash": "1abd414d9096154ea7ddac76063e6f562769b882499a2dcff3e28410fea7f1d2",
+      "translation_text_hash": "b0c95313c3dafa292bcb79bece916df948317f47cedc0efa0c926d41cb7de3a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 칼을 잡고 싸움에 익숙한 사람들이라 밤의 두려움을 인하여 각기 허리에 칼을 찼느니라"
+      ],
+      "raw_text_hashes": [
+        "b0c95313c3dafa292bcb79bece916df948317f47cedc0efa0c926d41cb7de3a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:9",
+      "sequence": 17581,
+      "chapter_label": "SNG 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "King Solomon made himself a carriage of the wood of Lebanon.",
+      "ko": "솔로몬왕이 레바논나무로 자기의 연을 만들었는데",
+      "source_text_hash": "576aa61635bbd16f7f4b762f46b29272a9730baa5717b966fb04a958c3a8c0e3",
+      "translation_text_hash": "fcf121e3c0d949c4023f4a5aa052f46a4680584c3ac741d79a1965b9b4690628",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 레바논나무로 자기의 연을 만들었는데"
+      ],
+      "raw_text_hashes": [
+        "fcf121e3c0d949c4023f4a5aa052f46a4680584c3ac741d79a1965b9b4690628"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:10",
+      "sequence": 17582,
+      "chapter_label": "SNG 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "He made its pillars of silver, its bottom of gold, its seat of purple, the middle of it being paved with love, from the daughters of Jerusalem.",
+      "ko": "그 기둥은 은이요 바닥은 금이요 자리는 자색 담이라 그 안에는 예루살렘 여자들의 사랑이 입혔구나",
+      "source_text_hash": "9be22809fda1bd537d7cba68cee0ed20a5677ca92cba3924029023bd423ddbf2",
+      "translation_text_hash": "f743c86b15a48465ab470a427bf02c26cd8b8e5b3c416588a16dbf711e1c6bb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기둥은 은이요 바닥은 금이요 자리는 자색 담이라 그 안에는 예루살렘 여자들의 사랑이 입혔구나"
+      ],
+      "raw_text_hashes": [
+        "f743c86b15a48465ab470a427bf02c26cd8b8e5b3c416588a16dbf711e1c6bb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:3:11",
+      "sequence": 17583,
+      "chapter_label": "SNG 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Go out, you daughters of Zion, and see King Solomon, with the crown with which his mother has crowned him, in the day of his weddings, in the day of the gladness of his heart.",
+      "ko": "시온의 여자들아 나와서 솔로몬왕을 보라 혼인날 마음이 기쁠 때에 그 모친의 씌운 면류관이 그 머리에 있구나",
+      "source_text_hash": "5f4909f894f8da96a39f894b880e60496c3159fd43dbd1dd536957b6f74fa811",
+      "translation_text_hash": "64724dc166e3745085c4650f318d12266fe313ef980ccb817dffdb36488c6b5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 여자들아 나와서 솔로몬왕을 보라 혼인날 마음이 기쁠 때에 그 모친의 씌운 면류관이 그 머리에 있구나"
+      ],
+      "raw_text_hashes": [
+        "64724dc166e3745085c4650f318d12266fe313ef980ccb817dffdb36488c6b5e"
+      ]
+    }
+  ]
+}

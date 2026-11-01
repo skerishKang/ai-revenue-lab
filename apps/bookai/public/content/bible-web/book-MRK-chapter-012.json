@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:012",
+  "unit_ordinal": 969,
+  "unit_label": "MRK 12",
+  "book_code": "MRK",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:12:1",
+      "sequence": 24675,
+      "chapter_label": "MRK 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "He began to speak to them in parables. “A man planted a vineyard, put a hedge around it, dug a pit for the wine press, built a tower, rented it out to a farmer, and went into another country.",
+      "ko": "예수께서 비유로 저희에게 말씀하시되 한 사람이 포도원을 만들고 산울로 두르고 즙 짜는 구유 자리를 파고 망대를 짓고 농부들에게 세로 주고 타국에 갔더니",
+      "source_text_hash": "5d7fafc755d312e77ef87694c5784bc94945de4a1ee359731dbc2db6cad32107",
+      "translation_text_hash": "79750a8e832d0c9dce7c652236b61cc9a1a326965039eb3dabc9c716dff9fe46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 비유로 저희에게 말씀하시되 한 사람이 포도원을 만들고 산울로 두르고 즙 짜는 구유 자리를 파고 망대를 짓고 농부들에게 세로 주고 타국에 갔더니"
+      ],
+      "raw_text_hashes": [
+        "79750a8e832d0c9dce7c652236b61cc9a1a326965039eb3dabc9c716dff9fe46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:2",
+      "sequence": 24676,
+      "chapter_label": "MRK 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "When it was time, he sent a servant to the farmer to get from the farmer his share of the fruit of the vineyard.",
+      "ko": "때가 이르매 농부들에게 포도원 소출 얼마를 받으려고 한 종을 보내니",
+      "source_text_hash": "2b7c3645c6d773d387ccb50b2133171990f1e773e67ca197992da28618c549a2",
+      "translation_text_hash": "9dc05ff917fde5d2fe8543f3b788d6e7d4262fdb314f4cf1d2291c02a177f3f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 이르매 농부들에게 포도원 소출 얼마를 받으려고 한 종을 보내니"
+      ],
+      "raw_text_hashes": [
+        "9dc05ff917fde5d2fe8543f3b788d6e7d4262fdb314f4cf1d2291c02a177f3f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:3",
+      "sequence": 24677,
+      "chapter_label": "MRK 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "They took him, beat him, and sent him away empty.",
+      "ko": "저희가 종을 잡아 심히 때리고 거저 보내었거늘",
+      "source_text_hash": "323a86cece7902410cb4a9cd560facde8029d8d4b7a77c95fb62f3263c39f526",
+      "translation_text_hash": "b0dae43f9243e24ee17eb71b2e7829b955f993c4b5cc3e7749d30c31b72abe1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 종을 잡아 심히 때리고 거저 보내었거늘"
+      ],
+      "raw_text_hashes": [
+        "b0dae43f9243e24ee17eb71b2e7829b955f993c4b5cc3e7749d30c31b72abe1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:4",
+      "sequence": 24678,
+      "chapter_label": "MRK 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Again, he sent another servant to them; and they threw stones at him, wounded him in the head, and sent him away shamefully treated.",
+      "ko": "다시 다른 종을 보내니 그의 머리에 상처를 내고 능욕하였거늘",
+      "source_text_hash": "8e498bb18236725aa13246cf5261e1a58ddabe6d4d0a17022da395375fcdc7d8",
+      "translation_text_hash": "5a524093fc693148689b8e4a73dc0b242c304efd25c32783ecff13f41e840ee5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 다른 종을 보내니 그의 머리에 상처를 내고 능욕하였거늘"
+      ],
+      "raw_text_hashes": [
+        "5a524093fc693148689b8e4a73dc0b242c304efd25c32783ecff13f41e840ee5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:5",
+      "sequence": 24679,
+      "chapter_label": "MRK 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Again he sent another, and they killed him, and many others, beating some, and killing some.",
+      "ko": "또 다른 종을 보내니 저희가 그를 죽이고 또 그외 많은 종들도 혹은 때리고 혹은 죽인지라",
+      "source_text_hash": "8b5960ad6d8ac39e75d445f85f52dc226d7b75779cd3e4628a4895021724f4cc",
+      "translation_text_hash": "49ccf0e63e35f3afc4f324c5fc3110f4d87fa328353edc3dfa46e19b58b6bf05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 종을 보내니 저희가 그를 죽이고 또 그외 많은 종들도 혹은 때리고 혹은 죽인지라"
+      ],
+      "raw_text_hashes": [
+        "49ccf0e63e35f3afc4f324c5fc3110f4d87fa328353edc3dfa46e19b58b6bf05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:6",
+      "sequence": 24680,
+      "chapter_label": "MRK 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore still having one, his beloved son, he sent him last to them, saying, ‘They will respect my son.’",
+      "ko": "오히려 한 사람이 있으니 곧 그의 사랑하는 아들이라 최후로 이를 보내며 가로되 내 아들은 공경하리라 하였더니",
+      "source_text_hash": "1b540cfc42be066f1e6f033bb3e3c69dd629322f3c38533b15bc8b8c3dcc82e7",
+      "translation_text_hash": "91b206e37e6fd7c406465a857599314f4563b0d94b2ac0c849c4f8e807aad10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오히려 한 사람이 있으니 곧 그의 사랑하는 아들이라 최후로 이를 보내며 가로되 내 아들은 공경하리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "91b206e37e6fd7c406465a857599314f4563b0d94b2ac0c849c4f8e807aad10d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:7",
+      "sequence": 24681,
+      "chapter_label": "MRK 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "But those farmers said among themselves, ‘This is the heir. Come, let’s kill him, and the inheritance will be ours.’",
+      "ko": "저 농부들이 서로 말하되 이는 상속자니 자 죽이자 그러면 그 유업이 우리 것이 되리라 하고",
+      "source_text_hash": "6f6ca212b5d03ab2d677b5ca7c9a0ee0337b4521db5c19367ca2f63793ac6905",
+      "translation_text_hash": "2991f2784a458df3b76cd7ea5ab8951c5e6ba1289ed99fd84f739c33f07d4c6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 농부들이 서로 말하되 이는 상속자니 자 죽이자 그러면 그 유업이 우리 것이 되리라 하고"
+      ],
+      "raw_text_hashes": [
+        "2991f2784a458df3b76cd7ea5ab8951c5e6ba1289ed99fd84f739c33f07d4c6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:8",
+      "sequence": 24682,
+      "chapter_label": "MRK 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "They took him, killed him, and cast him out of the vineyard.",
+      "ko": "이에 잡아 죽여 포도원 밖에 내어던졌느니라",
+      "source_text_hash": "cd12c37e44c3bdaa23c62c0fcea509bfd972239b7c334c8829de60e8fa6ee2e1",
+      "translation_text_hash": "9f3065f14e426fc20fb4a170eceb8e02dec928be864848e3f05f9150dced6409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 잡아 죽여 포도원 밖에 내어던졌느니라"
+      ],
+      "raw_text_hashes": [
+        "9f3065f14e426fc20fb4a170eceb8e02dec928be864848e3f05f9150dced6409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:9",
+      "sequence": 24683,
+      "chapter_label": "MRK 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "What therefore will the lord of the vineyard do? He will come and destroy the farmers, and will give the vineyard to others.",
+      "ko": "포도원 주인이 어떻게 하겠느뇨 와서 그 농부들을 진멸하고 포도원을 다른 사람들에게 주리라",
+      "source_text_hash": "70229c2c6efc6f1a1f7971e5bf6f842341f7f21d5ec9c7d0cd4e1625c041c8bd",
+      "translation_text_hash": "3d66a7994470cfaa5b21e594f7a194a76362f83640f3276fe22c63ddbd25b72a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도원 주인이 어떻게 하겠느뇨 와서 그 농부들을 진멸하고 포도원을 다른 사람들에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "3d66a7994470cfaa5b21e594f7a194a76362f83640f3276fe22c63ddbd25b72a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:10",
+      "sequence": 24684,
+      "chapter_label": "MRK 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Haven’t you even read this Scripture:‘The stone which the builders rejected was made the head of the corner.",
+      "ko": "너희가 성경에 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었나니",
+      "source_text_hash": "da76b240890388418c8e47b16cfd28a27ed75b00ae57bc14083a220913ce604e",
+      "translation_text_hash": "8558c65372d34f5fa594510ef283a34f4af63c3adc48357bc410ab2520cbf034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 성경에 건축자들의 버린 돌이 모퉁이의 머릿돌이 되었나니"
+      ],
+      "raw_text_hashes": [
+        "8558c65372d34f5fa594510ef283a34f4af63c3adc48357bc410ab2520cbf034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:11",
+      "sequence": 24685,
+      "chapter_label": "MRK 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "This was from the Lord.It is marvelous in our eyes’?”",
+      "ko": "이것은 주로 말미암아 된 것이요 우리 눈에 기이하도다 함을 읽어 보지도 못하였느냐 하시니라",
+      "source_text_hash": "2513c90fac404420ab3f8bfef66041c3e2b75cdb6c6a56cdfda0217a82690041",
+      "translation_text_hash": "d91c75d3d5e772dc7173fb0398e115f6ba231f57074fcdc40e0c0c01617e3a3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 주로 말미암아 된 것이요 우리 눈에 기이하도다 함을 읽어 보지도 못하였느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d91c75d3d5e772dc7173fb0398e115f6ba231f57074fcdc40e0c0c01617e3a3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:12",
+      "sequence": 24686,
+      "chapter_label": "MRK 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "They tried to seize him, but they feared the multitude; for they perceived that he spoke the parable against them. They left him and went away.",
+      "ko": "저희가 예수의 이 비유는 자기들을 가리켜 말씀하심인줄 알고 잡고자 하되 무리를 두려워하여 예수를 버려두고 가니라",
+      "source_text_hash": "9c1364de15f50542bcb3328d826ce74e5b7651ec56c46b3b7ea79dc35d9ad196",
+      "translation_text_hash": "a6b05dc66673a976e38387cb149d6e883a180d5c8babde27088a16564f0784bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수의 이 비유는 자기들을 가리켜 말씀하심인줄 알고 잡고자 하되 무리를 두려워하여 예수를 버려두고 가니라"
+      ],
+      "raw_text_hashes": [
+        "a6b05dc66673a976e38387cb149d6e883a180d5c8babde27088a16564f0784bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:13",
+      "sequence": 24687,
+      "chapter_label": "MRK 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "They sent some of the Pharisees and the Herodians to him, that they might trap him with words.",
+      "ko": "저희가 예수의 말씀을 책잡으려 하여 바리새인과 헤롯당 중에서 사람을 보내매",
+      "source_text_hash": "7c0e2ee6ba810d4c52754b15b553bc90df21c6403166ecf9ea3666b0c28bc477",
+      "translation_text_hash": "c3830ed5132fcf164e6590760a3ac9be20a0994137d8c11669e54aab030b857e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수의 말씀을 책잡으려 하여 바리새인과 헤롯당 중에서 사람을 보내매"
+      ],
+      "raw_text_hashes": [
+        "c3830ed5132fcf164e6590760a3ac9be20a0994137d8c11669e54aab030b857e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:14",
+      "sequence": 24688,
+      "chapter_label": "MRK 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "When they had come, they asked him, “Teacher, we know that you are honest, and don’t defer to anyone; for you aren’t partial to anyone, but truly teach the way of God. Is it lawful to pay taxes to Caesar, or not?",
+      "ko": "와서 가로되 선생님이여 우리가 아노니 당신은 참되시고 아무라도 꺼리는 일이 없으시니 이는 사람을 외모로 보지 않고 오직 참으로써 하나님의 도를 가르치심이니이다 가이사에게 세를 바치는 것이 가하니이까 불가하니이까",
+      "source_text_hash": "6ce4e06fde9914dbceba2e3b37e692a75469bf6bfbeb95795bf2743876913b05",
+      "translation_text_hash": "e1c125ce5263bff1e54cadaac4e68a544a3976ff8cd9daa6045964524c65b487",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와서 가로되 선생님이여 우리가 아노니 당신은 참되시고 아무라도 꺼리는 일이 없으시니 이는 사람을 외모로 보지 않고 오직 참으로써 하나님의 도를 가르치심이니이다 가이사에게 세를 바치는 것이 가하니이까 불가하니이까"
+      ],
+      "raw_text_hashes": [
+        "e1c125ce5263bff1e54cadaac4e68a544a3976ff8cd9daa6045964524c65b487"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:15",
+      "sequence": 24689,
+      "chapter_label": "MRK 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Shall we give, or shall we not give?” But he, knowing their hypocrisy, said to them, “Why do you test me? Bring me a denarius, that I may see it.”",
+      "ko": "우리가 바치리이까 말리이까 한대 예수께서 그 외식함을 아시고 이르시되 어찌하여 나를 시험하느냐 데나리온 하나를 가져다가 내게 보이라 하시니",
+      "source_text_hash": "5dc42651618040bff604533ca132cc7f2e7209dded3b20ef30f4f12bea7319c5",
+      "translation_text_hash": "bc58a9a362d0514337e68b1b772abcb4b177a73663a6ab616979f45dc10ac86c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 바치리이까 말리이까 한대 예수께서 그 외식함을 아시고 이르시되 어찌하여 나를 시험하느냐 데나리온 하나를 가져다가 내게 보이라 하시니"
+      ],
+      "raw_text_hashes": [
+        "bc58a9a362d0514337e68b1b772abcb4b177a73663a6ab616979f45dc10ac86c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:16",
+      "sequence": 24690,
+      "chapter_label": "MRK 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "They brought it. He said to them, “Whose is this image and inscription?” They said to him, “Caesar’s.”",
+      "ko": "가져왔거늘 예수께서 가라사대 이 화상과 이 글이 뉘것이냐 가로되 가이사의 것이니이다",
+      "source_text_hash": "4fd222e11089a1b2190fd0a4143a5d05f1b3fb76e3c381e076b09eb1dffd4b55",
+      "translation_text_hash": "aebd41394497091b78fcf73448ec7401dfd2b32818b737b898199a48cdad4c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가져왔거늘 예수께서 가라사대 이 화상과 이 글이 뉘것이냐 가로되 가이사의 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "aebd41394497091b78fcf73448ec7401dfd2b32818b737b898199a48cdad4c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:17",
+      "sequence": 24691,
+      "chapter_label": "MRK 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "Jesus answered them, “Give to Caesar the things that are Caesar’s, and to God the things that are God’s.”They marveled greatly at him.",
+      "ko": "이에 예수께서 가라사대 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니 저희가 예수께 대하여 심히 기이히 여기더라",
+      "source_text_hash": "2f12853140d782f569cd369fc8065b95dfd43416ba38af075927de67d7d55be6",
+      "translation_text_hash": "90dc3c9b45ce783fa679c73230f62398878c999e03e1c48195449abc498f03b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 가라사대 가이사의 것은 가이사에게, 하나님의 것은 하나님께 바치라 하시니 저희가 예수께 대하여 심히 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "90dc3c9b45ce783fa679c73230f62398878c999e03e1c48195449abc498f03b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:18",
+      "sequence": 24692,
+      "chapter_label": "MRK 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Some Sadducees, who say that there is no resurrection, came to him. They asked him, saying,",
+      "ko": "부활이 없다 하는 사두개인들이 예수께 와서 물어 가로되",
+      "source_text_hash": "938002dddeb3d7fdfe05a26a31dbd95d62571553a7944a42a71e0587827debee",
+      "translation_text_hash": "656edfbf2c204130c16bd0f971f2a3eef3cc61809276112354258aed696a1d6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부활이 없다 하는 사두개인들이 예수께 와서 물어 가로되"
+      ],
+      "raw_text_hashes": [
+        "656edfbf2c204130c16bd0f971f2a3eef3cc61809276112354258aed696a1d6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:19",
+      "sequence": 24693,
+      "chapter_label": "MRK 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "“Teacher, Moses wrote to us, ‘If a man’s brother dies and leaves a wife behind him, and leaves no children, that his brother should take his wife and raise up offspring for his brother.’",
+      "ko": "선생님이여 모세가 우리에게 써 주기를 사람의 형이 자식이 없이 아내를 두고 죽거든 그 동생이 그 아내를 취하여 형을 위하여 후사를 세울찌니라 하였나이다",
+      "source_text_hash": "6f8b4f1732d733a3d6598a1cffe05bf352ebcfcaea3aa958eee62f58909e545e",
+      "translation_text_hash": "9d29af5ee01f1d9d6d51904a909958b043d5ec8478fa533a7d664255611450db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선생님이여 모세가 우리에게 써 주기를 사람의 형이 자식이 없이 아내를 두고 죽거든 그 동생이 그 아내를 취하여 형을 위하여 후사를 세울찌니라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "9d29af5ee01f1d9d6d51904a909958b043d5ec8478fa533a7d664255611450db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:20",
+      "sequence": 24694,
+      "chapter_label": "MRK 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "There were seven brothers. The first took a wife, and dying left no offspring.",
+      "ko": "칠 형제가 있었는데 맏이 아내를 취하였다가 후사가 없이 죽고",
+      "source_text_hash": "720863abb4001b389efec8bfc5a5c18c68f06cdb4bfa40098fd3935a801f9ef8",
+      "translation_text_hash": "7d74314002d54d887936be4d39c9bf3fafc092116b580f12fedbecf1c6e96e22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠 형제가 있었는데 맏이 아내를 취하였다가 후사가 없이 죽고"
+      ],
+      "raw_text_hashes": [
+        "7d74314002d54d887936be4d39c9bf3fafc092116b580f12fedbecf1c6e96e22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:21",
+      "sequence": 24695,
+      "chapter_label": "MRK 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "The second took her, and died, leaving no children behind him. The third likewise;",
+      "ko": "둘째도 그 여자를 취하였다가 후사가 없이 죽고 세째도 그렇게 하여",
+      "source_text_hash": "979611a5189263a75b96d12941176da99cffa6440e5c37f9b497d60b116e9a7e",
+      "translation_text_hash": "720edcc7523bef56bb362e8cc14a07fb276757a337ede9db5b8bd987abaf1016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째도 그 여자를 취하였다가 후사가 없이 죽고 세째도 그렇게 하여"
+      ],
+      "raw_text_hashes": [
+        "720edcc7523bef56bb362e8cc14a07fb276757a337ede9db5b8bd987abaf1016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:22",
+      "sequence": 24696,
+      "chapter_label": "MRK 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "and the seven took her and left no children. Last of all the woman also died.",
+      "ko": "일곱이 다 후사가 없었고 최후에 여자도 죽었나이다",
+      "source_text_hash": "0008bcabc192bdb6bc109cfc3bc1f4f262c7a9f3edceeebd6b47f8466207e2b7",
+      "translation_text_hash": "97e0fe6a08315237f2e5a0cf1236c4e0657a09b12b44b7f86f2a697fbe36cdfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱이 다 후사가 없었고 최후에 여자도 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "97e0fe6a08315237f2e5a0cf1236c4e0657a09b12b44b7f86f2a697fbe36cdfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:23",
+      "sequence": 24697,
+      "chapter_label": "MRK 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "In the resurrection, when they rise, whose wife will she be of them? For the seven had her as a wife.”",
+      "ko": "일곱 사람이 다 그를 아내로 취하였으니 부활을 당하여 저희가 살아날 때에 그중에 뉘 아내가 되리이까",
+      "source_text_hash": "0dc401dee2ac4080bf3c7e6ad4fd2c56bf4dbe2f7aac0a59ba0763764a15a87e",
+      "translation_text_hash": "1b2f5a54a3fa5bf1bd0652d85335b1e7894a73d183f75b0e3d755fd4b27ddb71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 사람이 다 그를 아내로 취하였으니 부활을 당하여 저희가 살아날 때에 그중에 뉘 아내가 되리이까"
+      ],
+      "raw_text_hashes": [
+        "1b2f5a54a3fa5bf1bd0652d85335b1e7894a73d183f75b0e3d755fd4b27ddb71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:24",
+      "sequence": 24698,
+      "chapter_label": "MRK 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "Jesus answered them, “Isn’t this because you are mistaken, not knowing the Scriptures nor the power of God?",
+      "ko": "예수께서 가라사대 너희가 성경도 하나님의 능력도 알지 못하므로 오해함이 아니냐",
+      "source_text_hash": "3c6138dac74ae270da0e4eea00909ca7b15f075352a2a57f18455e80ec50327f",
+      "translation_text_hash": "d0b4fc784a24e22519f0771b02c76c14d6b33d1f2ae5123ec3f1d94f063701aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희가 성경도 하나님의 능력도 알지 못하므로 오해함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "d0b4fc784a24e22519f0771b02c76c14d6b33d1f2ae5123ec3f1d94f063701aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:25",
+      "sequence": 24699,
+      "chapter_label": "MRK 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "For when they will rise from the dead, they neither marry nor are given in marriage, but are like angels in heaven.",
+      "ko": "사람이 죽은 자 가운데서 살아날 때에는 장가도 아니가고 시집도 아니가고 하늘에 있는 천사들과 같으니라",
+      "source_text_hash": "eaf0ba7c2062285c5c687790e769852d0740f7a9df81c5b6aac8d6dd6ca8c52b",
+      "translation_text_hash": "29e85959b0c88c5e6ac7b597aef44f5e557b2fd08a41a565d418da3dccb24271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 죽은 자 가운데서 살아날 때에는 장가도 아니가고 시집도 아니가고 하늘에 있는 천사들과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "29e85959b0c88c5e6ac7b597aef44f5e557b2fd08a41a565d418da3dccb24271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:26",
+      "sequence": 24700,
+      "chapter_label": "MRK 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "But about the dead, that they are raised, haven’t you read in the book of Moses about the Bush, how God spoke to him, saying, ‘I am the God of Abraham, the God of Isaac, and the God of Jacob’?",
+      "ko": "죽은 자의 살아난다는 것을 의논할찐대 너희가 모세의 책 중 가시나무떨기에 관한 글에 하나님께서 모세에게 이르시되 나는 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이로라 하신 말씀을 읽어보지 못하였느냐",
+      "source_text_hash": "480d0cd1882b08a9cc56e2e207d2da2d93055e43c59941aa2a7f4b1bd97ac479",
+      "translation_text_hash": "4d2d3983e7d41387a9613f3c16c21667e92450d4f66f7d67c0ff666146511af0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자의 살아난다는 것을 의논할찐대 너희가 모세의 책 중 가시나무떨기에 관한 글에 하나님께서 모세에게 이르시되 나는 아브라함의 하나님이요 이삭의 하나님이요 야곱의 하나님이로라 하신 말씀을 읽어보지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "4d2d3983e7d41387a9613f3c16c21667e92450d4f66f7d67c0ff666146511af0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:27",
+      "sequence": 24701,
+      "chapter_label": "MRK 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "He is not the God of the dead, but of the living. You are therefore badly mistaken.”",
+      "ko": "하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시라 너희가 크게 오해하였도다 하시니라",
+      "source_text_hash": "eb7d9d19bbab63d4f874bee139cdae5cdda9f8e3e4c414ad3079cd41a8dadd7c",
+      "translation_text_hash": "6bcc6e1264aeb4bc4d43b2fc937ad0bb4d12ddcde0048b3a02667efd6fd40ed2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 죽은 자의 하나님이 아니요 산 자의 하나님이시라 너희가 크게 오해하였도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6bcc6e1264aeb4bc4d43b2fc937ad0bb4d12ddcde0048b3a02667efd6fd40ed2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:28",
+      "sequence": 24702,
+      "chapter_label": "MRK 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "One of the scribes came and heard them questioning together, and knowing that he had answered them well, asked him, “Which commandment is the greatest of all?”",
+      "ko": "서기관 중 한 사람이 저희의 변론하는 것을 듣고 예수께서 대답 잘하신 줄을 알고 나아와 묻되 모든 계명 중에 첫째가 무엇이니이까",
+      "source_text_hash": "02ea6397798501bebe410ac285cb742f4c811d00ab70e6f21e66c5ab5e8580f1",
+      "translation_text_hash": "75b44bbd48efd5ab31f27ef205b3bc5b93a4e820e3659bf5541ce54fb14beb7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관 중 한 사람이 저희의 변론하는 것을 듣고 예수께서 대답 잘하신 줄을 알고 나아와 묻되 모든 계명 중에 첫째가 무엇이니이까"
+      ],
+      "raw_text_hashes": [
+        "75b44bbd48efd5ab31f27ef205b3bc5b93a4e820e3659bf5541ce54fb14beb7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:29",
+      "sequence": 24703,
+      "chapter_label": "MRK 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus answered, “The greatest is: ‘Hear, Israel, the Lord our God, the Lord is one.",
+      "ko": "예수께서 대답하시되 첫째는 이것이니 이스라엘아 들으라 주 곧 우리 하나님은 유일한 주시라",
+      "source_text_hash": "b2079fbbd07e148224309c2ee2f58bd0c99c036aa128bd82350ebf04b54673e5",
+      "translation_text_hash": "3cd23ea16b09f8fb3392a2624b5450f834d29864174fa70ca0768ad8e4b0cc6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 첫째는 이것이니 이스라엘아 들으라 주 곧 우리 하나님은 유일한 주시라"
+      ],
+      "raw_text_hashes": [
+        "3cd23ea16b09f8fb3392a2624b5450f834d29864174fa70ca0768ad8e4b0cc6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:30",
+      "sequence": 24704,
+      "chapter_label": "MRK 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "You shall love the Lord your God with all your heart, with all your soul, with all your mind, and with all your strength.’This is the first commandment.",
+      "ko": "네 마음을 다하고 목숨을 다하고 뜻을 다하고 힘을 다하여 주 너의 하나님을 사랑하라 하신 것이요",
+      "source_text_hash": "1a0619e3309748c5f089e83a265fcff0a128086b4236d2fee5ae77e9c09175ac",
+      "translation_text_hash": "dae64abb96441fcfd715d48b1a134af3df38b6c85d68c05490fbce2290314b56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음을 다하고 목숨을 다하고 뜻을 다하고 힘을 다하여 주 너의 하나님을 사랑하라 하신 것이요"
+      ],
+      "raw_text_hashes": [
+        "dae64abb96441fcfd715d48b1a134af3df38b6c85d68c05490fbce2290314b56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:31",
+      "sequence": 24705,
+      "chapter_label": "MRK 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "The second is like this: ‘You shall love your neighbor as yourself.’There is no other commandment greater than these.”",
+      "ko": "둘째는 이것이니 네 이웃을 네 몸과 같이 사랑하라 하신 것이라 이에서 더 큰 계명이 없느니라",
+      "source_text_hash": "2c71ac227269fc7c5dbe9ceaa8dc1409077167d1e7e586b729f92b6de8d9f117",
+      "translation_text_hash": "a5eead327a64f036b6b0df15c44c46a7069c34bcc81939aa40ce83ce050e2075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째는 이것이니 네 이웃을 네 몸과 같이 사랑하라 하신 것이라 이에서 더 큰 계명이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "a5eead327a64f036b6b0df15c44c46a7069c34bcc81939aa40ce83ce050e2075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:32",
+      "sequence": 24706,
+      "chapter_label": "MRK 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "The scribe said to him, “Truly, teacher, you have said well that he is one, and there is none other but he;",
+      "ko": "서기관이 가로되 선생님이여 옳소이다 하나님은 한 분이시요 그 외에 다른이가 없다 하신 말씀이 참이니이다",
+      "source_text_hash": "17104bc0137b0db6562554f493fc34e286ab92bfe4f51354a609bcf0af5d7042",
+      "translation_text_hash": "bea75542fa30ac661bd2986c4f6a8e0473be0ae0f892a58d4706422fcf3a498d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관이 가로되 선생님이여 옳소이다 하나님은 한 분이시요 그 외에 다른이가 없다 하신 말씀이 참이니이다"
+      ],
+      "raw_text_hashes": [
+        "bea75542fa30ac661bd2986c4f6a8e0473be0ae0f892a58d4706422fcf3a498d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:33",
+      "sequence": 24707,
+      "chapter_label": "MRK 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "and to love him with all the heart, with all the understanding, all the soul, and with all the strength, and to love his neighbor as himself, is more important than all whole burnt offerings and sacrifices.”",
+      "ko": "또 마음을 다하고 지혜를 다하고 힘을 다하여 하나님을 사랑하는 것과 또 이웃을 제 몸과 같이 사랑하는 것이 전체로 드리는 모든 번제물과 기타 제물보다 나으니이다",
+      "source_text_hash": "0a48de998c99601f2c52d31b7051cc1e20e9cbbbd932857baca79a3d6c3ee695",
+      "translation_text_hash": "10b0498034e92c7ceb568788d5688dc5a49e768a9b473d7482e1f400ed5a52f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 마음을 다하고 지혜를 다하고 힘을 다하여 하나님을 사랑하는 것과 또 이웃을 제 몸과 같이 사랑하는 것이 전체로 드리는 모든 번제물과 기타 제물보다 나으니이다"
+      ],
+      "raw_text_hashes": [
+        "10b0498034e92c7ceb568788d5688dc5a49e768a9b473d7482e1f400ed5a52f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:34",
+      "sequence": 24708,
+      "chapter_label": "MRK 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "When Jesus saw that he answered wisely, he said to him, “You are not far from God’s Kingdom.”No one dared ask him any question after that.",
+      "ko": "예수께서 그 지혜 있게 대답함을 보시고 이르시되 네가 하나님의 나라에 멀지 않도다 하시니 그 후에 감히 묻는 자가 없더라",
+      "source_text_hash": "b170bca32371093f0b951f502efa886e9a646025b8ebb76c434a3a4c2c614c1e",
+      "translation_text_hash": "64c095ecd933cf59ab7219d772fb4770f003731753611274a1cd28773fad8660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 지혜 있게 대답함을 보시고 이르시되 네가 하나님의 나라에 멀지 않도다 하시니 그 후에 감히 묻는 자가 없더라"
+      ],
+      "raw_text_hashes": [
+        "64c095ecd933cf59ab7219d772fb4770f003731753611274a1cd28773fad8660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:35",
+      "sequence": 24709,
+      "chapter_label": "MRK 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus responded, as he taught in the temple, “How is it that the scribes say that the Christ is the son of David?",
+      "ko": "예수께서 성전에서 가르치실쌔 대답하여 가라사대 어찌하여 서기관들이 그리스도를 다윗의 자손이라 하느뇨",
+      "source_text_hash": "d1bdc0230f10ad6df19cbeaed289fafa86db5c0ad41503a55783b9abe15b5919",
+      "translation_text_hash": "daa71d052cd9e5e104540518c4af699abd4ea4557ef49259f5bdcffbb4f405bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에서 가르치실쌔 대답하여 가라사대 어찌하여 서기관들이 그리스도를 다윗의 자손이라 하느뇨"
+      ],
+      "raw_text_hashes": [
+        "daa71d052cd9e5e104540518c4af699abd4ea4557ef49259f5bdcffbb4f405bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:36",
+      "sequence": 24710,
+      "chapter_label": "MRK 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "For David himself said in the Holy Spirit,‘The Lord said to my Lord, “Sit at my right hand, until I make your enemies the footstool of your feet.”’",
+      "ko": "다윗이 성령에 감동하여 친히 말하되 주께서 내 주께 이르시되 내가 네 원수를 네 발 아래 둘 때까지 내 우편에 앉았으라 하셨도다 하였느니라",
+      "source_text_hash": "69bde85600927d4d18d28d65e814e8603f7c9e82ba02c8f6751daf8803324c2f",
+      "translation_text_hash": "e1b09076555a8f01540643efbd8128251875df136be2920c8953e7398189ee38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 성령에 감동하여 친히 말하되 주께서 내 주께 이르시되 내가 네 원수를 네 발 아래 둘 때까지 내 우편에 앉았으라 하셨도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e1b09076555a8f01540643efbd8128251875df136be2920c8953e7398189ee38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:37",
+      "sequence": 24711,
+      "chapter_label": "MRK 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "Therefore David himself calls him Lord, so how can he be his son?” The common people heard him gladly.",
+      "ko": "다윗이 그리스도를 주라 하였은즉 어찌 그의 자손이 되겠느냐 하시더라 백성이 즐겁게 듣더라",
+      "source_text_hash": "7d7036e15a8386c052a693e883137f34ecbcbeef37055059dbe8266b89e6e869",
+      "translation_text_hash": "fb26de3fc6653d3948fba5f1286367bd12366c133561258037eeb12057fb2f78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그리스도를 주라 하였은즉 어찌 그의 자손이 되겠느냐 하시더라 백성이 즐겁게 듣더라"
+      ],
+      "raw_text_hashes": [
+        "fb26de3fc6653d3948fba5f1286367bd12366c133561258037eeb12057fb2f78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:38",
+      "sequence": 24712,
+      "chapter_label": "MRK 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "In his teaching he said to them, “Beware of the scribes, who like to walk in long robes, and to get greetings in the marketplaces,",
+      "ko": "예수께서 가르치실 때에 가라사대 긴 옷을 입고 다니는 것과 시장에서 문안 받는 것과",
+      "source_text_hash": "4cb1583903155409e7ae308d2193b95b94a58b220cde977ec3e99aa9c972211c",
+      "translation_text_hash": "a3af302bcfc538830b65a8ec1186ed2ad6c2a0a1d5e26289fe3f91737460a15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가르치실 때에 가라사대 긴 옷을 입고 다니는 것과 시장에서 문안 받는 것과"
+      ],
+      "raw_text_hashes": [
+        "a3af302bcfc538830b65a8ec1186ed2ad6c2a0a1d5e26289fe3f91737460a15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:39",
+      "sequence": 24713,
+      "chapter_label": "MRK 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "and to get the best seats in the synagogues and the best places at feasts,",
+      "ko": "회당의 상좌와 잔치의 상석을 원하는 서기관들을 삼가라",
+      "source_text_hash": "9b77e011bfe9faf4333fb7f1d3ed48ab6eed3bf83cc3af0aab1a7443900ab8ee",
+      "translation_text_hash": "dee67625de2f0fe64d0ae1ebc55e7abebc279281aeb59b762217fd59ffe4e96e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당의 상좌와 잔치의 상석을 원하는 서기관들을 삼가라"
+      ],
+      "raw_text_hashes": [
+        "dee67625de2f0fe64d0ae1ebc55e7abebc279281aeb59b762217fd59ffe4e96e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:40",
+      "sequence": 24714,
+      "chapter_label": "MRK 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "those who devour widows’ houses, and for a pretense make long prayers. These will receive greater condemnation.”",
+      "ko": "저희는 과부의 가산을 삼키며 외식으로 길게 기도하는 자니 그 받는 판결이 더욱 중하리라 하시니라",
+      "source_text_hash": "99007ccfc03bb093d47215ec89fa3b8acd0728e42b4134659e52903887e7220e",
+      "translation_text_hash": "6465b0ec10a9047ca9fb48fbda0853f3b7d2779e2a8f9f183d2ee9f136486c40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 과부의 가산을 삼키며 외식으로 길게 기도하는 자니 그 받는 판결이 더욱 중하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6465b0ec10a9047ca9fb48fbda0853f3b7d2779e2a8f9f183d2ee9f136486c40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:41",
+      "sequence": 24715,
+      "chapter_label": "MRK 12",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 41
+        }
+      ],
+      "en": "Jesus sat down opposite the treasury and saw how the multitude cast money into the treasury. Many who were rich cast in much.",
+      "ko": "예수께서 연보 궤를 대하여 앉으사 무리의 연보 궤에 돈 넣는 것을 보실쌔 여러 부자는 많이 넣는데",
+      "source_text_hash": "87620a77b30ac4ff13963ee546004cb26688bcbdfed5997852c9079668b1e072",
+      "translation_text_hash": "89bfcaf875ee5aa32e5aa866d63fb74b187770c55c933daefce242b738e8dfc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 연보 궤를 대하여 앉으사 무리의 연보 궤에 돈 넣는 것을 보실쌔 여러 부자는 많이 넣는데"
+      ],
+      "raw_text_hashes": [
+        "89bfcaf875ee5aa32e5aa866d63fb74b187770c55c933daefce242b738e8dfc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:42",
+      "sequence": 24716,
+      "chapter_label": "MRK 12",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 42
+        }
+      ],
+      "en": "A poor widow came and she cast in two small brass coins, which equal a quadrans coin.",
+      "ko": "한 가난한 과부는 와서 두 렙돈 곧 한 고드란트를 넣는지라",
+      "source_text_hash": "b003583075069c96324336124b9fa4c5b0b940c4caa7dc472f8e7319533de0a8",
+      "translation_text_hash": "ba39da16046392eec82b590bcab106fa4648431af33cef81388d995a7da282d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 가난한 과부는 와서 두 렙돈 곧 한 고드란트를 넣는지라"
+      ],
+      "raw_text_hashes": [
+        "ba39da16046392eec82b590bcab106fa4648431af33cef81388d995a7da282d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:43",
+      "sequence": 24717,
+      "chapter_label": "MRK 12",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 43
+        }
+      ],
+      "en": "He called his disciples to himself and said to them, “Most certainly I tell you, this poor widow gave more than all those who are giving into the treasury,",
+      "ko": "예수께서 제자들을 불러다가 이르시되 내가 진실로 너희에게 이르노니 이 가난한 과부는 연보 궤에 넣는 모든 사람보다 많이 넣었도다",
+      "source_text_hash": "c24020c3027f29812631385e674694e978332061f2fb5885f31d592d6e8d17c1",
+      "translation_text_hash": "6b38d2839c1c53907f73aec0f3bcb394227debd7e152206150fa1a28e51c5cdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들을 불러다가 이르시되 내가 진실로 너희에게 이르노니 이 가난한 과부는 연보 궤에 넣는 모든 사람보다 많이 넣었도다"
+      ],
+      "raw_text_hashes": [
+        "6b38d2839c1c53907f73aec0f3bcb394227debd7e152206150fa1a28e51c5cdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:12:44",
+      "sequence": 24718,
+      "chapter_label": "MRK 12",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 12,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 12,
+          "verse": 44
+        }
+      ],
+      "en": "for they all gave out of their abundance, but she, out of her poverty, gave all that she had to live on.”",
+      "ko": "저희는 다 그 풍족한 중에서 넣었거니와 이 과부는 그 구차한 중에서 자기 모든 소유 곧 생활비 전부를 넣었느니라 하셨더라",
+      "source_text_hash": "4aa99a77ea088afa0da193059b35d7ef5776ac92cabf4e6b7214607fdad010b1",
+      "translation_text_hash": "214c9c6e515b30e03c96f0e7b8c5218a5b7f4507c7cd4009110348488a882dd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 다 그 풍족한 중에서 넣었거니와 이 과부는 그 구차한 중에서 자기 모든 소유 곧 생활비 전부를 넣었느니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "214c9c6e515b30e03c96f0e7b8c5218a5b7f4507c7cd4009110348488a882dd7"
+      ]
+    }
+  ]
+}

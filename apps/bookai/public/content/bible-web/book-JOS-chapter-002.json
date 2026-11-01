@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:002",
+  "unit_ordinal": 189,
+  "unit_label": "JOS 2",
+  "book_code": "JOS",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:2:1",
+      "sequence": 5871,
+      "chapter_label": "JOS 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Joshua the son of Nun secretly sent two men out of Shittim as spies, saying, “Go, view the land, including Jericho.” They went and came into the house of a prostitute whose name was Rahab, and slept there.",
+      "ko": "눈의 아들 여호수아가 싯딤에서 두 사람을 정탐으로 가만히 보내며 그들에게 이르되 가서 그 땅과 여리고를 엿보라 하매 그들이 가서 라합이라 하는 기생의 집에 들어가 거기서 유숙하더니",
+      "source_text_hash": "9492ca5261d5eef30e2f208324362c46b26a40a5572efab74b2edeab11828d60",
+      "translation_text_hash": "c01e977ae6aa71afb4061195e450598ced638861e2ee9a0f27a81fea846621e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈의 아들 여호수아가 싯딤에서 두 사람을 정탐으로 가만히 보내며 그들에게 이르되 가서 그 땅과 여리고를 엿보라 하매 그들이 가서 라합이라 하는 기생의 집에 들어가 거기서 유숙하더니"
+      ],
+      "raw_text_hashes": [
+        "c01e977ae6aa71afb4061195e450598ced638861e2ee9a0f27a81fea846621e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:2",
+      "sequence": 5872,
+      "chapter_label": "JOS 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The king of Jericho was told, “Behold, men of the children of Israel came in here tonight to spy out the land.”",
+      "ko": "혹이 여리고 왕에게 고하여 가로되 보소서 이 밤에 이스라엘 자손 몇 사람이 땅을 탐지하러 이리로 들어 왔나이다",
+      "source_text_hash": "2f0d0fc72cec08b501cf99629239b7695d9b5cef9bc49b358798cf039edaa5c4",
+      "translation_text_hash": "5fe5d84d7d66b0b58372f99f6bb85656bdcb70a748d61d6231e504da4fcfc087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 여리고 왕에게 고하여 가로되 보소서 이 밤에 이스라엘 자손 몇 사람이 땅을 탐지하러 이리로 들어 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "5fe5d84d7d66b0b58372f99f6bb85656bdcb70a748d61d6231e504da4fcfc087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:3",
+      "sequence": 5873,
+      "chapter_label": "JOS 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Jericho’s king sent to Rahab, saying, “Bring out the men who have come to you, who have entered into your house; for they have come to spy out all the land.”",
+      "ko": "여리고 왕이 라합에게 기별하여 가로되 네게로 와서 네 집에 들어간 사람들을 끌어내라 그들은 이 온 땅을 탐지하러 왔느니라",
+      "source_text_hash": "278f44148121b2225502ea236f098f4fd82987418be401dfb05d09a0fbdeb0ba",
+      "translation_text_hash": "9abd01b59d533333a8707ccc4c7b0dfecb4c0b98102afaaaf5c5e3e148a400dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여리고 왕이 라합에게 기별하여 가로되 네게로 와서 네 집에 들어간 사람들을 끌어내라 그들은 이 온 땅을 탐지하러 왔느니라"
+      ],
+      "raw_text_hashes": [
+        "9abd01b59d533333a8707ccc4c7b0dfecb4c0b98102afaaaf5c5e3e148a400dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:4",
+      "sequence": 5874,
+      "chapter_label": "JOS 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The woman took the two men and hid them. Then she said, “Yes, the men came to me, but I didn’t know where they came from.",
+      "ko": "그 여인이 그 두 사람을 이미 숨긴지라 가로되 과연 그 사람들이 내게 왔었으나 그들이 어디로서인지 나는 알지 못하였고",
+      "source_text_hash": "c86d09c4a82464f5d64d26ab46135a219de2671a16e0cf70c879f897978ef8fd",
+      "translation_text_hash": "4fe5b45f843ddd334a0c8c9e4f7db032449bac75601d7fdfec1fe817504d46e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인이 그 두 사람을 이미 숨긴지라 가로되 과연 그 사람들이 내게 왔었으나 그들이 어디로서인지 나는 알지 못하였고"
+      ],
+      "raw_text_hashes": [
+        "4fe5b45f843ddd334a0c8c9e4f7db032449bac75601d7fdfec1fe817504d46e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:5",
+      "sequence": 5875,
+      "chapter_label": "JOS 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "About the time of the shutting of the gate, when it was dark, the men went out. Where the men went, I don’t know. Pursue them quickly. You may catch up with them.”",
+      "ko": "그 사람들이 어두워 성문을 닫을 때쯤 되어 나갔으니 어디로 갔는지 알지 못하되 급히 따라가라 그리하면 그들에게 미치리라 하였으나",
+      "source_text_hash": "f98686b337540d1c86018cccf5e19aba57910600877fde09255602441ce0d6f8",
+      "translation_text_hash": "7428b54b87d6131e44f43792b8e6a7965df58be07c393d5b93202b0d5d855a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 어두워 성문을 닫을 때쯤 되어 나갔으니 어디로 갔는지 알지 못하되 급히 따라가라 그리하면 그들에게 미치리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "7428b54b87d6131e44f43792b8e6a7965df58be07c393d5b93202b0d5d855a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:6",
+      "sequence": 5876,
+      "chapter_label": "JOS 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But she had brought them up to the roof, and hidden them under the stalks of flax which she had laid in order on the roof.",
+      "ko": "실상은 그가 이미 그들을 이끌고 지붕에 올라가서 그 지붕에 벌여놓은 삼대에 숨겼더라",
+      "source_text_hash": "8b19bf27716314af34a61bee17cb02f9fde2f4bb99ce811cc82ab73d1b8abb38",
+      "translation_text_hash": "599e59b54c408a628ce5586d268817906c946dae5854866f5119eb6ed868d15a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실상은 그가 이미 그들을 이끌고 지붕에 올라가서 그 지붕에 벌여놓은 삼대에 숨겼더라"
+      ],
+      "raw_text_hashes": [
+        "599e59b54c408a628ce5586d268817906c946dae5854866f5119eb6ed868d15a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:7",
+      "sequence": 5877,
+      "chapter_label": "JOS 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The men pursued them along the way to the fords of the Jordan River. As soon as those who pursued them had gone out, they shut the gate.",
+      "ko": "그 사람들은 요단 길로 나루턱까지 따라갔고 그 따르는 자들이 나가자 곧 성문을 닫았더라",
+      "source_text_hash": "f72df19223a6a0003ae9c7a50d7ef635094c3eee3fd2e688d4ce06e69d87627c",
+      "translation_text_hash": "26d9f0e20589749de61ed0719cdcfc1d7f82cda322545990c7e5591283d57dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들은 요단 길로 나루턱까지 따라갔고 그 따르는 자들이 나가자 곧 성문을 닫았더라"
+      ],
+      "raw_text_hashes": [
+        "26d9f0e20589749de61ed0719cdcfc1d7f82cda322545990c7e5591283d57dd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:8",
+      "sequence": 5878,
+      "chapter_label": "JOS 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Before they had lain down, she came up to them on the roof.",
+      "ko": "두 사람이 눕기 전에 라합이 지붕에 올라가서 그들에게 이르러",
+      "source_text_hash": "5da387f37a7204609b4c53ca7965a35e45de5b1687716b72c192d12e19b247b7",
+      "translation_text_hash": "8c910f5d4d004200658db7a71ef5d8ad56ba3a909897c85f1daeb85ac0f0576c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 눕기 전에 라합이 지붕에 올라가서 그들에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "8c910f5d4d004200658db7a71ef5d8ad56ba3a909897c85f1daeb85ac0f0576c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:9",
+      "sequence": 5879,
+      "chapter_label": "JOS 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "She said to the men, “I know that the LORD has given you the land, and that the fear of you has fallen upon us, and that all the inhabitants of the land melt away before you.",
+      "ko": "말하되 여호와께서 이 땅을 너희에게 주신 줄을 내가 아노라 우리가 너희를 심히 두려워하고 이 땅 백성이 다 너희 앞에 간담이 녹나니",
+      "source_text_hash": "ef54d7b08e5fb52039399672fc43c01e56ea2332341fd679e0d8bf6f1a7dd63d",
+      "translation_text_hash": "891ee5beb9d1a907744d87d1b2b17ffea51488166a4e5f21232d37bf53a03a39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 여호와께서 이 땅을 너희에게 주신 줄을 내가 아노라 우리가 너희를 심히 두려워하고 이 땅 백성이 다 너희 앞에 간담이 녹나니"
+      ],
+      "raw_text_hashes": [
+        "891ee5beb9d1a907744d87d1b2b17ffea51488166a4e5f21232d37bf53a03a39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:10",
+      "sequence": 5880,
+      "chapter_label": "JOS 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For we have heard how the LORD dried up the water of the Red Sea before you, when you came out of Egypt; and what you did to the two kings of the Amorites, who were beyond the Jordan, to Sihon and to Og, whom you utterly destroyed.",
+      "ko": "이는 너희가 애굽에서 나올 때에 여호와께서 너희 앞에서 홍해 물을 마르게 하신 일과 너희가 요단 저편에 있는 아모리 사람의 두 왕 시혼과 옥에게 행한 일 곧 그들을 전멸시킨 일을 우리가 들었음이라",
+      "source_text_hash": "5bfe91a724319a4b6aefc8bd4e171c3473b274a44533154eca61f9bd01c20282",
+      "translation_text_hash": "f4261f3a664a098e86e90fb1b94cd1d5ff9cffb89589610cd6301428047fc407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 애굽에서 나올 때에 여호와께서 너희 앞에서 홍해 물을 마르게 하신 일과 너희가 요단 저편에 있는 아모리 사람의 두 왕 시혼과 옥에게 행한 일 곧 그들을 전멸시킨 일을 우리가 들었음이라"
+      ],
+      "raw_text_hashes": [
+        "f4261f3a664a098e86e90fb1b94cd1d5ff9cffb89589610cd6301428047fc407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:11",
+      "sequence": 5881,
+      "chapter_label": "JOS 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "As soon as we had heard it, our hearts melted, and there wasn’t any more spirit in any man, because of you: for the LORD your God, he is God in heaven above, and on earth beneath.",
+      "ko": "우리가 듣자 곧 마음이 녹았고 너희의 연고로 사람이 정신을 잃었나니 너희 하나님 여호와는 상천 하지에 하나님이시니라",
+      "source_text_hash": "cd1a98770f474f4d8bcbbcdcc34b8e8e888e27c770bcfb6029afac2d269d3b03",
+      "translation_text_hash": "ec1e318613cb7f07ea27631188a66416adc3a2405a4f1c3537ff280740c1dd11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 듣자 곧 마음이 녹았고 너희의 연고로 사람이 정신을 잃었나니 너희 하나님 여호와는 상천 하지에 하나님이시니라"
+      ],
+      "raw_text_hashes": [
+        "ec1e318613cb7f07ea27631188a66416adc3a2405a4f1c3537ff280740c1dd11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:12",
+      "sequence": 5882,
+      "chapter_label": "JOS 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Now therefore, please swear to me by the LORD, since I have dealt kindly with you, that you also will deal kindly with my father’s house, and give me a true sign;",
+      "ko": "그러므로 청하노니 내가 너희를 선대하였은즉 너희도 내 아버지의 집을 선대하여 나의 부모와 남녀 형제와 무릇 그들에게 있는 모든 자를 살려주어 우리 생명을 죽는데서 건져내기로 이제 여호와로 맹세하고 내게 진실한 표를 내라",
+      "source_text_hash": "709ff3a12c3725fb5fb16c43242a29b1d0bf4d24d9d3c90ae9bfe6f69ff968b5",
+      "translation_text_hash": "aaae21e075f8d5c86d9faa8d01c2ddecaa64b1d9b7618abe378650b4309279f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 청하노니 내가 너희를 선대하였은즉 너희도 내 아버지의 집을 선대하여 나의 부모와 남녀 형제와 무릇 그들에게 있는 모든 자를 살려주어 우리 생명을 죽는데서 건져내기로 이제 여호와로 맹세하고 내게 진실한 표를 내라"
+      ],
+      "raw_text_hashes": [
+        "aaae21e075f8d5c86d9faa8d01c2ddecaa64b1d9b7618abe378650b4309279f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:13",
+      "sequence": 5883,
+      "chapter_label": "JOS 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "and that you will save alive my father, my mother, my brothers, and my sisters, and all that they have, and will deliver our lives from death.”",
+      "ko": "(12절에 포함되어 있음)",
+      "source_text_hash": "a35180747d95f322d0aa774e6110b4fcc1f0225f10db8b54dadba7cc74b1ee4e",
+      "translation_text_hash": "2f1ad38123a2c867a836e35d58ad058d35166f1007b507e17320559ba0e000c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(12절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "2f1ad38123a2c867a836e35d58ad058d35166f1007b507e17320559ba0e000c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:14",
+      "sequence": 5884,
+      "chapter_label": "JOS 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The men said to her, “Our life for yours, if you don’t talk about this business of ours; and it shall be, when the LORD gives us the land, that we will deal kindly and truly with you.”",
+      "ko": "두 사람이 그에게 이르되 네가 우리의 이 일을 누설치 아니하면 우리의 생명으로 너희를 대신이라도 할 것이요 여호와께서 우리에게 이 땅을 주실 때에는 인자하고 진실하게 너를 대우하리라",
+      "source_text_hash": "a41d53ac0a0db166231b449fba923f286e90a2f69f993a13e942da41a88f9a3f",
+      "translation_text_hash": "0aac6e5d4c4a4e2603face202f7911a0eed5f2d1194e6d508d7545090ab06edc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 그에게 이르되 네가 우리의 이 일을 누설치 아니하면 우리의 생명으로 너희를 대신이라도 할 것이요 여호와께서 우리에게 이 땅을 주실 때에는 인자하고 진실하게 너를 대우하리라"
+      ],
+      "raw_text_hashes": [
+        "0aac6e5d4c4a4e2603face202f7911a0eed5f2d1194e6d508d7545090ab06edc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:15",
+      "sequence": 5885,
+      "chapter_label": "JOS 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Then she let them down by a cord through the window; for her house was on the side of the wall, and she lived on the wall.",
+      "ko": "라합이 그들을 창에서 줄로 달아내리우니 그 집이 성벽 위에 있으므로 그가 성벽 위에 거하였음이라",
+      "source_text_hash": "746d725a2bea7e73ba0a10586e4bccdf9373a2ec07c587239c394c0d7e3f39be",
+      "translation_text_hash": "50721d0b6431c40c6f926cd4c4f53e3ef428808f7f701a73f719e3602bf6c01b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라합이 그들을 창에서 줄로 달아내리우니 그 집이 성벽 위에 있으므로 그가 성벽 위에 거하였음이라"
+      ],
+      "raw_text_hashes": [
+        "50721d0b6431c40c6f926cd4c4f53e3ef428808f7f701a73f719e3602bf6c01b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:16",
+      "sequence": 5886,
+      "chapter_label": "JOS 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "She said to them, “Go to the mountain, lest the pursuers find you. Hide yourselves there three days, until the pursuers have returned. Afterward, you may go your way.”",
+      "ko": "라합이 그들에게 이르되 두렵건대 따르는 사람들이 너희를 만날까 하노니 너희는 산으로 가서 거기 사흘을 숨었다가 따르는 자들이 돌아간 후에 너희 길을 갈찌니라",
+      "source_text_hash": "3247d85bc1f3e7d80a4dfbd17c29a0c2aac0b934e26f7e4af5bd316680f3a302",
+      "translation_text_hash": "965706c466c3951e1bd3426eaafdb461e1b576c9f36e41dd0cb2d29cd3d71431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라합이 그들에게 이르되 두렵건대 따르는 사람들이 너희를 만날까 하노니 너희는 산으로 가서 거기 사흘을 숨었다가 따르는 자들이 돌아간 후에 너희 길을 갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "965706c466c3951e1bd3426eaafdb461e1b576c9f36e41dd0cb2d29cd3d71431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:17",
+      "sequence": 5887,
+      "chapter_label": "JOS 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The men said to her, “We will be guiltless of this your oath which you’ve made us to swear.",
+      "ko": "두 사람이 그에게 이르되 네가 우리로 서약케 한 이 맹세에 대하여 우리가 허물이 없게 하리니",
+      "source_text_hash": "826c6622e42c80f8e5f606d81d921fea615297f94f1b8a91da151905f429dc29",
+      "translation_text_hash": "e1427e029f97e20809336f5a38c4fa202bc7bab31929e26801bb9ab65e2f800f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 그에게 이르되 네가 우리로 서약케 한 이 맹세에 대하여 우리가 허물이 없게 하리니"
+      ],
+      "raw_text_hashes": [
+        "e1427e029f97e20809336f5a38c4fa202bc7bab31929e26801bb9ab65e2f800f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:18",
+      "sequence": 5888,
+      "chapter_label": "JOS 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, when we come into the land, tie this line of scarlet thread in the window which you used to let us down. Gather to yourself into the house your father, your mother, your brothers, and all your father’s household.",
+      "ko": "우리가 이 땅에 들어올 때에 우리를 달아내리운 창에 이 붉은 줄을 매고 네 부모와 형제와 네 아비의 가족을 다 네 집에 모으라",
+      "source_text_hash": "34b75ce31e2218189543af01a7dcf12e3c34c627baed39cf430ed52a51d2ad6b",
+      "translation_text_hash": "15a43ac4063675f75aeb87013d2f443eeb74e391765dd26f3a7655d4ead05f9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 땅에 들어올 때에 우리를 달아내리운 창에 이 붉은 줄을 매고 네 부모와 형제와 네 아비의 가족을 다 네 집에 모으라"
+      ],
+      "raw_text_hashes": [
+        "15a43ac4063675f75aeb87013d2f443eeb74e391765dd26f3a7655d4ead05f9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:19",
+      "sequence": 5889,
+      "chapter_label": "JOS 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "It shall be that whoever goes out of the doors of your house into the street, his blood will be on his head, and we will be guiltless. Whoever is with you in the house, his blood shall be on our head, if any hand is on him.",
+      "ko": "누구든지 네 집 문을 나서 거리로 가면 그 피가 그의 머리로 돌아갈 것이요 우리는 허물이 없으리라 그러나 누구든지 너와 함께 집에 있는 자에게 누가 손을 대면 그 피는 우리의 머리로 돌아오려니와",
+      "source_text_hash": "28337bc3ad667b247c3e114dfbdb208e5857fa1ddcec7b8ae590379333c1826f",
+      "translation_text_hash": "fae925c11f58c3dcba412ebed6c821000484632de9affccf0e744874fdf2ff91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 네 집 문을 나서 거리로 가면 그 피가 그의 머리로 돌아갈 것이요 우리는 허물이 없으리라 그러나 누구든지 너와 함께 집에 있는 자에게 누가 손을 대면 그 피는 우리의 머리로 돌아오려니와"
+      ],
+      "raw_text_hashes": [
+        "fae925c11f58c3dcba412ebed6c821000484632de9affccf0e744874fdf2ff91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:20",
+      "sequence": 5890,
+      "chapter_label": "JOS 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But if you talk about this business of ours, then we shall be guiltless of your oath which you’ve made us to swear.”",
+      "ko": "네가 우리의 이 일을 누설하면 네가 우리로 서약케 한 맹세에 대하여 우리에게 허물이 없으리라",
+      "source_text_hash": "ebbcd32e9ab8a0eb7c563e57aceccfa710ebf3be8320c1487f0f22389d17d2b7",
+      "translation_text_hash": "7363e11c2e21fe8a0e71b33000dadc49cd8b02800c55fbee4742fd9ea8df054c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 우리의 이 일을 누설하면 네가 우리로 서약케 한 맹세에 대하여 우리에게 허물이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "7363e11c2e21fe8a0e71b33000dadc49cd8b02800c55fbee4742fd9ea8df054c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:21",
+      "sequence": 5891,
+      "chapter_label": "JOS 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "She said, “Let it be as you have said.” She sent them away, and they departed. Then she tied the scarlet line in the window.",
+      "ko": "라합이 가로되 너희의 말대로 할것이라 하고 그들을 보내어 가게 하고 붉은 줄을 창문에 매니라",
+      "source_text_hash": "b992cd5faa0b59635478e100eafbd33c7fc633f3aac7714ad5c9fbbacfa46aa9",
+      "translation_text_hash": "217061d42e639d221daac52fa136a5ce97c520688438a0573576dce1a1a7a964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라합이 가로되 너희의 말대로 할것이라 하고 그들을 보내어 가게 하고 붉은 줄을 창문에 매니라"
+      ],
+      "raw_text_hashes": [
+        "217061d42e639d221daac52fa136a5ce97c520688438a0573576dce1a1a7a964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:22",
+      "sequence": 5892,
+      "chapter_label": "JOS 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "They went and came to the mountain, and stayed there three days, until the pursuers had returned. The pursuers sought them all along the way, but didn’t find them.",
+      "ko": "그들이 가서 산에 이르러 따르는 자가 돌아가도록 사흘을 거기 유하매 따르는 자가 그들을 길에서 두루 찾다가 만나지 못하니라",
+      "source_text_hash": "6bbde99ecfd678de6e042a5636971d8fbb6a73086c7cc642ceafb0f302260cf0",
+      "translation_text_hash": "82b6fef5da5641744c417159aba3050a97725779e351a994365fb6e6c2db9277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가서 산에 이르러 따르는 자가 돌아가도록 사흘을 거기 유하매 따르는 자가 그들을 길에서 두루 찾다가 만나지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "82b6fef5da5641744c417159aba3050a97725779e351a994365fb6e6c2db9277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:23",
+      "sequence": 5893,
+      "chapter_label": "JOS 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Then the two men returned, descended from the mountain, crossed the river, and came to Joshua the son of Nun. They told him all that had happened to them.",
+      "ko": "그 두 사람이 돌이켜 산에서 내려와 강을 건너 눈의 아들 여호수아에게 나아와서 그 당한 모든 일을 고하고",
+      "source_text_hash": "23d0ab7f365dfb6b66d64ae1155faf7e1deb802eb8bfb0c5c2c733db7abef07a",
+      "translation_text_hash": "8a4e59eddda57cf5497f534a924eddab89136771e730a75f1c0ab7cc8b1e0806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 사람이 돌이켜 산에서 내려와 강을 건너 눈의 아들 여호수아에게 나아와서 그 당한 모든 일을 고하고"
+      ],
+      "raw_text_hashes": [
+        "8a4e59eddda57cf5497f534a924eddab89136771e730a75f1c0ab7cc8b1e0806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:2:24",
+      "sequence": 5894,
+      "chapter_label": "JOS 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "They said to Joshua, “Truly the LORD has delivered all the land into our hands. Moreover, all the inhabitants of the land melt away before us.”",
+      "ko": "또 여호수아에게 이르되 진실로 여호와께서 그 온 땅을 우리 손에 붙이셨으므로 그 땅의 모든 거민이 우리 앞에서 간담이 녹더이다",
+      "source_text_hash": "26de1a2dba48f06f65d3363bca2dd65c0e3689533054cfc5d1cc016e4f6aed1d",
+      "translation_text_hash": "0b8adf449790d474ecefcb913c05558cd2468532353cef7d95399d62dd3400dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호수아에게 이르되 진실로 여호와께서 그 온 땅을 우리 손에 붙이셨으므로 그 땅의 모든 거민이 우리 앞에서 간담이 녹더이다"
+      ],
+      "raw_text_hashes": [
+        "0b8adf449790d474ecefcb913c05558cd2468532353cef7d95399d62dd3400dd"
+      ]
+    }
+  ]
+}

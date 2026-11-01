@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:024",
+  "unit_ordinal": 769,
+  "unit_label": "JER 24",
+  "book_code": "JER",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:24:1",
+      "sequence": 19526,
+      "chapter_label": "JER 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD showed me, and behold, two baskets of figs were set before the LORD’s temple, after Nebuchadnezzar king of Babylon had carried away captive Jeconiah the son of Jehoiakim, king of Judah, and the princes of Judah, with the craftsmen and smiths, from Jerusalem, and had brought them to Babylon.",
+      "ko": "바벨론 왕 느부갓네살이 유다 왕 여호야김의 아들 여고냐와 유다 방백들과 목공들과 철공들을 예루살렘에서 바벨론으로 옮긴 후에 여호와께서 여호와의 전 앞에 놓인 무화과 두 광주리로 내게 보이셨는데",
+      "source_text_hash": "291d21d123a25f6d943df1956f9737bdd9fb21c1f861dd052226abf0a3879039",
+      "translation_text_hash": "81ad6a5e396dc5bb120c24b2f0c14a228de70e3d72c661d4848453f4dcbd2985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살이 유다 왕 여호야김의 아들 여고냐와 유다 방백들과 목공들과 철공들을 예루살렘에서 바벨론으로 옮긴 후에 여호와께서 여호와의 전 앞에 놓인 무화과 두 광주리로 내게 보이셨는데"
+      ],
+      "raw_text_hashes": [
+        "81ad6a5e396dc5bb120c24b2f0c14a228de70e3d72c661d4848453f4dcbd2985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:2",
+      "sequence": 19527,
+      "chapter_label": "JER 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "One basket had very good figs, like the figs that are first-ripe; and the other basket had very bad figs, which could not be eaten, they were so bad.",
+      "ko": "한 광주리에는 처음 익은듯한 극히 좋은 무화과가 있고 한 광주리에는 악하여 먹을 수 없는 극히 악한 무화과가 있더라",
+      "source_text_hash": "a20a8ca217dcee7ca0abdb4f906e755194ebc948a2ae11c4e69f61ced5a406c0",
+      "translation_text_hash": "eada0be9050e46b634396c594ac483ffcd0c87585989ce9adf7e14e4b0252b81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 광주리에는 처음 익은듯한 극히 좋은 무화과가 있고 한 광주리에는 악하여 먹을 수 없는 극히 악한 무화과가 있더라"
+      ],
+      "raw_text_hashes": [
+        "eada0be9050e46b634396c594ac483ffcd0c87585989ce9adf7e14e4b0252b81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:3",
+      "sequence": 19528,
+      "chapter_label": "JER 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Then the LORD asked me, “What do you see, Jeremiah?” I said, “Figs. The good figs are very good, and the bad are very bad, so bad that they can’t be eaten.”",
+      "ko": "여호와께서 내게 이르시되 예레미야야 네가 무엇을 보느냐 내가 대답하되 무화과이온데 그 좋은 무화과는 극히 좋고 그 악한 것은 극히 악하여 먹을 수 없게 악하니이다",
+      "source_text_hash": "93c16d9b62ced5b5b98cbf417cac10226eef12b50c183a0ee184c63fd258ec4c",
+      "translation_text_hash": "5a901f24b66cd647f2ea37f1bc78c1cdc79571353f0baf7278468f4a70f76618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 예레미야야 네가 무엇을 보느냐 내가 대답하되 무화과이온데 그 좋은 무화과는 극히 좋고 그 악한 것은 극히 악하여 먹을 수 없게 악하니이다"
+      ],
+      "raw_text_hashes": [
+        "5a901f24b66cd647f2ea37f1bc78c1cdc79571353f0baf7278468f4a70f76618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:4",
+      "sequence": 19529,
+      "chapter_label": "JER 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하니라 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "18e915e6f8224946034ce7ce0ea23931e4330990e57709dfd13c42fd4d3d3af8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "18e915e6f8224946034ce7ce0ea23931e4330990e57709dfd13c42fd4d3d3af8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:5",
+      "sequence": 19530,
+      "chapter_label": "JER 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "“The LORD, the God of Israel says: ‘Like these good figs, so I will regard the captives of Judah, whom I have sent out of this place into the land of the Chaldeans, as good.",
+      "ko": "이스라엘의 하나님 여호와가 이같이 말하노라 내가 이곳에서 옮겨 갈대아인의 땅에 이르게 한 유다 포로를 이 좋은 무화과 같이 보아 좋게 할 것이라",
+      "source_text_hash": "bfdd54d9831e6d1dfa680b4cccc1849658c185ba48b5a2e92a4f0c0305c18372",
+      "translation_text_hash": "0f46a9a57d1293a5b330c03098cd1688557e9c8502e2eb0f26c89c4929630891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와가 이같이 말하노라 내가 이곳에서 옮겨 갈대아인의 땅에 이르게 한 유다 포로를 이 좋은 무화과 같이 보아 좋게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "0f46a9a57d1293a5b330c03098cd1688557e9c8502e2eb0f26c89c4929630891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:6",
+      "sequence": 19531,
+      "chapter_label": "JER 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "For I will set my eyes on them for good, and I will bring them again to this land. I will build them, and not pull them down. I will plant them, and not pluck them up.",
+      "ko": "내가 그들을 돌아보아 좋게 하여 다시 이 땅으로 인도하고 세우고 헐지 아니하며 심고 뽑지 아니하겠고",
+      "source_text_hash": "999aa45ec365e1496ad7283e84fb00c661f00a666e2b77e5b9c2c26c272fb269",
+      "translation_text_hash": "39f301aeca1f3d4ebddbaf1af2ee0a038ca436b0fd3b70dde9358ea138bf1bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 돌아보아 좋게 하여 다시 이 땅으로 인도하고 세우고 헐지 아니하며 심고 뽑지 아니하겠고"
+      ],
+      "raw_text_hashes": [
+        "39f301aeca1f3d4ebddbaf1af2ee0a038ca436b0fd3b70dde9358ea138bf1bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:7",
+      "sequence": 19532,
+      "chapter_label": "JER 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "I will give them a heart to know me, that I am the LORD. They will be my people, and I will be their God; for they will return to me with their whole heart.",
+      "ko": "내가 여호와인줄 아는 마음을 그들에게 주어서 그들로 전심으로 내게 돌아오게 하리니 그들은 내 백성이 되겠고 나는 그들의 하나님이 되리라",
+      "source_text_hash": "5ebedaf446b2c3cd0f0765a23d7d96a871793a15d089bbc8963e1c9fbe5724ce",
+      "translation_text_hash": "37a4e2deec40ae6d7fcfcfde719dcd7153a8732686a0566332b2938dec60e6fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와인줄 아는 마음을 그들에게 주어서 그들로 전심으로 내게 돌아오게 하리니 그들은 내 백성이 되겠고 나는 그들의 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "37a4e2deec40ae6d7fcfcfde719dcd7153a8732686a0566332b2938dec60e6fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:8",
+      "sequence": 19533,
+      "chapter_label": "JER 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "“‘As the bad figs, which can’t be eaten, they are so bad,’ surely the LORD says, ‘So I will give up Zedekiah the king of Judah, and his princes, and the remnant of Jerusalem who remain in this land, and those who dwell in the land of Egypt.",
+      "ko": "나 여호와가 이같이 말하노라 내가 유다 왕 시드기야와 그 방백들과 예루살렘의 남은 자로서 이 땅에 남아 있는 자와 애굽 땅에 거하는 자들을 이 악하여 먹을 수 없는 악한 무화과 같이 버리되",
+      "source_text_hash": "25967e22deaeb5f75af5e298624890895122def9d92d0cc8886de4ef640eb9fd",
+      "translation_text_hash": "6c271d1b65c1c1354ce27c934cdcee7ac714c6e3c24d523337bf341063771949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 내가 유다 왕 시드기야와 그 방백들과 예루살렘의 남은 자로서 이 땅에 남아 있는 자와 애굽 땅에 거하는 자들을 이 악하여 먹을 수 없는 악한 무화과 같이 버리되"
+      ],
+      "raw_text_hashes": [
+        "6c271d1b65c1c1354ce27c934cdcee7ac714c6e3c24d523337bf341063771949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:9",
+      "sequence": 19534,
+      "chapter_label": "JER 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "I will even give them up to be tossed back and forth among all the kingdoms of the earth for evil, to be a reproach and a proverb, a taunt and a curse, in all places where I will drive them.",
+      "ko": "세상 모든 나라 중에 흩어서 그들로 환난을 당하게 할 것이며 또 그들로 내가 쫓아보낼 모든 곳에서 치욕을 당하게 하며 말거리가 되게 하며 조롱과 저주를 받게 할 것이며",
+      "source_text_hash": "79066c5b4985f8414caf45e634de75d9cd6e01621a8fcb1e66be515fe5a1dc4e",
+      "translation_text_hash": "731a1655fa966243c38c2d82c64d8a299ebf4e84c31208fc62ccdb2d644fe451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상 모든 나라 중에 흩어서 그들로 환난을 당하게 할 것이며 또 그들로 내가 쫓아보낼 모든 곳에서 치욕을 당하게 하며 말거리가 되게 하며 조롱과 저주를 받게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "731a1655fa966243c38c2d82c64d8a299ebf4e84c31208fc62ccdb2d644fe451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:24:10",
+      "sequence": 19535,
+      "chapter_label": "JER 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "I will send the sword, the famine, and the pestilence among them, until they are consumed from off the land that I gave to them and to their fathers.’”",
+      "ko": "내가 칼과 기근과 염병을 그들 중에 보내어 그들로 내가 그들과 그 열조에게 준 땅에서 멸절하기까지 이르게 하리라 하시니라",
+      "source_text_hash": "b98f6f349ca9cecc84d4d70870b8f5f13b941bdf5928628a2369095df0e1f57b",
+      "translation_text_hash": "2ac4a687473f41c16f9f6504f52e25167ef2eca85ab44bce55790588b640b485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 칼과 기근과 염병을 그들 중에 보내어 그들로 내가 그들과 그 열조에게 준 땅에서 멸절하기까지 이르게 하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2ac4a687473f41c16f9f6504f52e25167ef2eca85ab44bce55790588b640b485"
+      ]
+    }
+  ]
+}

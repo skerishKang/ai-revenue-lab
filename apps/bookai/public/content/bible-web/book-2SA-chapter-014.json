@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:014",
+  "unit_ordinal": 281,
+  "unit_label": "2SA 14",
+  "book_code": "2SA",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:14:1",
+      "sequence": 8358,
+      "chapter_label": "2SA 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Now Joab the son of Zeruiah perceived that the king’s heart was toward Absalom.",
+      "ko": "스루야의 아들 요압이 왕의 마음이 압살롬에게로 향하는줄 알고",
+      "source_text_hash": "f15e6932ff6b4128c9d3ad5871cf14594564df0d4a4faf9c4707b3d38cef05d3",
+      "translation_text_hash": "4e0e3c8935fb00a6bd5c4c310fca9b481e9956edc9a1c8f6d860ebbc9f4cd452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 요압이 왕의 마음이 압살롬에게로 향하는줄 알고"
+      ],
+      "raw_text_hashes": [
+        "4e0e3c8935fb00a6bd5c4c310fca9b481e9956edc9a1c8f6d860ebbc9f4cd452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:2",
+      "sequence": 8359,
+      "chapter_label": "2SA 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "Joab sent to Tekoa and brought a wise woman from there, and said to her, “Please act like a mourner, and put on mourning clothing, please, and don’t anoint yourself with oil; but be as a woman who has mourned a long time for the dead.",
+      "ko": "드고아에 보내어 거기서 슬기 있는 여인 하나를 데려다가 이르되 청컨대 너는 상제 된것처럼 상복을 입고 기름을 바르지 말고 죽은 사람을 위하여 오래 슬퍼하는 여인 같이 하고",
+      "source_text_hash": "96100db79a763c5db2f2e34d9d17363e0c19b5ea8214c4f127871d0eae620e2e",
+      "translation_text_hash": "dc9a84cf28b20e09edfe3f3704068aed69f1700bf7d65a2de01de7e2e68846f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드고아에 보내어 거기서 슬기 있는 여인 하나를 데려다가 이르되 청컨대 너는 상제 된것처럼 상복을 입고 기름을 바르지 말고 죽은 사람을 위하여 오래 슬퍼하는 여인 같이 하고"
+      ],
+      "raw_text_hashes": [
+        "dc9a84cf28b20e09edfe3f3704068aed69f1700bf7d65a2de01de7e2e68846f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:3",
+      "sequence": 8360,
+      "chapter_label": "2SA 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Go in to the king and speak like this to him.” So Joab put the words in her mouth.",
+      "ko": "왕께 들어가서 여차여차히 말하라고 할 말을 그 입에 넣어주니라",
+      "source_text_hash": "4e3b502e9cb0a4bfb5b5c2cbefb825d50ce9966ba668a683007bc698f47b540e",
+      "translation_text_hash": "624d6883d00413dc6c9612c5e56bf84a326756fb2ce9f6b348f57a72ca929d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 들어가서 여차여차히 말하라고 할 말을 그 입에 넣어주니라"
+      ],
+      "raw_text_hashes": [
+        "624d6883d00413dc6c9612c5e56bf84a326756fb2ce9f6b348f57a72ca929d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:4",
+      "sequence": 8361,
+      "chapter_label": "2SA 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "When the woman of Tekoa spoke to the king, she fell on her face to the ground, showed respect, and said, “Help, O king!”",
+      "ko": "드고아 여인이 왕께 고할 때에 얼굴을 땅에 대고 엎드려 가로되 왕이여 도우소서",
+      "source_text_hash": "76c018379c92dbc1e3df150327be5886d1e53f874a2cacc4748020423f3a6cab",
+      "translation_text_hash": "b2321c1a90a037bdbb5a1a577c8d80963b2e6fdc09941c0325723cb576a56dca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드고아 여인이 왕께 고할 때에 얼굴을 땅에 대고 엎드려 가로되 왕이여 도우소서"
+      ],
+      "raw_text_hashes": [
+        "b2321c1a90a037bdbb5a1a577c8d80963b2e6fdc09941c0325723cb576a56dca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:5",
+      "sequence": 8362,
+      "chapter_label": "2SA 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The king said to her, “What ails you?” She answered, “Truly I am a widow, and my husband is dead.",
+      "ko": "왕이 저에게 이르되 무슨 일이냐 대답하되 나는 참 과부니이다 남편은 죽고",
+      "source_text_hash": "fa44fb7b1d0beaa1a086ff5dccca59e491824713c402347f68adc624562d2e27",
+      "translation_text_hash": "ca2f70564dd5280ecbaacfd15f3f988930fa498b20c51d2768852a8025b82068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저에게 이르되 무슨 일이냐 대답하되 나는 참 과부니이다 남편은 죽고"
+      ],
+      "raw_text_hashes": [
+        "ca2f70564dd5280ecbaacfd15f3f988930fa498b20c51d2768852a8025b82068"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:6",
+      "sequence": 8363,
+      "chapter_label": "2SA 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Your servant had two sons; and they both fought together in the field, and there was no one to part them, but the one struck the other and killed him.",
+      "ko": "아들 둘이 있더니 저희가 들에서 싸우나 말려 줄 사람이 아무도 없으므로 저가 이를 쳐 죽인지라",
+      "source_text_hash": "465114a25f089c92ff1905a0f6bf48b5f4f8ebe065193858fcd15717f2ab875d",
+      "translation_text_hash": "b25a3ce2f794b3e7837fbfc903d2ca0191672a9a3a42f4e79324e8c5f7efe1fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들 둘이 있더니 저희가 들에서 싸우나 말려 줄 사람이 아무도 없으므로 저가 이를 쳐 죽인지라"
+      ],
+      "raw_text_hashes": [
+        "b25a3ce2f794b3e7837fbfc903d2ca0191672a9a3a42f4e79324e8c5f7efe1fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:7",
+      "sequence": 8364,
+      "chapter_label": "2SA 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, the whole family has risen against your servant, and they say, ‘Deliver him who struck his brother, that we may kill him for the life of his brother whom he killed, and so destroy the heir also.’ Thus they would quench my coal which is left, and would leave to my husband neither name nor remainder on the surface of the earth.”",
+      "ko": "온 족속이 일어나서 왕의 계집종 나를 핍박하여 말하기를 그 동생을 죽인 자를 내어놓으라 우리가 그 동생 죽인 죄를 갚아 저를 죽여 사자 될것까지 끊겠노라 하오니 그러한즉 저희가 내게 남아 있는 숯불을 꺼서 내 남편의 이름과 씨를 세상에 끼쳐두지 아니하겠나이다",
+      "source_text_hash": "2edae7787d874f7da3b2e8c096cfcf9cbd1a723f8c5cac419ab77ec2c04dd65d",
+      "translation_text_hash": "220e6990284e69195077ebee87566ba8de39fc611f5e06889f5290104a80cbda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 족속이 일어나서 왕의 계집종 나를 핍박하여 말하기를 그 동생을 죽인 자를 내어놓으라 우리가 그 동생 죽인 죄를 갚아 저를 죽여 사자 될것까지 끊겠노라 하오니 그러한즉 저희가 내게 남아 있는 숯불을 꺼서 내 남편의 이름과 씨를 세상에 끼쳐두지 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "220e6990284e69195077ebee87566ba8de39fc611f5e06889f5290104a80cbda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:8",
+      "sequence": 8365,
+      "chapter_label": "2SA 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "The king said to the woman, “Go to your house, and I will give a command concerning you.”",
+      "ko": "왕이 여인에게 이르되 네 집으로 가라 내가 너를 위하여 명령을 내리리라",
+      "source_text_hash": "0ba4b6ae28f1f2c4b77940a1d1fca3aa2207105355318400a08f4bf0402eb29a",
+      "translation_text_hash": "62d17a3382946873b1346b2f3408a85b3a03d21011c672df852327189027bccc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 여인에게 이르되 네 집으로 가라 내가 너를 위하여 명령을 내리리라"
+      ],
+      "raw_text_hashes": [
+        "62d17a3382946873b1346b2f3408a85b3a03d21011c672df852327189027bccc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:9",
+      "sequence": 8366,
+      "chapter_label": "2SA 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "The woman of Tekoa said to the king, “My lord, O king, may the iniquity be on me, and on my father’s house; and may the king and his throne be guiltless.”",
+      "ko": "드고아 여인이 왕께 고하되 내 주 왕이여 그 죄는 나와 내 아비의 집으로 돌릴 것이니 왕과 왕위는 허물이 없으리이다",
+      "source_text_hash": "8aa8eb6e6212672754de1f704d2c6136bd5ce44848c177f28bf623327de763d4",
+      "translation_text_hash": "23bc2c029917a79a8eb6e10c0694c9c1971a3daecfe9e4d1dd73c75bdc410f06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드고아 여인이 왕께 고하되 내 주 왕이여 그 죄는 나와 내 아비의 집으로 돌릴 것이니 왕과 왕위는 허물이 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "23bc2c029917a79a8eb6e10c0694c9c1971a3daecfe9e4d1dd73c75bdc410f06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:10",
+      "sequence": 8367,
+      "chapter_label": "2SA 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "The king said, “Whoever says anything to you, bring him to me, and he will not bother you any more.”",
+      "ko": "왕이 가로되 누구든지 네게 말하는 자를 내게로 데려오라 저가 다시는 너를 건드리지도 못하리라",
+      "source_text_hash": "13b35c1d2c593740012ad970916d13b4496729e37385a063d591419af20713c9",
+      "translation_text_hash": "5fd3d9b4cfd96fb92f75050530fd7030c2b445f1c69d29c4b43adcb7d57730b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 누구든지 네게 말하는 자를 내게로 데려오라 저가 다시는 너를 건드리지도 못하리라"
+      ],
+      "raw_text_hashes": [
+        "5fd3d9b4cfd96fb92f75050530fd7030c2b445f1c69d29c4b43adcb7d57730b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:11",
+      "sequence": 8368,
+      "chapter_label": "2SA 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "Then she said, “Please let the king remember the LORD your God, that the avenger of blood destroy not any more, lest they destroy my son.” He said, “As the LORD lives, not one hair of your son shall fall to the earth.”",
+      "ko": "여인이 가로되 청컨대 왕은 왕의 하나님 여호와를 생각하사 원수 갚는 자로 더 죽이지 못하게 하옵소서 내 아들을 죽일까 두려워하나이다 왕이 가로되 여호와의 사심을 가리켜 맹세하노니 네 아들의 머리카락 하나라도 땅에 떨어지지 아니하리라",
+      "source_text_hash": "028c0db29b8a5c6e2b88c7b1420027e53d662419092704b4e4a3572a1c58cfed",
+      "translation_text_hash": "d163474fb3f5cf5a80699aa6893c00d31fa7d436b35da096d4c9ec64d4a54b67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 가로되 청컨대 왕은 왕의 하나님 여호와를 생각하사 원수 갚는 자로 더 죽이지 못하게 하옵소서 내 아들을 죽일까 두려워하나이다 왕이 가로되 여호와의 사심을 가리켜 맹세하노니 네 아들의 머리카락 하나라도 땅에 떨어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d163474fb3f5cf5a80699aa6893c00d31fa7d436b35da096d4c9ec64d4a54b67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:12",
+      "sequence": 8369,
+      "chapter_label": "2SA 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Then the woman said, “Please let your servant speak a word to my lord the king.” He said, “Say on.”",
+      "ko": "여인이 가로되 청컨대 계집종을 용납하여 한 말씀으로 내 주 왕께 여쭙게 하옵소서 가로되 말하라",
+      "source_text_hash": "b8bbeddb20e3bb52932702d62570bd10e4a5519470a85ee0ea339c8904513d07",
+      "translation_text_hash": "6d907435da5930cde847af08ff5fd58c28821ab905f48c71943ebf16494cbbbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 가로되 청컨대 계집종을 용납하여 한 말씀으로 내 주 왕께 여쭙게 하옵소서 가로되 말하라"
+      ],
+      "raw_text_hashes": [
+        "6d907435da5930cde847af08ff5fd58c28821ab905f48c71943ebf16494cbbbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:13",
+      "sequence": 8370,
+      "chapter_label": "2SA 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "The woman said, “Why then have you devised such a thing against the people of God? For in speaking this word the king is as one who is guilty, in that the king does not bring home again his banished one.",
+      "ko": "여인이 가로되 그러면 어찌하여 왕께서 하나님의 백성에게 대하여 이같은 도모를 하셨나이까 이 말씀을 하셨으니 왕께서 죄 있는 사람 같이 되심은 그 내어쫓긴 자를 집으로 돌아오게 아니하심이니이다",
+      "source_text_hash": "d722ecef7c465a20a50ea94d7ea0a7cdfafe49d7781a61c39f049ce13fd098ed",
+      "translation_text_hash": "2a9c040bfc5febba15e320a7b13dbdb06085d55c658a2e0b9d98e47fc978bb0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 가로되 그러면 어찌하여 왕께서 하나님의 백성에게 대하여 이같은 도모를 하셨나이까 이 말씀을 하셨으니 왕께서 죄 있는 사람 같이 되심은 그 내어쫓긴 자를 집으로 돌아오게 아니하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "2a9c040bfc5febba15e320a7b13dbdb06085d55c658a2e0b9d98e47fc978bb0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:14",
+      "sequence": 8371,
+      "chapter_label": "2SA 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "For we must die, and are like water spilled on the ground, which can’t be gathered up again; neither does God take away life, but devises means, that he who is banished not be an outcast from him.",
+      "ko": "우리는 필경 죽으리니 땅에 쏟아진 물을 다시 모으지 못함 같을 것이오나 하나님은 생명을 빼앗지 아니하시고 방책을 베푸사 내어쫓긴 자로 하나님께 버린 자가 되지 않게 하시나이다",
+      "source_text_hash": "f591956c99214ed6bdcbb49a63fd288cfe87e7becb8826329c6efe0974bdd1fc",
+      "translation_text_hash": "0a9c6ac00c0f595af96d9945cdfee09dbd85b8616fa4763b69645b5df788d6a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 필경 죽으리니 땅에 쏟아진 물을 다시 모으지 못함 같을 것이오나 하나님은 생명을 빼앗지 아니하시고 방책을 베푸사 내어쫓긴 자로 하나님께 버린 자가 되지 않게 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "0a9c6ac00c0f595af96d9945cdfee09dbd85b8616fa4763b69645b5df788d6a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:15",
+      "sequence": 8372,
+      "chapter_label": "2SA 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Now therefore, seeing that I have come to speak this word to my lord the king, it is because the people have made me afraid. Your servant said, ‘I will now speak to the king; it may be that the king will perform the request of his servant.’",
+      "ko": "이제 내가 와서 내 주 왕께 이 말씀을 여쭙는 것은 백성들이 나를 두렵게 하므로 계집종이 스스로 말하기를 내가 왕께 여쭈면 혹시 종의 청하는 것을 시행하실 것이라",
+      "source_text_hash": "b661a8cbdbdfd42c7353aef8ca723c261466067430fbffb1416f706841a88650",
+      "translation_text_hash": "df771fcde76741094eb49ca19930e323e68e711c3e4365cf40c880eb5a0cc6cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 와서 내 주 왕께 이 말씀을 여쭙는 것은 백성들이 나를 두렵게 하므로 계집종이 스스로 말하기를 내가 왕께 여쭈면 혹시 종의 청하는 것을 시행하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "df771fcde76741094eb49ca19930e323e68e711c3e4365cf40c880eb5a0cc6cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:16",
+      "sequence": 8373,
+      "chapter_label": "2SA 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "For the king will hear, to deliver his servant out of the hand of the man who would destroy me and my son together out of the inheritance of God.",
+      "ko": "왕께서 들으시고 나와 내 아들을 함께 하나님의 산업에서 끊을 자의 손에서 종을 구원하시리라 함이니이다",
+      "source_text_hash": "ead3a8fdb835ca9feb6aaa7a48b12336cc28a3b83fe5b27f30e9f142dc41d971",
+      "translation_text_hash": "ea61f0eb08771d5a8bcf889d7032e9350d36150ae2a347e10070d7a4e3fb4f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께서 들으시고 나와 내 아들을 함께 하나님의 산업에서 끊을 자의 손에서 종을 구원하시리라 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "ea61f0eb08771d5a8bcf889d7032e9350d36150ae2a347e10070d7a4e3fb4f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:17",
+      "sequence": 8374,
+      "chapter_label": "2SA 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Then your servant said, ‘Please let the word of my lord the king bring rest; for as an angel of God, so is my lord the king to discern good and bad. May the LORD, your God, be with you.’”",
+      "ko": "계집종이 또 스스로 말하기를 내 주 왕의 말씀이 나의 위로가 되기를 원한다 하였사오니 이는 내 주 왕께서 하나님의 사자 같이 선과 악을 분간하심이니이다 원컨대 왕의 하나님 여호와께서 왕과 같이 계시옵소서",
+      "source_text_hash": "36cab3b9320be5eb712aa5b61ffdeb67f5275b544fb8d1274b0dec8ac7299619",
+      "translation_text_hash": "298e221201fb9b0c2ad4f3ff74fffea21eac5d78d5e6e8cde1a0368b83b7422c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계집종이 또 스스로 말하기를 내 주 왕의 말씀이 나의 위로가 되기를 원한다 하였사오니 이는 내 주 왕께서 하나님의 사자 같이 선과 악을 분간하심이니이다 원컨대 왕의 하나님 여호와께서 왕과 같이 계시옵소서"
+      ],
+      "raw_text_hashes": [
+        "298e221201fb9b0c2ad4f3ff74fffea21eac5d78d5e6e8cde1a0368b83b7422c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:18",
+      "sequence": 8375,
+      "chapter_label": "2SA 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Then the king answered the woman, “Please don’t hide anything from me that I ask you.” The woman said, “Let my lord the king now speak.”",
+      "ko": "왕이 그 여인에게 대답하여 이르되 내가 네게 묻는 것을 숨기지 말라 여인이 가로되 내 주 왕은 말씀하옵소서",
+      "source_text_hash": "16126d7c811422c97227a8f976bb8ba425fe5e59d7b21d8ad02730dbeba0468f",
+      "translation_text_hash": "362a3ee93ae985da80ef60f406139b2e8f14923a8e0ee4e29269d44e7d090cce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 여인에게 대답하여 이르되 내가 네게 묻는 것을 숨기지 말라 여인이 가로되 내 주 왕은 말씀하옵소서"
+      ],
+      "raw_text_hashes": [
+        "362a3ee93ae985da80ef60f406139b2e8f14923a8e0ee4e29269d44e7d090cce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:19",
+      "sequence": 8376,
+      "chapter_label": "2SA 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "The king said, “Is the hand of Joab with you in all this?” The woman answered, “As your soul lives, my lord the king, no one can turn to the right hand or to the left from anything that my lord the king has spoken; for your servant Joab urged me, and he put all these words in the mouth of your servant.",
+      "ko": "왕이 가로되 이 모든 일에 요압이 너와 함께 하였느냐 여인이 대답하여 가로되 내 주 왕의 사심을 가리켜 맹세하옵나니 무릇 내 주 왕의 말씀을 좌로나 우로나 옮길 자가 없으리이다 왕의 종 요압이 내게 명하였고 저가 이 모든 말을 왕의 계집종의 입에 넣어주었사오니",
+      "source_text_hash": "3c3a4088997dbd92a0372e50b87918660ef7e8858c03304211cafa76e72eefb7",
+      "translation_text_hash": "31256af22602b7329d57379a207141ef97024f227095aa053b700c39b775d85b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 이 모든 일에 요압이 너와 함께 하였느냐 여인이 대답하여 가로되 내 주 왕의 사심을 가리켜 맹세하옵나니 무릇 내 주 왕의 말씀을 좌로나 우로나 옮길 자가 없으리이다 왕의 종 요압이 내게 명하였고 저가 이 모든 말을 왕의 계집종의 입에 넣어주었사오니"
+      ],
+      "raw_text_hashes": [
+        "31256af22602b7329d57379a207141ef97024f227095aa053b700c39b775d85b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:20",
+      "sequence": 8377,
+      "chapter_label": "2SA 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Your servant Joab has done this thing to change the face of the matter. My lord is wise, according to the wisdom of an angel of God, to know all things that are on the earth.”",
+      "ko": "이는 왕의 종 요압이 이 일의 형편을 변하려 하여 이렇게 함이니이다 내 주 왕의 지혜는 하나님의 사자의 지혜와 같아서 땅에 있는 일을 다 아시나이다 하니라",
+      "source_text_hash": "18b6f26cac83b14a154d23fa7f35b7bb76ed1c33a75904e7795902c5ec0c0471",
+      "translation_text_hash": "736f1d3e1b1e056e1c9d0a3327064607a11d82101adc5d65922673d5aaa91324",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 왕의 종 요압이 이 일의 형편을 변하려 하여 이렇게 함이니이다 내 주 왕의 지혜는 하나님의 사자의 지혜와 같아서 땅에 있는 일을 다 아시나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "736f1d3e1b1e056e1c9d0a3327064607a11d82101adc5d65922673d5aaa91324"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:21",
+      "sequence": 8378,
+      "chapter_label": "2SA 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "The king said to Joab, “Behold now, I have granted this thing. Go therefore, and bring the young man Absalom back.”",
+      "ko": "왕이 요압에게 이르되 내가 이 일을 허락하였으니 가서 소년 압살롬을 데려 오라",
+      "source_text_hash": "f3b8864aca95dbac46a8047ba84a268e2fa9a966ec6d3afd62e1a7cbcfb7df44",
+      "translation_text_hash": "0f115e985526dae4748556d40f928bff5c38797103cdd303a9660b8e5515266a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 요압에게 이르되 내가 이 일을 허락하였으니 가서 소년 압살롬을 데려 오라"
+      ],
+      "raw_text_hashes": [
+        "0f115e985526dae4748556d40f928bff5c38797103cdd303a9660b8e5515266a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:22",
+      "sequence": 8379,
+      "chapter_label": "2SA 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Joab fell to the ground on his face, showed respect, and blessed the king. Joab said, “Today your servant knows that I have found favor in your sight, my lord, O king, in that the king has performed the request of his servant.”",
+      "ko": "요압이 땅에 엎드려 절하고 왕을 위하여 복을 빌고 가로되 내 주 왕이여 종의 구함을 허락하시니 종이 왕 앞에서 은혜 받은줄을 오늘날 아나이다 하고",
+      "source_text_hash": "8a61da9d8478ad2565079dd80237146bf77d57be90ee79518e47894bb116f7d6",
+      "translation_text_hash": "deae84d5236bcd370d59806913bf8a7e67edc8c1b0f63fb36aa979831c948b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 땅에 엎드려 절하고 왕을 위하여 복을 빌고 가로되 내 주 왕이여 종의 구함을 허락하시니 종이 왕 앞에서 은혜 받은줄을 오늘날 아나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "deae84d5236bcd370d59806913bf8a7e67edc8c1b0f63fb36aa979831c948b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:23",
+      "sequence": 8380,
+      "chapter_label": "2SA 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "So Joab arose and went to Geshur, and brought Absalom to Jerusalem.",
+      "ko": "일어나 그술로 가서 압살롬을 데리고 예루살렘으로 오니",
+      "source_text_hash": "abad7f217e86a93694686c5771c11ad4cc96f52ca5f86831ae79f8b8e30ca2ca",
+      "translation_text_hash": "7da77b4b457096cadf867a68696097da13542ced1837352cfd3bd90bf0c497c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 그술로 가서 압살롬을 데리고 예루살렘으로 오니"
+      ],
+      "raw_text_hashes": [
+        "7da77b4b457096cadf867a68696097da13542ced1837352cfd3bd90bf0c497c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:24",
+      "sequence": 8381,
+      "chapter_label": "2SA 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "The king said, “Let him return to his own house, but let him not see my face.” So Absalom returned to his own house, and didn’t see the king’s face.",
+      "ko": "왕이 가로되 저를 그 집으로 물러가게 하고 내 얼굴을 보지 말게 하라 하매 압살롬이 자기 집으로 가고 왕의 얼굴을 보지 못하니라",
+      "source_text_hash": "c317124c18532fc76625abf2b5d61e4505e18cbf3ce0ba2bc8694d1ce8dc368f",
+      "translation_text_hash": "c95701b66d6d95ec15cd90333721153850210c5091b5749737bc1fa562a17a2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 저를 그 집으로 물러가게 하고 내 얼굴을 보지 말게 하라 하매 압살롬이 자기 집으로 가고 왕의 얼굴을 보지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "c95701b66d6d95ec15cd90333721153850210c5091b5749737bc1fa562a17a2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:25",
+      "sequence": 8382,
+      "chapter_label": "2SA 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "Now in all Israel there was no one to be so much praised as Absalom for his beauty. From the sole of his foot even to the crown of his head there was no defect in him.",
+      "ko": "온 이스라엘 가운데 압살롬 같이 아름다움으로 크게 칭찬 받는 자가 없었으니 저는 발바닥부터 정수리까지 흠이 없음이라",
+      "source_text_hash": "6781bc119d7e0b93a898cd64d646b0f65ee6bad1ef4dff633a9462722fd95719",
+      "translation_text_hash": "4fd12d19a226954322f24990f78ffe18e9638edb0a15cf51965da31df008d50c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘 가운데 압살롬 같이 아름다움으로 크게 칭찬 받는 자가 없었으니 저는 발바닥부터 정수리까지 흠이 없음이라"
+      ],
+      "raw_text_hashes": [
+        "4fd12d19a226954322f24990f78ffe18e9638edb0a15cf51965da31df008d50c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:26",
+      "sequence": 8383,
+      "chapter_label": "2SA 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "When he cut the hair of his head (now it was at every year’s end that he cut it; because it was heavy on him, therefore he cut it), he weighed the hair of his head at two hundred shekels, after the king’s weight.",
+      "ko": "그 머리털이 무거우므로 년말마다 깎았으며 그 머리털을 깎을 때에 달아 본즉 왕의 저울로 이백 세겔이었더라",
+      "source_text_hash": "23e4e59efeba63191a8b4c6fcc21f15d8992adca2fae5536541779eac401da69",
+      "translation_text_hash": "3dd1dffeeae1dd8d591c01821e99039719b04444c97a2afdd999a7c689df9507",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리털이 무거우므로 년말마다 깎았으며 그 머리털을 깎을 때에 달아 본즉 왕의 저울로 이백 세겔이었더라"
+      ],
+      "raw_text_hashes": [
+        "3dd1dffeeae1dd8d591c01821e99039719b04444c97a2afdd999a7c689df9507"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:27",
+      "sequence": 8384,
+      "chapter_label": "2SA 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "Three sons were born to Absalom, and one daughter, whose name was Tamar. She was a woman with a beautiful face.",
+      "ko": "압살롬이 아들 셋과 딸 하나를 낳았는데 딸의 이름은 다말이라 얼굴이 아름다운 여자더라",
+      "source_text_hash": "a4feaf3250791c98eaccd992e088e2bc7b16087bca15f7d292a73a82c63fb0c8",
+      "translation_text_hash": "dccf37a112762881c23d53a375f3c838e9ee793f76e9ecf9c49676d5fc3499c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 아들 셋과 딸 하나를 낳았는데 딸의 이름은 다말이라 얼굴이 아름다운 여자더라"
+      ],
+      "raw_text_hashes": [
+        "dccf37a112762881c23d53a375f3c838e9ee793f76e9ecf9c49676d5fc3499c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:28",
+      "sequence": 8385,
+      "chapter_label": "2SA 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Absalom lived two full years in Jerusalem, and he didn’t see the king’s face.",
+      "ko": "압살롬이 이태 동안을 예루살렘에 있으되 왕의 얼굴을 보지 못하였으므로",
+      "source_text_hash": "4cea82137c939bbcadeaee550524ab20033c4b6a0a990d7d9cb55946ccacb141",
+      "translation_text_hash": "9452d7e7ba332526152656ba6162223900cf0b9408fc5c94f152e5980c84c046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 이태 동안을 예루살렘에 있으되 왕의 얼굴을 보지 못하였으므로"
+      ],
+      "raw_text_hashes": [
+        "9452d7e7ba332526152656ba6162223900cf0b9408fc5c94f152e5980c84c046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:29",
+      "sequence": 8386,
+      "chapter_label": "2SA 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Then Absalom sent for Joab, to send him to the king, but he would not come to him. Then he sent again a second time, but he would not come.",
+      "ko": "요압을 왕께 보내려 하여 사람을 보내어 부르되 오지 아니하고 또 다시 보내되 오지 아니하는지라",
+      "source_text_hash": "64d1bc72203f1a8d98e19962e34eafbd0a771e647e1863408ca2a951adf1d484",
+      "translation_text_hash": "57da71ba1f07e3e53a5d55ae37ebbcb882253dec78a07c4fe5a491410a1126fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압을 왕께 보내려 하여 사람을 보내어 부르되 오지 아니하고 또 다시 보내되 오지 아니하는지라"
+      ],
+      "raw_text_hashes": [
+        "57da71ba1f07e3e53a5d55ae37ebbcb882253dec78a07c4fe5a491410a1126fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:30",
+      "sequence": 8387,
+      "chapter_label": "2SA 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "Therefore he said to his servants, “Behold, Joab’s field is near mine, and he has barley there. Go and set it on fire.” So Absalom’s servants set the field on fire.",
+      "ko": "압살롬이 그 종에게 이르되 보라 요압의 밭이 내 밭 근처에 있고 거기 보리가 있으니 가서 불을 놓으라 압살롬의 종들이 그 밭에 불을 놓았더니",
+      "source_text_hash": "4f6dc3e589c0327eed4fd10bb78a62330087dfd5d26bcc34aaab457eddd85adf",
+      "translation_text_hash": "0174ddb6de85a66163019c52b8b3db13d0b40fa63cb32a438296ab8e588506ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 그 종에게 이르되 보라 요압의 밭이 내 밭 근처에 있고 거기 보리가 있으니 가서 불을 놓으라 압살롬의 종들이 그 밭에 불을 놓았더니"
+      ],
+      "raw_text_hashes": [
+        "0174ddb6de85a66163019c52b8b3db13d0b40fa63cb32a438296ab8e588506ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:31",
+      "sequence": 8388,
+      "chapter_label": "2SA 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "Then Joab arose and came to Absalom to his house, and said to him, “Why have your servants set my field on fire?”",
+      "ko": "요압이 일어나 압살롬의 집으로 와서 압살롬에게 이르되 어찌하여 네 종들이 내 밭에 불을 놓았느냐",
+      "source_text_hash": "f1533ccbafd7f2a957851c1e1e40f88566e8fce420a2ce504e1f0a58009d6e27",
+      "translation_text_hash": "09da4f8560258c7485f2872f2a8388b513d88c5c00fe9c14eab97f57d2286dc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 일어나 압살롬의 집으로 와서 압살롬에게 이르되 어찌하여 네 종들이 내 밭에 불을 놓았느냐"
+      ],
+      "raw_text_hashes": [
+        "09da4f8560258c7485f2872f2a8388b513d88c5c00fe9c14eab97f57d2286dc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:32",
+      "sequence": 8389,
+      "chapter_label": "2SA 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "Absalom answered Joab, “Behold, I sent to you, saying, ‘Come here, that I may send you to the king, to say, “Why have I come from Geshur? It would be better for me to be there still. Now therefore, let me see the king’s face; and if there is iniquity in me, let him kill me.”’”",
+      "ko": "압살롬이 요압에게 대답하되 내가 일찍 사람을 네게 보내어 너를 이리로 청한 것은 내가 너를 왕께 보내어 고하게 하기를 어찌하여 내가 그술에서 돌아오게 되었나이까 이때까지 거기 있는 것이 내게 나았으리이다 하려 함이로라 이제는 네가 나로 왕의 얼굴을 보게 하라 내가 만일 죄가 있으면 왕이 나를 죽이시는 것이 가하니라",
+      "source_text_hash": "40a09de91bd0d1f8f702b99e8893f39a9701065399f4c71da1685d6f95329533",
+      "translation_text_hash": "c11398b8cb7d294c6c5c844d8118e7a34dc922ff0d874e01f57e90107fe00605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 요압에게 대답하되 내가 일찍 사람을 네게 보내어 너를 이리로 청한 것은 내가 너를 왕께 보내어 고하게 하기를 어찌하여 내가 그술에서 돌아오게 되었나이까 이때까지 거기 있는 것이 내게 나았으리이다 하려 함이로라 이제는 네가 나로 왕의 얼굴을 보게 하라 내가 만일 죄가 있으면 왕이 나를 죽이시는 것이 가하니라"
+      ],
+      "raw_text_hashes": [
+        "c11398b8cb7d294c6c5c844d8118e7a34dc922ff0d874e01f57e90107fe00605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:14:33",
+      "sequence": 8390,
+      "chapter_label": "2SA 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "So Joab came to the king and told him; and when he had called for Absalom, he came to the king and bowed himself on his face to the ground before the king; and the king kissed Absalom.",
+      "ko": "요압이 왕께 나아가서 그 말을 고하매 왕이 압살롬을 부르니 저가 왕께 나아가 그 앞에서 얼굴을 땅에 대어 절하매 왕이 압살롬과 입을 맞추니라",
+      "source_text_hash": "7b433ee8e0d02a87e77be62da71c0ff951b855472057e503cad145d4fa37e39d",
+      "translation_text_hash": "809e43898b7e21e5fefd4151e479de721df6809cff7b86875ad61915c81c585b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 왕께 나아가서 그 말을 고하매 왕이 압살롬을 부르니 저가 왕께 나아가 그 앞에서 얼굴을 땅에 대어 절하매 왕이 압살롬과 입을 맞추니라"
+      ],
+      "raw_text_hashes": [
+        "809e43898b7e21e5fefd4151e479de721df6809cff7b86875ad61915c81c585b"
+      ]
+    }
+  ]
+}

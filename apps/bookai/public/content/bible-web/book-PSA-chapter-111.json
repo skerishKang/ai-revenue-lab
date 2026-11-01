@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:111",
+  "unit_ordinal": 589,
+  "unit_label": "PSA 111",
+  "book_code": "PSA",
+  "chapter_number": 111,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:111:1",
+      "sequence": 15795,
+      "chapter_label": "PSA 111",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! I will give thanks to the LORD with my whole heart, in the council of the upright, and in the congregation.",
+      "ko": "할렐루야, 내가 정직한 자의 회와 공회 중에서 전심으로 여호와께 감사하리로다",
+      "source_text_hash": "7b9e50c32fd10233eb2cb5d6713a0d4d56e283c8b072f357844c76e2ca6e3552",
+      "translation_text_hash": "1e5905c65bbe97095100f3806354c523e84db23d8303b538c87fd714a9916761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야, 내가 정직한 자의 회와 공회 중에서 전심으로 여호와께 감사하리로다"
+      ],
+      "raw_text_hashes": [
+        "1e5905c65bbe97095100f3806354c523e84db23d8303b538c87fd714a9916761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:2",
+      "sequence": 15796,
+      "chapter_label": "PSA 111",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s works are great, pondered by all those who delight in them.",
+      "ko": "여호와의 행사가 크시니 이를 즐거워하는 자가 다 연구하는도다",
+      "source_text_hash": "7c33609f49298153fba7db41a86fd69567fd1d21156d3851a9d8ee9c65ac54e2",
+      "translation_text_hash": "801ac0f17c59be0b201de0de9365b03430f8f2646d573e9bffb82dab11ef96a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 행사가 크시니 이를 즐거워하는 자가 다 연구하는도다"
+      ],
+      "raw_text_hashes": [
+        "801ac0f17c59be0b201de0de9365b03430f8f2646d573e9bffb82dab11ef96a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:3",
+      "sequence": 15797,
+      "chapter_label": "PSA 111",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 3
+        }
+      ],
+      "en": "His work is honor and majesty. His righteousness endures forever.",
+      "ko": "그 행사가 존귀하고 엄위하며 그 의가 영원히 있도다",
+      "source_text_hash": "10e1cd0babda51015a1796c51bede4a818f3d05260fcd6efd6597aafbc1c8b5a",
+      "translation_text_hash": "e9286ed6ec06cc40252e7bbbec1fa119955af1ea6058cd355bd8b7074e9b57ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 행사가 존귀하고 엄위하며 그 의가 영원히 있도다"
+      ],
+      "raw_text_hashes": [
+        "e9286ed6ec06cc40252e7bbbec1fa119955af1ea6058cd355bd8b7074e9b57ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:4",
+      "sequence": 15798,
+      "chapter_label": "PSA 111",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 4
+        }
+      ],
+      "en": "He has caused his wonderful works to be remembered. The LORD is gracious and merciful.",
+      "ko": "그 기이한 일을 사람으로 기억케 하셨으니 여호와는 은혜로우시고 자비하시도다",
+      "source_text_hash": "4157df13afd3dba34c2ade384391ea73a00054dfc5e38aabf56e09c1b2b0da94",
+      "translation_text_hash": "38ced829f3fdaf1b5c5d11b162c14520714076d7e7e41fe74443299fb8e65c4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기이한 일을 사람으로 기억케 하셨으니 여호와는 은혜로우시고 자비하시도다"
+      ],
+      "raw_text_hashes": [
+        "38ced829f3fdaf1b5c5d11b162c14520714076d7e7e41fe74443299fb8e65c4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:5",
+      "sequence": 15799,
+      "chapter_label": "PSA 111",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 5
+        }
+      ],
+      "en": "He has given food to those who fear him. He always remembers his covenant.",
+      "ko": "여호와께서 자기를 경외하는 자에게 양식을 주시며 그 언약을 영원히 기억하시리로다",
+      "source_text_hash": "075f5e42f8e454df600052f56dad70ecd0c58ea918c8f9370df0af4df67cb65d",
+      "translation_text_hash": "8ca986861292d8fb1123ebce3d2e7c4b67196981d9cc65ddbee2b688a9d06c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 경외하는 자에게 양식을 주시며 그 언약을 영원히 기억하시리로다"
+      ],
+      "raw_text_hashes": [
+        "8ca986861292d8fb1123ebce3d2e7c4b67196981d9cc65ddbee2b688a9d06c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:6",
+      "sequence": 15800,
+      "chapter_label": "PSA 111",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 6
+        }
+      ],
+      "en": "He has shown his people the power of his works, in giving them the heritage of the nations.",
+      "ko": "저가 자기 백성에게 열방을 기업으로 주사 그 행사의 능을 저희에게 보이셨도다",
+      "source_text_hash": "40adf38d2aed21c2ee6adb003b053e466b9d8517bfcc2c75350009c63d2d603b",
+      "translation_text_hash": "cb9ef142d7affd314e0affa655e5f2eec742062f1a9e54e7f332607ad3f9e219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 자기 백성에게 열방을 기업으로 주사 그 행사의 능을 저희에게 보이셨도다"
+      ],
+      "raw_text_hashes": [
+        "cb9ef142d7affd314e0affa655e5f2eec742062f1a9e54e7f332607ad3f9e219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:7",
+      "sequence": 15801,
+      "chapter_label": "PSA 111",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 7
+        }
+      ],
+      "en": "The works of his hands are truth and justice. All his precepts are sure.",
+      "ko": "그 손의 행사는 진실과 공의며 그 법도는 다 확실하니",
+      "source_text_hash": "b7761ce3ae197c31218f8ad874713ea1fcfc3f08f627e2b3a87aa5a1ce5fb187",
+      "translation_text_hash": "8cab5aa43b384395d9acad0c0ed5515f74785fbfe0e6e831fe1aefcb95c75710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손의 행사는 진실과 공의며 그 법도는 다 확실하니"
+      ],
+      "raw_text_hashes": [
+        "8cab5aa43b384395d9acad0c0ed5515f74785fbfe0e6e831fe1aefcb95c75710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:8",
+      "sequence": 15802,
+      "chapter_label": "PSA 111",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 8
+        }
+      ],
+      "en": "They are established forever and ever. They are done in truth and uprightness.",
+      "ko": "영원 무궁히 정하신바요 진실과 정의로 행하신 바로다",
+      "source_text_hash": "47933f27e116274deb06b316353a45eaabe5cbe051f6d7f8ad2c4d7bc3081e6b",
+      "translation_text_hash": "f560a602576f4a59fed7a38364cb50a5a94379380555bc5849771bdb7fd1e391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영원 무궁히 정하신바요 진실과 정의로 행하신 바로다"
+      ],
+      "raw_text_hashes": [
+        "f560a602576f4a59fed7a38364cb50a5a94379380555bc5849771bdb7fd1e391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:9",
+      "sequence": 15803,
+      "chapter_label": "PSA 111",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 9
+        }
+      ],
+      "en": "He has sent redemption to his people. He has ordained his covenant forever. His name is holy and awesome!",
+      "ko": "여호와께서 그 백성에게 구속을 베푸시며 그 언약을 영원히 세우셨으니 그 이름이 거룩하고 지존하시도다",
+      "source_text_hash": "cf21816b658c37824f1e427f7f99872514b34883b37f20c5d9b848d38818b1fc",
+      "translation_text_hash": "f3432024ff9950ad7edae2fd1a2e4453edf90d0cf316d5901cecbdfe31ff5534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 백성에게 구속을 베푸시며 그 언약을 영원히 세우셨으니 그 이름이 거룩하고 지존하시도다"
+      ],
+      "raw_text_hashes": [
+        "f3432024ff9950ad7edae2fd1a2e4453edf90d0cf316d5901cecbdfe31ff5534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:111:10",
+      "sequence": 15804,
+      "chapter_label": "PSA 111",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 111,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 111,
+          "verse": 10
+        }
+      ],
+      "en": "The fear of the LORD is the beginning of wisdom. All those who do his work have a good understanding. His praise endures forever!",
+      "ko": "여호와를 경외함이 곧 지혜의 근본이라 그 계명을 지키는 자는 다 좋은 지각이 있나니 여호와를 찬송함이 영원히 있으리로다",
+      "source_text_hash": "f4c2c7844d4130f8c2499b14751a4df197d17716d54cf7569720947bb670d9a9",
+      "translation_text_hash": "7806f472d7aceee868eda17134293aba86113a9076de7fadb1417a29ded31cc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외함이 곧 지혜의 근본이라 그 계명을 지키는 자는 다 좋은 지각이 있나니 여호와를 찬송함이 영원히 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "7806f472d7aceee868eda17134293aba86113a9076de7fadb1417a29ded31cc7"
+      ]
+    }
+  ]
+}

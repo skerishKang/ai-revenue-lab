@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:001",
+  "unit_ordinal": 154,
+  "unit_label": "DEU 1",
+  "book_code": "DEU",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:1:1",
+      "sequence": 4894,
+      "chapter_label": "DEU 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "These are the words which Moses spoke to all Israel beyond the Jordan in the wilderness, in the Arabah opposite Suf, between Paran, Tophel, Laban, Hazeroth, and Dizahab.",
+      "ko": "이는 모세가 요단 저편 숩 맞은편의 아라바 광야 곧 바란과 도벨과 라반과 하세롯과 디사합 사이에서 이스라엘 무리에게 선포한 말씀이니라",
+      "source_text_hash": "a3b85e42106525ddd3f855f0ed7345726aeea6f6768fb6cfd3863b4831da6538",
+      "translation_text_hash": "b14dc26a427682fc596c162769ce8a7f15db4872b81e9cd1716ffd97da8599d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모세가 요단 저편 숩 맞은편의 아라바 광야 곧 바란과 도벨과 라반과 하세롯과 디사합 사이에서 이스라엘 무리에게 선포한 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "b14dc26a427682fc596c162769ce8a7f15db4872b81e9cd1716ffd97da8599d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:2",
+      "sequence": 4895,
+      "chapter_label": "DEU 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "It is eleven days’ journey from Horeb by the way of Mount Seir to Kadesh Barnea.",
+      "ko": "호렙산에서 세일산을 지나 가데스 바네아에까지 열 하룻길이었더라",
+      "source_text_hash": "a16ad006a7f517620ca6a874948feb7a940af879054428b7d2f67dda62a2fa8b",
+      "translation_text_hash": "c22f7595c937ce0c47070c5bddfa5b03f9f2740da288bffdb890ea585913cec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호렙산에서 세일산을 지나 가데스 바네아에까지 열 하룻길이었더라"
+      ],
+      "raw_text_hashes": [
+        "c22f7595c937ce0c47070c5bddfa5b03f9f2740da288bffdb890ea585913cec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:3",
+      "sequence": 4896,
+      "chapter_label": "DEU 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "In the fortieth year, in the eleventh month, on the first day of the month, Moses spoke to the children of Israel according to all that the LORD had given him in commandment to them,",
+      "ko": "제 사십년 십일월 그 달 초일일에 모세가 이스라엘 자손에게 여호와께서 그들을 위하여 자기에게 주신 명령을 다 고하였으니",
+      "source_text_hash": "9627d203cd87eed00b15bd108944687b0bd9d0634fdb5fcc47c8d77ebd302ab9",
+      "translation_text_hash": "c3c59621da73677bd89d0015b5fda2fb5ed8635232fdf596534129ec6f5f498e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사십년 십일월 그 달 초일일에 모세가 이스라엘 자손에게 여호와께서 그들을 위하여 자기에게 주신 명령을 다 고하였으니"
+      ],
+      "raw_text_hashes": [
+        "c3c59621da73677bd89d0015b5fda2fb5ed8635232fdf596534129ec6f5f498e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:4",
+      "sequence": 4897,
+      "chapter_label": "DEU 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "after he had struck Sihon the king of the Amorites who lived in Heshbon, and Og the king of Bashan who lived in Ashtaroth, at Edrei.",
+      "ko": "때는 모세가 헤스본에 거하는 아모리 왕 시혼을 쳐 죽이고 에드레이에서 아스다롯에 거하는 바산 왕 옥을 쳐 죽인 후라",
+      "source_text_hash": "a894ab08c78b4074a1235b18bc9b7414efcb9eaf7e6e595c97baf8a594b2f081",
+      "translation_text_hash": "c778d31749dd3f0ed41c07972750422d2fd12120751d51294b1c7a3aac649849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때는 모세가 헤스본에 거하는 아모리 왕 시혼을 쳐 죽이고 에드레이에서 아스다롯에 거하는 바산 왕 옥을 쳐 죽인 후라"
+      ],
+      "raw_text_hashes": [
+        "c778d31749dd3f0ed41c07972750422d2fd12120751d51294b1c7a3aac649849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:5",
+      "sequence": 4898,
+      "chapter_label": "DEU 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Beyond the Jordan, in the land of Moab, Moses began to declare this law, saying,",
+      "ko": "모세가 요단 저편 모압 땅에서 이 율법 설명하기를 시작하였더라 일렀으되",
+      "source_text_hash": "869bdc0fef84ae7a202e4878f087752a610e15cd00eb0ef0c7a2332c019a0e64",
+      "translation_text_hash": "b2d3baebe444ed2b3a404053534715b264bd26f5b59296fdd72788c605be0eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 요단 저편 모압 땅에서 이 율법 설명하기를 시작하였더라 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "b2d3baebe444ed2b3a404053534715b264bd26f5b59296fdd72788c605be0eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:6",
+      "sequence": 4899,
+      "chapter_label": "DEU 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "“The LORD our God spoke to us in Horeb, saying, ‘You have lived long enough at this mountain.",
+      "ko": "우리 하나님 여호와께서 호렙산에서 우리에게 말씀하여 이르시기를 너희가 이 산에 거한지 오래니",
+      "source_text_hash": "64587d6d70e22a6f2cab5d459eca7ce53055b479a67bc16552c7b04870125ede",
+      "translation_text_hash": "0c8f4a2eb61cf16296ac204b5cdf2b224f5e52e5e457d3dd5bd078e289f91e74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 호렙산에서 우리에게 말씀하여 이르시기를 너희가 이 산에 거한지 오래니"
+      ],
+      "raw_text_hashes": [
+        "0c8f4a2eb61cf16296ac204b5cdf2b224f5e52e5e457d3dd5bd078e289f91e74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:7",
+      "sequence": 4900,
+      "chapter_label": "DEU 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Turn, and take your journey, and go to the hill country of the Amorites and to all the places near there: in the Arabah, in the hill country, in the lowland, in the South, by the seashore, in the land of the Canaanites, and in Lebanon as far as the great river, the river Euphrates.",
+      "ko": "방향을 돌려 진행하여 아모리 족속의 산지로 가고 그 근지 곳곳으로 가고 아라바와 산지와 평지와 남방과 해변과 가나안 족속의 땅과 레바논과 큰 강 유브라데까지 가라 하셨나니",
+      "source_text_hash": "bdf7b826d1e8eade42ba4915e5be5314a0fccea62929a99e31cfd2f696a673d6",
+      "translation_text_hash": "a73deb05fb7fbc0b4239ef1a101103d7a91a33d9fd3f2b68d5818f80ce9ed3cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방향을 돌려 진행하여 아모리 족속의 산지로 가고 그 근지 곳곳으로 가고 아라바와 산지와 평지와 남방과 해변과 가나안 족속의 땅과 레바논과 큰 강 유브라데까지 가라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "a73deb05fb7fbc0b4239ef1a101103d7a91a33d9fd3f2b68d5818f80ce9ed3cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:8",
+      "sequence": 4901,
+      "chapter_label": "DEU 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, I have set the land before you. Go in and possess the land which the LORD swore to your fathers—to Abraham, to Isaac, and to Jacob—to give to them and to their offspring after them.’”",
+      "ko": "여호와께서 너희의 열조 아브라함과 이삭과 야곱에게 맹세하사 그들과 그 후손에게 주리라 하신 땅이 너희 앞에 있으니 들어가서 얻을찌니라",
+      "source_text_hash": "bd50fc4c1cfbcdd7c5faf2b9d3055a1c92ae33b609a04957db04369c989bd4d2",
+      "translation_text_hash": "be207d95acd01f8b66b6a2fd481e3a0155a589b4113b737e37e81acdf4565023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희의 열조 아브라함과 이삭과 야곱에게 맹세하사 그들과 그 후손에게 주리라 하신 땅이 너희 앞에 있으니 들어가서 얻을찌니라"
+      ],
+      "raw_text_hashes": [
+        "be207d95acd01f8b66b6a2fd481e3a0155a589b4113b737e37e81acdf4565023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:9",
+      "sequence": 4902,
+      "chapter_label": "DEU 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "I spoke to you at that time, saying, “I am not able to bear you myself alone.",
+      "ko": "그 때에 내가 너희에게 말하여 이르기를 나는 홀로 너희 짐을 질 수 없도다",
+      "source_text_hash": "d428fd0f733d69b816a7cf738fcaa005416da22153ff14814a4d3b3afbd3c6ff",
+      "translation_text_hash": "6475560628bcf7e4b9d4d48afab40fb195e04f4ae14deccd81a1d2c5d109c1e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 너희에게 말하여 이르기를 나는 홀로 너희 짐을 질 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "6475560628bcf7e4b9d4d48afab40fb195e04f4ae14deccd81a1d2c5d109c1e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:10",
+      "sequence": 4903,
+      "chapter_label": "DEU 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD your God has multiplied you, and behold, you are today as the stars of the sky for multitude.",
+      "ko": "너희 하나님 여호와께서 너희를 번성케 하셨으므로 너희가 오늘날 하늘의 별 같이 많거니와",
+      "source_text_hash": "2bab1bd5eee533cee912177bf2eb4861ff097d17e94583d4e00e76faddb76ea2",
+      "translation_text_hash": "7ac9e5988859d33d208ae273f31680244d3054f1d4511411ce24ffac1d4bd597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 너희를 번성케 하셨으므로 너희가 오늘날 하늘의 별 같이 많거니와"
+      ],
+      "raw_text_hashes": [
+        "7ac9e5988859d33d208ae273f31680244d3054f1d4511411ce24ffac1d4bd597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:11",
+      "sequence": 4904,
+      "chapter_label": "DEU 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "May the LORD, the God of your fathers, make you a thousand times as many as you are and bless you, as he has promised you!",
+      "ko": "너희 열조의 하나님 여호와께서 너희를 현재보다 천배나 많게 하시며 너희에게 허락하신 것과 같이 너희에게 복 주시기를 원하노라",
+      "source_text_hash": "3f398edfbb4a70b3306037a1d7baadba78f42c6b2e8220761f1de3a6f76d66fe",
+      "translation_text_hash": "0840ded0290fface36e69754ebb9dc20cb7ed18ef87a3c7eb17a12364752d6c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조의 하나님 여호와께서 너희를 현재보다 천배나 많게 하시며 너희에게 허락하신 것과 같이 너희에게 복 주시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "0840ded0290fface36e69754ebb9dc20cb7ed18ef87a3c7eb17a12364752d6c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:12",
+      "sequence": 4905,
+      "chapter_label": "DEU 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "How can I myself alone bear your problems, your burdens, and your strife?",
+      "ko": "그런즉 나 홀로 어찌 능히 너희의 괴로운 것과 너희의 무거운 짐과 너희의 다툼을 담당할 수 있으랴",
+      "source_text_hash": "87fcb7625916dffec56f526c1ed04ee871a4a475c55d4437e69b38bf53d56639",
+      "translation_text_hash": "c9ddebd2bf71258e4a56dd425272c6731c37472f49e4d93a1414c5a9e9c123f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 나 홀로 어찌 능히 너희의 괴로운 것과 너희의 무거운 짐과 너희의 다툼을 담당할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "c9ddebd2bf71258e4a56dd425272c6731c37472f49e4d93a1414c5a9e9c123f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:13",
+      "sequence": 4906,
+      "chapter_label": "DEU 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Take wise men of understanding who are respected among your tribes, and I will make them heads over you.”",
+      "ko": "너희의 각 지파에서 지혜와 지식이 있는 유명한 자를 택하라 내가 그들을 세워 너희 두령을 삼으리라 한즉",
+      "source_text_hash": "500d282396d7253dcc54aac1bc18bfc3de5a65ab45ba986d5e084eadc1df30f5",
+      "translation_text_hash": "7870b2c5b542b635066c6b1d5676dc605a3dab8641665be32f202172ea7a5d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 각 지파에서 지혜와 지식이 있는 유명한 자를 택하라 내가 그들을 세워 너희 두령을 삼으리라 한즉"
+      ],
+      "raw_text_hashes": [
+        "7870b2c5b542b635066c6b1d5676dc605a3dab8641665be32f202172ea7a5d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:14",
+      "sequence": 4907,
+      "chapter_label": "DEU 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "You answered me, and said, “The thing which you have spoken is good to do.”",
+      "ko": "너희가 대답하여 이르기를 당신의 말씀대로 하는 것이 좋다 하기에",
+      "source_text_hash": "0b515183bb76eb8c4c05ae859f23e46d4cffdf94cd7def51c5cf58353b294a2f",
+      "translation_text_hash": "0384ee8538fc0ac2e20ffbe2bdb5b08a0b56e9097a2161cc94a59d8c4332bf84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 대답하여 이르기를 당신의 말씀대로 하는 것이 좋다 하기에"
+      ],
+      "raw_text_hashes": [
+        "0384ee8538fc0ac2e20ffbe2bdb5b08a0b56e9097a2161cc94a59d8c4332bf84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:15",
+      "sequence": 4908,
+      "chapter_label": "DEU 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "So I took the heads of your tribes, wise and respected men, and made them heads over you, captains of thousands, captains of hundreds, captains of fifties, captains of tens, and officers, according to your tribes.",
+      "ko": "내가 너희 지파의 두령으로 지혜가 있는 유명한 자들을 취하여 너희의 어른을 삼되 곧 각 지파를 따라 천부장과 백부장과 오십부장과 십부장과 패장을 삼고",
+      "source_text_hash": "b2835d25d3128e4818bf45319503a22f7208bcd7153e03a965b618d99b3b7289",
+      "translation_text_hash": "993671877c4a6e2fca72d432457f1f7e39cf6f5fbc91dcb31b54ea783568d5fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 지파의 두령으로 지혜가 있는 유명한 자들을 취하여 너희의 어른을 삼되 곧 각 지파를 따라 천부장과 백부장과 오십부장과 십부장과 패장을 삼고"
+      ],
+      "raw_text_hashes": [
+        "993671877c4a6e2fca72d432457f1f7e39cf6f5fbc91dcb31b54ea783568d5fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:16",
+      "sequence": 4909,
+      "chapter_label": "DEU 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "I commanded your judges at that time, saying, “Hear cases between your brothers and judge righteously between a man and his brother, and the foreigner who is living with him.",
+      "ko": "내가 그 때에 너희 재판장들에게 명하여 이르기를 너희가 너희 형제 중에 송사를 들을 때에 양방간에 공정히 판결할 것이며 그들 중의 타국인에게도 그리 할것이라",
+      "source_text_hash": "743695e5d739ee380e39f16273f12498d0a906fb42e95829fec4f315240bc664",
+      "translation_text_hash": "bc3a3773691c4d25c7321d8ae0ddfdd79e2af9b472916566945a3abe36b89aae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 때에 너희 재판장들에게 명하여 이르기를 너희가 너희 형제 중에 송사를 들을 때에 양방간에 공정히 판결할 것이며 그들 중의 타국인에게도 그리 할것이라"
+      ],
+      "raw_text_hashes": [
+        "bc3a3773691c4d25c7321d8ae0ddfdd79e2af9b472916566945a3abe36b89aae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:17",
+      "sequence": 4910,
+      "chapter_label": "DEU 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "You shall not show partiality in judgment; you shall hear the small and the great alike. You shall not be afraid of the face of man, for the judgment is God’s. The case that is too hard for you, you shall bring to me, and I will hear it.”",
+      "ko": "재판은 하나님께 속한 것인즉 너희는 재판에 외모를 보지말고 귀천을 일반으로 듣고 사람의 낯을 두려워 말것이며 스스로 결단하기 어려운 일이거든 내게로 돌리라 내가 들으리라 하였고",
+      "source_text_hash": "573382cd7e6a7b5e14cd3cd1e5521948ba6bdbd9d5a88406c55610632e4a9d9f",
+      "translation_text_hash": "037bd8dcf45c5609a1395fd69041007ebf257c23fb455940c2b556203de9be33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재판은 하나님께 속한 것인즉 너희는 재판에 외모를 보지말고 귀천을 일반으로 듣고 사람의 낯을 두려워 말것이며 스스로 결단하기 어려운 일이거든 내게로 돌리라 내가 들으리라 하였고"
+      ],
+      "raw_text_hashes": [
+        "037bd8dcf45c5609a1395fd69041007ebf257c23fb455940c2b556203de9be33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:18",
+      "sequence": 4911,
+      "chapter_label": "DEU 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "I commanded you at that time all the things which you should do.",
+      "ko": "내가 너희의 행할 모든 일을 그 때에 너희에게 다 명하였느니라",
+      "source_text_hash": "fc6ee1f2a3ebc6385fc5f753e07b5f807288e8a16f3c2793eb13be14f9f39a15",
+      "translation_text_hash": "63949be6cebaa1d0cac4df24151987f623646165fd5c213b248b3c025046fc6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 행할 모든 일을 그 때에 너희에게 다 명하였느니라"
+      ],
+      "raw_text_hashes": [
+        "63949be6cebaa1d0cac4df24151987f623646165fd5c213b248b3c025046fc6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:19",
+      "sequence": 4912,
+      "chapter_label": "DEU 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "We traveled from Horeb and went through all that great and terrible wilderness which you saw, by the way to the hill country of the Amorites, as the LORD our God commanded us; and we came to Kadesh Barnea.",
+      "ko": "우리 하나님 여호와께서 우리에게 명하신대로 우리가 호렙산에서 발행하여 너희의 본바 크고 두려운 광야를 지나 아모리 족속의 산지 길로 가데스 바네아에 이른 때에",
+      "source_text_hash": "6fee952f03689c7674838814b5388447d900bc8cce7ffb8aab8cb4f942828382",
+      "translation_text_hash": "0c04ccbd0b76e88616a1c2f4b46be4e8cd5f3c31fda2eb98f16f08e2572fabca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 우리에게 명하신대로 우리가 호렙산에서 발행하여 너희의 본바 크고 두려운 광야를 지나 아모리 족속의 산지 길로 가데스 바네아에 이른 때에"
+      ],
+      "raw_text_hashes": [
+        "0c04ccbd0b76e88616a1c2f4b46be4e8cd5f3c31fda2eb98f16f08e2572fabca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:20",
+      "sequence": 4913,
+      "chapter_label": "DEU 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "I said to you, “You have come to the hill country of the Amorites, which the LORD our God gives to us.",
+      "ko": "내가 너희에게 이르기를 우리 하나님 여호와께서 우리에게 주신 아모리 족속의 산지에 너희가 이르렀나니",
+      "source_text_hash": "c7fb207cc9ba808e64ab0b2b070b8792f4c0dba954f395dc810af58efb9307ec",
+      "translation_text_hash": "5d2b365207291cbf8d18e131d53c38c28f62827f3d651ee359c0d05347b34892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르기를 우리 하나님 여호와께서 우리에게 주신 아모리 족속의 산지에 너희가 이르렀나니"
+      ],
+      "raw_text_hashes": [
+        "5d2b365207291cbf8d18e131d53c38c28f62827f3d651ee359c0d05347b34892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:21",
+      "sequence": 4914,
+      "chapter_label": "DEU 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Behold, the LORD your God has set the land before you. Go up, take possession, as the LORD the God of your fathers has spoken to you. Don’t be afraid, neither be dismayed.”",
+      "ko": "너희 하나님 여호와께서 이 땅을 너희 앞에 두셨은즉 너희 열조의 하나님 여호와께서 너희에게 이르신대로 올라가서 얻으라 두려워 말라 주저하지 말라 한즉",
+      "source_text_hash": "e4bb44f20f4a83adcc92b3b3e5dbe3aa35e8bd4b9315daf01562209eecc10f7a",
+      "translation_text_hash": "674082406aea3d0a169a18b9c7d045ca12d0a7cdbccc92f14b3c01dd21aa328f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 이 땅을 너희 앞에 두셨은즉 너희 열조의 하나님 여호와께서 너희에게 이르신대로 올라가서 얻으라 두려워 말라 주저하지 말라 한즉"
+      ],
+      "raw_text_hashes": [
+        "674082406aea3d0a169a18b9c7d045ca12d0a7cdbccc92f14b3c01dd21aa328f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:22",
+      "sequence": 4915,
+      "chapter_label": "DEU 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "You came near to me, everyone of you, and said, “Let’s send men before us, that they may search the land for us, and bring back to us word of the way by which we must go up, and the cities to which we shall come.”",
+      "ko": "너희가 다 내 앞으로 나아와 말하기를 우리가 사람을 우리 앞서 보내어 우리를 위하여 그 땅을 정탐하고 어느 길로 올라가야 할것과 어느 성읍으로 들어가야 할것을 우리에게 회보케 하자 하기에",
+      "source_text_hash": "60ff16ea1518d2669153a113f5376aeb6abd9dbf4de6401647cf004b8de291c1",
+      "translation_text_hash": "1c8ba3c3cc16e6ab3bf3e7306c7044dcc8f881ef36e5201afecc35138b413cc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다 내 앞으로 나아와 말하기를 우리가 사람을 우리 앞서 보내어 우리를 위하여 그 땅을 정탐하고 어느 길로 올라가야 할것과 어느 성읍으로 들어가야 할것을 우리에게 회보케 하자 하기에"
+      ],
+      "raw_text_hashes": [
+        "1c8ba3c3cc16e6ab3bf3e7306c7044dcc8f881ef36e5201afecc35138b413cc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:23",
+      "sequence": 4916,
+      "chapter_label": "DEU 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "The thing pleased me well. I took twelve of your men, one man for every tribe.",
+      "ko": "내가 그 말을 선히 여겨 너희 중에서 매 지파에 한 사람씩 열 둘을 택하매",
+      "source_text_hash": "ddb1ac78b15eeda6c460ecbf7074b3b384738a6e0d57855dec42b7b5de4dfb0f",
+      "translation_text_hash": "7211aa9557c66d8bea7c86754c4089e24d8e35741a48563ca72a253226340a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 말을 선히 여겨 너희 중에서 매 지파에 한 사람씩 열 둘을 택하매"
+      ],
+      "raw_text_hashes": [
+        "7211aa9557c66d8bea7c86754c4089e24d8e35741a48563ca72a253226340a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:24",
+      "sequence": 4917,
+      "chapter_label": "DEU 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "They turned and went up into the hill country, and came to the valley of Eshcol, and spied it out.",
+      "ko": "그들이 앞으로 가서 산지에 올라 에스골 골짜기에 이르러 그곳을 정탐하고",
+      "source_text_hash": "9e4c763adbfb5f8e0d3dcc27ea0dbd41ce0af79804a920716aedf02f4490c870",
+      "translation_text_hash": "546d269ac3c1633b49c8586588cfb0c9a9961c8f94c2f2d7a36d65e617c846dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 앞으로 가서 산지에 올라 에스골 골짜기에 이르러 그곳을 정탐하고"
+      ],
+      "raw_text_hashes": [
+        "546d269ac3c1633b49c8586588cfb0c9a9961c8f94c2f2d7a36d65e617c846dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:25",
+      "sequence": 4918,
+      "chapter_label": "DEU 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "They took some of the fruit of the land in their hands and brought it down to us, and brought us word again, and said, “It is a good land which the LORD our God gives to us.”",
+      "ko": "그 땅의 과실을 손에 가지고 우리에게로 돌아와서 우리에게 회보하여 이르되 우리의 하나님 여호와께서 우리에게 주시는 땅이 좋더라 하였느니라",
+      "source_text_hash": "2a0767036ca97dc77a0e498416e847c1e7118d002e2349838222fe18d5b5aa21",
+      "translation_text_hash": "b037295444a6e4c9ec4851f58b6608b5e83d4e3a9daac4e8330c87bc972389c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 과실을 손에 가지고 우리에게로 돌아와서 우리에게 회보하여 이르되 우리의 하나님 여호와께서 우리에게 주시는 땅이 좋더라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b037295444a6e4c9ec4851f58b6608b5e83d4e3a9daac4e8330c87bc972389c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:26",
+      "sequence": 4919,
+      "chapter_label": "DEU 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "Yet you wouldn’t go up, but rebelled against the commandment of the LORD your God.",
+      "ko": "그러나 너희가 올라가기를 즐겨 아니하고 너희 하나님 여호와의 명을 거역하여",
+      "source_text_hash": "49f89855adaf08fed4ad0a73c5d26f9f765f73e4977a1e0372e1e93b48852c47",
+      "translation_text_hash": "12a4c5e4e1c420a1030e2fd03030b632f58dac6997a78b159c577ea5efd29886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 올라가기를 즐겨 아니하고 너희 하나님 여호와의 명을 거역하여"
+      ],
+      "raw_text_hashes": [
+        "12a4c5e4e1c420a1030e2fd03030b632f58dac6997a78b159c577ea5efd29886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:27",
+      "sequence": 4920,
+      "chapter_label": "DEU 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "You murmured in your tents, and said, “Because the LORD hated us, he has brought us out of the land of Egypt, to deliver us into the hand of the Amorites to destroy us.",
+      "ko": "장막 중에서 원망하여 이르기를 여호와께서 우리를 미워하시는고로 아모리 족속의 손에 붙여 멸하시려고 우리를 애굽 땅에서 인도하여 내셨도다",
+      "source_text_hash": "b797af3ffc95cf8c196e2363f56cb80377ad26be11fdab8fec3325f64e168fdd",
+      "translation_text_hash": "1db2d8ea9e02d5a5a70642c9501bd27243c772ddd351a860f9648143e6c92e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 중에서 원망하여 이르기를 여호와께서 우리를 미워하시는고로 아모리 족속의 손에 붙여 멸하시려고 우리를 애굽 땅에서 인도하여 내셨도다"
+      ],
+      "raw_text_hashes": [
+        "1db2d8ea9e02d5a5a70642c9501bd27243c772ddd351a860f9648143e6c92e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:28",
+      "sequence": 4921,
+      "chapter_label": "DEU 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "Where are we going up? Our brothers have made our heart melt, saying, ‘The people are greater and taller than we. The cities are great and fortified up to the sky. Moreover we have seen the sons of the Anakim there!’”",
+      "ko": "우리가 어디로 갈꼬 우리의 형제들이 우리로 낙심케 하여 말하기를 그 백성은 우리보다 장대하며 그 성읍은 크고 성곽은 하늘에 닿았으며 우리가 또 거기서 아낙 자손을 보았노라 하는도다 하기로",
+      "source_text_hash": "d4cf67b3ca0a82469f25edfdd9c106332799cba25580ca2372e51fc078d74cc3",
+      "translation_text_hash": "475e74d9c108168de7ff1d4d54940aae394207b7091314b22359d1eacb65ae92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 어디로 갈꼬 우리의 형제들이 우리로 낙심케 하여 말하기를 그 백성은 우리보다 장대하며 그 성읍은 크고 성곽은 하늘에 닿았으며 우리가 또 거기서 아낙 자손을 보았노라 하는도다 하기로"
+      ],
+      "raw_text_hashes": [
+        "475e74d9c108168de7ff1d4d54940aae394207b7091314b22359d1eacb65ae92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:29",
+      "sequence": 4922,
+      "chapter_label": "DEU 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "Then I said to you, “Don’t be terrified. Don’t be afraid of them.",
+      "ko": "내가 너희에게 말하기를 그들을 무서워 말라 두려워하지 말라",
+      "source_text_hash": "5c0ab564add53ff309b6530a980033bdd45039a0e65fe7c980eb640235522406",
+      "translation_text_hash": "664b7d19608b8b442570542927d9efb174de9fc3615215446cbc41eee6508bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하기를 그들을 무서워 말라 두려워하지 말라"
+      ],
+      "raw_text_hashes": [
+        "664b7d19608b8b442570542927d9efb174de9fc3615215446cbc41eee6508bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:30",
+      "sequence": 4923,
+      "chapter_label": "DEU 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD your God, who goes before you, he will fight for you, according to all that he did for you in Egypt before your eyes,",
+      "ko": "너희 앞서 행하시는 너희 하나님 여호와께서 애굽에서 너희를 위하여 너희 목전에서 모든 일을 행하신것 같이 이제도 너희를 위하여 싸우실 것이며",
+      "source_text_hash": "d13a7f40529bbaab2940e5dd9a442442e5b46f370b6a10096cce88092f4d341c",
+      "translation_text_hash": "321824efd82c1e9c5beec91c926349f8840fd032ef18a41cbbdc61f83635c5cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 앞서 행하시는 너희 하나님 여호와께서 애굽에서 너희를 위하여 너희 목전에서 모든 일을 행하신것 같이 이제도 너희를 위하여 싸우실 것이며"
+      ],
+      "raw_text_hashes": [
+        "321824efd82c1e9c5beec91c926349f8840fd032ef18a41cbbdc61f83635c5cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:31",
+      "sequence": 4924,
+      "chapter_label": "DEU 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "and in the wilderness where you have seen how that the LORD your God carried you, as a man carries his son, in all the way that you went, until you came to this place.”",
+      "ko": "광야에서도 너희가 당하였거니와 사람이 자기 아들을 안음 같이 너희 하나님 여호와께서 너희의 행로 중에 너희를 안으사 이곳까지 이르게 하셨느니라 하나",
+      "source_text_hash": "123b6b2471d931b4235d73f4b469a3b7b750bdf9a35f05d8da8498c8ac39f984",
+      "translation_text_hash": "05f8cb316cbaf0e15032fcf5c4684d934f2c9735613c01bab46dbf20835c8762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에서도 너희가 당하였거니와 사람이 자기 아들을 안음 같이 너희 하나님 여호와께서 너희의 행로 중에 너희를 안으사 이곳까지 이르게 하셨느니라 하나"
+      ],
+      "raw_text_hashes": [
+        "05f8cb316cbaf0e15032fcf5c4684d934f2c9735613c01bab46dbf20835c8762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:32",
+      "sequence": 4925,
+      "chapter_label": "DEU 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "Yet in this thing you didn’t believe the LORD your God,",
+      "ko": "이 일에 너희가 너희 하나님 여호와를 믿지 아니하였도다",
+      "source_text_hash": "1691148f541635458c82d26af5badbe86e9ddbe62a6031512e20f3cffd514f16",
+      "translation_text_hash": "94cbf74626b882da05a98f4f78c8713c9f60cc1996fc215a4c989793587bdbfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일에 너희가 너희 하나님 여호와를 믿지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "94cbf74626b882da05a98f4f78c8713c9f60cc1996fc215a4c989793587bdbfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:33",
+      "sequence": 4926,
+      "chapter_label": "DEU 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "who went before you on the way, to seek out a place for you to pitch your tents in: in fire by night, to show you by what way you should go, and in the cloud by day.",
+      "ko": "그는 너희 앞서 행하시며 장막 칠 곳을 찾으시고 밤에는 불로, 낮에는 구름으로 너희의 행할 길을 지시하신 자니라",
+      "source_text_hash": "11a1efe3bf40c239395491324e8b9a03ff45fd72af017151e5901445f52a426c",
+      "translation_text_hash": "63035753a2a6c8f10139ef629edacf6d2063ebb17b4cfff4ec6ffdea8a8be5c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 너희 앞서 행하시며 장막 칠 곳을 찾으시고 밤에는 불로, 낮에는 구름으로 너희의 행할 길을 지시하신 자니라"
+      ],
+      "raw_text_hashes": [
+        "63035753a2a6c8f10139ef629edacf6d2063ebb17b4cfff4ec6ffdea8a8be5c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:34",
+      "sequence": 4927,
+      "chapter_label": "DEU 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "The LORD heard the voice of your words and was angry, and swore, saying,",
+      "ko": "여호와께서 너희의 말소리를 들으시고 노하사 맹세하여 가라사대",
+      "source_text_hash": "8151be9a06c1dc1ce195eba22606dfcdc5341052b0e35481adfeeeb158d38c8a",
+      "translation_text_hash": "4b57952cfcb89ac6ac9c56001cf49baab9224ce74fa5c43460160a94bf9e4a89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희의 말소리를 들으시고 노하사 맹세하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "4b57952cfcb89ac6ac9c56001cf49baab9224ce74fa5c43460160a94bf9e4a89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:35",
+      "sequence": 4928,
+      "chapter_label": "DEU 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "“Surely not one of these men of this evil generation shall see the good land which I swore to give to your fathers,",
+      "ko": "이 악한 세대 사람들 중에는 내가 그들의 열조에게 주기로 맹세한 좋은 땅을 볼 자가 하나도 없으리라",
+      "source_text_hash": "f8e8271a9ebd7dfc6d48c49f9c28e909af7f14d1b707c8117f5c90e770b7d3b5",
+      "translation_text_hash": "f528ce0e16632ccd8d1143723ff530fe6f8227d6b91070feeb3512115abec041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 악한 세대 사람들 중에는 내가 그들의 열조에게 주기로 맹세한 좋은 땅을 볼 자가 하나도 없으리라"
+      ],
+      "raw_text_hashes": [
+        "f528ce0e16632ccd8d1143723ff530fe6f8227d6b91070feeb3512115abec041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:36",
+      "sequence": 4929,
+      "chapter_label": "DEU 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "except Caleb the son of Jephunneh. He shall see it. I will give the land that he has trodden on to him and to his children, because he has wholly followed the LORD.”",
+      "ko": "오직 여분네의 아들 갈렙은 온전히 여호와를 순종하였은즉 그는 그것을 볼 것이요 그가 밟은 땅을 내가 그와 그의 자손에게 주리라 하시고",
+      "source_text_hash": "489fc427c428976e0a70599de68abed3e467c039933c788fae3e9bb0aa8e3701",
+      "translation_text_hash": "d44120af6c13020e018e6f0b3981194106ce1d55affd99caf7baa0a61afb73d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여분네의 아들 갈렙은 온전히 여호와를 순종하였은즉 그는 그것을 볼 것이요 그가 밟은 땅을 내가 그와 그의 자손에게 주리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "d44120af6c13020e018e6f0b3981194106ce1d55affd99caf7baa0a61afb73d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:37",
+      "sequence": 4930,
+      "chapter_label": "DEU 1",
+      "verse_label": "37",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 37
+        }
+      ],
+      "en": "Also the LORD was angry with me for your sakes, saying, “You also shall not go in there.",
+      "ko": "여호와께서 너희의 연고로 내게도 진노하사 가라사대 너도 그리로 들어가지 못하리라",
+      "source_text_hash": "155850f5c4352c89e17a0fdd46441559cc50dadb037819921f1dd1b1e5428f0c",
+      "translation_text_hash": "7c64c6aa0805ca4d69e3d6a27a581b0a48326413e776a1f033bfcd9ad7c62d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희의 연고로 내게도 진노하사 가라사대 너도 그리로 들어가지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "7c64c6aa0805ca4d69e3d6a27a581b0a48326413e776a1f033bfcd9ad7c62d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:38",
+      "sequence": 4931,
+      "chapter_label": "DEU 1",
+      "verse_label": "38",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 38
+        }
+      ],
+      "en": "Joshua the son of Nun, who stands before you, shall go in there. Encourage him, for he shall cause Israel to inherit it.",
+      "ko": "너의 종자 눈의 아들 여호수아는 그리로 들어갈 것이니 너는 그를 담대케 하라 그가 이스라엘에게 그 땅을 기업으로 얻게 하리라",
+      "source_text_hash": "33f898872f0fd03a0b1ffdc76c6b1108ad513952b4ebee5089b291dd4fad8b6a",
+      "translation_text_hash": "f874e2a24da0831b98f088f4f58e53285653c941fb5637b5016c3eeb5343c504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 종자 눈의 아들 여호수아는 그리로 들어갈 것이니 너는 그를 담대케 하라 그가 이스라엘에게 그 땅을 기업으로 얻게 하리라"
+      ],
+      "raw_text_hashes": [
+        "f874e2a24da0831b98f088f4f58e53285653c941fb5637b5016c3eeb5343c504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:39",
+      "sequence": 4932,
+      "chapter_label": "DEU 1",
+      "verse_label": "39",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 39
+        }
+      ],
+      "en": "Moreover your little ones, whom you said would be captured or killed, your children, who today have no knowledge of good or evil, shall go in there. I will give it to them, and they shall possess it.",
+      "ko": "또 너희가 사로잡히리라 하던 너희의 아이들과 당일에 선악을 분변치 못하던 너희 자녀들 그들은 그리로 들어갈 것이라 내가 그 땅을 그들에게 주어 산업이 되게 하리라",
+      "source_text_hash": "750793b7117174f6b3ef482917058f5f6862dca45f2a0a7f3b61d85993ebb8a9",
+      "translation_text_hash": "2e3ffe8a624ae1a2c8b2f8a3121349a6a4a73159811e923eba6021a6e407d45f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 사로잡히리라 하던 너희의 아이들과 당일에 선악을 분변치 못하던 너희 자녀들 그들은 그리로 들어갈 것이라 내가 그 땅을 그들에게 주어 산업이 되게 하리라"
+      ],
+      "raw_text_hashes": [
+        "2e3ffe8a624ae1a2c8b2f8a3121349a6a4a73159811e923eba6021a6e407d45f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:40",
+      "sequence": 4933,
+      "chapter_label": "DEU 1",
+      "verse_label": "40",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 40
+        }
+      ],
+      "en": "But as for you, turn, and take your journey into the wilderness by the way to the Red Sea.”",
+      "ko": "너희는 회정하여 홍해 길로하여 광야로 들어갈찌니라 하시매",
+      "source_text_hash": "96419f77eb4687402b4afeb8222eb614f2634b33dad4d16b4674f41407061e50",
+      "translation_text_hash": "82229732e5d1de8a784d3ff4d38e7eb234f70c4a0c77354653bb385f74a3abcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 회정하여 홍해 길로하여 광야로 들어갈찌니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "82229732e5d1de8a784d3ff4d38e7eb234f70c4a0c77354653bb385f74a3abcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:41",
+      "sequence": 4934,
+      "chapter_label": "DEU 1",
+      "verse_label": "41",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 41
+        }
+      ],
+      "en": "Then you answered and said to me, “We have sinned against the LORD. We will go up and fight, according to all that the LORD our God commanded us.” Every man of you put on his weapons of war, and presumed to go up into the hill country.",
+      "ko": "너희가 대답하여 내게 이르기를 우리가 여호와께 범죄하였사오니 우리 하나님께서 우리에게 명하신대로 우리가 올라가서 싸우리이다 하고 너희가 각각 병기를 띠고 경솔히 산지로 올라가려 할 때에",
+      "source_text_hash": "527a16fb92bd3413d8f5f53e65b398f963a38500b4607df576becb2bc8b08557",
+      "translation_text_hash": "492428dbe8bf1000c40447b3d4e06c37cc3c4e6971f3fa5145abc7e9d2bb6326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 대답하여 내게 이르기를 우리가 여호와께 범죄하였사오니 우리 하나님께서 우리에게 명하신대로 우리가 올라가서 싸우리이다 하고 너희가 각각 병기를 띠고 경솔히 산지로 올라가려 할 때에"
+      ],
+      "raw_text_hashes": [
+        "492428dbe8bf1000c40447b3d4e06c37cc3c4e6971f3fa5145abc7e9d2bb6326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:42",
+      "sequence": 4935,
+      "chapter_label": "DEU 1",
+      "verse_label": "42",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 42
+        }
+      ],
+      "en": "The LORD said to me, “Tell them, ‘Don’t go up and don’t fight; for I am not among you, lest you be struck before your enemies.’”",
+      "ko": "여호와께서 내게 이르시되 너는 그들에게 이르기를 너희는 올라가지 말라 싸우지도 말라 내가 너희 중에 있지 아니하니 너희가 대적에게 패할까 하노라 하셨다 하라 하시기로",
+      "source_text_hash": "04b9b2ee7ad242bf57ac591da6dfd18d894c2d4049b8555086d33ec2340ee6ec",
+      "translation_text_hash": "7d2db210861ebca46534c7f462dd74ae00b4722964803918518e148be25a28c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 너는 그들에게 이르기를 너희는 올라가지 말라 싸우지도 말라 내가 너희 중에 있지 아니하니 너희가 대적에게 패할까 하노라 하셨다 하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "7d2db210861ebca46534c7f462dd74ae00b4722964803918518e148be25a28c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:43",
+      "sequence": 4936,
+      "chapter_label": "DEU 1",
+      "verse_label": "43",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 43
+        }
+      ],
+      "en": "So I spoke to you, and you didn’t listen; but you rebelled against the commandment of the LORD, and were presumptuous, and went up into the hill country.",
+      "ko": "내가 너희에게 고하였으나 너희가 듣지 아니하고 여호와의 명을 거역하고 천자히 산지로 올라가매",
+      "source_text_hash": "1c6fd71379a7612bc6cbb0060d52ead32c2b00000cbcfddcf2bc61d749531678",
+      "translation_text_hash": "550a6ba46b6eaa10f77f36c8f4fe4e86d571b6e894d37b648ce2c87cb9cc2222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 고하였으나 너희가 듣지 아니하고 여호와의 명을 거역하고 천자히 산지로 올라가매"
+      ],
+      "raw_text_hashes": [
+        "550a6ba46b6eaa10f77f36c8f4fe4e86d571b6e894d37b648ce2c87cb9cc2222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:44",
+      "sequence": 4937,
+      "chapter_label": "DEU 1",
+      "verse_label": "44",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 44
+        }
+      ],
+      "en": "The Amorites, who lived in that hill country, came out against you and chased you as bees do, and beat you down in Seir, even to Hormah.",
+      "ko": "그 산지에 거하는 아모리 족속이 너희를 마주 나와서 벌떼 같이 너희를 쫓아 세일산에서 쳐서 호르마까지 미친지라",
+      "source_text_hash": "889eccfb46e8f5e1272f419ed9960ef26a061a14fd1a270c9ff30b314b762030",
+      "translation_text_hash": "65394cfb90da155fdaa2ebb8a131590af86a5ed4f375e5dd9d0d5e3bea100593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 산지에 거하는 아모리 족속이 너희를 마주 나와서 벌떼 같이 너희를 쫓아 세일산에서 쳐서 호르마까지 미친지라"
+      ],
+      "raw_text_hashes": [
+        "65394cfb90da155fdaa2ebb8a131590af86a5ed4f375e5dd9d0d5e3bea100593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:45",
+      "sequence": 4938,
+      "chapter_label": "DEU 1",
+      "verse_label": "45",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 45
+        }
+      ],
+      "en": "You returned and wept before the LORD, but the LORD didn’t listen to your voice, nor turn his ear to you.",
+      "ko": "너희가 돌아와서 여호와 앞에서 통곡하나 여호와께서 너희의 소리를 듣지 아니하시며 너희에게 귀를 기울이지 아니하셨으므로",
+      "source_text_hash": "6a98276e5517a0550b19614b3445a495eaca667352becd9395ef2d671f01277b",
+      "translation_text_hash": "fd55011270f9e96cdccfac94ea55a566a8ae2ede6f36d4590b4364845a440815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 돌아와서 여호와 앞에서 통곡하나 여호와께서 너희의 소리를 듣지 아니하시며 너희에게 귀를 기울이지 아니하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "fd55011270f9e96cdccfac94ea55a566a8ae2ede6f36d4590b4364845a440815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:1:46",
+      "sequence": 4939,
+      "chapter_label": "DEU 1",
+      "verse_label": "46",
+      "locator": {
+        "book": "DEU",
+        "chapter": 1,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 1,
+          "verse": 46
+        }
+      ],
+      "en": "So you stayed in Kadesh many days, according to the days that you remained.",
+      "ko": "너희가 가데스에 여러날 동안 거하였었나니 곧 너희가 그곳에 거하던 날 수대로니라",
+      "source_text_hash": "fddbad2151e07439647e42decf0962d313b2c5174bfa23466bf4ddde88cbcd1e",
+      "translation_text_hash": "1737b4cb167800020ce691efe507251b6a1487a71b6ba0e9672534cee723b468",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가데스에 여러날 동안 거하였었나니 곧 너희가 그곳에 거하던 날 수대로니라"
+      ],
+      "raw_text_hashes": [
+        "1737b4cb167800020ce691efe507251b6a1487a71b6ba0e9672534cee723b468"
+      ]
+    }
+  ]
+}

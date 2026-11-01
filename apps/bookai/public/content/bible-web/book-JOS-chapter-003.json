@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:003",
+  "unit_ordinal": 190,
+  "unit_label": "JOS 3",
+  "book_code": "JOS",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:3:1",
+      "sequence": 5895,
+      "chapter_label": "JOS 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Joshua got up early in the morning; and they moved from Shittim and came to the Jordan, he and all the children of Israel. They camped there before they crossed over.",
+      "ko": "여호수아가 아침에 일찌기 일어나서 이스라엘 사람들로 더불어 싯딤에서 떠나 요단에 이르러서는 건너지 아니하고 거기서 유숙하니라",
+      "source_text_hash": "2958448dc2000e1d792ebc13d19e5b9c8229de19e28e71ad2aded5603e048b73",
+      "translation_text_hash": "08ce29288cc6bccdd428465486e220230f7ac045f40e9feeceebf61cf10a3986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 아침에 일찌기 일어나서 이스라엘 사람들로 더불어 싯딤에서 떠나 요단에 이르러서는 건너지 아니하고 거기서 유숙하니라"
+      ],
+      "raw_text_hashes": [
+        "08ce29288cc6bccdd428465486e220230f7ac045f40e9feeceebf61cf10a3986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:2",
+      "sequence": 5896,
+      "chapter_label": "JOS 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "After three days, the officers went through the middle of the camp;",
+      "ko": "삼일 후에 유사들이 진중으로 두루 다니며",
+      "source_text_hash": "e6bd2a2f8d52993b02b6b92a6ac7999d2bf051b7f5d08db52ff1009d4758b997",
+      "translation_text_hash": "e386f3b42230628b8e60ed6470e3d52c1a539f7e9396411bb8c63da89d2e2008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼일 후에 유사들이 진중으로 두루 다니며"
+      ],
+      "raw_text_hashes": [
+        "e386f3b42230628b8e60ed6470e3d52c1a539f7e9396411bb8c63da89d2e2008"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:3",
+      "sequence": 5897,
+      "chapter_label": "JOS 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "and they commanded the people, saying, “When you see the ark of the LORD your God’s covenant, and the Levitical priests bearing it, then leave your place and follow it.",
+      "ko": "백성에게 명하여 가로되 너희는 레위 사람 제사장들이 너희 하나님 여호와의 언약궤 메는 것을 보거든 너희 곳을 떠나 그 뒤를 좇으라",
+      "source_text_hash": "772e0cf8d9a60a9343c7e61b336b41bc600bd14451d3b7bca6c5ebfa862df837",
+      "translation_text_hash": "3949682b8a6ca6943f1607aad15950269856d3f02b8649918dd7cc96dd9f01b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성에게 명하여 가로되 너희는 레위 사람 제사장들이 너희 하나님 여호와의 언약궤 메는 것을 보거든 너희 곳을 떠나 그 뒤를 좇으라"
+      ],
+      "raw_text_hashes": [
+        "3949682b8a6ca6943f1607aad15950269856d3f02b8649918dd7cc96dd9f01b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:4",
+      "sequence": 5898,
+      "chapter_label": "JOS 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Yet there shall be a space between you and it of about two thousand cubits by measure—don’t come closer to it—that you may know the way by which you must go; for you have not passed this way before.”",
+      "ko": "그러나 너희와 그 사이 상거가 이천 규빗쯤 되게 하고 그것에 가까이 하지는 말라 그리 하면 너희 행할 길을 알리니 너희가 이전에 이 길을 지나보지 못하였음이니라",
+      "source_text_hash": "a78ca9c07ecaabddc7ac0d1f84f16083753d10b5a0ecdd9d07940cc2b4a73155",
+      "translation_text_hash": "fcebc0db6daa0c7fcb6dc311e8e4ad2131b0cb690258755b1b54cd13bcb6a892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희와 그 사이 상거가 이천 규빗쯤 되게 하고 그것에 가까이 하지는 말라 그리 하면 너희 행할 길을 알리니 너희가 이전에 이 길을 지나보지 못하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "fcebc0db6daa0c7fcb6dc311e8e4ad2131b0cb690258755b1b54cd13bcb6a892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:5",
+      "sequence": 5899,
+      "chapter_label": "JOS 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Joshua said to the people, “Sanctify yourselves; for tomorrow the LORD will do wonders among you.”",
+      "ko": "여호수아가 또 백성에게 이르되 너희는 스스로 성결케 하라 여호와께서 내일 너희 가운데 기사를 행하시리라",
+      "source_text_hash": "a0252435f8e90c04019d2d2c3638ed64603b72eb0d24a190667d38a62cec66f4",
+      "translation_text_hash": "31431e847b23da8f85c9a9929884a08af690edc27218c65f508c79e9d0e03773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 백성에게 이르되 너희는 스스로 성결케 하라 여호와께서 내일 너희 가운데 기사를 행하시리라"
+      ],
+      "raw_text_hashes": [
+        "31431e847b23da8f85c9a9929884a08af690edc27218c65f508c79e9d0e03773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:6",
+      "sequence": 5900,
+      "chapter_label": "JOS 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Joshua spoke to the priests, saying, “Take up the ark of the covenant, and cross over before the people.” They took up the ark of the covenant, and went before the people.",
+      "ko": "여호수아가 또 제사장들에게 일러 가로되 언약궤를 메고 백성 앞서 건너라 하매 곧 언약궤를 메고 백성 앞서 나아가니라",
+      "source_text_hash": "f3db909b56ca3b58e0dbc20b423485043987304e9e28a885709647a70ceab48b",
+      "translation_text_hash": "ebae755eb760bacdeac40c50a00adcb597220d2a4b15a5930d16440db1be383b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 제사장들에게 일러 가로되 언약궤를 메고 백성 앞서 건너라 하매 곧 언약궤를 메고 백성 앞서 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "ebae755eb760bacdeac40c50a00adcb597220d2a4b15a5930d16440db1be383b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:7",
+      "sequence": 5901,
+      "chapter_label": "JOS 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD said to Joshua, “Today I will begin to magnify you in the sight of all Israel, that they may know that as I was with Moses, so I will be with you.",
+      "ko": "여호와께서 여호수아에게 이르시되 내가 오늘부터 시작하여 너를 온 이스라엘의 목전에서 크게 하여 내가 모세와 함께 있던 것 같이 너와 함께 있는 것을 그들로 알게 하리라",
+      "source_text_hash": "00892e0582f6ffea8d245813ebb10271c64b39f0cdc806780a0d6d0912af6d11",
+      "translation_text_hash": "5a2afa7a2a2647b6522c98e915e1da743885df527375aa673b8abf96cd8c1ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 내가 오늘부터 시작하여 너를 온 이스라엘의 목전에서 크게 하여 내가 모세와 함께 있던 것 같이 너와 함께 있는 것을 그들로 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "5a2afa7a2a2647b6522c98e915e1da743885df527375aa673b8abf96cd8c1ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:8",
+      "sequence": 5902,
+      "chapter_label": "JOS 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "You shall command the priests who bear the ark of the covenant, saying, ‘When you come to the brink of the waters of the Jordan, you shall stand still in the Jordan.’”",
+      "ko": "너는 언약궤를 멘 제사장들에게 명하여 이르기를 너희가 요단 물가에 이르거든 요단에 들어서라 하라",
+      "source_text_hash": "fe2f2a9e1b720dd0859b3635859da6ae3a535e016aff19394f7640dcede773a0",
+      "translation_text_hash": "1712172da4ca1e7dd55b8f9a64975c0c63438163825b61553d706dc8b9a7a7fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 언약궤를 멘 제사장들에게 명하여 이르기를 너희가 요단 물가에 이르거든 요단에 들어서라 하라"
+      ],
+      "raw_text_hashes": [
+        "1712172da4ca1e7dd55b8f9a64975c0c63438163825b61553d706dc8b9a7a7fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:9",
+      "sequence": 5903,
+      "chapter_label": "JOS 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua said to the children of Israel, “Come here, and hear the words of the LORD your God.”",
+      "ko": "여호수아가 이스라엘 자손에게 이르되 이리 와서 너희 하나님 여호와의 말씀을 들으라 하고",
+      "source_text_hash": "0645dee2f7830a0be0f1a0161e2df01914c7a8af5e96c782e906862ede99e3d6",
+      "translation_text_hash": "bcbfaf5191b6218d51afd570cf360764651b9ba8bedbf919bdbb87b13bf4cc21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이스라엘 자손에게 이르되 이리 와서 너희 하나님 여호와의 말씀을 들으라 하고"
+      ],
+      "raw_text_hashes": [
+        "bcbfaf5191b6218d51afd570cf360764651b9ba8bedbf919bdbb87b13bf4cc21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:10",
+      "sequence": 5904,
+      "chapter_label": "JOS 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Joshua said, “By this you shall know that the living God is among you, and that he will without fail drive the Canaanite, the Hittite, the Hivite, the Perizzite, the Girgashite, the Amorite, and the Jebusite out from before you.",
+      "ko": "또 말하되 사시는 하나님이 너희 가운데 계시사 가나안 족속과 헷 족속과 히위 족속과 브리스 족속과 기르가스 족속과 아모리 족속과 여부스 족속을 너희 앞에서 정녕히 쫓아내실 줄을 이 일로 너희가 알리라",
+      "source_text_hash": "6d1be2894ca098d9e38120c7a247c3c7e3f817b8fd2cdcaf93026a95437679cb",
+      "translation_text_hash": "dd9032fd8b2be4a1e44265c2c2f2520e0e4586eb22d1e4d6432ab32e77d004a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하되 사시는 하나님이 너희 가운데 계시사 가나안 족속과 헷 족속과 히위 족속과 브리스 족속과 기르가스 족속과 아모리 족속과 여부스 족속을 너희 앞에서 정녕히 쫓아내실 줄을 이 일로 너희가 알리라"
+      ],
+      "raw_text_hashes": [
+        "dd9032fd8b2be4a1e44265c2c2f2520e0e4586eb22d1e4d6432ab32e77d004a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:11",
+      "sequence": 5905,
+      "chapter_label": "JOS 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, the ark of the covenant of the Lord of all the earth passes over before you into the Jordan.",
+      "ko": "보라 온 땅의 주의 언약궤가 너희 앞서 요단으로 들어가나니",
+      "source_text_hash": "4a041fea4ec657b81cafb12757a7245586832625fe945b6c6c21fe530a035fc2",
+      "translation_text_hash": "eb73cad9d88502c84df5efef0d94808dee5d1be308ce67cd0d3f76e081d1d308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 온 땅의 주의 언약궤가 너희 앞서 요단으로 들어가나니"
+      ],
+      "raw_text_hashes": [
+        "eb73cad9d88502c84df5efef0d94808dee5d1be308ce67cd0d3f76e081d1d308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:12",
+      "sequence": 5906,
+      "chapter_label": "JOS 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Now therefore take twelve men out of the tribes of Israel, for every tribe a man.",
+      "ko": "이제 이스라엘 지파 중에서 매 지파에 한 사람씩 십 이명을 택하라",
+      "source_text_hash": "eb274805f142f27b0f6e150d5c22e05c4b93ce1aa57739830a0b2f10a93e9e5d",
+      "translation_text_hash": "c3b89d0da8e18c1604e535a8949d4574b50249c8139a1d43dc5a554239f50616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이스라엘 지파 중에서 매 지파에 한 사람씩 십 이명을 택하라"
+      ],
+      "raw_text_hashes": [
+        "c3b89d0da8e18c1604e535a8949d4574b50249c8139a1d43dc5a554239f50616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:13",
+      "sequence": 5907,
+      "chapter_label": "JOS 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "It shall be that when the soles of the feet of the priests who bear the ark of GOD, the Lord of all the earth, rest in the waters of the Jordan, that the waters of the Jordan will be cut off. The waters that come down from above shall stand in one heap.”",
+      "ko": "온 땅의 주 여호와의 궤를 멘 제사장들의 발바닥이 요단 물을 밟고 멈추면 요단 물 곧 위에서부터 흘러 내리던 물이 끊어지고 쌓여 서리라",
+      "source_text_hash": "b9448e613ec42d076112dbbae965c0984931bd59e1bb846a9bd7e9a629e5963f",
+      "translation_text_hash": "1218f1e07d8ba47f75e6d4eee413837c46b729553e9ad6b25380a88e355ebcf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅의 주 여호와의 궤를 멘 제사장들의 발바닥이 요단 물을 밟고 멈추면 요단 물 곧 위에서부터 흘러 내리던 물이 끊어지고 쌓여 서리라"
+      ],
+      "raw_text_hashes": [
+        "1218f1e07d8ba47f75e6d4eee413837c46b729553e9ad6b25380a88e355ebcf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:14",
+      "sequence": 5908,
+      "chapter_label": "JOS 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "When the people moved from their tents to pass over the Jordan, the priests who bore the ark of the covenant being before the people,",
+      "ko": "백성이 요단을 건너려고 자기들의 장막을 떠날 때에 제사장들은 언약궤를 메고 백성 앞에서 행하니라",
+      "source_text_hash": "a58f97d0854c3eacd82253e7abfb9c04c4320ae609609b8ca588415008ce63df",
+      "translation_text_hash": "71b96a07344f9c672e32c57a33ca385b9615321c8646a8788c76b764ec83b2a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 요단을 건너려고 자기들의 장막을 떠날 때에 제사장들은 언약궤를 메고 백성 앞에서 행하니라"
+      ],
+      "raw_text_hashes": [
+        "71b96a07344f9c672e32c57a33ca385b9615321c8646a8788c76b764ec83b2a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:15",
+      "sequence": 5909,
+      "chapter_label": "JOS 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "and when those who bore the ark had come to the Jordan, and the feet of the priests who bore the ark had dipped in the edge of the water (for the Jordan overflows all its banks all the time of harvest),",
+      "ko": "(요단이 모맥 거두는 시기에는 항상 언덕에 넘치더라) 궤를 멘 자들이 요단에 이르며 궤를 멘 제사장들의 발이 물가에 잠기자",
+      "source_text_hash": "cbad721a4e1e2618d0e13f9fab5bfad896005d5b3a4abd42cfcd3828036a6455",
+      "translation_text_hash": "88687f7e231882dd5b91fb4d41c426dfb124cc713c5219483dda448f5b940825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(요단이 모맥 거두는 시기에는 항상 언덕에 넘치더라) 궤를 멘 자들이 요단에 이르며 궤를 멘 제사장들의 발이 물가에 잠기자"
+      ],
+      "raw_text_hashes": [
+        "88687f7e231882dd5b91fb4d41c426dfb124cc713c5219483dda448f5b940825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:16",
+      "sequence": 5910,
+      "chapter_label": "JOS 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "the waters which came down from above stood, and rose up in one heap a great way off, at Adam, the city that is beside Zarethan; and those that went down toward the sea of the Arabah, even the Salt Sea, were wholly cut off. Then the people passed over near Jericho.",
+      "ko": "곧 위에서부터 흘러 내리던 물이 그쳐서 심히 멀리 사르단에 가까운 아담 읍 변방에 일어나 쌓이고 아라바의 바다 염해로 향하여 흘러가는 물은 온전히 끊어지매 백성이 여리고 앞으로 바로 건널쌔",
+      "source_text_hash": "628edb8299ecb606a75b4a20209d0cf60ff1a301cf6c26891f11162eeba7f044",
+      "translation_text_hash": "0dddd41a17c356a1ad4d544d9d17ab552a3af2a3c5d3e8cfc9c772830435c28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 위에서부터 흘러 내리던 물이 그쳐서 심히 멀리 사르단에 가까운 아담 읍 변방에 일어나 쌓이고 아라바의 바다 염해로 향하여 흘러가는 물은 온전히 끊어지매 백성이 여리고 앞으로 바로 건널쌔"
+      ],
+      "raw_text_hashes": [
+        "0dddd41a17c356a1ad4d544d9d17ab552a3af2a3c5d3e8cfc9c772830435c28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:3:17",
+      "sequence": 5911,
+      "chapter_label": "JOS 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "The priests who bore the ark of the LORD’s covenant stood firm on dry ground in the middle of the Jordan; and all Israel crossed over on dry ground, until all the nation had passed completely over the Jordan.",
+      "ko": "여호와의 언약궤를 멘 제사장들은 요단 가운데 마른 땅에 굳게 섰고 온 이스라엘 백성은 마른 땅으로 행하여 요단을 건너니라",
+      "source_text_hash": "f5fa26d04fab81aa0cbd2a7dc06d1c621faa50c6a16f1a3a05278a87887b1b0c",
+      "translation_text_hash": "c7b3b4fdd35751db2ff68a323ef086d08333a261efb08d57a581574c263f3203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤를 멘 제사장들은 요단 가운데 마른 땅에 굳게 섰고 온 이스라엘 백성은 마른 땅으로 행하여 요단을 건너니라"
+      ],
+      "raw_text_hashes": [
+        "c7b3b4fdd35751db2ff68a323ef086d08333a261efb08d57a581574c263f3203"
+      ]
+    }
+  ]
+}

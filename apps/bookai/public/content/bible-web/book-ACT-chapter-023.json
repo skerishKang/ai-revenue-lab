@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:023",
+  "unit_ordinal": 1041,
+  "unit_label": "ACT 23",
+  "book_code": "ACT",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:23:1",
+      "sequence": 27733,
+      "chapter_label": "ACT 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, looking steadfastly at the council, said, “Brothers, I have lived before God in all good conscience until today.”",
+      "ko": "바울이 공회를 주목하여 가로되 여러분 형제들아 오늘날까지 내가 범사에 양심을 따라 하나님을 섬겼노라 하거늘",
+      "source_text_hash": "4afb69b689cecd9386973cf117fc039edb62bb3e924a736c2288f31e1d7434e6",
+      "translation_text_hash": "36f9aef9166d37f8c71a447840e03e0d044f72e3510637c4b0b63c51867853bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 공회를 주목하여 가로되 여러분 형제들아 오늘날까지 내가 범사에 양심을 따라 하나님을 섬겼노라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "36f9aef9166d37f8c71a447840e03e0d044f72e3510637c4b0b63c51867853bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:2",
+      "sequence": 27734,
+      "chapter_label": "ACT 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "The high priest, Ananias, commanded those who stood by him to strike him on the mouth.",
+      "ko": "대제사장 아나니아가 바울 곁에 섰는 사람들에게 그 입을 치라 명하니",
+      "source_text_hash": "94396e69288bc2447b6936da163aa59d4918e1a06aedbb94407c48a9b2ad8f5e",
+      "translation_text_hash": "137ce7170cbc9314d74a89fc6b8f2e36c327a7796b07d729a115324e4a89725b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 아나니아가 바울 곁에 섰는 사람들에게 그 입을 치라 명하니"
+      ],
+      "raw_text_hashes": [
+        "137ce7170cbc9314d74a89fc6b8f2e36c327a7796b07d729a115324e4a89725b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:3",
+      "sequence": 27735,
+      "chapter_label": "ACT 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Then Paul said to him, “God will strike you, you whitewashed wall! Do you sit to judge me according to the law, and command me to be struck contrary to the law?”",
+      "ko": "바울이 가로되 회칠한 담이여 하나님이 너를 치시리로다 네가 나를 율법대로 판단한다고 앉아서 율법을 어기고 나를 치라 하느냐 하니",
+      "source_text_hash": "738f16bfeeee4ffa780a6b8aec8fe0def6e4f23719540aa16adcdaa64ee82281",
+      "translation_text_hash": "e0183de995045551e239e3f44196f862506c03d264cf69d171f6ef1304f7cd41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 회칠한 담이여 하나님이 너를 치시리로다 네가 나를 율법대로 판단한다고 앉아서 율법을 어기고 나를 치라 하느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "e0183de995045551e239e3f44196f862506c03d264cf69d171f6ef1304f7cd41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:4",
+      "sequence": 27736,
+      "chapter_label": "ACT 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Those who stood by said, “Do you malign God’s high priest?”",
+      "ko": "곁에 선 사람들이 말하되 하나님의 대제사장을 네가 욕하느냐",
+      "source_text_hash": "bdc276138c15b90ad112888c582bb11868742c4820ce34eac3b8c14b6e78904d",
+      "translation_text_hash": "93db01b00357e94a2461253e3309f7a3b61f7917fce2b299a579360d70f01401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곁에 선 사람들이 말하되 하나님의 대제사장을 네가 욕하느냐"
+      ],
+      "raw_text_hashes": [
+        "93db01b00357e94a2461253e3309f7a3b61f7917fce2b299a579360d70f01401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:5",
+      "sequence": 27737,
+      "chapter_label": "ACT 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "Paul said, “I didn’t know, brothers, that he was high priest. For it is written, ‘You shall not speak evil of a ruler of your people.’”",
+      "ko": "바울이 가로되 형제들아 나는 그가 대제사장인줄 알지 못하였노라 기록하였으되 너의 백성의 관원을 비방치 말라 하였느니라 하더라",
+      "source_text_hash": "aec1875ae5e0f9440393df7bae44e349c4b34e62a73c3eb16c7f2ff99a202bb8",
+      "translation_text_hash": "0d4d4fd94af80a914258f0189875b8a0c1ad6de9869bd7d09eaaf9f22edcdaff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 형제들아 나는 그가 대제사장인줄 알지 못하였노라 기록하였으되 너의 백성의 관원을 비방치 말라 하였느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "0d4d4fd94af80a914258f0189875b8a0c1ad6de9869bd7d09eaaf9f22edcdaff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:6",
+      "sequence": 27738,
+      "chapter_label": "ACT 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "But when Paul perceived that the one part were Sadducees and the other Pharisees, he cried out in the council, “Men and brothers, I am a Pharisee, a son of Pharisees. Concerning the hope and resurrection of the dead I am being judged!”",
+      "ko": "바울이 그 한 부분은 사두개인이요 한 부분은 바리새인인줄 알고 공회에서 외쳐 가로되 여러분 형제들아 나는 바리새인이요 또 바리새인의 아들이라 죽은 자의 소망 곧 부활을 인하여 내가 심문을 받노라",
+      "source_text_hash": "7001de95985faa52ec0b266c8f454db52ae7715504116fa451bbf3a68ec4fa0f",
+      "translation_text_hash": "60570085fdeb51dddf0446f540a5aac701e5bf4976c0fd4a9cc420e289ecc682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 그 한 부분은 사두개인이요 한 부분은 바리새인인줄 알고 공회에서 외쳐 가로되 여러분 형제들아 나는 바리새인이요 또 바리새인의 아들이라 죽은 자의 소망 곧 부활을 인하여 내가 심문을 받노라"
+      ],
+      "raw_text_hashes": [
+        "60570085fdeb51dddf0446f540a5aac701e5bf4976c0fd4a9cc420e289ecc682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:7",
+      "sequence": 27739,
+      "chapter_label": "ACT 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "When he had said this, an argument arose between the Pharisees and Sadducees, and the crowd was divided.",
+      "ko": "그 말을 한즉 바리새인과 사두개인 사이에 다툼이 생겨 무리가 나누이니",
+      "source_text_hash": "8f759fb51e698915d0656d26761ae0a92b60a09439468b2556b86cf7eea3a9bf",
+      "translation_text_hash": "be0970070dc6721d6abc236a7a8b18466d97562c015b8f4f3db982d6e87189d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말을 한즉 바리새인과 사두개인 사이에 다툼이 생겨 무리가 나누이니"
+      ],
+      "raw_text_hashes": [
+        "be0970070dc6721d6abc236a7a8b18466d97562c015b8f4f3db982d6e87189d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:8",
+      "sequence": 27740,
+      "chapter_label": "ACT 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "For the Sadducees say that there is no resurrection, nor angel, nor spirit; but the Pharisees confess all of these.",
+      "ko": "이는 사두개인은 부활도 없고 천사도 없고 영도 없다 하고 바리새인은 다 있다 함이라",
+      "source_text_hash": "0a041bcb85f70f286c800a08e90e7753785b9d122dfd3da50aad358834d9542c",
+      "translation_text_hash": "2461bb2446e2b8bd5d30e920906730f800c4a357b116fe00a18be13824012c82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 사두개인은 부활도 없고 천사도 없고 영도 없다 하고 바리새인은 다 있다 함이라"
+      ],
+      "raw_text_hashes": [
+        "2461bb2446e2b8bd5d30e920906730f800c4a357b116fe00a18be13824012c82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:9",
+      "sequence": 27741,
+      "chapter_label": "ACT 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "A great clamor arose, and some of the scribes of the Pharisees’ part stood up, and contended, saying, “We find no evil in this man. But if a spirit or angel has spoken to him, let’s not fight against God!”",
+      "ko": "크게 훤화가 일어날쌔 바리새인 편에서 몇 서기관이 일어나 다투어 가로되 우리가 이 사람을 보매 악한 것이 없도다 혹 영이나 혹 천사가 저더러 말하였으면 어찌 하겠느뇨 하여",
+      "source_text_hash": "07daa44d484d31daafc34b3fa04caeaf6b117a358ac1452c40bc7206f0a359ad",
+      "translation_text_hash": "f92cecb38a055334c27745e547da1ea0e58454381be1e951cea49d55d8253a72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크게 훤화가 일어날쌔 바리새인 편에서 몇 서기관이 일어나 다투어 가로되 우리가 이 사람을 보매 악한 것이 없도다 혹 영이나 혹 천사가 저더러 말하였으면 어찌 하겠느뇨 하여"
+      ],
+      "raw_text_hashes": [
+        "f92cecb38a055334c27745e547da1ea0e58454381be1e951cea49d55d8253a72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:10",
+      "sequence": 27742,
+      "chapter_label": "ACT 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "When a great argument arose, the commanding officer, fearing that Paul would be torn in pieces by them, commanded the soldiers to go down and take him by force from among them and bring him into the barracks.",
+      "ko": "큰 분쟁이 생기니 천부장이 바울이 저희에게 찢겨질까 하여 군사를 명하여 내려가 무리 가운데서 빼앗아 가지고 영문으로 들어가라 하니라",
+      "source_text_hash": "9ed270328781a37626c31f3afc33e581ddbc4d888bed650e5afa4d83fd93e0ce",
+      "translation_text_hash": "57f99c11504384be228c948adc6446a003f5d77bec481c974e6b92e63dc9eb95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 분쟁이 생기니 천부장이 바울이 저희에게 찢겨질까 하여 군사를 명하여 내려가 무리 가운데서 빼앗아 가지고 영문으로 들어가라 하니라"
+      ],
+      "raw_text_hashes": [
+        "57f99c11504384be228c948adc6446a003f5d77bec481c974e6b92e63dc9eb95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:11",
+      "sequence": 27743,
+      "chapter_label": "ACT 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "The following night, the Lord stood by him and said, “Cheer up, Paul, for as you have testified about me at Jerusalem, so you must testify also at Rome.”",
+      "ko": "그날 밤에 주께서 바울 곁에 서서 이르시되 담대하라 네가 예루살렘에서 나의 일을 증거한 것 같이 로마에서도 증거하여야 하리라 하시니라",
+      "source_text_hash": "fca3be3736779d2b3d18621db481a726cda95b5d18656594b7404d9b447447b6",
+      "translation_text_hash": "43c38465453e6dc515deca9aaf4ea522dcc27b322d37ec03389f9fffb0a42e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날 밤에 주께서 바울 곁에 서서 이르시되 담대하라 네가 예루살렘에서 나의 일을 증거한 것 같이 로마에서도 증거하여야 하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "43c38465453e6dc515deca9aaf4ea522dcc27b322d37ec03389f9fffb0a42e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:12",
+      "sequence": 27744,
+      "chapter_label": "ACT 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "When it was day, some of the Jews banded together and bound themselves under a curse, saying that they would neither eat nor drink until they had killed Paul.",
+      "ko": "날이 새매 유대인들이 당을 지어 맹세하되 바울을 죽이기 전에는 먹지도 아니하고 마시지도 아니하겠다 하고",
+      "source_text_hash": "46de3a065f9c9de094d16e1c554a4529861f6eae268bb62dc05fb92d2958fc39",
+      "translation_text_hash": "0879e403e9c1a19e70773907d67f587272978c64b64a2d3f3585bd95eb06ac60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새매 유대인들이 당을 지어 맹세하되 바울을 죽이기 전에는 먹지도 아니하고 마시지도 아니하겠다 하고"
+      ],
+      "raw_text_hashes": [
+        "0879e403e9c1a19e70773907d67f587272978c64b64a2d3f3585bd95eb06ac60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:13",
+      "sequence": 27745,
+      "chapter_label": "ACT 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "There were more than forty people who had made this conspiracy.",
+      "ko": "이같이 동맹한 자가 사십 여명이더라",
+      "source_text_hash": "99c886fa337b2c32b56732858e72c315def507eec735e1c41de1875d1800197b",
+      "translation_text_hash": "f1feafb243c3a67e2caf83290e658c9c30712f496dd978d599860a9fe08890b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 동맹한 자가 사십 여명이더라"
+      ],
+      "raw_text_hashes": [
+        "f1feafb243c3a67e2caf83290e658c9c30712f496dd978d599860a9fe08890b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:14",
+      "sequence": 27746,
+      "chapter_label": "ACT 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "They came to the chief priests and the elders, and said, “We have bound ourselves under a great curse to taste nothing until we have killed Paul.",
+      "ko": "대제사장들과 장로들에게 가서 말하되 우리가 바울을 죽이기 전에는 아무 것도 먹지 않기로 굳게 맹세하였으니",
+      "source_text_hash": "d27b9c338aa35e10fd0e450ecce8a7dd1c1bc02eda1c0a7c57aabefdf1a712fa",
+      "translation_text_hash": "0233da0b40ec38321103b6e13100d75a478907202ac22638c431b1aa57d6193b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 장로들에게 가서 말하되 우리가 바울을 죽이기 전에는 아무 것도 먹지 않기로 굳게 맹세하였으니"
+      ],
+      "raw_text_hashes": [
+        "0233da0b40ec38321103b6e13100d75a478907202ac22638c431b1aa57d6193b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:15",
+      "sequence": 27747,
+      "chapter_label": "ACT 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Now therefore, you with the council inform the commanding officer that he should bring him down to you tomorrow, as though you were going to judge his case more exactly. We are ready to kill him before he comes near.”",
+      "ko": "이제 너희는 그의 사실을 더 자세히 알아볼 양으로 공회와 함께 천부장에게 청하여 바울을 너희에게로 데리고 내려오게 하라 우리는 그가 가까이 오기 전에 죽이기로 준비하였노라 하더니",
+      "source_text_hash": "407432b38774f1afe5f1171ea0a1372f3412f80f0e8043542a1c540cb1de4aeb",
+      "translation_text_hash": "bf0f7d25731aec05716c517352c987a44724fd3e3fedb64b224f5ee48875d987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 그의 사실을 더 자세히 알아볼 양으로 공회와 함께 천부장에게 청하여 바울을 너희에게로 데리고 내려오게 하라 우리는 그가 가까이 오기 전에 죽이기로 준비하였노라 하더니"
+      ],
+      "raw_text_hashes": [
+        "bf0f7d25731aec05716c517352c987a44724fd3e3fedb64b224f5ee48875d987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:16",
+      "sequence": 27748,
+      "chapter_label": "ACT 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "But Paul’s sister’s son heard they were lying in wait, and he came and entered into the barracks and told Paul.",
+      "ko": "바울의 생질이 그들이 매복하여 있다 함을 듣고 와서 영문에 들어가 바울에게 고한지라",
+      "source_text_hash": "b55e8bdfa404cc7644fb5ff2c0f673eecbda4459dc746cbf7ffc6befd76795d4",
+      "translation_text_hash": "1f701699876bc4d6f39aa6ac832b30beab00ec144c25fb4d8413cf1ade0f4ec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울의 생질이 그들이 매복하여 있다 함을 듣고 와서 영문에 들어가 바울에게 고한지라"
+      ],
+      "raw_text_hashes": [
+        "1f701699876bc4d6f39aa6ac832b30beab00ec144c25fb4d8413cf1ade0f4ec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:17",
+      "sequence": 27749,
+      "chapter_label": "ACT 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Paul summoned one of the centurions and said, “Bring this young man to the commanding officer, for he has something to tell him.”",
+      "ko": "바울이 한 백부장을 청하여 가로되 이 청년을 천부장에게로 인도하라 그에게 무슨 할 말이 있다 하니",
+      "source_text_hash": "824c6acb8787b8a6db48f0a055ad92a3c965a3a0c4a0eedeb2cf190d67db9c7a",
+      "translation_text_hash": "b5ed9db656ce2518c5a0d6134eef1e23d0cebc71d91fd3b675a8dcfedf424ef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 한 백부장을 청하여 가로되 이 청년을 천부장에게로 인도하라 그에게 무슨 할 말이 있다 하니"
+      ],
+      "raw_text_hashes": [
+        "b5ed9db656ce2518c5a0d6134eef1e23d0cebc71d91fd3b675a8dcfedf424ef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:18",
+      "sequence": 27750,
+      "chapter_label": "ACT 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "So he took him and brought him to the commanding officer and said, “Paul, the prisoner, summoned me and asked me to bring this young man to you. He has something to tell you.”",
+      "ko": "천부장에게로 데리고 가서 가로되 죄수 바울이 나를 불러 이 청년이 당신께 할 말이 있다 하여 데리고 가기를 청하더이다 하매",
+      "source_text_hash": "3f6c06309fd12d2fdd66b886c25224ad40cbaf2f2c432d0af13da15c90e95a42",
+      "translation_text_hash": "9d8c15a0e2341aba00283799ce4adf294b074ac4abf6c8f1ffa33f89103b4d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장에게로 데리고 가서 가로되 죄수 바울이 나를 불러 이 청년이 당신께 할 말이 있다 하여 데리고 가기를 청하더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "9d8c15a0e2341aba00283799ce4adf294b074ac4abf6c8f1ffa33f89103b4d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:19",
+      "sequence": 27751,
+      "chapter_label": "ACT 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "The commanding officer took him by the hand, and going aside, asked him privately, “What is it that you have to tell me?”",
+      "ko": "천부장이 그 손을 잡고 물러가서 종용히 묻되 내게 할 말이 무엇이냐",
+      "source_text_hash": "209e4c67e4a48afe68c639bef22eec713e8b6e94eb038d05b2521408583484bf",
+      "translation_text_hash": "39855e86558906a18435db80d48814ba6a2e9ab6c40c02b1dd6ea999fb594b02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장이 그 손을 잡고 물러가서 종용히 묻되 내게 할 말이 무엇이냐"
+      ],
+      "raw_text_hashes": [
+        "39855e86558906a18435db80d48814ba6a2e9ab6c40c02b1dd6ea999fb594b02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:20",
+      "sequence": 27752,
+      "chapter_label": "ACT 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "He said, “The Jews have agreed to ask you to bring Paul down to the council tomorrow, as though intending to inquire somewhat more accurately concerning him.",
+      "ko": "대답하되 유대인들이 공모하기를 저희들이 바울에 대하여 더 자세한 것을 묻기 위함이라 하고 내일 그를 데리고 공회로 내려오기를 당신께 청하자 하였으니",
+      "source_text_hash": "4c7e2a1f4a3f93b09859e63abe6ffb4d4f6e234047248ec2d263c8038e2d872f",
+      "translation_text_hash": "a672292def4524005000ef599f58a5df9005ce0e3e786dad96188b367e40a10f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 유대인들이 공모하기를 저희들이 바울에 대하여 더 자세한 것을 묻기 위함이라 하고 내일 그를 데리고 공회로 내려오기를 당신께 청하자 하였으니"
+      ],
+      "raw_text_hashes": [
+        "a672292def4524005000ef599f58a5df9005ce0e3e786dad96188b367e40a10f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:21",
+      "sequence": 27753,
+      "chapter_label": "ACT 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore don’t yield to them, for more than forty men lie in wait for him, who have bound themselves under a curse to neither eat nor drink until they have killed him. Now they are ready, looking for the promise from you.”",
+      "ko": "당신은 저희 청함을 좇지 마옵소서 저희 중에서 바울을 죽이기 전에는 먹지도 않고 마시지도 않기로 맹세한 자 사십 여명이 그를 죽이려고 숨어서 지금 다 준비하고 당신의 허락만 기다리나이다 하매",
+      "source_text_hash": "65026843f1f4fbd85bd2d51a8cf951e53c3516641b48874e050edd4cbeb8a13c",
+      "translation_text_hash": "eb3e2cd08d6c6a7f51e3a049f512d5a5ab1530102101d11de55628e5dcc9ef87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신은 저희 청함을 좇지 마옵소서 저희 중에서 바울을 죽이기 전에는 먹지도 않고 마시지도 않기로 맹세한 자 사십 여명이 그를 죽이려고 숨어서 지금 다 준비하고 당신의 허락만 기다리나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "eb3e2cd08d6c6a7f51e3a049f512d5a5ab1530102101d11de55628e5dcc9ef87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:22",
+      "sequence": 27754,
+      "chapter_label": "ACT 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "So the commanding officer let the young man go, charging him, “Tell no one that you have revealed these things to me.”",
+      "ko": "이에 천부장이 청년을 보내며 경계하되 이 일을 내게 고하였다고 아무에게도 이르지 말라 하고",
+      "source_text_hash": "7a512c94dc376b2cb3b88cef0ccc995e2e7dc00894f87f9ecf67f21dc6f87636",
+      "translation_text_hash": "1c97be6eb01551246ec051e424ca14538a2cb7b24036c4c63343cdff0cdcd894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 천부장이 청년을 보내며 경계하되 이 일을 내게 고하였다고 아무에게도 이르지 말라 하고"
+      ],
+      "raw_text_hashes": [
+        "1c97be6eb01551246ec051e424ca14538a2cb7b24036c4c63343cdff0cdcd894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:23",
+      "sequence": 27755,
+      "chapter_label": "ACT 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "He called to himself two of the centurions, and said, “Prepare two hundred soldiers to go as far as Caesarea, with seventy horsemen and two hundred men armed with spears, at the third hour of the night.”",
+      "ko": "백부장 둘을 불러 이르되 밤 제삼시에 가이사랴까지 갈 보병 이백 명과 마병 칠십 명과 창군 이백 명을 준비하라 하고",
+      "source_text_hash": "2c10e0fa3494e21ba99d1158c49b628ccfa3b977a97ca7724b1a2adca558e09e",
+      "translation_text_hash": "4f39fff727c531f24f266cb61e7089bf525f3a7f222a883458798ddcb738b8a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장 둘을 불러 이르되 밤 제삼시에 가이사랴까지 갈 보병 이백 명과 마병 칠십 명과 창군 이백 명을 준비하라 하고"
+      ],
+      "raw_text_hashes": [
+        "4f39fff727c531f24f266cb61e7089bf525f3a7f222a883458798ddcb738b8a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:24",
+      "sequence": 27756,
+      "chapter_label": "ACT 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "He asked them to provide mounts, that they might set Paul on one, and bring him safely to Felix the governor.",
+      "ko": "또 바울을 태워 총독 벨릭스에게로 무사히 보내기 위하여 짐승을 준비하라 명하며",
+      "source_text_hash": "d434843c1dd6012f0613d01acd656b7b234780eca81d65aa6509db8e9fe622c8",
+      "translation_text_hash": "f7b577fbaf4e2b6dcf113261ebe57b57998e19f55b7a8f49b58825c63caa5bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바울을 태워 총독 벨릭스에게로 무사히 보내기 위하여 짐승을 준비하라 명하며"
+      ],
+      "raw_text_hashes": [
+        "f7b577fbaf4e2b6dcf113261ebe57b57998e19f55b7a8f49b58825c63caa5bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:25",
+      "sequence": 27757,
+      "chapter_label": "ACT 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "He wrote a letter like this:",
+      "ko": "또 이 아래와 같이 편지하니 일렀으되",
+      "source_text_hash": "286813cb3b9276523830c57f4ffdee9e32a9c66ee6d901b6ab1eece39087ff73",
+      "translation_text_hash": "b8dc12f4dba6cc4bef6797156c56eb8166ca64541dc93a2c2aca488434c36855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 아래와 같이 편지하니 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "b8dc12f4dba6cc4bef6797156c56eb8166ca64541dc93a2c2aca488434c36855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:26",
+      "sequence": 27758,
+      "chapter_label": "ACT 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "“Claudius Lysias to the most excellent governor Felix: Greetings.",
+      "ko": "글라우디오 루시아는 총독 벨릭스 각하에게 문안하노이다",
+      "source_text_hash": "e28c0ba1ed6cafcb48646cee5766b409475845198c87fcee3c6864ae450745ab",
+      "translation_text_hash": "0158601f3ce270304c546797d584cc93eb2d602a3baeca4cbd31af4b64f90364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "글라우디오 루시아는 총독 벨릭스 각하에게 문안하노이다"
+      ],
+      "raw_text_hashes": [
+        "0158601f3ce270304c546797d584cc93eb2d602a3baeca4cbd31af4b64f90364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:27",
+      "sequence": 27759,
+      "chapter_label": "ACT 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "“This man was seized by the Jews, and was about to be killed by them when I came with the soldiers and rescued him, having learned that he was a Roman.",
+      "ko": "이 사람이 유대인들에게 잡혀 죽게 된 것을 내가 로마 사람인줄 들어 알고 군사를 거느리고 가서 구원하여다가",
+      "source_text_hash": "b16560f74f96decf1147e48cce9576fbb38feb606f0d261396229c0f7e70aab7",
+      "translation_text_hash": "0cf41e1668a9c10c4939b4fbcfba8d04f2cc8d93578fe58d224672a33b518046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 유대인들에게 잡혀 죽게 된 것을 내가 로마 사람인줄 들어 알고 군사를 거느리고 가서 구원하여다가"
+      ],
+      "raw_text_hashes": [
+        "0cf41e1668a9c10c4939b4fbcfba8d04f2cc8d93578fe58d224672a33b518046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:28",
+      "sequence": 27760,
+      "chapter_label": "ACT 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "Desiring to know the cause why they accused him, I brought him down to their council.",
+      "ko": "유대인들이 무슨 일로 그를 송사하는지 알고자 하여 저희 공회로 데리고 내려갔더니",
+      "source_text_hash": "fdd6f8b26a88d6f6dff43404e8054640ce2d0e07ea68a6c14414143cfb7c20cd",
+      "translation_text_hash": "a3378f7ffe9b478b655a90ff37ae8eeef9a10c07038d726df950aab6735c53a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 무슨 일로 그를 송사하는지 알고자 하여 저희 공회로 데리고 내려갔더니"
+      ],
+      "raw_text_hashes": [
+        "a3378f7ffe9b478b655a90ff37ae8eeef9a10c07038d726df950aab6735c53a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:29",
+      "sequence": 27761,
+      "chapter_label": "ACT 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "I found him to be accused about questions of their law, but not to be charged with anything worthy of death or of imprisonment.",
+      "ko": "송사하는 것이 저희 율법 문제에 관한 것뿐이요 한 가지도 죽이거나 결박할 사건이 없음을 발견하였나이다",
+      "source_text_hash": "cd21f6da775eb227acd5c69490f975c5c55ae1b9a82429bd0c9ae94a2934022c",
+      "translation_text_hash": "22da22d0c69a16613a7cbd4c749159a5e274948c1fa551d7096a569ca1463702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "송사하는 것이 저희 율법 문제에 관한 것뿐이요 한 가지도 죽이거나 결박할 사건이 없음을 발견하였나이다"
+      ],
+      "raw_text_hashes": [
+        "22da22d0c69a16613a7cbd4c749159a5e274948c1fa551d7096a569ca1463702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:30",
+      "sequence": 27762,
+      "chapter_label": "ACT 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "When I was told that the Jews lay in wait for the man, I sent him to you immediately, charging his accusers also to bring their accusations against him before you. Farewell.”",
+      "ko": "그러나 이 사람을 해하려는 간계가 있다고 누가 내게 알게 하기로 곧 당신께로 보내며 또 송사하는 사람들도 당신 앞에서 그를 대하여 말하라 하였나이다 하였더라",
+      "source_text_hash": "2def40d06ae76a5218b55413e55c6eecc69c26ccaaaf2a6acc32b6a3137d14c5",
+      "translation_text_hash": "cd0fbae61770b4e127c7f3d36863c303cb728cb47f05a01cf8126cd0221cf60d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 사람을 해하려는 간계가 있다고 누가 내게 알게 하기로 곧 당신께로 보내며 또 송사하는 사람들도 당신 앞에서 그를 대하여 말하라 하였나이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "cd0fbae61770b4e127c7f3d36863c303cb728cb47f05a01cf8126cd0221cf60d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:31",
+      "sequence": 27763,
+      "chapter_label": "ACT 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "So the soldiers, carrying out their orders, took Paul and brought him by night to Antipatris.",
+      "ko": "보병이 명을 받은대로 밤에 바울을 데리고 안디바드리에 이르러",
+      "source_text_hash": "c0f042ed75291947a63d65487ea93c20126200606ed0cba0199535207801bc63",
+      "translation_text_hash": "d173ccda37c615f17c28f18183acb6d3122541728a9d4b2d81200f52584aa41e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보병이 명을 받은대로 밤에 바울을 데리고 안디바드리에 이르러"
+      ],
+      "raw_text_hashes": [
+        "d173ccda37c615f17c28f18183acb6d3122541728a9d4b2d81200f52584aa41e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:32",
+      "sequence": 27764,
+      "chapter_label": "ACT 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "But on the next day they left the horsemen to go with him, and returned to the barracks.",
+      "ko": "이튿날 마병으로 바울을 호송하게 하고 영문으로 돌아 가니라",
+      "source_text_hash": "f3b2969f66ded9814585ba80001c4f030bd7d3def7528f145f7c5f0bb34bfd25",
+      "translation_text_hash": "a62eb0b0a2831a305c3eea6dc6f6927b8d67ba1110a82f5adf9bd7d6e7775573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 마병으로 바울을 호송하게 하고 영문으로 돌아 가니라"
+      ],
+      "raw_text_hashes": [
+        "a62eb0b0a2831a305c3eea6dc6f6927b8d67ba1110a82f5adf9bd7d6e7775573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:33",
+      "sequence": 27765,
+      "chapter_label": "ACT 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "When they came to Caesarea and delivered the letter to the governor, they also presented Paul to him.",
+      "ko": "저희가 가이사랴에 들어가서 편지를 총독에게 드리고 바울을 그 앞에 세우니",
+      "source_text_hash": "fa4b2017290b3878088beeb190a3bdd8ddb4dc874ab59fc134e4f12ea330ccd4",
+      "translation_text_hash": "60e5dd17765960990bf32b3c5e04ba73706281c9bf3a8f45e9e3ec5a13166794",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가이사랴에 들어가서 편지를 총독에게 드리고 바울을 그 앞에 세우니"
+      ],
+      "raw_text_hashes": [
+        "60e5dd17765960990bf32b3c5e04ba73706281c9bf3a8f45e9e3ec5a13166794"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:34",
+      "sequence": 27766,
+      "chapter_label": "ACT 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "When the governor had read it, he asked what province he was from. When he understood that he was from Cilicia, he said,",
+      "ko": "총독이 읽고 바울더러 어느 영지 사람이냐 물어 길리기아 사람인줄 알고",
+      "source_text_hash": "51db249f631296479fabcb303f473ced1c40f71cd7614bd554cc5e6d74ee3c1f",
+      "translation_text_hash": "43b4213b5549b3855e65f0809a34976c17e33ae9db0803994cea3349c33b2119",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "총독이 읽고 바울더러 어느 영지 사람이냐 물어 길리기아 사람인줄 알고"
+      ],
+      "raw_text_hashes": [
+        "43b4213b5549b3855e65f0809a34976c17e33ae9db0803994cea3349c33b2119"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:23:35",
+      "sequence": 27767,
+      "chapter_label": "ACT 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "“I will hear you fully when your accusers also arrive.” He commanded that he be kept in Herod’s palace.",
+      "ko": "가로되 너를 송사하는 사람들이 오거든 네 말을 들으리라 하고 헤롯궁에 그를 지키라 명하니라",
+      "source_text_hash": "e2bc9586d157d6a2f9b9250e31eb7ba91c01d2591ef9ad26810bec592758c339",
+      "translation_text_hash": "d75987de9909758f3eae52f54ec0bcfe563c2d83822924239ae350f1dbb09409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너를 송사하는 사람들이 오거든 네 말을 들으리라 하고 헤롯궁에 그를 지키라 명하니라"
+      ],
+      "raw_text_hashes": [
+        "d75987de9909758f3eae52f54ec0bcfe563c2d83822924239ae350f1dbb09409"
+      ]
+    }
+  ]
+}

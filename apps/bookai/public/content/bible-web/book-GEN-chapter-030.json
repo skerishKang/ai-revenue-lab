@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:030",
+  "unit_ordinal": 30,
+  "unit_label": "GEN 30",
+  "book_code": "GEN",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:30:1",
+      "sequence": 832,
+      "chapter_label": "GEN 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "When Rachel saw that she bore Jacob no children, Rachel envied her sister. She said to Jacob, “Give me children, or else I will die.”",
+      "ko": "라헬이 자기가 야곱에게 아들을 낳지 못함을 보고 그 형을 투기하여 야곱에게 이르되 나로 자식을 낳게 하라 그렇지 아니하면 내가 죽겠노라",
+      "source_text_hash": "8d8d450861b8a2c387922c86d95b3a0dd210d73cb0750d0c95f717669dde7120",
+      "translation_text_hash": "8b19bfee9118d8ef279337d77c9ea15912f5ef4799094d4e4a683ee0aeffe50d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 자기가 야곱에게 아들을 낳지 못함을 보고 그 형을 투기하여 야곱에게 이르되 나로 자식을 낳게 하라 그렇지 아니하면 내가 죽겠노라"
+      ],
+      "raw_text_hashes": [
+        "8b19bfee9118d8ef279337d77c9ea15912f5ef4799094d4e4a683ee0aeffe50d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:2",
+      "sequence": 833,
+      "chapter_label": "GEN 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "Jacob’s anger burned against Rachel, and he said, “Am I in God’s place, who has withheld from you the fruit of the womb?”",
+      "ko": "야곱이 라헬에게 노를 발하여 가로되 그대로 성태치 못하게 하시는 이는 하나님이시니 내가 하나님을 대신하겠느냐",
+      "source_text_hash": "f0e9c3eaa9006780aa7ed8d9d8a90f0e56084c4ad946b610b5419f14219183fa",
+      "translation_text_hash": "c7647d0d8cb04ff0bf0c04823308cf0dac8ee1c299f1834389cfbed0305e8b67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 라헬에게 노를 발하여 가로되 그대로 성태치 못하게 하시는 이는 하나님이시니 내가 하나님을 대신하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c7647d0d8cb04ff0bf0c04823308cf0dac8ee1c299f1834389cfbed0305e8b67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:3",
+      "sequence": 834,
+      "chapter_label": "GEN 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "She said, “Behold, my maid Bilhah. Go in to her, that she may bear on my knees, and I also may obtain children by her.”",
+      "ko": "라헬이 가로되 나의 여종 빌하에게로 들어가라 그가 아들을 낳아 내 무릎에 두리니 그러면 나도 그를 인하여 자식을 얻겠노라 하고",
+      "source_text_hash": "1b6f2836452dd541409fc9dab40dfd12546d9ab9c490378afdd1e3a367e6be8c",
+      "translation_text_hash": "6d556d11618dd5125b9eda041e23365aee187e25ed9f7856da33374749f230d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 가로되 나의 여종 빌하에게로 들어가라 그가 아들을 낳아 내 무릎에 두리니 그러면 나도 그를 인하여 자식을 얻겠노라 하고"
+      ],
+      "raw_text_hashes": [
+        "6d556d11618dd5125b9eda041e23365aee187e25ed9f7856da33374749f230d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:4",
+      "sequence": 835,
+      "chapter_label": "GEN 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "She gave him Bilhah her servant as wife, and Jacob went in to her.",
+      "ko": "그 시녀 빌하를 남편에게 첩으로 주매 야곱이 그에게로 들어갔더니",
+      "source_text_hash": "9f37853cd7296603562cdfd764edbd65311e9e64a8d15d17f47c2b1896d5a693",
+      "translation_text_hash": "d541b34d58dda67f8bea9d300f80693505e7662f18013c7472d3525b2cb18578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시녀 빌하를 남편에게 첩으로 주매 야곱이 그에게로 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "d541b34d58dda67f8bea9d300f80693505e7662f18013c7472d3525b2cb18578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:5",
+      "sequence": 836,
+      "chapter_label": "GEN 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "Bilhah conceived, and bore Jacob a son.",
+      "ko": "빌하가 잉태하여 야곱에게 아들을 낳은지라",
+      "source_text_hash": "f451993a31fc7b70bc4054ac34d2645c1211ba45ea7099df2e037520efc41b1b",
+      "translation_text_hash": "3af3437294d5fb53f8371de7fc2d31728825b7b8c539740b85a6b9c3b159b891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌하가 잉태하여 야곱에게 아들을 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "3af3437294d5fb53f8371de7fc2d31728825b7b8c539740b85a6b9c3b159b891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:6",
+      "sequence": 837,
+      "chapter_label": "GEN 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "Rachel said, “God has judged me, and has also heard my voice, and has given me a son.” Therefore she called his name Dan.",
+      "ko": "라헬이 가로되 하나님이 내 억울함을 푸시려고 내 소리를 들으사 내게 아들을 주셨다 하고 이로 인하여 그 이름을 단이라 하였으며",
+      "source_text_hash": "9b60785f4078a32ed22ee9e37f75a9fb3c507caaa369f873bd8db4d087abb34c",
+      "translation_text_hash": "e3e19b47dced6e18530ea521083fee6d8d74d1168790632f860dfbed67ecffc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 가로되 하나님이 내 억울함을 푸시려고 내 소리를 들으사 내게 아들을 주셨다 하고 이로 인하여 그 이름을 단이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "e3e19b47dced6e18530ea521083fee6d8d74d1168790632f860dfbed67ecffc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:7",
+      "sequence": 838,
+      "chapter_label": "GEN 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "Bilhah, Rachel’s servant, conceived again, and bore Jacob a second son.",
+      "ko": "라헬의 시녀 빌하가 다시 잉태하여 둘째 아들을 야곱에게 낳으매",
+      "source_text_hash": "ff9cc06cf8f5bc704be681d6e2bd8a857de5e90347a3638c9b0e9d01462d195d",
+      "translation_text_hash": "8646d8d6aefaae11053bb1c3010c6580e8ca5d7373100e26be88e7cdd2aecbba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬의 시녀 빌하가 다시 잉태하여 둘째 아들을 야곱에게 낳으매"
+      ],
+      "raw_text_hashes": [
+        "8646d8d6aefaae11053bb1c3010c6580e8ca5d7373100e26be88e7cdd2aecbba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:8",
+      "sequence": 839,
+      "chapter_label": "GEN 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "Rachel said, “I have wrestled with my sister with mighty wrestlings, and have prevailed.” She named him Naphtali.",
+      "ko": "라헬이 가로되 내가 형과 크게 경쟁하여 이기었다 하고 그 이름을 납달리라 하였더라",
+      "source_text_hash": "9ae430be3006bc2aa1293855b27dc22c0574bec4bfac219036c9a080800ece7d",
+      "translation_text_hash": "cd7098bd5c7edcbe07a2e696b79d87ef2fa56a74a2155c5e77ee3550171f6bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 가로되 내가 형과 크게 경쟁하여 이기었다 하고 그 이름을 납달리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "cd7098bd5c7edcbe07a2e696b79d87ef2fa56a74a2155c5e77ee3550171f6bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:9",
+      "sequence": 840,
+      "chapter_label": "GEN 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "When Leah saw that she had finished bearing, she took Zilpah, her servant, and gave her to Jacob as a wife.",
+      "ko": "레아가 자기의 생산이 멈춤을 보고 그 시녀 실바를 취하여 야곱에게 주어 첩을 삼게 하였더니",
+      "source_text_hash": "caab51ac3a893d615f691e4f0dee2e23d6c7d35001df175c64d9d97ef9ac0780",
+      "translation_text_hash": "74a48b703a4b718cbc1cc94955fad101aa50d9d59014060c275a05e1826408c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 자기의 생산이 멈춤을 보고 그 시녀 실바를 취하여 야곱에게 주어 첩을 삼게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "74a48b703a4b718cbc1cc94955fad101aa50d9d59014060c275a05e1826408c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:10",
+      "sequence": 841,
+      "chapter_label": "GEN 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "Zilpah, Leah’s servant, bore Jacob a son.",
+      "ko": "레아의 시녀 실바가 야곱에게 아들을 낳으매",
+      "source_text_hash": "2fe3a5285cf8dfce60b49c1861ef028d6cb6ff7555a9dc5d55c73dd1d2018dbd",
+      "translation_text_hash": "9085072a29da33d2b5adff6d2fde7cb786edafddb6c9dda51ed5850962e7cc95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아의 시녀 실바가 야곱에게 아들을 낳으매"
+      ],
+      "raw_text_hashes": [
+        "9085072a29da33d2b5adff6d2fde7cb786edafddb6c9dda51ed5850962e7cc95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:11",
+      "sequence": 842,
+      "chapter_label": "GEN 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "Leah said, “How fortunate!” She named him Gad.",
+      "ko": "레아가 가로되 복되도다 하고 그 이름을 갓이라 하였으며",
+      "source_text_hash": "0ba9334b19bf1d3f472f62b7bb92d7a8d33bbc7c4003693ec4adcec6dbb5fa45",
+      "translation_text_hash": "12756191f6e54258a95fe94cba6d233999a17e9ab701bf0a69a6b41ca9f62cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 가로되 복되도다 하고 그 이름을 갓이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "12756191f6e54258a95fe94cba6d233999a17e9ab701bf0a69a6b41ca9f62cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:12",
+      "sequence": 843,
+      "chapter_label": "GEN 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "Zilpah, Leah’s servant, bore Jacob a second son.",
+      "ko": "레아의 시녀 실바가 둘째 아들을 야곱에게 낳으매",
+      "source_text_hash": "e4c0ff90eef2373e1dab8258b6aa65a768fc371225695d7885f83f85ccab3554",
+      "translation_text_hash": "d502d2b810d25709c5a7f6c3de588ef9e494e2137434e96bcf168c485d35eae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아의 시녀 실바가 둘째 아들을 야곱에게 낳으매"
+      ],
+      "raw_text_hashes": [
+        "d502d2b810d25709c5a7f6c3de588ef9e494e2137434e96bcf168c485d35eae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:13",
+      "sequence": 844,
+      "chapter_label": "GEN 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "Leah said, “Happy am I, for the daughters will call me happy.” She named him Asher.",
+      "ko": "레아가 가로되 기쁘도다 모든 딸들이 나를 기쁜 자라 하리로다 하고 그 이름을 아셀이라 하였더라",
+      "source_text_hash": "040953300e187b8c9d23a5fabf9ca3fdeb9724dfc9f0d87fc572f856d3f9d622",
+      "translation_text_hash": "6e8a5a4dfc93c0bfedff9f985d595ea0df3f6d0f923332ee302cbcec98238208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 가로되 기쁘도다 모든 딸들이 나를 기쁜 자라 하리로다 하고 그 이름을 아셀이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "6e8a5a4dfc93c0bfedff9f985d595ea0df3f6d0f923332ee302cbcec98238208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:14",
+      "sequence": 845,
+      "chapter_label": "GEN 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "Reuben went in the days of wheat harvest, and found mandrakes in the field, and brought them to his mother, Leah. Then Rachel said to Leah, “Please give me some of your son’s mandrakes.”",
+      "ko": "맥추때에 르우벤이 나가서 들에서 합환채를 얻어 어미 레아에게 드렸더니 라헬이 레아에게 이르되 형의 아들의 합환채를 청구하노라",
+      "source_text_hash": "dbfe508546aef74b4cff2716400f0557e5767cec098714850ce338679be395ba",
+      "translation_text_hash": "e6bcc3fd8a0654d33ac0608eb388b9945491f50e86ba28bbe9e9480c2c035b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맥추때에 르우벤이 나가서 들에서 합환채를 얻어 어미 레아에게 드렸더니 라헬이 레아에게 이르되 형의 아들의 합환채를 청구하노라"
+      ],
+      "raw_text_hashes": [
+        "e6bcc3fd8a0654d33ac0608eb388b9945491f50e86ba28bbe9e9480c2c035b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:15",
+      "sequence": 846,
+      "chapter_label": "GEN 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "Leah said to her, “Is it a small matter that you have taken away my husband? Would you take away my son’s mandrakes, also?” Rachel said, “Therefore he will lie with you tonight for your son’s mandrakes.”",
+      "ko": "레아가 그에게 이르되 네가 내 남편을 빼앗은 것이 작은 일이냐 그런데 네가 내 아들의 합환채도 빼앗고자 하느냐 라헬이 가로되 그러면 형의 아들의 합환채 대신에 오늘 밤에 내 남편이 형과 동침하리라 하니라",
+      "source_text_hash": "c69e1dacc559305036dbbd45d6b82388043d43edb9ba4adc81bcadef81e11f54",
+      "translation_text_hash": "f616cf310326ecbf28c1ac61a9405612a10376abc3dba01a986bf88964e602d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 그에게 이르되 네가 내 남편을 빼앗은 것이 작은 일이냐 그런데 네가 내 아들의 합환채도 빼앗고자 하느냐 라헬이 가로되 그러면 형의 아들의 합환채 대신에 오늘 밤에 내 남편이 형과 동침하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f616cf310326ecbf28c1ac61a9405612a10376abc3dba01a986bf88964e602d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:16",
+      "sequence": 847,
+      "chapter_label": "GEN 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "Jacob came from the field in the evening, and Leah went out to meet him, and said, “You must come in to me; for I have surely hired you with my son’s mandrakes.” He lay with her that night.",
+      "ko": "저물 때에 야곱이 들에서 돌아오매 레아가 나와서 그를 영접하며 이르되 내게로 들어오라 내가 내 아들의 합환채로 당신을 샀노라 그 밤에 야곱이 그와 동침하였더라",
+      "source_text_hash": "eec0cd0b71831c282fa43ecb8f68a6afc8937407c11c68d70850df2daefec900",
+      "translation_text_hash": "5e24ba1c1051368bd514a80006c40bcbdac145569d1390e0a1be995aa8615dd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물 때에 야곱이 들에서 돌아오매 레아가 나와서 그를 영접하며 이르되 내게로 들어오라 내가 내 아들의 합환채로 당신을 샀노라 그 밤에 야곱이 그와 동침하였더라"
+      ],
+      "raw_text_hashes": [
+        "5e24ba1c1051368bd514a80006c40bcbdac145569d1390e0a1be995aa8615dd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:17",
+      "sequence": 848,
+      "chapter_label": "GEN 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "God listened to Leah, and she conceived, and bore Jacob a fifth son.",
+      "ko": "하나님이 레아를 들으셨으므로 그가 잉태하여 다섯째 아들을 야곱에게 낳은지라",
+      "source_text_hash": "04ae41fbf9f0c84ebd07e1a3177fd765c29d45a6ee4f7b2138698dc6e697070c",
+      "translation_text_hash": "c75883f6c602f77409b380398ac37814606b2933db8bdd45435ebc5d23af60e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 레아를 들으셨으므로 그가 잉태하여 다섯째 아들을 야곱에게 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "c75883f6c602f77409b380398ac37814606b2933db8bdd45435ebc5d23af60e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:18",
+      "sequence": 849,
+      "chapter_label": "GEN 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "Leah said, “God has given me my hire, because I gave my servant to my husband.” She named him Issachar.",
+      "ko": "레아가 가로되 내가 내 시녀를 남편에게 주었으므로 하나님이 내게 그 값을 주셨다 하고 그 이름을 잇사갈이라 하였으며",
+      "source_text_hash": "0316def5705ccfed278d3f8bef31d1f33edc37d3e8148aaa79660b3a265ace6e",
+      "translation_text_hash": "8d140cb0cf27c263829fd00b512b69a669ddf174a5378a9d233a50ea90c25b38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 가로되 내가 내 시녀를 남편에게 주었으므로 하나님이 내게 그 값을 주셨다 하고 그 이름을 잇사갈이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "8d140cb0cf27c263829fd00b512b69a669ddf174a5378a9d233a50ea90c25b38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:19",
+      "sequence": 850,
+      "chapter_label": "GEN 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "Leah conceived again, and bore a sixth son to Jacob.",
+      "ko": "레아가 다시 잉태하여 여섯째 아들을 야곱에게 낳은지라",
+      "source_text_hash": "fa0a29ee8a588c8b10f3ece517802d6e87cc20c0d149221ad718e9cd64114831",
+      "translation_text_hash": "42bf3d26fc746c264042fe372048bb982e8cb1da1d276f674661ab16a3cc9c2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 다시 잉태하여 여섯째 아들을 야곱에게 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "42bf3d26fc746c264042fe372048bb982e8cb1da1d276f674661ab16a3cc9c2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:20",
+      "sequence": 851,
+      "chapter_label": "GEN 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "Leah said, “God has endowed me with a good dowry. Now my husband will live with me, because I have borne him six sons.” She named him Zebulun.",
+      "ko": "레아가 가로되 하나님이 내게 후한 선물을 주시도다 내가 남편에게 여섯 아들을 낳았으니 이제는 그가 나와 함께 거하리라 하고 그 이름을 스불론이라 하였으며",
+      "source_text_hash": "20a688f1c6b77c9a008523fc5ac4691fa7a2a0e4a23f103a513aeb4e3adf9346",
+      "translation_text_hash": "377d3ead784cbf2735451b650ff761a3ea447535da4c42051bd914b9b1d2985b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아가 가로되 하나님이 내게 후한 선물을 주시도다 내가 남편에게 여섯 아들을 낳았으니 이제는 그가 나와 함께 거하리라 하고 그 이름을 스불론이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "377d3ead784cbf2735451b650ff761a3ea447535da4c42051bd914b9b1d2985b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:21",
+      "sequence": 852,
+      "chapter_label": "GEN 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "Afterwards, she bore a daughter, and named her Dinah.",
+      "ko": "그 후에 그가 딸을 낳고 그 이름을 디나라 하였더라",
+      "source_text_hash": "7b55b12c2d3fb52b7ea044a372f6cdb3400498700ceaffe6b6762a09042a437b",
+      "translation_text_hash": "a9c9420c1409918af5b4e2ab4b8dc586bd68fdaa81c547a81c38df2e66d6fb81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 그가 딸을 낳고 그 이름을 디나라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a9c9420c1409918af5b4e2ab4b8dc586bd68fdaa81c547a81c38df2e66d6fb81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:22",
+      "sequence": 853,
+      "chapter_label": "GEN 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "God remembered Rachel, and God listened to her, and opened her womb.",
+      "ko": "하나님이 라헬을 생각하신지라 하나님이 그를 들으시고 그 태를 여신고로",
+      "source_text_hash": "5e83f52228ec2cd081851b914b6e010689fd7646302bb4575ec2c54f8f07fa90",
+      "translation_text_hash": "cd2e30eb0aca2b8b681cdc92ae16f63163fcdec74812fd24cb28699a73ba57ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 라헬을 생각하신지라 하나님이 그를 들으시고 그 태를 여신고로"
+      ],
+      "raw_text_hashes": [
+        "cd2e30eb0aca2b8b681cdc92ae16f63163fcdec74812fd24cb28699a73ba57ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:23",
+      "sequence": 854,
+      "chapter_label": "GEN 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "She conceived, bore a son, and said, “God has taken away my reproach.”",
+      "ko": "그가 잉태하여 아들을 낳고 가로되 하나님이 나의 부끄러움을 씻으셨다 하고",
+      "source_text_hash": "0ac934c733ebb10ed9fcfb3e32d2383228e9926b86e9046b7eff60f12cc92516",
+      "translation_text_hash": "f5deba498f36dbe4b1d92f92ed8e0866e86b9bcc6777250e071f71655bc36c50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 잉태하여 아들을 낳고 가로되 하나님이 나의 부끄러움을 씻으셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "f5deba498f36dbe4b1d92f92ed8e0866e86b9bcc6777250e071f71655bc36c50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:24",
+      "sequence": 855,
+      "chapter_label": "GEN 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "She named him Joseph, saying, “May the LORD add another son to me.”",
+      "ko": "그 이름을 요셉이라 하니 여호와는 다시 다른 아들을 내게 더하시기를 원하노라 함이었더라",
+      "source_text_hash": "23de69096470ad46333ccba12b8b4b9e05e884a0dec84c7c976a8aa330000940",
+      "translation_text_hash": "beb69c48497aa3b9662e41408e75e2fe37b9ffa18331b9b9b8b9a2090fd0e4ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이름을 요셉이라 하니 여호와는 다시 다른 아들을 내게 더하시기를 원하노라 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "beb69c48497aa3b9662e41408e75e2fe37b9ffa18331b9b9b8b9a2090fd0e4ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:25",
+      "sequence": 856,
+      "chapter_label": "GEN 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "When Rachel had borne Joseph, Jacob said to Laban, “Send me away, that I may go to my own place, and to my country.",
+      "ko": "라헬이 요셉을 낳은 때에 야곱이 라반에게 이르되 나를 보내어 내 고향 내 본토로 가게 하시되",
+      "source_text_hash": "1e938a95001e148ed1ebd585b17c1fe5acf095987524b8d586652e3941895051",
+      "translation_text_hash": "013c615cf77629c42732ac044d2da6f21c927c29a621fa9a089bb7faeeaca7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 요셉을 낳은 때에 야곱이 라반에게 이르되 나를 보내어 내 고향 내 본토로 가게 하시되"
+      ],
+      "raw_text_hashes": [
+        "013c615cf77629c42732ac044d2da6f21c927c29a621fa9a089bb7faeeaca7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:26",
+      "sequence": 857,
+      "chapter_label": "GEN 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "Give me my wives and my children for whom I have served you, and let me go; for you know my service with which I have served you.”",
+      "ko": "내가 외삼촌에게서 일하고 얻은 처자를 내게 주어 나로 가게 하소서 내가 외삼촌께 한 일은 외삼촌이 아시나이다",
+      "source_text_hash": "0fd64ed77719614ed52454816009daaea52840775dfa8feef5fa7b3dc9871ef6",
+      "translation_text_hash": "cf46b4dad4b8b96263036ec929ce253e328d905c1d3b0c605058ad2b05cf605e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 외삼촌에게서 일하고 얻은 처자를 내게 주어 나로 가게 하소서 내가 외삼촌께 한 일은 외삼촌이 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "cf46b4dad4b8b96263036ec929ce253e328d905c1d3b0c605058ad2b05cf605e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:27",
+      "sequence": 858,
+      "chapter_label": "GEN 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "Laban said to him, “If now I have found favor in your eyes, stay here, for I have divined that the LORD has blessed me for your sake.”",
+      "ko": "라반이 그에게 이르되 여호와께서 너로 인하여 내게 복 주신줄을 내가 깨달았노니 네가 나를 사랑스럽게 여기거든 유하라",
+      "source_text_hash": "e982d39c25cee961b56ec069d24a99022b2581db9880083a4c0bd81538454dc6",
+      "translation_text_hash": "589404af147f6c5e72f6298fc1315aeda03213755a93d6b37288829a658575f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 그에게 이르되 여호와께서 너로 인하여 내게 복 주신줄을 내가 깨달았노니 네가 나를 사랑스럽게 여기거든 유하라"
+      ],
+      "raw_text_hashes": [
+        "589404af147f6c5e72f6298fc1315aeda03213755a93d6b37288829a658575f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:28",
+      "sequence": 859,
+      "chapter_label": "GEN 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "He said, “Appoint me your wages, and I will give it.”",
+      "ko": "또 가로되 네 품삯을 정하라 내가 그것을 주리라",
+      "source_text_hash": "7a64938cd62d0799d0f9541c4624d5f0d256f1db64ffca96422bd5badbb2f340",
+      "translation_text_hash": "9ef391f29dc37567d118703517dfb5483d5380da95354e5e95075df0751c0a54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 네 품삯을 정하라 내가 그것을 주리라"
+      ],
+      "raw_text_hashes": [
+        "9ef391f29dc37567d118703517dfb5483d5380da95354e5e95075df0751c0a54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:29",
+      "sequence": 860,
+      "chapter_label": "GEN 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "Jacob said to him, “You know how I have served you, and how your livestock have fared with me.",
+      "ko": "야곱이 그에게 이르되 내가 어떻게 외삼촌을 섬겼는지, 어떻게 외삼촌의 짐승을 쳤는지 외삼촌이 아시나이다",
+      "source_text_hash": "dbd34b4b0557860118eb2bbee686737ace22079a258a19b36786ba94f6f45402",
+      "translation_text_hash": "6c672b00fe1f9f1e838e84919babae371e3d68cf0b3e1d80b2605f01e94fb09d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그에게 이르되 내가 어떻게 외삼촌을 섬겼는지, 어떻게 외삼촌의 짐승을 쳤는지 외삼촌이 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "6c672b00fe1f9f1e838e84919babae371e3d68cf0b3e1d80b2605f01e94fb09d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:30",
+      "sequence": 861,
+      "chapter_label": "GEN 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "For it was little which you had before I came, and it has increased to a multitude. The LORD has blessed you wherever I turned. Now when will I provide for my own house also?”",
+      "ko": "내가 오기 전에는 외삼촌의 소유가 적더니 번성하여 떼를 이루었나이다 나의 공력을 따라 여호와께서 외삼촌에게 복을 주셨나이다 그러나 나는 어느 때에나 내 집을 세우리이까",
+      "source_text_hash": "21ec9e3e18d90363f59766523a98425fd4910d462433052df0cc3d9a2863f2c1",
+      "translation_text_hash": "2c788cb3c5cb1e61f48f8c8005822401401d6f168e0cec66043053b04637fb4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오기 전에는 외삼촌의 소유가 적더니 번성하여 떼를 이루었나이다 나의 공력을 따라 여호와께서 외삼촌에게 복을 주셨나이다 그러나 나는 어느 때에나 내 집을 세우리이까"
+      ],
+      "raw_text_hashes": [
+        "2c788cb3c5cb1e61f48f8c8005822401401d6f168e0cec66043053b04637fb4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:31",
+      "sequence": 862,
+      "chapter_label": "GEN 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 31
+        }
+      ],
+      "en": "Laban said, “What shall I give you?” Jacob said, “You shall not give me anything. If you will do this thing for me, I will again feed your flock and keep it.",
+      "ko": "라반이 가로되 내가 무엇으로 네게 주랴 야곱이 가로되 외삼촌께서 아무 것도 내게 주실 것이 아니라 나를 위하여 이 일을 행하시면 내가 다시 외삼촌의 양떼를 먹이고 지키리이다",
+      "source_text_hash": "82da3ecd497420deb0039c3466d9b7cfd8bd2d4539aa4208c1e1dcc3479314b8",
+      "translation_text_hash": "0ff5cffc718ffc00628021ae8449238dbaf0954e23348a2072590e1d0a72a8be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 가로되 내가 무엇으로 네게 주랴 야곱이 가로되 외삼촌께서 아무 것도 내게 주실 것이 아니라 나를 위하여 이 일을 행하시면 내가 다시 외삼촌의 양떼를 먹이고 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "0ff5cffc718ffc00628021ae8449238dbaf0954e23348a2072590e1d0a72a8be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:32",
+      "sequence": 863,
+      "chapter_label": "GEN 30",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 32
+        }
+      ],
+      "en": "I will pass through all your flock today, removing from there every speckled and spotted one, and every black one among the sheep, and the spotted and speckled among the goats. This will be my hire.",
+      "ko": "오늘 내가 외삼촌의 양떼로 두루 다니며 그 양 중에 아롱진 자와 점 있는 자와 검은 자를 가리어내며 염소 중에 점 있는 자와 아롱진 자를 가리어내리니 이같은 것이 나면 나의 삯이 되리이다",
+      "source_text_hash": "3a459c0aa9ea0a6fbf403159481c3ff01d935dffc8520b413f1dfe40054e92e3",
+      "translation_text_hash": "94c74f26827eb27313155f4b4c6da37a03b588049d017b929a3bae693f9ca000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 내가 외삼촌의 양떼로 두루 다니며 그 양 중에 아롱진 자와 점 있는 자와 검은 자를 가리어내며 염소 중에 점 있는 자와 아롱진 자를 가리어내리니 이같은 것이 나면 나의 삯이 되리이다"
+      ],
+      "raw_text_hashes": [
+        "94c74f26827eb27313155f4b4c6da37a03b588049d017b929a3bae693f9ca000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:33",
+      "sequence": 864,
+      "chapter_label": "GEN 30",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 33
+        }
+      ],
+      "en": "So my righteousness will answer for me hereafter, when you come concerning my hire that is before you. Every one that is not speckled and spotted among the goats, and black among the sheep, that might be with me, will be considered stolen.”",
+      "ko": "후일에 외삼촌께서 오셔서 내 품삯을 조사하실 때에 나의 의가 나의 표징이 되리이다 내게 혹시 염소 중 아롱지지 아니한 자나 점이 없는 자나 양 중 검지 아니한 자가 있거든 다 도적질한 것으로 인정하소서",
+      "source_text_hash": "3bd550999b9573915feef1a9b4b8006e1b5a1b502c0f90db5d0009cb633dc17f",
+      "translation_text_hash": "3ee466f3294465a583e3b93677643556f8b2855d46a9a400ddf97c8af5efed32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후일에 외삼촌께서 오셔서 내 품삯을 조사하실 때에 나의 의가 나의 표징이 되리이다 내게 혹시 염소 중 아롱지지 아니한 자나 점이 없는 자나 양 중 검지 아니한 자가 있거든 다 도적질한 것으로 인정하소서"
+      ],
+      "raw_text_hashes": [
+        "3ee466f3294465a583e3b93677643556f8b2855d46a9a400ddf97c8af5efed32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:34",
+      "sequence": 865,
+      "chapter_label": "GEN 30",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 34
+        }
+      ],
+      "en": "Laban said, “Behold, let it be according to your word.”",
+      "ko": "라반이 가로되 내가 네 말대로 하리라 하고",
+      "source_text_hash": "cfe8ee679cd024e9b27d84bf6b96c921d0bf4ba03cb2f867a19536ea92a65f83",
+      "translation_text_hash": "9a9d15afa8a5ae107389e14dd0e870fcd2c0d72a5a0a7e226e96eb21100b0bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 가로되 내가 네 말대로 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "9a9d15afa8a5ae107389e14dd0e870fcd2c0d72a5a0a7e226e96eb21100b0bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:35",
+      "sequence": 866,
+      "chapter_label": "GEN 30",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 35
+        }
+      ],
+      "en": "That day, he removed the male goats that were streaked and spotted, and all the female goats that were speckled and spotted, every one that had white in it, and all the black ones among the sheep, and gave them into the hand of his sons.",
+      "ko": "그 날에 그가 수염소 중 얼룩무늬 있는 자와 점 있는 자를 가리고 암염소 중 흰 바탕에 아롱진 자와 점 있는 자를 가리고 양 중의 검은 자들을 가려 자기 아들들의 손에 붙이고",
+      "source_text_hash": "206573ddd485c24870a9cbaa0d998b900dcb3fce1d9cb133a741d552cf4d21d7",
+      "translation_text_hash": "fe10e2ea57afcecc7255dc7ad71dac2cfb23058ee5d66f431aa3ba7f26cbbc78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그가 수염소 중 얼룩무늬 있는 자와 점 있는 자를 가리고 암염소 중 흰 바탕에 아롱진 자와 점 있는 자를 가리고 양 중의 검은 자들을 가려 자기 아들들의 손에 붙이고"
+      ],
+      "raw_text_hashes": [
+        "fe10e2ea57afcecc7255dc7ad71dac2cfb23058ee5d66f431aa3ba7f26cbbc78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:36",
+      "sequence": 867,
+      "chapter_label": "GEN 30",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 36
+        }
+      ],
+      "en": "He set three days’ journey between himself and Jacob, and Jacob fed the rest of Laban’s flocks.",
+      "ko": "자기와 야곱의 사이를 사흘길이 뜨게 하였고 야곱은 라반의 남은 양떼를 치니라",
+      "source_text_hash": "b9704ce94ff6f6f08ceafe5ade215ba588b5866b2d87d08cc609d117aa15d970",
+      "translation_text_hash": "dfd9a0d5aa902643a028569b6c0a3a36193ce23d529f8981891bbfea678a6512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기와 야곱의 사이를 사흘길이 뜨게 하였고 야곱은 라반의 남은 양떼를 치니라"
+      ],
+      "raw_text_hashes": [
+        "dfd9a0d5aa902643a028569b6c0a3a36193ce23d529f8981891bbfea678a6512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:37",
+      "sequence": 868,
+      "chapter_label": "GEN 30",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 37
+        }
+      ],
+      "en": "Jacob took to himself rods of fresh poplar, almond, and plane tree, peeled white streaks in them, and made the white appear which was in the rods.",
+      "ko": "야곱이 버드나무와 살구나무와 신풍나무의 푸른 가지를 취하여 그것들의 껍질을 벗겨 흰 무늬를 내고",
+      "source_text_hash": "7fbacdcd795c10738bc0affdffc1c241449fc828a0b74dd1dec2a1e5dde924e6",
+      "translation_text_hash": "01add7f8d227cf124c4d7c49031080a69a32d753e02bd1f4ad611fe4cb8ab3e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 버드나무와 살구나무와 신풍나무의 푸른 가지를 취하여 그것들의 껍질을 벗겨 흰 무늬를 내고"
+      ],
+      "raw_text_hashes": [
+        "01add7f8d227cf124c4d7c49031080a69a32d753e02bd1f4ad611fe4cb8ab3e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:38",
+      "sequence": 869,
+      "chapter_label": "GEN 30",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 38
+        }
+      ],
+      "en": "He set the rods which he had peeled opposite the flocks in the watering troughs where the flocks came to drink. They conceived when they came to drink.",
+      "ko": "그 껍질 벗긴 가지를 양떼가 와서 먹는 개천의 물구유에 세워 양떼에 향하게 하매 그 떼가 물을 먹으러 올 때에 새끼를 배니",
+      "source_text_hash": "49b2e335f26a14793a8597b6f2a763a1f8a50161e89624e193038980ab3f43eb",
+      "translation_text_hash": "cc444c72bf7430399b8fe2e3c75d7387fb11e1f5739fb2ec519ffc4a28fa4238",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 껍질 벗긴 가지를 양떼가 와서 먹는 개천의 물구유에 세워 양떼에 향하게 하매 그 떼가 물을 먹으러 올 때에 새끼를 배니"
+      ],
+      "raw_text_hashes": [
+        "cc444c72bf7430399b8fe2e3c75d7387fb11e1f5739fb2ec519ffc4a28fa4238"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:39",
+      "sequence": 870,
+      "chapter_label": "GEN 30",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 39
+        }
+      ],
+      "en": "The flocks conceived before the rods, and the flocks produced streaked, speckled, and spotted.",
+      "ko": "가지 앞에서 새끼를 배므로 얼룩얼룩한 것과 점이 있고 아롱진 것을 낳은지라",
+      "source_text_hash": "042e20a36d65d5e08a6654493714c6330c86feea02b3a7de0f669b077f423152",
+      "translation_text_hash": "da88ff71188143aa38b0cfc400d5b62265415294affd952a86161416131e80b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가지 앞에서 새끼를 배므로 얼룩얼룩한 것과 점이 있고 아롱진 것을 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "da88ff71188143aa38b0cfc400d5b62265415294affd952a86161416131e80b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:40",
+      "sequence": 871,
+      "chapter_label": "GEN 30",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 40
+        }
+      ],
+      "en": "Jacob separated the lambs, and set the faces of the flocks toward the streaked and all the black in Laban’s flock. He put his own droves apart, and didn’t put them into Laban’s flock.",
+      "ko": "야곱이 새끼 양을 구분하고 그 얼룩무늬와 검은 빛 있는 것으로 라반의 양과 서로 대하게하며 자기 양을 따로 두어 라반의 양과 섞이지 않게 하며",
+      "source_text_hash": "6042d40914c88a772e8c095e5bbfa76150c322bf13820e4b43d09fae52f3b7b6",
+      "translation_text_hash": "ba9340b5897ffc4107e6ce971fae57a143c4e60a9d89ada128f435045a2f3393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 새끼 양을 구분하고 그 얼룩무늬와 검은 빛 있는 것으로 라반의 양과 서로 대하게하며 자기 양을 따로 두어 라반의 양과 섞이지 않게 하며"
+      ],
+      "raw_text_hashes": [
+        "ba9340b5897ffc4107e6ce971fae57a143c4e60a9d89ada128f435045a2f3393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:41",
+      "sequence": 872,
+      "chapter_label": "GEN 30",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 41
+        }
+      ],
+      "en": "Whenever the stronger of the flock conceived, Jacob laid the rods in front of the eyes of the flock in the watering troughs, that they might conceive among the rods;",
+      "ko": "실한 양이 새끼 밸 때에는 야곱이 개천에다가 양떼의 눈앞에 그 가지를 두어 양으로 그 가지 곁에서 새끼를 배게 하고",
+      "source_text_hash": "1420f4086a5be8b5fb4edc0f0c9fb20d8cb97fd4c54604b0d598ea1dcd7c29e9",
+      "translation_text_hash": "7496aac83638722613e063b9923ee86beb053d54560fb619fa6850e33b3c5c4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실한 양이 새끼 밸 때에는 야곱이 개천에다가 양떼의 눈앞에 그 가지를 두어 양으로 그 가지 곁에서 새끼를 배게 하고"
+      ],
+      "raw_text_hashes": [
+        "7496aac83638722613e063b9923ee86beb053d54560fb619fa6850e33b3c5c4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:42",
+      "sequence": 873,
+      "chapter_label": "GEN 30",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 42
+        }
+      ],
+      "en": "but when the flock were feeble, he didn’t put them in. So the feebler were Laban’s, and the stronger Jacob’s.",
+      "ko": "약한 양이면 그 가지를 두지아니하니 이러므로 약한 자는 라반의 것이 되고 실한 자는 야곱의 것이 된지라",
+      "source_text_hash": "b40eab168437a4caa8b56bc1b595be35fca20b3f826090adb27b7fc8f569ede7",
+      "translation_text_hash": "c68d8f39afdbc8067c9971318635ca5778d0f3f4f3ef87dba9d4c653e7e50b5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약한 양이면 그 가지를 두지아니하니 이러므로 약한 자는 라반의 것이 되고 실한 자는 야곱의 것이 된지라"
+      ],
+      "raw_text_hashes": [
+        "c68d8f39afdbc8067c9971318635ca5778d0f3f4f3ef87dba9d4c653e7e50b5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:30:43",
+      "sequence": 874,
+      "chapter_label": "GEN 30",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 30,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 30,
+          "verse": 43
+        }
+      ],
+      "en": "The man increased exceedingly, and had large flocks, female servants and male servants, and camels and donkeys.",
+      "ko": "이에 그 사람이 심히 풍부하여 양떼와 노비와 약대와 나귀가 많았더라",
+      "source_text_hash": "46dad28fd7359cd4b455fb1609d541fe62e2aa7e1bb0f99f9157ff4e6b4d43c6",
+      "translation_text_hash": "ab590b93faad84a0cf37aa8f9d05e8e6f18c8f967da0e6a493e7e7260f087a45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 사람이 심히 풍부하여 양떼와 노비와 약대와 나귀가 많았더라"
+      ],
+      "raw_text_hashes": [
+        "ab590b93faad84a0cf37aa8f9d05e8e6f18c8f967da0e6a493e7e7260f087a45"
+      ]
+    }
+  ]
+}

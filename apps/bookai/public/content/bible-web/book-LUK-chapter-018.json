@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:018",
+  "unit_ordinal": 991,
+  "unit_label": "LUK 18",
+  "book_code": "LUK",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:18:1",
+      "sequence": 25689,
+      "chapter_label": "LUK 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "He also spoke a parable to them that they must always pray and not give up,",
+      "ko": "항상 기도하고 낙망치 말아야 될 것을 저희에게 비유로 하여",
+      "source_text_hash": "f0cacb69c8268ddc36243ca9937624c981147c0b30cf25bd4b876f3d4c3e8a4f",
+      "translation_text_hash": "770d4b9aa372d7e73767cc3ca345aa704ac444912ee9ad94426616de83a8f53e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 기도하고 낙망치 말아야 될 것을 저희에게 비유로 하여"
+      ],
+      "raw_text_hashes": [
+        "770d4b9aa372d7e73767cc3ca345aa704ac444912ee9ad94426616de83a8f53e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:2",
+      "sequence": 25690,
+      "chapter_label": "LUK 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "saying, “There was a judge in a certain city who didn’t fear God and didn’t respect man.",
+      "ko": "가라사대 어떤 도시에 하나님을 두려워 아니하고 사람을 무시하는 한 재판관이 있는데",
+      "source_text_hash": "e879ffbc3b2b62f835c07e013b299226b8cea544404ea6ea85a3252ea60516d9",
+      "translation_text_hash": "99a15ea87b017371a7dd42570a36ae97d534dfb802a83b44283c1e758f799e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 어떤 도시에 하나님을 두려워 아니하고 사람을 무시하는 한 재판관이 있는데"
+      ],
+      "raw_text_hashes": [
+        "99a15ea87b017371a7dd42570a36ae97d534dfb802a83b44283c1e758f799e89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:3",
+      "sequence": 25691,
+      "chapter_label": "LUK 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "A widow was in that city, and she often came to him, saying, ‘Defend me from my adversary!’",
+      "ko": "그 도시에 한 과부가 있어 자주 그에게 가서 내 원수에 대한 나의 원한을 풀어 주소서 하되",
+      "source_text_hash": "82b255db7078c458f7998b9f023ed14a5c5e7bc8eaf5f76c2f89c58b41331f17",
+      "translation_text_hash": "7bc75e36af9777c669dd232d2d36c509b39bd00fd9f3de24aa4298f503ca61b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 도시에 한 과부가 있어 자주 그에게 가서 내 원수에 대한 나의 원한을 풀어 주소서 하되"
+      ],
+      "raw_text_hashes": [
+        "7bc75e36af9777c669dd232d2d36c509b39bd00fd9f3de24aa4298f503ca61b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:4",
+      "sequence": 25692,
+      "chapter_label": "LUK 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "He wouldn’t for a while; but afterward he said to himself, ‘Though I neither fear God nor respect man,",
+      "ko": "그가 얼마 동안 듣지 아니하다가 후에 속으로 생각하되 내가 하나님을 두려워 아니하고 사람을 무시하나",
+      "source_text_hash": "d8f233f1b1dabac1b13adb6867c1400ac29ed8936e396b166146221e2a5b25e6",
+      "translation_text_hash": "3cc6be6670312b4cce3cc274405e93752e871680866cd77b592830bf98ae39dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 얼마 동안 듣지 아니하다가 후에 속으로 생각하되 내가 하나님을 두려워 아니하고 사람을 무시하나"
+      ],
+      "raw_text_hashes": [
+        "3cc6be6670312b4cce3cc274405e93752e871680866cd77b592830bf98ae39dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:5",
+      "sequence": 25693,
+      "chapter_label": "LUK 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "yet because this widow bothers me, I will defend her, or else she will wear me out by her continual coming.’”",
+      "ko": "이 과부가 나를 번거롭게 하니 내가 그 원한을 풀어 주리라 그렇지 않으면 늘 와서 나를 괴롭게 하리라 하였느니라",
+      "source_text_hash": "c56a734effad5d21ead6f991c5a4a948d7dc7f81331a1d9e2124ba964dde5d0a",
+      "translation_text_hash": "31d1e0d112afc94c185e1488ce8a0e7e03d9d120b3fdbd65c8a01629c976a176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 과부가 나를 번거롭게 하니 내가 그 원한을 풀어 주리라 그렇지 않으면 늘 와서 나를 괴롭게 하리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "31d1e0d112afc94c185e1488ce8a0e7e03d9d120b3fdbd65c8a01629c976a176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:6",
+      "sequence": 25694,
+      "chapter_label": "LUK 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "The Lord said, “Listen to what the unrighteous judge says.",
+      "ko": "주께서 또 가라사대 불의한 재판관의 말한 것을 들으라",
+      "source_text_hash": "42bca536078726b787b345089d4857283c9e7198f599edf7f5a59cdcf607c4f7",
+      "translation_text_hash": "2d6e00748d6dde8628b1a6b93de6023cc945104394f074cc1ff189216ee8460b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 가라사대 불의한 재판관의 말한 것을 들으라"
+      ],
+      "raw_text_hashes": [
+        "2d6e00748d6dde8628b1a6b93de6023cc945104394f074cc1ff189216ee8460b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:7",
+      "sequence": 25695,
+      "chapter_label": "LUK 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Won’t God avenge his chosen ones who are crying out to him day and night, and yet he exercises patience with them?",
+      "ko": "하물며 하나님께서 그 밤낮 부르짖는 택하신 자들의 원한을 풀어 주지 아니하시겠느냐 저희에게 오래 참으시겠느냐",
+      "source_text_hash": "743061a0edc3baffd2e3f4daa63daeda0fe09fdab547409b54f94527682f29e0",
+      "translation_text_hash": "1e3f8a85fe7d2e66ad40f8886865a416f95491cbee029343fc5bcc3585118529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 하나님께서 그 밤낮 부르짖는 택하신 자들의 원한을 풀어 주지 아니하시겠느냐 저희에게 오래 참으시겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1e3f8a85fe7d2e66ad40f8886865a416f95491cbee029343fc5bcc3585118529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:8",
+      "sequence": 25696,
+      "chapter_label": "LUK 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "I tell you that he will avenge them quickly. Nevertheless, when the Son of Man comes, will he find faith on the earth?”",
+      "ko": "내가 너희에게 이르노니 속히 그 원한을 풀어 주시리라 그러나 인자가 올 때에 세상에서 믿음을 보겠느냐 하시니라",
+      "source_text_hash": "26c54d450804a7fcca2943e4a227dd1f930c079b05cb8028f2ac7b0aaacf6e28",
+      "translation_text_hash": "a7502bc35539ea60bf1d9a0f16d185e0e97a399171cc5e9ae533dc48f9e2037c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 속히 그 원한을 풀어 주시리라 그러나 인자가 올 때에 세상에서 믿음을 보겠느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a7502bc35539ea60bf1d9a0f16d185e0e97a399171cc5e9ae533dc48f9e2037c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:9",
+      "sequence": 25697,
+      "chapter_label": "LUK 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "He also spoke this parable to certain people who were convinced of their own righteousness, and who despised all others:",
+      "ko": "또 자기를 의롭다고 믿고 다른 사람을 멸시하는 자들에게 이 비유로 말씀하시되",
+      "source_text_hash": "3b795ba77d921f8794c98eba361b8ecdff764ec00b4716a32aad72f60bd1cb33",
+      "translation_text_hash": "3d9c61c1a0e0a2517384f5adc396c083bdd6eb54854bea5da190f56c8e05c22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기를 의롭다고 믿고 다른 사람을 멸시하는 자들에게 이 비유로 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "3d9c61c1a0e0a2517384f5adc396c083bdd6eb54854bea5da190f56c8e05c22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:10",
+      "sequence": 25698,
+      "chapter_label": "LUK 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "“Two men went up into the temple to pray; one was a Pharisee, and the other was a tax collector.",
+      "ko": "두 사람이 기도하러 성전에 올라가니 하나는 바리새인이요 하나는 세리라",
+      "source_text_hash": "e8cca485f6e3d64c633ca33169391c57c3768113577406ce615afe8ba8525b87",
+      "translation_text_hash": "10404ae290fd86229403961439f8d5481d0a56c9cd6d83aa30a44fc14d6e275a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 기도하러 성전에 올라가니 하나는 바리새인이요 하나는 세리라"
+      ],
+      "raw_text_hashes": [
+        "10404ae290fd86229403961439f8d5481d0a56c9cd6d83aa30a44fc14d6e275a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:11",
+      "sequence": 25699,
+      "chapter_label": "LUK 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "The Pharisee stood and prayed by himself like this: ‘God, I thank you that I am not like the rest of men: extortionists, unrighteous, adulterers, or even like this tax collector.",
+      "ko": "바리새인은 서서 따로 기도하여 가로되 하나님이여 나는 다른 사람들 곧 토색, 불의, 간음을 하는 자들과 같지 아니하고 이 세리와도 같지 아니함을 감사하나이다",
+      "source_text_hash": "5551c8208877018aeff9697ccfcdee67e4f9538514d1e38c64b00ec795a0b3d2",
+      "translation_text_hash": "637c295e7d35b6fa29ecb6fce72c5b9e71971aaea45334af3160d3d50432c953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인은 서서 따로 기도하여 가로되 하나님이여 나는 다른 사람들 곧 토색, 불의, 간음을 하는 자들과 같지 아니하고 이 세리와도 같지 아니함을 감사하나이다"
+      ],
+      "raw_text_hashes": [
+        "637c295e7d35b6fa29ecb6fce72c5b9e71971aaea45334af3160d3d50432c953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:12",
+      "sequence": 25700,
+      "chapter_label": "LUK 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "I fast twice a week. I give tithes of all that I get.’",
+      "ko": "나는 이레에 두번씩 금식하고 또 소득의 십일조를 드리나이다 하고",
+      "source_text_hash": "9484d52830d2d22bafcc70d4846b6f5dba21799a698206f6b848cba63fd66315",
+      "translation_text_hash": "be8b360731c2edb7f9615455c3824920f9f8f18522f35d2bf2c0d993b431fabb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 이레에 두번씩 금식하고 또 소득의 십일조를 드리나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "be8b360731c2edb7f9615455c3824920f9f8f18522f35d2bf2c0d993b431fabb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:13",
+      "sequence": 25701,
+      "chapter_label": "LUK 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "But the tax collector, standing far away, wouldn’t even lift up his eyes to heaven, but beat his chest, saying, ‘God, be merciful to me, a sinner!’",
+      "ko": "세리는 멀리 서서 감히 눈을 들어 하늘을 우러러 보지도 못하고 다만 가슴을 치며 가로되 하나님이여 불쌍히 여기옵소서 나는 죄인이로소이다 하였느니라",
+      "source_text_hash": "bea2c4a53495769d4ca96a9fa83fae78fc24fd9869edd26988b87d915c45da39",
+      "translation_text_hash": "b947314eae352c2a8d933505384ff8f073ad0d1b92822a5be5f091cecf886629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세리는 멀리 서서 감히 눈을 들어 하늘을 우러러 보지도 못하고 다만 가슴을 치며 가로되 하나님이여 불쌍히 여기옵소서 나는 죄인이로소이다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b947314eae352c2a8d933505384ff8f073ad0d1b92822a5be5f091cecf886629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:14",
+      "sequence": 25702,
+      "chapter_label": "LUK 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "I tell you, this man went down to his house justified rather than the other; for everyone who exalts himself will be humbled, but he who humbles himself will be exalted.”",
+      "ko": "내가 너희에게 이르노니 이 사람이 저보다 의롭다 하심을 받고 집에 내려 갔느니라 무릇 자기를 높이는 자는 낮아지고 자기를 낮추는 자는 높아지리라 하시니라",
+      "source_text_hash": "12f724e70373dd10dcfeedfde4bb836f6d20c467b7250e9e79661424f8742482",
+      "translation_text_hash": "cd2bb9882a8f50a4989b1b06cc6b74714dc2090df507ed9160389b14cc5a7eb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 이 사람이 저보다 의롭다 하심을 받고 집에 내려 갔느니라 무릇 자기를 높이는 자는 낮아지고 자기를 낮추는 자는 높아지리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "cd2bb9882a8f50a4989b1b06cc6b74714dc2090df507ed9160389b14cc5a7eb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:15",
+      "sequence": 25703,
+      "chapter_label": "LUK 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "They were also bringing their babies to him, that he might touch them. But when the disciples saw it, they rebuked them.",
+      "ko": "사람들이 예수의 만져 주심을 바라고 자기 어린 아기를 데리고 오매 제자들이 보고 꾸짖거늘",
+      "source_text_hash": "2bdf5f0c35789a04367c5dcbda74b7a06d15b95e97bdf4670b8e82df13b675f8",
+      "translation_text_hash": "5f8a17a6af388659416c90ca143e24294fe71e001a91142ae86ae0e17a54b6be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 예수의 만져 주심을 바라고 자기 어린 아기를 데리고 오매 제자들이 보고 꾸짖거늘"
+      ],
+      "raw_text_hashes": [
+        "5f8a17a6af388659416c90ca143e24294fe71e001a91142ae86ae0e17a54b6be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:16",
+      "sequence": 25704,
+      "chapter_label": "LUK 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "Jesus summoned them, saying, “Allow the little children to come to me, and don’t hinder them, for God’s Kingdom belongs to such as these.",
+      "ko": "예수께서 그 어린 아이들을 불러 가까이 하시고 이르시되 어린 아이들이 내게 오는 것을 용납하고 금하지 말라 하나님의 나라가 이런 자의 것이니라",
+      "source_text_hash": "3667f70153a998039204133573756c7a7e9fad8ba6bf674e14ee85330bc195b1",
+      "translation_text_hash": "52e0a38fc253186adf0292335a581cdae07595b21d1797985d79b113ca911c29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 어린 아이들을 불러 가까이 하시고 이르시되 어린 아이들이 내게 오는 것을 용납하고 금하지 말라 하나님의 나라가 이런 자의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "52e0a38fc253186adf0292335a581cdae07595b21d1797985d79b113ca911c29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:17",
+      "sequence": 25705,
+      "chapter_label": "LUK 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "Most certainly, I tell you, whoever doesn’t receive God’s Kingdom like a little child, he will in no way enter into it.”",
+      "ko": "내가 진실로 너희에게 이르노니 누구든지 하나님의 나라를 어린 아이와 같이 받들지 않는 자는 결단코 들어가지 못하리라 하시니라",
+      "source_text_hash": "91830daac0b8cc48467e3c2a2c389e818b74c33d0a4f0dbb65e1c7ea3b560aed",
+      "translation_text_hash": "6bf3e326610f87cada30e7400033d58f7fa701c8f775a6ef5030d70c7991a36f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 누구든지 하나님의 나라를 어린 아이와 같이 받들지 않는 자는 결단코 들어가지 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6bf3e326610f87cada30e7400033d58f7fa701c8f775a6ef5030d70c7991a36f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:18",
+      "sequence": 25706,
+      "chapter_label": "LUK 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "A certain ruler asked him, saying, “Good Teacher, what shall I do to inherit eternal life?”",
+      "ko": "어떤 관원이 물어 가로되 선한 선생님이여 내가 무엇을 하여야 영생을 얻으리이까",
+      "source_text_hash": "e04a9b8905ded98816d58b3ca9f562806a1cf0f147ba2e62f550f755218ee9f0",
+      "translation_text_hash": "c6ba13d22391dac8595c6fa3c48d55edbfd92dc007ec0e94788c77a522a435b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 관원이 물어 가로되 선한 선생님이여 내가 무엇을 하여야 영생을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "c6ba13d22391dac8595c6fa3c48d55edbfd92dc007ec0e94788c77a522a435b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:19",
+      "sequence": 25707,
+      "chapter_label": "LUK 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Jesus asked him, “Why do you call me good? No one is good, except one: God.",
+      "ko": "예수께서 이르시되 네가 어찌하여 나를 선하다 일컫느냐 하나님 한분 외에는 선한 이가 없느니라",
+      "source_text_hash": "f48b68501911585796a5abc6fc6cae30e22b67f5b57075aa38ebeb476c7f7ee2",
+      "translation_text_hash": "dff823b9cccdced17bfe82124e27c80b95320e1f56bf5c2a97699744dc7aa34d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 네가 어찌하여 나를 선하다 일컫느냐 하나님 한분 외에는 선한 이가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "dff823b9cccdced17bfe82124e27c80b95320e1f56bf5c2a97699744dc7aa34d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:20",
+      "sequence": 25708,
+      "chapter_label": "LUK 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "You know the commandments: ‘Don’t commit adultery,’ ‘Don’t murder,’ ‘Don’t steal,’ ‘Don’t give false testimony,’ ‘Honor your father and your mother.’”",
+      "ko": "네가 계명을 아나니 간음하지 말라, 살인하지 말라, 도적질하지 말라, 거짓증거하지 말라, 네 부모를 공경하라 하였느니라",
+      "source_text_hash": "955974ffe7e23765b8d30748ef427491de6dd80cd0ee5225dac86bd9295f21e0",
+      "translation_text_hash": "b1ac8be55711015986076b73a115b31cc38ed7369ffc09a25e346b263b5d7266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 계명을 아나니 간음하지 말라, 살인하지 말라, 도적질하지 말라, 거짓증거하지 말라, 네 부모를 공경하라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b1ac8be55711015986076b73a115b31cc38ed7369ffc09a25e346b263b5d7266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:21",
+      "sequence": 25709,
+      "chapter_label": "LUK 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "He said, “I have observed all these things from my youth up.”",
+      "ko": "여짜오되 이것은 내가 어려서부터 다 지키었나이다",
+      "source_text_hash": "de7b3a154fbf6b69d0cfb8054e0129c41572861a53a6f916ad54a018b06def08",
+      "translation_text_hash": "94d647527938fe7046bfdbe1d6c5e7001dad31d5f404ae1438834e11b9c9c14a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜오되 이것은 내가 어려서부터 다 지키었나이다"
+      ],
+      "raw_text_hashes": [
+        "94d647527938fe7046bfdbe1d6c5e7001dad31d5f404ae1438834e11b9c9c14a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:22",
+      "sequence": 25710,
+      "chapter_label": "LUK 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "When Jesus heard these things, he said to him, “You still lack one thing. Sell all that you have and distribute it to the poor. Then you will have treasure in heaven; then come, follow me.”",
+      "ko": "예수께서 이 말을 들으시고 이르시되 네가 오히려 한 가지 부족한 것이 있으니 네게 있는 것을 다 팔아 가난한 자들을 나눠 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니",
+      "source_text_hash": "1513d89e76f7b0372c1cfe951d6adf74a5630bdf61fe0c9ee82fd1b1a2ef77c7",
+      "translation_text_hash": "9fa049ca48eb21fda2b9b55aa090999503c2b7a96acb7a559d52779dfa141f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말을 들으시고 이르시되 네가 오히려 한 가지 부족한 것이 있으니 네게 있는 것을 다 팔아 가난한 자들을 나눠 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "9fa049ca48eb21fda2b9b55aa090999503c2b7a96acb7a559d52779dfa141f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:23",
+      "sequence": 25711,
+      "chapter_label": "LUK 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "But when he heard these things, he became very sad, for he was very rich.",
+      "ko": "그 사람이 큰 부자인고로 이 말씀을 듣고 심히 근심하더라",
+      "source_text_hash": "d6808a3696dbebad65a41ea976c27b619ddad527890972b77c5bb8cbfbea9b25",
+      "translation_text_hash": "78ad8d64872e1409a0f329e9fb0e7483a31744c8f44821836e78c330ea101a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 큰 부자인고로 이 말씀을 듣고 심히 근심하더라"
+      ],
+      "raw_text_hashes": [
+        "78ad8d64872e1409a0f329e9fb0e7483a31744c8f44821836e78c330ea101a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:24",
+      "sequence": 25712,
+      "chapter_label": "LUK 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Jesus, seeing that he became very sad, said, “How hard it is for those who have riches to enter into God’s Kingdom!",
+      "ko": "예수께서 저를 보시고 가라사대 재물이 있는 자는 하나님의 나라에 들어가기가 어떻게 어려운지",
+      "source_text_hash": "e52e366fc0295187e377397a29cfc15370bbb8b33d37ec8a09387d59ae0c55c4",
+      "translation_text_hash": "4df936a685e943dde9cd15c263362f9904045f0d1c58daf0e7437ed37ef69dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저를 보시고 가라사대 재물이 있는 자는 하나님의 나라에 들어가기가 어떻게 어려운지"
+      ],
+      "raw_text_hashes": [
+        "4df936a685e943dde9cd15c263362f9904045f0d1c58daf0e7437ed37ef69dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:25",
+      "sequence": 25713,
+      "chapter_label": "LUK 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "For it is easier for a camel to enter in through a needle’s eye than for a rich man to enter into God’s Kingdom.”",
+      "ko": "약대가 바늘귀로 들어가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대",
+      "source_text_hash": "1ce60fd7df155bd93d0838747aa3e0483b12e97c12ac0bd703513a85c77fe2f5",
+      "translation_text_hash": "e4466aea0c914f75c404ccd0fd073417bfdf906ae10caa97f78f1524ec72d5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약대가 바늘귀로 들어가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "e4466aea0c914f75c404ccd0fd073417bfdf906ae10caa97f78f1524ec72d5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:26",
+      "sequence": 25714,
+      "chapter_label": "LUK 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "Those who heard it said, “Then who can be saved?”",
+      "ko": "듣는 자들이 가로되 그런즉 누가 구원을 얻을 수 있나이까",
+      "source_text_hash": "0b1891630ca919924bbcf0760aacd861d5262b7f86f5b14346f02cbca9fbc3f5",
+      "translation_text_hash": "48e46c596d31b2e8f6c1c77185a2392b674c7c58467010f3447b0eb91c59b2b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 자들이 가로되 그런즉 누가 구원을 얻을 수 있나이까"
+      ],
+      "raw_text_hashes": [
+        "48e46c596d31b2e8f6c1c77185a2392b674c7c58467010f3447b0eb91c59b2b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:27",
+      "sequence": 25715,
+      "chapter_label": "LUK 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "But he said, “The things which are impossible with men are possible with God.”",
+      "ko": "가라사대 무릇 사람의 할 수 없는 것을 하나님은 하실 수 있느니라",
+      "source_text_hash": "da6ded0be7db5ca69279f9aeafb19acde8fff762b182830fc151882a2dc0f47d",
+      "translation_text_hash": "4fcd1f991033fce935ee2600a57ce7cb00b8e022577bf5d93d681fdae8d7a768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 무릇 사람의 할 수 없는 것을 하나님은 하실 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "4fcd1f991033fce935ee2600a57ce7cb00b8e022577bf5d93d681fdae8d7a768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:28",
+      "sequence": 25716,
+      "chapter_label": "LUK 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "Peter said, “Look, we have left everything and followed you.”",
+      "ko": "베드로가 여짜오되 보옵소서 우리가 우리의 것을 다 버리고 주를 좇았나이다",
+      "source_text_hash": "a27e05bfdb5a75df62ab3696527d03b6efe53088788da6e19f2b8d15e9d1626b",
+      "translation_text_hash": "4242768eb45b0ab30d2b9ccb94e0d1899a7c93cbf7421c0219892615e5d37d5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 여짜오되 보옵소서 우리가 우리의 것을 다 버리고 주를 좇았나이다"
+      ],
+      "raw_text_hashes": [
+        "4242768eb45b0ab30d2b9ccb94e0d1899a7c93cbf7421c0219892615e5d37d5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:29",
+      "sequence": 25717,
+      "chapter_label": "LUK 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "He said to them, “Most certainly I tell you, there is no one who has left house, or wife, or brothers, or parents, or children, for God’s Kingdom’s sake,",
+      "ko": "이르시되 내가 진실로 너희에게 이르노니 하나님의 나라를 위하여 집이나 아내나 형제나 부모나 자녀를 버린 자는",
+      "source_text_hash": "1b406ef04cef013fb59f88737619eb6ef8b5584042912e6c9b667c307fdd0783",
+      "translation_text_hash": "a9e5bdea1157dadb6aa2f6823c5c0b568fc0c53660fdb75a2af41316423c48b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 내가 진실로 너희에게 이르노니 하나님의 나라를 위하여 집이나 아내나 형제나 부모나 자녀를 버린 자는"
+      ],
+      "raw_text_hashes": [
+        "a9e5bdea1157dadb6aa2f6823c5c0b568fc0c53660fdb75a2af41316423c48b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:30",
+      "sequence": 25718,
+      "chapter_label": "LUK 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "who will not receive many times more in this time, and in the world to come, eternal life.”",
+      "ko": "금세에 있어 여러 배를 받고 내세에 영생을 받지 못할 자가 없느니라 하시니라",
+      "source_text_hash": "0cde6e052c37268e2353d2cf4bfd132e3f9b06bdfa80f0a0347d73a0eb812379",
+      "translation_text_hash": "574fcf11e60ea95402abbd7d63264689f90f92445c1face67b6d98ae15aeace0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금세에 있어 여러 배를 받고 내세에 영생을 받지 못할 자가 없느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "574fcf11e60ea95402abbd7d63264689f90f92445c1face67b6d98ae15aeace0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:31",
+      "sequence": 25719,
+      "chapter_label": "LUK 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "He took the twelve aside and said to them, “Behold, we are going up to Jerusalem, and all the things that are written through the prophets concerning the Son of Man will be completed.",
+      "ko": "예수께서 열 두 제자를 데리시고 이르시되 보라 우리가 예루살렘으로 올라가노니 선지자들로 기록된 모든 것이 인자에게 응하리라",
+      "source_text_hash": "a7aad67f16979d5d92ba76e8ef2b499119365d0ee332bde2ab5d9f5ee64f7648",
+      "translation_text_hash": "b7f1a970ecfa74f1a2354742541ff00dc2b3f76bb1599f5579d334c13a8db2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 열 두 제자를 데리시고 이르시되 보라 우리가 예루살렘으로 올라가노니 선지자들로 기록된 모든 것이 인자에게 응하리라"
+      ],
+      "raw_text_hashes": [
+        "b7f1a970ecfa74f1a2354742541ff00dc2b3f76bb1599f5579d334c13a8db2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:32",
+      "sequence": 25720,
+      "chapter_label": "LUK 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "For he will be delivered up to the Gentiles, will be mocked, treated shamefully, and spit on.",
+      "ko": "인자가 이방인들에게 넘기워 희롱을 받고 능욕을 받고 침 뱉음을 받겠으며",
+      "source_text_hash": "e9f4f42f38149c8a57a8a2633db1f1c8d718f593ad64b3f3b7ada27bb829b934",
+      "translation_text_hash": "23c2bbe41bee8cead907b467f25b826e634e38259acdf03a2dc7507f8404e4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 이방인들에게 넘기워 희롱을 받고 능욕을 받고 침 뱉음을 받겠으며"
+      ],
+      "raw_text_hashes": [
+        "23c2bbe41bee8cead907b467f25b826e634e38259acdf03a2dc7507f8404e4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:33",
+      "sequence": 25721,
+      "chapter_label": "LUK 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "They will scourge and kill him. On the third day, he will rise again.”",
+      "ko": "저희는 채찍질하고 죽일 것이니 저는 삼일만에 살아나리라 하시되",
+      "source_text_hash": "3bd0e84937c0ab7c0ba8b6a94a63fd0fe2b10f9716cc93eeb5b8a5b6f2f3d21c",
+      "translation_text_hash": "e1f8e1657d1b11b3af5c2fd29d55b9a41e3d36e9cf80edf569cbfbbd4d95cf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 채찍질하고 죽일 것이니 저는 삼일만에 살아나리라 하시되"
+      ],
+      "raw_text_hashes": [
+        "e1f8e1657d1b11b3af5c2fd29d55b9a41e3d36e9cf80edf569cbfbbd4d95cf5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:34",
+      "sequence": 25722,
+      "chapter_label": "LUK 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "They understood none of these things. This saying was hidden from them, and they didn’t understand the things that were said.",
+      "ko": "제자들이 이것을 하나도 깨닫지 못하였으니 그 말씀이 감추였으므로 저희가 그 이르신 바를 알지 못하였더라",
+      "source_text_hash": "c411efa87c6293555e2dce520c9fe6a3e9a0225df033979a4f5596ac57153922",
+      "translation_text_hash": "e946769ba58ab1505347f250d7471468646290cf86b941bf458e985c0e903fef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 이것을 하나도 깨닫지 못하였으니 그 말씀이 감추였으므로 저희가 그 이르신 바를 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "e946769ba58ab1505347f250d7471468646290cf86b941bf458e985c0e903fef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:35",
+      "sequence": 25723,
+      "chapter_label": "LUK 18",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 35
+        }
+      ],
+      "en": "As he came near Jericho, a certain blind man sat by the road, begging.",
+      "ko": "여리고에 가까이 오실 때에 한 소경이 길 가에 앉아 구걸하다가",
+      "source_text_hash": "50c3360db00fe6892972d132e886e1dd7dcad1124f85a7ef15a5c9bea8b67b33",
+      "translation_text_hash": "fda2c0c4cb8d96d7267284082e58bf249a91d4cec94e734849a43ce8397dc4b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여리고에 가까이 오실 때에 한 소경이 길 가에 앉아 구걸하다가"
+      ],
+      "raw_text_hashes": [
+        "fda2c0c4cb8d96d7267284082e58bf249a91d4cec94e734849a43ce8397dc4b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:36",
+      "sequence": 25724,
+      "chapter_label": "LUK 18",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 36
+        }
+      ],
+      "en": "Hearing a multitude going by, he asked what this meant.",
+      "ko": "무리의 지남을 듣고 이 무슨 일이냐고 물은대",
+      "source_text_hash": "166010e4e6658ac705ac6e31601382952dfe6b203610a7ca4c4e6e200980368f",
+      "translation_text_hash": "1b7103437eb05844b6a05a7366d105e0e75734c0cdadcefdb1fec5a63f7a3f48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리의 지남을 듣고 이 무슨 일이냐고 물은대"
+      ],
+      "raw_text_hashes": [
+        "1b7103437eb05844b6a05a7366d105e0e75734c0cdadcefdb1fec5a63f7a3f48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:37",
+      "sequence": 25725,
+      "chapter_label": "LUK 18",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 37
+        }
+      ],
+      "en": "They told him that Jesus of Nazareth was passing by.",
+      "ko": "저희가 나사렛 예수께서 지나신다 하니",
+      "source_text_hash": "b414adf4ceefcd99ab3d72e4bd7da218e52443d9d181938bb3e999049a72967e",
+      "translation_text_hash": "3862747b9b732b11e7963b149ede6280d852a6cd2429e00236a0724b45a1eac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나사렛 예수께서 지나신다 하니"
+      ],
+      "raw_text_hashes": [
+        "3862747b9b732b11e7963b149ede6280d852a6cd2429e00236a0724b45a1eac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:38",
+      "sequence": 25726,
+      "chapter_label": "LUK 18",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 38
+        }
+      ],
+      "en": "He cried out, “Jesus, you son of David, have mercy on me!”",
+      "ko": "소경이 외쳐 가로되 다윗의 자손 예수여 나를 불쌍히 여기소서 하거늘",
+      "source_text_hash": "76e6b60648e7b561259216d7da1cec2cdaf797f793b387579a7fd3eda694fde0",
+      "translation_text_hash": "5b3d7910361b599201f844062b26797e55c54546d11a58a352acc8086828d442",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경이 외쳐 가로되 다윗의 자손 예수여 나를 불쌍히 여기소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "5b3d7910361b599201f844062b26797e55c54546d11a58a352acc8086828d442"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:39",
+      "sequence": 25727,
+      "chapter_label": "LUK 18",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 39
+        }
+      ],
+      "en": "Those who led the way rebuked him, that he should be quiet; but he cried out all the more, “You son of David, have mercy on me!”",
+      "ko": "앞서 가는 자들이 저를 꾸짖어 잠잠하라 하되 저가 더욱 심히 소리질러 다윗의 자손이여 나를 불쌍히 여기소서 하는지라",
+      "source_text_hash": "0104b07462ef6527f035da7823dd2dd8b0a867dcd73f783605d5d69ea8d9e13f",
+      "translation_text_hash": "6e225b406a1d8888e361e50adb956ae530aa67f03e522ef8573acfb7d56eb943",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞서 가는 자들이 저를 꾸짖어 잠잠하라 하되 저가 더욱 심히 소리질러 다윗의 자손이여 나를 불쌍히 여기소서 하는지라"
+      ],
+      "raw_text_hashes": [
+        "6e225b406a1d8888e361e50adb956ae530aa67f03e522ef8573acfb7d56eb943"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:40",
+      "sequence": 25728,
+      "chapter_label": "LUK 18",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 40
+        }
+      ],
+      "en": "Standing still, Jesus commanded him to be brought to him. When he had come near, he asked him,",
+      "ko": "예수께서 머물러 서서 명하여 데려오라 하셨더니 저가 가까이 오매 물어 가라사대",
+      "source_text_hash": "7e6ad0b3f5077fc4f9c6e690419f5228a4edbd4e50bf7b0bc8d99fbfd3b9b307",
+      "translation_text_hash": "47b9db536fea3cc663ecec8f9ed048eae1b15d6b5090d350e5449ca8dad24174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 머물러 서서 명하여 데려오라 하셨더니 저가 가까이 오매 물어 가라사대"
+      ],
+      "raw_text_hashes": [
+        "47b9db536fea3cc663ecec8f9ed048eae1b15d6b5090d350e5449ca8dad24174"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:41",
+      "sequence": 25729,
+      "chapter_label": "LUK 18",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 41
+        }
+      ],
+      "en": "“What do you want me to do?”He said, “Lord, that I may see again.”",
+      "ko": "네게 무엇을 하여 주기를 원하느냐 가로되 주여 보기를 원하나이다",
+      "source_text_hash": "66df50bdbf344c9ce42829514cf0b58e6511867be73f24920fcfac43fbd29521",
+      "translation_text_hash": "e646fec8704af769d157270eb9be30e6ab57706e0aceb2591bbedddddc042692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 무엇을 하여 주기를 원하느냐 가로되 주여 보기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "e646fec8704af769d157270eb9be30e6ab57706e0aceb2591bbedddddc042692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:42",
+      "sequence": 25730,
+      "chapter_label": "LUK 18",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 42
+        }
+      ],
+      "en": "Jesus said to him, “Receive your sight. Your faith has healed you.”",
+      "ko": "예수께서 저에게 이르시되 보아라 네 믿음이 너를 구원하였느니라 하시매",
+      "source_text_hash": "7e3833213d70b9c25953215dbed873365ae976d440daf73b86b92f7ebb5cc5b3",
+      "translation_text_hash": "9ee526b8dc1b5627b059e2488f29b4a4ccd82bc04d3e31cd966a7b1ca38dfc7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저에게 이르시되 보아라 네 믿음이 너를 구원하였느니라 하시매"
+      ],
+      "raw_text_hashes": [
+        "9ee526b8dc1b5627b059e2488f29b4a4ccd82bc04d3e31cd966a7b1ca38dfc7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:18:43",
+      "sequence": 25731,
+      "chapter_label": "LUK 18",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 18,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 18,
+          "verse": 43
+        }
+      ],
+      "en": "Immediately he received his sight and followed him, glorifying God. All the people, when they saw it, praised God.",
+      "ko": "곧 보게 되어 하나님께 영광을 돌리며 예수를 좇으니 백성이 다 이를 보고 하나님을 찬양하니라",
+      "source_text_hash": "f126306c23a4a0c4a9eb49e2c7a71ea99951c35a24940257a5a15a6def008572",
+      "translation_text_hash": "ec8ef60af2efa7f65d84f4524ed444fcd3f31aec02b1ad3ef3e756759e16a837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 보게 되어 하나님께 영광을 돌리며 예수를 좇으니 백성이 다 이를 보고 하나님을 찬양하니라"
+      ],
+      "raw_text_hashes": [
+        "ec8ef60af2efa7f65d84f4524ed444fcd3f31aec02b1ad3ef3e756759e16a837"
+      ]
+    }
+  ]
+}

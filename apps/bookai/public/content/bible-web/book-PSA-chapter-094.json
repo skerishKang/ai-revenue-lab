@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:094",
+  "unit_ordinal": 572,
+  "unit_label": "PSA 94",
+  "book_code": "PSA",
+  "chapter_number": 94,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:94:1",
+      "sequence": 15433,
+      "chapter_label": "PSA 94",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, you God to whom vengeance belongs, you God to whom vengeance belongs, shine out.",
+      "ko": "여호와여 보수하시는 하나님이여 보수하시는 하나님이여 빛을 비취소서",
+      "source_text_hash": "d095288bab7fae21b4218996a7fb1549b08586ce2e70cbf9ee93b396ea22c5ac",
+      "translation_text_hash": "76190c6b34553198e0cfbdf07adb554177ac312e5dd3a71d75427b8ecd0ca248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 보수하시는 하나님이여 보수하시는 하나님이여 빛을 비취소서"
+      ],
+      "raw_text_hashes": [
+        "76190c6b34553198e0cfbdf07adb554177ac312e5dd3a71d75427b8ecd0ca248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:2",
+      "sequence": 15434,
+      "chapter_label": "PSA 94",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 2
+        }
+      ],
+      "en": "Rise up, you judge of the earth. Pay back the proud what they deserve.",
+      "ko": "세계를 판단하시는 주여 일어나사 교만한 자에게 상당한 형벌을 주소서",
+      "source_text_hash": "70fcaa2c4a465b8c3d108e6c57aeb80db34ae06867b6e60ebb70060c274cefeb",
+      "translation_text_hash": "7619f4b84d66787c105b0f3d43937ae83e403f012e0cecbce04749966515f27c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세계를 판단하시는 주여 일어나사 교만한 자에게 상당한 형벌을 주소서"
+      ],
+      "raw_text_hashes": [
+        "7619f4b84d66787c105b0f3d43937ae83e403f012e0cecbce04749966515f27c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:3",
+      "sequence": 15435,
+      "chapter_label": "PSA 94",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 3
+        }
+      ],
+      "en": "LORD, how long will the wicked, how long will the wicked triumph?",
+      "ko": "여호와여 악인이 언제까지, 악인이 언제까지 개가를 부르리이까",
+      "source_text_hash": "40c8f6fc0863247ebaf02c5733a40e90e041e23ee03598e3eb45933348d4d73e",
+      "translation_text_hash": "e962ecac15b0240ffa363c2cc947283fc79bb612ccdc9ad7521d4d36a0b8b1c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 악인이 언제까지, 악인이 언제까지 개가를 부르리이까"
+      ],
+      "raw_text_hashes": [
+        "e962ecac15b0240ffa363c2cc947283fc79bb612ccdc9ad7521d4d36a0b8b1c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:4",
+      "sequence": 15436,
+      "chapter_label": "PSA 94",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 4
+        }
+      ],
+      "en": "They pour out arrogant words. All the evildoers boast.",
+      "ko": "저희가 지꺼리며 오만히 말을 하오며 죄악을 행하는 자가 다 자긍하나이다",
+      "source_text_hash": "c537be92c05c5ef8e04dfe28bb696307a3f9ad4dbfe995c8c0c670e8777b33a4",
+      "translation_text_hash": "6c431bf02cf8fa5202f82c0f8873498342093dddd3a9b4e62a7674fcfa1c2069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 지꺼리며 오만히 말을 하오며 죄악을 행하는 자가 다 자긍하나이다"
+      ],
+      "raw_text_hashes": [
+        "6c431bf02cf8fa5202f82c0f8873498342093dddd3a9b4e62a7674fcfa1c2069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:5",
+      "sequence": 15437,
+      "chapter_label": "PSA 94",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 5
+        }
+      ],
+      "en": "They break your people in pieces, LORD, and afflict your heritage.",
+      "ko": "여호와여 저희가 주의 백성을 파쇄하며 주의 기업을 곤고케 하며",
+      "source_text_hash": "54b32249d53c89ddfaf812d69cdf8bc6cf71221b0c0526385875daf4758ed620",
+      "translation_text_hash": "bfcd54eeca528e7247ea91e2cfff9d3c2d7b982f3de44193f30b95bfe017ef3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 저희가 주의 백성을 파쇄하며 주의 기업을 곤고케 하며"
+      ],
+      "raw_text_hashes": [
+        "bfcd54eeca528e7247ea91e2cfff9d3c2d7b982f3de44193f30b95bfe017ef3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:6",
+      "sequence": 15438,
+      "chapter_label": "PSA 94",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 6
+        }
+      ],
+      "en": "They kill the widow and the alien, and murder the fatherless.",
+      "ko": "과부와 나그네를 죽이며 고아를 살해하며",
+      "source_text_hash": "1e6fbf0439ca4b143b5f0d8123efad8f0fb8cc8c537842c989bd828dc1afc02d",
+      "translation_text_hash": "72a69c05d224d30904931bb4a73c72c0ee856c44ab4d5942234fae21c2753bbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부와 나그네를 죽이며 고아를 살해하며"
+      ],
+      "raw_text_hashes": [
+        "72a69c05d224d30904931bb4a73c72c0ee856c44ab4d5942234fae21c2753bbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:7",
+      "sequence": 15439,
+      "chapter_label": "PSA 94",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 7
+        }
+      ],
+      "en": "They say, “The LORD will not see, neither will Jacob’s God consider.”",
+      "ko": "말하기를 여호와가 보지못하며 야곱의 하나님이 생각지 못하리라 하나이다",
+      "source_text_hash": "2626f741b315227e395eb54129527a3a24d90d002b946e4a007ee4eccdd33fc0",
+      "translation_text_hash": "193e7edaad5cd5a2fda838fbeb56f9114e4e5dbee4a5e2e74e83fc768ffb69ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 여호와가 보지못하며 야곱의 하나님이 생각지 못하리라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "193e7edaad5cd5a2fda838fbeb56f9114e4e5dbee4a5e2e74e83fc768ffb69ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:8",
+      "sequence": 15440,
+      "chapter_label": "PSA 94",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 8
+        }
+      ],
+      "en": "Consider, you senseless among the people; you fools, when will you be wise?",
+      "ko": "백성중 우준한 자들아 너희는 생각하라 무지한 자들아 너희가 언제나 지혜로울꼬",
+      "source_text_hash": "6d322a383ba40d78c444b383e440b3c79f42cd39e97e33a66a87215f784f0d0b",
+      "translation_text_hash": "dcc6ef1200f43017ae31dc4c6467ef8e8a9da813705c67d2915b47fe54e70cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성중 우준한 자들아 너희는 생각하라 무지한 자들아 너희가 언제나 지혜로울꼬"
+      ],
+      "raw_text_hashes": [
+        "dcc6ef1200f43017ae31dc4c6467ef8e8a9da813705c67d2915b47fe54e70cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:9",
+      "sequence": 15441,
+      "chapter_label": "PSA 94",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 9
+        }
+      ],
+      "en": "He who implanted the ear, won’t he hear? He who formed the eye, won’t he see?",
+      "ko": "귀를 지으신 자가 듣지 아니하시랴 눈을 만드신 자가 보지 아니하시랴",
+      "source_text_hash": "305cf005c7278855464ef32f0090d24f5ec5ec8be6e66e121d23bb6063f5ea97",
+      "translation_text_hash": "a34e6c15eb1dba612af2cd3fd197b6ddb1d5d8c8d24478a9d3adc8e572fe1375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀를 지으신 자가 듣지 아니하시랴 눈을 만드신 자가 보지 아니하시랴"
+      ],
+      "raw_text_hashes": [
+        "a34e6c15eb1dba612af2cd3fd197b6ddb1d5d8c8d24478a9d3adc8e572fe1375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:10",
+      "sequence": 15442,
+      "chapter_label": "PSA 94",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 10
+        }
+      ],
+      "en": "He who disciplines the nations, won’t he punish? He who teaches man knows.",
+      "ko": "열방을 징벌하시는 자 곧 지식으로 사람을 교훈하시는 자가 징치하지 아니하시랴",
+      "source_text_hash": "ffa22662bd6c89c13ac6f9f3e982df3f7907226d8849dbb8897feec25da32cb8",
+      "translation_text_hash": "8114921dfb67fc36196f038adb125ca9f3c576181d4814a7156544497eaa4837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방을 징벌하시는 자 곧 지식으로 사람을 교훈하시는 자가 징치하지 아니하시랴"
+      ],
+      "raw_text_hashes": [
+        "8114921dfb67fc36196f038adb125ca9f3c576181d4814a7156544497eaa4837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:11",
+      "sequence": 15443,
+      "chapter_label": "PSA 94",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD knows the thoughts of man, that they are futile.",
+      "ko": "여호와께서 사람의 생각이 허무함을 아시느니라",
+      "source_text_hash": "dffb3b7dbf2d7cb4e3856a0c6218037f74c3ef12e9f9a3eb00ad52f024c90642",
+      "translation_text_hash": "2a0b044992453892563302b36e136e7b547171e1a54b1765712b1f4b1e7b2b0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사람의 생각이 허무함을 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "2a0b044992453892563302b36e136e7b547171e1a54b1765712b1f4b1e7b2b0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:12",
+      "sequence": 15444,
+      "chapter_label": "PSA 94",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 12
+        }
+      ],
+      "en": "Blessed is the man whom you discipline, LORD, and teach out of your law,",
+      "ko": "여호와여 주의 징벌을 당하며 주의 법으로 교훈하심을 받는 자가 복이 있나니",
+      "source_text_hash": "96a2ce32f14864dd47330f8e1b1959baf5271f42102f9cb01d63396edfb96b56",
+      "translation_text_hash": "867c4fed06f39b3570d0d2f61032e94bf7338de0f62807fe0408db7ff3a9a42d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 징벌을 당하며 주의 법으로 교훈하심을 받는 자가 복이 있나니"
+      ],
+      "raw_text_hashes": [
+        "867c4fed06f39b3570d0d2f61032e94bf7338de0f62807fe0408db7ff3a9a42d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:13",
+      "sequence": 15445,
+      "chapter_label": "PSA 94",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 13
+        }
+      ],
+      "en": "that you may give him rest from the days of adversity, until the pit is dug for the wicked.",
+      "ko": "이런 사람에게는 환난의 날에 벗어나게 하사 악인을 위하여 구덩이를 팔 때까지 평안을 주시리이다",
+      "source_text_hash": "6334d161cb6ad0dec5160c1f879d566f5b4a2d5cac656a28db98977353348105",
+      "translation_text_hash": "6b16739d37e65e7f5104d7ce644ed445c4b4de794c063766cbe9f67979eb086e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 사람에게는 환난의 날에 벗어나게 하사 악인을 위하여 구덩이를 팔 때까지 평안을 주시리이다"
+      ],
+      "raw_text_hashes": [
+        "6b16739d37e65e7f5104d7ce644ed445c4b4de794c063766cbe9f67979eb086e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:14",
+      "sequence": 15446,
+      "chapter_label": "PSA 94",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 14
+        }
+      ],
+      "en": "For the LORD won’t reject his people, neither will he forsake his inheritance.",
+      "ko": "여호와께서는 그 백성을 버리지 아니하시며 그 기업을 떠나지 아니하시리로다",
+      "source_text_hash": "b5beb938df0b0c52d7f68b667f27ce63fb3865e86649cdc7cf7a4e47e06e80aa",
+      "translation_text_hash": "aceec77d6240f5c12e7d3f4ccb9d7240337bf43c4908da60649be71e2dee669e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 그 백성을 버리지 아니하시며 그 기업을 떠나지 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "aceec77d6240f5c12e7d3f4ccb9d7240337bf43c4908da60649be71e2dee669e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:15",
+      "sequence": 15447,
+      "chapter_label": "PSA 94",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 15
+        }
+      ],
+      "en": "For judgment will return to righteousness. All the upright in heart shall follow it.",
+      "ko": "판단이 의로 돌아가리니 마음이 정직한 자가 다 좇으리로다",
+      "source_text_hash": "1f465cbb97502f55c34014e2f24298f811ca80bd81c0fe96d6953276554fb45b",
+      "translation_text_hash": "38d5ba034c2129a79900f0820ce03a071691906eeefc070173f077e1542151a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "판단이 의로 돌아가리니 마음이 정직한 자가 다 좇으리로다"
+      ],
+      "raw_text_hashes": [
+        "38d5ba034c2129a79900f0820ce03a071691906eeefc070173f077e1542151a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:16",
+      "sequence": 15448,
+      "chapter_label": "PSA 94",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 16
+        }
+      ],
+      "en": "Who will rise up for me against the wicked? Who will stand up for me against the evildoers?",
+      "ko": "누가 나를 위하여 일어나서 행악자를 치며 누가 나를 위하여 일어서서 죄악 행하는 자를 칠꼬",
+      "source_text_hash": "382920339caea1cdf2ef0171ac2ad9a7aadae41518514703bd091ef582eb5d1d",
+      "translation_text_hash": "3b8e92856c4b52b1c82e0d37b2d6890027319372932d0e351f53cde5bc0ca6e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 나를 위하여 일어나서 행악자를 치며 누가 나를 위하여 일어서서 죄악 행하는 자를 칠꼬"
+      ],
+      "raw_text_hashes": [
+        "3b8e92856c4b52b1c82e0d37b2d6890027319372932d0e351f53cde5bc0ca6e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:17",
+      "sequence": 15449,
+      "chapter_label": "PSA 94",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 17
+        }
+      ],
+      "en": "Unless the LORD had been my help, my soul would have soon lived in silence.",
+      "ko": "여호와께서 내게 도움이 되지 아니하셨더면 내 혼이 벌써 적막 중에 처하였으리로다",
+      "source_text_hash": "0330458fbaa54b00b7abe1e1b21a10be7d093e99f858f1867ce097e518435f51",
+      "translation_text_hash": "837183c2682a47a99540c48a93d203a5fcf1115af15a30bf57259514c9ee497b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 도움이 되지 아니하셨더면 내 혼이 벌써 적막 중에 처하였으리로다"
+      ],
+      "raw_text_hashes": [
+        "837183c2682a47a99540c48a93d203a5fcf1115af15a30bf57259514c9ee497b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:18",
+      "sequence": 15450,
+      "chapter_label": "PSA 94",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 18
+        }
+      ],
+      "en": "When I said, “My foot is slipping!” Your loving kindness, LORD, held me up.",
+      "ko": "여호와여 나의 발이 미끄러진다 말할 때에 주의 인자하심이 나를 붙드셨사오며",
+      "source_text_hash": "3f073f5832e5f46fe212560197d37428fa7ccf91ac378042ec666d0f47835b08",
+      "translation_text_hash": "4955eda210f6f94cbf4f8facdce925338a1b47936bcd441a620bac86990b4484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 발이 미끄러진다 말할 때에 주의 인자하심이 나를 붙드셨사오며"
+      ],
+      "raw_text_hashes": [
+        "4955eda210f6f94cbf4f8facdce925338a1b47936bcd441a620bac86990b4484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:19",
+      "sequence": 15451,
+      "chapter_label": "PSA 94",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 19
+        }
+      ],
+      "en": "In the multitude of my thoughts within me, your comforts delight my soul.",
+      "ko": "내 속에 생각이 많을 때에 주의 위안이 내 영혼을 즐겁게 하시나이다",
+      "source_text_hash": "72dc9a2f6ea86ceda0c72594ef953b81ad22d5df1e4fdedcb4693429a47b13e6",
+      "translation_text_hash": "97649658b931602aa5630488f22527366971363b5e69638ba0912ac7f095a123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 속에 생각이 많을 때에 주의 위안이 내 영혼을 즐겁게 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "97649658b931602aa5630488f22527366971363b5e69638ba0912ac7f095a123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:20",
+      "sequence": 15452,
+      "chapter_label": "PSA 94",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 20
+        }
+      ],
+      "en": "Shall the throne of wickedness have fellowship with you, which brings about mischief by statute?",
+      "ko": "율례를 빙자하고 잔해를 도모하는 악한 재판장이 어찌 주와 교제하리이까",
+      "source_text_hash": "204d54bc675abefabbb572703c232e3320d1be41ab252f8c4ccc044bb4751bdf",
+      "translation_text_hash": "73a4ad10ee2be39db60d98de8885addc1031887926c968a1c32ec96c422d5211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율례를 빙자하고 잔해를 도모하는 악한 재판장이 어찌 주와 교제하리이까"
+      ],
+      "raw_text_hashes": [
+        "73a4ad10ee2be39db60d98de8885addc1031887926c968a1c32ec96c422d5211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:21",
+      "sequence": 15453,
+      "chapter_label": "PSA 94",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 21
+        }
+      ],
+      "en": "They gather themselves together against the soul of the righteous, and condemn the innocent blood.",
+      "ko": "저희가 모여 의인의 영혼을 치려 하며 무죄자를 정죄하여 피를 흘리려 하나",
+      "source_text_hash": "d26547ecb31fca55a29567da1c1d76fd5430fe8b1a42b75591a1fcaf7deeda3c",
+      "translation_text_hash": "875ec6de276d161425cd5a7e650db9fca955d11c48f5c07cde73d0df5366f5e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 모여 의인의 영혼을 치려 하며 무죄자를 정죄하여 피를 흘리려 하나"
+      ],
+      "raw_text_hashes": [
+        "875ec6de276d161425cd5a7e650db9fca955d11c48f5c07cde73d0df5366f5e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:22",
+      "sequence": 15454,
+      "chapter_label": "PSA 94",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 22
+        }
+      ],
+      "en": "But the LORD has been my high tower, my God, the rock of my refuge.",
+      "ko": "여호와는 나의 산성이시요 나의 하나님은 나의 피할 반석이시라",
+      "source_text_hash": "dd1956068c6e9de82cfbb1ac1cc0671b3a897a7b870c9655a15a514bf8913055",
+      "translation_text_hash": "24dc11d483785d7102317a1678b27cf67fcb67e67a0e131e0cbbd297f500087d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 산성이시요 나의 하나님은 나의 피할 반석이시라"
+      ],
+      "raw_text_hashes": [
+        "24dc11d483785d7102317a1678b27cf67fcb67e67a0e131e0cbbd297f500087d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:94:23",
+      "sequence": 15455,
+      "chapter_label": "PSA 94",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 94,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 94,
+          "verse": 23
+        }
+      ],
+      "en": "He has brought on them their own iniquity, and will cut them off in their own wickedness. The LORD, our God, will cut them off.",
+      "ko": "저희 죄악을 저희에게 돌리시며 저희의 악을 인하여 저희를 끊으시리니 여호와 우리 하나님이 저희를 끊으시리로다",
+      "source_text_hash": "afcabeda5a0a49f1aafb712d2f15bebbc9054c72e8c63d8f34b0b78d97917c28",
+      "translation_text_hash": "718510ab73802c19ce7e0f5e4afa855a500403b09852243f15a01c6656a411af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 죄악을 저희에게 돌리시며 저희의 악을 인하여 저희를 끊으시리니 여호와 우리 하나님이 저희를 끊으시리로다"
+      ],
+      "raw_text_hashes": [
+        "718510ab73802c19ce7e0f5e4afa855a500403b09852243f15a01c6656a411af"
+      ]
+    }
+  ]
+}

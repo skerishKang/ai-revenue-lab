@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:039",
+  "unit_ordinal": 841,
+  "unit_label": "EZK 39",
+  "book_code": "EZK",
+  "chapter_number": 39,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:39:1",
+      "sequence": 21450,
+      "chapter_label": "EZK 39",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 1
+        }
+      ],
+      "en": "“You, son of man, prophesy against Gog, and say, ‘The Lord GOD says: “Behold, I am against you, Gog, prince of Rosh, Meshech, and Tubal.",
+      "ko": "그러므로 인자야 너는 곡을 쳐서 예언하여 이르기를 주 여호와의 말씀에 로스와 메섹과 두발 왕 곡아 내가 너를 대적하여",
+      "source_text_hash": "97b8dde3681720bc7d2f14b4d87f2c7f97b856828ac542bbd4f1c8f390d53890",
+      "translation_text_hash": "b6a5e6b9ed5975386cdae571faa597942c4dee2c9e216b344d36d1576b1082ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 인자야 너는 곡을 쳐서 예언하여 이르기를 주 여호와의 말씀에 로스와 메섹과 두발 왕 곡아 내가 너를 대적하여"
+      ],
+      "raw_text_hashes": [
+        "b6a5e6b9ed5975386cdae571faa597942c4dee2c9e216b344d36d1576b1082ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:2",
+      "sequence": 21451,
+      "chapter_label": "EZK 39",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 2
+        }
+      ],
+      "en": "I will turn you around, will lead you on, and will cause you to come up from the uttermost parts of the north; and I will bring you onto the mountains of Israel.",
+      "ko": "너를 돌이켜서 이끌고 먼 북방에서부터 나와서 이스라엘 산 위에 이르러",
+      "source_text_hash": "2d5deed0f0b52cfe0d6779413bb0f8eab8c1300d5177fb9fcd5670e64ff7c613",
+      "translation_text_hash": "ceb19c1db1b933ffd4747c7d53c225f7149dcb71b53f63ea7c905d517b59449b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 돌이켜서 이끌고 먼 북방에서부터 나와서 이스라엘 산 위에 이르러"
+      ],
+      "raw_text_hashes": [
+        "ceb19c1db1b933ffd4747c7d53c225f7149dcb71b53f63ea7c905d517b59449b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:3",
+      "sequence": 21452,
+      "chapter_label": "EZK 39",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 3
+        }
+      ],
+      "en": "I will strike your bow out of your left hand, and will cause your arrows to fall out of your right hand.",
+      "ko": "네 활을 쳐서 네 왼손에서 떨어뜨리고 네 살을 네 오른손에서 떨어뜨리리니",
+      "source_text_hash": "e424b68f4253bd5d206b7ff3768faef9e667c6261cef85afebaefb51afd82629",
+      "translation_text_hash": "d53c1552f0a3b84685836d8233928ef839711dd97288a6fa47fe40f376f254f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 활을 쳐서 네 왼손에서 떨어뜨리고 네 살을 네 오른손에서 떨어뜨리리니"
+      ],
+      "raw_text_hashes": [
+        "d53c1552f0a3b84685836d8233928ef839711dd97288a6fa47fe40f376f254f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:4",
+      "sequence": 21453,
+      "chapter_label": "EZK 39",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 4
+        }
+      ],
+      "en": "You will fall on the mountains of Israel, you, and all your hordes, and the peoples who are with you. I will give you to the ravenous birds of every sort and to the animals of the field to be devoured.",
+      "ko": "너와 네 모든 떼와 너와 함께한 백성이 다 이스라엘 산 위에 엎드러지리라 내가 너를 각종 움키는 새와 들짐승에게 붙여 먹게 하리니",
+      "source_text_hash": "4d1bb670ae6131126d8a9d33eef540833d88a87bb771e4be8bcdebdbe3e3e090",
+      "translation_text_hash": "ca358ef69001aff05ed55f1dd5f67a6c20e0fcf6493a79e0d97ed25ad3102f8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 모든 떼와 너와 함께한 백성이 다 이스라엘 산 위에 엎드러지리라 내가 너를 각종 움키는 새와 들짐승에게 붙여 먹게 하리니"
+      ],
+      "raw_text_hashes": [
+        "ca358ef69001aff05ed55f1dd5f67a6c20e0fcf6493a79e0d97ed25ad3102f8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:5",
+      "sequence": 21454,
+      "chapter_label": "EZK 39",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 5
+        }
+      ],
+      "en": "You will fall on the open field, for I have spoken it,” says the Lord GOD.",
+      "ko": "네가 빈들에 엎드러지리라 이는 내가 말하였음이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "a5d7324747c31ae7d267a9a4e1f5ebf516935180e94e35dfef4795ed626c6d5b",
+      "translation_text_hash": "102990fc40a50c0ea059c30303b11695d5ef43101e625c3bb7b212fd8bcc29f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 빈들에 엎드러지리라 이는 내가 말하였음이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "102990fc40a50c0ea059c30303b11695d5ef43101e625c3bb7b212fd8bcc29f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:6",
+      "sequence": 21455,
+      "chapter_label": "EZK 39",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 6
+        }
+      ],
+      "en": "“I will send a fire on Magog and on those who dwell securely in the islands. Then they will know that I am the LORD.",
+      "ko": "내가 또 불을 마곡과 및 섬에 평안히 거하는 자에게 내리리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "e73b17b4b2c1102add9a9e7d356ae2a43769de77f961fcf2694243086f39c0a8",
+      "translation_text_hash": "8102a530d56dba9cf29b21ca8ca8c42731121186065b59ca1439d0397eb63231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 불을 마곡과 및 섬에 평안히 거하는 자에게 내리리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "8102a530d56dba9cf29b21ca8ca8c42731121186065b59ca1439d0397eb63231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:7",
+      "sequence": 21456,
+      "chapter_label": "EZK 39",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“I will make my holy name known among my people Israel. I won’t allow my holy name to be profaned any more. Then the nations will know that I am the LORD, the Holy One in Israel.",
+      "ko": "내가 내 거룩한 이름을 내 백성 이스라엘 가운데 알게 하여 다시는 내 거룩한 이름을 더럽히지 않게 하리니 열국이 나를 여호와 곧 이스라엘의 거룩한 자인줄 알리라 하셨다 하라",
+      "source_text_hash": "3c3cb3fbc9d961a6d45e4ab60ecd481d4fc528735aceb641e4ba5ed41bb7c7a3",
+      "translation_text_hash": "2b8ea4dc9a90286673be4c0e8c44a37a191112a6f92fae14ec971e312dcf47dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 거룩한 이름을 내 백성 이스라엘 가운데 알게 하여 다시는 내 거룩한 이름을 더럽히지 않게 하리니 열국이 나를 여호와 곧 이스라엘의 거룩한 자인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "2b8ea4dc9a90286673be4c0e8c44a37a191112a6f92fae14ec971e312dcf47dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:8",
+      "sequence": 21457,
+      "chapter_label": "EZK 39",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, it comes, and it will be done,” says the Lord GOD. “This is the day about which I have spoken.",
+      "ko": "나 주 여호와가 말하노라 볼찌어다 그 일이 이르고 이루리니 내가 말한 그 날이 이 날이니라",
+      "source_text_hash": "9d6079beef61240c121107284258977299eee121f8193c25f412f989d3ada886",
+      "translation_text_hash": "7b1b8a635567d85f24649ca964bd3a3b759d1a01d82c750afadabb231e150c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 볼찌어다 그 일이 이르고 이루리니 내가 말한 그 날이 이 날이니라"
+      ],
+      "raw_text_hashes": [
+        "7b1b8a635567d85f24649ca964bd3a3b759d1a01d82c750afadabb231e150c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:9",
+      "sequence": 21458,
+      "chapter_label": "EZK 39",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 9
+        }
+      ],
+      "en": "“‘“Those who dwell in the cities of Israel will go out and will make fires of the weapons and burn them, both the shields and the bucklers, the bows and the arrows, and the war clubs and the spears, and they will make fires with them for seven years;",
+      "ko": "이스라엘 성읍들에 거한 자가 나가서 그 병기를 불 피워 사르되 큰 방패와 작은 방패와 활과 살과 몽둥이와 창을 취하여 칠년 동안 불 피우리라",
+      "source_text_hash": "2e6fa5482758201f97e893a75a95109f7372648e7c0aff347f64f345286f314f",
+      "translation_text_hash": "7de1851749a2fda8e9c9742c4d4887db39686b1cfd65044431cd3a70b647a945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 성읍들에 거한 자가 나가서 그 병기를 불 피워 사르되 큰 방패와 작은 방패와 활과 살과 몽둥이와 창을 취하여 칠년 동안 불 피우리라"
+      ],
+      "raw_text_hashes": [
+        "7de1851749a2fda8e9c9742c4d4887db39686b1cfd65044431cd3a70b647a945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:10",
+      "sequence": 21459,
+      "chapter_label": "EZK 39",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 10
+        }
+      ],
+      "en": "so that they will take no wood out of the field, and not cut down any out of the forests; for they will make fires with the weapons. They will plunder those who plundered them, and rob those who robbed them,” says the Lord GOD.",
+      "ko": "이와 같이 그 병기로 불을 피울 것이므로 그들이 들에서 나무를 취하지 아니하며 삼림에서 벌목하지 아니하겠고 전에 자기에게서 약탈하던 자의 것을 약탈하며 전에 자기에게서 늑탈하던 자의 것을 늑탈하리라 나 주 여호와의 말이니라",
+      "source_text_hash": "1ec393c64d8e9eb0ffda46d6d6ef7eeed4611eaef351b15375995e3ce55cfaeb",
+      "translation_text_hash": "873b54f5da722ed6a468c7404db11ef757ed0e3c50b9d1457a6bcd3f136d058a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그 병기로 불을 피울 것이므로 그들이 들에서 나무를 취하지 아니하며 삼림에서 벌목하지 아니하겠고 전에 자기에게서 약탈하던 자의 것을 약탈하며 전에 자기에게서 늑탈하던 자의 것을 늑탈하리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "873b54f5da722ed6a468c7404db11ef757ed0e3c50b9d1457a6bcd3f136d058a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:11",
+      "sequence": 21460,
+      "chapter_label": "EZK 39",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 11
+        }
+      ],
+      "en": "“‘“It will happen in that day, that I will give to Gog a place for burial in Israel, the valley of those who pass through on the east of the sea; and it will stop those who pass through. They will bury Gog and all his multitude there, and they will call it ‘The valley of Hamon Gog’.",
+      "ko": "그 날에 내가 곡을 위하여 이스라엘 땅 곧 바다 동편 사람의 통행하는 골짜기를 매장지로 주리니 통행하던 것이 막힐 것이라 사람이 거기서 곡과 그 모든 무리를 장사하고 그 이름을 하몬곡의 골짜기라 일컬으리라",
+      "source_text_hash": "41137f92e0f850a426585648636bbeed895c12831a537808e45175a3f9f7df26",
+      "translation_text_hash": "18a4a93bdb774f280867ef81c329211630b07006903325854885f8cd273a3eea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 곡을 위하여 이스라엘 땅 곧 바다 동편 사람의 통행하는 골짜기를 매장지로 주리니 통행하던 것이 막힐 것이라 사람이 거기서 곡과 그 모든 무리를 장사하고 그 이름을 하몬곡의 골짜기라 일컬으리라"
+      ],
+      "raw_text_hashes": [
+        "18a4a93bdb774f280867ef81c329211630b07006903325854885f8cd273a3eea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:12",
+      "sequence": 21461,
+      "chapter_label": "EZK 39",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 12
+        }
+      ],
+      "en": "“‘“The house of Israel will be burying them for seven months, that they may cleanse the land.",
+      "ko": "이스라엘 족속이 일곱 달 동안에 그들을 장사하여 그 땅을 정결케 할 것이라",
+      "source_text_hash": "815dd7039b728489406a33abd0d721b5b9a3870321f57269ae3e5d891dd07b2e",
+      "translation_text_hash": "80113db0a58a7513957d09b667da38a5da86550efb049960d763a47123514b8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속이 일곱 달 동안에 그들을 장사하여 그 땅을 정결케 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "80113db0a58a7513957d09b667da38a5da86550efb049960d763a47123514b8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:13",
+      "sequence": 21462,
+      "chapter_label": "EZK 39",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 13
+        }
+      ],
+      "en": "Yes, all the people of the land will bury them; and they will become famous in the day that I will be glorified,” says the Lord GOD.",
+      "ko": "그 땅 모든 백성이 그들을 장사하고 그로 말미암아 이름을 얻으리니 이는 나의 영광이 나타나는 날이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "93d94536b9688ead17c3294de80972562cab317e32dc9b189ab8ed919d64bbd1",
+      "translation_text_hash": "f01df1909be82f866fbb02e40208271c025759299bc9b26b6fe69cd2fc2d5a1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 모든 백성이 그들을 장사하고 그로 말미암아 이름을 얻으리니 이는 나의 영광이 나타나는 날이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f01df1909be82f866fbb02e40208271c025759299bc9b26b6fe69cd2fc2d5a1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:14",
+      "sequence": 21463,
+      "chapter_label": "EZK 39",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 14
+        }
+      ],
+      "en": "“‘“They will set apart men of continual employment who will pass through the land. Those who pass through will go with those who bury those who remain on the surface of the land, to cleanse it. After the end of seven months they will search.",
+      "ko": "그들이 사람을 택하여 그 땅에 늘 순행하며 장사할 사람으로 더불어 지면에 남아 있는 시체를 장사하여 그 땅을 정결케 할 것이라 일곱 달 후에 그들이 살펴 보되",
+      "source_text_hash": "6958453739b8b14fb791a3e70e6981113b0caf18191eeb017fa92dec16d778d5",
+      "translation_text_hash": "7c921ba9a33f9d22e00db10a7a12ceb88c520793dc2cf9d559eb45b3f830b92b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 사람을 택하여 그 땅에 늘 순행하며 장사할 사람으로 더불어 지면에 남아 있는 시체를 장사하여 그 땅을 정결케 할 것이라 일곱 달 후에 그들이 살펴 보되"
+      ],
+      "raw_text_hashes": [
+        "7c921ba9a33f9d22e00db10a7a12ceb88c520793dc2cf9d559eb45b3f830b92b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:15",
+      "sequence": 21464,
+      "chapter_label": "EZK 39",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 15
+        }
+      ],
+      "en": "Those who search through the land will pass through; and when anyone sees a man’s bone, then he will set up a sign by it, until the undertakers have buried it in the valley of Hamon Gog.",
+      "ko": "순행하는 자가 그 땅으로 통행하다가 사람의 뼈를 보면 그 곁에 표를 세워 장사하는 자로 와서 하몬곡 골짜기에 장사하게 할 것이요",
+      "source_text_hash": "3ff9357f25ed5b8167c8d19196bfac14190204c9ed8cb5a3b949cbc8f6940444",
+      "translation_text_hash": "82ab6fef056991fd6bc9a59fdc90c2d4d6af23a2a298cbed38c57d3de414a8c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "순행하는 자가 그 땅으로 통행하다가 사람의 뼈를 보면 그 곁에 표를 세워 장사하는 자로 와서 하몬곡 골짜기에 장사하게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "82ab6fef056991fd6bc9a59fdc90c2d4d6af23a2a298cbed38c57d3de414a8c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:16",
+      "sequence": 21465,
+      "chapter_label": "EZK 39",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 16
+        }
+      ],
+      "en": "Hamonah will also be the name of a city. Thus they will cleanse the land.”’",
+      "ko": "성의 이름도 하모나라 하리라 그들이 이와 같이 그 땅을 정결케 하리라",
+      "source_text_hash": "180b85caf44274d309414800055ef957579348950ae8987dd512d79933a49b70",
+      "translation_text_hash": "f74a17a3aa2a8c899788663edb74ea94106ac83553ff45d86e863d8d38f9e731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성의 이름도 하모나라 하리라 그들이 이와 같이 그 땅을 정결케 하리라"
+      ],
+      "raw_text_hashes": [
+        "f74a17a3aa2a8c899788663edb74ea94106ac83553ff45d86e863d8d38f9e731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:17",
+      "sequence": 21466,
+      "chapter_label": "EZK 39",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 17
+        }
+      ],
+      "en": "“You, son of man, the Lord GOD says: ‘Speak to the birds of every sort, and to every animal of the field, “Assemble yourselves, and come; gather yourselves on every side to my sacrifice that I sacrifice for you, even a great sacrifice on the mountains of Israel, that you may eat meat and drink blood.",
+      "ko": "너 인자야 나 주 여호와가 말하노라 너는 각종 새와 들의 각종 짐승에게 이르기를 너희는 모여 오라 내가 너희를 위한 잔치 곧 이스라엘 산 위에 예비한 큰 잔치로 너희는 사방에서 모여서 고기를 먹으며 피를 마실찌어다",
+      "source_text_hash": "36e56612d40cc8fc59ffc9d1488a6190c661c8657af1b9825a863e47aaa697e7",
+      "translation_text_hash": "4777256d3f98c6ab694be7eaf2cf4af28dfa1e8a9c6e3fcd2e83cb907997de91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 인자야 나 주 여호와가 말하노라 너는 각종 새와 들의 각종 짐승에게 이르기를 너희는 모여 오라 내가 너희를 위한 잔치 곧 이스라엘 산 위에 예비한 큰 잔치로 너희는 사방에서 모여서 고기를 먹으며 피를 마실찌어다"
+      ],
+      "raw_text_hashes": [
+        "4777256d3f98c6ab694be7eaf2cf4af28dfa1e8a9c6e3fcd2e83cb907997de91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:18",
+      "sequence": 21467,
+      "chapter_label": "EZK 39",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 18
+        }
+      ],
+      "en": "You shall eat the flesh of the mighty, and drink the blood of the princes of the earth, of rams, of lambs, and of goats, of bulls, all of them fatlings of Bashan.",
+      "ko": "너희가 용사의 고기를 먹으며 세상 왕들의 피를 마시기를 바산의 살찐 짐승 곧 수양이나 어린 양이나 염소나 수송아지를 먹듯 할찌라",
+      "source_text_hash": "d5e0f8cec487f5c2988a8eea388994744b89204be37902bce0c46346c21fcbfd",
+      "translation_text_hash": "301995b91f37364e7aa6e1028b936a985d02f3844f6767d83dd4748ea116ad44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 용사의 고기를 먹으며 세상 왕들의 피를 마시기를 바산의 살찐 짐승 곧 수양이나 어린 양이나 염소나 수송아지를 먹듯 할찌라"
+      ],
+      "raw_text_hashes": [
+        "301995b91f37364e7aa6e1028b936a985d02f3844f6767d83dd4748ea116ad44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:19",
+      "sequence": 21468,
+      "chapter_label": "EZK 39",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 19
+        }
+      ],
+      "en": "You shall eat fat until you are full, and drink blood until you are drunk, of my sacrifice which I have sacrificed for you.",
+      "ko": "내가 너희를 위하여 예비한 잔치의 기름을 너희가 배불리 먹으며 그 피를 취토록 마시되",
+      "source_text_hash": "73106f1167971ccfaf0f7848160d03550860d46a747a1a139d5496d62eec7960",
+      "translation_text_hash": "02d41763b56a3fcab3380af55b071ec1d5cdc32c2e0ac86e885a06ce6231fa9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 위하여 예비한 잔치의 기름을 너희가 배불리 먹으며 그 피를 취토록 마시되"
+      ],
+      "raw_text_hashes": [
+        "02d41763b56a3fcab3380af55b071ec1d5cdc32c2e0ac86e885a06ce6231fa9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:20",
+      "sequence": 21469,
+      "chapter_label": "EZK 39",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 20
+        }
+      ],
+      "en": "You shall be filled at my table with horses and charioteers, with mighty men, and with all men of war,” says the Lord GOD.’",
+      "ko": "내 상에서 말과 기병과 용사와 모든 군사를 배불리 먹을찌니라 하라 나 주 여호와의 말이니라",
+      "source_text_hash": "1f47cfbd2419633997de0c1fb6143282fef7a63a10106de54e57f1d29a121336",
+      "translation_text_hash": "87fcf0fed418ae8fdc661f2013617fbeffd288697e9a9ef9c4b2e2af90d6333a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 상에서 말과 기병과 용사와 모든 군사를 배불리 먹을찌니라 하라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "87fcf0fed418ae8fdc661f2013617fbeffd288697e9a9ef9c4b2e2af90d6333a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:21",
+      "sequence": 21470,
+      "chapter_label": "EZK 39",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 21
+        }
+      ],
+      "en": "“I will set my glory among the nations. Then all the nations will see my judgment that I have executed, and my hand that I have laid on them.",
+      "ko": "내가 내 영광을 열국 중에 나타내어 열국으로 나의 행한 심판과 내가 그 위에 나타낸 권능을 보게 하리니",
+      "source_text_hash": "a2b9fdac7ddee73af526df3c52e7cb75d97f60cf4566214eca4af41862ac853c",
+      "translation_text_hash": "5d306be78371b0130f42b6cc51da4b33f1ee56d6b29ddf808257b90292e8d293",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 영광을 열국 중에 나타내어 열국으로 나의 행한 심판과 내가 그 위에 나타낸 권능을 보게 하리니"
+      ],
+      "raw_text_hashes": [
+        "5d306be78371b0130f42b6cc51da4b33f1ee56d6b29ddf808257b90292e8d293"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:22",
+      "sequence": 21471,
+      "chapter_label": "EZK 39",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 22
+        }
+      ],
+      "en": "So the house of Israel will know that I am the LORD their God, from that day and forward.",
+      "ko": "그 날 이후에 이스라엘 족속은 나를 여호와 자기들의 하나님인줄 알겠고",
+      "source_text_hash": "acb0028b20678070f709974694dc5fb35b3b3e2ad43fb46c7c7bc7e7d0917f17",
+      "translation_text_hash": "dcbacddb7008353c20129a5ff6795f094c397d64720c0a5ecb33ffb5d59d3356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날 이후에 이스라엘 족속은 나를 여호와 자기들의 하나님인줄 알겠고"
+      ],
+      "raw_text_hashes": [
+        "dcbacddb7008353c20129a5ff6795f094c397d64720c0a5ecb33ffb5d59d3356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:23",
+      "sequence": 21472,
+      "chapter_label": "EZK 39",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 23
+        }
+      ],
+      "en": "The nations will know that the house of Israel went into captivity for their iniquity, because they trespassed against me, and I hid my face from them; so I gave them into the hand of their adversaries, and they all fell by the sword.",
+      "ko": "열국은 이스라엘 족속이 그 죄악으로 인하여 사로잡혀 갔던줄 알찌라 그들이 내게 범죄하였으므로 내 얼굴을 그들에게 가리우고 그들을 그 대적의 손에 붙여 다 칼에 엎드러지게 하였으되",
+      "source_text_hash": "3b2aa7334d463d635191c6e13baeeaaf3b1922819285b5bbb599d2cbfcb3919b",
+      "translation_text_hash": "6993cd98a07d70e1a5173e9079bc4c4e166bec45ed228ff3b1c31b6e65353e91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국은 이스라엘 족속이 그 죄악으로 인하여 사로잡혀 갔던줄 알찌라 그들이 내게 범죄하였으므로 내 얼굴을 그들에게 가리우고 그들을 그 대적의 손에 붙여 다 칼에 엎드러지게 하였으되"
+      ],
+      "raw_text_hashes": [
+        "6993cd98a07d70e1a5173e9079bc4c4e166bec45ed228ff3b1c31b6e65353e91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:24",
+      "sequence": 21473,
+      "chapter_label": "EZK 39",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 24
+        }
+      ],
+      "en": "I did to them according to their uncleanness and according to their transgressions. I hid my face from them.",
+      "ko": "내가 그들의 더러움과 그들의 범죄한대로 행하여 그들에게 내 얼굴을 가리웠었느니라",
+      "source_text_hash": "da9845451bc28300e92de9d8137d66ca5d5629946b7d1da0409530ab99ebcae0",
+      "translation_text_hash": "43aeac7d311681c631e3fa5d435c48d350954c392cee8ff24142dbdb802961a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 더러움과 그들의 범죄한대로 행하여 그들에게 내 얼굴을 가리웠었느니라"
+      ],
+      "raw_text_hashes": [
+        "43aeac7d311681c631e3fa5d435c48d350954c392cee8ff24142dbdb802961a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:25",
+      "sequence": 21474,
+      "chapter_label": "EZK 39",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 25
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘Now I will reverse the captivity of Jacob and have mercy on the whole house of Israel. I will be jealous for my holy name.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 이제 내 거룩한 이름을 위하여 열심을 내어 야곱의 사로잡힌 자를 돌아오게 하며 이스라엘 온 족속에게 긍휼을 베풀찌라",
+      "source_text_hash": "674aff3e4da8da679d8124168f3fd38238a013deee20c1969902078b5ffd9036",
+      "translation_text_hash": "16fb356e809e0f8d2e86d3b53fa9976c706104423c594119638433a1fdec6ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 이제 내 거룩한 이름을 위하여 열심을 내어 야곱의 사로잡힌 자를 돌아오게 하며 이스라엘 온 족속에게 긍휼을 베풀찌라"
+      ],
+      "raw_text_hashes": [
+        "16fb356e809e0f8d2e86d3b53fa9976c706104423c594119638433a1fdec6ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:26",
+      "sequence": 21475,
+      "chapter_label": "EZK 39",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 26
+        }
+      ],
+      "en": "They will forget their shame and all their trespasses by which they have trespassed against me, when they dwell securely in their land. No one will make them afraid",
+      "ko": "그들이 그 땅에 평안히 거하고 두렵게 할 자가 없게 될 때에 부끄러움을 품고 내게 범한 죄를 뉘우치리니",
+      "source_text_hash": "457186f5832979754d9ac57f48241c23ffdb007756d18a9bcb7e6076a4c2c5c4",
+      "translation_text_hash": "257a5efbcefca731e6b427c2f066edab5085a683efe161c34e630f9f753b45c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 땅에 평안히 거하고 두렵게 할 자가 없게 될 때에 부끄러움을 품고 내게 범한 죄를 뉘우치리니"
+      ],
+      "raw_text_hashes": [
+        "257a5efbcefca731e6b427c2f066edab5085a683efe161c34e630f9f753b45c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:27",
+      "sequence": 21476,
+      "chapter_label": "EZK 39",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 27
+        }
+      ],
+      "en": "when I have brought them back from the peoples, gathered them out of their enemies’ lands, and am shown holy among them in the sight of many nations.",
+      "ko": "곧 내가 그들을 만민 중에서 돌아오게 하고 적국 중에서 모아내어 열국 목전에서 그들로 인하여 나의 거룩함을 나타낼 때에라",
+      "source_text_hash": "6fc6b4638ec2ce58bb16fc21a524d46e4fa500fa29937d504a94c1ac9cfd4d02",
+      "translation_text_hash": "9df3c4c6b2a8ce96819080126032b3f4cb4ab0b3466cdbfbbed6c67f490025ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내가 그들을 만민 중에서 돌아오게 하고 적국 중에서 모아내어 열국 목전에서 그들로 인하여 나의 거룩함을 나타낼 때에라"
+      ],
+      "raw_text_hashes": [
+        "9df3c4c6b2a8ce96819080126032b3f4cb4ab0b3466cdbfbbed6c67f490025ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:28",
+      "sequence": 21477,
+      "chapter_label": "EZK 39",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 28
+        }
+      ],
+      "en": "They will know that I am the LORD their God, in that I caused them to go into captivity among the nations, and have gathered them to their own land. Then I will leave none of them captive any more.",
+      "ko": "전에는 내가 그들로 사로잡혀 열국에 이르게 하였거니와 후에는 내가 그들을 모아 고토로 돌아오게 하고 그 한 사람도 이방에 남기지 아니하리니 그들이 나를 여호와 자기들의 하나님인줄 알리라",
+      "source_text_hash": "e2eb2b859a79997c3071f0fae94b8fc6551952e129153e4eea307bdeaedd01af",
+      "translation_text_hash": "7eca82e257c9b1f8dc9917b0c285f91d7d35baabd434d22f4d1f7e9dd072cbcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 내가 그들로 사로잡혀 열국에 이르게 하였거니와 후에는 내가 그들을 모아 고토로 돌아오게 하고 그 한 사람도 이방에 남기지 아니하리니 그들이 나를 여호와 자기들의 하나님인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "7eca82e257c9b1f8dc9917b0c285f91d7d35baabd434d22f4d1f7e9dd072cbcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:39:29",
+      "sequence": 21478,
+      "chapter_label": "EZK 39",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 39,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 39,
+          "verse": 29
+        }
+      ],
+      "en": "I won’t hide my face from them any more, for I have poured out my Spirit on the house of Israel,’ says the Lord GOD.”",
+      "ko": "내가 다시는 내 얼굴을 그들에게 가리우지 아니하리니 이는 내가 내 신을 이스라엘 족속에게 쏟았음이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "89ae822f0dbc22301e6e5d29ecbb4c77162c68185b47d70f6753116a16bc009b",
+      "translation_text_hash": "ba74b9327b38adb3e2e2f4e4b5f4c8984c255695095822bc799002cff6c0354f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다시는 내 얼굴을 그들에게 가리우지 아니하리니 이는 내가 내 신을 이스라엘 족속에게 쏟았음이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "ba74b9327b38adb3e2e2f4e4b5f4c8984c255695095822bc799002cff6c0354f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GAL:chapter:002",
+  "unit_ordinal": 1093,
+  "unit_label": "GAL 2",
+  "book_code": "GAL",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GAL:2:1",
+      "sequence": 29079,
+      "chapter_label": "GAL 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Then after a period of fourteen years I went up again to Jerusalem with Barnabas, taking Titus also with me.",
+      "ko": "십 사년 후에 내가 바나바와 함께 디도를 데리고 다시 예루살렘에 올라갔노니",
+      "source_text_hash": "a229e2eb1e728616f323789e3745e706f3a2c856dadb5b9865e788f97249ba61",
+      "translation_text_hash": "02872f75bc9022f3803fe2d90da8d947b26309a12559fb1c1ea675b50c069ed9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십 사년 후에 내가 바나바와 함께 디도를 데리고 다시 예루살렘에 올라갔노니"
+      ],
+      "raw_text_hashes": [
+        "02872f75bc9022f3803fe2d90da8d947b26309a12559fb1c1ea675b50c069ed9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:2",
+      "sequence": 29080,
+      "chapter_label": "GAL 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "I went up by revelation, and I laid before them the Good News which I preach among the Gentiles, but privately before those who were respected, for fear that I might be running, or had run, in vain.",
+      "ko": "계시를 인하여 올라가 내가 이방 가운데서 전파하는 복음을 저희에게 제출하되 유명한 자들에게 사사로이 한 것은 내가 달음질 하는 것이나 달음질 한 것이 헛되지 않게 하려 함이라",
+      "source_text_hash": "504c8ac197c65b8230f60aa52034cb35e1771e64b3863db74917d17e018e3898",
+      "translation_text_hash": "fe085acf77eac163d014e0288172858809dda794dc8e6bba74f40a4d0b191887",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계시를 인하여 올라가 내가 이방 가운데서 전파하는 복음을 저희에게 제출하되 유명한 자들에게 사사로이 한 것은 내가 달음질 하는 것이나 달음질 한 것이 헛되지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "fe085acf77eac163d014e0288172858809dda794dc8e6bba74f40a4d0b191887"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:3",
+      "sequence": 29081,
+      "chapter_label": "GAL 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "But not even Titus, who was with me, being a Greek, was compelled to be circumcised.",
+      "ko": "그러나 나와 함께 있는 헬라인 디도라도 억지로 할례를 받게 아니하였으니",
+      "source_text_hash": "49738ab4fd58ade4fcfc2c11cf3c7eda9742d01a4464cc65c59ed313e7b3eb4c",
+      "translation_text_hash": "46f660812f2c58f10744dcab74dff37936a282fd14a887acc6851f3d75f6ccaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나와 함께 있는 헬라인 디도라도 억지로 할례를 받게 아니하였으니"
+      ],
+      "raw_text_hashes": [
+        "46f660812f2c58f10744dcab74dff37936a282fd14a887acc6851f3d75f6ccaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:4",
+      "sequence": 29082,
+      "chapter_label": "GAL 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "This was because of the false brothers secretly brought in, who stole in to spy out our liberty which we have in Christ Jesus, that they might bring us into bondage,",
+      "ko": "이는 가만히 들어온 거짓 형제 까닭이라 저희가 가만히 들어온 것은 그리스도 예수 안에서 우리의 가진 자유를 엿보고 우리를 종으로 삼고자 함이로되",
+      "source_text_hash": "dc1fad968c96b8289cc5ffc21d76c574f289c9e835d2ae80043f8ebb8717281c",
+      "translation_text_hash": "60214df092014ddd6a8fa0e2f9bc3fa2c0a944658824e74b23b2d03b2d95f5c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 가만히 들어온 거짓 형제 까닭이라 저희가 가만히 들어온 것은 그리스도 예수 안에서 우리의 가진 자유를 엿보고 우리를 종으로 삼고자 함이로되"
+      ],
+      "raw_text_hashes": [
+        "60214df092014ddd6a8fa0e2f9bc3fa2c0a944658824e74b23b2d03b2d95f5c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:5",
+      "sequence": 29083,
+      "chapter_label": "GAL 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "to whom we gave no place in the way of subjection, not for an hour, that the truth of the Good News might continue with you.",
+      "ko": "우리가 일시라도 복종치 아니하였으니 이는 복음의 진리로 너희 가운데 항상 있게 하려 함이라",
+      "source_text_hash": "a295fa8578f2ee32b5c2d07807339389d673ccf6833342998f6b52fb4544f52b",
+      "translation_text_hash": "1c99e9d08028449284e027d807c3474c608a7c26df041ac0e973d8d3f5cd00d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 일시라도 복종치 아니하였으니 이는 복음의 진리로 너희 가운데 항상 있게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "1c99e9d08028449284e027d807c3474c608a7c26df041ac0e973d8d3f5cd00d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:6",
+      "sequence": 29084,
+      "chapter_label": "GAL 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But from those who were reputed to be important—whatever they were, it makes no difference to me; God doesn’t show partiality to man—they, I say, who were respected imparted nothing to me,",
+      "ko": "유명하다는 이들 중에 (본래 어떤이들이든지 내게 상관이 없으며 하나님은 사람의 외모를 취하지 아니하시나니) 저 유명한 이들은 내게 더하여 준 것이 없고",
+      "source_text_hash": "aba6b1ea656ed4a3630fb9ee89ab8975d0db88dfb0dbdf779d5196d5f3a4dad5",
+      "translation_text_hash": "305287a102d07f27bf833eeda1260920ae4570d8e274b798254bb9f7ac22f3eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유명하다는 이들 중에 (본래 어떤이들이든지 내게 상관이 없으며 하나님은 사람의 외모를 취하지 아니하시나니) 저 유명한 이들은 내게 더하여 준 것이 없고"
+      ],
+      "raw_text_hashes": [
+        "305287a102d07f27bf833eeda1260920ae4570d8e274b798254bb9f7ac22f3eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:7",
+      "sequence": 29085,
+      "chapter_label": "GAL 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "but to the contrary, when they saw that I had been entrusted with the Good News for the uncircumcised, even as Peter with the Good News for the circumcised—",
+      "ko": "도리어 내가 무할례자에게 복음 전함을 맡기를 베드로가 할례자에게 맡음과 같이 한 것을 보고",
+      "source_text_hash": "5da95cda1cf69ceb179af70235550428926739f44762648cd3c21c9fc7204778",
+      "translation_text_hash": "786317749ffab0910521d30dc603e3bcd5a15c22ba6cbea3a2a3a10ac23d660d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 내가 무할례자에게 복음 전함을 맡기를 베드로가 할례자에게 맡음과 같이 한 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "786317749ffab0910521d30dc603e3bcd5a15c22ba6cbea3a2a3a10ac23d660d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:8",
+      "sequence": 29086,
+      "chapter_label": "GAL 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "for he who worked through Peter in the apostleship with the circumcised also worked through me with the Gentiles—",
+      "ko": "베드로에게 역사하사 그를 할례자의 사도로 삼으신 이가 또한 내게 역사하사 나를 이방인에게 사도로 삼으셨느니라",
+      "source_text_hash": "ab5c341293f948975c154e5f22423184c40d32feae28c495de9878b026c4a173",
+      "translation_text_hash": "d5d7aafb19797cd9a703450538d8f80a0c746a670272269fda07949da8db1ec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로에게 역사하사 그를 할례자의 사도로 삼으신 이가 또한 내게 역사하사 나를 이방인에게 사도로 삼으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d5d7aafb19797cd9a703450538d8f80a0c746a670272269fda07949da8db1ec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:9",
+      "sequence": 29087,
+      "chapter_label": "GAL 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "and when they perceived the grace that was given to me, James and Cephas and John, those who were reputed to be pillars, gave to Barnabas and me the right hand of fellowship, that we should go to the Gentiles, and they to the circumcision.",
+      "ko": "또 내게 주신 은혜를 알므로 기둥 같이 여기는 야고보와 게바와 요한도 나와 바나바에게 교제의 악수를 하였으니 이는 우리는 이방인에게로, 저희는 할례자에게로 가게 하려 함이라",
+      "source_text_hash": "78e5785ba6a98bf61e69de8ef5438029b870c54f4841aead1c508f849920295b",
+      "translation_text_hash": "7fd113e22eeb55c3731182769e2fc6a1c5a33e4ce4bb4c8658ee57b18273f6e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 주신 은혜를 알므로 기둥 같이 여기는 야고보와 게바와 요한도 나와 바나바에게 교제의 악수를 하였으니 이는 우리는 이방인에게로, 저희는 할례자에게로 가게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "7fd113e22eeb55c3731182769e2fc6a1c5a33e4ce4bb4c8658ee57b18273f6e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:10",
+      "sequence": 29088,
+      "chapter_label": "GAL 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "They only asked us to remember the poor—which very thing I was also zealous to do.",
+      "ko": "다만 우리에게 가난한 자들 생각하는 것을 부탁하였으니 이것을 나도 본래 힘써 행하노라",
+      "source_text_hash": "931ff6a96e9816177b419d14f8ab3030abb9c348b0b24fb66c2f7fd7bcb680f2",
+      "translation_text_hash": "6a5286c786a1825a4a9b7ff053c3245edb759b796ee3d9ca98df96ed750af954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 우리에게 가난한 자들 생각하는 것을 부탁하였으니 이것을 나도 본래 힘써 행하노라"
+      ],
+      "raw_text_hashes": [
+        "6a5286c786a1825a4a9b7ff053c3245edb759b796ee3d9ca98df96ed750af954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:11",
+      "sequence": 29089,
+      "chapter_label": "GAL 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "But when Peter came to Antioch, I resisted him to his face, because he stood condemned.",
+      "ko": "게바가 안디옥에 이르렀을 때에 책망할 일이 있기로 내가 저를 면책하였노라",
+      "source_text_hash": "69729e6237fcee873b970900855035f4894d06554120c6c86bbb344bf2b910e5",
+      "translation_text_hash": "c0bcbccb1b4a0ecf699c68ad619fc4da4598ac5b192aab9d02f892af7b888eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게바가 안디옥에 이르렀을 때에 책망할 일이 있기로 내가 저를 면책하였노라"
+      ],
+      "raw_text_hashes": [
+        "c0bcbccb1b4a0ecf699c68ad619fc4da4598ac5b192aab9d02f892af7b888eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:12",
+      "sequence": 29090,
+      "chapter_label": "GAL 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "For before some people came from James, he ate with the Gentiles. But when they came, he drew back and separated himself, fearing those who were of the circumcision.",
+      "ko": "야고보에게서 온 어떤이들이 이르기 전에 게바가 이방인과 함께 먹다가 저희가 오매 그가 할례자들을 두려워하여 떠나 물러가매",
+      "source_text_hash": "f560a9e4e1b09354de9a6961e7b812d6fa8669e6ad89151a8f9d40b36c370b9d",
+      "translation_text_hash": "78c6e4247151457ecc914df32dc6e36c4efc70238a5b337619a7e3be19c207b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야고보에게서 온 어떤이들이 이르기 전에 게바가 이방인과 함께 먹다가 저희가 오매 그가 할례자들을 두려워하여 떠나 물러가매"
+      ],
+      "raw_text_hashes": [
+        "78c6e4247151457ecc914df32dc6e36c4efc70238a5b337619a7e3be19c207b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:13",
+      "sequence": 29091,
+      "chapter_label": "GAL 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "And the rest of the Jews joined him in his hypocrisy, so that even Barnabas was carried away with their hypocrisy.",
+      "ko": "남은 유대인들도 저와 같이 외식하므로 바나바도 저희의 외식에 유혹되었느니라",
+      "source_text_hash": "c4238914ceb6c29a1d60609acfe707b3a7dbf28887feb844fe5c47535335e946",
+      "translation_text_hash": "fa01d4d8880b2e6314d7ccf278eb51f413f27fc77db0d438961ef23b136740c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남은 유대인들도 저와 같이 외식하므로 바나바도 저희의 외식에 유혹되었느니라"
+      ],
+      "raw_text_hashes": [
+        "fa01d4d8880b2e6314d7ccf278eb51f413f27fc77db0d438961ef23b136740c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:14",
+      "sequence": 29092,
+      "chapter_label": "GAL 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "But when I saw that they didn’t walk uprightly according to the truth of the Good News, I said to Peter before them all, “If you, being a Jew, live as the Gentiles do, and not as the Jews do, why do you compel the Gentiles to live as the Jews do?",
+      "ko": "그러므로 나는 저희가 복음의 진리를 따라 바로 행하지 아니함을 보고 모든 자 앞에서 게바에게 이르되 네가 유대인으로서 이방을 좇고 유대인답게 살지 아니하면서 어찌하여 억지로 이방인을 유대인답게 살게 하려느냐 하였노라",
+      "source_text_hash": "142448257a476c13168188c398403912637f35fe0d1ef66bc9d5a3f759219b7d",
+      "translation_text_hash": "1e55696f3cf4fb32573708ee35ab5681b183591d030fbf652fbc96a88156cf9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나는 저희가 복음의 진리를 따라 바로 행하지 아니함을 보고 모든 자 앞에서 게바에게 이르되 네가 유대인으로서 이방을 좇고 유대인답게 살지 아니하면서 어찌하여 억지로 이방인을 유대인답게 살게 하려느냐 하였노라"
+      ],
+      "raw_text_hashes": [
+        "1e55696f3cf4fb32573708ee35ab5681b183591d030fbf652fbc96a88156cf9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:15",
+      "sequence": 29093,
+      "chapter_label": "GAL 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "“We, being Jews by nature and not Gentile sinners,",
+      "ko": "우리는 본래 유대인이요 이방 죄인이 아니로되",
+      "source_text_hash": "d665a50cfde54758974d23f19b589fa30ef237f021df051a5e30eef7e13cbb90",
+      "translation_text_hash": "55efe7d776e410a827b1d2a5a25d6515bc86107e8a21de4a20b5493357e9bc7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 본래 유대인이요 이방 죄인이 아니로되"
+      ],
+      "raw_text_hashes": [
+        "55efe7d776e410a827b1d2a5a25d6515bc86107e8a21de4a20b5493357e9bc7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:16",
+      "sequence": 29094,
+      "chapter_label": "GAL 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "yet knowing that a man is not justified by the works of the law but through faith in Jesus Christ, even we believed in Christ Jesus, that we might be justified by faith in Christ and not by the works of the law, because no flesh will be justified by the works of the law.",
+      "ko": "사람이 의롭게 되는 것은 율법의 행위에서 난 것이 아니요 오직 예수 그리스도를 믿음으로 말미암는줄 아는고로 우리도 그리스도 예수를 믿나니 이는 우리가 율법의 행위에서 아니고 그리스도를 믿음으로서 의롭다 함을 얻으려 함이라 율법의 행위로서는 의롭다 함을 얻을 육체가 없느니라",
+      "source_text_hash": "b6c3643edd3ea24aee1622998ca3af1beba9cb86ab2dfbfa456489b1779885d6",
+      "translation_text_hash": "bd528bae91cf7406c68d245f8f132a88bfd1fb04885bbef6f6749b78f703ee9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 의롭게 되는 것은 율법의 행위에서 난 것이 아니요 오직 예수 그리스도를 믿음으로 말미암는줄 아는고로 우리도 그리스도 예수를 믿나니 이는 우리가 율법의 행위에서 아니고 그리스도를 믿음으로서 의롭다 함을 얻으려 함이라 율법의 행위로서는 의롭다 함을 얻을 육체가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "bd528bae91cf7406c68d245f8f132a88bfd1fb04885bbef6f6749b78f703ee9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:17",
+      "sequence": 29095,
+      "chapter_label": "GAL 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "But if while we sought to be justified in Christ, we ourselves also were found sinners, is Christ a servant of sin? Certainly not!",
+      "ko": "만일 우리가 그리스도 안에서 의롭게 되려 하다가 죄인으로 나타나면 그리스도께서 죄를 짓게 하는 자냐 결코 그럴 수 없느니라",
+      "source_text_hash": "026cda54cdfd2eb02e86ece39a4d7dd6d564dea360b71f5f37558e8c4e95614c",
+      "translation_text_hash": "c45332d38f5490eae4ca7677931ef51cc48fe10a5245fdd40c524c9a797aca04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 그리스도 안에서 의롭게 되려 하다가 죄인으로 나타나면 그리스도께서 죄를 짓게 하는 자냐 결코 그럴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "c45332d38f5490eae4ca7677931ef51cc48fe10a5245fdd40c524c9a797aca04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:18",
+      "sequence": 29096,
+      "chapter_label": "GAL 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "For if I build up again those things which I destroyed, I prove myself a law-breaker.",
+      "ko": "만일 내가 헐었던 것을 다시 세우면 내가 나를 범법한 자로 만드는 것이라",
+      "source_text_hash": "9b10bc3a3d2184803260c67b78a08c743dc000ebfb021ea9b9d5f920e326d15b",
+      "translation_text_hash": "2f641db7132cf49463af92465dc614fa90469fe8959ddeb433ffa406e48217d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 헐었던 것을 다시 세우면 내가 나를 범법한 자로 만드는 것이라"
+      ],
+      "raw_text_hashes": [
+        "2f641db7132cf49463af92465dc614fa90469fe8959ddeb433ffa406e48217d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:19",
+      "sequence": 29097,
+      "chapter_label": "GAL 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "For I through the law died to the law, that I might live to God.",
+      "ko": "내가 율법으로 말미암아 율법을 향하여 죽었나니 이는 하나님을 향하여 살려 함이니라",
+      "source_text_hash": "c258c5b0c1538055a1cea6eb4f260fe610d9cb778ebff6fdae1fae79bfa97472",
+      "translation_text_hash": "ef8cfc188897c51e79bbb4cbb7838b11c5b0d720d635e78f083ca79ec7a9ecb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 율법으로 말미암아 율법을 향하여 죽었나니 이는 하나님을 향하여 살려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "ef8cfc188897c51e79bbb4cbb7838b11c5b0d720d635e78f083ca79ec7a9ecb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:20",
+      "sequence": 29098,
+      "chapter_label": "GAL 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "I have been crucified with Christ, and it is no longer I who live, but Christ lives in me. That life which I now live in the flesh, I live by faith in the Son of God, who loved me and gave himself up for me.",
+      "ko": "내가 그리스도와 함께 십자가에 못 박혔나니 그런즉 이제는 내가 산 것이 아니요 오직 내 안에 그리스도께서 사신 것이라 이제 내가 육체 가운데 사는 것은 나를 사랑하사 나를 위하여 자기 몸을 버리신 하나님의 아들을 믿는 믿음 안에서 사는 것이라",
+      "source_text_hash": "b7963131a6010489b12ddd6391c50d44688be61a4d891e5f8e96c565360fab18",
+      "translation_text_hash": "a10ce8c989796e711b3ff771ad862b11c9446d04351befc905eae3fe57efee98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도와 함께 십자가에 못 박혔나니 그런즉 이제는 내가 산 것이 아니요 오직 내 안에 그리스도께서 사신 것이라 이제 내가 육체 가운데 사는 것은 나를 사랑하사 나를 위하여 자기 몸을 버리신 하나님의 아들을 믿는 믿음 안에서 사는 것이라"
+      ],
+      "raw_text_hashes": [
+        "a10ce8c989796e711b3ff771ad862b11c9446d04351befc905eae3fe57efee98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:2:21",
+      "sequence": 29099,
+      "chapter_label": "GAL 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "GAL",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "I don’t reject the grace of God. For if righteousness is through the law, then Christ died for nothing!”",
+      "ko": "내가 하나님의 은혜를 폐하지 아니하노니 만일 의롭게 되는 것이 율법으로 말미암으면 그리스도께서 헛되이 죽으셨느니라",
+      "source_text_hash": "f66d5f00d1155c797ce4445e9d0efb96f8657139fe0922dbce64bdfaf3d43d29",
+      "translation_text_hash": "197c3e08da0d8d7c22d89cf69dca211536b47020f6a6c0022d407c322f6bdb96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님의 은혜를 폐하지 아니하노니 만일 의롭게 되는 것이 율법으로 말미암으면 그리스도께서 헛되이 죽으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "197c3e08da0d8d7c22d89cf69dca211536b47020f6a6c0022d407c322f6bdb96"
+      ]
+    }
+  ]
+}

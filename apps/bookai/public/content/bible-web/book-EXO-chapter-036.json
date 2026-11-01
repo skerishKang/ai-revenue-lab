@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:036",
+  "unit_ordinal": 86,
+  "unit_label": "EXO 36",
+  "book_code": "EXO",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:36:1",
+      "sequence": 2568,
+      "chapter_label": "EXO 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "“Bezalel and Oholiab shall work with every wise-hearted man, in whom the LORD has put wisdom and understanding to know how to do all the work for the service of the sanctuary, according to all that the LORD has commanded.”",
+      "ko": "브살렐과 오홀리압과 및 마음이 지혜로운 사람 곧 여호와께서 지혜와 총명을 부으사 성소에 쓸 모든 일을 할줄 알게 하심을 입은 자들은 여호와의 무릇 명하신대로 할 것이니라",
+      "source_text_hash": "aa386ba374cd41eb5591ed664d93d381eff7e923a50b4b0b09eee53ac25f244e",
+      "translation_text_hash": "d6cfd05bbe4d1c5d66c19f9e3ae1b42e42aee724b400c832601d105ceb1c0d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브살렐과 오홀리압과 및 마음이 지혜로운 사람 곧 여호와께서 지혜와 총명을 부으사 성소에 쓸 모든 일을 할줄 알게 하심을 입은 자들은 여호와의 무릇 명하신대로 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d6cfd05bbe4d1c5d66c19f9e3ae1b42e42aee724b400c832601d105ceb1c0d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:2",
+      "sequence": 2569,
+      "chapter_label": "EXO 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "Moses called Bezalel and Oholiab, and every wise-hearted man, in whose heart the LORD had put wisdom, even everyone whose heart stirred him up to come to the work to do it.",
+      "ko": "모세가 브살렐과 오홀리압과 및 마음이 지혜로운 사람 곧 그 마음에 여호와께로 지혜를 얻고 와서 그 일을 하려고 마음에 원하는 모든 자를 부르매",
+      "source_text_hash": "e5836727fe0574b5496c3d4633e8f1b09b7fbedb4c707e4747cb723b3eddeb2a",
+      "translation_text_hash": "a6c9408503d89eb7bbba84afab20ddad2a802b42ea16fbd9447ed08b61bf2cb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 브살렐과 오홀리압과 및 마음이 지혜로운 사람 곧 그 마음에 여호와께로 지혜를 얻고 와서 그 일을 하려고 마음에 원하는 모든 자를 부르매"
+      ],
+      "raw_text_hashes": [
+        "a6c9408503d89eb7bbba84afab20ddad2a802b42ea16fbd9447ed08b61bf2cb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:3",
+      "sequence": 2570,
+      "chapter_label": "EXO 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "They received from Moses all the offering which the children of Israel had brought for the work of the service of the sanctuary, with which to make it. They kept bringing free will offerings to him every morning.",
+      "ko": "그들이 이스라엘 자손의 성소의 모든 것을 만들기 위하여 가져 온 예물을 모세에게서 받으니라 그러나 백성이 아침마다 자원하는 예물을 연하여 가져 오는 고로",
+      "source_text_hash": "750fb74402daf8534c44bc2a40fe45a30561320f587012b156ea414794be262f",
+      "translation_text_hash": "0e66345f55bd11a63064b21262952124d7c0908831d73f6fc1befac39dff752e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이스라엘 자손의 성소의 모든 것을 만들기 위하여 가져 온 예물을 모세에게서 받으니라 그러나 백성이 아침마다 자원하는 예물을 연하여 가져 오는 고로"
+      ],
+      "raw_text_hashes": [
+        "0e66345f55bd11a63064b21262952124d7c0908831d73f6fc1befac39dff752e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:4",
+      "sequence": 2571,
+      "chapter_label": "EXO 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "All the wise men, who performed all the work of the sanctuary, each came from his work which he did.",
+      "ko": "성소의 모든 일을 하는 지혜로운 자들이 각기 하는 일을 정지하고 와서",
+      "source_text_hash": "f839f587da9e620cf68b1e310604be70a8445dc70d2661cb1ec65e4e2d03086e",
+      "translation_text_hash": "e1268e2ed1127dfa28750e42cb885c318ab4b1125c9df112ac1bac40b8faaf00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소의 모든 일을 하는 지혜로운 자들이 각기 하는 일을 정지하고 와서"
+      ],
+      "raw_text_hashes": [
+        "e1268e2ed1127dfa28750e42cb885c318ab4b1125c9df112ac1bac40b8faaf00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:5",
+      "sequence": 2572,
+      "chapter_label": "EXO 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "They spoke to Moses, saying, “The people have brought much more than enough for the service of the work which the LORD commanded to make.”",
+      "ko": "모세에게 고하여 가로되 백성이 너무 많이 가져 오므로 여호와의 명하신 일에 쓰기에 남음이 있나이다",
+      "source_text_hash": "1668b04ee9868ecf7422206379b5b9bb18a336c0f49d3864739f2c88b96703c7",
+      "translation_text_hash": "b3deed59be94f5bb5b7eb53460a96beed18ba571db79ab37c71bda5fbcbb5aef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 고하여 가로되 백성이 너무 많이 가져 오므로 여호와의 명하신 일에 쓰기에 남음이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "b3deed59be94f5bb5b7eb53460a96beed18ba571db79ab37c71bda5fbcbb5aef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:6",
+      "sequence": 2573,
+      "chapter_label": "EXO 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Moses gave a commandment, and they caused it to be proclaimed throughout the camp, saying, “Let neither man nor woman make anything else for the offering for the sanctuary.” So the people were restrained from bringing.",
+      "ko": "모세가 명을 내리매 그들이 진중에 공포하여 가로되 무론 남녀하고 성소에 드릴 예물을 다시 만들지 말라 하매 백성이 가져오기를 정지하니",
+      "source_text_hash": "14adef84d89848ba27b86635d0b06f705eb5302692f8b47def67152faec087e4",
+      "translation_text_hash": "dfda75dc06997394a5b5dd9fcf344fd9973b01569c92b6cd1e27e2fd3885b932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 명을 내리매 그들이 진중에 공포하여 가로되 무론 남녀하고 성소에 드릴 예물을 다시 만들지 말라 하매 백성이 가져오기를 정지하니"
+      ],
+      "raw_text_hashes": [
+        "dfda75dc06997394a5b5dd9fcf344fd9973b01569c92b6cd1e27e2fd3885b932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:7",
+      "sequence": 2574,
+      "chapter_label": "EXO 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "For the stuff they had was sufficient to do all the work, and too much.",
+      "ko": "있는 재료가 모든 일을 하기에 넉넉하여 남음이 있었더라",
+      "source_text_hash": "18c72ed8978a2daa8354f6ddfb9ad669fa3dfb33e7dbf6398fdbc621548e94eb",
+      "translation_text_hash": "6fc06eef17ac4098541d3d5ff44470b6e1a07d8a9378787e4231b8ba53b203a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "있는 재료가 모든 일을 하기에 넉넉하여 남음이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "6fc06eef17ac4098541d3d5ff44470b6e1a07d8a9378787e4231b8ba53b203a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:8",
+      "sequence": 2575,
+      "chapter_label": "EXO 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "All the wise-hearted men among those who did the work made the tabernacle with ten curtains of fine twined linen, blue, purple, and scarlet. They made them with cherubim, the work of a skillful workman.",
+      "ko": "일하는 사람 중에 마음이 지혜로운 모든 사람이 열 폭 앙장으로 성막을 지었으니 곧 가늘게 꼰 베실과 청색 자색 홍색실로 그룹들을 무늬 놓아 짜서 지은 것이라",
+      "source_text_hash": "6a704a49f3fa72513e4709ecaf483c12a64abdca28d54ab4fc72cb9509a32025",
+      "translation_text_hash": "05bd68218412ae8d16679cc3ce56dd02a5332733501267377c8c2b75cdc2ce08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일하는 사람 중에 마음이 지혜로운 모든 사람이 열 폭 앙장으로 성막을 지었으니 곧 가늘게 꼰 베실과 청색 자색 홍색실로 그룹들을 무늬 놓아 짜서 지은 것이라"
+      ],
+      "raw_text_hashes": [
+        "05bd68218412ae8d16679cc3ce56dd02a5332733501267377c8c2b75cdc2ce08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:9",
+      "sequence": 2576,
+      "chapter_label": "EXO 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "The length of each curtain was twenty-eight cubits, and the width of each curtain four cubits. All the curtains had one measure.",
+      "ko": "매폭의 장은 이십팔 규빗, 광은 사 규빗으로 각 폭의 장단을 같게 하여",
+      "source_text_hash": "f3c73b03fe918472875e3eafdca72a3802e6fc76aca2538a09addd23eecf641d",
+      "translation_text_hash": "d528adc45345266b9c6c33c494871570f684563b4027deee05ac2bf2bb7c89cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매폭의 장은 이십팔 규빗, 광은 사 규빗으로 각 폭의 장단을 같게 하여"
+      ],
+      "raw_text_hashes": [
+        "d528adc45345266b9c6c33c494871570f684563b4027deee05ac2bf2bb7c89cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:10",
+      "sequence": 2577,
+      "chapter_label": "EXO 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "He coupled five curtains to one another, and the other five curtains he coupled to one another.",
+      "ko": "그 다섯 폭을 서로 연하며 또 그 다섯 폭을 서로 연하고",
+      "source_text_hash": "c29d8ef7cd3e37ad09d0a2100cdb6cd6c1a8c2be4fb11b76d0986d0a1572172d",
+      "translation_text_hash": "dd25eea42a6130464c67da5b55ef7da7223c91717afc324d37f770681e20d8ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다섯 폭을 서로 연하며 또 그 다섯 폭을 서로 연하고"
+      ],
+      "raw_text_hashes": [
+        "dd25eea42a6130464c67da5b55ef7da7223c91717afc324d37f770681e20d8ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:11",
+      "sequence": 2578,
+      "chapter_label": "EXO 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "He made loops of blue on the edge of the one curtain from the edge in the coupling. Likewise he made in the edge of the curtain that was outermost in the second coupling.",
+      "ko": "연락할 말폭 가에 청색 고를 만들며 다른 연락할 말폭 가에도 고를 만들되",
+      "source_text_hash": "9f48438c906f8899caec5e5731f2e244611eb87cb92f76b0ac5c5d8b51e5dda5",
+      "translation_text_hash": "2316105461644703ed60b42c98fe537a16c6ff4acf99acbc0bddb77932f9b593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연락할 말폭 가에 청색 고를 만들며 다른 연락할 말폭 가에도 고를 만들되"
+      ],
+      "raw_text_hashes": [
+        "2316105461644703ed60b42c98fe537a16c6ff4acf99acbc0bddb77932f9b593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:12",
+      "sequence": 2579,
+      "chapter_label": "EXO 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "He made fifty loops in the one curtain, and he made fifty loops in the edge of the curtain that was in the second coupling. The loops were opposite to one another.",
+      "ko": "그 연락할 한 폭에 고 오십을 달고 다른 연락할 한 폭의 가에도 고 오십을 달아 그 고들이 서로 대하게 하고",
+      "source_text_hash": "c2bbab928fe63af6d49d00403963b6b0198fa62df33dd72086a7bd46a5963d0d",
+      "translation_text_hash": "7e76a83cf0c9303b8592038a8da7f4e2e0cf42d0aeb2d17fa2274d285e0c4b76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 연락할 한 폭에 고 오십을 달고 다른 연락할 한 폭의 가에도 고 오십을 달아 그 고들이 서로 대하게 하고"
+      ],
+      "raw_text_hashes": [
+        "7e76a83cf0c9303b8592038a8da7f4e2e0cf42d0aeb2d17fa2274d285e0c4b76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:13",
+      "sequence": 2580,
+      "chapter_label": "EXO 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "He made fifty clasps of gold, and coupled the curtains to one another with the clasps: so the tabernacle was a unit.",
+      "ko": "금 갈고리 오십을 만들어 그 갈고리로 두 앙장을 연하여 한 막을 이루었더라",
+      "source_text_hash": "f3568db66203740b04a8c6ffbcd44f94738ab699c8796895d51714add95d32cc",
+      "translation_text_hash": "21d24ff069536c158756507a2862f06d5412945a75319626c0c8935866500329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금 갈고리 오십을 만들어 그 갈고리로 두 앙장을 연하여 한 막을 이루었더라"
+      ],
+      "raw_text_hashes": [
+        "21d24ff069536c158756507a2862f06d5412945a75319626c0c8935866500329"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:14",
+      "sequence": 2581,
+      "chapter_label": "EXO 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "He made curtains of goats’ hair for a covering over the tabernacle. He made them eleven curtains.",
+      "ko": "그 성막을 덮는 막 곧 앙장을 염소털로 만들되 십 일폭을 만들었으니",
+      "source_text_hash": "936ad0f303492d05679a38de00adac5637ec2c0a200adc2d9c2677cb58e8da74",
+      "translation_text_hash": "de8fd3ecc0e1a4a149f3d2e2a684fa9892a9500663557a264f1e4cec52474cdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성막을 덮는 막 곧 앙장을 염소털로 만들되 십 일폭을 만들었으니"
+      ],
+      "raw_text_hashes": [
+        "de8fd3ecc0e1a4a149f3d2e2a684fa9892a9500663557a264f1e4cec52474cdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:15",
+      "sequence": 2582,
+      "chapter_label": "EXO 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "The length of each curtain was thirty cubits, and four cubits the width of each curtain. The eleven curtains had one measure.",
+      "ko": "각 폭의 장은 삼십 규빗, 광은 사 규빗으로 십 일폭의 장단을 같게 하여",
+      "source_text_hash": "b71efac17f2a7a67a06627be058f5591f54e47790005eb06000b4a72ed7df7e6",
+      "translation_text_hash": "5ae1e5e4a7067fb7b4bd4c45f51730e2a8e25847fc5d3e6eddf5ed596078e855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 폭의 장은 삼십 규빗, 광은 사 규빗으로 십 일폭의 장단을 같게 하여"
+      ],
+      "raw_text_hashes": [
+        "5ae1e5e4a7067fb7b4bd4c45f51730e2a8e25847fc5d3e6eddf5ed596078e855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:16",
+      "sequence": 2583,
+      "chapter_label": "EXO 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "He coupled five curtains by themselves, and six curtains by themselves.",
+      "ko": "그 앙장 다섯 폭을 서로 연하며 또 여섯 폭을 서로 연하고",
+      "source_text_hash": "5d81f8b26f7a91ebe8da69057503f643fbfacdf33635e19336449c9029fb26c8",
+      "translation_text_hash": "719e6d24e9e2af19eb488c958ba07369ccd1272b8f6dfa4c4e035dac2c45600d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앙장 다섯 폭을 서로 연하며 또 여섯 폭을 서로 연하고"
+      ],
+      "raw_text_hashes": [
+        "719e6d24e9e2af19eb488c958ba07369ccd1272b8f6dfa4c4e035dac2c45600d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:17",
+      "sequence": 2584,
+      "chapter_label": "EXO 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "He made fifty loops on the edge of the curtain that was outermost in the coupling, and he made fifty loops on the edge of the curtain which was outermost in the second coupling.",
+      "ko": "앙장을 연락할 말폭 가에 고 오십을 달며 다른 연락할 말폭 가에도 고 오십을 달고",
+      "source_text_hash": "b508e30931f75357a9078bfe1b048e9401876c0711c009aa06ff4d6809b7da54",
+      "translation_text_hash": "bde990d434704871e16b4fbfbe5cee0a437cfa8c01929aa61f9ca24f8bd51dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앙장을 연락할 말폭 가에 고 오십을 달며 다른 연락할 말폭 가에도 고 오십을 달고"
+      ],
+      "raw_text_hashes": [
+        "bde990d434704871e16b4fbfbe5cee0a437cfa8c01929aa61f9ca24f8bd51dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:18",
+      "sequence": 2585,
+      "chapter_label": "EXO 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "He made fifty clasps of bronze to couple the tent together, that it might be a unit.",
+      "ko": "놋 갈고리 오십을 만들어 그 앙장을 연합하여 한 막이 되게 하고",
+      "source_text_hash": "a5ce3ce40019cc25999414ed5c433592f29b3cefa9166ae4783e53604a63b8e2",
+      "translation_text_hash": "d25f3b3fb53eae8d97d67e0fba7b3b3e007edc0f9845320292313975399360ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "놋 갈고리 오십을 만들어 그 앙장을 연합하여 한 막이 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "d25f3b3fb53eae8d97d67e0fba7b3b3e007edc0f9845320292313975399360ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:19",
+      "sequence": 2586,
+      "chapter_label": "EXO 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "He made a covering for the tent of rams’ skins dyed red, and a covering of sea cow hides above.",
+      "ko": "붉은 물 들인 수양의 가죽으로 막의 덮개를 만들고 해달의 가죽으로 그 웃덮개를 만들었더라",
+      "source_text_hash": "3860b424e40364d1c68e892468e6f4239b3c8168bbfd62eafd02d67081f35ef4",
+      "translation_text_hash": "38896686fc3a857e90cb0011161e4be4146588ec66d99ab6632119e75e2dc867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "붉은 물 들인 수양의 가죽으로 막의 덮개를 만들고 해달의 가죽으로 그 웃덮개를 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "38896686fc3a857e90cb0011161e4be4146588ec66d99ab6632119e75e2dc867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:20",
+      "sequence": 2587,
+      "chapter_label": "EXO 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "He made the boards for the tabernacle of acacia wood, standing up.",
+      "ko": "그가 또 조각목으로 성막에 세울 널판들을 만들었으니",
+      "source_text_hash": "6da5f0aed17275889cb6cb7db8fb4d8ce6cc939a396f60d5bcf78dd5c4d24718",
+      "translation_text_hash": "07d28aab96dfc273d94381cabd6eef0f8aa2d06b58bbcbc2838cb60721367896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 조각목으로 성막에 세울 널판들을 만들었으니"
+      ],
+      "raw_text_hashes": [
+        "07d28aab96dfc273d94381cabd6eef0f8aa2d06b58bbcbc2838cb60721367896"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:21",
+      "sequence": 2588,
+      "chapter_label": "EXO 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "Ten cubits was the length of a board, and a cubit and a half the width of each board.",
+      "ko": "각 판의 장은 십 규빗, 광은 일 규빗 반이며",
+      "source_text_hash": "200b5596558d2a81084184ab10210a535818f983909be9caa754bbdd01fab182",
+      "translation_text_hash": "0b0fd5b1f650ca146b003be50472220a8345e1c8e12621b54fe842f6a6b018e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 판의 장은 십 규빗, 광은 일 규빗 반이며"
+      ],
+      "raw_text_hashes": [
+        "0b0fd5b1f650ca146b003be50472220a8345e1c8e12621b54fe842f6a6b018e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:22",
+      "sequence": 2589,
+      "chapter_label": "EXO 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "Each board had two tenons, joined to one another. He made all the boards of the tabernacle this way.",
+      "ko": "각 판에 두 촉이 있어 서로 연하게 하였으니 성막의 모든 판이 그러하며",
+      "source_text_hash": "2cd01ecd85a61ae1841090297122559374786119eab55d9e89bef1109c79bf1d",
+      "translation_text_hash": "6c4a01f7a472546722714b12ed90b6f0171c587b2604ce96e311d5f8ea31fede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 판에 두 촉이 있어 서로 연하게 하였으니 성막의 모든 판이 그러하며"
+      ],
+      "raw_text_hashes": [
+        "6c4a01f7a472546722714b12ed90b6f0171c587b2604ce96e311d5f8ea31fede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:23",
+      "sequence": 2590,
+      "chapter_label": "EXO 36",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 23
+        }
+      ],
+      "en": "He made the boards for the tabernacle, twenty boards for the south side southward.",
+      "ko": "성막을 위하여 널판을 만들었으되 남으로는 남편에 널판이 이십이라",
+      "source_text_hash": "4fe62aab44d8d3d37f5fc360d16526500cff2e809371bc9b5bdf8cd2edcb2fc1",
+      "translation_text_hash": "223fee0ff59704bdb5446aa931784a4f58dc814b80c6a708db8da325da601aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막을 위하여 널판을 만들었으되 남으로는 남편에 널판이 이십이라"
+      ],
+      "raw_text_hashes": [
+        "223fee0ff59704bdb5446aa931784a4f58dc814b80c6a708db8da325da601aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:24",
+      "sequence": 2591,
+      "chapter_label": "EXO 36",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 24
+        }
+      ],
+      "en": "He made forty sockets of silver under the twenty boards: two sockets under one board for its two tenons, and two sockets under another board for its two tenons.",
+      "ko": "그 이십 널판 밑에 은받침 사십을 만들었으되 곧 이 널판 밑에도 두 받침이 그 두 촉을 받게 하였고 저 널판 밑에도 두 받침이 그 두 촉을 받게 하였으며",
+      "source_text_hash": "160b6a9455778591f366a51345d5f4e26414735a585ee61d19abe1801179e877",
+      "translation_text_hash": "f84f984095b3b2c3d7a94792819a138e76c06858637c7875a0d20fac16e5532a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이십 널판 밑에 은받침 사십을 만들었으되 곧 이 널판 밑에도 두 받침이 그 두 촉을 받게 하였고 저 널판 밑에도 두 받침이 그 두 촉을 받게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "f84f984095b3b2c3d7a94792819a138e76c06858637c7875a0d20fac16e5532a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:25",
+      "sequence": 2592,
+      "chapter_label": "EXO 36",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 25
+        }
+      ],
+      "en": "For the second side of the tabernacle, on the north side, he made twenty boards",
+      "ko": "성막 다른 편 곧 북편을 위하여도 널판 이십을 만들고",
+      "source_text_hash": "fdd0d2e101e0c63d2efda2d2dbabfdc97c5d7c801dd908d242bdb8598b47f103",
+      "translation_text_hash": "fb0c980f9ccf1616b47adaef83525b6ee27d69410cf5bb691fe969f4103e90e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 다른 편 곧 북편을 위하여도 널판 이십을 만들고"
+      ],
+      "raw_text_hashes": [
+        "fb0c980f9ccf1616b47adaef83525b6ee27d69410cf5bb691fe969f4103e90e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:26",
+      "sequence": 2593,
+      "chapter_label": "EXO 36",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 26
+        }
+      ],
+      "en": "and their forty sockets of silver: two sockets under one board, and two sockets under another board.",
+      "ko": "또 은받침 사십을 만들었으니 곧 이 판 밑에도 두 받침이요 저 판 밑에도 두 받침이며",
+      "source_text_hash": "a75a0abf2cd05769b372806ac89a1b181899a3da14c234c36d12fc8a65f15b24",
+      "translation_text_hash": "dfc8af3ff81d1b6f0385f4b090a2cdc75d7ec2da58bba2f5bf6f34cb7a318335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 은받침 사십을 만들었으니 곧 이 판 밑에도 두 받침이요 저 판 밑에도 두 받침이며"
+      ],
+      "raw_text_hashes": [
+        "dfc8af3ff81d1b6f0385f4b090a2cdc75d7ec2da58bba2f5bf6f34cb7a318335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:27",
+      "sequence": 2594,
+      "chapter_label": "EXO 36",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 27
+        }
+      ],
+      "en": "For the far part of the tabernacle westward he made six boards.",
+      "ko": "장막 뒤 곧 서편을 위하여는 널판 여섯을 만들었고",
+      "source_text_hash": "ab6d33c1d83ad58850b979f16556acf68b59c3049d07e3fb1876f27549ab4c2c",
+      "translation_text_hash": "08e295d8acae00f05e1b581ec23b22fef436d144d44492d84cec4d7a77820341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 뒤 곧 서편을 위하여는 널판 여섯을 만들었고"
+      ],
+      "raw_text_hashes": [
+        "08e295d8acae00f05e1b581ec23b22fef436d144d44492d84cec4d7a77820341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:28",
+      "sequence": 2595,
+      "chapter_label": "EXO 36",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 28
+        }
+      ],
+      "en": "He made two boards for the corners of the tabernacle in the far part.",
+      "ko": "장막 뒤 두 모퉁이 편을 위하여는 널판 둘을 만들되",
+      "source_text_hash": "b09c945f16efac058f16777e5f2b9199c195555aeb88ca0a15993d23262fda97",
+      "translation_text_hash": "54f8d2087fc0753d76bd93a3292cceb08b8303e9e316a0d48f73cce9342a9b2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 뒤 두 모퉁이 편을 위하여는 널판 둘을 만들되"
+      ],
+      "raw_text_hashes": [
+        "54f8d2087fc0753d76bd93a3292cceb08b8303e9e316a0d48f73cce9342a9b2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:29",
+      "sequence": 2596,
+      "chapter_label": "EXO 36",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 29
+        }
+      ],
+      "en": "They were double beneath, and in the same way they were all the way to its top to one ring. He did this to both of them in the two corners.",
+      "ko": "아래서부터 위까지 각기 두 겹 두께로 하여 윗고리에 이르게 하고 두 모퉁이 편을 다 그리하며",
+      "source_text_hash": "93f836f535130ef92ab7245dad30dcb0f91f345069209f431c0dac2d0099f3af",
+      "translation_text_hash": "62a6dcad936781d8c67c9e22d2827c8f19b694ab33593d0c0cf7d264b8f6c711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아래서부터 위까지 각기 두 겹 두께로 하여 윗고리에 이르게 하고 두 모퉁이 편을 다 그리하며"
+      ],
+      "raw_text_hashes": [
+        "62a6dcad936781d8c67c9e22d2827c8f19b694ab33593d0c0cf7d264b8f6c711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:30",
+      "sequence": 2597,
+      "chapter_label": "EXO 36",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 30
+        }
+      ],
+      "en": "There were eight boards and their sockets of silver, sixteen sockets—under every board two sockets.",
+      "ko": "그 널판은 여덟이요 그 받침은 은받침 열 여섯이라 각 널판 밑에 둘씩이었더라",
+      "source_text_hash": "24017e782e3b12e11368efe02a79fda6b0eca63994ef40cbad5817539a7fd990",
+      "translation_text_hash": "f53fd36decdaf2dc4615474388cef3feaac653e031bf65404d5cea53012ef831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 널판은 여덟이요 그 받침은 은받침 열 여섯이라 각 널판 밑에 둘씩이었더라"
+      ],
+      "raw_text_hashes": [
+        "f53fd36decdaf2dc4615474388cef3feaac653e031bf65404d5cea53012ef831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:31",
+      "sequence": 2598,
+      "chapter_label": "EXO 36",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 31
+        }
+      ],
+      "en": "He made bars of acacia wood: five for the boards of the one side of the tabernacle,",
+      "ko": "그가 또 조각목으로 띠를 만들었으니 곧 성막 이편 널판을 위하여 다섯이요",
+      "source_text_hash": "2567506835cae1750852a21dceadeda71c0039342bd24c282bc7f055ec49544f",
+      "translation_text_hash": "09a51784e2e174ff828db279f23db2e350df240fd19b8dfb049aab7170ba3211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 조각목으로 띠를 만들었으니 곧 성막 이편 널판을 위하여 다섯이요"
+      ],
+      "raw_text_hashes": [
+        "09a51784e2e174ff828db279f23db2e350df240fd19b8dfb049aab7170ba3211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:32",
+      "sequence": 2599,
+      "chapter_label": "EXO 36",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 32
+        }
+      ],
+      "en": "and five bars for the boards of the other side of the tabernacle, and five bars for the boards of the tabernacle for the hinder part westward.",
+      "ko": "성막 저편 널판을 위하여 다섯이요 성막 뒤 곧 서편 널판을 위하여 다섯이며",
+      "source_text_hash": "0acbb0fb18e78b0e79573ce441257328057808647ecea4e0ebd6513ff0abc72f",
+      "translation_text_hash": "01ec12677a6431c49ef8da0a63f372b847d24be38717ad617de2e392bcbe806f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 저편 널판을 위하여 다섯이요 성막 뒤 곧 서편 널판을 위하여 다섯이며"
+      ],
+      "raw_text_hashes": [
+        "01ec12677a6431c49ef8da0a63f372b847d24be38717ad617de2e392bcbe806f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:33",
+      "sequence": 2600,
+      "chapter_label": "EXO 36",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 33
+        }
+      ],
+      "en": "He made the middle bar to pass through in the middle of the boards from the one end to the other.",
+      "ko": "그 중간 띠를 만들되 널판 중간 이 끝에서 저 끝에 미치게 하였으며",
+      "source_text_hash": "406cacf208edefc7746ca72604b70754a64e395704d5ad659059acec9d6bf91d",
+      "translation_text_hash": "29dda99de15bec37f59e2f5ac36397e15bb1e6247694e24e118677d4328c6a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중간 띠를 만들되 널판 중간 이 끝에서 저 끝에 미치게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "29dda99de15bec37f59e2f5ac36397e15bb1e6247694e24e118677d4328c6a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:34",
+      "sequence": 2601,
+      "chapter_label": "EXO 36",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 34
+        }
+      ],
+      "en": "He overlaid the boards with gold, and made their rings of gold as places for the bars, and overlaid the bars with gold.",
+      "ko": "그 널판들을 금으로 싸고 그 널판에 띠를 꿸 금고리를 만들고 그 띠도 금으로 쌌더라",
+      "source_text_hash": "b2156af4593ac6ecc373e1d8c4c119b8f6c03f924a9b499c314aac4dc888eec5",
+      "translation_text_hash": "e66511fd98174dc6f6516dbf120eefd68c5f0998ddb2c10e86e0909628a0395e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 널판들을 금으로 싸고 그 널판에 띠를 꿸 금고리를 만들고 그 띠도 금으로 쌌더라"
+      ],
+      "raw_text_hashes": [
+        "e66511fd98174dc6f6516dbf120eefd68c5f0998ddb2c10e86e0909628a0395e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:35",
+      "sequence": 2602,
+      "chapter_label": "EXO 36",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 35
+        }
+      ],
+      "en": "He made the veil of blue, purple, scarlet, and fine twined linen, with cherubim. He made it the work of a skillful workman.",
+      "ko": "그가 또 청색 자색 홍색실과 가늘게 꼰 베실로 장을 짜고 그 위에 그룹들을 공교히 수 놓고",
+      "source_text_hash": "85298457637ad4ff4d724ad36eadca597614c51985776a02b905345dded3372f",
+      "translation_text_hash": "f0c2fd83992b3473c5cb43594a70094730b10df7a05ae43f2e22e94c9dcbf3b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 청색 자색 홍색실과 가늘게 꼰 베실로 장을 짜고 그 위에 그룹들을 공교히 수 놓고"
+      ],
+      "raw_text_hashes": [
+        "f0c2fd83992b3473c5cb43594a70094730b10df7a05ae43f2e22e94c9dcbf3b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:36",
+      "sequence": 2603,
+      "chapter_label": "EXO 36",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 36
+        }
+      ],
+      "en": "He made four pillars of acacia for it, and overlaid them with gold. Their hooks were of gold. He cast four sockets of silver for them.",
+      "ko": "조각목으로 네 기둥을 만들어 금으로 쌌으며 그 갈고리는 금이며 기둥의 네 받침은 은으로 부어 만들었으며",
+      "source_text_hash": "5c729a0a58b03a2956047aefc57581537a299c959ce23ce900aaf732ef713105",
+      "translation_text_hash": "2894c78c0471627204eed86affa263a7082f05286104c8317b0300f0d00832a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각목으로 네 기둥을 만들어 금으로 쌌으며 그 갈고리는 금이며 기둥의 네 받침은 은으로 부어 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "2894c78c0471627204eed86affa263a7082f05286104c8317b0300f0d00832a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:37",
+      "sequence": 2604,
+      "chapter_label": "EXO 36",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 37
+        }
+      ],
+      "en": "He made a screen for the door of the tent, of blue, purple, scarlet, and fine twined linen, the work of an embroiderer;",
+      "ko": "청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 장막 문을 위하여 장을 만들고",
+      "source_text_hash": "67a6d6e57be8f4415dab715625e28a136509626156e7051e38264c4877d056b2",
+      "translation_text_hash": "e868cd93a133a1cd224c5ae9e1ab912b09f5b35caf039ea9c2926dd39a657db1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 장막 문을 위하여 장을 만들고"
+      ],
+      "raw_text_hashes": [
+        "e868cd93a133a1cd224c5ae9e1ab912b09f5b35caf039ea9c2926dd39a657db1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:36:38",
+      "sequence": 2605,
+      "chapter_label": "EXO 36",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 36,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 36,
+          "verse": 38
+        }
+      ],
+      "en": "and the five pillars of it with their hooks. He overlaid their capitals and their fillets with gold, and their five sockets were of bronze.",
+      "ko": "문장의 기둥 다섯과 그 갈고리를 만들고 기둥머리와 그 가름대를 금으로 쌌으며 그 다섯 받침은 놋이었더라",
+      "source_text_hash": "951ceda442833e741db1ccec4b6598ef4d066a80da0115b53155eb43da21fb25",
+      "translation_text_hash": "6ae172d072f522d88b777c47031e8e2b7f972a8fb168e2fbf3b7988431a52cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문장의 기둥 다섯과 그 갈고리를 만들고 기둥머리와 그 가름대를 금으로 쌌으며 그 다섯 받침은 놋이었더라"
+      ],
+      "raw_text_hashes": [
+        "6ae172d072f522d88b777c47031e8e2b7f972a8fb168e2fbf3b7988431a52cdd"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:009",
+  "unit_ordinal": 487,
+  "unit_label": "PSA 9",
+  "book_code": "PSA",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:9:1",
+      "sequence": 14023,
+      "chapter_label": "PSA 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "I will give thanks to the LORD with my whole heart. I will tell of all your marvelous works.",
+      "ko": "내가 전심으로 여호와께 감사하오며 주의 모든 기사를 전하리이다",
+      "source_text_hash": "3cb91f9a6eb952141b883c0d71a0bd56ff80f988b347cafc7af58e277c001804",
+      "translation_text_hash": "e62ad387ccb793eb86d8e0129c30229675ecf0515caa3786dd577b92652313d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전심으로 여호와께 감사하오며 주의 모든 기사를 전하리이다"
+      ],
+      "raw_text_hashes": [
+        "e62ad387ccb793eb86d8e0129c30229675ecf0515caa3786dd577b92652313d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:2",
+      "sequence": 14024,
+      "chapter_label": "PSA 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "I will be glad and rejoice in you. I will sing praise to your name, O Most High.",
+      "ko": "내가 주를 기뻐하고 즐거워하며 지극히 높으신 주의 이름을 찬송하리니",
+      "source_text_hash": "a3deebcca7584deeeee1339a8c6810f8002317546c9eb890bd73a27a717292fb",
+      "translation_text_hash": "ec6af977fb6a389ff9316b4ea26529e56c0d2b49976119bcde882a51b537e159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 기뻐하고 즐거워하며 지극히 높으신 주의 이름을 찬송하리니"
+      ],
+      "raw_text_hashes": [
+        "ec6af977fb6a389ff9316b4ea26529e56c0d2b49976119bcde882a51b537e159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:3",
+      "sequence": 14025,
+      "chapter_label": "PSA 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "When my enemies turn back, they stumble and perish in your presence.",
+      "ko": "내 원수들이 물러갈 때에 주의 앞에서 넘어져 망함이니이다",
+      "source_text_hash": "db4a582c1ea4b5a9debe37911f3b6c56bf39b021f57cc1014b5b0d4ea1d552f6",
+      "translation_text_hash": "fa461f86744d6d6aab037eaa59de78690101f04e6e34b6ffbf9d9a13b4e03415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 원수들이 물러갈 때에 주의 앞에서 넘어져 망함이니이다"
+      ],
+      "raw_text_hashes": [
+        "fa461f86744d6d6aab037eaa59de78690101f04e6e34b6ffbf9d9a13b4e03415"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:4",
+      "sequence": 14026,
+      "chapter_label": "PSA 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "For you have maintained my just cause. You sit on the throne judging righteously.",
+      "ko": "주께서 나의 의와 송사를 변호하셨으며 보좌에 앉으사 의롭게 심판하셨나이다",
+      "source_text_hash": "6006189cf8feb554b5bf98e5b194f58ed57a8b224b2cba79f0e50c44fc280595",
+      "translation_text_hash": "71052ba9a7b2e33777a42fc9b2c490f1f2919d3aa17a2b38494ea49723b71249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 의와 송사를 변호하셨으며 보좌에 앉으사 의롭게 심판하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "71052ba9a7b2e33777a42fc9b2c490f1f2919d3aa17a2b38494ea49723b71249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:5",
+      "sequence": 14027,
+      "chapter_label": "PSA 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "You have rebuked the nations. You have destroyed the wicked. You have blotted out their name forever and ever.",
+      "ko": "열방을 책하시고 악인을 멸하시며 저희 이름을 영영히 도말하셨나이다",
+      "source_text_hash": "9bbd6eb703fa372bf192079f7adb8340d6c7a2ab197cc2871f42c3ad1f3f1a76",
+      "translation_text_hash": "b0cb8e7b9e29e929d298cec6481b30e342b1af68aba600882dfc56132eb5c81c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방을 책하시고 악인을 멸하시며 저희 이름을 영영히 도말하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b0cb8e7b9e29e929d298cec6481b30e342b1af68aba600882dfc56132eb5c81c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:6",
+      "sequence": 14028,
+      "chapter_label": "PSA 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "The enemy is overtaken by endless ruin. The very memory of the cities which you have overthrown has perished.",
+      "ko": "원수가 끊어져 영영히 멸망하였사오니 주께서 무너뜨린 성읍들을 기억할 수 없나이다",
+      "source_text_hash": "8d11305f7be977a5b1a998b85e85e2a503dc5f50a4893b2a62f35b334328a520",
+      "translation_text_hash": "3eb76ec20c28deadcad07f42e47d0311d85316ebb1f75c4a599b22fb6be5af59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수가 끊어져 영영히 멸망하였사오니 주께서 무너뜨린 성읍들을 기억할 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "3eb76ec20c28deadcad07f42e47d0311d85316ebb1f75c4a599b22fb6be5af59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:7",
+      "sequence": 14029,
+      "chapter_label": "PSA 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "But the LORD reigns forever. He has prepared his throne for judgment.",
+      "ko": "여호와께서 영영히 앉으심이여 심판을 위하여 보좌를 예비하셨도다",
+      "source_text_hash": "1e45f7e3e2d3a490b7cc81df420220c5a3b08cb1d64f3aac30737f80eac6eb3b",
+      "translation_text_hash": "405870a556bfcbfeae939a1a1bf67cbd682bb1787fc358ed970ec7cbcd2aa5fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 영영히 앉으심이여 심판을 위하여 보좌를 예비하셨도다"
+      ],
+      "raw_text_hashes": [
+        "405870a556bfcbfeae939a1a1bf67cbd682bb1787fc358ed970ec7cbcd2aa5fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:8",
+      "sequence": 14030,
+      "chapter_label": "PSA 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "He will judge the world in righteousness. He will administer judgment to the peoples in uprightness.",
+      "ko": "공의로 세계를 심판하심이여 정직으로 만민에게 판단을 행하시리로다",
+      "source_text_hash": "6d4f19d76903f00abd894c7ab0b58bcee35a5a4788277bb8967048f2ea1d0b41",
+      "translation_text_hash": "b14e1c68f216913e148f3af29ff663fd9c6967e853a0f96f6428a0af2f5e8d08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의로 세계를 심판하심이여 정직으로 만민에게 판단을 행하시리로다"
+      ],
+      "raw_text_hashes": [
+        "b14e1c68f216913e148f3af29ff663fd9c6967e853a0f96f6428a0af2f5e8d08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:9",
+      "sequence": 14031,
+      "chapter_label": "PSA 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD will also be a high tower for the oppressed; a high tower in times of trouble.",
+      "ko": "여호와는 또 압제를 당하는 자의 산성이시요 환난 때의 산성이시로다",
+      "source_text_hash": "47193ad4f6299686ef31e29989c238a8c9c55eb6310013b2770f2f4b6187f2d8",
+      "translation_text_hash": "735ddb8a52d0c95482c25075bcb047f032aaa2e721b01a13189d138ce91af4c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 또 압제를 당하는 자의 산성이시요 환난 때의 산성이시로다"
+      ],
+      "raw_text_hashes": [
+        "735ddb8a52d0c95482c25075bcb047f032aaa2e721b01a13189d138ce91af4c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:10",
+      "sequence": 14032,
+      "chapter_label": "PSA 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Those who know your name will put their trust in you, for you, LORD, have not forsaken those who seek you.",
+      "ko": "여호와여 주의 이름을 아는 자는 주를 의지하오리니 이는 주를 찾는 자들을 버리지 아니하심이니이다",
+      "source_text_hash": "2aef3f76c24cf4f3a164d91d6614866f5c24355ce63889c086187d7e6c81e853",
+      "translation_text_hash": "f8df59391d89f95613b468a42d1ac9bc1598a6e3db114b60e9e40b08e680127a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 이름을 아는 자는 주를 의지하오리니 이는 주를 찾는 자들을 버리지 아니하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "f8df59391d89f95613b468a42d1ac9bc1598a6e3db114b60e9e40b08e680127a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:11",
+      "sequence": 14033,
+      "chapter_label": "PSA 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Sing praises to the LORD, who dwells in Zion, and declare among the people what he has done.",
+      "ko": "너희는 시온에 거하신 여호와를 찬송하며 그 행사를 백성 중에 선포할찌어다",
+      "source_text_hash": "65dc1ad687a39e5144f26c92bae6ff6624c75d47525e6c68ed1a1b547a15bf15",
+      "translation_text_hash": "a89d1a3ea79a828028b8b4356b3ebe38f9e15227ce7bd76eb1e175ff35c35293",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 시온에 거하신 여호와를 찬송하며 그 행사를 백성 중에 선포할찌어다"
+      ],
+      "raw_text_hashes": [
+        "a89d1a3ea79a828028b8b4356b3ebe38f9e15227ce7bd76eb1e175ff35c35293"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:12",
+      "sequence": 14034,
+      "chapter_label": "PSA 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "For he who avenges blood remembers them. He doesn’t forget the cry of the afflicted.",
+      "ko": "피 흘림을 심문하시는 이가 저희를 기억하심이여 가난한 자의 부르짖음을 잊지아니하시도다",
+      "source_text_hash": "dc240ca4418a05ed0c2d3619a9a0a4242cb1cbc4500fc9f5fe5547ead389d8e8",
+      "translation_text_hash": "d061c58c555dd235d456a4d4dbbbfada74fde9377657befc782b237311e84ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피 흘림을 심문하시는 이가 저희를 기억하심이여 가난한 자의 부르짖음을 잊지아니하시도다"
+      ],
+      "raw_text_hashes": [
+        "d061c58c555dd235d456a4d4dbbbfada74fde9377657befc782b237311e84ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:13",
+      "sequence": 14035,
+      "chapter_label": "PSA 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Have mercy on me, LORD. See my affliction by those who hate me, and lift me up from the gates of death,",
+      "ko": "여호와여 나를 긍휼히 여기소서 나를 사망의 문에서 일으키시는 주여 미워하는 자에게 받는 나의 곤고를 보소서",
+      "source_text_hash": "380fc0e241bab1459256a1aa0912d6ea7c228dccab5b6ed39408ee9582292ec0",
+      "translation_text_hash": "8b6c97c05a09cafb08aeaa6c156976758559640e3ccc1b42d83ceb910adc1612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 긍휼히 여기소서 나를 사망의 문에서 일으키시는 주여 미워하는 자에게 받는 나의 곤고를 보소서"
+      ],
+      "raw_text_hashes": [
+        "8b6c97c05a09cafb08aeaa6c156976758559640e3ccc1b42d83ceb910adc1612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:14",
+      "sequence": 14036,
+      "chapter_label": "PSA 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "that I may show all of your praise. I will rejoice in your salvation in the gates of the daughter of Zion.",
+      "ko": "그리하시면 내가 주의 찬송을 다 전할 것이요 딸 같은 시온의 문에서 주의 구원을 기뻐하리이다",
+      "source_text_hash": "a70bf430a334ae51687e7b1c6afd5edc0709aaf956abd010b136eef4d1dfc426",
+      "translation_text_hash": "b4cf2fd7783d782eeb7273ca7780dbca62e65f1e51fcc50699842da2c094d39b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시면 내가 주의 찬송을 다 전할 것이요 딸 같은 시온의 문에서 주의 구원을 기뻐하리이다"
+      ],
+      "raw_text_hashes": [
+        "b4cf2fd7783d782eeb7273ca7780dbca62e65f1e51fcc50699842da2c094d39b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:15",
+      "sequence": 14037,
+      "chapter_label": "PSA 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "The nations have sunk down in the pit that they made. In the net which they hid, their own foot is taken.",
+      "ko": "열방은 자기가 판 웅덩이에 빠짐이여 그 숨긴 그물에 자기 발이 걸렸도다",
+      "source_text_hash": "81ad4cfa02e79dcac167ceb9221eccbbe4bc3d1cca028571152f0729f369dd3d",
+      "translation_text_hash": "618ba79a0ca046aae850a58141009e5eea91fccb1187e3e6a3da8e907c718fd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방은 자기가 판 웅덩이에 빠짐이여 그 숨긴 그물에 자기 발이 걸렸도다"
+      ],
+      "raw_text_hashes": [
+        "618ba79a0ca046aae850a58141009e5eea91fccb1187e3e6a3da8e907c718fd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:16",
+      "sequence": 14038,
+      "chapter_label": "PSA 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD has made himself known. He has executed judgment. The wicked is snared by the work of his own hands. Meditation. Selah.",
+      "ko": "여호와께서 자기를 알게 하사 심판을 행하셨음이여 악인은 그 손으로 행한 일에 스스로 얽혔도다(힉가욘, 셀라)",
+      "source_text_hash": "06702a477300918bf77eee74c3b6c4a43f13ddd361bb09a8bd84a06032c56824",
+      "translation_text_hash": "a8cb0f97efa38ca070841ad3cb4bcbdcd3ec74baf0e975ac84e07fcb2140de55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 알게 하사 심판을 행하셨음이여 악인은 그 손으로 행한 일에 스스로 얽혔도다(힉가욘, 셀라)"
+      ],
+      "raw_text_hashes": [
+        "a8cb0f97efa38ca070841ad3cb4bcbdcd3ec74baf0e975ac84e07fcb2140de55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:17",
+      "sequence": 14039,
+      "chapter_label": "PSA 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "The wicked shall be turned back to Sheol, even all the nations that forget God.",
+      "ko": "악인이 음부로 돌아감이여 하나님을 잊어버린 모든 열방이 그리 하리로다",
+      "source_text_hash": "beee4457d888a5536daa49233f8aa79eb83071dbf5db0417f0732b345b4dd7a3",
+      "translation_text_hash": "6498ad6f927db6233acee11110f90e235b0f15ab1ce9ee2a47e487010594b5df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 음부로 돌아감이여 하나님을 잊어버린 모든 열방이 그리 하리로다"
+      ],
+      "raw_text_hashes": [
+        "6498ad6f927db6233acee11110f90e235b0f15ab1ce9ee2a47e487010594b5df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:18",
+      "sequence": 14040,
+      "chapter_label": "PSA 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "For the needy shall not always be forgotten, nor the hope of the poor perish forever.",
+      "ko": "궁핍한 자가 항상 잊어버림을 보지 아니함이여 가난한 자가 영영히 실망치 아니하리로다",
+      "source_text_hash": "9d93e1b7a65329e0e65daa891be3cf66253c7faa85416abfcb0497c27526ee04",
+      "translation_text_hash": "ab9c62b86f802fe086046c7f1dcc411f86ff0137a2485fd09d7f8e6bad3b9db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁핍한 자가 항상 잊어버림을 보지 아니함이여 가난한 자가 영영히 실망치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "ab9c62b86f802fe086046c7f1dcc411f86ff0137a2485fd09d7f8e6bad3b9db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:19",
+      "sequence": 14041,
+      "chapter_label": "PSA 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Arise, LORD! Don’t let man prevail. Let the nations be judged in your sight.",
+      "ko": "여호와여 일어나사 인생으로 승리를 얻지 못하게 하시며 열방으로 주의 목전에 심판을 받게하소서",
+      "source_text_hash": "d64c0dbf4f02276f11ed7633625f78ebff2200ab26fc8fdfae5d70b2d9dfa908",
+      "translation_text_hash": "c1498056716e2770524fac339efd9b6a699fae6e9cfa8a4d349720b185c74545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 일어나사 인생으로 승리를 얻지 못하게 하시며 열방으로 주의 목전에 심판을 받게하소서"
+      ],
+      "raw_text_hashes": [
+        "c1498056716e2770524fac339efd9b6a699fae6e9cfa8a4d349720b185c74545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:9:20",
+      "sequence": 14042,
+      "chapter_label": "PSA 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Put them in fear, LORD. Let the nations know that they are only men. Selah.",
+      "ko": "여호와여 저희로 두렵게 하시며 열방으로 자기는 인생 뿐인줄 알게 하소서 (셀라)",
+      "source_text_hash": "11fe92c7e3a5bf9abaae8106f0c673c66251f41762cf464c9655ba4b16472ef3",
+      "translation_text_hash": "c8f47ed430b104aca83b3b0ed0697b9e81e4ee39090d0ef529548e1e05756aba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 저희로 두렵게 하시며 열방으로 자기는 인생 뿐인줄 알게 하소서 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "c8f47ed430b104aca83b3b0ed0697b9e81e4ee39090d0ef529548e1e05756aba"
+      ]
+    }
+  ]
+}

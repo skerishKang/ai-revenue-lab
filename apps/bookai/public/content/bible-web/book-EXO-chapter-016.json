@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:016",
+  "unit_ordinal": 66,
+  "unit_label": "EXO 16",
+  "book_code": "EXO",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:16:1",
+      "sequence": 1949,
+      "chapter_label": "EXO 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "They took their journey from Elim, and all the congregation of the children of Israel came to the wilderness of Sin, which is between Elim and Sinai, on the fifteenth day of the second month after their departing out of the land of Egypt.",
+      "ko": "이스라엘 자손의 온 회중이 엘림에서 떠나 엘림과 시내산 사이 신 광야에 이르니 애굽에서 나온 후 제 이월 십오일이라",
+      "source_text_hash": "5fe3f159957bb7fd6cc2f31de3eeebc0c33809a8c90e41bfbc4b65f1a1d4f744",
+      "translation_text_hash": "44fb542c13ee9466994671ce8f9d76b399dc9f34e86b05840314c98df1323769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중이 엘림에서 떠나 엘림과 시내산 사이 신 광야에 이르니 애굽에서 나온 후 제 이월 십오일이라"
+      ],
+      "raw_text_hashes": [
+        "44fb542c13ee9466994671ce8f9d76b399dc9f34e86b05840314c98df1323769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:2",
+      "sequence": 1950,
+      "chapter_label": "EXO 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "The whole congregation of the children of Israel murmured against Moses and against Aaron in the wilderness;",
+      "ko": "이스라엘 온 회중이 그 광야에서 모세와 아론을 원망하여",
+      "source_text_hash": "0487b2838e0e233365b06430e6c5098486acdc93f1a6e7f9575b2ea708ee9b88",
+      "translation_text_hash": "d00e734e40dc0276aca15d1ba35ad1e21afa8245ce134ff72af7c7375b382722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 온 회중이 그 광야에서 모세와 아론을 원망하여"
+      ],
+      "raw_text_hashes": [
+        "d00e734e40dc0276aca15d1ba35ad1e21afa8245ce134ff72af7c7375b382722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:3",
+      "sequence": 1951,
+      "chapter_label": "EXO 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "and the children of Israel said to them, “We wish that we had died by the LORD’s hand in the land of Egypt, when we sat by the meat pots, when we ate our fill of bread, for you have brought us out into this wilderness to kill this whole assembly with hunger.”",
+      "ko": "그들에게 이르되 우리가 애굽 땅에서 고기 가마 곁에 앉았던 때와 떡을 배불리 먹던 때에 여호와의 손에 죽었더면 좋았을 것을 너희가 이 광야로 우리를 인도하여 내어 이 온 회중으로 주려 죽게 하는도다",
+      "source_text_hash": "f494c9b717303ef9da1d946f83fd4e75322b833472e6f409f20346f64a1d65d0",
+      "translation_text_hash": "724ab3620b33462115d32d5527f86e7282a76c6f6a7c65fe824915efe7c5ff0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 우리가 애굽 땅에서 고기 가마 곁에 앉았던 때와 떡을 배불리 먹던 때에 여호와의 손에 죽었더면 좋았을 것을 너희가 이 광야로 우리를 인도하여 내어 이 온 회중으로 주려 죽게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "724ab3620b33462115d32d5527f86e7282a76c6f6a7c65fe824915efe7c5ff0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:4",
+      "sequence": 1952,
+      "chapter_label": "EXO 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "Then the LORD said to Moses, “Behold, I will rain bread from the sky for you, and the people shall go out and gather a day’s portion every day, that I may test them, whether they will walk in my law or not.",
+      "ko": "때에 여호와께서 모세에게 이르시되 보라 내가 너희를 위하여 하늘에서 양식을 비 같이 내리리니 백성이 나가서 일용할 것을 날마다 거둘 것이라 이같이 하여 그들이 나의 율법을 준행하나 아니하나 내가 시험하리라",
+      "source_text_hash": "9b3cc934f6916ad0d04ef315266729141f3cc4ac14496308f07799093a2391c8",
+      "translation_text_hash": "84ae94d28cf7e023d79b6f2b91e10370bd47ea4ef294080696873516ab36e2a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 모세에게 이르시되 보라 내가 너희를 위하여 하늘에서 양식을 비 같이 내리리니 백성이 나가서 일용할 것을 날마다 거둘 것이라 이같이 하여 그들이 나의 율법을 준행하나 아니하나 내가 시험하리라"
+      ],
+      "raw_text_hashes": [
+        "84ae94d28cf7e023d79b6f2b91e10370bd47ea4ef294080696873516ab36e2a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:5",
+      "sequence": 1953,
+      "chapter_label": "EXO 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "It shall come to pass on the sixth day, that they shall prepare that which they bring in, and it shall be twice as much as they gather daily.”",
+      "ko": "제 육일에는 그들이 그 거둔 것을 예비할찌니 날마다 거두던 것의 갑절이 되리라",
+      "source_text_hash": "64b915d25bbf0d7f66298fea92cc4eb7b68c6cee053a8615cc23ec1f0df3e8d5",
+      "translation_text_hash": "c0ea118ff4f0e2a7f16028a47808a58654523fe44b58513a54b9d5e5519ef224",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육일에는 그들이 그 거둔 것을 예비할찌니 날마다 거두던 것의 갑절이 되리라"
+      ],
+      "raw_text_hashes": [
+        "c0ea118ff4f0e2a7f16028a47808a58654523fe44b58513a54b9d5e5519ef224"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:6",
+      "sequence": 1954,
+      "chapter_label": "EXO 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Moses and Aaron said to all the children of Israel, “At evening, you shall know that the LORD has brought you out from the land of Egypt.",
+      "ko": "모세와 아론이 온 이스라엘 자손에게 이르되 저녁이 되면 너희가 여호와께서 너희를 애굽 땅에서 인도하여 내셨음을 알 것이요",
+      "source_text_hash": "8ed0f8072ea2371a94769246c9a7d3fd11c122c9485a4942ca3ec39b90754a22",
+      "translation_text_hash": "a157895576cbeebecf4116dc9848306bdcc8a1d671a29e3651906daae2aed2e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 온 이스라엘 자손에게 이르되 저녁이 되면 너희가 여호와께서 너희를 애굽 땅에서 인도하여 내셨음을 알 것이요"
+      ],
+      "raw_text_hashes": [
+        "a157895576cbeebecf4116dc9848306bdcc8a1d671a29e3651906daae2aed2e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:7",
+      "sequence": 1955,
+      "chapter_label": "EXO 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "In the morning, you shall see the LORD’s glory; because he hears your murmurings against the LORD. Who are we, that you murmur against us?”",
+      "ko": "아침에는 너희가 여호와의 영광을 보리니 이는 여호와께서 너희가 자기를 향하여 원망함을 들으셨음이라 우리가 누구관대 너희가 우리를 대하여 원망하느냐",
+      "source_text_hash": "948deb56c9ed317c29d689e8e3c157326f3183032b038e3c1dfe95e63c083099",
+      "translation_text_hash": "6606bf2ea872a88c372d47c2cde1c8a775e9d814f70950a72c4446eac4c8545a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에는 너희가 여호와의 영광을 보리니 이는 여호와께서 너희가 자기를 향하여 원망함을 들으셨음이라 우리가 누구관대 너희가 우리를 대하여 원망하느냐"
+      ],
+      "raw_text_hashes": [
+        "6606bf2ea872a88c372d47c2cde1c8a775e9d814f70950a72c4446eac4c8545a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:8",
+      "sequence": 1956,
+      "chapter_label": "EXO 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Moses said, “Now the LORD will give you meat to eat in the evening, and in the morning bread to satisfy you, because the LORD hears your murmurings which you murmur against him. And who are we? Your murmurings are not against us, but against the LORD.”",
+      "ko": "모세가 또 가로되 여호와께서 저녁에는 너희에게 고기를 주어 먹이시고 아침에는 떡으로 배불리시리니 이는 여호와께서 자기를 향하여 너희의 원망하는 그 말을 들으셨음이니라 우리가 누구냐 너희의 원망은 우리를 향하여 함이 아니요 여호와를 향하여 함이로다",
+      "source_text_hash": "9b4ad0a750e5b145fc8b26ecf2a1767f3311213b3974512a57c59df5b308ae10",
+      "translation_text_hash": "f70cae9d595875856d0342a813507e2fc75f70f4f27cf7e2d4a38b5155fbc4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 가로되 여호와께서 저녁에는 너희에게 고기를 주어 먹이시고 아침에는 떡으로 배불리시리니 이는 여호와께서 자기를 향하여 너희의 원망하는 그 말을 들으셨음이니라 우리가 누구냐 너희의 원망은 우리를 향하여 함이 아니요 여호와를 향하여 함이로다"
+      ],
+      "raw_text_hashes": [
+        "f70cae9d595875856d0342a813507e2fc75f70f4f27cf7e2d4a38b5155fbc4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:9",
+      "sequence": 1957,
+      "chapter_label": "EXO 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Moses said to Aaron, “Tell all the congregation of the children of Israel, ‘Come close to the LORD, for he has heard your murmurings.’”",
+      "ko": "모세가 또 아론에게 이르되 이스라엘 자손의 온 회중에게 명하기를 여호와께 가까이 나아오라 여호와께서 너희의 원망함을 들으셨느니라 하라",
+      "source_text_hash": "30fb8b3cc2ffc6c6c7f9310de299cc42d70dcdea1e1933e7495878066ab8ae1b",
+      "translation_text_hash": "5cdf967eeae4dc22c9f7b075d0777055caef233400745a3b9922445cf18a7586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 아론에게 이르되 이스라엘 자손의 온 회중에게 명하기를 여호와께 가까이 나아오라 여호와께서 너희의 원망함을 들으셨느니라 하라"
+      ],
+      "raw_text_hashes": [
+        "5cdf967eeae4dc22c9f7b075d0777055caef233400745a3b9922445cf18a7586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:10",
+      "sequence": 1958,
+      "chapter_label": "EXO 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "As Aaron spoke to the whole congregation of the children of Israel, they looked toward the wilderness, and behold, the LORD’s glory appeared in the cloud.",
+      "ko": "아론이 이스라엘 자손의 온 회중에게 말하매 그들이 광야를 바라보니 여호와의 영광이 구름 속에 나타나더라",
+      "source_text_hash": "81fade084e61746af04d66014d3f1054f41d76b9de3e87c520fb557f16742f98",
+      "translation_text_hash": "83e387543ca34abb6c6e4d5e4355b62aea85f0f6407de6cda4032af7234cd4ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 이스라엘 자손의 온 회중에게 말하매 그들이 광야를 바라보니 여호와의 영광이 구름 속에 나타나더라"
+      ],
+      "raw_text_hashes": [
+        "83e387543ca34abb6c6e4d5e4355b62aea85f0f6407de6cda4032af7234cd4ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:11",
+      "sequence": 1959,
+      "chapter_label": "EXO 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:12",
+      "sequence": 1960,
+      "chapter_label": "EXO 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "“I have heard the murmurings of the children of Israel. Speak to them, saying, ‘At evening you shall eat meat, and in the morning you shall be filled with bread. Then you will know that I am the LORD your God.’”",
+      "ko": "내가 이스라엘 자손의 원망함을 들었노라 그들에게 고하여 이르기를 너희가 해 질 때에는 고기를 먹고 아침에는 떡으로 배부르리니 나는 여호와 너희의 하나님인줄 알리라 하라 하시니라",
+      "source_text_hash": "302fa407585aa7ecbbf94fccd4c8ee177440bf56100b146e12ae55ba53561793",
+      "translation_text_hash": "03decdc14a51a3d91b7d182608b2887645053447dd8f2197cf72aa2b7e26a5a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손의 원망함을 들었노라 그들에게 고하여 이르기를 너희가 해 질 때에는 고기를 먹고 아침에는 떡으로 배부르리니 나는 여호와 너희의 하나님인줄 알리라 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "03decdc14a51a3d91b7d182608b2887645053447dd8f2197cf72aa2b7e26a5a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:13",
+      "sequence": 1961,
+      "chapter_label": "EXO 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "In the evening, quail came up and covered the camp; and in the morning the dew lay around the camp.",
+      "ko": "저녁에는 메추라기가 와서 진에 덮이고 아침에는 이슬이 진 사면에 있더니",
+      "source_text_hash": "53be2e872862b58a81242f14a9b55c8fb87f3358033617ebab3e7ad95614f510",
+      "translation_text_hash": "f7e57cf710655340f590a2d9e570da86422202b138d50885de3d6a04c8eb5f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁에는 메추라기가 와서 진에 덮이고 아침에는 이슬이 진 사면에 있더니"
+      ],
+      "raw_text_hashes": [
+        "f7e57cf710655340f590a2d9e570da86422202b138d50885de3d6a04c8eb5f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:14",
+      "sequence": 1962,
+      "chapter_label": "EXO 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "When the dew that lay had gone, behold, on the surface of the wilderness was a small round thing, small as the frost on the ground.",
+      "ko": "그 이슬이 마른 후에 광야 지면에 작고 둥글며 서리 같이 세미한 것이 있는지라",
+      "source_text_hash": "b76b6bde49887db8a5e76aa4b82e8acf6f3d7ffbe8332c7193295dac5ab0f4aa",
+      "translation_text_hash": "653d2d65e6ceff515275dffcd5c94932bbeaa4cd677cf74bd89442a9808dae99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이슬이 마른 후에 광야 지면에 작고 둥글며 서리 같이 세미한 것이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "653d2d65e6ceff515275dffcd5c94932bbeaa4cd677cf74bd89442a9808dae99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:15",
+      "sequence": 1963,
+      "chapter_label": "EXO 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "When the children of Israel saw it, they said to one another, “What is it?” For they didn’t know what it was. Moses said to them, “It is the bread which the LORD has given you to eat.",
+      "ko": "이스라엘 자손이 보고 그것이 무엇인지 알지 못하여 서로 이르되 이것이 무엇이냐 하니 모세가 그들에게 이르되 이는 여호와께서 너희에게 주어 먹게 하신 양식이라",
+      "source_text_hash": "2e4f9b53f1f4638cbf431d87ab810923377a8ddf016e73c61443258b8e5296e4",
+      "translation_text_hash": "0ab16653e689c270e2f95b73d9de51d24b7893005e39d43c25b4de172b431b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 보고 그것이 무엇인지 알지 못하여 서로 이르되 이것이 무엇이냐 하니 모세가 그들에게 이르되 이는 여호와께서 너희에게 주어 먹게 하신 양식이라"
+      ],
+      "raw_text_hashes": [
+        "0ab16653e689c270e2f95b73d9de51d24b7893005e39d43c25b4de172b431b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:16",
+      "sequence": 1964,
+      "chapter_label": "EXO 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "This is the thing which the LORD has commanded: ‘Gather of it everyone according to his eating; an omer a head, according to the number of your persons, you shall take it, every man for those who are in his tent.’”",
+      "ko": "여호와께서 이같이 명하시기를 너희 각 사람의 식량대로 이것을 거둘지니 곧 너희 인수대로 매명에 한 오멜씩 취하되 각 사람이 그 장막에 있는 자들을 위하여 취할지니라 하셨느니라",
+      "source_text_hash": "a78b77973ccc5084f619122c8edcb4a90697de449151a1536d493dec9f21f50e",
+      "translation_text_hash": "e3b38c447d111600727bc75611611a7066c74f6531ac40e8b0b2d3bc39b266ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 명하시기를 너희 각 사람의 식량대로 이것을 거둘지니 곧 너희 인수대로 매명에 한 오멜씩 취하되 각 사람이 그 장막에 있는 자들을 위하여 취할지니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e3b38c447d111600727bc75611611a7066c74f6531ac40e8b0b2d3bc39b266ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:17",
+      "sequence": 1965,
+      "chapter_label": "EXO 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "The children of Israel did so, and some gathered more, some less.",
+      "ko": "이스라엘 자손이 그같이 하였더니 그 거둔 것이 많기도 하고 적기도 하나",
+      "source_text_hash": "b2a240eb2b1a8174ceaf7ae06dc30154747cd471eb22bbd59b03adfdac07e23d",
+      "translation_text_hash": "0bfe09dcbce6a3fca00c943605d3227bcaa566c25862e1494bac0c242ef5ac3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그같이 하였더니 그 거둔 것이 많기도 하고 적기도 하나"
+      ],
+      "raw_text_hashes": [
+        "0bfe09dcbce6a3fca00c943605d3227bcaa566c25862e1494bac0c242ef5ac3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:18",
+      "sequence": 1966,
+      "chapter_label": "EXO 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "When they measured it with an omer, he who gathered much had nothing over, and he who gathered little had no lack. They each gathered according to his eating.",
+      "ko": "오멜로 되어 본즉 많이 거둔 자도 남음이 없고 적게 거둔 자도 부족함이 없이 각기 식량대로 거두었더라",
+      "source_text_hash": "b36c7d3a1a839652d2a8f4da6d593cba3d84ce194ae15f4de179a4108f9dba5b",
+      "translation_text_hash": "94bfac7c5ffdcaf9878820aa0e3ce00263873154d091f7bc1702529dfcf137a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오멜로 되어 본즉 많이 거둔 자도 남음이 없고 적게 거둔 자도 부족함이 없이 각기 식량대로 거두었더라"
+      ],
+      "raw_text_hashes": [
+        "94bfac7c5ffdcaf9878820aa0e3ce00263873154d091f7bc1702529dfcf137a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:19",
+      "sequence": 1967,
+      "chapter_label": "EXO 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "Moses said to them, “Let no one leave of it until the morning.”",
+      "ko": "모세가 그들에게 이르기를 아무든지 아침까지 그것을 남겨 두지 말라 하였으나",
+      "source_text_hash": "ca546aa406f94202141e37c23be3593252f0b4976c6f38143503234df5f41476",
+      "translation_text_hash": "36c68664a262720faa079a0fc8bd2f0214df8b0068a5656545e33a5be20e73a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르기를 아무든지 아침까지 그것을 남겨 두지 말라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "36c68664a262720faa079a0fc8bd2f0214df8b0068a5656545e33a5be20e73a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:20",
+      "sequence": 1968,
+      "chapter_label": "EXO 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Notwithstanding they didn’t listen to Moses, but some of them left of it until the morning, so it bred worms and became foul; and Moses was angry with them.",
+      "ko": "그들이 모세의 말을 청종치 아니하고 더러는 아침까지 두었더니 벌레가 생기고 냄새가 난지라 모세가 그들에게 노하니라",
+      "source_text_hash": "8d4a6c84c730d3c63877f208215019c4b02a88a622becb50b827f27ed450d44a",
+      "translation_text_hash": "7b2c887c989dfea35105f0868468ed7fa8add8061dd3f4064aa79a10d64ab22a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모세의 말을 청종치 아니하고 더러는 아침까지 두었더니 벌레가 생기고 냄새가 난지라 모세가 그들에게 노하니라"
+      ],
+      "raw_text_hashes": [
+        "7b2c887c989dfea35105f0868468ed7fa8add8061dd3f4064aa79a10d64ab22a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:21",
+      "sequence": 1969,
+      "chapter_label": "EXO 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "They gathered it morning by morning, everyone according to his eating. When the sun grew hot, it melted.",
+      "ko": "무리가 아침마다 각기 식량대로 거두었고 해가 뜨겁게 쪼이면 그것이 스러졌더라",
+      "source_text_hash": "8772d45022ba1d7cd926389a55bb0ae27902a1b8a8981465f315bd0f87be44f8",
+      "translation_text_hash": "c82ce5f938ee3ab11968cc74915b685ef277abf531eefcd495caef64f2595ad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 아침마다 각기 식량대로 거두었고 해가 뜨겁게 쪼이면 그것이 스러졌더라"
+      ],
+      "raw_text_hashes": [
+        "c82ce5f938ee3ab11968cc74915b685ef277abf531eefcd495caef64f2595ad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:22",
+      "sequence": 1970,
+      "chapter_label": "EXO 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "On the sixth day, they gathered twice as much bread, two omers for each one; and all the rulers of the congregation came and told Moses.",
+      "ko": "제 육일에는 각 사람이 갑절의 식물 곧 하나에 두 오멜씩 거둔지라 회중의 모든 두목이 와서 모세에게 고하매",
+      "source_text_hash": "5f6bae4163059aafacccbaf7e87d2e3411675f4694f66690672a81b3bc618d18",
+      "translation_text_hash": "010a28a84a3408da12a3f04ff4ec7ab6593ade251eb2c9bb645b1aa3847d7f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육일에는 각 사람이 갑절의 식물 곧 하나에 두 오멜씩 거둔지라 회중의 모든 두목이 와서 모세에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "010a28a84a3408da12a3f04ff4ec7ab6593ade251eb2c9bb645b1aa3847d7f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:23",
+      "sequence": 1971,
+      "chapter_label": "EXO 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "He said to them, “This is that which the LORD has spoken, ‘Tomorrow is a solemn rest, a holy Sabbath to the LORD. Bake that which you want to bake, and boil that which you want to boil; and all that remains over lay up for yourselves to be kept until the morning.’”",
+      "ko": "모세가 그들에게 이르되 여호와께서 이같이 말씀하셨느니라 내일은 휴식이니 여호와께 거룩한 안식일이라 너희가 구울 것은 굽고 삶을 것은 삶고 그 나머지는 다 너희를 위하여 아침까지 간수하라",
+      "source_text_hash": "97f33ff75a4e7ff249dac19a2260626eda3ef16f417695d5b2fc9f138089daef",
+      "translation_text_hash": "13aa6e8f6a05d7f11bcdbb987fd8adb3b28a49a0b1974233745bb678396637a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 여호와께서 이같이 말씀하셨느니라 내일은 휴식이니 여호와께 거룩한 안식일이라 너희가 구울 것은 굽고 삶을 것은 삶고 그 나머지는 다 너희를 위하여 아침까지 간수하라"
+      ],
+      "raw_text_hashes": [
+        "13aa6e8f6a05d7f11bcdbb987fd8adb3b28a49a0b1974233745bb678396637a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:24",
+      "sequence": 1972,
+      "chapter_label": "EXO 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "They laid it up until the morning, as Moses ordered, and it didn’t become foul, and there were no worms in it.",
+      "ko": "그들이 모세의 명대로 아침까지 간수하였으나 냄새도 나지 아니하고 벌레도 생기지 아니한지라",
+      "source_text_hash": "54e7dd311a2936791904a0a3662d24396682f724f51ca4c7d888e68fed86e6b3",
+      "translation_text_hash": "720ce6b0fabd067be015997a288b5d54828c076bdbc0f2cab0b0aba3592d5b4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모세의 명대로 아침까지 간수하였으나 냄새도 나지 아니하고 벌레도 생기지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "720ce6b0fabd067be015997a288b5d54828c076bdbc0f2cab0b0aba3592d5b4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:25",
+      "sequence": 1973,
+      "chapter_label": "EXO 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "Moses said, “Eat that today, for today is a Sabbath to the LORD. Today you shall not find it in the field.",
+      "ko": "모세가 가로되 오늘은 그것을 먹으라 오늘은 여호와께 안식일인즉 오늘은 너희가 그것을 들에서 얻지 못하리라",
+      "source_text_hash": "28aabab04223863654e470071e36afbfe1f5db4b1336b2c6d2d3d7b944aab704",
+      "translation_text_hash": "5f182cb2254c10c2c34e47388d3295450ff9b3c582408c69185f32e4a9af1dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 오늘은 그것을 먹으라 오늘은 여호와께 안식일인즉 오늘은 너희가 그것을 들에서 얻지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "5f182cb2254c10c2c34e47388d3295450ff9b3c582408c69185f32e4a9af1dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:26",
+      "sequence": 1974,
+      "chapter_label": "EXO 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "Six days you shall gather it, but on the seventh day is the Sabbath. In it there shall be none.”",
+      "ko": "육일 동안은 너희가 그것을 거두되 제 칠일은 안식일인즉 그 날에는 없으리라 하였으나",
+      "source_text_hash": "2e31d53bde612933add81d52cca80cfa7f42615243ca9bb1df6c6e371933a2d7",
+      "translation_text_hash": "a524f1c48df62aa8c93a7a765088e66df9fb65bfcefe181c4a308aa62522f5cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육일 동안은 너희가 그것을 거두되 제 칠일은 안식일인즉 그 날에는 없으리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "a524f1c48df62aa8c93a7a765088e66df9fb65bfcefe181c4a308aa62522f5cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:27",
+      "sequence": 1975,
+      "chapter_label": "EXO 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "On the seventh day, some of the people went out to gather, and they found none.",
+      "ko": "제 칠일에 백성 중 더러가 거두러 나갔다가 얻지 못하니라",
+      "source_text_hash": "336c82276de40c16f847d844f948958aaf21ee5349e04e05f9f040a406971078",
+      "translation_text_hash": "d2c9593ef713769b04beafb6990985e0341f1757e0b6f49e03df4b0434b38815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일에 백성 중 더러가 거두러 나갔다가 얻지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "d2c9593ef713769b04beafb6990985e0341f1757e0b6f49e03df4b0434b38815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:28",
+      "sequence": 1976,
+      "chapter_label": "EXO 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD said to Moses, “How long do you refuse to keep my commandments and my laws?",
+      "ko": "여호와께서 모세에게 이르시되 어느 때까지 너희가 내 계명과 내 율법을 지키지 아니하려느냐",
+      "source_text_hash": "82dc82762ea86a9a1ca8769826f7f67a8e8635a06ad9fe9c914fe087bc06530a",
+      "translation_text_hash": "0960a77b051681e71653859ea6edb5ba4c7b58d250305d378debdddadae9cd6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 어느 때까지 너희가 내 계명과 내 율법을 지키지 아니하려느냐"
+      ],
+      "raw_text_hashes": [
+        "0960a77b051681e71653859ea6edb5ba4c7b58d250305d378debdddadae9cd6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:29",
+      "sequence": 1977,
+      "chapter_label": "EXO 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "Behold, because the LORD has given you the Sabbath, therefore he gives you on the sixth day the bread of two days. Everyone stay in his place. Let no one go out of his place on the seventh day.”",
+      "ko": "볼지어다 여호와가 너희에게 안식일을 줌으로 제 육일에는 이틀 양식을 너희에게 주는 것이니 너희는 각기 처소에 있고 제 칠일에는 아무도 그 처소에서 나오지 말지니라",
+      "source_text_hash": "f759992646c14b2265c93c8fc051550a41f24e0ab2960cacf5ce4ac718862f9f",
+      "translation_text_hash": "320715557fe3eb9cd799dd8becc0921621c4d93188c5991a15e2417a781c1d54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼지어다 여호와가 너희에게 안식일을 줌으로 제 육일에는 이틀 양식을 너희에게 주는 것이니 너희는 각기 처소에 있고 제 칠일에는 아무도 그 처소에서 나오지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "320715557fe3eb9cd799dd8becc0921621c4d93188c5991a15e2417a781c1d54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:30",
+      "sequence": 1978,
+      "chapter_label": "EXO 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "So the people rested on the seventh day.",
+      "ko": "그러므로 백성이 제 칠일에 안식하니라",
+      "source_text_hash": "904b08306a12a1295190cca835d162faedffbe6451f09464ee3f83e4c1feb701",
+      "translation_text_hash": "972613ff20dadc58011f015ee65eb29070948fdd9f2df246af14421f0bfd691d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 백성이 제 칠일에 안식하니라"
+      ],
+      "raw_text_hashes": [
+        "972613ff20dadc58011f015ee65eb29070948fdd9f2df246af14421f0bfd691d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:31",
+      "sequence": 1979,
+      "chapter_label": "EXO 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "The house of Israel called its name “Manna”, and it was like coriander seed, white; and its taste was like wafers with honey.",
+      "ko": "이스라엘 족속이 그 이름을 만나라 하였으며 깟씨 같고도 희고 맛은 꿀 섞은 과자 같았더라",
+      "source_text_hash": "811ce90ae36675c41bde7b0074ffea4ae9633469c6b739f6411c027261cce3f9",
+      "translation_text_hash": "d5e9bd56897e6531423e58d3846101b734125fdc0c723086c3b40b4daf7bb2a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속이 그 이름을 만나라 하였으며 깟씨 같고도 희고 맛은 꿀 섞은 과자 같았더라"
+      ],
+      "raw_text_hashes": [
+        "d5e9bd56897e6531423e58d3846101b734125fdc0c723086c3b40b4daf7bb2a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:32",
+      "sequence": 1980,
+      "chapter_label": "EXO 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "Moses said, “This is the thing which the LORD has commanded, ‘Let an omer-full of it be kept throughout your generations, that they may see the bread with which I fed you in the wilderness, when I brought you out of the land of Egypt.’”",
+      "ko": "모세가 가로되 여호와께서 이같이 명하시기를 이것을 오멜에 채워서 너희 대대 후손을 위하여 간수하라 이는 내가 너희를 애굽 땅에서 인도하여 낼 때에 광야에서 너희에게 먹인 양식을 그들에게 보이기 위함이니라 하셨다 하고",
+      "source_text_hash": "48e5fd2d0e98b9cfb2a4815231c1ad65a59239e7ccb6fc0f1db411742f7713b4",
+      "translation_text_hash": "cf755dcb61384ef7b33fb0aad884dd985cb8399d0c2ac0f7484142ba5ae0eb2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 여호와께서 이같이 명하시기를 이것을 오멜에 채워서 너희 대대 후손을 위하여 간수하라 이는 내가 너희를 애굽 땅에서 인도하여 낼 때에 광야에서 너희에게 먹인 양식을 그들에게 보이기 위함이니라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "cf755dcb61384ef7b33fb0aad884dd985cb8399d0c2ac0f7484142ba5ae0eb2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:33",
+      "sequence": 1981,
+      "chapter_label": "EXO 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "Moses said to Aaron, “Take a pot, and put an omer-full of manna in it, and lay it up before the LORD, to be kept throughout your generations.”",
+      "ko": "또 아론에게 이르되 항아리를 가져다가 그 속에 만나 한 오멜을 담아 여호와 앞에 두어 너희 대대로 간수하라",
+      "source_text_hash": "941dbd94b6dbfcd0e50a32e0ec266ffddb8585033e6599f1b62a62979e48d565",
+      "translation_text_hash": "e2b50f32f22a4d66b4ffd432bc0e471e5e67304df65d6dd9622c4b13eb8e8da1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아론에게 이르되 항아리를 가져다가 그 속에 만나 한 오멜을 담아 여호와 앞에 두어 너희 대대로 간수하라"
+      ],
+      "raw_text_hashes": [
+        "e2b50f32f22a4d66b4ffd432bc0e471e5e67304df65d6dd9622c4b13eb8e8da1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:34",
+      "sequence": 1982,
+      "chapter_label": "EXO 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "As the LORD commanded Moses, so Aaron laid it up before the Testimony, to be kept.",
+      "ko": "아론이 여호와께서 모세에게 명하신대로 그것을 증거판 앞에 두어 간수하게 하였고",
+      "source_text_hash": "6c4bcf418434943571d4302132823e75d6c37b78c78cad40dfdeb8d29060b9e8",
+      "translation_text_hash": "af9708e880a8a7ed6261203f5a25b0a2f2d77596a2e3f0de162b4db0d0a0be1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 여호와께서 모세에게 명하신대로 그것을 증거판 앞에 두어 간수하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "af9708e880a8a7ed6261203f5a25b0a2f2d77596a2e3f0de162b4db0d0a0be1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:35",
+      "sequence": 1983,
+      "chapter_label": "EXO 16",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 35
+        }
+      ],
+      "en": "The children of Israel ate the manna forty years, until they came to an inhabited land. They ate the manna until they came to the borders of the land of Canaan.",
+      "ko": "이스라엘 자손이 사람 사는 땅에 이르기까지 사십년 동안 만나를 먹되 곧 가나안 지경에 이르기까지 그들이 만나를 먹었더라",
+      "source_text_hash": "7cc6d2b37dba3fe520ea0514c7200190e478a0f363e451099e898736d84407b8",
+      "translation_text_hash": "b157197bc89e51a1b14e3475c034fd0c6d0090f517343fd4507fa26f3853201d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 사람 사는 땅에 이르기까지 사십년 동안 만나를 먹되 곧 가나안 지경에 이르기까지 그들이 만나를 먹었더라"
+      ],
+      "raw_text_hashes": [
+        "b157197bc89e51a1b14e3475c034fd0c6d0090f517343fd4507fa26f3853201d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:16:36",
+      "sequence": 1984,
+      "chapter_label": "EXO 16",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 16,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 16,
+          "verse": 36
+        }
+      ],
+      "en": "Now an omer is one tenth of an ephah.",
+      "ko": "오멜은 에바 십분의 일이더라",
+      "source_text_hash": "e73f2b2a62eecbaac1e26df2afb8e4ed44016c21b12213cfc61c1fa2a51a6f9e",
+      "translation_text_hash": "98af089e9aaf08642bf2b3274bbba35c6947c7079ee1c8509ea571adb7c0747e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오멜은 에바 십분의 일이더라"
+      ],
+      "raw_text_hashes": [
+        "98af089e9aaf08642bf2b3274bbba35c6947c7079ee1c8509ea571adb7c0747e"
+      ]
+    }
+  ]
+}

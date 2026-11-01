@@ -1,0 +1,1549 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:020",
+  "unit_ordinal": 231,
+  "unit_label": "JDG 20",
+  "book_code": "JDG",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:20:1",
+      "sequence": 7056,
+      "chapter_label": "JDG 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Then all the children of Israel went out, and the congregation was assembled as one man, from Dan even to Beersheba, with the land of Gilead, to the LORD at Mizpah.",
+      "ko": "이에 모든 이스라엘 자손이 단에서부터 브엘세바까지와 길르앗 땅에서 나왔는데 그 회중이 일제히 미스바에서 여호와 앞에 모였으니",
+      "source_text_hash": "399242c7b5be2b3ca1d36cad52f287c347335c37d16889bb68333fff7e2720f9",
+      "translation_text_hash": "a2da55bf01803811104badbd5aaa6af50f5993d43ae57df8e9d522ef173b97cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모든 이스라엘 자손이 단에서부터 브엘세바까지와 길르앗 땅에서 나왔는데 그 회중이 일제히 미스바에서 여호와 앞에 모였으니"
+      ],
+      "raw_text_hashes": [
+        "a2da55bf01803811104badbd5aaa6af50f5993d43ae57df8e9d522ef173b97cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:2",
+      "sequence": 7057,
+      "chapter_label": "JDG 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "The chiefs of all the people, even of all the tribes of Israel, presented themselves in the assembly of the people of God, four hundred thousand footmen who drew sword.",
+      "ko": "온 백성의 어른 곧 이스라엘 모든 지파의 어른들은 하나님 백성의 총회에 섰고 칼을 빼는 보병은 사십만이었으며",
+      "source_text_hash": "8058629e1fffef10bf5ebf2bd68dd45338889dfa8267963ac089b4b39a223ff3",
+      "translation_text_hash": "35ee8d165d1b60eca8195bcedf67611247d397c936077d2494d6f866f119e7a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 백성의 어른 곧 이스라엘 모든 지파의 어른들은 하나님 백성의 총회에 섰고 칼을 빼는 보병은 사십만이었으며"
+      ],
+      "raw_text_hashes": [
+        "35ee8d165d1b60eca8195bcedf67611247d397c936077d2494d6f866f119e7a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:3",
+      "sequence": 7058,
+      "chapter_label": "JDG 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "(Now the children of Benjamin heard that the children of Israel had gone up to Mizpah.) The children of Israel said, “Tell us, how did this wickedness happen?”",
+      "ko": "이스라엘 자손의 미스바에 올라간 것을 베냐민 자손이 들었더라 이스라엘 자손이 가로되 이 악한 일의 정형을 우리에게 고하라",
+      "source_text_hash": "c9adaeb491e4757af11f76e8de05f8e92ae2c1824db73cda0d27914ee83d8abb",
+      "translation_text_hash": "960bfdc5bb73522c10c896fc7f663df0a982aa98275de360627363c62cd894d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 미스바에 올라간 것을 베냐민 자손이 들었더라 이스라엘 자손이 가로되 이 악한 일의 정형을 우리에게 고하라"
+      ],
+      "raw_text_hashes": [
+        "960bfdc5bb73522c10c896fc7f663df0a982aa98275de360627363c62cd894d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:4",
+      "sequence": 7059,
+      "chapter_label": "JDG 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "The Levite, the husband of the woman who was murdered, answered, “I came into Gibeah that belongs to Benjamin, I and my concubine, to spend the night.",
+      "ko": "레위 사람 곧 죽임을 당한 여인의 남편이 대답하여 가로되 내가 내 첩으로 더불어 베냐민에 속한 기브아에 유숙하러 갔더니",
+      "source_text_hash": "6518e8f39c6d520d1679b0f2db7a474feef7c6c39a52587315711c515c0b092b",
+      "translation_text_hash": "901d84cac7641dcd9db50f55f2dcf7ad7ed67a6fa7f2e2d4ed46fcec29e5aa36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 곧 죽임을 당한 여인의 남편이 대답하여 가로되 내가 내 첩으로 더불어 베냐민에 속한 기브아에 유숙하러 갔더니"
+      ],
+      "raw_text_hashes": [
+        "901d84cac7641dcd9db50f55f2dcf7ad7ed67a6fa7f2e2d4ed46fcec29e5aa36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:5",
+      "sequence": 7060,
+      "chapter_label": "JDG 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "The men of Gibeah rose against me, and surrounded the house by night. They intended to kill me and they raped my concubine, and she is dead.",
+      "ko": "기브아 사람들이 나를 치러 일어나서 밤에 나의 우거한 집을 에워싸고 나를 죽이려 하고 내 첩을 욕보여서 그로 죽게 한지라",
+      "source_text_hash": "d9d346cddb6b6988245f1338df577fdf9ee42839b00d99e6b231498701db7bb1",
+      "translation_text_hash": "d79ca16a16e3dca92b34b2520ab7db8159a29d6db9d0574eb7c45c8d292c2b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브아 사람들이 나를 치러 일어나서 밤에 나의 우거한 집을 에워싸고 나를 죽이려 하고 내 첩을 욕보여서 그로 죽게 한지라"
+      ],
+      "raw_text_hashes": [
+        "d79ca16a16e3dca92b34b2520ab7db8159a29d6db9d0574eb7c45c8d292c2b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:6",
+      "sequence": 7061,
+      "chapter_label": "JDG 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "I took my concubine and cut her in pieces, and sent her throughout all the country of the inheritance of Israel; for they have committed lewdness and folly in Israel.",
+      "ko": "내가 내 첩의 시체를 취하여 쪼개어 이스라엘 기업의 온 땅에 보내었노니 이는 그들이 이스라엘 중에서 음행과 망령된 일을 행하였음을 인함이로라",
+      "source_text_hash": "22a2ad02c89d14366f8c68b3d83950fdd21a70784408c4412b664d1660505010",
+      "translation_text_hash": "3c0d110d12174ac9f8fc138dbc8a20cdb6bd139d40b08365529ddbabdc4861c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 첩의 시체를 취하여 쪼개어 이스라엘 기업의 온 땅에 보내었노니 이는 그들이 이스라엘 중에서 음행과 망령된 일을 행하였음을 인함이로라"
+      ],
+      "raw_text_hashes": [
+        "3c0d110d12174ac9f8fc138dbc8a20cdb6bd139d40b08365529ddbabdc4861c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:7",
+      "sequence": 7062,
+      "chapter_label": "JDG 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, you children of Israel, all of you, give here your advice and counsel.”",
+      "ko": "이스라엘 자손들아 너희가 다 여기 있은즉 너희의 의견과 방책을 낼찌니라",
+      "source_text_hash": "e64521e1d36f184e6159bf53b7ba9db3971c5e3d9e7f0a7e21e5a6e2da34e586",
+      "translation_text_hash": "4e0476d120032da6389595d9a2a34f01eec929bbf4c9ee0de245c2e38324773f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들아 너희가 다 여기 있은즉 너희의 의견과 방책을 낼찌니라"
+      ],
+      "raw_text_hashes": [
+        "4e0476d120032da6389595d9a2a34f01eec929bbf4c9ee0de245c2e38324773f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:8",
+      "sequence": 7063,
+      "chapter_label": "JDG 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "All the people arose as one man, saying, “None of us will go to his tent, neither will any of us turn to his house.",
+      "ko": "모든 백성이 일제히 일어나며 가로되 우리가 하나라도 자기 장막으로 돌아가지 아니하며 하나라도 자기 집으로 들어가지 아니하고",
+      "source_text_hash": "526dd1307f846a107a82f47143e14fb10597afb445e58ddc8f85585576f0d826",
+      "translation_text_hash": "5f4a6e86167386ea33b267763f743a73790c91939eff16e97090675543ff1813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 일제히 일어나며 가로되 우리가 하나라도 자기 장막으로 돌아가지 아니하며 하나라도 자기 집으로 들어가지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "5f4a6e86167386ea33b267763f743a73790c91939eff16e97090675543ff1813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:9",
+      "sequence": 7064,
+      "chapter_label": "JDG 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "But now this is the thing which we will do to Gibeah: we will go up against it by lot;",
+      "ko": "우리가 기브아 사람에게 이렇게 행하리니 곧 제비 뽑아서 그들을 치되",
+      "source_text_hash": "e7db5acf62782ac31ac926279ba8a1d5711a871acaa606f3c4eda114e6a1d933",
+      "translation_text_hash": "5d91ad23f24a7c3d23865875baf1d33f67fd94a8e2b565b30601b10dc5554a54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 기브아 사람에게 이렇게 행하리니 곧 제비 뽑아서 그들을 치되"
+      ],
+      "raw_text_hashes": [
+        "5d91ad23f24a7c3d23865875baf1d33f67fd94a8e2b565b30601b10dc5554a54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:10",
+      "sequence": 7065,
+      "chapter_label": "JDG 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "and we will take ten men of one hundred throughout all the tribes of Israel, and one hundred of one thousand, and a thousand out of ten thousand to get food for the people, that they may do, when they come to Gibeah of Benjamin, according to all the folly that the men of Gibeah have done in Israel.”",
+      "ko": "우리가 이스라엘 모든 지파 중에서 백에 열, 천에 백, 만에 천을 취하고 그 백성을 위하여 양식을 예비하고 그들로 베냐민의 기브아에 가서 그 무리의 이스라엘 중에서 망령된 일을 행한대로 징계하게 하리라 하니라",
+      "source_text_hash": "ff24a21a92a147aaefe0ba41b6326e847743d773b11ade9ab0629e88ff437fbd",
+      "translation_text_hash": "5ec431039ea3fac06e2fa22630e463837f79acf1fc1ab7a3ff5996a0ee1fb8a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이스라엘 모든 지파 중에서 백에 열, 천에 백, 만에 천을 취하고 그 백성을 위하여 양식을 예비하고 그들로 베냐민의 기브아에 가서 그 무리의 이스라엘 중에서 망령된 일을 행한대로 징계하게 하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "5ec431039ea3fac06e2fa22630e463837f79acf1fc1ab7a3ff5996a0ee1fb8a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:11",
+      "sequence": 7066,
+      "chapter_label": "JDG 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "So all the men of Israel were gathered against the city, knit together as one man.",
+      "ko": "이와 같이 이스라엘 모든 사람이 하나 같이 합심하여 그 성읍을 치려고 모였더라",
+      "source_text_hash": "05a933a2a541c32589e452bb54418efaad3285949b012a81655f440f46dac7ff",
+      "translation_text_hash": "0cbcefa385bd6225583d953203d9da41daed559f02d8589ed67ab9ee4de6917c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 이스라엘 모든 사람이 하나 같이 합심하여 그 성읍을 치려고 모였더라"
+      ],
+      "raw_text_hashes": [
+        "0cbcefa385bd6225583d953203d9da41daed559f02d8589ed67ab9ee4de6917c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:12",
+      "sequence": 7067,
+      "chapter_label": "JDG 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "The tribes of Israel sent men through all the tribe of Benjamin, saying, “What wickedness is this that has happened among you?",
+      "ko": "이스라엘 지파들이 베냐민 온 지파에 사람들을 보내어 두루 행하며 이르기를 너희 중에서 생긴 이 악이 어찜이뇨",
+      "source_text_hash": "8862f6236d2bd909e6bba33b340107f2254bf3433e1b620186834da30ac67ce9",
+      "translation_text_hash": "6a3bed67c39cb7d1ee05c1a3ef8ee5cda3bca16400e3cf811cb34255dcb21e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 지파들이 베냐민 온 지파에 사람들을 보내어 두루 행하며 이르기를 너희 중에서 생긴 이 악이 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "6a3bed67c39cb7d1ee05c1a3ef8ee5cda3bca16400e3cf811cb34255dcb21e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:13",
+      "sequence": 7068,
+      "chapter_label": "JDG 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "Now therefore deliver up the men, the wicked fellows who are in Gibeah, that we may put them to death and put away evil from Israel.” But Benjamin would not listen to the voice of their brothers, the children of Israel.",
+      "ko": "그런즉 이제 기브아 사람 곧 그 비류를 우리에게 붙여서 우리로 죽여 이스라엘 중에 악을 제하여 버리게 하라 하나 베냐민 자손이 그 형제 이스라엘 자손의 말을 듣지 아니하고",
+      "source_text_hash": "ec2ead38b035944d22d9c5d0f26974631c473bbfb5af5a6aa44bf401d2fd1413",
+      "translation_text_hash": "69ed12dacb65ac3f6d013962c7760f8ebf558b282e560e2a581b1b35c455c791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이제 기브아 사람 곧 그 비류를 우리에게 붙여서 우리로 죽여 이스라엘 중에 악을 제하여 버리게 하라 하나 베냐민 자손이 그 형제 이스라엘 자손의 말을 듣지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "69ed12dacb65ac3f6d013962c7760f8ebf558b282e560e2a581b1b35c455c791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:14",
+      "sequence": 7069,
+      "chapter_label": "JDG 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Benjamin gathered themselves together out of the cities to Gibeah, to go out to battle against the children of Israel.",
+      "ko": "도리어 각 성읍에서 기브아에 모이고 나가서 이스라엘 자손과 싸우고자 하니",
+      "source_text_hash": "2a68911cc16dc31fc4cd8c0929ae414c765c62c328ce937fb6db996616b4d107",
+      "translation_text_hash": "8f0e6f170cb4a130e0407451d65f4e04f741a102def730e952c37ce85b8c4a9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 각 성읍에서 기브아에 모이고 나가서 이스라엘 자손과 싸우고자 하니"
+      ],
+      "raw_text_hashes": [
+        "8f0e6f170cb4a130e0407451d65f4e04f741a102def730e952c37ce85b8c4a9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:15",
+      "sequence": 7070,
+      "chapter_label": "JDG 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "The children of Benjamin were counted on that day out of the cities twenty-six thousand men who drew the sword, in addition to the inhabitants of Gibeah, who were counted seven hundred chosen men.",
+      "ko": "그 때에 성읍들에서 나온 베냐민 자손의 수는 칼을 빼는 자가 모두 이만 육천이요 그 외에 기브아 거민중 택한 자가 칠백인데",
+      "source_text_hash": "e987e9773c2554322b8141dc155794b141657d5b31b55faf55ee52acf6a7fb9f",
+      "translation_text_hash": "961d8421517559949496fccc63dcafc83aaacb932f772e61640386fe5ce3801f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 성읍들에서 나온 베냐민 자손의 수는 칼을 빼는 자가 모두 이만 육천이요 그 외에 기브아 거민중 택한 자가 칠백인데"
+      ],
+      "raw_text_hashes": [
+        "961d8421517559949496fccc63dcafc83aaacb932f772e61640386fe5ce3801f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:16",
+      "sequence": 7071,
+      "chapter_label": "JDG 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "Among all these soldiers there were seven hundred chosen men who were left-handed. Every one of them could sling a stone at a hair and not miss.",
+      "ko": "이 모든 백성 중에서 택한 칠백명은 다 왼손잡이라 물매로 돌을 던지면 호리도 틀림이 없는 자더라",
+      "source_text_hash": "cd6087053e64d2d6cce6882657ffebd15b02238c4b9254cdb8b5b3f5a1f72339",
+      "translation_text_hash": "319c2cebbbb338142dce27cd406ba4a7f899031abbfaf71d354f01738af6a453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 백성 중에서 택한 칠백명은 다 왼손잡이라 물매로 돌을 던지면 호리도 틀림이 없는 자더라"
+      ],
+      "raw_text_hashes": [
+        "319c2cebbbb338142dce27cd406ba4a7f899031abbfaf71d354f01738af6a453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:17",
+      "sequence": 7072,
+      "chapter_label": "JDG 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "The men of Israel, besides Benjamin, were counted four hundred thousand men who drew sword. All these were men of war.",
+      "ko": "베냐민 자손 외에 이스라엘 사람의 칼을 빼는 자의 수는 사십만명이니 다 전사라",
+      "source_text_hash": "114e23f4eed094fc9394df20f72ded72c72b6844336315b61ee84dc2f8cc8291",
+      "translation_text_hash": "29dbf29221ce7215e728cb499ec8c8586abe62db24d398952fb4a90ebae10b8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손 외에 이스라엘 사람의 칼을 빼는 자의 수는 사십만명이니 다 전사라"
+      ],
+      "raw_text_hashes": [
+        "29dbf29221ce7215e728cb499ec8c8586abe62db24d398952fb4a90ebae10b8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:18",
+      "sequence": 7073,
+      "chapter_label": "JDG 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "The children of Israel arose, went up to Bethel, and asked counsel of God. They asked, “Who shall go up for us first to battle against the children of Benjamin?” The LORD said, “Judah first.”",
+      "ko": "이스라엘 자손이 일어나 벧엘에 올라가서 하나님께 묻자와 가로되 우리 중에 누가 먼저 올라가서 베냐민 자손과 싸우리이까 여호와께서 가라사대 유다가 먼저일찌니라",
+      "source_text_hash": "53befad2887774c55642400d0f1f1b8bf3739e42eb9e7ad8d7d049d4d49daeb8",
+      "translation_text_hash": "be3e4065bcc30db0af6bb0b24475cfeaef067c52e5fe57f02128b3fe5c949e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 일어나 벧엘에 올라가서 하나님께 묻자와 가로되 우리 중에 누가 먼저 올라가서 베냐민 자손과 싸우리이까 여호와께서 가라사대 유다가 먼저일찌니라"
+      ],
+      "raw_text_hashes": [
+        "be3e4065bcc30db0af6bb0b24475cfeaef067c52e5fe57f02128b3fe5c949e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:19",
+      "sequence": 7074,
+      "chapter_label": "JDG 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "The children of Israel rose up in the morning and encamped against Gibeah.",
+      "ko": "이스라엘 자손이 아침에 일어나 기브아를 대하여 진을 치니라",
+      "source_text_hash": "c9615a31f43edc2d0079c36bf2a64e6b0bc30afc2ad3d1e44e16270704af696d",
+      "translation_text_hash": "56fc5a26704dcd97a6107e2e18e2031f854daccf27d2a9923ab30176163decd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 아침에 일어나 기브아를 대하여 진을 치니라"
+      ],
+      "raw_text_hashes": [
+        "56fc5a26704dcd97a6107e2e18e2031f854daccf27d2a9923ab30176163decd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:20",
+      "sequence": 7075,
+      "chapter_label": "JDG 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "The men of Israel went out to battle against Benjamin; and the men of Israel set the battle in array against them at Gibeah.",
+      "ko": "이스라엘 사람들이 나가서 항오를 벌이고 거기서 그들과 싸우고자 하매",
+      "source_text_hash": "9608d3a2a39e2590ee930a89c57c645f3170156c5afe21a5f95e9e1f6ac26d81",
+      "translation_text_hash": "c04b9194450487b1cf2710928eac32bca0ba242f20e97a430d63ee94a2da550a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 나가서 항오를 벌이고 거기서 그들과 싸우고자 하매"
+      ],
+      "raw_text_hashes": [
+        "c04b9194450487b1cf2710928eac32bca0ba242f20e97a430d63ee94a2da550a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:21",
+      "sequence": 7076,
+      "chapter_label": "JDG 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Benjamin came out of Gibeah, and on that day destroyed twenty-two thousand of the Israelite men down to the ground.",
+      "ko": "베냐민 자손이 기브아에서 나와서 당일에 이스라엘 사람 이만 이천을 땅에 엎드러뜨렸으나",
+      "source_text_hash": "2cfa5160f1f43f9f339cc0d3cb8d6fb74a0206436a33167163c97290f330c713",
+      "translation_text_hash": "052669f839c9ac1f990a653359a5405a04b545ba5b04e696a9879d334f9471b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손이 기브아에서 나와서 당일에 이스라엘 사람 이만 이천을 땅에 엎드러뜨렸으나"
+      ],
+      "raw_text_hashes": [
+        "052669f839c9ac1f990a653359a5405a04b545ba5b04e696a9879d334f9471b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:22",
+      "sequence": 7077,
+      "chapter_label": "JDG 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "The people, the men of Israel, encouraged themselves, and set the battle again in array in the place where they set themselves in array the first day.",
+      "ko": "이스라엘 사람들이 스스로 용기를 내어 첫날 항오를 벌였던 곳에 다시 항오를 벌이니라",
+      "source_text_hash": "c96deb06631290374a688e5bb20e7fc99c7c18996399cadbae191bcb6d3c2205",
+      "translation_text_hash": "685ccf3bbe401fcd0d99aad6daf9f3f709888cfca385393d5f02bf1126860901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 스스로 용기를 내어 첫날 항오를 벌였던 곳에 다시 항오를 벌이니라"
+      ],
+      "raw_text_hashes": [
+        "685ccf3bbe401fcd0d99aad6daf9f3f709888cfca385393d5f02bf1126860901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:23",
+      "sequence": 7078,
+      "chapter_label": "JDG 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "The children of Israel went up and wept before the LORD until evening; and they asked of the LORD, saying, “Shall I again draw near to battle against the children of Benjamin my brother?” The LORD said, “Go up against him.”",
+      "ko": "이스라엘 자손이 올라가서 여호와 앞에서 저물도록 울며 여호와께 묻자와 가로되 내가 다시 나아가서 나의 형제 베냐민 자손과 싸우리이까 여호와께서 가라사대 올라가서 치라 하시니라",
+      "source_text_hash": "559a1bb998de64ef5aaa3e031ba58f50d832069b614d443edbd36f45f168e059",
+      "translation_text_hash": "87fb84e59b16225c0c9d207c62ec0bf349083461badbb4da865cc799a9ae6386",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 올라가서 여호와 앞에서 저물도록 울며 여호와께 묻자와 가로되 내가 다시 나아가서 나의 형제 베냐민 자손과 싸우리이까 여호와께서 가라사대 올라가서 치라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "87fb84e59b16225c0c9d207c62ec0bf349083461badbb4da865cc799a9ae6386"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:24",
+      "sequence": 7079,
+      "chapter_label": "JDG 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "The children of Israel came near against the children of Benjamin the second day.",
+      "ko": "그 이튿날에 이스라엘 자손이 베냐민 자손을 치러 나아가매",
+      "source_text_hash": "14230024dc6779f6121c9d15784271b97fa1fef723dbd954c1daa42f09734b72",
+      "translation_text_hash": "9cfcd02e17a923c5025bd5fbfecb8b1e947fc13d75d837258bea9138da7c2a0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날에 이스라엘 자손이 베냐민 자손을 치러 나아가매"
+      ],
+      "raw_text_hashes": [
+        "9cfcd02e17a923c5025bd5fbfecb8b1e947fc13d75d837258bea9138da7c2a0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:25",
+      "sequence": 7080,
+      "chapter_label": "JDG 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "Benjamin went out against them out of Gibeah the second day, and destroyed down to the ground of the children of Israel again eighteen thousand men. All these drew the sword.",
+      "ko": "베냐민도 그 이튿날에 기브아에서 그들을 치러 나와서 다시 이스라엘 자손 일만 팔천을 땅에 엎드러뜨렸으니 다 칼을 빼는 자였더라",
+      "source_text_hash": "78fcaac574ee3d91fbf7b883d35b2b82fb55f3f1d79771baf2d2c4a5e615b8cf",
+      "translation_text_hash": "348000466bb5b1c674b110f7e38e8ddadfd2433ccba6e65ceb598e214c5232f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민도 그 이튿날에 기브아에서 그들을 치러 나와서 다시 이스라엘 자손 일만 팔천을 땅에 엎드러뜨렸으니 다 칼을 빼는 자였더라"
+      ],
+      "raw_text_hashes": [
+        "348000466bb5b1c674b110f7e38e8ddadfd2433ccba6e65ceb598e214c5232f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:26",
+      "sequence": 7081,
+      "chapter_label": "JDG 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "Then all the children of Israel and all the people went up, and came to Bethel, and wept, and sat there before the LORD, and fasted that day until evening; then they offered burnt offerings and peace offerings before the LORD.",
+      "ko": "이에 온 이스라엘 자손 모든 백성이 올라가서 벧엘에 이르러 울며 거기서 여호와 앞에 앉고 그 날이 저물도록 금식하고 번제와 화목제를 여호와 앞에 드리고",
+      "source_text_hash": "3900d09a3a2c47a85fb19e0db56b20a9a7e9b53a697e69e43e209bc61bbb8282",
+      "translation_text_hash": "0575d6698b47c6a058e93345beb1f1e90794eb1be039e9841645ac90d8c25003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 온 이스라엘 자손 모든 백성이 올라가서 벧엘에 이르러 울며 거기서 여호와 앞에 앉고 그 날이 저물도록 금식하고 번제와 화목제를 여호와 앞에 드리고"
+      ],
+      "raw_text_hashes": [
+        "0575d6698b47c6a058e93345beb1f1e90794eb1be039e9841645ac90d8c25003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:27",
+      "sequence": 7082,
+      "chapter_label": "JDG 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "The children of Israel asked the LORD (for the ark of the covenant of God was there in those days,",
+      "ko": "여호와께 물으니라 (그 때에는 하나님의 언약궤가 거기 있고",
+      "source_text_hash": "e624ec24863cc47afaa519d868c060767724f2ae1751923719129a5039186aaf",
+      "translation_text_hash": "74f4381e1c26ae1f5720b45788cc20721b33adf7516033b7bc5e468d1ca7103d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 물으니라 (그 때에는 하나님의 언약궤가 거기 있고"
+      ],
+      "raw_text_hashes": [
+        "74f4381e1c26ae1f5720b45788cc20721b33adf7516033b7bc5e468d1ca7103d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:28",
+      "sequence": 7083,
+      "chapter_label": "JDG 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "and Phinehas, the son of Eleazar, the son of Aaron, stood before it in those days), saying, “Shall I yet again go out to battle against the children of Benjamin my brother, or shall I cease?” The LORD said, “Go up; for tomorrow I will deliver him into your hand.”",
+      "ko": "아론의 손자 엘르아살의 아들 비느하스가 그 앞에 모셨더라) 이스라엘 자손이 묻자오되 내가 다시 나가 나의 형제 베냐민 자손과 싸우리이까 말리이까 여호와께서 가라사대 올라가라 내일은 내가 그를 네 손에 붙이리라",
+      "source_text_hash": "edc901ef410392b655f97840a9845374fa622aa651b88e45be65d17c3eaa3a79",
+      "translation_text_hash": "9db3b5a3202d2de6dc0b7f16fd6a78df5d2eadf6fd78069a07c1a3b034f5f65e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 손자 엘르아살의 아들 비느하스가 그 앞에 모셨더라) 이스라엘 자손이 묻자오되 내가 다시 나가 나의 형제 베냐민 자손과 싸우리이까 말리이까 여호와께서 가라사대 올라가라 내일은 내가 그를 네 손에 붙이리라"
+      ],
+      "raw_text_hashes": [
+        "9db3b5a3202d2de6dc0b7f16fd6a78df5d2eadf6fd78069a07c1a3b034f5f65e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:29",
+      "sequence": 7084,
+      "chapter_label": "JDG 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "Israel set ambushes all around Gibeah.",
+      "ko": "이스라엘이 기브아 사면에 군사를 매복하니라",
+      "source_text_hash": "df48c1806a1b278012743b4ad535b4b199216f4f5cf18955e56b892e9be62971",
+      "translation_text_hash": "d1fca7571844b731c71bfab14d9a6e88daabe33bac05b7cf972381b2d504212a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 기브아 사면에 군사를 매복하니라"
+      ],
+      "raw_text_hashes": [
+        "d1fca7571844b731c71bfab14d9a6e88daabe33bac05b7cf972381b2d504212a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:30",
+      "sequence": 7085,
+      "chapter_label": "JDG 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "The children of Israel went up against the children of Benjamin on the third day, and set themselves in array against Gibeah, as at other times.",
+      "ko": "이스라엘 자손이 제 삼일에 베냐민 자손에게로 치러 올라가서 전과 같이 기브아를 대하여 항오를 벌이매",
+      "source_text_hash": "c23bc4a15f1780b5363c011bebf596c600f50e3d098d29c88ac2fceaa976d21d",
+      "translation_text_hash": "bf9be542a78b9bc77469b9d8f63bc5936ccf6cf8bf01145c01cc2bcfeb208167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 제 삼일에 베냐민 자손에게로 치러 올라가서 전과 같이 기브아를 대하여 항오를 벌이매"
+      ],
+      "raw_text_hashes": [
+        "bf9be542a78b9bc77469b9d8f63bc5936ccf6cf8bf01145c01cc2bcfeb208167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:31",
+      "sequence": 7086,
+      "chapter_label": "JDG 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "The children of Benjamin went out against the people, and were drawn away from the city; and they began to strike and kill of the people as at other times, in the highways, of which one goes up to Bethel and the other to Gibeah, in the field, about thirty men of Israel.",
+      "ko": "베냐민 자손이 나와서 백성을 맞더니 꾀임에 빠져 성읍을 떠났더라 그들이 큰길 곧 한편은 벧엘로 올라가는 길이요 한편은 기브아의 들로 가는 길에서 백성을 쳐서 전과 같이 이스라엘 사람 삼십명 가량을 죽이기 시작하며",
+      "source_text_hash": "2c685ca94a023875b36c478d2b17033f1396e8dc51a7172833a5489d1fc1766f",
+      "translation_text_hash": "20c794d3af107a2599f054553d25ec2269be8bf2d21d46a53f3557e6812a2e88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손이 나와서 백성을 맞더니 꾀임에 빠져 성읍을 떠났더라 그들이 큰길 곧 한편은 벧엘로 올라가는 길이요 한편은 기브아의 들로 가는 길에서 백성을 쳐서 전과 같이 이스라엘 사람 삼십명 가량을 죽이기 시작하며"
+      ],
+      "raw_text_hashes": [
+        "20c794d3af107a2599f054553d25ec2269be8bf2d21d46a53f3557e6812a2e88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:32",
+      "sequence": 7087,
+      "chapter_label": "JDG 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "The children of Benjamin said, “They are struck down before us, as at the first.” But the children of Israel said, “Let’s flee, and draw them away from the city to the highways.”",
+      "ko": "스스로 이르기를 이들이 처음과 같이 우리 앞에서 패한다 하나 이스라엘 자손은 이르기를 우리가 도망하여 그들을 성읍에서 큰길로 꾀어내자 하고",
+      "source_text_hash": "abf028ce9c756cba7d1941af86fcc19cae2c1903c709a6338fbb81f4f8d8c60f",
+      "translation_text_hash": "d4d96960fce605895fbabab103e478eff47932e3e34046b512d68a9c870b77a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 이르기를 이들이 처음과 같이 우리 앞에서 패한다 하나 이스라엘 자손은 이르기를 우리가 도망하여 그들을 성읍에서 큰길로 꾀어내자 하고"
+      ],
+      "raw_text_hashes": [
+        "d4d96960fce605895fbabab103e478eff47932e3e34046b512d68a9c870b77a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:33",
+      "sequence": 7088,
+      "chapter_label": "JDG 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "All the men of Israel rose up out of their place and set themselves in array at Baal Tamar. Then the ambushers of Israel broke out of their place, even out of Maareh Geba.",
+      "ko": "이스라엘 사람이 모두 그 처소에서 일어나서 바알다말에 항오를 벌였고 그 복병은 그 처소 곧 기브아 초장에서 쏟아져 나왔더라",
+      "source_text_hash": "d06d2574ad0b0824c68497cc2a7684a3755c1e3a9b9fca6269d98c597aa1d35b",
+      "translation_text_hash": "4829e4257bf495dd05eab9ebe9b53934d890fd51118ec576e5aa2b751e481c53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람이 모두 그 처소에서 일어나서 바알다말에 항오를 벌였고 그 복병은 그 처소 곧 기브아 초장에서 쏟아져 나왔더라"
+      ],
+      "raw_text_hashes": [
+        "4829e4257bf495dd05eab9ebe9b53934d890fd51118ec576e5aa2b751e481c53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:34",
+      "sequence": 7089,
+      "chapter_label": "JDG 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "Ten thousand chosen men out of all Israel came over against Gibeah, and the battle was severe; but they didn’t know that disaster was close to them.",
+      "ko": "온 이스라엘 사람 중에서 택한 사람 일만이 기브아에 이르러 치매 싸움이 심히 맹렬하나 베냐민 사람은 화가 자기에게 미친줄을 알지 못하였더라",
+      "source_text_hash": "ca08197cc6f222ae3920c8b20ffd394c4cc8ba9b4ec66bb679911bd2fcdb3f18",
+      "translation_text_hash": "a95aec3bff40dc2febe05d49b6e7620963cce392d372a263c1d7de971e01928d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘 사람 중에서 택한 사람 일만이 기브아에 이르러 치매 싸움이 심히 맹렬하나 베냐민 사람은 화가 자기에게 미친줄을 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "a95aec3bff40dc2febe05d49b6e7620963cce392d372a263c1d7de971e01928d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:35",
+      "sequence": 7090,
+      "chapter_label": "JDG 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD struck Benjamin before Israel; and the children of Israel destroyed of Benjamin that day twenty-five thousand one hundred men. All these drew the sword.",
+      "ko": "여호와께서 이스라엘 앞에서 베냐민을 쳐서 파하게 하시매 당일에 이스라엘 자손이 베냐민 사람 이만 오천 일백을 죽였으니 다 칼을 빼는 자이었더라",
+      "source_text_hash": "f03dc8bd5b70340dd243a2dca50d07b99179d1c01b9717fbed1a5b32b9f35648",
+      "translation_text_hash": "1dee94e11173057d88a5c0bb3061f20583aa9d29cdee5c82481c4b966375ccac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘 앞에서 베냐민을 쳐서 파하게 하시매 당일에 이스라엘 자손이 베냐민 사람 이만 오천 일백을 죽였으니 다 칼을 빼는 자이었더라"
+      ],
+      "raw_text_hashes": [
+        "1dee94e11173057d88a5c0bb3061f20583aa9d29cdee5c82481c4b966375ccac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:36",
+      "sequence": 7091,
+      "chapter_label": "JDG 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "So the children of Benjamin saw that they were struck, for the men of Israel yielded to Benjamin because they trusted the ambushers whom they had set against Gibeah.",
+      "ko": "이에 베냐민 자손이 자기가 패한 것을 깨달았으니 이는 이스라엘 사람이 기브아에 매복한 군사를 믿고 잠간 베냐민 사람 앞을 피하매",
+      "source_text_hash": "3d5337bbaec9fb7424d06947322fce081bdd5af8471847eb50a81a49c24a8138",
+      "translation_text_hash": "b764fb61b508459bf62c6c91401a36c78171edff41e9c78f3a08d438f90faa46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베냐민 자손이 자기가 패한 것을 깨달았으니 이는 이스라엘 사람이 기브아에 매복한 군사를 믿고 잠간 베냐민 사람 앞을 피하매"
+      ],
+      "raw_text_hashes": [
+        "b764fb61b508459bf62c6c91401a36c78171edff41e9c78f3a08d438f90faa46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:37",
+      "sequence": 7092,
+      "chapter_label": "JDG 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "The ambushers hurried, and rushed on Gibeah; then the ambushers spread out, and struck all the city with the edge of the sword.",
+      "ko": "복병이 급히 나와 기브아에 돌입하고 나아가며 칼날로 온 성읍을 쳤음이더라",
+      "source_text_hash": "2738e5b1f6586dc435d612696c15bdea0acf6e1f28d8c5b8eee4dab3330943b0",
+      "translation_text_hash": "387a0067ddcc8c5d1a62ccfb328b83f38c2b99421baa2ff601aa2eaa85480f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복병이 급히 나와 기브아에 돌입하고 나아가며 칼날로 온 성읍을 쳤음이더라"
+      ],
+      "raw_text_hashes": [
+        "387a0067ddcc8c5d1a62ccfb328b83f38c2b99421baa2ff601aa2eaa85480f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:38",
+      "sequence": 7093,
+      "chapter_label": "JDG 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "Now the appointed sign between the men of Israel and the ambushers was that they should make a great cloud of smoke rise up out of the city.",
+      "ko": "처음에 이스라엘 사람과 복병 사이에 상약하기를 성읍에서 큰 연기가 치미는 것으로 군호를 삼자 하고",
+      "source_text_hash": "9ef8f6eed15fd6a08f27807ba7b870f18d9e97d3544725adf7c150c725233d99",
+      "translation_text_hash": "9db5b8d792b5123ccfef954746ad683a1e1aad59dd4d95e21f836465ec2cf7b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음에 이스라엘 사람과 복병 사이에 상약하기를 성읍에서 큰 연기가 치미는 것으로 군호를 삼자 하고"
+      ],
+      "raw_text_hashes": [
+        "9db5b8d792b5123ccfef954746ad683a1e1aad59dd4d95e21f836465ec2cf7b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:39",
+      "sequence": 7094,
+      "chapter_label": "JDG 20",
+      "verse_label": "39",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 39
+        }
+      ],
+      "en": "The men of Israel turned in the battle, and Benjamin began to strike and kill of the men of Israel about thirty persons; for they said, “Surely they are struck down before us, as in the first battle.”",
+      "ko": "이스라엘 사람은 싸우다가 물러가고 베냐민 사람은 이스라엘 사람 삼십명 가량을 쳐 죽이기를 시작하며 이르기를 이들이 정녕 처음 싸움같이 우리에게 패한다 하다가",
+      "source_text_hash": "e70566d69c26459515a6a360babd72524d7075d3c4b840011a64ad1e7e488a9d",
+      "translation_text_hash": "be47625afff4d500c58a7eb574a7af079f2eb6504f2284c4a3cbabdc49062bde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람은 싸우다가 물러가고 베냐민 사람은 이스라엘 사람 삼십명 가량을 쳐 죽이기를 시작하며 이르기를 이들이 정녕 처음 싸움같이 우리에게 패한다 하다가"
+      ],
+      "raw_text_hashes": [
+        "be47625afff4d500c58a7eb574a7af079f2eb6504f2284c4a3cbabdc49062bde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:40",
+      "sequence": 7095,
+      "chapter_label": "JDG 20",
+      "verse_label": "40",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 40
+        }
+      ],
+      "en": "But when the cloud began to arise up out of the city in a pillar of smoke, the Benjamites looked behind them; and behold, the whole city went up in smoke to the sky.",
+      "ko": "연기 구름이 기둥 같이 성읍 가운데서 일어날 때에 베냐민 사람이 돌아보매 온 성읍에 연기가 하늘에 닿았고",
+      "source_text_hash": "16843f1b1c2725684474c39e4b19376e0e4c257db84f8f3231cad0a6210fe0ae",
+      "translation_text_hash": "9bc089e029a9126690ebcf1f84d060ab8e8cf99252203ca985efda30d453eeee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연기 구름이 기둥 같이 성읍 가운데서 일어날 때에 베냐민 사람이 돌아보매 온 성읍에 연기가 하늘에 닿았고"
+      ],
+      "raw_text_hashes": [
+        "9bc089e029a9126690ebcf1f84d060ab8e8cf99252203ca985efda30d453eeee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:41",
+      "sequence": 7096,
+      "chapter_label": "JDG 20",
+      "verse_label": "41",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 41
+        }
+      ],
+      "en": "The men of Israel turned, and the men of Benjamin were dismayed; for they saw that disaster had come on them.",
+      "ko": "이스라엘 사람은 돌이키는지라 베냐민 사람이 화가 자기에게 미친 것을 보고 심히 놀라",
+      "source_text_hash": "d86119d8d3d44dc42db3b0a866257c0f9c23d83e5338fae3f60cd065d0a3464a",
+      "translation_text_hash": "3e8b0e01789088ff64fb6ad6c601f670516ae49b372b5ffecc9397ca20463832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람은 돌이키는지라 베냐민 사람이 화가 자기에게 미친 것을 보고 심히 놀라"
+      ],
+      "raw_text_hashes": [
+        "3e8b0e01789088ff64fb6ad6c601f670516ae49b372b5ffecc9397ca20463832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:42",
+      "sequence": 7097,
+      "chapter_label": "JDG 20",
+      "verse_label": "42",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 42
+        }
+      ],
+      "en": "Therefore they turned their backs before the men of Israel to the way of the wilderness, but the battle followed hard after them; and those who came out of the cities destroyed them in the middle of it.",
+      "ko": "이스라엘 사람 앞에서 몸을 돌이켜 광야 길로 향하였으나 군사가 급히 추격하며 각 성읍에서 나온 자를 그 가운데서 진멸하니라",
+      "source_text_hash": "52a96a5f2c9adeeb3ca1882d2a4b6304663f2ec8e1b64c0eee6298ffc478abfe",
+      "translation_text_hash": "f5f9f689705da54acb36a93c1d24b2e7376d760c1dcb979b57e655f610fb4bfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람 앞에서 몸을 돌이켜 광야 길로 향하였으나 군사가 급히 추격하며 각 성읍에서 나온 자를 그 가운데서 진멸하니라"
+      ],
+      "raw_text_hashes": [
+        "f5f9f689705da54acb36a93c1d24b2e7376d760c1dcb979b57e655f610fb4bfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:43",
+      "sequence": 7098,
+      "chapter_label": "JDG 20",
+      "verse_label": "43",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 43
+        }
+      ],
+      "en": "They surrounded the Benjamites, chased them, and trod them down at their resting place, as far as near Gibeah toward the sunrise.",
+      "ko": "그들이 베냐민 사람을 에워쌌더니 기브아 앞 동편까지 쫓으며 그 쉬는 곳에서 짓밟으매",
+      "source_text_hash": "8e0bd8535786328700867c4d171c926cdbf880adac63859bbba13676bebe16ce",
+      "translation_text_hash": "154c5a0bfe9e6b9a09f82c3b3121c314b4034897e46fd7f7e58e9677ca71b6ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 베냐민 사람을 에워쌌더니 기브아 앞 동편까지 쫓으며 그 쉬는 곳에서 짓밟으매"
+      ],
+      "raw_text_hashes": [
+        "154c5a0bfe9e6b9a09f82c3b3121c314b4034897e46fd7f7e58e9677ca71b6ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:44",
+      "sequence": 7099,
+      "chapter_label": "JDG 20",
+      "verse_label": "44",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 44
+        }
+      ],
+      "en": "Eighteen thousand men of Benjamin fell; all these were men of valor.",
+      "ko": "베냐민 중에서 엎드러진 자가 일만 팔천이니 다 용사더라",
+      "source_text_hash": "ca1e132a3ee939d890a94f129593abdb7ab25c8d885c082452292c9fc8b7a58d",
+      "translation_text_hash": "e8176f386fd8bcc03aca7822e1c8547add28f2b27e81e9f6d29b3de245c1a20f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 중에서 엎드러진 자가 일만 팔천이니 다 용사더라"
+      ],
+      "raw_text_hashes": [
+        "e8176f386fd8bcc03aca7822e1c8547add28f2b27e81e9f6d29b3de245c1a20f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:45",
+      "sequence": 7100,
+      "chapter_label": "JDG 20",
+      "verse_label": "45",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 45
+        }
+      ],
+      "en": "They turned and fled toward the wilderness to the rock of Rimmon. They gleaned five thousand men of them in the highways, and followed hard after them to Gidom, and struck two thousand men of them.",
+      "ko": "그들이 몸을 돌이켜 광야로 도망하여 림몬 바위에 이르는 큰길에서 이스라엘이 또 오천명을 이삭 줍듯 하고 또 급히 따라 기돔에 이르러 또 이천명을 죽였으니",
+      "source_text_hash": "42a1b4ea8105f04c215c4e5fed1c9eac05394293a900c074121b522951a9096b",
+      "translation_text_hash": "43c26b42c5b3537294cc3143ad5d75177dac3caac9d9b0a685f59c3362be7c6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 몸을 돌이켜 광야로 도망하여 림몬 바위에 이르는 큰길에서 이스라엘이 또 오천명을 이삭 줍듯 하고 또 급히 따라 기돔에 이르러 또 이천명을 죽였으니"
+      ],
+      "raw_text_hashes": [
+        "43c26b42c5b3537294cc3143ad5d75177dac3caac9d9b0a685f59c3362be7c6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:46",
+      "sequence": 7101,
+      "chapter_label": "JDG 20",
+      "verse_label": "46",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 46
+        }
+      ],
+      "en": "So that all who fell that day of Benjamin were twenty-five thousand men who drew the sword. All these were men of valor.",
+      "ko": "이 날에 베냐민의 칼을 빼는 자의 엎드러진 것이 모두 이만 오천이니 다 용사더라",
+      "source_text_hash": "049a132ab1e3cd8c736648c1a14f8b5d6b219a4e067ec17366e76f99e58fb380",
+      "translation_text_hash": "94d456c92a0dc7b9377a7ac4570608f68daca9420b01b3fdde39e9575b002b1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 베냐민의 칼을 빼는 자의 엎드러진 것이 모두 이만 오천이니 다 용사더라"
+      ],
+      "raw_text_hashes": [
+        "94d456c92a0dc7b9377a7ac4570608f68daca9420b01b3fdde39e9575b002b1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:47",
+      "sequence": 7102,
+      "chapter_label": "JDG 20",
+      "verse_label": "47",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 47
+        }
+      ],
+      "en": "But six hundred men turned and fled toward the wilderness to the rock of Rimmon, and stayed in the rock of Rimmon four months.",
+      "ko": "베냐민 육백명이 돌이켜 광야로 도망하여 림몬 바위에 이르러 거기서 넉달을 지내었더라",
+      "source_text_hash": "0b46e0535b91fa297f407153df8aa136993b996c6df9c78410f482d7e18532e5",
+      "translation_text_hash": "9126a82169e7322eddd1fe6f83b1ab6532bdbc8f6d40f6d647bdad5e238f8d65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 육백명이 돌이켜 광야로 도망하여 림몬 바위에 이르러 거기서 넉달을 지내었더라"
+      ],
+      "raw_text_hashes": [
+        "9126a82169e7322eddd1fe6f83b1ab6532bdbc8f6d40f6d647bdad5e238f8d65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:20:48",
+      "sequence": 7103,
+      "chapter_label": "JDG 20",
+      "verse_label": "48",
+      "locator": {
+        "book": "JDG",
+        "chapter": 20,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 20,
+          "verse": 48
+        }
+      ],
+      "en": "The men of Israel turned again on the children of Benjamin, and struck them with the edge of the sword—including the entire city, the livestock, and all that they found. Moreover they set all the cities which they found on fire.",
+      "ko": "이스라엘 사람이 베냐민 자손에게로 돌아와서 온 성읍과 가축과 만나는 자를 다 칼날로 치고 닥치는 성읍마다 다 불살랐더라",
+      "source_text_hash": "90cb0c78ba125398c17ec9e71a3c3a167e88458a344295df2959961466bdc8ab",
+      "translation_text_hash": "9cb3a67f950bf6af4747918f22be03930ecc1c05e35eef1a5c0470a85f705b18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람이 베냐민 자손에게로 돌아와서 온 성읍과 가축과 만나는 자를 다 칼날로 치고 닥치는 성읍마다 다 불살랐더라"
+      ],
+      "raw_text_hashes": [
+        "9cb3a67f950bf6af4747918f22be03930ecc1c05e35eef1a5c0470a85f705b18"
+      ]
+    }
+  ]
+}

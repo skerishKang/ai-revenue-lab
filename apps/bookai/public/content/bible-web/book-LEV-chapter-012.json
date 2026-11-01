@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:012",
+  "unit_ordinal": 102,
+  "unit_label": "LEV 12",
+  "book_code": "LEV",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:12:1",
+      "sequence": 3046,
+      "chapter_label": "LEV 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:2",
+      "sequence": 3047,
+      "chapter_label": "LEV 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘If a woman conceives, and bears a male child, then she shall be unclean seven days; as in the days of her monthly period she shall be unclean.",
+      "ko": "이스라엘 자손에게 고하여 이르라 여인이 잉태하여 남자를 낳으면 그는 칠일 동안 부정하리니 곧 경도할 때와 같이 부정할 것이며",
+      "source_text_hash": "380156b8a66154da8bf0a73ff5d9ad73e99c676e87e3a77fc4fca4c36a99a32e",
+      "translation_text_hash": "b4341d5e26c2b3bb927a99d513ad507b5288b0ff22a89256e7dbc04656a1a480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 여인이 잉태하여 남자를 낳으면 그는 칠일 동안 부정하리니 곧 경도할 때와 같이 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "b4341d5e26c2b3bb927a99d513ad507b5288b0ff22a89256e7dbc04656a1a480"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:3",
+      "sequence": 3048,
+      "chapter_label": "LEV 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "In the eighth day the flesh of his foreskin shall be circumcised.",
+      "ko": "제 팔일에는 그 아이의 양피를 벨 것이요",
+      "source_text_hash": "4711f561e5a83df7c28e741282c28abe1c89c6975907e0932696946056675fba",
+      "translation_text_hash": "17984668850ceb95dcec251a45997ff86d9f50b0011a758d12da9dfe043e4832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에는 그 아이의 양피를 벨 것이요"
+      ],
+      "raw_text_hashes": [
+        "17984668850ceb95dcec251a45997ff86d9f50b0011a758d12da9dfe043e4832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:4",
+      "sequence": 3049,
+      "chapter_label": "LEV 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "She shall continue in the blood of purification thirty-three days. She shall not touch any holy thing, nor come into the sanctuary, until the days of her purifying are completed.",
+      "ko": "그 여인은 오히려 삼십 삼일을 지나야 산혈이 깨끗하리니 정결케 되는 기한이 차기 전에는 성물을 만지지도 말며 성소에 들어가지도 말 것이며",
+      "source_text_hash": "12e4df3cb2974ec749805b20f625e185e89c722624bfa3b4350fff11903d9b98",
+      "translation_text_hash": "2ce363f83f5c863691e5aa03214af4813fd5325b827447f6147d49c192292daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인은 오히려 삼십 삼일을 지나야 산혈이 깨끗하리니 정결케 되는 기한이 차기 전에는 성물을 만지지도 말며 성소에 들어가지도 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "2ce363f83f5c863691e5aa03214af4813fd5325b827447f6147d49c192292daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:5",
+      "sequence": 3050,
+      "chapter_label": "LEV 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "But if she bears a female child, then she shall be unclean two weeks, as in her period; and she shall continue in the blood of purification sixty-six days.",
+      "ko": "여자를 낳으면 그는 이 칠일 동안 부정하리니 경도할 때와 같을 것이며 산혈이 깨끗하게 됨은 육십 륙일을 지나야 하리라",
+      "source_text_hash": "9a13ada8b4ca99f8e4db3db5fee8f5766b2012ebabcc804cc082eaf0ccc74beb",
+      "translation_text_hash": "bcc110ca1e079c5a1d2d1acf2c38f1378235d937770469af307bb2a649b8bb50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자를 낳으면 그는 이 칠일 동안 부정하리니 경도할 때와 같을 것이며 산혈이 깨끗하게 됨은 육십 륙일을 지나야 하리라"
+      ],
+      "raw_text_hashes": [
+        "bcc110ca1e079c5a1d2d1acf2c38f1378235d937770469af307bb2a649b8bb50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:6",
+      "sequence": 3051,
+      "chapter_label": "LEV 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "“‘When the days of her purification are completed for a son or for a daughter, she shall bring to the priest at the door of the Tent of Meeting, a year old lamb for a burnt offering, and a young pigeon or a turtledove, for a sin offering.",
+      "ko": "자녀간 정결케 되는 기한이 차거든 그 여인은 번제를 위하여 일년 된 어린 양을 취하고 속죄제를 위하여 집비둘기 새끼나 산비둘기를 취하여 회막문 제사장에게로 가져갈 것이요",
+      "source_text_hash": "9ee5e61ff24952d1bcce7eee41b37d240f44f157a98d1a477c498d875785006a",
+      "translation_text_hash": "d3aff4ab684306120bd8dc829bb9de2f111fe44eab85aad678260122eaeadc87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀간 정결케 되는 기한이 차거든 그 여인은 번제를 위하여 일년 된 어린 양을 취하고 속죄제를 위하여 집비둘기 새끼나 산비둘기를 취하여 회막문 제사장에게로 가져갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "d3aff4ab684306120bd8dc829bb9de2f111fe44eab85aad678260122eaeadc87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:7",
+      "sequence": 3052,
+      "chapter_label": "LEV 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "He shall offer it before the LORD, and make atonement for her; then she shall be cleansed from the fountain of her blood. “‘This is the law for her who bears, whether a male or a female.",
+      "ko": "제사장은 그것을 여호와 앞에 드려서 여인을 위하여 속죄할찌니 그리하면 산혈이 깨끗하리라 이는 자녀간 생산한 여인에게 대한 규례니라",
+      "source_text_hash": "c314a2ab48d03786558567ea6f96d26ef7c679a0f8cbf367f08dd73970cb6937",
+      "translation_text_hash": "abc7ad71cd6f4d47c74ffc0c1cf3974fb137b8fe00dcdec6d7af59f4a48d64ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것을 여호와 앞에 드려서 여인을 위하여 속죄할찌니 그리하면 산혈이 깨끗하리라 이는 자녀간 생산한 여인에게 대한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "abc7ad71cd6f4d47c74ffc0c1cf3974fb137b8fe00dcdec6d7af59f4a48d64ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:12:8",
+      "sequence": 3053,
+      "chapter_label": "LEV 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "If she cannot afford a lamb, then she shall take two turtledoves or two young pigeons: the one for a burnt offering, and the other for a sin offering. The priest shall make atonement for her, and she shall be clean.’”",
+      "ko": "그 여인의 힘이 어린 양에 미치지 못하거든 산비둘기 둘이나 집비둘기 새끼 둘을 가져다가 하나는 번제물로, 하나는 속죄 제물로 삼을 것이요 제사장은 그를 위하여 속할찌니 그가 정결하리라",
+      "source_text_hash": "81e68ff9cb2c42d6b75e7cc6759eef528a8048d9ef9c3e73c508a9c2d7a5cb2e",
+      "translation_text_hash": "44476c93a41de7c5e2ff8720efc0bbc43019f63b46de377ac0833e3bda5c9ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인의 힘이 어린 양에 미치지 못하거든 산비둘기 둘이나 집비둘기 새끼 둘을 가져다가 하나는 번제물로, 하나는 속죄 제물로 삼을 것이요 제사장은 그를 위하여 속할찌니 그가 정결하리라"
+      ],
+      "raw_text_hashes": [
+        "44476c93a41de7c5e2ff8720efc0bbc43019f63b46de377ac0833e3bda5c9ab9"
+      ]
+    }
+  ]
+}

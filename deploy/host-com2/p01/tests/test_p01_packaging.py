@@ -264,12 +264,24 @@ if __name__ == "__main__":
     unittest.main()
 
 
+def _stage_shared_stubs(checkout: Path):
+    for relative in (
+        "packages/padiem-ai-core/padiem_ai_core",
+        "packages/padiem-control-plane/padiem_control_plane",
+        "apps/korean-ai-code-agent/src/kagent",
+    ):
+        package = checkout / relative
+        package.mkdir(parents=True)
+        (package / "__init__.py").write_text("# stub\n", encoding="utf-8")
+
+
 class P01CodeStage(unittest.TestCase):
     def test_stage_reinstall_and_missing_entry(self):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             source = root / "checkout" / "apps" / "padiem-ai-engine"
+            _stage_shared_stubs(root / "checkout")
             target = root / "p01"
             target.mkdir()
             for name in ("app", "clients", "ingress", "migrations"):
@@ -299,6 +311,7 @@ class P01CodeStage(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             source = root / "checkout" / "apps" / "padiem-ai-engine"
+            _stage_shared_stubs(root / "checkout")
             target = root / "p01"
             target.mkdir()
             for name in ("app", "clients", "ingress", "migrations"):
@@ -322,6 +335,7 @@ class P01CodeStage(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             source = root / "checkout" / "apps" / "padiem-ai-engine"
+            _stage_shared_stubs(root / "checkout")
             target = root / "p01"
             for name in ("app", "clients", "ingress", "migrations"):
                 (source / name).mkdir(parents=True)
@@ -339,3 +353,74 @@ class P01CodeStage(unittest.TestCase):
             snapshot = next((target / "rollback").glob("p01.*"))
             self.assertEqual((snapshot / "asgi.py").read_text(), "old")
             self.assertFalse((snapshot / "cycle").exists())
+
+
+    def test_shared_packages_are_copied_readable_and_detached(self):
+        import tempfile
+        import shutil
+        import stat
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checkout = root / "checkout"
+            _stage_shared_stubs(checkout)
+            source = checkout / "apps/padiem-ai-engine"
+            for name in ("app", "clients", "ingress", "migrations"):
+                (source / name).mkdir(parents=True)
+            for name in ("asgi.py", "worker.py", "worker_identity.py"):
+                (source / name).write_text("# entry\n", encoding="utf-8")
+            for path in checkout.rglob("__init__.py"):
+                path.chmod(0o600)
+            target = root / "p01"
+            target.mkdir()
+            result = subprocess.run(
+                ["bash", str(HERE / "stage_code.sh"), str(checkout), str(target)],
+                capture_output=True, text=True, preexec_fn=lambda: os.umask(0o077),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            release = (target / "app").resolve()
+            for name in ("padiem_ai_core", "padiem_control_plane", "kagent"):
+                package = release / name / "__init__.py"
+                self.assertTrue(package.is_file())
+                self.assertTrue(package.stat().st_mode & stat.S_IROTH)
+                self.assertFalse(package.stat().st_mode & (stat.S_IWGRP | stat.S_IWOTH))
+            shutil.rmtree(checkout)
+            for name in ("padiem_ai_core", "padiem_control_plane", "kagent"):
+                self.assertTrue((release / name / "__init__.py").is_file())
+
+
+
+    def test_real_release_import_as_service_user(self):
+        import pwd
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            root.chmod(0o755)
+            target = root / "p01"
+            target.mkdir()
+            result = subprocess.run(
+                ["bash", str(HERE / "stage_code.sh"), str(REPO), str(target)],
+                capture_output=True, text=True, preexec_fn=lambda: os.umask(0o077),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            release = (target / "app").resolve()
+            env = {"PADIEM_LOCAL_DEV": "1", "PATH": os.environ.get("PATH", "")}
+            drop = None
+            if os.geteuid() == 0:
+                try:
+                    user = pwd.getpwnam("padiem-p01")
+                except KeyError:
+                    user = pwd.getpwnam("nobody")
+                def drop():
+                    os.setgroups([])
+                    os.setgid(user.pw_gid)
+                    os.setuid(user.pw_uid)
+            probe = subprocess.run(
+                [sys.executable, "-I", "-c",
+                 "import os,sys; sys.path.insert(0, os.getcwd()); "
+                 "import asgi,padiem_ai_core,padiem_control_plane,kagent; "
+                 "root=os.path.realpath(os.getcwd()); "
+                 "assert all(os.path.realpath(m.__file__).startswith(root+os.sep) "
+                 "for m in (asgi,padiem_ai_core,padiem_control_plane,kagent))"],
+                cwd=release, env=env, preexec_fn=drop, capture_output=True, text=True,
+            )
+            self.assertEqual(probe.returncode, 0, probe.stderr)

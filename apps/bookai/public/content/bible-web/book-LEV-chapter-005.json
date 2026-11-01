@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:005",
+  "unit_ordinal": 95,
+  "unit_label": "LEV 5",
+  "book_code": "LEV",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:5:1",
+      "sequence": 2832,
+      "chapter_label": "LEV 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "“‘If anyone sins, in that he hears a public adjuration to testify, he being a witness, whether he has seen or known, if he doesn’t report it, then he shall bear his iniquity.",
+      "ko": "누구든지 증인이 되어 맹세시키는 소리를 듣고도 그 본 일이나 아는 일을 진술치 아니하면 죄가 있나니 그 허물이 그에게로 돌아갈 것이요",
+      "source_text_hash": "da51efeb753f047be1c65e26e37b65c05eb08364e925b1cc641bd485fe744eee",
+      "translation_text_hash": "fa8057b9bdabf2a51d3250d9f93db34db618f2f3748260119054c270c2a0ac6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 증인이 되어 맹세시키는 소리를 듣고도 그 본 일이나 아는 일을 진술치 아니하면 죄가 있나니 그 허물이 그에게로 돌아갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "fa8057b9bdabf2a51d3250d9f93db34db618f2f3748260119054c270c2a0ac6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:2",
+      "sequence": 2833,
+      "chapter_label": "LEV 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "“‘Or if anyone touches any unclean thing, whether it is the carcass of an unclean animal, or the carcass of unclean livestock, or the carcass of unclean creeping things, and it is hidden from him, and he is unclean, then he shall be guilty.",
+      "ko": "누구든지 부정한 들짐승의 사체나 부정한 가축의 사체나 부정한 곤충의 사체들 무릇 부정한 것을 만졌으면 부지중에라 할지라도 그 몸이 더러워져서 허물이 있을 것이요",
+      "source_text_hash": "598180af49ca65cbee4e0b6cb67c0b789bdbb002224db1a6c118d50f83408200",
+      "translation_text_hash": "2aaea28e8c36910c048acbe2d67cab16ac3756ac285bf6d44be0037a3c5077fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 부정한 들짐승의 사체나 부정한 가축의 사체나 부정한 곤충의 사체들 무릇 부정한 것을 만졌으면 부지중에라 할지라도 그 몸이 더러워져서 허물이 있을 것이요"
+      ],
+      "raw_text_hashes": [
+        "2aaea28e8c36910c048acbe2d67cab16ac3756ac285bf6d44be0037a3c5077fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:3",
+      "sequence": 2834,
+      "chapter_label": "LEV 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "“‘Or if he touches the uncleanness of man, whatever his uncleanness is with which he is unclean, and it is hidden from him; when he knows of it, then he shall be guilty.",
+      "ko": "혹시 부지중에 사람의 부정에 다닥쳤는데 그 사람의 부정이 어떠한 부정이든지 그것을 깨달을 때에는 허물이 있을 것이요",
+      "source_text_hash": "18de4c8a694ab535a1e56f88e0d39d04cc252922cbe9d80a68030d285a5ef56f",
+      "translation_text_hash": "e4ae6360143e2a9c0b39d92720a6e34671df81417deb7194fdf21f4f10132e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 부지중에 사람의 부정에 다닥쳤는데 그 사람의 부정이 어떠한 부정이든지 그것을 깨달을 때에는 허물이 있을 것이요"
+      ],
+      "raw_text_hashes": [
+        "e4ae6360143e2a9c0b39d92720a6e34671df81417deb7194fdf21f4f10132e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:4",
+      "sequence": 2835,
+      "chapter_label": "LEV 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "“‘Or if anyone swears rashly with his lips to do evil or to do good—whatever it is that a man might utter rashly with an oath, and it is hidden from him—when he knows of it, then he will be guilty of one of these.",
+      "ko": "혹 누구든지 무심중에 입으로 맹세를 발하여 악을 하리라 하든지 선을 하리라 하면 그 사람의 무심중에 맹세를 발하여 말한 것이 어떠한 일이든지 깨닫지 못하다가 그것을 깨달을 때에는 그 중 하나에 허물이 있을 것이니",
+      "source_text_hash": "e465a7f04eaf37536057d208155e0de05886d1ba20b63e0c87411fbad02dbb1b",
+      "translation_text_hash": "080efdbdfe2ea079db7c5a58744bb37b2378c52504e8ec949b349823adf3ecc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 누구든지 무심중에 입으로 맹세를 발하여 악을 하리라 하든지 선을 하리라 하면 그 사람의 무심중에 맹세를 발하여 말한 것이 어떠한 일이든지 깨닫지 못하다가 그것을 깨달을 때에는 그 중 하나에 허물이 있을 것이니"
+      ],
+      "raw_text_hashes": [
+        "080efdbdfe2ea079db7c5a58744bb37b2378c52504e8ec949b349823adf3ecc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:5",
+      "sequence": 2836,
+      "chapter_label": "LEV 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "It shall be, when he is guilty of one of these, he shall confess that in which he has sinned;",
+      "ko": "이 중 하나에 허물이 있을 때에는 아무 일에 범과하였노라 자복하고",
+      "source_text_hash": "409a6010b2764f8755d30a32a920d447f3cfe9e93a295e818943b54e91fbacaa",
+      "translation_text_hash": "7bd9c89b50ff988432bdb7640cad72397c6041c8472cc682c839e395bd8ebeb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 중 하나에 허물이 있을 때에는 아무 일에 범과하였노라 자복하고"
+      ],
+      "raw_text_hashes": [
+        "7bd9c89b50ff988432bdb7640cad72397c6041c8472cc682c839e395bd8ebeb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:6",
+      "sequence": 2837,
+      "chapter_label": "LEV 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "and he shall bring his trespass offering to the LORD for his sin which he has sinned: a female from the flock, a lamb or a goat, for a sin offering; and the priest shall make atonement for him concerning his sin.",
+      "ko": "그 범과를 인하여 여호와께 속건제를 드리되 양떼의 암컷 어린 양이나 염소를 끌어다가 속죄제를 드릴 것이요 제사장은 그의 허물을 위하여 속죄할지니라",
+      "source_text_hash": "e1af4e0695280faff9a4567909374ca61b1729a974a57b061be64cec98b43e31",
+      "translation_text_hash": "a114274bc305a0489676de6ca2a1ffcd3bb058cb8454ba4e3f8048a49638f897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 범과를 인하여 여호와께 속건제를 드리되 양떼의 암컷 어린 양이나 염소를 끌어다가 속죄제를 드릴 것이요 제사장은 그의 허물을 위하여 속죄할지니라"
+      ],
+      "raw_text_hashes": [
+        "a114274bc305a0489676de6ca2a1ffcd3bb058cb8454ba4e3f8048a49638f897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:7",
+      "sequence": 2838,
+      "chapter_label": "LEV 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "“‘If he can’t afford a lamb, then he shall bring his trespass offering for that in which he has sinned, two turtledoves, or two young pigeons, to the LORD; one for a sin offering, and the other for a burnt offering.",
+      "ko": "만일 힘이 어린 양에 미치지 못하거든 그 범과를 속하기 위하여 산비둘기 둘이나 집비둘기 새끼 둘을 여호와께로 가져 가되 하나는 속죄 제물을 삼고 하나는 번제물을 삼아",
+      "source_text_hash": "138863565b1d03e256c25a101a53a9960210edd20fb6536c238be34c98959b7a",
+      "translation_text_hash": "4f64d6c910fe01c1a5c27e3bc5a895220c27ed94ab8f1fc269e42e7a96a5e2cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 힘이 어린 양에 미치지 못하거든 그 범과를 속하기 위하여 산비둘기 둘이나 집비둘기 새끼 둘을 여호와께로 가져 가되 하나는 속죄 제물을 삼고 하나는 번제물을 삼아"
+      ],
+      "raw_text_hashes": [
+        "4f64d6c910fe01c1a5c27e3bc5a895220c27ed94ab8f1fc269e42e7a96a5e2cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:8",
+      "sequence": 2839,
+      "chapter_label": "LEV 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "He shall bring them to the priest, who shall first offer the one which is for the sin offering. He shall wring off its head from its neck, but shall not sever it completely.",
+      "ko": "제사장에게로 가져갈 것이요 제사장은 그 속죄 제물을 먼저 드리되 그 머리를 목에서 비틀어 끊고 몸은 아주 쪼개지 말며",
+      "source_text_hash": "0676cec14d521157a9c42c205a5c96f15c60a6a5781c0a19b57f4be69b1396c6",
+      "translation_text_hash": "ed18ba7f2d1ea0a655a0fdc031f55f8b08b38ae93e1707f7320a8691ef25d2b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장에게로 가져갈 것이요 제사장은 그 속죄 제물을 먼저 드리되 그 머리를 목에서 비틀어 끊고 몸은 아주 쪼개지 말며"
+      ],
+      "raw_text_hashes": [
+        "ed18ba7f2d1ea0a655a0fdc031f55f8b08b38ae93e1707f7320a8691ef25d2b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:9",
+      "sequence": 2840,
+      "chapter_label": "LEV 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "He shall sprinkle some of the blood of the sin offering on the side of the altar; and the rest of the blood shall be drained out at the base of the altar. It is a sin offering.",
+      "ko": "그 속죄 제물의 피를 단 곁에 뿌리고 그 남은 피는 단 밑에 흘릴찌니 이는 속죄제요",
+      "source_text_hash": "978df5339aa2793840dfbcb89a844fce0109382bc625cd3d2dd71f750dde70b4",
+      "translation_text_hash": "e15a12a3dc8d52cb7483534fae3833fa4829c18ab31173627c6150d3396d8f8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속죄 제물의 피를 단 곁에 뿌리고 그 남은 피는 단 밑에 흘릴찌니 이는 속죄제요"
+      ],
+      "raw_text_hashes": [
+        "e15a12a3dc8d52cb7483534fae3833fa4829c18ab31173627c6150d3396d8f8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:10",
+      "sequence": 2841,
+      "chapter_label": "LEV 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "He shall offer the second for a burnt offering, according to the ordinance; and the priest shall make atonement for him concerning his sin which he has sinned, and he shall be forgiven.",
+      "ko": "그 다음 것은 규례대로 번제를 드릴찌니 제사장이 그의 범과를 위하여 속한즉 그가 사함을 얻으리라",
+      "source_text_hash": "5ee4ed5c0ab219f1deb4c15c5a72ab4710c2a06d9404442844ecc0d2ac0f9ec7",
+      "translation_text_hash": "b3df796de23de7e28990cc90b920f038c9b931c967b848d71be704b6fec531d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음 것은 규례대로 번제를 드릴찌니 제사장이 그의 범과를 위하여 속한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "b3df796de23de7e28990cc90b920f038c9b931c967b848d71be704b6fec531d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:11",
+      "sequence": 2842,
+      "chapter_label": "LEV 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "“‘But if he can’t afford two turtledoves or two young pigeons, then he shall bring as his offering for that in which he has sinned, one tenth of an ephah of fine flour for a sin offering. He shall put no oil on it, and he shall not put any frankincense on it, for it is a sin offering.",
+      "ko": "만일 힘이 산비둘기 둘이나 집비둘기 둘에도 미치지 못하거든 그 범과를 인하여 고운 가루 에바 십분 일을 예물로 가져다가 속죄 제물로 드리되 이는 속죄제인즉 그 위에 기름을 붓지 말며 유향을 놓지 말고",
+      "source_text_hash": "5f190a5ec2cd0f6c2fe3aeeb43fbd0fa42082325ec1d79e69a6fa2816a77bb48",
+      "translation_text_hash": "7a9f1a537b5066351296cb99e55f697ab8eda5061641b3cb4aa7e3b45b657b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 힘이 산비둘기 둘이나 집비둘기 둘에도 미치지 못하거든 그 범과를 인하여 고운 가루 에바 십분 일을 예물로 가져다가 속죄 제물로 드리되 이는 속죄제인즉 그 위에 기름을 붓지 말며 유향을 놓지 말고"
+      ],
+      "raw_text_hashes": [
+        "7a9f1a537b5066351296cb99e55f697ab8eda5061641b3cb4aa7e3b45b657b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:12",
+      "sequence": 2843,
+      "chapter_label": "LEV 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "He shall bring it to the priest, and the priest shall take his handful of it as the memorial portion, and burn it on the altar, on the offerings of the LORD made by fire. It is a sin offering.",
+      "ko": "그것을 제사장에게로 가져갈 것이요 제사장은 그것을 기념물로 한 움큼을 취하여 단 위 여호와의 화제물 위에 불사를찌니 이는 속죄제라",
+      "source_text_hash": "56014a9ee5d48187160ab814939521538bd43709a7ac89bf742cb9f4ed937e1f",
+      "translation_text_hash": "689a5904ca403f13efd5c8037e70192032f1376ef5e109c0ec27bc95d162cbef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 제사장에게로 가져갈 것이요 제사장은 그것을 기념물로 한 움큼을 취하여 단 위 여호와의 화제물 위에 불사를찌니 이는 속죄제라"
+      ],
+      "raw_text_hashes": [
+        "689a5904ca403f13efd5c8037e70192032f1376ef5e109c0ec27bc95d162cbef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:13",
+      "sequence": 2844,
+      "chapter_label": "LEV 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "The priest shall make atonement for him concerning his sin that he has sinned in any of these things, and he will be forgiven; and the rest shall be the priest’s, as the meal offering.’”",
+      "ko": "제사장이 그가 이 중에 하나를 범하여 얻은 허물을 위하여 속한즉 그가 사함을 얻으리라 그 나머지는 소제물 같이 제사장에게 돌릴찌니라",
+      "source_text_hash": "80f84f3f91006f7cf2831624044962ecd5a489e2a5a41b3cd2a9c57f3023b19a",
+      "translation_text_hash": "ffb3ab2fdddebd21427af6b15bb3e32d1c0bb81ef3c21137d1459ddfb73bc629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 그가 이 중에 하나를 범하여 얻은 허물을 위하여 속한즉 그가 사함을 얻으리라 그 나머지는 소제물 같이 제사장에게 돌릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "ffb3ab2fdddebd21427af6b15bb3e32d1c0bb81ef3c21137d1459ddfb73bc629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:14",
+      "sequence": 2845,
+      "chapter_label": "LEV 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:15",
+      "sequence": 2846,
+      "chapter_label": "LEV 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "“If anyone commits a trespass, and sins unwittingly regarding the LORD’s holy things, then he shall bring his trespass offering to the LORD: a ram without defect from the flock, according to your estimation in silver by shekels, according to the shekel of the sanctuary, for a trespass offering.",
+      "ko": "누구든지 여호와의 성물에 대하여 그릇 범과하였거든 여호와께 속건제를 드리되 너의 지정한 가치를 따라 성소의 세겔로 몇 세겔 은에 상당한 흠 없는 수양을 떼 중에서 끌어다가 속건제로 드려서",
+      "source_text_hash": "c862480efcb79b54c6faa91dc392fbc8dd59c806318549cb46304c6e67086062",
+      "translation_text_hash": "cf55d0ec3ea676631f95e4ac7b99bd69ae8c36ed619b83181e2532c94ffc5d09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 여호와의 성물에 대하여 그릇 범과하였거든 여호와께 속건제를 드리되 너의 지정한 가치를 따라 성소의 세겔로 몇 세겔 은에 상당한 흠 없는 수양을 떼 중에서 끌어다가 속건제로 드려서"
+      ],
+      "raw_text_hashes": [
+        "cf55d0ec3ea676631f95e4ac7b99bd69ae8c36ed619b83181e2532c94ffc5d09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:16",
+      "sequence": 2847,
+      "chapter_label": "LEV 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "He shall make restitution for that which he has done wrong regarding the holy thing, and shall add a fifth part to it, and give it to the priest; and the priest shall make atonement for him with the ram of the trespass offering, and he will be forgiven.",
+      "ko": "성물에 대한 범과를 갚되 그것에 오분 일을 더하여 제사장에게 줄 것이요 제사장은 그 속건제의 수양으로 그를 위하여 속한즉 그가 사함을 얻으리라",
+      "source_text_hash": "a77136f33dc137df76188dae968b313b61b9428b472aaa6b4f089ffd073b3da9",
+      "translation_text_hash": "721498fc42d5c26f0af8fa5bcc0455a1e8f64a79af040c0116b9050db1e9a1e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성물에 대한 범과를 갚되 그것에 오분 일을 더하여 제사장에게 줄 것이요 제사장은 그 속건제의 수양으로 그를 위하여 속한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "721498fc42d5c26f0af8fa5bcc0455a1e8f64a79af040c0116b9050db1e9a1e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:17",
+      "sequence": 2848,
+      "chapter_label": "LEV 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "“If anyone sins, doing any of the things which the LORD has commanded not to be done, though he didn’t know it, he is still guilty, and shall bear his iniquity.",
+      "ko": "만일 누구든지 여호와의 금령중 하나를 부지중에 범하여도 허물이라 벌을 당할 것이니",
+      "source_text_hash": "0ca446c732eabe52a714f7a13038c46442e3f4b1615d98324b99ed43e49395bd",
+      "translation_text_hash": "1a52bfb6cbf81c613f54ef0ab0a27a4d15913767b025227cd4de1f244140d3b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 여호와의 금령중 하나를 부지중에 범하여도 허물이라 벌을 당할 것이니"
+      ],
+      "raw_text_hashes": [
+        "1a52bfb6cbf81c613f54ef0ab0a27a4d15913767b025227cd4de1f244140d3b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:18",
+      "sequence": 2849,
+      "chapter_label": "LEV 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "He shall bring a ram without defect from of the flock, according to your estimation, for a trespass offering, to the priest; and the priest shall make atonement for him concerning the thing in which he sinned and didn’t know it, and he will be forgiven.",
+      "ko": "그는 너의 지정한 가치대로 떼 중 흠 없는 수양을 속건 제물로 제사장에게로 가져올 것이요 제사장은 그의 부지중에 그릇 범한 허물을 위하여 속한즉 그가 사함을 얻으리라",
+      "source_text_hash": "e025819dae9caa0d8ccb577b5ec8c67cb0f9df2c05e68fc1c5a95888724b5e9a",
+      "translation_text_hash": "140f6ed9d0cd86a7c30749fd6db61088d210f11bb16c28e5d80a2f7a5b69777a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 너의 지정한 가치대로 떼 중 흠 없는 수양을 속건 제물로 제사장에게로 가져올 것이요 제사장은 그의 부지중에 그릇 범한 허물을 위하여 속한즉 그가 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "140f6ed9d0cd86a7c30749fd6db61088d210f11bb16c28e5d80a2f7a5b69777a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:5:19",
+      "sequence": 2850,
+      "chapter_label": "LEV 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "It is a trespass offering. He is certainly guilty before the LORD.”",
+      "ko": "이는 속건제니 그가 실로 여호와 앞에 범과함이니라",
+      "source_text_hash": "aad4da40c2d6cc8ac7410e47bd7f6282f3142dcc17e99a25f70fc66b37cc8995",
+      "translation_text_hash": "dbb5d4e8b00416d6b508b0c12075e8216c8247997848d2e564a57691da2e9c4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 속건제니 그가 실로 여호와 앞에 범과함이니라"
+      ],
+      "raw_text_hashes": [
+        "dbb5d4e8b00416d6b508b0c12075e8216c8247997848d2e564a57691da2e9c4d"
+      ]
+    }
+  ]
+}

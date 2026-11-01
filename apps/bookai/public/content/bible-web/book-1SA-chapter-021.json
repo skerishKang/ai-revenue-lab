@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:021",
+  "unit_ordinal": 257,
+  "unit_label": "1SA 21",
+  "book_code": "1SA",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:21:1",
+      "sequence": 7774,
+      "chapter_label": "1SA 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Then David came to Nob to Ahimelech the priest. Ahimelech came to meet David trembling, and said to him, “Why are you alone, and no man with you?”",
+      "ko": "다윗이 놉에 가서 제사장 아히멜렉에게 이르니 아히멜렉이 떨며 다윗을 영접하며 그에게 이르되 어찌하여 네가 홀로 있고 함께 하는 자가 아무도 없느냐",
+      "source_text_hash": "95090a5e29dfd28e33383f4abe46b2d5d9f216a09b6a1f1f514047667ec8d9a6",
+      "translation_text_hash": "c5b61a8da5b21a7e6dd75fc02a2cd848453f239091c25c11673ac5c17a1c6c43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 놉에 가서 제사장 아히멜렉에게 이르니 아히멜렉이 떨며 다윗을 영접하며 그에게 이르되 어찌하여 네가 홀로 있고 함께 하는 자가 아무도 없느냐"
+      ],
+      "raw_text_hashes": [
+        "c5b61a8da5b21a7e6dd75fc02a2cd848453f239091c25c11673ac5c17a1c6c43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:2",
+      "sequence": 7775,
+      "chapter_label": "1SA 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "David said to Ahimelech the priest, “The king has commanded me to do something, and has said to me, ‘Let no one know anything about the business about which I send you, and what I have commanded you. I have sent the young men to a certain place.’",
+      "ko": "다윗이 제사장 아히멜렉에게 이르되 왕이 내게 일을 명하고 이르시기를 내가 너를 보내는 바와 네게 명한바 일의 아무것이라도 사람에게 알게 하지 말라 하시기로 내가 나의 소년들을 여차 여차한 곳으로 약정하였나이다",
+      "source_text_hash": "9bede3e751f06daccd9772ff989d72d8af8a12b62d5fd1d8f8a38ff60d082fc3",
+      "translation_text_hash": "b9828eb367674cf4b1863a3a5773a8ed3b9d169e345615a575e3be11924266d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 제사장 아히멜렉에게 이르되 왕이 내게 일을 명하고 이르시기를 내가 너를 보내는 바와 네게 명한바 일의 아무것이라도 사람에게 알게 하지 말라 하시기로 내가 나의 소년들을 여차 여차한 곳으로 약정하였나이다"
+      ],
+      "raw_text_hashes": [
+        "b9828eb367674cf4b1863a3a5773a8ed3b9d169e345615a575e3be11924266d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:3",
+      "sequence": 7776,
+      "chapter_label": "1SA 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Now therefore what is under your hand? Please give me five loaves of bread in my hand, or whatever is available.”",
+      "ko": "이제 당신의 수중에 무엇이 있나이까 떡 다섯 덩이나 무엇이든지 있는 대로 내 손에 주소서",
+      "source_text_hash": "293dc1f4eba9f2e1b02542660a6e9b40271c1ba133fc157f30daa570c9f7f293",
+      "translation_text_hash": "a0aa3ab9e47fa888cb76056fecf08aeea588a09f6387b054bcd5daa47437fc00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 당신의 수중에 무엇이 있나이까 떡 다섯 덩이나 무엇이든지 있는 대로 내 손에 주소서"
+      ],
+      "raw_text_hashes": [
+        "a0aa3ab9e47fa888cb76056fecf08aeea588a09f6387b054bcd5daa47437fc00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:4",
+      "sequence": 7777,
+      "chapter_label": "1SA 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "The priest answered David, and said, “I have no common bread, but there is holy bread; if only the young men have kept themselves from women.”",
+      "ko": "제사장이 다윗에게 대답하여 가로되 항용 떡은 내 수중에 없으나 거룩한 떡은 있나니 그 소년들이 부녀를 가까이만 아니하였으면 주리라",
+      "source_text_hash": "726fa704d5c65e4c862fe9c0e416c6ddf8957fd8bc8c9e9ca3d913865140a94b",
+      "translation_text_hash": "07a6192f39c3c4c5ea945035f3c425ebd3549513aa23dea27b43348e8cb4dc18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 다윗에게 대답하여 가로되 항용 떡은 내 수중에 없으나 거룩한 떡은 있나니 그 소년들이 부녀를 가까이만 아니하였으면 주리라"
+      ],
+      "raw_text_hashes": [
+        "07a6192f39c3c4c5ea945035f3c425ebd3549513aa23dea27b43348e8cb4dc18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:5",
+      "sequence": 7778,
+      "chapter_label": "1SA 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "David answered the priest, and said to him, “Truly, women have been kept from us as usual these three days. When I came out, the vessels of the young men were holy, though it was only a common journey. How much more then today shall their vessels be holy?”",
+      "ko": "다윗이 제사장에게 대답하여 가로되 우리가 참으로 삼일 동안이나 부녀를 가까이 하지 아니하였나이다 나의 떠난 길이 보통 여행이라도 소년들의 그릇이 성결하겠거든 하물며 오늘날 그들의 그릇이 성결치 아니하겠나이까 하매",
+      "source_text_hash": "f2934f6a59c0d0adb527998a6897a1f3c66fbbc6ba1de36f6b6f47d80c2ebaff",
+      "translation_text_hash": "c535bdbe00a5647ce386c542f1473c2550ffda6aeb5f2e685b9fb204f7c12c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 제사장에게 대답하여 가로되 우리가 참으로 삼일 동안이나 부녀를 가까이 하지 아니하였나이다 나의 떠난 길이 보통 여행이라도 소년들의 그릇이 성결하겠거든 하물며 오늘날 그들의 그릇이 성결치 아니하겠나이까 하매"
+      ],
+      "raw_text_hashes": [
+        "c535bdbe00a5647ce386c542f1473c2550ffda6aeb5f2e685b9fb204f7c12c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:6",
+      "sequence": 7779,
+      "chapter_label": "1SA 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "So the priest gave him holy bread; for there was no bread there but the show bread that was taken from before the LORD, to be replaced with hot bread in the day when it was taken away.",
+      "ko": "제사장이 그 거룩한 떡을 주었으니 거기는 진설병 곧 여호와 앞에서 물려낸 떡 밖에 없음이라 이 떡은 더운 떡을 드리는 날에 물려낸 것이더라",
+      "source_text_hash": "72fb5b5eba0377aa99687a4d59ea8699a87945fbd73b677ca3bfce3b795a0388",
+      "translation_text_hash": "6b1485c2debe6f75daa562576a00c91d1c3687a6ce18b16fd1a281440908a973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 그 거룩한 떡을 주었으니 거기는 진설병 곧 여호와 앞에서 물려낸 떡 밖에 없음이라 이 떡은 더운 떡을 드리는 날에 물려낸 것이더라"
+      ],
+      "raw_text_hashes": [
+        "6b1485c2debe6f75daa562576a00c91d1c3687a6ce18b16fd1a281440908a973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:7",
+      "sequence": 7780,
+      "chapter_label": "1SA 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "Now a certain man of the servants of Saul was there that day, detained before the LORD; and his name was Doeg the Edomite, the best of the herdsmen who belonged to Saul.",
+      "ko": "그 날에 사울의 신하 한 사람이 여호와 앞에 머물러 있었는데 그는 도엑이라 이름하는 에돔 사람이요 사울의 목자장이었더라",
+      "source_text_hash": "937dd9134ccb3ff13987c104045416fb34310c01ed64b89f10098c9a7ea924f1",
+      "translation_text_hash": "36c5f97f7d22bb7ca60f77ee23da642844349b021fea3132f70a1c53377db602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 사울의 신하 한 사람이 여호와 앞에 머물러 있었는데 그는 도엑이라 이름하는 에돔 사람이요 사울의 목자장이었더라"
+      ],
+      "raw_text_hashes": [
+        "36c5f97f7d22bb7ca60f77ee23da642844349b021fea3132f70a1c53377db602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:8",
+      "sequence": 7781,
+      "chapter_label": "1SA 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "David said to Ahimelech, “Isn’t there here under your hand spear or sword? For I haven’t brought my sword or my weapons with me, because the king’s business required haste.”",
+      "ko": "다윗이 아히멜렉에게 이르되 여기 당신의 수중에 창이나 칼이 없나이까 왕의 일이 급하므로 내가 내 칼과 병기를 가지지 못하였나이다",
+      "source_text_hash": "d6afe970ae0d83584e020fd635d2a22691d55da8a7695cc5aaed2167158d0f3a",
+      "translation_text_hash": "a560c06cc9b9f34de4d13bc149d56690335f98dcbbaaec00366f406edd0cedf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아히멜렉에게 이르되 여기 당신의 수중에 창이나 칼이 없나이까 왕의 일이 급하므로 내가 내 칼과 병기를 가지지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "a560c06cc9b9f34de4d13bc149d56690335f98dcbbaaec00366f406edd0cedf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:9",
+      "sequence": 7782,
+      "chapter_label": "1SA 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "The priest said, “Behold, the sword of Goliath the Philistine, whom you killed in the valley of Elah, is here wrapped in a cloth behind the ephod. If you would like to take that, take it, for there is no other except that here.” David said, “There is none like that. Give it to me.”",
+      "ko": "제사장이 가로되 네가 엘라 골짜기에서 죽인 블레셋 사람 골리앗의 칼이 보자기에 싸여 에봇 뒤에 있으니 네가 그것을 가지려거든 가지라 여기는 그 밖에 다른것이 없느니라 다윗이 가로되 그같은 것이 또 없나니 내게 주소서",
+      "source_text_hash": "400a8437fe65e44d925731dd2a6a6accc5a318a7400334e8377ba8757fa7d822",
+      "translation_text_hash": "42606420d2f157b8ca2cb20b8c25ddc643559fa654e763483d537b59ec4a5079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 가로되 네가 엘라 골짜기에서 죽인 블레셋 사람 골리앗의 칼이 보자기에 싸여 에봇 뒤에 있으니 네가 그것을 가지려거든 가지라 여기는 그 밖에 다른것이 없느니라 다윗이 가로되 그같은 것이 또 없나니 내게 주소서"
+      ],
+      "raw_text_hashes": [
+        "42606420d2f157b8ca2cb20b8c25ddc643559fa654e763483d537b59ec4a5079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:10",
+      "sequence": 7783,
+      "chapter_label": "1SA 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "David arose and fled that day for fear of Saul, and went to Achish the king of Gath.",
+      "ko": "그 날에 다윗이 사울을 두려워하여 일어나 도망하여 가드 왕 아기스에게로 가니",
+      "source_text_hash": "bf50dba1a1cc35791b82061473b9ba1fee0b425b2888eb0aa7992dbbb2ab8150",
+      "translation_text_hash": "ce9baef89c4d612fc8c81cf2515b5f12297d73f7404dbbcf7062b958aacf4f92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 다윗이 사울을 두려워하여 일어나 도망하여 가드 왕 아기스에게로 가니"
+      ],
+      "raw_text_hashes": [
+        "ce9baef89c4d612fc8c81cf2515b5f12297d73f7404dbbcf7062b958aacf4f92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:11",
+      "sequence": 7784,
+      "chapter_label": "1SA 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "The servants of Achish said to him, “Isn’t this David the king of the land? Didn’t they sing to one another about him in dances, saying, ‘Saul has slain his thousands, and David his ten thousands’?”",
+      "ko": "아기스의 신하들이 아기스에게 고하되 이는 그 땅의 왕 다윗이 아니니이까 무리가 춤추며 이 사람의 일을 창화하여 가로되 사울의 죽인 자는 천천이요 다윗은 만만이로다 하지 아니하였나이까 한지라",
+      "source_text_hash": "d61b1217625b0ca178d5f1d9b351bb6513f01671e5bc65fd3a08b312829925cb",
+      "translation_text_hash": "d750832f73fdc1e89fcd6ae9b5dfd12ab621dfc99c5451cea83a71ee1135110b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기스의 신하들이 아기스에게 고하되 이는 그 땅의 왕 다윗이 아니니이까 무리가 춤추며 이 사람의 일을 창화하여 가로되 사울의 죽인 자는 천천이요 다윗은 만만이로다 하지 아니하였나이까 한지라"
+      ],
+      "raw_text_hashes": [
+        "d750832f73fdc1e89fcd6ae9b5dfd12ab621dfc99c5451cea83a71ee1135110b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:12",
+      "sequence": 7785,
+      "chapter_label": "1SA 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "David laid up these words in his heart, and was very afraid of Achish the king of Gath.",
+      "ko": "다윗이 이 말을 그 마음에 두고 가드 왕 아기스를 심히 두려워하여",
+      "source_text_hash": "3b147e2f47c7bb2c3c8ee6e4cb4fdddc1b0db4fa7738033e6a8b9fa0b306ade4",
+      "translation_text_hash": "cb5ab85f17b81555cd5989240bdcd6442fca3ddf0d84975cb8008c4f608a6f18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이 말을 그 마음에 두고 가드 왕 아기스를 심히 두려워하여"
+      ],
+      "raw_text_hashes": [
+        "cb5ab85f17b81555cd5989240bdcd6442fca3ddf0d84975cb8008c4f608a6f18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:13",
+      "sequence": 7786,
+      "chapter_label": "1SA 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "He changed his behavior before them and pretended to be insane in their hands, and scribbled on the doors of the gate, and let his spittle fall down on his beard.",
+      "ko": "그들의 앞에서 그 행동을 변하여 미친 체 하고 대문짝에 그적거리며 침을 수염에 흘리매",
+      "source_text_hash": "cd89930d57a4df1821729c1c6e4dff967d84e920d3aa11a5ed42672ec00787c4",
+      "translation_text_hash": "f4b3b35b5a9fa2201dd2697bb91ef9c4c153aa0f564e024372863cc3d9f7134d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 앞에서 그 행동을 변하여 미친 체 하고 대문짝에 그적거리며 침을 수염에 흘리매"
+      ],
+      "raw_text_hashes": [
+        "f4b3b35b5a9fa2201dd2697bb91ef9c4c153aa0f564e024372863cc3d9f7134d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:14",
+      "sequence": 7787,
+      "chapter_label": "1SA 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Then Achish said to his servants, “Look, you see the man is insane. Why then have you brought him to me?",
+      "ko": "아기스가 그 신하에게 이르되 너희도 보거니와 이 사람이 미치광이로다 어찌하여 그를 내게로 데려왔느냐",
+      "source_text_hash": "698d6c21771701142c73f3decab723b162f59ebec803c35a9787900e497d76e7",
+      "translation_text_hash": "9b56ec946e84b619cded34ba60bd53b1c08820c35b4a28c1e0f6732bd4238c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기스가 그 신하에게 이르되 너희도 보거니와 이 사람이 미치광이로다 어찌하여 그를 내게로 데려왔느냐"
+      ],
+      "raw_text_hashes": [
+        "9b56ec946e84b619cded34ba60bd53b1c08820c35b4a28c1e0f6732bd4238c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:21:15",
+      "sequence": 7788,
+      "chapter_label": "1SA 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "Do I lack madmen, that you have brought this fellow to play the madman in my presence? Should this fellow come into my house?”",
+      "ko": "내게 미치광이가 부족하여서 너희가 이 자를 데려다가 내 앞에서 미친짓을 하게 하느냐 이 자가 어찌 내 집에 들어 오겠느냐 하니라",
+      "source_text_hash": "3eb39408e906db3844daa411795ab0f5b17b11c323e24e565937bb1598f32c4c",
+      "translation_text_hash": "1f01d78533ec3de40c1e4df0a291d93c925cef55e002f561159e2a69eef0ff45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 미치광이가 부족하여서 너희가 이 자를 데려다가 내 앞에서 미친짓을 하게 하느냐 이 자가 어찌 내 집에 들어 오겠느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "1f01d78533ec3de40c1e4df0a291d93c925cef55e002f561159e2a69eef0ff45"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:004",
+  "unit_ordinal": 883,
+  "unit_label": "AMO 4",
+  "book_code": "AMO",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:4:1",
+      "sequence": 22412,
+      "chapter_label": "AMO 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Listen to this word, you cows of Bashan, who are on the mountain of Samaria, who oppress the poor, who crush the needy, who tell their husbands, “Bring us drinks!”",
+      "ko": "사마리아 산에 거하는 바산 암소들아 이 말을 들으라 너희는 가난한 자를 학대하며 궁핍한 자를 압제하며 가장에게 이르기를 술을 가져다가 우리로 마시게 하라 하는도다",
+      "source_text_hash": "cea4af084d20229655843826a52f4f4c6b52abe349cea97fbb15352e794ca413",
+      "translation_text_hash": "ddc64098d78790d0f916e6812c3bc27eda08da1b47f2e62389c75568167c4df0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아 산에 거하는 바산 암소들아 이 말을 들으라 너희는 가난한 자를 학대하며 궁핍한 자를 압제하며 가장에게 이르기를 술을 가져다가 우리로 마시게 하라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "ddc64098d78790d0f916e6812c3bc27eda08da1b47f2e62389c75568167c4df0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:2",
+      "sequence": 22413,
+      "chapter_label": "AMO 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "The Lord GOD has sworn by his holiness, “Behold, the days shall come on you that they will take you away with hooks, and the last of you with fish hooks.",
+      "ko": "주 여호와께서 자기의 거룩함을 가리켜 맹세하시되 때가 너희에게 임할찌라 사람이 갈고리로 너희를 끌어 가며 낚시로 너희의 남은 자들을 그리하리라",
+      "source_text_hash": "f6bc2f2e5eed1892d74fac8da6f89be6edcdb97f7a4060e01a785ea62f8461c1",
+      "translation_text_hash": "843de0fd54f36645d1d7c6bcb7d52e8b251d38e63c0fcb387d7c498cc2aaf001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 자기의 거룩함을 가리켜 맹세하시되 때가 너희에게 임할찌라 사람이 갈고리로 너희를 끌어 가며 낚시로 너희의 남은 자들을 그리하리라"
+      ],
+      "raw_text_hashes": [
+        "843de0fd54f36645d1d7c6bcb7d52e8b251d38e63c0fcb387d7c498cc2aaf001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:3",
+      "sequence": 22414,
+      "chapter_label": "AMO 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "You will go out at the breaks in the wall, everyone straight before her; and you will cast yourselves into Harmon,” says the LORD.",
+      "ko": "너희가 성 무너진데로 말미암아 각기 앞으로 바로 나가서 하르몬에 던지우리라 이는 여호와의 말씀이니라",
+      "source_text_hash": "3c731bb353a3f0b22070091010dbc73b7f2ba6c034f279ae46f09b6089033b42",
+      "translation_text_hash": "9e3a537e60fabd81856442f0f1e525ee71f97eb0da6ee349483507d0ebffc927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 성 무너진데로 말미암아 각기 앞으로 바로 나가서 하르몬에 던지우리라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "9e3a537e60fabd81856442f0f1e525ee71f97eb0da6ee349483507d0ebffc927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:4",
+      "sequence": 22415,
+      "chapter_label": "AMO 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“Go to Bethel, and sin; to Gilgal, and sin more. Bring your sacrifices every morning, your tithes every three days,",
+      "ko": "너희는 벧엘에 가서 범죄하며 길갈에 가서 죄를 더하며 아침마다 너희 희생을, 삼일마다 너희 십일조를 드리며",
+      "source_text_hash": "deafd1ab3f059441397e23c242adc5b53f2444cda065d5df2f04f5e554e6de2f",
+      "translation_text_hash": "29ae91648103e5c5bb278ce60332e7a9a807309f84e77378de5598bc3b665147",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 벧엘에 가서 범죄하며 길갈에 가서 죄를 더하며 아침마다 너희 희생을, 삼일마다 너희 십일조를 드리며"
+      ],
+      "raw_text_hashes": [
+        "29ae91648103e5c5bb278ce60332e7a9a807309f84e77378de5598bc3b665147"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:5",
+      "sequence": 22416,
+      "chapter_label": "AMO 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "offer a sacrifice of thanksgiving of that which is leavened, and proclaim free will offerings and brag about them; for this pleases you, you children of Israel,” says the Lord GOD.",
+      "ko": "누룩 넣은 것을 불살라 수은제로 드리며 낙헌제를 소리내어 광포하려무나 이스라엘 자손들아 이것이 너희의 기뻐하는 바니라 이는 주 여호와의 말씀이니라",
+      "source_text_hash": "f14ec8636749f79c0bc706fcc619625fca798d85d81fac2059ed769b662c3ed9",
+      "translation_text_hash": "5af0e834eb48fa4ceb4c44678542093282aee4fd9198cf5684d87fc654cab41a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누룩 넣은 것을 불살라 수은제로 드리며 낙헌제를 소리내어 광포하려무나 이스라엘 자손들아 이것이 너희의 기뻐하는 바니라 이는 주 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "5af0e834eb48fa4ceb4c44678542093282aee4fd9198cf5684d87fc654cab41a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:6",
+      "sequence": 22417,
+      "chapter_label": "AMO 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "“I also have given you cleanness of teeth in all your cities, and lack of bread in every town; yet you haven’t returned to me,” says the LORD.",
+      "ko": "또 내가 너희 모든 성읍에서 너희 이를 한가하게 하며 너희 각처에서 양식이 떨어지게 하였으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "60e7f3657a6c17036c6c923605cd616947f5ef9e5faa77e75243a011da7c2daa",
+      "translation_text_hash": "8ea8cbe6bec6155072c25e7667e77021e15051eca040c159d8c1682dd139462d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 너희 모든 성읍에서 너희 이를 한가하게 하며 너희 각처에서 양식이 떨어지게 하였으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "8ea8cbe6bec6155072c25e7667e77021e15051eca040c159d8c1682dd139462d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:7",
+      "sequence": 22418,
+      "chapter_label": "AMO 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "“I also have withheld the rain from you, when there were yet three months to the harvest; and I caused it to rain on one city, and caused it not to rain on another city. One field was rained on, and the field where it didn’t rain withered.",
+      "ko": "또 추수하기 석달 전에 내가 너희에게 비를 멈추어 어떤 성읍에는 내리고 어떤 성읍에는 내리지 않게 하였더니 땅 한 부분은 비를 얻고 한 부분은 비를 얻지 못하여 말랐으매",
+      "source_text_hash": "a51e6cf296d49958f7556ae23ecceea45f2d865da1a4494068fe71018ea4e1b4",
+      "translation_text_hash": "5a7ab8e200e2b9d13ea3c9a2cb9fa29ef23d80d2f629eebdd119f3e4080fe6c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 추수하기 석달 전에 내가 너희에게 비를 멈추어 어떤 성읍에는 내리고 어떤 성읍에는 내리지 않게 하였더니 땅 한 부분은 비를 얻고 한 부분은 비를 얻지 못하여 말랐으매"
+      ],
+      "raw_text_hashes": [
+        "5a7ab8e200e2b9d13ea3c9a2cb9fa29ef23d80d2f629eebdd119f3e4080fe6c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:8",
+      "sequence": 22419,
+      "chapter_label": "AMO 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "So two or three cities staggered to one city to drink water, and were not satisfied; yet you haven’t returned to me,” says the LORD.",
+      "ko": "두 세 성읍 사람이 어떤 성읍으로 비틀거리며 물을 마시러 가서 만족히 마시지 못하였으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "03bffc11c8bc20bfaef628ee622fe458b5dceac169c6cfef7e80789125fe565a",
+      "translation_text_hash": "195d4d1354d899305c2b1200ebc861af45711faf48b32c0a9d2327f5c313adfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 세 성읍 사람이 어떤 성읍으로 비틀거리며 물을 마시러 가서 만족히 마시지 못하였으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "195d4d1354d899305c2b1200ebc861af45711faf48b32c0a9d2327f5c313adfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:9",
+      "sequence": 22420,
+      "chapter_label": "AMO 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“I struck you with blight and mildew many times in your gardens and your vineyards, and the swarming locusts have devoured your fig trees and your olive trees; yet you haven’t returned to me,” says the LORD.",
+      "ko": "내가 풍재와 깜부기 재앙으로 너희를 쳤으며 팟종이로 너희의 많은 동산과 포도원과 무화과나무와 감람나무를 다 먹게 하였으나 너희가 내게로 돌아오지 아니하였느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "b61828adf1226a8228d1e201ad0c06a7b5f27a25f760c4b29241d69d037ba198",
+      "translation_text_hash": "b4a4b1bd3639c96e37e2cf88859cff1c8249c1e947d135b64474a37a7d31bf2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 풍재와 깜부기 재앙으로 너희를 쳤으며 팟종이로 너희의 많은 동산과 포도원과 무화과나무와 감람나무를 다 먹게 하였으나 너희가 내게로 돌아오지 아니하였느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "b4a4b1bd3639c96e37e2cf88859cff1c8249c1e947d135b64474a37a7d31bf2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:10",
+      "sequence": 22421,
+      "chapter_label": "AMO 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "“I sent plagues among you like I did Egypt. I have slain your young men with the sword, and have carried away your horses. I filled your nostrils with the stench of your camp, yet you haven’t returned to me,” says the LORD.",
+      "ko": "내가 너희 중에 염병이 임하게 하기를 애굽에서 한것처럼 하였으며 칼로 너희 청년들을 죽였으며 너희 말들을 노략하게 하며 너희 진의 악취로 코를 찌르게 하였으나 너희가 내게로 돌아오지 아니하였느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "7f447cef63fe5e8ca871fd0c6eb912441fe23a4a9a3df536eab5b9f626cfc766",
+      "translation_text_hash": "ecbac30fd9addb3976bd1d04550a7900485d321fbac4425dffea9487d80012e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 중에 염병이 임하게 하기를 애굽에서 한것처럼 하였으며 칼로 너희 청년들을 죽였으며 너희 말들을 노략하게 하며 너희 진의 악취로 코를 찌르게 하였으나 너희가 내게로 돌아오지 아니하였느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "ecbac30fd9addb3976bd1d04550a7900485d321fbac4425dffea9487d80012e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:11",
+      "sequence": 22422,
+      "chapter_label": "AMO 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "“I have overthrown some of you, as when God overthrew Sodom and Gomorrah, and you were like a burning stick plucked out of the fire; yet you haven’t returned to me,” says the LORD.",
+      "ko": "내가 너희 중의 성읍 무너뜨리기를 하나님 내가 소돔과 고모라를 무너뜨림 같이 하였으므로 너희가 불붙는 가운데서 빼낸 나무 조각 같이 되었으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라",
+      "source_text_hash": "5ea8d4a84cea558a60afdf221a13004b69a61dfc2f25a96b00406ba939a88c5f",
+      "translation_text_hash": "c0f5aed7d081b11702cb80efbca7005eecaf663e5411e7229af8f6f51d69c686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 중의 성읍 무너뜨리기를 하나님 내가 소돔과 고모라를 무너뜨림 같이 하였으므로 너희가 불붙는 가운데서 빼낸 나무 조각 같이 되었으나 너희가 내게로 돌아 오지 아니하였느니라 이는 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "c0f5aed7d081b11702cb80efbca7005eecaf663e5411e7229af8f6f51d69c686"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:12",
+      "sequence": 22423,
+      "chapter_label": "AMO 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "“Therefore I will do this to you, Israel; because I will do this to you, prepare to meet your God, Israel.",
+      "ko": "그러므로 이스라엘아 내가 이와 같이 네게 행하리라 내가 이것을 네게 행하리니 이스라엘아 네 하나님 만나기를 예비하라",
+      "source_text_hash": "54b920076c18010a37dc67111b84113e94bbea108c8558cfd360388f8ec1c4b9",
+      "translation_text_hash": "8ae936df9b0868807d99f26b3c3ec49c9652a8a3ec371512305fefbfa24f93cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘아 내가 이와 같이 네게 행하리라 내가 이것을 네게 행하리니 이스라엘아 네 하나님 만나기를 예비하라"
+      ],
+      "raw_text_hashes": [
+        "8ae936df9b0868807d99f26b3c3ec49c9652a8a3ec371512305fefbfa24f93cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:4:13",
+      "sequence": 22424,
+      "chapter_label": "AMO 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "For, behold, he who forms the mountains, creates the wind, declares to man what is his thought, who makes the morning darkness, and treads on the high places of the earth: The LORD, the God of Armies, is his name.”",
+      "ko": "대저 산들을 지으며 바람을 창조하며 자기 뜻을 사람에게 보이며 아침을 어둡게 하며 땅의 높은데를 밟는 자는 그 이름이 만군의 하나님 여호와니라",
+      "source_text_hash": "22906a2ba6bbb373c6e668a04d7128b06d4f1fa41c6cd61bb5f85e74e95ece65",
+      "translation_text_hash": "33c1301ab91a2d4097a9a094fa7de610c94af4fa3970d1b2a13a236edd54d79d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 산들을 지으며 바람을 창조하며 자기 뜻을 사람에게 보이며 아침을 어둡게 하며 땅의 높은데를 밟는 자는 그 이름이 만군의 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "33c1301ab91a2d4097a9a094fa7de610c94af4fa3970d1b2a13a236edd54d79d"
+      ]
+    }
+  ]
+}

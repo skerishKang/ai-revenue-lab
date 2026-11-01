@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:033",
+  "unit_ordinal": 400,
+  "unit_label": "2CH 33",
+  "book_code": "2CH",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:33:1",
+      "sequence": 11910,
+      "chapter_label": "2CH 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "Manasseh was twelve years old when he began to reign, and he reigned fifty-five years in Jerusalem.",
+      "ko": "므낫세가 위에 나아갈 때에 나이 십 이세라 예루살렘에서 오십 오년을 치리하며",
+      "source_text_hash": "276e756dc1c2622329fa61ba9b94edcd8325b177bca9cc25b7d6a6916fd7c98a",
+      "translation_text_hash": "f22192975c9c4dd61819378154dd9a28277188c003aa274f9e7690605113ee47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 위에 나아갈 때에 나이 십 이세라 예루살렘에서 오십 오년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "f22192975c9c4dd61819378154dd9a28277188c003aa274f9e7690605113ee47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:2",
+      "sequence": 11911,
+      "chapter_label": "2CH 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, after the abominations of the nations whom the LORD cast out before the children of Israel.",
+      "ko": "여호와 보시기에 악을 행하여 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아",
+      "source_text_hash": "81cd4386be472d93ff5540c3ef964a117a29ede426359f861f5fc5f260200163",
+      "translation_text_hash": "30551d14690b85c2c5b250ef6c6a812768bdc0b40ef0432a5e043a9bdcd804fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 보시기에 악을 행하여 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아"
+      ],
+      "raw_text_hashes": [
+        "30551d14690b85c2c5b250ef6c6a812768bdc0b40ef0432a5e043a9bdcd804fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:3",
+      "sequence": 11912,
+      "chapter_label": "2CH 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "For he built again the high places which Hezekiah his father had broken down; and he raised up altars for the Baals, made Asheroth, and worshiped all the army of the sky, and served them.",
+      "ko": "그 부친 히스기야의 헐어버린 산당을 다시 세우며 바알들을 위하여 단을 쌓으며 아세라 목상을 만들며 하늘의 일월 성신을 숭배하여 섬기며",
+      "source_text_hash": "f321904bbd2dc9fcc387e6630ad9aba8f0e64d95a1c773d225a6ba933618be0f",
+      "translation_text_hash": "5346ad692fd4d583bc0166849677334f7e09ad140dd4197da5601ba1333916fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친 히스기야의 헐어버린 산당을 다시 세우며 바알들을 위하여 단을 쌓으며 아세라 목상을 만들며 하늘의 일월 성신을 숭배하여 섬기며"
+      ],
+      "raw_text_hashes": [
+        "5346ad692fd4d583bc0166849677334f7e09ad140dd4197da5601ba1333916fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:4",
+      "sequence": 11913,
+      "chapter_label": "2CH 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "He built altars in the LORD’s house, of which the LORD said, “My name shall be in Jerusalem forever.”",
+      "ko": "여호와께서 전에 이르시기를 내가 내 이름을 예루살렘에 영영히 두리라 하신 여호와의 전에 단들을 쌓고",
+      "source_text_hash": "44f6184cdcf59dde8cde811228fce9e4d3c88f0ad55a939b5588b7e0148a00dc",
+      "translation_text_hash": "ea1c65b787a87e120a7ad3e85eb64fe5f2fc8c503f7a2000b71a732cba791431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 전에 이르시기를 내가 내 이름을 예루살렘에 영영히 두리라 하신 여호와의 전에 단들을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "ea1c65b787a87e120a7ad3e85eb64fe5f2fc8c503f7a2000b71a732cba791431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:5",
+      "sequence": 11914,
+      "chapter_label": "2CH 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "He built altars for all the army of the sky in the two courts of the LORD’s house.",
+      "ko": "또 여호와의 전 두 마당에 하늘의 일월 성신을 위하여 단들을 쌓고",
+      "source_text_hash": "03b2cede9be1df004e055717c8abd37dfb14984206726f0d80ba6e2444387292",
+      "translation_text_hash": "915cdbb60c80fd445e768775d08fd70ed45cedcc874fa88a4591e27d9c87a701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 전 두 마당에 하늘의 일월 성신을 위하여 단들을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "915cdbb60c80fd445e768775d08fd70ed45cedcc874fa88a4591e27d9c87a701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:6",
+      "sequence": 11915,
+      "chapter_label": "2CH 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "He also made his children to pass through the fire in the valley of the son of Hinnom. He practiced sorcery, divination, and witchcraft, and dealt with those who had familiar spirits and with wizards. He did much evil in the LORD’s sight, to provoke him to anger.",
+      "ko": "또 힌놈의 아들 골짜기에서 그 아들들을 불 가운데로 지나게 하며 또 점치며 사술과 요술을 행하며 신접한 자와 박수를 신임하여 여호와 보시기에 악을 많이 행하여 그 진노를 격발하였으며",
+      "source_text_hash": "dd18c4c004e6b697c174175fdb9b61ea24e03824889aa955cbd6597872a104ef",
+      "translation_text_hash": "531d750e05c9fef1bd856a80f8b872a3ab676c7eeee814085177eca1177efe54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 힌놈의 아들 골짜기에서 그 아들들을 불 가운데로 지나게 하며 또 점치며 사술과 요술을 행하며 신접한 자와 박수를 신임하여 여호와 보시기에 악을 많이 행하여 그 진노를 격발하였으며"
+      ],
+      "raw_text_hashes": [
+        "531d750e05c9fef1bd856a80f8b872a3ab676c7eeee814085177eca1177efe54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:7",
+      "sequence": 11916,
+      "chapter_label": "2CH 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "He set the engraved image of the idol, which he had made, in God’s house, of which God said to David and to Solomon his son, “In this house, and in Jerusalem, which I have chosen out of all the tribes of Israel, I will put my name forever.",
+      "ko": "또 자기가 만든 아로새긴 목상을 하나님의 전에 세웠더라 옛적에 하나님이 이 전에 대하여 다윗과 그 아들 솔로몬에게 이르시기를 내가 이스라엘 모든 지파 중에서 택한 이 전과 예루살렘에 내 이름을 영원히 둘찌라",
+      "source_text_hash": "b89aa482af21bc3288e492994536617ca00842f47c050051fba697b738c2bb21",
+      "translation_text_hash": "cb665fff03d885980e8103bce068354c8de8c110424fcb197d9e57b2e8e2fece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기가 만든 아로새긴 목상을 하나님의 전에 세웠더라 옛적에 하나님이 이 전에 대하여 다윗과 그 아들 솔로몬에게 이르시기를 내가 이스라엘 모든 지파 중에서 택한 이 전과 예루살렘에 내 이름을 영원히 둘찌라"
+      ],
+      "raw_text_hashes": [
+        "cb665fff03d885980e8103bce068354c8de8c110424fcb197d9e57b2e8e2fece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:8",
+      "sequence": 11917,
+      "chapter_label": "2CH 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "I will not any more remove the foot of Israel from off the land which I have appointed for your fathers, if only they will observe to do all that I have commanded them, even all the law, the statutes, and the ordinances given by Moses.”",
+      "ko": "만일 이스라엘 사람이 내가 명한 일 곧 모세로 전한 모든 율법과 율례와 규례를 지켜 행하면 내가 그들의 발로 다시는 그 열조에게 정하여 준 땅에서 옮기지 않게 하리라 하셨으나",
+      "source_text_hash": "f4f2081420f524b36453ab0ed99cfe60ef221122da6e42ff74ffc5bb37acd6c1",
+      "translation_text_hash": "4029ba7896b62045f78e2fb1184251bdf25c25a36ccf3250519fd8c0a997bb51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이스라엘 사람이 내가 명한 일 곧 모세로 전한 모든 율법과 율례와 규례를 지켜 행하면 내가 그들의 발로 다시는 그 열조에게 정하여 준 땅에서 옮기지 않게 하리라 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "4029ba7896b62045f78e2fb1184251bdf25c25a36ccf3250519fd8c0a997bb51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:9",
+      "sequence": 11918,
+      "chapter_label": "2CH 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "Manasseh seduced Judah and the inhabitants of Jerusalem, so that they did more evil than did the nations whom the LORD destroyed before the children of Israel.",
+      "ko": "유다와 예루살렘 거민이 므낫세의 꾀임을 받고 악을 행한 것이 여호와께서 이스라엘 자손 앞에서 멸하신 열방보다 더욱 심하였더라",
+      "source_text_hash": "aa48424a5f2494164104c5210aff3a500dcd58f24acf8795a0e42d835ef641b1",
+      "translation_text_hash": "ba4e9bfc67a7474a0ce03f2e8c63848685be77e33f6f9e95bc75ad824ebfc6a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 예루살렘 거민이 므낫세의 꾀임을 받고 악을 행한 것이 여호와께서 이스라엘 자손 앞에서 멸하신 열방보다 더욱 심하였더라"
+      ],
+      "raw_text_hashes": [
+        "ba4e9bfc67a7474a0ce03f2e8c63848685be77e33f6f9e95bc75ad824ebfc6a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:10",
+      "sequence": 11919,
+      "chapter_label": "2CH 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD spoke to Manasseh and to his people, but they didn’t listen.",
+      "ko": "여호와께서 므낫세와 그 백성에게 이르셨으나 저희가 듣지 아니한고로",
+      "source_text_hash": "19c2d73889efe0cd2c658185e454fad79f3edaccb31fe776065ab709d601f226",
+      "translation_text_hash": "1858e5c60a53a4432eace7b33883b6405485f659be9d0a5d22cd4abefa64418d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 므낫세와 그 백성에게 이르셨으나 저희가 듣지 아니한고로"
+      ],
+      "raw_text_hashes": [
+        "1858e5c60a53a4432eace7b33883b6405485f659be9d0a5d22cd4abefa64418d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:11",
+      "sequence": 11920,
+      "chapter_label": "2CH 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore the LORD brought on them the captains of the army of the king of Assyria, who took Manasseh in chains, bound him with fetters, and carried him to Babylon.",
+      "ko": "여호와께서 앗수르 왕의 군대 장관들로 와서 치게 하시매 저희가 므낫세를 사로잡고 쇠사슬로 결박하여 바벨론으로 끌어 간지라",
+      "source_text_hash": "80e44283a38776fd754012e2b1f2e9d9c14ef64aafbb2dfb832c0f8b6a47cf00",
+      "translation_text_hash": "93a2cfded3ed9235515db5b7bd65a7230155a38774481a6ddac03284ffea7f2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 앗수르 왕의 군대 장관들로 와서 치게 하시매 저희가 므낫세를 사로잡고 쇠사슬로 결박하여 바벨론으로 끌어 간지라"
+      ],
+      "raw_text_hashes": [
+        "93a2cfded3ed9235515db5b7bd65a7230155a38774481a6ddac03284ffea7f2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:12",
+      "sequence": 11921,
+      "chapter_label": "2CH 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "When he was in distress, he begged the LORD his God, and humbled himself greatly before the God of his fathers.",
+      "ko": "저가 환난을 당하여 그 하나님 여호와께 간구하고 그 열조의 하나님 앞에 크게 겸비하여",
+      "source_text_hash": "4ac28b73de320f1735aa6128e29d18ae1b1cb51e85ac1862ea2fa1316024fb74",
+      "translation_text_hash": "a365e41909b7917dd5b50f760fdbd03dab6cd89828d59fcb805ea279d6103c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 환난을 당하여 그 하나님 여호와께 간구하고 그 열조의 하나님 앞에 크게 겸비하여"
+      ],
+      "raw_text_hashes": [
+        "a365e41909b7917dd5b50f760fdbd03dab6cd89828d59fcb805ea279d6103c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:13",
+      "sequence": 11922,
+      "chapter_label": "2CH 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "He prayed to him; and he was entreated by him, and heard his supplication, and brought him again to Jerusalem into his kingdom. Then Manasseh knew that the LORD was God.",
+      "ko": "기도한고로 하나님이 그 기도를 받으시며 그 간구를 들으시사 저로 예루살렘에 돌아와서 다시 왕위에 거하게 하시매 므낫세가 그제야 여호와께서 하나님이신 줄을 알았더라",
+      "source_text_hash": "f08a3aec3362c3397dfadf4e10a85d8d50303bee819c7c0b933daae9e21be04d",
+      "translation_text_hash": "7d7dbc62036629244a47cb2f2d7af18e02e5b5bbe983c6407f4152349307ace7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도한고로 하나님이 그 기도를 받으시며 그 간구를 들으시사 저로 예루살렘에 돌아와서 다시 왕위에 거하게 하시매 므낫세가 그제야 여호와께서 하나님이신 줄을 알았더라"
+      ],
+      "raw_text_hashes": [
+        "7d7dbc62036629244a47cb2f2d7af18e02e5b5bbe983c6407f4152349307ace7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:14",
+      "sequence": 11923,
+      "chapter_label": "2CH 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "Now after this, he built an outer wall to David’s city on the west side of Gihon, in the valley, even to the entrance at the fish gate. He encircled Ophel with it, and raised it up to a very great height; and he put valiant captains in all the fortified cities of Judah.",
+      "ko": "그 후에 다윗성 밖 기혼 서편 골짜기 안에 외성을 쌓되 생선문 어귀까지 이르러 오벨을 둘러 심히 높이 쌓고 또 유다 모든 견고한 성읍에 군대 장관을 두며",
+      "source_text_hash": "94005c738a20d24d7abb7c66ac9be96cccca024ec46855b008407ca27fbdc4f6",
+      "translation_text_hash": "181551c6fc9a71a4891e0ce4a7d1a13a396e24aef3653913fd2f69cada13dab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다윗성 밖 기혼 서편 골짜기 안에 외성을 쌓되 생선문 어귀까지 이르러 오벨을 둘러 심히 높이 쌓고 또 유다 모든 견고한 성읍에 군대 장관을 두며"
+      ],
+      "raw_text_hashes": [
+        "181551c6fc9a71a4891e0ce4a7d1a13a396e24aef3653913fd2f69cada13dab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:15",
+      "sequence": 11924,
+      "chapter_label": "2CH 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "He took away the foreign gods and the idol out of the LORD’s house, and all the altars that he had built in the mountain of the LORD’s house and in Jerusalem, and cast them out of the city.",
+      "ko": "이방 신들과 여호와의 전의 우상을 제하며 여호와의 전을 건축한 산에와 예루살렘에 쌓은 모든 단을 다 성 밖에 던지고",
+      "source_text_hash": "836fddf5e36be24d34fdc03b047ed877fb0ddb9f05163697fc784009324357eb",
+      "translation_text_hash": "4e15f801b8c5c57095adb2cd876013f6f1e8c14348b80920bf148442e510bc2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방 신들과 여호와의 전의 우상을 제하며 여호와의 전을 건축한 산에와 예루살렘에 쌓은 모든 단을 다 성 밖에 던지고"
+      ],
+      "raw_text_hashes": [
+        "4e15f801b8c5c57095adb2cd876013f6f1e8c14348b80920bf148442e510bc2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:16",
+      "sequence": 11925,
+      "chapter_label": "2CH 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "He built up the LORD’s altar, and offered sacrifices of peace offerings and of thanksgiving on it, and commanded Judah to serve the LORD, the God of Israel.",
+      "ko": "여호와의 단을 중수하고 화목제와 감사제를 그 단 위에 드리고 유다를 명하여 이스라엘 하나님 여호와를 섬기라 하매",
+      "source_text_hash": "ff57510cbd164c6d0e9874fce46be9d1d75db0d3e16be8b64c3aa8f2021b1b2d",
+      "translation_text_hash": "f3e96bd6d63189a57010b0e68aed2eb314a6e531f31859dac2c9b96043be389f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 단을 중수하고 화목제와 감사제를 그 단 위에 드리고 유다를 명하여 이스라엘 하나님 여호와를 섬기라 하매"
+      ],
+      "raw_text_hashes": [
+        "f3e96bd6d63189a57010b0e68aed2eb314a6e531f31859dac2c9b96043be389f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:17",
+      "sequence": 11926,
+      "chapter_label": "2CH 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "Nevertheless the people still sacrificed in the high places, but only to the LORD their God.",
+      "ko": "백성이 그 하나님 여호와께만 제사를 드렸으나 오히려 산당에서 제사를 드렸더라",
+      "source_text_hash": "c65865827fc9f23ca7599c74d5aa88273c34a5949e382308cef8c7cb9c95cdf1",
+      "translation_text_hash": "90af149d66c1c5e9c0479c7c0f75d5adc4f076371190b39cac684ea7e7e6ac16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 그 하나님 여호와께만 제사를 드렸으나 오히려 산당에서 제사를 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "90af149d66c1c5e9c0479c7c0f75d5adc4f076371190b39cac684ea7e7e6ac16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:18",
+      "sequence": 11927,
+      "chapter_label": "2CH 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "Now the rest of the acts of Manasseh, and his prayer to his God, and the words of the seers who spoke to him in the name of the LORD, the God of Israel, behold, they are written among the acts of the kings of Israel.",
+      "ko": "므낫세의 남은 사적과 그 하나님께 기도한 말씀과 선견자가 이스라엘 하나님 여호와의 이름을 받들고 권한 말씀이 모두 이스라엘 열왕의 행장에 기록되었고",
+      "source_text_hash": "397f7d4bea4c115763fd6eef6e62fd0f525f0d62b073d0214f37e7a6637ae281",
+      "translation_text_hash": "1efb447a6cb9c40ad6fdfe4ce113b375e4fda23b0867fd2e8e4958e3192bbc98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 남은 사적과 그 하나님께 기도한 말씀과 선견자가 이스라엘 하나님 여호와의 이름을 받들고 권한 말씀이 모두 이스라엘 열왕의 행장에 기록되었고"
+      ],
+      "raw_text_hashes": [
+        "1efb447a6cb9c40ad6fdfe4ce113b375e4fda23b0867fd2e8e4958e3192bbc98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:19",
+      "sequence": 11928,
+      "chapter_label": "2CH 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "His prayer also, and how God listened to his request, and all his sin and his trespass, and the places in which he built high places and set up the Asherah poles and the engraved images before he humbled himself: behold, they are written in the history of Hozai.",
+      "ko": "또 그 기도와 그 기도를 들으신것과 그 모든 죄와 건과와 겸비하기 전에 산당을 세운 곳과 아세라 목상과 우상을 세운 곳들이 다 호새의 사기에 기록되니라",
+      "source_text_hash": "5fee6f645ed3cfbd4998a54c3569ccac3a4b9e16890b2ba4102b9a1744c6b904",
+      "translation_text_hash": "21c38bbcddd98ab332bcfebccd5b2a9947a48a9df784164815c6e33fd1df6611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 기도와 그 기도를 들으신것과 그 모든 죄와 건과와 겸비하기 전에 산당을 세운 곳과 아세라 목상과 우상을 세운 곳들이 다 호새의 사기에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "21c38bbcddd98ab332bcfebccd5b2a9947a48a9df784164815c6e33fd1df6611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:20",
+      "sequence": 11929,
+      "chapter_label": "2CH 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "So Manasseh slept with his fathers, and they buried him in his own house; and Amon his son reigned in his place.",
+      "ko": "므낫세가 그 열조와 함께 자매 그 궁에 장사하고 그 아들 아몬이 대신하여 왕이 되니라",
+      "source_text_hash": "482ad5d611b2f6de7687115ab8673ee7685cffdec47cf0e7c52fdcecf66c08ed",
+      "translation_text_hash": "124b452f37db4ddf4d0675bd27fc0608587c5fe0f2af51cede30f4ad4da4ee8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 그 열조와 함께 자매 그 궁에 장사하고 그 아들 아몬이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "124b452f37db4ddf4d0675bd27fc0608587c5fe0f2af51cede30f4ad4da4ee8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:21",
+      "sequence": 11930,
+      "chapter_label": "2CH 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "Amon was twenty-two years old when he began to reign; and he reigned two years in Jerusalem.",
+      "ko": "아몬이 위에 나아갈 때에 나이 이십 이세라 예루살렘에서 이년을 치리하며",
+      "source_text_hash": "f4b1f1f8787e76fffda4346a21ba533a41b29f1e1ccc30084cf3590250a76f43",
+      "translation_text_hash": "35ead8d3b650408154465b3fc874380e43b4d872b12eb9fb41623a4da44abb7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬이 위에 나아갈 때에 나이 이십 이세라 예루살렘에서 이년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "35ead8d3b650408154465b3fc874380e43b4d872b12eb9fb41623a4da44abb7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:22",
+      "sequence": 11931,
+      "chapter_label": "2CH 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, as did Manasseh his father; and Amon sacrificed to all the engraved images which Manasseh his father had made, and served them.",
+      "ko": "그 부친 므낫세의 행함 같이 여호와 보시기에 악을 행하여 그 부친 므낫세가 만든 아로새긴 모든 우상에게 제사하여 섬겼으며",
+      "source_text_hash": "ab69485a73ea149ea74405eed1b37ae8f9cb2d24ec2b30e7dc2795afadf5e97f",
+      "translation_text_hash": "e17e4c7206ff1c1899c2c57146a95c1134de9d2dee82163d03a17c9cdc45c1a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친 므낫세의 행함 같이 여호와 보시기에 악을 행하여 그 부친 므낫세가 만든 아로새긴 모든 우상에게 제사하여 섬겼으며"
+      ],
+      "raw_text_hashes": [
+        "e17e4c7206ff1c1899c2c57146a95c1134de9d2dee82163d03a17c9cdc45c1a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:23",
+      "sequence": 11932,
+      "chapter_label": "2CH 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "He didn’t humble himself before the LORD, as Manasseh his father had humbled himself; but this same Amon trespassed more and more.",
+      "ko": "이 아몬이 그 부친 므낫세의 스스로 겸비함 같이 여호와 앞에서 스스로 겸비치 아니하고 더욱 범죄하더니",
+      "source_text_hash": "4044c4c641b9d2278fc96713318eae9d41932b169378e11becae88d916490e34",
+      "translation_text_hash": "590dc56a8af7474ff0abfc5f336a47a5f27d1878a84e5121c22f62a07cc3ae57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 아몬이 그 부친 므낫세의 스스로 겸비함 같이 여호와 앞에서 스스로 겸비치 아니하고 더욱 범죄하더니"
+      ],
+      "raw_text_hashes": [
+        "590dc56a8af7474ff0abfc5f336a47a5f27d1878a84e5121c22f62a07cc3ae57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:24",
+      "sequence": 11933,
+      "chapter_label": "2CH 33",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 24
+        }
+      ],
+      "en": "His servants conspired against him, and put him to death in his own house.",
+      "ko": "그 신복이 반역하여 왕을 궁중에서 죽이매",
+      "source_text_hash": "dc76161e3bcfc2a479ef4ede9c5fbe9f1b400234b394180ed16f9c5913dd9fa6",
+      "translation_text_hash": "08436f163371b2c808c9194143e7f4f743b3ca468729f54108343aff884c097b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복이 반역하여 왕을 궁중에서 죽이매"
+      ],
+      "raw_text_hashes": [
+        "08436f163371b2c808c9194143e7f4f743b3ca468729f54108343aff884c097b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:33:25",
+      "sequence": 11934,
+      "chapter_label": "2CH 33",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 33,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 33,
+          "verse": 25
+        }
+      ],
+      "en": "But the people of the land killed all those who had conspired against King Amon; and the people of the land made Josiah his son king in his place.",
+      "ko": "국민이 아몬왕을 반역한 사람들을 다 죽이고 그 아들 요시야로 대신하여 왕을 삼으니라",
+      "source_text_hash": "f054497ad4baa200d17ae1c8e91d568ff3dfed05bcefa0876093505209628cee",
+      "translation_text_hash": "2047dc46e5a1d433f921b214c8408b99d6851012023c7bcaf9f9b0a7b895bb56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "국민이 아몬왕을 반역한 사람들을 다 죽이고 그 아들 요시야로 대신하여 왕을 삼으니라"
+      ],
+      "raw_text_hashes": [
+        "2047dc46e5a1d433f921b214c8408b99d6851012023c7bcaf9f9b0a7b895bb56"
+      ]
+    }
+  ]
+}

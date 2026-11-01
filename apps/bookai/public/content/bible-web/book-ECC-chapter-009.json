@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:009",
+  "unit_ordinal": 668,
+  "unit_label": "ECC 9",
+  "book_code": "ECC",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:9:1",
+      "sequence": 17477,
+      "chapter_label": "ECC 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "For all this I laid to my heart, even to explore all this: that the righteous, and the wise, and their works, are in the hand of God; whether it is love or hatred, man doesn’t know it; all is before them.",
+      "ko": "내가 마음을 다하여 이 모든 일을 궁구하며 살펴 본즉 의인과 지혜자나 그들의 행하는 일이나 다 하나님의 손에 있으니 사랑을 받을는지 미움을 받을는지 사람이 알지 못하는 것은 모두 그 미래임이니라",
+      "source_text_hash": "88d3102e5131005e4c996ceca462cb86340bf696ca8a72630f5bfe750df91cf6",
+      "translation_text_hash": "7c9d8d1b5c1d0d2f02af230a742b1e006a0e97cbb89a84a39dd4b7077f62a831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마음을 다하여 이 모든 일을 궁구하며 살펴 본즉 의인과 지혜자나 그들의 행하는 일이나 다 하나님의 손에 있으니 사랑을 받을는지 미움을 받을는지 사람이 알지 못하는 것은 모두 그 미래임이니라"
+      ],
+      "raw_text_hashes": [
+        "7c9d8d1b5c1d0d2f02af230a742b1e006a0e97cbb89a84a39dd4b7077f62a831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:2",
+      "sequence": 17478,
+      "chapter_label": "ECC 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "All things come alike to all. There is one event to the righteous and to the wicked; to the good, to the clean, to the unclean, to him who sacrifices, and to him who doesn’t sacrifice. As is the good, so is the sinner; he who takes an oath, as he who fears an oath.",
+      "ko": "모든 사람에게 임하는 모든 것이 일반이라 의인과 악인이며 선하고 깨끗한 자와 깨끗지 않은 자며 제사를 드리는 자와 제사를 드리지 아니하는 자의 결국이 일반이니 선인과 죄인이며 맹세하는 자와 맹세하기를 무서워 하는 자가 일반이로다",
+      "source_text_hash": "b74b8354b8a595a3765478a8acea60fc301bd6b67a2fee149e39eac89a588370",
+      "translation_text_hash": "0e7747154332043b4d2b5d0139a143e4e38f8da8dbb648d99ab4638f49bfc110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람에게 임하는 모든 것이 일반이라 의인과 악인이며 선하고 깨끗한 자와 깨끗지 않은 자며 제사를 드리는 자와 제사를 드리지 아니하는 자의 결국이 일반이니 선인과 죄인이며 맹세하는 자와 맹세하기를 무서워 하는 자가 일반이로다"
+      ],
+      "raw_text_hashes": [
+        "0e7747154332043b4d2b5d0139a143e4e38f8da8dbb648d99ab4638f49bfc110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:3",
+      "sequence": 17479,
+      "chapter_label": "ECC 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "This is an evil in all that is done under the sun, that there is one event to all. Yes also, the heart of the sons of men is full of evil, and madness is in their heart while they live, and after that they go to the dead.",
+      "ko": "모든 사람의 결국이 일반인 그것은 해 아래서 모든 일 중에 악한 것이니 곧 인생의 마음에 악이 가득하여 평생에 미친 마음을 품다가 후에는 죽은 자에게로 돌아가는 것이라",
+      "source_text_hash": "8dac5468e1aa21a948df8bbecc2fb8f9ae9105cd5803bd11bcfe2136b97a6b5f",
+      "translation_text_hash": "0ece09ecdaac0829be1e5288730879ccc761d1ee82d1d036ef182c135b2aa0aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람의 결국이 일반인 그것은 해 아래서 모든 일 중에 악한 것이니 곧 인생의 마음에 악이 가득하여 평생에 미친 마음을 품다가 후에는 죽은 자에게로 돌아가는 것이라"
+      ],
+      "raw_text_hashes": [
+        "0ece09ecdaac0829be1e5288730879ccc761d1ee82d1d036ef182c135b2aa0aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:4",
+      "sequence": 17480,
+      "chapter_label": "ECC 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "For to him who is joined with all the living there is hope; for a living dog is better than a dead lion.",
+      "ko": "모든 산 자 중에 참예한 자가 소망이 있음은 산 개가 죽은 사자보다 나음이니라",
+      "source_text_hash": "7abf87a224d4882c00a02715178c3da52f92f3c781033ddf6febd71338c315c2",
+      "translation_text_hash": "03ca5dbcbc92c6c7526dd4b65f7d8473b1ed4568fe214dd4a67da30fe1e8d7a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 산 자 중에 참예한 자가 소망이 있음은 산 개가 죽은 사자보다 나음이니라"
+      ],
+      "raw_text_hashes": [
+        "03ca5dbcbc92c6c7526dd4b65f7d8473b1ed4568fe214dd4a67da30fe1e8d7a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:5",
+      "sequence": 17481,
+      "chapter_label": "ECC 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "For the living know that they will die, but the dead don’t know anything, neither do they have any more a reward; for their memory is forgotten.",
+      "ko": "무릇 산 자는 죽을 줄을 알되 죽은 자는 아무 것도 모르며 다시는 상도 받지 못하는 것은 그 이름이 잊어버린바 됨이라",
+      "source_text_hash": "1086515ae0fcd0064edc68c53fcf26744bfdb376db4bec37d7c694b4f88fdc1d",
+      "translation_text_hash": "744956b71ab2df344f9a33136f67ab990c39a13968baebe9938cb3409c09505b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 산 자는 죽을 줄을 알되 죽은 자는 아무 것도 모르며 다시는 상도 받지 못하는 것은 그 이름이 잊어버린바 됨이라"
+      ],
+      "raw_text_hashes": [
+        "744956b71ab2df344f9a33136f67ab990c39a13968baebe9938cb3409c09505b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:6",
+      "sequence": 17482,
+      "chapter_label": "ECC 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Also their love, their hatred, and their envy has perished long ago; neither do they any longer have a portion forever in anything that is done under the sun.",
+      "ko": "그 사랑함과 미워함과 시기함이 없어진지 오래니 해 아래서 행하는 모든 일에 저희가 다시는 영영히 분복이 없느니라",
+      "source_text_hash": "3434e88b7fbc9d7e5c2db59c35e663cbc766169c55c26ef32fe95306306da2f0",
+      "translation_text_hash": "51f25695d83907785a5a6bd88a98be8522cc82403c954d103e524b9c2c0aefa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사랑함과 미워함과 시기함이 없어진지 오래니 해 아래서 행하는 모든 일에 저희가 다시는 영영히 분복이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "51f25695d83907785a5a6bd88a98be8522cc82403c954d103e524b9c2c0aefa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:7",
+      "sequence": 17483,
+      "chapter_label": "ECC 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Go your way—eat your bread with joy, and drink your wine with a merry heart; for God has already accepted your works.",
+      "ko": "너는 가서 기쁨으로 네 식물을 먹고 즐거운 마음으로 네 포도주를 마실찌어다 이는 하나님이 너의 하는 일을 벌써 기쁘게 받으셨음이니라",
+      "source_text_hash": "fce2455e83ae5e2cb5dcec2545d8598aed6d68e8dab9e989722f894bfbd69dde",
+      "translation_text_hash": "96e065becd7efed407ac3e8d079f7e00d5fef793707a4f0e1f631dc7f7b51470",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 기쁨으로 네 식물을 먹고 즐거운 마음으로 네 포도주를 마실찌어다 이는 하나님이 너의 하는 일을 벌써 기쁘게 받으셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "96e065becd7efed407ac3e8d079f7e00d5fef793707a4f0e1f631dc7f7b51470"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:8",
+      "sequence": 17484,
+      "chapter_label": "ECC 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Let your garments be always white, and don’t let your head lack oil.",
+      "ko": "네 의복을 항상 희게하며 네 머리에 향 기름을 그치지 않게 할찌니라",
+      "source_text_hash": "a932f1f63a312d1aab0a38b4de177404f7683ad84b79c8ec40b9f10cd09ccfde",
+      "translation_text_hash": "5fe31ab7607318a05ece765027a17b4c932db49dab1c5d5990b213d2d2bcf213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 의복을 항상 희게하며 네 머리에 향 기름을 그치지 않게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5fe31ab7607318a05ece765027a17b4c932db49dab1c5d5990b213d2d2bcf213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:9",
+      "sequence": 17485,
+      "chapter_label": "ECC 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Live joyfully with the wife whom you love all the days of your life of vanity, which he has given you under the sun, all your days of vanity, for that is your portion in life, and in your labor in which you labor under the sun.",
+      "ko": "네 헛된 평생의 모든 날 곧 하나님이 해 아래서 네게 주신 모든 헛된 날에 사랑하는 아내와 함께 즐겁게 살찌어다 이는 네가 일평생에 해 아래서 수고하고 얻은 분복이니라",
+      "source_text_hash": "1bb9af154703e3ebf280bca747af2e2c4d293e6fcacc403de54bf1a94fe1b3dc",
+      "translation_text_hash": "116b1b20a5cd35c4582da3f29189da04de3a2750236927ca4dfa472f4b01c180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 헛된 평생의 모든 날 곧 하나님이 해 아래서 네게 주신 모든 헛된 날에 사랑하는 아내와 함께 즐겁게 살찌어다 이는 네가 일평생에 해 아래서 수고하고 얻은 분복이니라"
+      ],
+      "raw_text_hashes": [
+        "116b1b20a5cd35c4582da3f29189da04de3a2750236927ca4dfa472f4b01c180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:10",
+      "sequence": 17486,
+      "chapter_label": "ECC 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Whatever your hand finds to do, do it with your might; for there is no work, nor plan, nor knowledge, nor wisdom, in Sheol, where you are going.",
+      "ko": "무릇 네 손이 일을 당하는대로 힘을 다하여 할찌어다 네가 장차 들어갈 음부에는 일도 없고 계획도 없고 지식도 없고 지혜도 없음이니라",
+      "source_text_hash": "40254c45bfaf217e65abd08ecf72d39799e368170a9de251c193ab327829ccf2",
+      "translation_text_hash": "40eef1dd45083bccb2e014884b8297946f35824ec66da9351188d21d7d9c8c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 네 손이 일을 당하는대로 힘을 다하여 할찌어다 네가 장차 들어갈 음부에는 일도 없고 계획도 없고 지식도 없고 지혜도 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "40eef1dd45083bccb2e014884b8297946f35824ec66da9351188d21d7d9c8c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:11",
+      "sequence": 17487,
+      "chapter_label": "ECC 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "I returned and saw under the sun that the race is not to the swift, nor the battle to the strong, neither yet bread to the wise, nor yet riches to men of understanding, nor yet favor to men of skill; but time and chance happen to them all.",
+      "ko": "내가 돌이켜 해 아래서 보니 빠른 경주자라고 선착하는 것이 아니며 유력자라고 전쟁에 승리하는 것이 아니며 지혜자라고 식물을 얻는 것이 아니며 명철자라고 재물을 얻는 것이 아니며 기능자라고 은총을 입는 것이 아니니 이는 시기와 우연이 이 모든 자에게 임함이라",
+      "source_text_hash": "f28079c2aacfeec0271fd00cbb0f1679078dd07d055de5b93672b5a5f1dd6e96",
+      "translation_text_hash": "52e8a7ca87ed3b7860f7cde35ab32bd55367810e98597f7ec14dc0d229e41eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 해 아래서 보니 빠른 경주자라고 선착하는 것이 아니며 유력자라고 전쟁에 승리하는 것이 아니며 지혜자라고 식물을 얻는 것이 아니며 명철자라고 재물을 얻는 것이 아니며 기능자라고 은총을 입는 것이 아니니 이는 시기와 우연이 이 모든 자에게 임함이라"
+      ],
+      "raw_text_hashes": [
+        "52e8a7ca87ed3b7860f7cde35ab32bd55367810e98597f7ec14dc0d229e41eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:12",
+      "sequence": 17488,
+      "chapter_label": "ECC 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "For man also doesn’t know his time. As the fish that are taken in an evil net, and as the birds that are caught in the snare, even so are the sons of men snared in an evil time, when it falls suddenly on them.",
+      "ko": "대저 사람은 자기의 시기를 알지 못하나니 물고기가 재앙의 그물에 걸리고 새가 올무에 걸림 같이 인생도 재앙의 날이 홀연히 임하면 거기 걸리느니라",
+      "source_text_hash": "c69705127107db796a6019fb01dfb43ecd5b02e4d2ee9c4ac33983f340540c62",
+      "translation_text_hash": "b40e4080aaf83e2129cb69c5062db6a47be4c4d74dd7203d144c4ebaa03390e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 사람은 자기의 시기를 알지 못하나니 물고기가 재앙의 그물에 걸리고 새가 올무에 걸림 같이 인생도 재앙의 날이 홀연히 임하면 거기 걸리느니라"
+      ],
+      "raw_text_hashes": [
+        "b40e4080aaf83e2129cb69c5062db6a47be4c4d74dd7203d144c4ebaa03390e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:13",
+      "sequence": 17489,
+      "chapter_label": "ECC 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "I have also seen wisdom under the sun in this way, and it seemed great to me.",
+      "ko": "내가 또 해 아래서 지혜를 보고 크게 여긴 것이 이러하니",
+      "source_text_hash": "8c0af0cc12227ee05944c81c61aff4f4d54fabe314ef98c323cfb8a1abe90720",
+      "translation_text_hash": "917907b1a9ad1e1a9f28ef8a39e20209c37d771e52391e31c71f0586bfe27017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 해 아래서 지혜를 보고 크게 여긴 것이 이러하니"
+      ],
+      "raw_text_hashes": [
+        "917907b1a9ad1e1a9f28ef8a39e20209c37d771e52391e31c71f0586bfe27017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:14",
+      "sequence": 17490,
+      "chapter_label": "ECC 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "There was a little city, and few men within it; and a great king came against it, besieged it, and built great bulwarks against it.",
+      "ko": "곧 어떤 작고 인구가 많지 않은 성읍에 큰 임금이 와서 에워싸고 큰 흉벽을 쌓고 치고자 할 때에",
+      "source_text_hash": "33fe44603cc04aa7a284980fec526760a281f4671604d9e2181437cba557212d",
+      "translation_text_hash": "a1107cf1f5f7b7545148a6a9e7b5944079d30b083d66b1b66efdda181154e7c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 어떤 작고 인구가 많지 않은 성읍에 큰 임금이 와서 에워싸고 큰 흉벽을 쌓고 치고자 할 때에"
+      ],
+      "raw_text_hashes": [
+        "a1107cf1f5f7b7545148a6a9e7b5944079d30b083d66b1b66efdda181154e7c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:15",
+      "sequence": 17491,
+      "chapter_label": "ECC 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Now a poor wise man was found in it, and he by his wisdom delivered the city; yet no man remembered that same poor man.",
+      "ko": "그 성읍 가운데 가난한 지혜자가 있어서 그 지혜로 그 성읍을 건진 것이라 그러나 이 가난한 자를 기억하는 사람이 없었도다",
+      "source_text_hash": "1db8c420084442fefb9cd3bfd5025773d492693e5d7be2c2d475a2e74da803ee",
+      "translation_text_hash": "cc004462b359bf185fea69cc4ec7996b5d134bd2b583922ee80dcc9000c5bc31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 가운데 가난한 지혜자가 있어서 그 지혜로 그 성읍을 건진 것이라 그러나 이 가난한 자를 기억하는 사람이 없었도다"
+      ],
+      "raw_text_hashes": [
+        "cc004462b359bf185fea69cc4ec7996b5d134bd2b583922ee80dcc9000c5bc31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:16",
+      "sequence": 17492,
+      "chapter_label": "ECC 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "Then I said, “Wisdom is better than strength.” Nevertheless the poor man’s wisdom is despised, and his words are not heard.",
+      "ko": "그러므로 내가 이르기를 지혜가 힘보다 낫다마는 가난한 자의 지혜가 멸시를 받고 그 말이 신청되지 아니한다 하였노라",
+      "source_text_hash": "0b137fb16d86e0152020b2e652d21ce7d1960c56ced2a5495653efff19ee874a",
+      "translation_text_hash": "96e62f388d317a16ed6448882380772ae132b724a6112836f4e1fe8d5813dbe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이르기를 지혜가 힘보다 낫다마는 가난한 자의 지혜가 멸시를 받고 그 말이 신청되지 아니한다 하였노라"
+      ],
+      "raw_text_hashes": [
+        "96e62f388d317a16ed6448882380772ae132b724a6112836f4e1fe8d5813dbe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:17",
+      "sequence": 17493,
+      "chapter_label": "ECC 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "The words of the wise heard in quiet are better than the cry of him who rules among fools.",
+      "ko": "종용히 들리는 지혜자의 말이 우매자의 어른의 호령보다 나으니라",
+      "source_text_hash": "1feb46646c93be29840c1904ed37df2a8e07f0c3ce222ba498c860f1a49c6ad1",
+      "translation_text_hash": "cb78a3019833c5709f4e2a7601f40e90791acf660f050362899710ab95c37fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종용히 들리는 지혜자의 말이 우매자의 어른의 호령보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "cb78a3019833c5709f4e2a7601f40e90791acf660f050362899710ab95c37fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:9:18",
+      "sequence": 17494,
+      "chapter_label": "ECC 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Wisdom is better than weapons of war; but one sinner destroys much good.",
+      "ko": "지혜가 병기보다 나으니라 그러나 한 죄인이 많은 선을 패궤케 하느니라",
+      "source_text_hash": "7712e7a9f5946aad594f7320f1a4428dcfe4e8bb36b4e74598da9e6ef9646f5e",
+      "translation_text_hash": "3408b41a7b472229cec4f1c298cd5a965f1aae84a07473c3c001f549133d5e1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 병기보다 나으니라 그러나 한 죄인이 많은 선을 패궤케 하느니라"
+      ],
+      "raw_text_hashes": [
+        "3408b41a7b472229cec4f1c298cd5a965f1aae84a07473c3c001f549133d5e1b"
+      ]
+    }
+  ]
+}

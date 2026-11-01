@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:010",
+  "unit_ordinal": 100,
+  "unit_label": "LEV 10",
+  "book_code": "LEV",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:10:1",
+      "sequence": 2979,
+      "chapter_label": "LEV 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Nadab and Abihu, the sons of Aaron, each took his censer, and put fire in it, and laid incense on it, and offered strange fire before the LORD, which he had not commanded them.",
+      "ko": "아론의 아들 나답과 아비후가 각기 향로를 가져다가 여호와의 명하시지 않은 다른 불을 담아 여호와 앞에 분향하였더니",
+      "source_text_hash": "70e4b291594ced488a228a3c96edda3ab0f256cb21918187431d35598dd4520d",
+      "translation_text_hash": "8072a8691e2a5afa347abb1d4978cbc8d3f59c0859696e602b1cf4df9e061ea9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들 나답과 아비후가 각기 향로를 가져다가 여호와의 명하시지 않은 다른 불을 담아 여호와 앞에 분향하였더니"
+      ],
+      "raw_text_hashes": [
+        "8072a8691e2a5afa347abb1d4978cbc8d3f59c0859696e602b1cf4df9e061ea9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:2",
+      "sequence": 2980,
+      "chapter_label": "LEV 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Fire came out from before the LORD, and devoured them, and they died before the LORD.",
+      "ko": "불이 여호와 앞에서 나와 그들을 삼키매 그들이 여호와 앞에서 죽은지라",
+      "source_text_hash": "542cb93c5ab88503fc616ac03c83c2bbf7956f83a7b6eac1ff84699145f87dae",
+      "translation_text_hash": "09474296b7f9c5f85cc1757bb86ea35baa64f2c8109fd33c7d03927fb786a3df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 여호와 앞에서 나와 그들을 삼키매 그들이 여호와 앞에서 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "09474296b7f9c5f85cc1757bb86ea35baa64f2c8109fd33c7d03927fb786a3df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:3",
+      "sequence": 2981,
+      "chapter_label": "LEV 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Then Moses said to Aaron, “This is what the LORD spoke of, saying, ‘I will show myself holy to those who come near me, and before all the people I will be glorified.’” Aaron held his peace.",
+      "ko": "모세가 아론에게 이르되 이는 여호와의 말씀이라 이르시기를 나는 나를 가까이 하는 자 중에 내가 거룩하다 함을 얻겠고 온 백성 앞에 내가 영광을 얻으리라 하셨느니라 아론이 잠잠하니",
+      "source_text_hash": "11fffe679740e291d154a8d2fc2a679c2e4de04fe6874825998f0f574d74af55",
+      "translation_text_hash": "d36a62fbd2a58361771069c26063eb0a505a1baf505807801ef3784aa0e95cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론에게 이르되 이는 여호와의 말씀이라 이르시기를 나는 나를 가까이 하는 자 중에 내가 거룩하다 함을 얻겠고 온 백성 앞에 내가 영광을 얻으리라 하셨느니라 아론이 잠잠하니"
+      ],
+      "raw_text_hashes": [
+        "d36a62fbd2a58361771069c26063eb0a505a1baf505807801ef3784aa0e95cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:4",
+      "sequence": 2982,
+      "chapter_label": "LEV 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Moses called Mishael and Elzaphan, the sons of Uzziel the uncle of Aaron, and said to them, “Draw near, carry your brothers from before the sanctuary out of the camp.”",
+      "ko": "모세가 아론의 아자비 웃시엘의 아들 미사엘과 엘사반을 불러 그들에게 이르되 나아와 너희 형제들을 성소 앞에서 진 밖으로 메어 가라 하매",
+      "source_text_hash": "38aa46e87306eccc616fd1faa3f893143b84923d18c66e178789cbe85c422bc0",
+      "translation_text_hash": "e7fca98eca2dbf5955d30f1f0aafe2a066aa8f733aa70d2d4cb3ab13fbc8f2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론의 아자비 웃시엘의 아들 미사엘과 엘사반을 불러 그들에게 이르되 나아와 너희 형제들을 성소 앞에서 진 밖으로 메어 가라 하매"
+      ],
+      "raw_text_hashes": [
+        "e7fca98eca2dbf5955d30f1f0aafe2a066aa8f733aa70d2d4cb3ab13fbc8f2f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:5",
+      "sequence": 2983,
+      "chapter_label": "LEV 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "So they came near, and carried them in their tunics out of the camp, as Moses had said.",
+      "ko": "그들이 나아와 모세의 명대로 그들을 옷 입은채 진 밖으로 메어 내니",
+      "source_text_hash": "8b45488ed3a3afcb62ff8a8df06c533c75f42f0ae32aa07bdde4bc21357ac216",
+      "translation_text_hash": "b59dae188d73329745b7cd5653a268f83903d294b91581f5ba97f17f724c21c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나아와 모세의 명대로 그들을 옷 입은채 진 밖으로 메어 내니"
+      ],
+      "raw_text_hashes": [
+        "b59dae188d73329745b7cd5653a268f83903d294b91581f5ba97f17f724c21c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:6",
+      "sequence": 2984,
+      "chapter_label": "LEV 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Moses said to Aaron, and to Eleazar and to Ithamar, his sons, “Don’t let the hair of your heads go loose, and don’t tear your clothes, so that you don’t die, and so that he will not be angry with all the congregation; but let your brothers, the whole house of Israel, bewail the burning which the LORD has kindled.",
+      "ko": "모세가 아론과 그 아들 엘르아살과 이다말에게 이르되 너희는 머리를 풀거나 옷을 찢지 말아서 너희 죽음을 면하고 여호와의 진노가 온 회중에게 미침을 면케 하라 오직 너희 형제 이스라엘 온 족속이 여호와의 치신 불로 인하여 슬퍼할 것이니라",
+      "source_text_hash": "c2c6380200d86bfea0bd5e45d3b852ecdd929d1075b3f0ae8abbdf8ebafea067",
+      "translation_text_hash": "58abdee12a912a72a38ca9b411a8a96b4b7482e4f5ba62dedd29bbdeca493f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론과 그 아들 엘르아살과 이다말에게 이르되 너희는 머리를 풀거나 옷을 찢지 말아서 너희 죽음을 면하고 여호와의 진노가 온 회중에게 미침을 면케 하라 오직 너희 형제 이스라엘 온 족속이 여호와의 치신 불로 인하여 슬퍼할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "58abdee12a912a72a38ca9b411a8a96b4b7482e4f5ba62dedd29bbdeca493f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:7",
+      "sequence": 2985,
+      "chapter_label": "LEV 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "You shall not go out from the door of the Tent of Meeting, lest you die; for the anointing oil of the LORD is on you.” They did according to the word of Moses.",
+      "ko": "여호와의 관유가 너희에게 있은즉 너희는 회막문에 나가지 말아서 죽음을 면할찌니라 그들이 모세의 명대로 하니라",
+      "source_text_hash": "8a1fd90b7dcbbdcff8ff3a7164775f97b23a255af0637a91c11dc65af108b1e2",
+      "translation_text_hash": "71c403a5dd7e2b2902466c112c40d9ad9d3157e7c1301e9a3bdbec062bf9d2fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 관유가 너희에게 있은즉 너희는 회막문에 나가지 말아서 죽음을 면할찌니라 그들이 모세의 명대로 하니라"
+      ],
+      "raw_text_hashes": [
+        "71c403a5dd7e2b2902466c112c40d9ad9d3157e7c1301e9a3bdbec062bf9d2fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:8",
+      "sequence": 2986,
+      "chapter_label": "LEV 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Then the LORD said to Aaron,",
+      "ko": "여호와께서 아론에게 일러 가라사대",
+      "source_text_hash": "908e66d67320bea762b1abd5dacab00c1db3cfe354c4345183423b3355b867ec",
+      "translation_text_hash": "dcf6e46eccb120e3d0c0484c6e3431428a445874e9584be9e62d438456640fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "dcf6e46eccb120e3d0c0484c6e3431428a445874e9584be9e62d438456640fc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:9",
+      "sequence": 2987,
+      "chapter_label": "LEV 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "“You and your sons are not to drink wine or strong drink whenever you go into the Tent of Meeting, or you will die. This shall be a statute forever throughout your generations.",
+      "ko": "너나 네 자손들이 회막에 들어갈 때에는 포도주나 독주를 마시지 말아서 너희 사망을 면하라 이는 너희 대대로 영영한 규례라",
+      "source_text_hash": "38dc3b09b379473287294562d2e0d5d9af683f860d05e1ed118e1d9c3ff34ba8",
+      "translation_text_hash": "6588d674e5b0472b7a40fee9b8465d2b4c720198a0d3e8e7c8b385fd9cb4d5b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너나 네 자손들이 회막에 들어갈 때에는 포도주나 독주를 마시지 말아서 너희 사망을 면하라 이는 너희 대대로 영영한 규례라"
+      ],
+      "raw_text_hashes": [
+        "6588d674e5b0472b7a40fee9b8465d2b4c720198a0d3e8e7c8b385fd9cb4d5b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:10",
+      "sequence": 2988,
+      "chapter_label": "LEV 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "You are to make a distinction between the holy and the common, and between the unclean and the clean.",
+      "ko": "그리하여야 너희가 거룩하고 속된 것을 분별하며 부정하고 정한 것을 분별하고",
+      "source_text_hash": "4126892813a3f289bdd042adfa0ef8ced2c1e256a75dcc654814ccabdf967d1f",
+      "translation_text_hash": "94cc29fa6332ae6c4d96b424b89b120d91ad8348f181d706045071c3dd2476b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하여야 너희가 거룩하고 속된 것을 분별하며 부정하고 정한 것을 분별하고"
+      ],
+      "raw_text_hashes": [
+        "94cc29fa6332ae6c4d96b424b89b120d91ad8348f181d706045071c3dd2476b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:11",
+      "sequence": 2989,
+      "chapter_label": "LEV 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "You are to teach the children of Israel all the statutes which the LORD has spoken to them by Moses.”",
+      "ko": "또 여호와가 모세로 명한 모든 규례를 이스라엘 자손에게 가르치리라",
+      "source_text_hash": "9f85d96b518864dc1b5140f6f1f02409bb3781ef2457726fd0bcf2355bd712da",
+      "translation_text_hash": "714c9c1c2e2b73b298fdec2e52d79a58cd4855638719dab42b0d46f9154fb7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와가 모세로 명한 모든 규례를 이스라엘 자손에게 가르치리라"
+      ],
+      "raw_text_hashes": [
+        "714c9c1c2e2b73b298fdec2e52d79a58cd4855638719dab42b0d46f9154fb7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:12",
+      "sequence": 2990,
+      "chapter_label": "LEV 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Moses spoke to Aaron, and to Eleazar and to Ithamar, his sons who were left, “Take the meal offering that remains of the offerings of the LORD made by fire, and eat it without yeast beside the altar; for it is most holy;",
+      "ko": "모세가 아론과 그 남은 아들 엘르아살에게와 이다말에게 이르되 여호와께 드린 화제중 소제의 남은 것은 지극히 거룩하니 너희는 그것을 취하여 누룩을 넣지 말고 단 곁에서 먹되",
+      "source_text_hash": "381eb1cf2e5435115ed2183531f1de14b150343cd04a2dfdfb1d6a7eb5b43d27",
+      "translation_text_hash": "ae5e4ca6bd8e56899be20c53ea1732ee1673edb6002d4e92d186641a64e5f77f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론과 그 남은 아들 엘르아살에게와 이다말에게 이르되 여호와께 드린 화제중 소제의 남은 것은 지극히 거룩하니 너희는 그것을 취하여 누룩을 넣지 말고 단 곁에서 먹되"
+      ],
+      "raw_text_hashes": [
+        "ae5e4ca6bd8e56899be20c53ea1732ee1673edb6002d4e92d186641a64e5f77f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:13",
+      "sequence": 2991,
+      "chapter_label": "LEV 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "and you shall eat it in a holy place, because it is your portion, and your sons’ portion, of the offerings of the LORD made by fire; for so I am commanded.",
+      "ko": "이는 여호와의 화제중 네 응식과 네 아들의 응식인즉 너희는 그것을 거룩한 곳에서 먹으라 내가 명령을 받았느니라",
+      "source_text_hash": "a18a379df582ad67c7a37881268dfba98e7c93d72534a176678c5d1187899d3a",
+      "translation_text_hash": "71c5f0e3c7603efb4c81acb5d218374393e1a93888a9a3d9db382287ddbdb1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 화제중 네 응식과 네 아들의 응식인즉 너희는 그것을 거룩한 곳에서 먹으라 내가 명령을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "71c5f0e3c7603efb4c81acb5d218374393e1a93888a9a3d9db382287ddbdb1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:14",
+      "sequence": 2992,
+      "chapter_label": "LEV 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "The waved breast and the heaved thigh you shall eat in a clean place, you, and your sons, and your daughters with you: for they are given as your portion, and your sons’ portion, out of the sacrifices of the peace offerings of the children of Israel.",
+      "ko": "흔든 가슴과 든 뒷다리는 너와 네 자녀가 너와 함께 정결한 곳에서 먹을찌니 이는 이스라엘 자손의 화목제 희생 중에서 네 응식과 네 자손의 응식으로 주신 것임이니라",
+      "source_text_hash": "d2093a61deb28cc26b8fe0792aad6c79ae8cc1d0b180db5201b347fb59dca0aa",
+      "translation_text_hash": "b979230613185ca24807099cac66471a72472fda4185b915c419fecb938ffe3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흔든 가슴과 든 뒷다리는 너와 네 자녀가 너와 함께 정결한 곳에서 먹을찌니 이는 이스라엘 자손의 화목제 희생 중에서 네 응식과 네 자손의 응식으로 주신 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "b979230613185ca24807099cac66471a72472fda4185b915c419fecb938ffe3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:15",
+      "sequence": 2993,
+      "chapter_label": "LEV 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "They shall bring the heaved thigh and the waved breast with the offerings made by fire of the fat, to wave it for a wave offering before the LORD. It shall be yours, and your sons’ with you, as a portion forever, as the LORD has commanded.”",
+      "ko": "그 든 뒷다리와 흔든 가슴을 화제의 기름과 함께 가져다가 여호와 앞에 흔들어 요제를 삼을찌니 이는 여호와의 명령대로 너와 네 자손의 영원한 응식이니라",
+      "source_text_hash": "99f013957db98bc83e51840b39ce7e9bd9b6278b4bc1dcb1b3d6a85c946a7f31",
+      "translation_text_hash": "e88f1584748511a5ec5a4323a911ded1997108d0a228ba57ff77786710cce985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 든 뒷다리와 흔든 가슴을 화제의 기름과 함께 가져다가 여호와 앞에 흔들어 요제를 삼을찌니 이는 여호와의 명령대로 너와 네 자손의 영원한 응식이니라"
+      ],
+      "raw_text_hashes": [
+        "e88f1584748511a5ec5a4323a911ded1997108d0a228ba57ff77786710cce985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:16",
+      "sequence": 2994,
+      "chapter_label": "LEV 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Moses diligently inquired about the goat of the sin offering, and, behold, it was burned. He was angry with Eleazar and with Ithamar, the sons of Aaron who were left, saying,",
+      "ko": "모세가 속죄제 드린 염소를 찾은즉 이미 불살랐는지라 그가 아론의 남은 아들 엘르아살과 이다말에게 노하여 가로되",
+      "source_text_hash": "f90978ad4d651ee2b9f07da97dc382c5be0759d4346b1032cfe22a4bf8c1756c",
+      "translation_text_hash": "e70d8bc02f30dbc6d4d1414a264d927201a0e63134b9c10d73dd64cbc4465435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 속죄제 드린 염소를 찾은즉 이미 불살랐는지라 그가 아론의 남은 아들 엘르아살과 이다말에게 노하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "e70d8bc02f30dbc6d4d1414a264d927201a0e63134b9c10d73dd64cbc4465435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:17",
+      "sequence": 2995,
+      "chapter_label": "LEV 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "“Why haven’t you eaten the sin offering in the place of the sanctuary, since it is most holy, and he has given it to you to bear the iniquity of the congregation, to make atonement for them before the LORD?",
+      "ko": "이 속죄제 희생은 지극히 거룩하거늘 너희가 어찌하여 거룩한 곳에서 먹지 아니하였느뇨 이는 너희로 회중의 죄를 담당하여 그들을 위하여 여호와 앞에 속하게 하려고 너희에게 주신 것이니라",
+      "source_text_hash": "5e15d7b1b3003b36a187f01c90b019f16472368ca396b7e868bca89a8b6dbfcb",
+      "translation_text_hash": "1018e05772627537b6f414979ee1657321d9b52045495d4d7be30a83d98393e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 속죄제 희생은 지극히 거룩하거늘 너희가 어찌하여 거룩한 곳에서 먹지 아니하였느뇨 이는 너희로 회중의 죄를 담당하여 그들을 위하여 여호와 앞에 속하게 하려고 너희에게 주신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "1018e05772627537b6f414979ee1657321d9b52045495d4d7be30a83d98393e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:18",
+      "sequence": 2996,
+      "chapter_label": "LEV 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, its blood was not brought into the inner part of the sanctuary. You certainly should have eaten it in the sanctuary, as I commanded.”",
+      "ko": "그 피를 성소에 들여오지 아니하였으니 그 제육은 너희가 나의 명한 대로 거룩한 곳에서 먹었어야 할 것이니라",
+      "source_text_hash": "68f6e33778b2e8d7a4e90b913b5b359a46b8fb5a0f9db0fdf6709a75ba57eea7",
+      "translation_text_hash": "489642ad07f3607d3cf17ede857d794b6331ee1d7c2c5dc78a4d7237f230cda0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피를 성소에 들여오지 아니하였으니 그 제육은 너희가 나의 명한 대로 거룩한 곳에서 먹었어야 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "489642ad07f3607d3cf17ede857d794b6331ee1d7c2c5dc78a4d7237f230cda0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:19",
+      "sequence": 2997,
+      "chapter_label": "LEV 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Aaron spoke to Moses, “Behold, today they have offered their sin offering and their burnt offering before the LORD; and such things as these have happened to me. If I had eaten the sin offering today, would it have been pleasing in the LORD’s sight?”",
+      "ko": "아론이 모세에게 이르되 오늘 그들이 그 속죄제와 번제를 여호와께 드렸어도 이런 일이 내게 임하였거늘 오늘 내가 속죄 제육을 먹었더면 여호와께서 어찌 선히 여기셨으리요",
+      "source_text_hash": "1b5a3f0135232dd621a373b1b36e3d4e464e736e110ed2c6f0f8270a56d0cf86",
+      "translation_text_hash": "efff5e4aeb203165aabdcce3d5272c098cbcd58c4dd417adcfac1dfe401bb6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 모세에게 이르되 오늘 그들이 그 속죄제와 번제를 여호와께 드렸어도 이런 일이 내게 임하였거늘 오늘 내가 속죄 제육을 먹었더면 여호와께서 어찌 선히 여기셨으리요"
+      ],
+      "raw_text_hashes": [
+        "efff5e4aeb203165aabdcce3d5272c098cbcd58c4dd417adcfac1dfe401bb6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:10:20",
+      "sequence": 2998,
+      "chapter_label": "LEV 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "When Moses heard that, it was pleasing in his sight.",
+      "ko": "모세가 그 말을 듣고 좋게 여겼더라",
+      "source_text_hash": "109f70751a9ccc78b90585448ff0a50d7e368b4c0b8f5a59b06724e12421eda8",
+      "translation_text_hash": "44c85cefa421ea7d9d4bab2fce0c08a3da9fb6a3ef451042ed019a1cd1ee0ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 말을 듣고 좋게 여겼더라"
+      ],
+      "raw_text_hashes": [
+        "44c85cefa421ea7d9d4bab2fce0c08a3da9fb6a3ef451042ed019a1cd1ee0ed6"
+      ]
+    }
+  ]
+}

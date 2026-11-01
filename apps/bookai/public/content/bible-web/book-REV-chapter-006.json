@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:006",
+  "unit_ordinal": 1173,
+  "unit_label": "REV 6",
+  "book_code": "REV",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:6:1",
+      "sequence": 30791,
+      "chapter_label": "REV 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "I saw that the Lamb opened one of the seven seals, and I heard one of the four living creatures saying, as with a voice of thunder, “Come and see!”",
+      "ko": "내가 보매 어린 양이 일곱 인 중에 하나를 떼시는 그 때에 내가 들으니 네 생물 중에 하나가 우뢰소리 같이 말하되 오라 하기로",
+      "source_text_hash": "2b8c7189caf0f4c52972973af71f2234f9fc203c3e0afe38db8ec87624595dd3",
+      "translation_text_hash": "38b03bc0870b938887cbcfe4928be85e1938c84484539a6a28008d55f166a397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보매 어린 양이 일곱 인 중에 하나를 떼시는 그 때에 내가 들으니 네 생물 중에 하나가 우뢰소리 같이 말하되 오라 하기로"
+      ],
+      "raw_text_hashes": [
+        "38b03bc0870b938887cbcfe4928be85e1938c84484539a6a28008d55f166a397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:2",
+      "sequence": 30792,
+      "chapter_label": "REV 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Then a white horse appeared, and he who sat on it had a bow. A crown was given to him, and he came out conquering, and to conquer.",
+      "ko": "내가 이에 보니 흰 말이 있는데 그 탄 자가 활을 가졌고 면류관을 받고 나가서 이기고 또 이기려고 하더라",
+      "source_text_hash": "e525fea40f4551f7db194893d1c12024222c449ec6b6e2c4e144770496c5c3c7",
+      "translation_text_hash": "3e7e120c5040b5a15d9633d173f5faed98f37ec3cbc93493fdbddb75ffc810d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이에 보니 흰 말이 있는데 그 탄 자가 활을 가졌고 면류관을 받고 나가서 이기고 또 이기려고 하더라"
+      ],
+      "raw_text_hashes": [
+        "3e7e120c5040b5a15d9633d173f5faed98f37ec3cbc93493fdbddb75ffc810d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:3",
+      "sequence": 30793,
+      "chapter_label": "REV 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "When he opened the second seal, I heard the second living creature saying, “Come!”",
+      "ko": "둘째 인을 떼실 때에 내가 들으니 둘째 생물이 말하되 오라 하더니",
+      "source_text_hash": "ee9756856cd1e64667f3f5a4d3e9917663b4512cb531d1c765818edcc7287964",
+      "translation_text_hash": "8754222de9ff0335d648f24e8af846a0de813d076fdd4ece77887177e850a607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 인을 떼실 때에 내가 들으니 둘째 생물이 말하되 오라 하더니"
+      ],
+      "raw_text_hashes": [
+        "8754222de9ff0335d648f24e8af846a0de813d076fdd4ece77887177e850a607"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:4",
+      "sequence": 30794,
+      "chapter_label": "REV 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Another came out, a red horse. To him who sat on it was given power to take peace from the earth, and that they should kill one another. There was given to him a great sword.",
+      "ko": "이에 붉은 다른 말이 나오더라 그 탄 자가 허락을 받아 땅에서 화평을 제하여 버리며 서로 죽이게 하고 또 큰 칼을 받았더라",
+      "source_text_hash": "58bef98c978d1aa249e0e79b3f6c0dff5246deffbfde2e013b8c3db48a4ddc25",
+      "translation_text_hash": "7d5a37431913ce7f1b2af94488087241bcdaa80e9157d2b81feb69d6c75b647f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 붉은 다른 말이 나오더라 그 탄 자가 허락을 받아 땅에서 화평을 제하여 버리며 서로 죽이게 하고 또 큰 칼을 받았더라"
+      ],
+      "raw_text_hashes": [
+        "7d5a37431913ce7f1b2af94488087241bcdaa80e9157d2b81feb69d6c75b647f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:5",
+      "sequence": 30795,
+      "chapter_label": "REV 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "When he opened the third seal, I heard the third living creature saying, “Come and see!” And behold, a black horse, and he who sat on it had a balance in his hand.",
+      "ko": "세째 인을 떼실 때에 내가 들으니 세째 생물이 말하되 오라 하기로 내가 보니 검은 말이 나오는데 그 탄 자가 손에 저울을 가졌더라",
+      "source_text_hash": "d570a551a7187053f2782e1c2978ad780c0da207e2e333d39f8ead5fe7b41b6e",
+      "translation_text_hash": "073d2bb928d976cf29f642cd68f14d1184d9c02d78062920b58f5189679bed76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째 인을 떼실 때에 내가 들으니 세째 생물이 말하되 오라 하기로 내가 보니 검은 말이 나오는데 그 탄 자가 손에 저울을 가졌더라"
+      ],
+      "raw_text_hashes": [
+        "073d2bb928d976cf29f642cd68f14d1184d9c02d78062920b58f5189679bed76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:6",
+      "sequence": 30796,
+      "chapter_label": "REV 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "I heard a voice in the middle of the four living creatures saying, “A choenix of wheat for a denarius, and three choenix of barley for a denarius! Don’t damage the oil and the wine!”",
+      "ko": "내가 네 생물 사이로서 나는듯하는 음성을 들으니 가로되 한 데나리온에 밀 한되요 한 데나리온에 보리 석되로다 또 감람유와 포도주는 해치 말라 하더라",
+      "source_text_hash": "6ff6fc37b152b78a224ffaaec0d2bedc4d6ef64d750ac9326f1910847f020aaa",
+      "translation_text_hash": "3863d808ffc2d0839922009d309dfe92050e9712265bc9e3cc7155aec33e6f84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 생물 사이로서 나는듯하는 음성을 들으니 가로되 한 데나리온에 밀 한되요 한 데나리온에 보리 석되로다 또 감람유와 포도주는 해치 말라 하더라"
+      ],
+      "raw_text_hashes": [
+        "3863d808ffc2d0839922009d309dfe92050e9712265bc9e3cc7155aec33e6f84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:7",
+      "sequence": 30797,
+      "chapter_label": "REV 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "When he opened the fourth seal, I heard the fourth living creature saying, “Come and see!”",
+      "ko": "네째 인을 떼실 때에 내가 네째 생물의 음성을 들으니 가로되 오라 하기로",
+      "source_text_hash": "77d72594dec992e426f3ebb25394e617f1c5b7f779c478e42f482258a3c4e101",
+      "translation_text_hash": "574987eaa5ba8d9774a6e91a599ba086679ddcf1be8d85a77fe40929a02b1aed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째 인을 떼실 때에 내가 네째 생물의 음성을 들으니 가로되 오라 하기로"
+      ],
+      "raw_text_hashes": [
+        "574987eaa5ba8d9774a6e91a599ba086679ddcf1be8d85a77fe40929a02b1aed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:8",
+      "sequence": 30798,
+      "chapter_label": "REV 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "And behold, a pale horse, and the name of he who sat on it was Death. Hades followed with him. Authority over one fourth of the earth, to kill with the sword, with famine, with death, and by the wild animals of the earth was given to him.",
+      "ko": "내가 보매 청황색 말이 나오는데 그 탄 자의 이름은 사망이니 음부가 그 뒤를 따르더라 저희가 땅 사분 일의 권세를 얻어 검과 흉년과 사망과 땅의 짐승으로써 죽이더라",
+      "source_text_hash": "fca59e918fc47011199f1dede7ce9aa78863bb152600087dabfabfc5c2106526",
+      "translation_text_hash": "e0dc14e49527d0f739848e84389d9489a69d8ed2e569f2c8ddf8da0b36692c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보매 청황색 말이 나오는데 그 탄 자의 이름은 사망이니 음부가 그 뒤를 따르더라 저희가 땅 사분 일의 권세를 얻어 검과 흉년과 사망과 땅의 짐승으로써 죽이더라"
+      ],
+      "raw_text_hashes": [
+        "e0dc14e49527d0f739848e84389d9489a69d8ed2e569f2c8ddf8da0b36692c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:9",
+      "sequence": 30799,
+      "chapter_label": "REV 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "When he opened the fifth seal, I saw underneath the altar the souls of those who had been killed for the Word of God, and for the testimony of the Lamb which they had.",
+      "ko": "다섯째 인을 떼실 때에 내가 보니 하나님의 말씀과 저희의 가진 증거를 인하여 죽임을 당한 영혼들이 제단 아래 있어",
+      "source_text_hash": "c17cabd8ca96c357ad261c882162a180a28bd3aba9a2c4d18a501df680621e37",
+      "translation_text_hash": "3d714c70e952730ab76a80c98db4f4d38f920fb3fa8e24462a512cb78ab93eaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째 인을 떼실 때에 내가 보니 하나님의 말씀과 저희의 가진 증거를 인하여 죽임을 당한 영혼들이 제단 아래 있어"
+      ],
+      "raw_text_hashes": [
+        "3d714c70e952730ab76a80c98db4f4d38f920fb3fa8e24462a512cb78ab93eaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:10",
+      "sequence": 30800,
+      "chapter_label": "REV 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "They cried with a loud voice, saying, “How long, Master, the holy and true, until you judge and avenge our blood on those who dwell on the earth?”",
+      "ko": "큰 소리로 불러 가로되 거룩하고 참되신 대주재여 땅에 거하는 자들을 심판하여 우리 피를 신원하여 주지 아니하시기를 어느 때까지 하시려나이까 하니",
+      "source_text_hash": "515826c432176d3e01e2774c72238910fd43b9eb34b98e2234d3350852491e81",
+      "translation_text_hash": "664fef328ba9ec70a0c6e464aa0e73b7c50bb99da9ac72b684e10aeac1d293b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리로 불러 가로되 거룩하고 참되신 대주재여 땅에 거하는 자들을 심판하여 우리 피를 신원하여 주지 아니하시기를 어느 때까지 하시려나이까 하니"
+      ],
+      "raw_text_hashes": [
+        "664fef328ba9ec70a0c6e464aa0e73b7c50bb99da9ac72b684e10aeac1d293b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:11",
+      "sequence": 30801,
+      "chapter_label": "REV 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "A long white robe was given to each of them. They were told that they should rest yet for a while, until their fellow servants and their brothers, who would also be killed even as they were, should complete their course.",
+      "ko": "각각 저희에게 흰 두루마기를 주시며 가라사대 아직 잠시 동안 쉬되 저희 동무 종들과 형제들도 자기처럼 죽임을 받아 그 수가 차기까지 하라 하시더라",
+      "source_text_hash": "e0e68389bf9596e8e8d9cd6c61ae8b511dec804113a348316f9562fcfcd7e849",
+      "translation_text_hash": "c8c6b316b830d1c0c8a80053464f325eeb2505e8ff099bc4797192207ba6105a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 저희에게 흰 두루마기를 주시며 가라사대 아직 잠시 동안 쉬되 저희 동무 종들과 형제들도 자기처럼 죽임을 받아 그 수가 차기까지 하라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "c8c6b316b830d1c0c8a80053464f325eeb2505e8ff099bc4797192207ba6105a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:12",
+      "sequence": 30802,
+      "chapter_label": "REV 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "I saw when he opened the sixth seal, and there was a great earthquake. The sun became black as sackcloth made of hair, and the whole moon became as blood.",
+      "ko": "내가 보니 여섯째 인을 떼실 때에 큰 지진이 나며 해가 총담 같이 검어지고 온 달이 피 같이 되며",
+      "source_text_hash": "d697064bb2d2ef145c6452b697c672092af4a74e1a34b05a318a9100eb7dae1c",
+      "translation_text_hash": "59d668c1933ea0c606b4e3515c5c8399b4173594c59c35443b248c70303ac629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 여섯째 인을 떼실 때에 큰 지진이 나며 해가 총담 같이 검어지고 온 달이 피 같이 되며"
+      ],
+      "raw_text_hashes": [
+        "59d668c1933ea0c606b4e3515c5c8399b4173594c59c35443b248c70303ac629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:13",
+      "sequence": 30803,
+      "chapter_label": "REV 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "The stars of the sky fell to the earth, like a fig tree dropping its unripe figs when it is shaken by a great wind.",
+      "ko": "하늘의 별들이 무화과나무가 대풍에 흔들려 선 과실이 떨어지는것 같이 땅에 떨어지며",
+      "source_text_hash": "0323a107d42fc4f8dc4d933462468df974dcfc18574ef0b69b37aa78c06a6de3",
+      "translation_text_hash": "f755ab648b3f94095438c2017452964e1972a5b6948b912700fbdc3f02236e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 별들이 무화과나무가 대풍에 흔들려 선 과실이 떨어지는것 같이 땅에 떨어지며"
+      ],
+      "raw_text_hashes": [
+        "f755ab648b3f94095438c2017452964e1972a5b6948b912700fbdc3f02236e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:14",
+      "sequence": 30804,
+      "chapter_label": "REV 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The sky was removed like a scroll when it is rolled up. Every mountain and island was moved out of its place.",
+      "ko": "하늘은 종이 축이 말리는것 같이 떠나가고 각 산과 섬이 제 자리에서 옮기우매",
+      "source_text_hash": "af3b9fec1faa07b96c6dac88f448088614dde796af89a13be858d78355621031",
+      "translation_text_hash": "fda0a7d4abbd31eba185784a95fddc0bd02e22612214cc7c679519e15473a62e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘은 종이 축이 말리는것 같이 떠나가고 각 산과 섬이 제 자리에서 옮기우매"
+      ],
+      "raw_text_hashes": [
+        "fda0a7d4abbd31eba185784a95fddc0bd02e22612214cc7c679519e15473a62e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:15",
+      "sequence": 30805,
+      "chapter_label": "REV 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "The kings of the earth, the princes, the commanding officers, the rich, the strong, and every slave and free person, hid themselves in the caves and in the rocks of the mountains.",
+      "ko": "땅의 임금들과 왕족들과 장군들과 부자들과 강한 자들과 각 종과 자주자가 굴과 산 바위틈에 숨어",
+      "source_text_hash": "49810985bcf34148ca949788f88a726a60a665cb553b84461d767fdfc7c64fa4",
+      "translation_text_hash": "30ee406166efb9b9e4f996ea4746b20ea5018badb986a988d12588a5c4bab4c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 임금들과 왕족들과 장군들과 부자들과 강한 자들과 각 종과 자주자가 굴과 산 바위틈에 숨어"
+      ],
+      "raw_text_hashes": [
+        "30ee406166efb9b9e4f996ea4746b20ea5018badb986a988d12588a5c4bab4c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:16",
+      "sequence": 30806,
+      "chapter_label": "REV 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "They told the mountains and the rocks, “Fall on us, and hide us from the face of him who sits on the throne, and from the wrath of the Lamb,",
+      "ko": "산과 바위에게 이르되 우리 위에 떨어져 보좌에 앉으신 이의 낯에서와 어린 양의 진노에서 우리를 가리우라",
+      "source_text_hash": "b328ac30253b6bbc5dc53c076f417949395fa1d65b60cd763cfde6df93150618",
+      "translation_text_hash": "8b1021fa1db0dbc1fd5538498d06ee7207925df295137544814cdf0d50991bc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산과 바위에게 이르되 우리 위에 떨어져 보좌에 앉으신 이의 낯에서와 어린 양의 진노에서 우리를 가리우라"
+      ],
+      "raw_text_hashes": [
+        "8b1021fa1db0dbc1fd5538498d06ee7207925df295137544814cdf0d50991bc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:6:17",
+      "sequence": 30807,
+      "chapter_label": "REV 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "for the great day of his wrath has come, and who is able to stand?”",
+      "ko": "그들의 진노의 큰 날이 이르렀으니 누가 능히 서리요 하더라",
+      "source_text_hash": "9934710b8e3801f14d5843ba0c22ab7f31a3d4bfcc06aa21323cd0a35c91cda3",
+      "translation_text_hash": "388cfc9f1b7e32727b473f6094138caf817940a1a8b9dafb922a99a6cb2ecec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 진노의 큰 날이 이르렀으니 누가 능히 서리요 하더라"
+      ],
+      "raw_text_hashes": [
+        "388cfc9f1b7e32727b473f6094138caf817940a1a8b9dafb922a99a6cb2ecec6"
+      ]
+    }
+  ]
+}

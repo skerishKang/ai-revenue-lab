@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:002",
+  "unit_ordinal": 895,
+  "unit_label": "MIC 2",
+  "book_code": "MIC",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:2:1",
+      "sequence": 22597,
+      "chapter_label": "MIC 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to those who devise iniquity and work evil on their beds! When the morning is light, they practice it, because it is in the power of their hand.",
+      "ko": "침상에서 악을 꾀하며 간사를 경영하고 날이 밝으면 그 손에 힘이 있으므로 그것을 행하는 자는 화 있을찐저",
+      "source_text_hash": "5a11628dfba32a47bcf3594316348820dedbfdc6042f970dc14a80c4e288f88f",
+      "translation_text_hash": "b6de30fcdd2d2a86d6181f8181bf815d9cba2ee979ea756bcbdcb27589da5d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "침상에서 악을 꾀하며 간사를 경영하고 날이 밝으면 그 손에 힘이 있으므로 그것을 행하는 자는 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "b6de30fcdd2d2a86d6181f8181bf815d9cba2ee979ea756bcbdcb27589da5d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:2",
+      "sequence": 22598,
+      "chapter_label": "MIC 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "They covet fields and seize them, and houses, then take them away. They oppress a man and his house, even a man and his heritage.",
+      "ko": "밭들을 탐하여 빼앗고 집들을 탐하여 취하니 그들이 사람과 그 집사람과 그 산업을 학대하도다",
+      "source_text_hash": "9ae060f6dd3d4e17aae98d11ed25c8a6e43c1394e38b6a05ee9435834c829f76",
+      "translation_text_hash": "431bd7e41808452c6bf0159891dc1cccceadca0e6b31b1d45e36afacb717c50f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭들을 탐하여 빼앗고 집들을 탐하여 취하니 그들이 사람과 그 집사람과 그 산업을 학대하도다"
+      ],
+      "raw_text_hashes": [
+        "431bd7e41808452c6bf0159891dc1cccceadca0e6b31b1d45e36afacb717c50f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:3",
+      "sequence": 22599,
+      "chapter_label": "MIC 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore the LORD says: “Behold, I am planning against these people a disaster, from which you will not remove your necks, neither will you walk haughtily, for it is an evil time.",
+      "ko": "그러므로 여호와의 말씀에 내가 이 족속에게 재앙 내리기를 계획하나니 너희의 목이 이에서 벗어나지 못할 것이요 또한 교만히 다니지 못할 것이라 이는 재앙의 때임이니라 하셨느니라",
+      "source_text_hash": "987c7aa282e8e8e0f1cdf1011d83b7cb7b9241a467b4312ff38caf57c531d95d",
+      "translation_text_hash": "082ade9715ae53570e879f12b904ea2ca007bc872a519c397fe17342c63e154c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와의 말씀에 내가 이 족속에게 재앙 내리기를 계획하나니 너희의 목이 이에서 벗어나지 못할 것이요 또한 교만히 다니지 못할 것이라 이는 재앙의 때임이니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "082ade9715ae53570e879f12b904ea2ca007bc872a519c397fe17342c63e154c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:4",
+      "sequence": 22600,
+      "chapter_label": "MIC 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "In that day they will take up a parable against you, and lament with a doleful lamentation, saying, ‘We are utterly ruined! My people’s possession is divided up. Indeed he takes it from me and assigns our fields to traitors!’”",
+      "ko": "그 때에 너희에게 대하여 풍사를 지으며 슬픈 애가를 불러 이르기를 우리가 온전히 망하게 되었도다 그가 내 백성의 산업을 옮겨 내게서 떠나게 하시며 우리 밭을 나누어 패역자에게 주시는도다 하리니",
+      "source_text_hash": "fb90a964f50d0495d95beef50f22fb3640a3cd9c9b38db359ccdd7efa2410948",
+      "translation_text_hash": "361280a00d6c66e896103d2d02bbf1da0397218d4910987abf91bcf1e7ca151d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희에게 대하여 풍사를 지으며 슬픈 애가를 불러 이르기를 우리가 온전히 망하게 되었도다 그가 내 백성의 산업을 옮겨 내게서 떠나게 하시며 우리 밭을 나누어 패역자에게 주시는도다 하리니"
+      ],
+      "raw_text_hashes": [
+        "361280a00d6c66e896103d2d02bbf1da0397218d4910987abf91bcf1e7ca151d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:5",
+      "sequence": 22601,
+      "chapter_label": "MIC 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore you will have no one who divides the land by lot in the LORD’s assembly.",
+      "ko": "그러므로 여호와의 회중에서 제비를 뽑고 줄을 띨 자가 너희 중에 하나도 없으리라",
+      "source_text_hash": "1a2291447918800a06f52631cbb23fb889ee8ada3fef62a900b93909367ef093",
+      "translation_text_hash": "e5bce032f56b5034a2530cc3b1554b1c06a4ec777e64ffc0c18a60a04f213266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와의 회중에서 제비를 뽑고 줄을 띨 자가 너희 중에 하나도 없으리라"
+      ],
+      "raw_text_hashes": [
+        "e5bce032f56b5034a2530cc3b1554b1c06a4ec777e64ffc0c18a60a04f213266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:6",
+      "sequence": 22602,
+      "chapter_label": "MIC 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "“Don’t prophesy!”—they prophesy— “Don’t prophesy about these things. Disgrace won’t overtake us.”",
+      "ko": "그들이 말하기를 너희는 예언하지 말라 이것은 예언할 것이 아니어늘 욕하는 말을 그치지 아니한다 하는도다",
+      "source_text_hash": "154d5b2f9699719a16df8304d26df0d6fa4c761091901686db8f2024d023d205",
+      "translation_text_hash": "807cf436d69325ac537c725dd2eea8422f9187bd719378286bd6b8f7c01067e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 말하기를 너희는 예언하지 말라 이것은 예언할 것이 아니어늘 욕하는 말을 그치지 아니한다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "807cf436d69325ac537c725dd2eea8422f9187bd719378286bd6b8f7c01067e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:7",
+      "sequence": 22603,
+      "chapter_label": "MIC 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Shall it be said, O house of Jacob, “Is the LORD’s Spirit angry? Are these his doings? Don’t my words do good to him who walks blamelessly?”",
+      "ko": "너희 야곱의 족속아 어찌 이르기를 여호와의 신이 편급하시다 하겠느냐 그의 행위가 이러하시다 하겠느냐 나의 말이 행위 정직한 자에게 유익되지 아니하냐",
+      "source_text_hash": "89d185d0d0ea9cfd92a5a27b70a72b857daa9eb5264e06585ff41a70cc5c40ac",
+      "translation_text_hash": "f4d7184c399518709fc2aee79d57cf0f9e0b7f8d3e6d1fbc3671b9a16bb06933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 야곱의 족속아 어찌 이르기를 여호와의 신이 편급하시다 하겠느냐 그의 행위가 이러하시다 하겠느냐 나의 말이 행위 정직한 자에게 유익되지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "f4d7184c399518709fc2aee79d57cf0f9e0b7f8d3e6d1fbc3671b9a16bb06933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:8",
+      "sequence": 22604,
+      "chapter_label": "MIC 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "But lately my people have risen up as an enemy. You strip the robe and clothing from those who pass by without a care, returning from battle.",
+      "ko": "근래에 내 백성이 대적 같이 일어나서 전쟁을 피하여 평안히 지나가는 자들의 의복중 겉옷을 벗기며",
+      "source_text_hash": "c56895bdc0b728619e2d1bc7081132f8248276931977e92fc3b7e28f28517a2d",
+      "translation_text_hash": "02af76aadea582519ed76f19dbec0588393169dfd03af9f3e8c18c0603aeb2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근래에 내 백성이 대적 같이 일어나서 전쟁을 피하여 평안히 지나가는 자들의 의복중 겉옷을 벗기며"
+      ],
+      "raw_text_hashes": [
+        "02af76aadea582519ed76f19dbec0588393169dfd03af9f3e8c18c0603aeb2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:9",
+      "sequence": 22605,
+      "chapter_label": "MIC 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "You drive the women of my people out from their pleasant houses; from their young children you take away my blessing forever.",
+      "ko": "내 백성의 부녀들을 너희가 그 즐거운 집에서 쫓아내고 그 어린 자녀에게서 나의 영광을 영영히 빼앗는도다",
+      "source_text_hash": "abce6a0a977416bd3740d511c2d49900a60e2e11061df02212725c6af3a7b2ef",
+      "translation_text_hash": "35c94ba730a6cace8801ded9b51b583246db5f9c367f9b025cb0470455eca9a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성의 부녀들을 너희가 그 즐거운 집에서 쫓아내고 그 어린 자녀에게서 나의 영광을 영영히 빼앗는도다"
+      ],
+      "raw_text_hashes": [
+        "35c94ba730a6cace8801ded9b51b583246db5f9c367f9b025cb0470455eca9a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:10",
+      "sequence": 22606,
+      "chapter_label": "MIC 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Arise, and depart! For this is not your resting place, because of uncleanness that destroys, even with a grievous destruction.",
+      "ko": "이것이 너희의 쉴 곳이 아니니 일어나 떠날찌어다 이는 그것이 이미 더러워졌음이라 그런즉 반드시 멸하리니 그 멸망이 크리라",
+      "source_text_hash": "7405e83055c28140c9462289f38224d226f7ad180cde026a1029bda13cebc112",
+      "translation_text_hash": "4c60f68f48ada4be5c6da589be8e2a9f3dc369ebd31373b69f9f00b0cfcfc23b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 너희의 쉴 곳이 아니니 일어나 떠날찌어다 이는 그것이 이미 더러워졌음이라 그런즉 반드시 멸하리니 그 멸망이 크리라"
+      ],
+      "raw_text_hashes": [
+        "4c60f68f48ada4be5c6da589be8e2a9f3dc369ebd31373b69f9f00b0cfcfc23b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:11",
+      "sequence": 22607,
+      "chapter_label": "MIC 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "If a man walking in a spirit of falsehood lies, saying, “I will prophesy to you of wine and of strong drink,” he would be the prophet of this people.",
+      "ko": "사람이 만일 허망히 행하며 거짓말로 이르기를 내가 포도주와 독주에 대하여 네게 예언하리라 할것 같으면 그 사람이 이 백성의 선지자가 되리로다",
+      "source_text_hash": "093d5d265fb15c549aa41cef62412ba3bfe55115731bb9349035cb093c357964",
+      "translation_text_hash": "d520e1a9b8d2946d41ad0b7f395910d9549ea2be8897a21b867b43edd0a8d5c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 허망히 행하며 거짓말로 이르기를 내가 포도주와 독주에 대하여 네게 예언하리라 할것 같으면 그 사람이 이 백성의 선지자가 되리로다"
+      ],
+      "raw_text_hashes": [
+        "d520e1a9b8d2946d41ad0b7f395910d9549ea2be8897a21b867b43edd0a8d5c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:12",
+      "sequence": 22608,
+      "chapter_label": "MIC 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "I will surely assemble all of you, Jacob. I will surely gather the remnant of Israel. I will put them together as the sheep of Bozrah, as a flock in the middle of their pasture. They will swarm with people.",
+      "ko": "야곱아 내가 정녕히 너희 무리를 다 모으며 내가 정녕히 이스라엘의 남은 자를 모으고 그들을 한 처소에 두기를 보스라 양떼 같게 하며 초장의 양떼 같게 하리니 그들의 인수가 많으므로 소리가 크게 들릴 것이며",
+      "source_text_hash": "9a96cb3e48840ad915ac448c2c1a5d9d96787181b2d16c8f94e714694c37b6d0",
+      "translation_text_hash": "63f194d697c82d814f5885b4ea11ee3815b831101a2d102609a0cf7315d209be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱아 내가 정녕히 너희 무리를 다 모으며 내가 정녕히 이스라엘의 남은 자를 모으고 그들을 한 처소에 두기를 보스라 양떼 같게 하며 초장의 양떼 같게 하리니 그들의 인수가 많으므로 소리가 크게 들릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "63f194d697c82d814f5885b4ea11ee3815b831101a2d102609a0cf7315d209be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:2:13",
+      "sequence": 22609,
+      "chapter_label": "MIC 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "He who breaks open the way goes up before them. They break through the gate, and go out. Their king passes on before them, with the LORD at their head.",
+      "ko": "길을 여는 자가 그들의 앞서 올라가고 그들은 달려서 성문에 이르러서는 그리로 좇아 나갈 것이며 그들의 왕이 앞서 행하며 여호와께서 선두로 행하시리라",
+      "source_text_hash": "ec75ba6241b0043c654140bb44792a3382981a01643909300aece557a44f980b",
+      "translation_text_hash": "a89e6269d832e2dd5704c6870687b1f994395be38609825fad6da7cdd4439a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길을 여는 자가 그들의 앞서 올라가고 그들은 달려서 성문에 이르러서는 그리로 좇아 나갈 것이며 그들의 왕이 앞서 행하며 여호와께서 선두로 행하시리라"
+      ],
+      "raw_text_hashes": [
+        "a89e6269d832e2dd5704c6870687b1f994395be38609825fad6da7cdd4439a52"
+      ]
+    }
+  ]
+}

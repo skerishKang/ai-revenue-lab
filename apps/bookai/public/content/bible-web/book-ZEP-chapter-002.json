@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEP:chapter:002",
+  "unit_ordinal": 908,
+  "unit_label": "ZEP 2",
+  "book_code": "ZEP",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEP:2:1",
+      "sequence": 22807,
+      "chapter_label": "ZEP 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Gather yourselves together, yes, gather together, you nation that has no shame,",
+      "ko": "수치를 모르는 백성아 모일찌어다 모일찌어다",
+      "source_text_hash": "0e13adcc839408853389a6c5b5edee9b143fe0793ee345b1d8bda81fa1e3ff1d",
+      "translation_text_hash": "084e489f93cd89c4fdc7269fe63f4a8ebb3c1e51464738c171b418fae231d291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수치를 모르는 백성아 모일찌어다 모일찌어다"
+      ],
+      "raw_text_hashes": [
+        "084e489f93cd89c4fdc7269fe63f4a8ebb3c1e51464738c171b418fae231d291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:2",
+      "sequence": 22808,
+      "chapter_label": "ZEP 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "before the appointed time when the day passes as the chaff, before the fierce anger of the LORD comes on you, before the day of the LORD’s anger comes on you.",
+      "ko": "명령이 시행되기 전, 광음이 겨 같이 날아 지나가기 전, 여호와의 진노가 너희에게 임하기 전, 여호와의 분노의 날이 너희에게 이르기 전에 그리할찌어다",
+      "source_text_hash": "80de44448c0ec0d13f5d08560d5196ed197a130af76914fa029441b54ef40599",
+      "translation_text_hash": "95748b0db4ce26fc72a162fe1c8e0c3a31d13c26f3fda819c2707ea110054eea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명령이 시행되기 전, 광음이 겨 같이 날아 지나가기 전, 여호와의 진노가 너희에게 임하기 전, 여호와의 분노의 날이 너희에게 이르기 전에 그리할찌어다"
+      ],
+      "raw_text_hashes": [
+        "95748b0db4ce26fc72a162fe1c8e0c3a31d13c26f3fda819c2707ea110054eea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:3",
+      "sequence": 22809,
+      "chapter_label": "ZEP 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Seek the LORD, all you humble of the land, who have kept his ordinances. Seek righteousness. Seek humility. It may be that you will be hidden in the day of the LORD’s anger.",
+      "ko": "여호와의 규례를 지키는 세상의 모든 겸손한 자들아 너희는 여호와를 찾으며 공의와 겸손을 구하라 너희가 혹시 여호와의 분노의 날에 숨김을 얻으리라",
+      "source_text_hash": "4ee96bfec75f83e584b69bfbba6c16f905b7ad1963bf663ee0aaa4159aef99cb",
+      "translation_text_hash": "0ca2c563c367979edd5377db874d94249f959ac7f8c3add9daab47460adfee85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 규례를 지키는 세상의 모든 겸손한 자들아 너희는 여호와를 찾으며 공의와 겸손을 구하라 너희가 혹시 여호와의 분노의 날에 숨김을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "0ca2c563c367979edd5377db874d94249f959ac7f8c3add9daab47460adfee85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:4",
+      "sequence": 22810,
+      "chapter_label": "ZEP 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "For Gaza will be forsaken, and Ashkelon a desolation. They will drive out Ashdod at noonday, and Ekron will be rooted up.",
+      "ko": "가사가 버리우며 아스글론이 황폐되며 아스돗이 백주에 쫓겨나며 에그론이 뽑히우리라",
+      "source_text_hash": "068f59be1950f7e520661454ae29773b28de9ef1efc53fd87aed5a69a21b976b",
+      "translation_text_hash": "309a9e98d565fe40a65460b78b1dcd2216ea0323a38704c66d1303dcf549528e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가사가 버리우며 아스글론이 황폐되며 아스돗이 백주에 쫓겨나며 에그론이 뽑히우리라"
+      ],
+      "raw_text_hashes": [
+        "309a9e98d565fe40a65460b78b1dcd2216ea0323a38704c66d1303dcf549528e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:5",
+      "sequence": 22811,
+      "chapter_label": "ZEP 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Woe to the inhabitants of the sea coast, the nation of the Cherethites! The LORD’s word is against you, Canaan, the land of the Philistines. I will destroy you until there is no inhabitant.",
+      "ko": "해변 거민 그렛 족속에게 화 있을찐저 블레셋 사람의 땅 가나안아 여호와의 말이 너희를 치나니 내가 너를 멸하여 거민이 없게 하리라",
+      "source_text_hash": "ece2588d5b534a1903db9abbc9a69442d03e04259e2d4c9fd325f76a722f1d76",
+      "translation_text_hash": "b6de4c9161a68951a405ee00d9931e12e1c730650e6ad21a35ea10590851ec29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해변 거민 그렛 족속에게 화 있을찐저 블레셋 사람의 땅 가나안아 여호와의 말이 너희를 치나니 내가 너를 멸하여 거민이 없게 하리라"
+      ],
+      "raw_text_hashes": [
+        "b6de4c9161a68951a405ee00d9931e12e1c730650e6ad21a35ea10590851ec29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:6",
+      "sequence": 22812,
+      "chapter_label": "ZEP 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The sea coast will be pastures, with cottages for shepherds and folds for flocks.",
+      "ko": "해변은 초장이 되어 목자의 움과 양떼의 우리가 거기 있을 것이며",
+      "source_text_hash": "105a40f17de66bd0c9bf82a5d24208723aef80810126b23db3d7fb606f5d1c23",
+      "translation_text_hash": "30f8239822eb8fbb3332932ae918bd8297f8b9b187851550439e6e00bde62220",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해변은 초장이 되어 목자의 움과 양떼의 우리가 거기 있을 것이며"
+      ],
+      "raw_text_hashes": [
+        "30f8239822eb8fbb3332932ae918bd8297f8b9b187851550439e6e00bde62220"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:7",
+      "sequence": 22813,
+      "chapter_label": "ZEP 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The coast will be for the remnant of the house of Judah. They will find pasture. In the houses of Ashkelon, they will lie down in the evening, for the LORD, their God, will visit them and restore them.",
+      "ko": "그 지경은 유다 족속의 남은 자에게로 돌아갈찌라 그들이 거기서 양떼를 먹이고 저녁에는 아스글론 집들에 누우리니 이는 그들의 하나님 여호와가 그들을 권고하여 그 사로잡힘을 돌이킬 것임이니라",
+      "source_text_hash": "ef11d260b059c067e0c3fca61d29b9398cd6288552de01569cd323968a8df9a0",
+      "translation_text_hash": "181ec933dc8c70041479baf45edd6b00472d1c7fc2e33ffe3fec252e75c8dde7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경은 유다 족속의 남은 자에게로 돌아갈찌라 그들이 거기서 양떼를 먹이고 저녁에는 아스글론 집들에 누우리니 이는 그들의 하나님 여호와가 그들을 권고하여 그 사로잡힘을 돌이킬 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "181ec933dc8c70041479baf45edd6b00472d1c7fc2e33ffe3fec252e75c8dde7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:8",
+      "sequence": 22814,
+      "chapter_label": "ZEP 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "I have heard the reproach of Moab and the insults of the children of Ammon, with which they have reproached my people and magnified themselves against their border.",
+      "ko": "내가 모압의 훼방과 암몬 자손의 후욕을 들었나니 그들이 내 백성을 훼방하고 스스로 커서 그 경계를 침범하였느니라",
+      "source_text_hash": "618f068d0ddf4bc2ec3b3d3300915c70c727ed0317b762e2eca706a90d77bc0d",
+      "translation_text_hash": "d2afb7cd10afb948aebe3d223753d80322ba169ca9b4f713f7d94ef92a0e0369",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모압의 훼방과 암몬 자손의 후욕을 들었나니 그들이 내 백성을 훼방하고 스스로 커서 그 경계를 침범하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d2afb7cd10afb948aebe3d223753d80322ba169ca9b4f713f7d94ef92a0e0369"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:9",
+      "sequence": 22815,
+      "chapter_label": "ZEP 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore, as I live, says the LORD of Armies, the God of Israel, surely Moab will be as Sodom, and the children of Ammon as Gomorrah, a possession of nettles and salt pits, and a perpetual desolation. The remnant of my people will plunder them, and the survivors of my nation will inherit them.",
+      "ko": "그러므로 만군의 여호와 이스라엘의 하나님이 말하노라 내가 나의 삶을 두고 맹세하노니 장차 모압은 소돔 같으며 암몬 자손은 고모라 같을 것이라 찔레가 나며 소금 구덩이가 되어 영원히 황무하리니 나의 끼친 백성이 그들을 노략하며 나의 남은 국민이 그것을 기업으로 얻을 것이라",
+      "source_text_hash": "eb686b13febb730aa8246d3f6d60fed52027583314fe6a65cf16153eec2f6b69",
+      "translation_text_hash": "63c7ad30363d07558b6f4099be60a946059c2d66b4744ff5225639e8854ba04e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만군의 여호와 이스라엘의 하나님이 말하노라 내가 나의 삶을 두고 맹세하노니 장차 모압은 소돔 같으며 암몬 자손은 고모라 같을 것이라 찔레가 나며 소금 구덩이가 되어 영원히 황무하리니 나의 끼친 백성이 그들을 노략하며 나의 남은 국민이 그것을 기업으로 얻을 것이라"
+      ],
+      "raw_text_hashes": [
+        "63c7ad30363d07558b6f4099be60a946059c2d66b4744ff5225639e8854ba04e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:10",
+      "sequence": 22816,
+      "chapter_label": "ZEP 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "This they will have for their pride, because they have reproached and magnified themselves against the people of the LORD of Armies.",
+      "ko": "그들이 이런 일을 당할 것은 교만하여 스스로 커서 만군의 여호와의 백성을 훼방함이니라",
+      "source_text_hash": "1e2a0131acae0d7949d2679a7c773f417908c5e071b629ffdde200b11020a9ab",
+      "translation_text_hash": "4435f235c94b7d7e85b20e40e05e067414025d3cb1890e53feadcc3f38403d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이런 일을 당할 것은 교만하여 스스로 커서 만군의 여호와의 백성을 훼방함이니라"
+      ],
+      "raw_text_hashes": [
+        "4435f235c94b7d7e85b20e40e05e067414025d3cb1890e53feadcc3f38403d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:11",
+      "sequence": 22817,
+      "chapter_label": "ZEP 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD will be awesome to them, for he will famish all the gods of the land. Men will worship him, everyone from his place, even all the shores of the nations.",
+      "ko": "여호와가 그들에게 두렵게 되어서 세상의 모든 신을 쇠진케 하리니 이방의 모든 해변 사람들이 각각 자기 처소에서 여호와께 경배하리라",
+      "source_text_hash": "cfb7aac2ec663db6dbcc4cea33ac9829e0e4d3c8dc7c71cd4d07e714f7094147",
+      "translation_text_hash": "983499d2d163de870f7db65eb5619e68774c22d9aa792d4355f7a78162ecb3a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 그들에게 두렵게 되어서 세상의 모든 신을 쇠진케 하리니 이방의 모든 해변 사람들이 각각 자기 처소에서 여호와께 경배하리라"
+      ],
+      "raw_text_hashes": [
+        "983499d2d163de870f7db65eb5619e68774c22d9aa792d4355f7a78162ecb3a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:12",
+      "sequence": 22818,
+      "chapter_label": "ZEP 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "You Cushites also, you will be killed by my sword.",
+      "ko": "구스 사람아 너희도 내 칼에 살륙을 당하리라",
+      "source_text_hash": "980725b270a51fc35dd441ff1d21042207ce16302f93a6fd4dce76f0a9583281",
+      "translation_text_hash": "ea177e2c6acf153bd5eedc912e841c711cf2e9f1fb846bc1e1a13b58aca573ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스 사람아 너희도 내 칼에 살륙을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "ea177e2c6acf153bd5eedc912e841c711cf2e9f1fb846bc1e1a13b58aca573ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:13",
+      "sequence": 22819,
+      "chapter_label": "ZEP 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "He will stretch out his hand against the north, destroy Assyria, and will make Nineveh a desolation, as dry as the wilderness.",
+      "ko": "여호와가 북방을 향하여 손을 펴서 앗수르를 멸하며 니느웨로 황무케 하여 사막 같이 메마르게 하리니",
+      "source_text_hash": "9cbe142f0b5a14bba31bb0b9fa14ecd25f458467c9aa80bb4a50d59088bb83a2",
+      "translation_text_hash": "6e5316539aba6a2ef582cf5affc6c2bce56c7aacf4910121d9304ae7a957870e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 북방을 향하여 손을 펴서 앗수르를 멸하며 니느웨로 황무케 하여 사막 같이 메마르게 하리니"
+      ],
+      "raw_text_hashes": [
+        "6e5316539aba6a2ef582cf5affc6c2bce56c7aacf4910121d9304ae7a957870e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:14",
+      "sequence": 22820,
+      "chapter_label": "ZEP 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Herds will lie down in the middle of her, all kinds of animals. Both the pelican and the porcupine will lodge in its capitals. Their calls will echo through the windows. Desolation will be in the thresholds, for he has laid bare the cedar beams.",
+      "ko": "각양 짐승이 그 가운데 떼로 누울 것이며 당아와 고슴도치가 그 기둥 꼭대기에 깃들일 것이며 창에서 울 것이며 문턱이 적막하리니 백향목으로 지은 것이 벗겨졌음이라",
+      "source_text_hash": "e8e3f680bd0dbf6399fd8140d1f1da3ce7330934d1da780b9ae2f98c7e9f89cf",
+      "translation_text_hash": "5e3f3763b6b711cb3f17083cc5dd59defb63a24ca5acda46968ddaabc92baa5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각양 짐승이 그 가운데 떼로 누울 것이며 당아와 고슴도치가 그 기둥 꼭대기에 깃들일 것이며 창에서 울 것이며 문턱이 적막하리니 백향목으로 지은 것이 벗겨졌음이라"
+      ],
+      "raw_text_hashes": [
+        "5e3f3763b6b711cb3f17083cc5dd59defb63a24ca5acda46968ddaabc92baa5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:2:15",
+      "sequence": 22821,
+      "chapter_label": "ZEP 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "This is the joyous city that lived carelessly, that said in her heart, “I am, and there is no one besides me.” How she has become a desolation, a place for animals to lie down in! Everyone who passes by her will hiss and shake their fists.",
+      "ko": "이는 기쁜 성이라 염려 없이 거하며 심중에 이르기를 오직 나만 있고 나 외에는 다른이가 없다 하더니 어찌 이같이 황무하여 들짐승의 엎드릴 곳이 되었는고 지나가는 자마다 치소하여 손을 흔들리로다",
+      "source_text_hash": "14840e03e04dcecbcf8fd4fc894b251c87b1f4a336cc223e0c94a388fb1630c0",
+      "translation_text_hash": "7f0480b26726ae0acf6de2060dcc084359f9fb568be30dcfecd33bc261729117",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 기쁜 성이라 염려 없이 거하며 심중에 이르기를 오직 나만 있고 나 외에는 다른이가 없다 하더니 어찌 이같이 황무하여 들짐승의 엎드릴 곳이 되었는고 지나가는 자마다 치소하여 손을 흔들리로다"
+      ],
+      "raw_text_hashes": [
+        "7f0480b26726ae0acf6de2060dcc084359f9fb568be30dcfecd33bc261729117"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:022",
+  "unit_ordinal": 701,
+  "unit_label": "ISA 22",
+  "book_code": "ISA",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:22:1",
+      "sequence": 18054,
+      "chapter_label": "ISA 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "The burden of the valley of vision. What ails you now, that you have all gone up to the housetops?",
+      "ko": "이상 골짜기에 관한 경고라 네가 지붕에 올라감은 어찜인고",
+      "source_text_hash": "e1bb0f3af4982e9a1580654c18840aa1888336cd7aa0ec6b8d62be5c5111cca2",
+      "translation_text_hash": "73ddaecf5a41288a7216f0ac8208c3ca729dd8351df7f01ccfd6410bb928b91f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상 골짜기에 관한 경고라 네가 지붕에 올라감은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "73ddaecf5a41288a7216f0ac8208c3ca729dd8351df7f01ccfd6410bb928b91f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:2",
+      "sequence": 18055,
+      "chapter_label": "ISA 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "You that are full of shouting, a tumultuous city, a joyous town, your slain are not slain with the sword, neither are they dead in battle.",
+      "ko": "훤화하며 떠들던 성, 즐거워하던 고을이여 너의 죽임을 당한 자가 칼에 죽은 것도 아니요 전쟁에 사망한 것도 아니며",
+      "source_text_hash": "bf633dd51c41938d91b91cc560a7d57c21091adcfb1626b6d24fbe97baaad8b0",
+      "translation_text_hash": "acb44127873cfa7fb457a698f7507ce601aaecf9ac7e46ff59d61baf5778294c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훤화하며 떠들던 성, 즐거워하던 고을이여 너의 죽임을 당한 자가 칼에 죽은 것도 아니요 전쟁에 사망한 것도 아니며"
+      ],
+      "raw_text_hashes": [
+        "acb44127873cfa7fb457a698f7507ce601aaecf9ac7e46ff59d61baf5778294c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:3",
+      "sequence": 18056,
+      "chapter_label": "ISA 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "All your rulers fled away together. They were bound by the archers. All who were found by you were bound together. They fled far away.",
+      "ko": "너의 관원들은 다 함께 도망하였다가 활을 버리고 결박을 당하였고 너의 멀리 도망한 자도 발견되어 다 함께 결박을 당하였도다",
+      "source_text_hash": "61b3c71b7c18b1d6cc0a260efc863997a547f981b1870bcc98979c048cb03feb",
+      "translation_text_hash": "2ed0901fd03373d31f96d15e714b6b8ed165421abc2be744e6035ff8a828fa5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 관원들은 다 함께 도망하였다가 활을 버리고 결박을 당하였고 너의 멀리 도망한 자도 발견되어 다 함께 결박을 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "2ed0901fd03373d31f96d15e714b6b8ed165421abc2be744e6035ff8a828fa5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:4",
+      "sequence": 18057,
+      "chapter_label": "ISA 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore I said, “Look away from me. I will weep bitterly. Don’t labor to comfort me for the destruction of the daughter of my people.",
+      "ko": "이러므로 내가 말하노니 돌이켜 나를 보지 말지어다 나는 슬피 통곡하겠노라 내 딸 백성이 패멸하였음을 인하여 나를 위로하려고 힘쓰지 말지니라",
+      "source_text_hash": "a1194b634249be64432b84b7635f87881364d5f895e86a36088f410b5083d2ed",
+      "translation_text_hash": "0cab6a40a2e22396659c7dfa410f8956a30ac58a2d690755a45732c842522604",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 말하노니 돌이켜 나를 보지 말지어다 나는 슬피 통곡하겠노라 내 딸 백성이 패멸하였음을 인하여 나를 위로하려고 힘쓰지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "0cab6a40a2e22396659c7dfa410f8956a30ac58a2d690755a45732c842522604"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:5",
+      "sequence": 18058,
+      "chapter_label": "ISA 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "For it is a day of confusion, and of treading down, and of perplexity from the Lord, GOD of Armies, in the valley of vision, a breaking down of the walls, and a crying to the mountains.”",
+      "ko": "이상의 골짜기에 주 만군의 여호와께로서 이르는 분요와 밟힘과 혼란의 날이여 성벽의 무너뜨림과 산악에 사무치는 부르짖는 소리로다",
+      "source_text_hash": "fee062992506549cd972810e3ce8df2aae766111697f1f9bd424b22109c62c23",
+      "translation_text_hash": "ca270278467aea73c8a237e34ab06dd0fe6f3cae097ec721108bb6e07d3cd48f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상의 골짜기에 주 만군의 여호와께로서 이르는 분요와 밟힘과 혼란의 날이여 성벽의 무너뜨림과 산악에 사무치는 부르짖는 소리로다"
+      ],
+      "raw_text_hashes": [
+        "ca270278467aea73c8a237e34ab06dd0fe6f3cae097ec721108bb6e07d3cd48f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:6",
+      "sequence": 18059,
+      "chapter_label": "ISA 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "Elam carried his quiver, with chariots of men and horsemen; and Kir uncovered the shield.",
+      "ko": "엘람 사람은 전통을 졌고 병거탄 자와 마병이 함께하였고 기르 사람은 방패를 들어 내었으니",
+      "source_text_hash": "43e37acf510f4a359a8ce4e313679ff3aed0284137d6d2c93890b23f601cd421",
+      "translation_text_hash": "f27c0c51b283264213d7f8a48a8795f2da584fc82697dba2584c67768bc3cffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 사람은 전통을 졌고 병거탄 자와 마병이 함께하였고 기르 사람은 방패를 들어 내었으니"
+      ],
+      "raw_text_hashes": [
+        "f27c0c51b283264213d7f8a48a8795f2da584fc82697dba2584c67768bc3cffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:7",
+      "sequence": 18060,
+      "chapter_label": "ISA 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "Your choicest valleys were full of chariots, and the horsemen set themselves in array at the gate.",
+      "ko": "병거는 너의 아름다운 골짜기에 가득하였고 마병은 성문에 정렬되었도다",
+      "source_text_hash": "80a727f973a65a6de743eb2e002782dec3513876d5724a54df744d3d3d54a648",
+      "translation_text_hash": "c1a43dd8477d7b04b9ccd711516bb7d81864177b3d8bfbd8cdc6eab7bb22d2b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병거는 너의 아름다운 골짜기에 가득하였고 마병은 성문에 정렬되었도다"
+      ],
+      "raw_text_hashes": [
+        "c1a43dd8477d7b04b9ccd711516bb7d81864177b3d8bfbd8cdc6eab7bb22d2b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:8",
+      "sequence": 18061,
+      "chapter_label": "ISA 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "He took away the covering of Judah; and you looked in that day to the armor in the house of the forest.",
+      "ko": "그가 유다에게 덮였던 것을 벗기매 이 날에야 네가 수풀 곳간의 병기를 바라보았고",
+      "source_text_hash": "6a3e884f40751fedacb5b4c20b8eafb55ea686f637894653c7a0529fd357ec14",
+      "translation_text_hash": "01bd4da9e445b957bcef573bbc0356e5aa4364145005f7fee452437eec7f135f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 유다에게 덮였던 것을 벗기매 이 날에야 네가 수풀 곳간의 병기를 바라보았고"
+      ],
+      "raw_text_hashes": [
+        "01bd4da9e445b957bcef573bbc0356e5aa4364145005f7fee452437eec7f135f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:9",
+      "sequence": 18062,
+      "chapter_label": "ISA 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "You saw the breaches of David’s city, that they were many; and you gathered together the waters of the lower pool.",
+      "ko": "너희가 다윗성의 무너진 곳이 많은 것도 보며 너희가 아래 못의 물도 모으며",
+      "source_text_hash": "ec1ab90b1ec5ac3ca9aa8b0265623b6bf86b5e025cb2aca362914e07de1deabf",
+      "translation_text_hash": "d244e650816c5eb6b72c89b732e1850c39f4fd15025b54da1cf0d9647e1a9c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다윗성의 무너진 곳이 많은 것도 보며 너희가 아래 못의 물도 모으며"
+      ],
+      "raw_text_hashes": [
+        "d244e650816c5eb6b72c89b732e1850c39f4fd15025b54da1cf0d9647e1a9c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:10",
+      "sequence": 18063,
+      "chapter_label": "ISA 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "You counted the houses of Jerusalem, and you broke down the houses to fortify the wall.",
+      "ko": "또 예루살렘의 가옥을 계수하며 그 가옥을 헐어 성벽을 견고케도 하며",
+      "source_text_hash": "c88e2cbc4a033580b1e4b8ebafdb7cc043a65dc3ccf738fa075e6074104f61d3",
+      "translation_text_hash": "43b1573d31289d28f521b0c9e3b222b6e74b914dd21e08e83627f0c1ee2447ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예루살렘의 가옥을 계수하며 그 가옥을 헐어 성벽을 견고케도 하며"
+      ],
+      "raw_text_hashes": [
+        "43b1573d31289d28f521b0c9e3b222b6e74b914dd21e08e83627f0c1ee2447ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:11",
+      "sequence": 18064,
+      "chapter_label": "ISA 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "You also made a reservoir between the two walls for the water of the old pool. But you didn’t look to him who had done this, neither did you have respect for him who planned it long ago.",
+      "ko": "너희가 또 옛못의 물을 위하여 두 성벽 사이에 저수지를 만들었느니라 그러나 너희가 이 일을 하신 자를 앙망하지 아니하였고 이 일을 옛적부터 경영하신 자를 존경하지 아니하였느니라",
+      "source_text_hash": "65f4ffcc3ed58de29889c27bad684755422e001f1ad776125d37381a54920821",
+      "translation_text_hash": "1e3a9d51e1c62dde1c6ce6212092b4693d37e9c33c10707f3b4ed7d8916dae48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 또 옛못의 물을 위하여 두 성벽 사이에 저수지를 만들었느니라 그러나 너희가 이 일을 하신 자를 앙망하지 아니하였고 이 일을 옛적부터 경영하신 자를 존경하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1e3a9d51e1c62dde1c6ce6212092b4693d37e9c33c10707f3b4ed7d8916dae48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:12",
+      "sequence": 18065,
+      "chapter_label": "ISA 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "In that day, the Lord, GOD of Armies, called to weeping, to mourning, to baldness, and to dressing in sackcloth;",
+      "ko": "그 날에 주 만군의 여호와께서 명하사 통곡하며 애호하며 머리털을 뜯으며 굵은 베를 띠라 하셨거늘",
+      "source_text_hash": "68080e69e96c908f1e1c3218e4c181d0180ada2ec9672c7478c92296a46e06cf",
+      "translation_text_hash": "825a0aeea8120ea58c7eb1d8a417baf56f743b31b50266330ff0f23cbfc6515b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 주 만군의 여호와께서 명하사 통곡하며 애호하며 머리털을 뜯으며 굵은 베를 띠라 하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "825a0aeea8120ea58c7eb1d8a417baf56f743b31b50266330ff0f23cbfc6515b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:13",
+      "sequence": 18066,
+      "chapter_label": "ISA 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "and behold, there is joy and gladness, killing cattle and killing sheep, eating meat and drinking wine: “Let’s eat and drink, for tomorrow we will die.”",
+      "ko": "너희가 기뻐하며 즐거워하여 소를 잡고 양을 죽여 고기를 먹고 포도주를 마시면서 내일 죽으리니 먹고 마시자 하도다",
+      "source_text_hash": "afe60e69aecb5714b5d4489a9bcaadd16fca97b0b452945136fbc107827f281a",
+      "translation_text_hash": "4c22632942a8d55e7c09a46eb342ade62b07fffea99b2df4951b577c1a2f5588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 기뻐하며 즐거워하여 소를 잡고 양을 죽여 고기를 먹고 포도주를 마시면서 내일 죽으리니 먹고 마시자 하도다"
+      ],
+      "raw_text_hashes": [
+        "4c22632942a8d55e7c09a46eb342ade62b07fffea99b2df4951b577c1a2f5588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:14",
+      "sequence": 18067,
+      "chapter_label": "ISA 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD of Armies revealed himself in my ears, “Surely this iniquity will not be forgiven you until you die,” says the Lord, GOD of Armies.",
+      "ko": "만군의 여호와께서 친히 내 귀에 들려 가라사대 진실로 이 죄악은 너희 죽기까지 속하지 못하리라 하셨느니라 주 만군의 여호와의 말씀이니라",
+      "source_text_hash": "8008ac1c1565a3e7ff6b46b7b1ffbacb0973e1315f32d87e7e5a6a05f4da1642",
+      "translation_text_hash": "da6f9b2b57889174ae0ce817c341ee30b57f9b5f78462308417ee5cbb3cd32af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 친히 내 귀에 들려 가라사대 진실로 이 죄악은 너희 죽기까지 속하지 못하리라 하셨느니라 주 만군의 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "da6f9b2b57889174ae0ce817c341ee30b57f9b5f78462308417ee5cbb3cd32af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:15",
+      "sequence": 18068,
+      "chapter_label": "ISA 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "The Lord, GOD of Armies says, “Go, get yourself to this treasurer, even to Shebna, who is over the house, and say,",
+      "ko": "주 만군의 여호와께서 가라사대 너는 가서 그 국고를 맡고 궁을 차지한 셉나를 보고 이르기를",
+      "source_text_hash": "0a480d94d0ae40747663d5dc96c82ed047700269e61aabb29a3d040101a6888f",
+      "translation_text_hash": "ecf597318dc384b975cd2494dc17b965534458fced176d5ca19c17c7c1ba04bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 만군의 여호와께서 가라사대 너는 가서 그 국고를 맡고 궁을 차지한 셉나를 보고 이르기를"
+      ],
+      "raw_text_hashes": [
+        "ecf597318dc384b975cd2494dc17b965534458fced176d5ca19c17c7c1ba04bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:16",
+      "sequence": 18069,
+      "chapter_label": "ISA 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "‘What are you doing here? Who has you here, that you have dug out a tomb here?’ Cutting himself out a tomb on high, chiseling a habitation for himself in the rock!”",
+      "ko": "네가 여기 무슨 관계가 있느냐 여기 누가 있기에 여기서 너를 위하여 묘실을 팠느냐 높은 곳에 자기를 위하여 묘실을 팠고 반석에 자기를 위하여 처소를 쪼아 내었도다",
+      "source_text_hash": "4b144fd9540edd7f73edd14051e54846996a9afdebfd82f1d6e83b0eab18c5ca",
+      "translation_text_hash": "55d8a2ab16bc7d24da2753767e1c3096d4f350d61d580aee0feb9b9c35f237ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여기 무슨 관계가 있느냐 여기 누가 있기에 여기서 너를 위하여 묘실을 팠느냐 높은 곳에 자기를 위하여 묘실을 팠고 반석에 자기를 위하여 처소를 쪼아 내었도다"
+      ],
+      "raw_text_hashes": [
+        "55d8a2ab16bc7d24da2753767e1c3096d4f350d61d580aee0feb9b9c35f237ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:17",
+      "sequence": 18070,
+      "chapter_label": "ISA 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "Behold, the LORD will overcome you and hurl you away violently. Yes, he will grasp you firmly.",
+      "ko": "나 여호와가 너를 단단히 속박하고 장사 같이 맹렬히 던지되",
+      "source_text_hash": "ce46e3ccc839ff11e805b42289e25ed1b0c0d55b21d40d5cc7b4e839a2c86987",
+      "translation_text_hash": "d0aee2883148f7ca23a7a76e29027f6065b081194b7cb5aa208f60fe5c620783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 너를 단단히 속박하고 장사 같이 맹렬히 던지되"
+      ],
+      "raw_text_hashes": [
+        "d0aee2883148f7ca23a7a76e29027f6065b081194b7cb5aa208f60fe5c620783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:18",
+      "sequence": 18071,
+      "chapter_label": "ISA 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "He will surely wind you around and around, and throw you like a ball into a large country. There you will die, and there the chariots of your glory will be, you disgrace of your lord’s house.",
+      "ko": "정녕히 너를 말아 싸서 공 같이 광막한 지경에 던질 것이라 주인의 집에 수치를 끼치는 너여 네가 그 곳에서 죽겠고 네 영광의 수레도 거기 있으리라",
+      "source_text_hash": "93bc05424f2a0939f78555b56345c1335a95135b5be69f8e3beaf3de7ae56613",
+      "translation_text_hash": "4bf9dfaf056f592190d37240f8ce5ff63c7393a1630e865755568d7a756341ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정녕히 너를 말아 싸서 공 같이 광막한 지경에 던질 것이라 주인의 집에 수치를 끼치는 너여 네가 그 곳에서 죽겠고 네 영광의 수레도 거기 있으리라"
+      ],
+      "raw_text_hashes": [
+        "4bf9dfaf056f592190d37240f8ce5ff63c7393a1630e865755568d7a756341ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:19",
+      "sequence": 18072,
+      "chapter_label": "ISA 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "I will thrust you from your office. You will be pulled down from your station.",
+      "ko": "내가 너를 네 관직에서 쫓아내며 네 지위에서 낮추고",
+      "source_text_hash": "b807135dc02dd3a3a7645830b5b019e52c7da16bc4aad8398a15bcdc20bb3b4c",
+      "translation_text_hash": "c465793437e32847fa037b6a584f897d332265198c8cb4defb3b1e0ec73b0111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 네 관직에서 쫓아내며 네 지위에서 낮추고"
+      ],
+      "raw_text_hashes": [
+        "c465793437e32847fa037b6a584f897d332265198c8cb4defb3b1e0ec73b0111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:20",
+      "sequence": 18073,
+      "chapter_label": "ISA 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "It will happen in that day that I will call my servant Eliakim the son of Hilkiah,",
+      "ko": "그 날에 내가 힐기야의 아들 내 종 엘리아김을 불러",
+      "source_text_hash": "45a6cd148d9a3ea422866860da9a60bfbbabdd74c48a802405daad9df1ff51a4",
+      "translation_text_hash": "8963a01f3d8718a8084643edbc62c471d7462a9963978230a41e80911bafac52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 힐기야의 아들 내 종 엘리아김을 불러"
+      ],
+      "raw_text_hashes": [
+        "8963a01f3d8718a8084643edbc62c471d7462a9963978230a41e80911bafac52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:21",
+      "sequence": 18074,
+      "chapter_label": "ISA 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "and I will clothe him with your robe, and strengthen him with your belt. I will commit your government into his hand; and he will be a father to the inhabitants of Jerusalem, and to the house of Judah.",
+      "ko": "네 옷을 그에게 입히며 네 띠를 그에게 띠워 힘 있게 하고 네 정권을 그의 손에 맡기리니 그가 예루살렘 거민과 유다 집의 아비가 될 것이며",
+      "source_text_hash": "b491bc5e78a487b4e007556b933aac325fec8240069a46a218dd39a2f98c1ae3",
+      "translation_text_hash": "46abfc6ee5849a360be10e2845239fd8a7f5dfa4554cf8cd8c897bf4bd0280be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 옷을 그에게 입히며 네 띠를 그에게 띠워 힘 있게 하고 네 정권을 그의 손에 맡기리니 그가 예루살렘 거민과 유다 집의 아비가 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "46abfc6ee5849a360be10e2845239fd8a7f5dfa4554cf8cd8c897bf4bd0280be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:22",
+      "sequence": 18075,
+      "chapter_label": "ISA 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "I will lay the key of David’s house on his shoulder. He will open, and no one will shut. He will shut, and no one will open.",
+      "ko": "내가 또 다윗 집의 열쇠를 그의 어깨에 두리니 그가 열면 닫을 자가 없겠고 닫으면 열 자가 없으리라",
+      "source_text_hash": "291dc8c1b7a905204871cb4424f7ed0ace58a1653cd87723348a46dcc65fd7ee",
+      "translation_text_hash": "3612b463513b7613305598954dee488f6045a8e87e81e385cf5b3617421b7c56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 다윗 집의 열쇠를 그의 어깨에 두리니 그가 열면 닫을 자가 없겠고 닫으면 열 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "3612b463513b7613305598954dee488f6045a8e87e81e385cf5b3617421b7c56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:23",
+      "sequence": 18076,
+      "chapter_label": "ISA 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "I will fasten him like a nail in a sure place. He will be for a throne of glory to his father’s house.",
+      "ko": "못이 단단한 곳에 박힘 같이 그를 견고케 하리니 그가 그 아비 집에 영광의 보좌가 될 것이요",
+      "source_text_hash": "8e8d72b66801afe03fb9caa6126584fa68c037d6120a7face6c0ea9cd7eeb33b",
+      "translation_text_hash": "894c1702d961b43fdda517d92ac522ccd2f6b41e0825570955ffb7cc1efa73d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "못이 단단한 곳에 박힘 같이 그를 견고케 하리니 그가 그 아비 집에 영광의 보좌가 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "894c1702d961b43fdda517d92ac522ccd2f6b41e0825570955ffb7cc1efa73d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:24",
+      "sequence": 18077,
+      "chapter_label": "ISA 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "They will hang on him all the glory of his father’s house, the offspring and the issue, every small vessel, from the cups even to all the pitchers.",
+      "ko": "그 아비 집의 모든 영광이 그 위에 걸리리니 그 후손과 족속 되는 각 작은 그릇 곧 종지로부터 항아리까지리라",
+      "source_text_hash": "e53ef5b81a3871778340d10fc9cc27d337b82484d115b60324d04bef18aeb91b",
+      "translation_text_hash": "f1ccb38451064dfc1723ae17422aa0e285d6a1dbde92cd195ccb09f33a41b269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 집의 모든 영광이 그 위에 걸리리니 그 후손과 족속 되는 각 작은 그릇 곧 종지로부터 항아리까지리라"
+      ],
+      "raw_text_hashes": [
+        "f1ccb38451064dfc1723ae17422aa0e285d6a1dbde92cd195ccb09f33a41b269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:22:25",
+      "sequence": 18078,
+      "chapter_label": "ISA 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "“In that day,” says the LORD of Armies, “the nail that was fastened in a sure place will give way. It will be cut down and fall. The burden that was on it will be cut off, for the LORD has spoken it.”",
+      "ko": "만군의 여호와께서 가라사대 그 날에는 단단한 곳에 박혔던 못이 삭으리니 그 못이 부러져 떨어지므로 그 위에 걸린 물건이 파쇄되리라 하셨다 하라 나 여호와의 말이니라",
+      "source_text_hash": "9c442f3d7ff8c541390a6de5ea2207886af9bdb49558f893c125a610900002a5",
+      "translation_text_hash": "45338c452e40bf5ab8af374d9a6355fbe2a80f733ab7f8c854d8c428b8c1d5c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 가라사대 그 날에는 단단한 곳에 박혔던 못이 삭으리니 그 못이 부러져 떨어지므로 그 위에 걸린 물건이 파쇄되리라 하셨다 하라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "45338c452e40bf5ab8af374d9a6355fbe2a80f733ab7f8c854d8c428b8c1d5c3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1JN:chapter:001",
+  "unit_ordinal": 1160,
+  "unit_label": "1JN 1",
+  "book_code": "1JN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1JN:1:1",
+      "sequence": 30538,
+      "chapter_label": "1JN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "That which was from the beginning, that which we have heard, that which we have seen with our eyes, that which we saw, and our hands touched, concerning the Word of life",
+      "ko": "태초부터 있는 생명의 말씀에 관하여는 우리가 들은 바요 눈으로 본 바요 주목하고 우리 손으로 만진 바라",
+      "source_text_hash": "2f191f804b1b82a719e3a2b2dcc0d535201785000481dcd653cb1b325b041399",
+      "translation_text_hash": "f550bc2e68f2a4658eb4841f38474659fdec9e5e40ffd7596ea6708e32c62c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태초부터 있는 생명의 말씀에 관하여는 우리가 들은 바요 눈으로 본 바요 주목하고 우리 손으로 만진 바라"
+      ],
+      "raw_text_hashes": [
+        "f550bc2e68f2a4658eb4841f38474659fdec9e5e40ffd7596ea6708e32c62c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:2",
+      "sequence": 30539,
+      "chapter_label": "1JN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "(and the life was revealed, and we have seen, and testify, and declare to you the life, the eternal life, which was with the Father, and was revealed to us);",
+      "ko": "이 생명이 나타내신바 된지라 이 영원한 생명을 우리가 보았고 증거하여 너희에게 전하노니 이는 아버지와 함께 계시다가 우리에게 나타내신바 된 자니라",
+      "source_text_hash": "2712dbf0ac1c8db83b29fc81fd18972a6b2300ecdcc74ac8dda52a09d362a7d8",
+      "translation_text_hash": "24fa649ce203807c91d36236bd3c7d980c77a54048b1e79b572f44685c91aae6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 생명이 나타내신바 된지라 이 영원한 생명을 우리가 보았고 증거하여 너희에게 전하노니 이는 아버지와 함께 계시다가 우리에게 나타내신바 된 자니라"
+      ],
+      "raw_text_hashes": [
+        "24fa649ce203807c91d36236bd3c7d980c77a54048b1e79b572f44685c91aae6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:3",
+      "sequence": 30540,
+      "chapter_label": "1JN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "that which we have seen and heard we declare to you, that you also may have fellowship with us. Yes, and our fellowship is with the Father and with his Son, Jesus Christ.",
+      "ko": "우리가 보고 들은 바를 너희에게도 전함은 너희로 우리와 사귐이 있게 하려 함이니 우리의 사귐은 아버지와 그 아들 예수 그리스도와 함께 함이라",
+      "source_text_hash": "fffb1667b46ad4967e958399a181e3b4e9ca0610b50019df4cb5363a0bb23caf",
+      "translation_text_hash": "3d615b83b3d4cc1ce9140f5533a3494d6f376cea489ea9a899608e8661775b56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 보고 들은 바를 너희에게도 전함은 너희로 우리와 사귐이 있게 하려 함이니 우리의 사귐은 아버지와 그 아들 예수 그리스도와 함께 함이라"
+      ],
+      "raw_text_hashes": [
+        "3d615b83b3d4cc1ce9140f5533a3494d6f376cea489ea9a899608e8661775b56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:4",
+      "sequence": 30541,
+      "chapter_label": "1JN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "And we write these things to you, that our joy may be fulfilled.",
+      "ko": "우리가 이것을 씀은 우리의 기쁨이 충만케 하려 함이로라",
+      "source_text_hash": "4de795adaefe6e235e5245e7c76abba3b1e75155f5138c1f0d6ce73b27cce8b3",
+      "translation_text_hash": "3ab0efd4ef4603e65ece6e1ad1d0daa524ac63998620fba9a7012afa3c8df87c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이것을 씀은 우리의 기쁨이 충만케 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "3ab0efd4ef4603e65ece6e1ad1d0daa524ac63998620fba9a7012afa3c8df87c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:5",
+      "sequence": 30542,
+      "chapter_label": "1JN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "This is the message which we have heard from him and announce to you, that God is light, and in him is no darkness at all.",
+      "ko": "우리가 저에게서 듣고 너희에게 전하는 소식이 이것이니 곧 하나님은 빛이시라 그에게는 어두움이 조금도 없으시니라",
+      "source_text_hash": "d1c5a4e56d332bbbbbc89c498ea4942d952f07d65fcc7439b553830d575e0ee7",
+      "translation_text_hash": "fc3da7d17410050006bbfeca5c07701745440b8839ae083c97b39853fcd158bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 저에게서 듣고 너희에게 전하는 소식이 이것이니 곧 하나님은 빛이시라 그에게는 어두움이 조금도 없으시니라"
+      ],
+      "raw_text_hashes": [
+        "fc3da7d17410050006bbfeca5c07701745440b8839ae083c97b39853fcd158bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:6",
+      "sequence": 30543,
+      "chapter_label": "1JN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "If we say that we have fellowship with him and walk in the darkness, we lie and don’t tell the truth.",
+      "ko": "만일 우리가 하나님과 사귐이 있다 하고 어두운 가운데 행하면 거짓말을 하고 진리를 행치 아니함이거니와",
+      "source_text_hash": "1a4ce8df766c507643a46a2f4d04bf0e1cead81ceaa27c745c6840ede1a31b50",
+      "translation_text_hash": "ccff3c11c9e1d23b3928a23a46f2852bb0368e313b6af201ab7508d35ce702c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 하나님과 사귐이 있다 하고 어두운 가운데 행하면 거짓말을 하고 진리를 행치 아니함이거니와"
+      ],
+      "raw_text_hashes": [
+        "ccff3c11c9e1d23b3928a23a46f2852bb0368e313b6af201ab7508d35ce702c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:7",
+      "sequence": 30544,
+      "chapter_label": "1JN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "But if we walk in the light as he is in the light, we have fellowship with one another, and the blood of Jesus Christ his Son cleanses us from all sin.",
+      "ko": "저가 빛 가운데 계신것 같이 우리도 빛 가운데 행하면 우리가 서로 사귐이 있고 그 아들 예수의 피가 우리를 모든 죄에서 깨끗하게 하실 것이요",
+      "source_text_hash": "f35560b6a731d97c39a2d7b4ad6c83ba3a0031ae3a747a3af08441de57f94dbf",
+      "translation_text_hash": "ff47952bb9a9c919296c06fe5ae47f975942d0f851df583a79e794b1b40f5c9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 빛 가운데 계신것 같이 우리도 빛 가운데 행하면 우리가 서로 사귐이 있고 그 아들 예수의 피가 우리를 모든 죄에서 깨끗하게 하실 것이요"
+      ],
+      "raw_text_hashes": [
+        "ff47952bb9a9c919296c06fe5ae47f975942d0f851df583a79e794b1b40f5c9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:8",
+      "sequence": 30545,
+      "chapter_label": "1JN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "If we say that we have no sin, we deceive ourselves, and the truth is not in us.",
+      "ko": "만일 우리가 죄 없다하면 스스로 속이고 또 진리가 우리 속에 있지 아니할 것이요",
+      "source_text_hash": "eec78043bdc6bd06220cb809c4caa62d831fbdfba73dd68861fddea98f8a3893",
+      "translation_text_hash": "ac36ad5acb4ae10dae3e8d3c3e916a471240323dcf01c6673042b5073f04ed58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 죄 없다하면 스스로 속이고 또 진리가 우리 속에 있지 아니할 것이요"
+      ],
+      "raw_text_hashes": [
+        "ac36ad5acb4ae10dae3e8d3c3e916a471240323dcf01c6673042b5073f04ed58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:9",
+      "sequence": 30546,
+      "chapter_label": "1JN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "If we confess our sins, he is faithful and righteous to forgive us the sins and to cleanse us from all unrighteousness.",
+      "ko": "만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사 우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요",
+      "source_text_hash": "959f76f911e5f76f21128ca83b4c83626aff27c440bbff41bb0cb3bebbea6f48",
+      "translation_text_hash": "740fe4dc8107d15a7b0ee112c15175c008b2c87e494680adf89530951e06541d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 우리 죄를 자백하면 저는 미쁘시고 의로우사 우리 죄를 사하시며 모든 불의에서 우리를 깨끗케 하실 것이요"
+      ],
+      "raw_text_hashes": [
+        "740fe4dc8107d15a7b0ee112c15175c008b2c87e494680adf89530951e06541d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:1:10",
+      "sequence": 30547,
+      "chapter_label": "1JN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1JN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "If we say that we haven’t sinned, we make him a liar, and his word is not in us.",
+      "ko": "만일 우리가 범죄하지 아니하였다 하면 하나님을 거짓말 하는 자로 만드는 것이니 또한 그의 말씀이 우리 속에 있지 아니하니라",
+      "source_text_hash": "74b1d2d8066e414c4dd909416c74f7183664fd2c54b107a4a190161f781b581f",
+      "translation_text_hash": "64c25b3ce1c35cefdd32bf03df11014635e191ae1def666916922d8b2392a3a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 범죄하지 아니하였다 하면 하나님을 거짓말 하는 자로 만드는 것이니 또한 그의 말씀이 우리 속에 있지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "64c25b3ce1c35cefdd32bf03df11014635e191ae1def666916922d8b2392a3a1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:005",
+  "unit_ordinal": 343,
+  "unit_label": "1CH 5",
+  "book_code": "1CH",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:5:1",
+      "sequence": 10430,
+      "chapter_label": "1CH 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "The sons of Reuben the firstborn of Israel (for he was the firstborn, but because he defiled his father’s couch, his birthright was given to the sons of Joseph the son of Israel; and the genealogy is not to be listed according to the birthright.",
+      "ko": "이스라엘의 장자 르우벤의 아들들은 이러하니라 (르우벤은 장자라도 그 아비의 침상을 더럽게 하였으므로 장자의 명분이 이스라엘의 아들 요셉의 자손에게로 돌아갔으나 족보에는 장자의 명분대로 기록할 것이 아니니라",
+      "source_text_hash": "e2b185c50f2276b28e7417766bccc272121e0e91f73c2472bab8bd945fd32c22",
+      "translation_text_hash": "c18143f004fc5b6505e21bc077af2e865315bf1da3040005174b6eb14436228b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 장자 르우벤의 아들들은 이러하니라 (르우벤은 장자라도 그 아비의 침상을 더럽게 하였으므로 장자의 명분이 이스라엘의 아들 요셉의 자손에게로 돌아갔으나 족보에는 장자의 명분대로 기록할 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "c18143f004fc5b6505e21bc077af2e865315bf1da3040005174b6eb14436228b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:2",
+      "sequence": 10431,
+      "chapter_label": "1CH 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "For Judah prevailed above his brothers, and from him came the prince; but the birthright was Joseph’s)—",
+      "ko": "유다는 형제보다 뛰어나고 주권자가 유다로 말미암아 났을찌라도 장자의 명분은 요셉에게 있으니라)",
+      "source_text_hash": "304c5906088241b2772b858aa15f402b6986b15e7f17f54520203bf1a71ac14b",
+      "translation_text_hash": "e9d0655fd4385fca0e6ec58257eaf9029e97886443cd5b451bc79df837c81383",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 형제보다 뛰어나고 주권자가 유다로 말미암아 났을찌라도 장자의 명분은 요셉에게 있으니라)"
+      ],
+      "raw_text_hashes": [
+        "e9d0655fd4385fca0e6ec58257eaf9029e97886443cd5b451bc79df837c81383"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:3",
+      "sequence": 10432,
+      "chapter_label": "1CH 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "the sons of Reuben the firstborn of Israel: Hanoch, Pallu, Hezron, and Carmi.",
+      "ko": "이스라엘의 장자 르우벤의 아들들은 하녹과 발루와 헤스론과 갈미요",
+      "source_text_hash": "98588ad574529ebe06374601460d6f40e99b4064302b9398466dbe9dc0e1a95f",
+      "translation_text_hash": "69ed505f9663783fe441eafe46607bb206e56cf2e56105ef69b7d63726e65465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 장자 르우벤의 아들들은 하녹과 발루와 헤스론과 갈미요"
+      ],
+      "raw_text_hashes": [
+        "69ed505f9663783fe441eafe46607bb206e56cf2e56105ef69b7d63726e65465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:4",
+      "sequence": 10433,
+      "chapter_label": "1CH 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "The sons of Joel: Shemaiah his son, Gog his son, Shimei his son,",
+      "ko": "요엘의 아들은 스마야요 그 아들은 곡이요 그 아들은 시므이요",
+      "source_text_hash": "71e82643dc9ecd347c3e98b4da05d567bea1d3743296b53df5c17e9574dd05e8",
+      "translation_text_hash": "88d16888e50b3b6cfc436ff1d463a271eb012c0d2fe11f26a0065eeb11ec2e77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요엘의 아들은 스마야요 그 아들은 곡이요 그 아들은 시므이요"
+      ],
+      "raw_text_hashes": [
+        "88d16888e50b3b6cfc436ff1d463a271eb012c0d2fe11f26a0065eeb11ec2e77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:5",
+      "sequence": 10434,
+      "chapter_label": "1CH 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Micah his son, Reaiah his son, Baal his son,",
+      "ko": "그 아들은 미가요 그 아들은 르아야요 그 아들은 바알이요",
+      "source_text_hash": "31185f5b94b9e5ea5c4fa45e9b8c1a42fc045d42727c00d512d08fbffff0a0fd",
+      "translation_text_hash": "7e33e06a6ebc2c34195bb3360b05a56deb947ea217be8ce50f3a74c5a8bd7c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 미가요 그 아들은 르아야요 그 아들은 바알이요"
+      ],
+      "raw_text_hashes": [
+        "7e33e06a6ebc2c34195bb3360b05a56deb947ea217be8ce50f3a74c5a8bd7c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:6",
+      "sequence": 10435,
+      "chapter_label": "1CH 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "and Beerah his son, whom Tilgath Pilneser king of Assyria carried away captive. He was prince of the Reubenites.",
+      "ko": "그 아들은 브에라니 저는 르우벤 자손의 두목으로서 앗수르 왕 디글랏 빌레셀에게 사로잡힌 자라",
+      "source_text_hash": "ed9b20d5874f12cb5607562759d2cd5f6addd09c8a97f428021e4f3bc10d2577",
+      "translation_text_hash": "059c0c71dd9a153287d6f5176cfaba3a0b4634357b71481cc18dbd810a9b5815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 브에라니 저는 르우벤 자손의 두목으로서 앗수르 왕 디글랏 빌레셀에게 사로잡힌 자라"
+      ],
+      "raw_text_hashes": [
+        "059c0c71dd9a153287d6f5176cfaba3a0b4634357b71481cc18dbd810a9b5815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:7",
+      "sequence": 10436,
+      "chapter_label": "1CH 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "His brothers by their families, when the genealogy of their generations was listed: the chief, Jeiel, and Zechariah,",
+      "ko": "저의 형제가 종족과 보계대로 족장 된 자는 여이엘과 스가랴와",
+      "source_text_hash": "f779b2340552f493d815266e5320826751372f159a5c231599230ed50fd59be1",
+      "translation_text_hash": "c811f5b8519d7be7d70b00738989f927e57b37beb3ddae4f566714c679c48621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 형제가 종족과 보계대로 족장 된 자는 여이엘과 스가랴와"
+      ],
+      "raw_text_hashes": [
+        "c811f5b8519d7be7d70b00738989f927e57b37beb3ddae4f566714c679c48621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:8",
+      "sequence": 10437,
+      "chapter_label": "1CH 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "and Bela the son of Azaz, the son of Shema, the son of Joel, who lived in Aroer, even to Nebo and Baal Meon;",
+      "ko": "벨라니 벨라는 아사스의 아들이요 세마의 손자요 요엘의 증손이라 저가 아로엘에 거하여 느보와 바알므온까지 미쳤고",
+      "source_text_hash": "dc4716e1f46067861b908350b7b0c26b0edd0a5d2b18177f9a823feac177110c",
+      "translation_text_hash": "18876be2489ae3e41aba933d32f1dfcdccb8bd366a69957d6f8e7dafe244d59f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨라니 벨라는 아사스의 아들이요 세마의 손자요 요엘의 증손이라 저가 아로엘에 거하여 느보와 바알므온까지 미쳤고"
+      ],
+      "raw_text_hashes": [
+        "18876be2489ae3e41aba933d32f1dfcdccb8bd366a69957d6f8e7dafe244d59f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:9",
+      "sequence": 10438,
+      "chapter_label": "1CH 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "and he lived eastward even to the entrance of the wilderness from the river Euphrates, because their livestock were multiplied in the land of Gilead.",
+      "ko": "또 동으로 가서 거하여 유브라데강에서부터 광야 지경까지 미쳤으니 이는 길르앗 땅에서 그 생축이 번식함이라",
+      "source_text_hash": "c7655e2c4e4ff88f71b248c620696559ee974f29a570a4d0402093419daf7478",
+      "translation_text_hash": "65923a572792e686b776f875ec63aef89bf2b75c2fbc6ce0ea77a8178e43e3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 동으로 가서 거하여 유브라데강에서부터 광야 지경까지 미쳤으니 이는 길르앗 땅에서 그 생축이 번식함이라"
+      ],
+      "raw_text_hashes": [
+        "65923a572792e686b776f875ec63aef89bf2b75c2fbc6ce0ea77a8178e43e3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:10",
+      "sequence": 10439,
+      "chapter_label": "1CH 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "In the days of Saul, they made war with the Hagrites, who fell by their hand; and they lived in their tents throughout all the land east of Gilead.",
+      "ko": "사울왕 때에 저희가 하갈 사람으로 더불어 싸워 쳐 죽이고 길르앗 동편 온 땅에서 장막에 거하였더라",
+      "source_text_hash": "7d35370174dbe6bd8e608540204cfe56adf52faa74d59087c9337783158682c4",
+      "translation_text_hash": "3706ed24a8ad3d15e5b4c38f73baf8c3639545b3bd86affc56d42c31ad2c2b0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울왕 때에 저희가 하갈 사람으로 더불어 싸워 쳐 죽이고 길르앗 동편 온 땅에서 장막에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "3706ed24a8ad3d15e5b4c38f73baf8c3639545b3bd86affc56d42c31ad2c2b0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:11",
+      "sequence": 10440,
+      "chapter_label": "1CH 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "The sons of Gad lived beside them in the land of Bashan to Salecah:",
+      "ko": "갓 자손은 르우벤 사람을 마주 대하여 바산 땅에 거하여 살르가까지 미쳤으니",
+      "source_text_hash": "4a735934f09f1c4acb6b3a4604dac7eaac549fae2ee63ac9b7e6846e2de3b178",
+      "translation_text_hash": "dd16e279c642021077a7f9720b605b28cbe5eba79abb584c8ae69bb1cb9b65a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손은 르우벤 사람을 마주 대하여 바산 땅에 거하여 살르가까지 미쳤으니"
+      ],
+      "raw_text_hashes": [
+        "dd16e279c642021077a7f9720b605b28cbe5eba79abb584c8ae69bb1cb9b65a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:12",
+      "sequence": 10441,
+      "chapter_label": "1CH 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Joel the chief, Shapham the second, Janai, and Shaphat in Bashan.",
+      "ko": "족장은 요엘이요 다음은 사밤이요 또 야내와 바산에 거한 사밧이요",
+      "source_text_hash": "112c897d8f4c7208d11601574bca1c2cbd72be180c5800a720bc6923de1cecac",
+      "translation_text_hash": "83599910e45769874fe152b224a0d28ad35c65afc0226ed328d1379f4b12333d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "족장은 요엘이요 다음은 사밤이요 또 야내와 바산에 거한 사밧이요"
+      ],
+      "raw_text_hashes": [
+        "83599910e45769874fe152b224a0d28ad35c65afc0226ed328d1379f4b12333d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:13",
+      "sequence": 10442,
+      "chapter_label": "1CH 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Their brothers of their fathers’ houses: Michael, Meshullam, Sheba, Jorai, Jacan, Zia, and Eber, seven.",
+      "ko": "그 족속 형제에는 미가엘과 므술람과 세바와 요래와 야간과 시아와 에벨 일곱명이니",
+      "source_text_hash": "b01e12cf6db2760f3e2e450f76b13ec7bcc3c1710b98fce5ac98995c83eb6c54",
+      "translation_text_hash": "b3b2bea965eb8906dd59a185f0eb847dacdf5f7ea265f2886b1baca18497ea54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 족속 형제에는 미가엘과 므술람과 세바와 요래와 야간과 시아와 에벨 일곱명이니"
+      ],
+      "raw_text_hashes": [
+        "b3b2bea965eb8906dd59a185f0eb847dacdf5f7ea265f2886b1baca18497ea54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:14",
+      "sequence": 10443,
+      "chapter_label": "1CH 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "These were the sons of Abihail, the son of Huri, the son of Jaroah, the son of Gilead, the son of Michael, the son of Jeshishai, the son of Jahdo, the son of Buz;",
+      "ko": "이는 다 아비하일의 아들이라 아비하일은 후리의 아들이요 야로아의 손자요 길르앗의 증손이요 미가엘의 현손이요 여시새의 오대손이요 야도의 육대손이요 부스의 칠대손이며",
+      "source_text_hash": "78dc9ec82db5b7cff2bcbb32b2de201192e9060423d30e9a243d088e903f7ceb",
+      "translation_text_hash": "7459335f4b39368f86e8a89c475154d7a6a81213a442c5a661d88e43f9ce8e87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 아비하일의 아들이라 아비하일은 후리의 아들이요 야로아의 손자요 길르앗의 증손이요 미가엘의 현손이요 여시새의 오대손이요 야도의 육대손이요 부스의 칠대손이며"
+      ],
+      "raw_text_hashes": [
+        "7459335f4b39368f86e8a89c475154d7a6a81213a442c5a661d88e43f9ce8e87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:15",
+      "sequence": 10444,
+      "chapter_label": "1CH 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Ahi the son of Abdiel, the son of Guni, chief of their fathers’ houses.",
+      "ko": "또 구니의 손자 압디엘의 아들 아히가 족장이 되었고",
+      "source_text_hash": "65110dd6e11edb3f7d16a828c74ce0a88fe0808cc3751c3daeda855b846f5b51",
+      "translation_text_hash": "3dae18452a4fb0eedda54677b390691d8e96d10a5f6fa55c388ef6a401651f6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 구니의 손자 압디엘의 아들 아히가 족장이 되었고"
+      ],
+      "raw_text_hashes": [
+        "3dae18452a4fb0eedda54677b390691d8e96d10a5f6fa55c388ef6a401651f6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:16",
+      "sequence": 10445,
+      "chapter_label": "1CH 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "They lived in Gilead in Bashan and in its towns, and in all the pasture lands of Sharon as far as their borders.",
+      "ko": "저희가 바산 길르앗과 그 향촌과 사론의 모든 들에 거하여 그 사방 변경에 미쳤더라",
+      "source_text_hash": "5dfb801c04a655725a8879541487a190a87bf3cc66fa9fece61895c8b17b378a",
+      "translation_text_hash": "7d3d55ee84ba8df8b6ebc526a5c005af805ad29778369bb543c4bc6bd021ae74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 바산 길르앗과 그 향촌과 사론의 모든 들에 거하여 그 사방 변경에 미쳤더라"
+      ],
+      "raw_text_hashes": [
+        "7d3d55ee84ba8df8b6ebc526a5c005af805ad29778369bb543c4bc6bd021ae74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:17",
+      "sequence": 10446,
+      "chapter_label": "1CH 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "All these were listed by genealogies in the days of Jotham king of Judah, and in the days of Jeroboam king of Israel.",
+      "ko": "이상은 유다 왕 요담과 이스라엘 왕 여로보암 때에 족보에 기록되었더라",
+      "source_text_hash": "e03c372bba6783e7e24ca26a99d58d2feaed52747183f1ccf47242f02e322f29",
+      "translation_text_hash": "43d66152519e8687569895b1d32e4f8f222ba9d1e3f0e9b6978a6a9efe39e8ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 유다 왕 요담과 이스라엘 왕 여로보암 때에 족보에 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "43d66152519e8687569895b1d32e4f8f222ba9d1e3f0e9b6978a6a9efe39e8ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:18",
+      "sequence": 10447,
+      "chapter_label": "1CH 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "The sons of Reuben, the Gadites, and the half-tribe of Manasseh, of valiant men, men able to bear buckler and sword, able to shoot with bow, and skillful in war, were forty-four thousand seven hundred sixty that were able to go out to war.",
+      "ko": "르우벤 자손과 갓 사람과 므낫세 반 지파의 나가 싸울만한 용사 곧 능히 방패와 칼을 들며 활을 당기어 싸움에 익숙한 자가 사만 사천 칠백 륙십인이라",
+      "source_text_hash": "3b1656eece8de2d02c6912bdd9636b37e41b99d73b7157dd7803817f334ce702",
+      "translation_text_hash": "04f3f77ac08c4b9a3b86921866ee34f03bc2a15a58a1130e18aef3cbeca29560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 사람과 므낫세 반 지파의 나가 싸울만한 용사 곧 능히 방패와 칼을 들며 활을 당기어 싸움에 익숙한 자가 사만 사천 칠백 륙십인이라"
+      ],
+      "raw_text_hashes": [
+        "04f3f77ac08c4b9a3b86921866ee34f03bc2a15a58a1130e18aef3cbeca29560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:19",
+      "sequence": 10448,
+      "chapter_label": "1CH 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "They made war with the Hagrites, with Jetur, and Naphish, and Nodab.",
+      "ko": "저희가 하갈 사람과 여두르와 나비스와 노답과 싸우는 중에",
+      "source_text_hash": "d06f3b51b2bc6709b1381d9c3574c677e9d3e1f5ea6741e3dfa6f2162b140e87",
+      "translation_text_hash": "7b29c4ef865fec7354af52e3725481fae5aee7ab6ae91d69cc5586aebc732b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 하갈 사람과 여두르와 나비스와 노답과 싸우는 중에"
+      ],
+      "raw_text_hashes": [
+        "7b29c4ef865fec7354af52e3725481fae5aee7ab6ae91d69cc5586aebc732b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:20",
+      "sequence": 10449,
+      "chapter_label": "1CH 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "They were helped against them, and the Hagrites were delivered into their hand, and all who were with them; for they cried to God in the battle, and he answered them because they put their trust in him.",
+      "ko": "도우심을 입었으므로 하갈 사람과 그 함께한 자들이 다 저희 손에 패하였으니 이는 저희가 싸울 때에 하나님께 의뢰하고 부르짖음을 하나님이 들으셨음이라",
+      "source_text_hash": "4726dedd23c4da2d6a6ae719cdf2e24cd466327eb019d1945a3fad4498c24697",
+      "translation_text_hash": "654a5fa1aa3d8343d49b8e1722fde855b79fdbe3264078711456b558e3117a0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도우심을 입었으므로 하갈 사람과 그 함께한 자들이 다 저희 손에 패하였으니 이는 저희가 싸울 때에 하나님께 의뢰하고 부르짖음을 하나님이 들으셨음이라"
+      ],
+      "raw_text_hashes": [
+        "654a5fa1aa3d8343d49b8e1722fde855b79fdbe3264078711456b558e3117a0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:21",
+      "sequence": 10450,
+      "chapter_label": "1CH 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "They took away their livestock: of their camels fifty thousand, and of sheep two hundred fifty thousand, and of donkeys two thousand, and of men one hundred thousand.",
+      "ko": "저희가 대적의 짐승 곧 약대 오만과 양 이십 오만과 나귀 이천을 빼앗으며 사람 십만을 사로잡았고",
+      "source_text_hash": "ba2a048b020eaf3f9c00f311f3462a10169c03b410c54c412d1ac0ac659c0a46",
+      "translation_text_hash": "31fdc781b1a6d63bd0d5d597876d7bcf4cd969ff08a0be90366b292ea8c1c7e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대적의 짐승 곧 약대 오만과 양 이십 오만과 나귀 이천을 빼앗으며 사람 십만을 사로잡았고"
+      ],
+      "raw_text_hashes": [
+        "31fdc781b1a6d63bd0d5d597876d7bcf4cd969ff08a0be90366b292ea8c1c7e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:22",
+      "sequence": 10451,
+      "chapter_label": "1CH 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "For many fell slain, because the war was of God. They lived in their place until the captivity.",
+      "ko": "죽임을 당한 자가 많았으니 이 싸움이 하나님께로 말미암았음이라 저희가 그 땅에 거하여 사로잡힐 때까지 이르렀더라",
+      "source_text_hash": "99c1fba96c52b98ca54b484cf22af8f2b17b0d5f65fdc627fddb08cab0b0d2ae",
+      "translation_text_hash": "694a0df7abf5784e1891d4fcfbc615ee954e61d3dc6d1d604d57e04ea7202f7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽임을 당한 자가 많았으니 이 싸움이 하나님께로 말미암았음이라 저희가 그 땅에 거하여 사로잡힐 때까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "694a0df7abf5784e1891d4fcfbc615ee954e61d3dc6d1d604d57e04ea7202f7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:23",
+      "sequence": 10452,
+      "chapter_label": "1CH 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "The children of the half-tribe of Manasseh lived in the land. They increased from Bashan to Baal Hermon, Senir, and Mount Hermon.",
+      "ko": "므낫세 반 지파 자손들이 그 땅에 거하여 번성하여 바산에서부터 바알헤르몬과 스닐과 헤르몬산까지 미쳤으며",
+      "source_text_hash": "1e043f15fe3f5096904d841dd86a244153fa3c5c14896c531fc0890a865495a8",
+      "translation_text_hash": "52e460e488cf7db1fdc995dfa95033125d57b9e682fb573a89f2f900415e7da5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 반 지파 자손들이 그 땅에 거하여 번성하여 바산에서부터 바알헤르몬과 스닐과 헤르몬산까지 미쳤으며"
+      ],
+      "raw_text_hashes": [
+        "52e460e488cf7db1fdc995dfa95033125d57b9e682fb573a89f2f900415e7da5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:24",
+      "sequence": 10453,
+      "chapter_label": "1CH 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "These were the heads of their fathers’ houses: Epher, Ishi, Eliel, Azriel, Jeremiah, Hodaviah, and Jahdiel—mighty men of valor, famous men, heads of their fathers’ houses.",
+      "ko": "그 족장은 에벨과 이시와 엘리엘과 아스리엘과 예레미야와 호다위야와 야디엘이라 다 용력이 유명한 족장이었더라",
+      "source_text_hash": "aabb5c82c3e2a86bb036d8594cd88bee1afd02ac7e2596052a4c6c38644c7c67",
+      "translation_text_hash": "a8a796340f3f30d9ad27c7d67bbd5ca503f719a74d09f87038740e6ca444594a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 족장은 에벨과 이시와 엘리엘과 아스리엘과 예레미야와 호다위야와 야디엘이라 다 용력이 유명한 족장이었더라"
+      ],
+      "raw_text_hashes": [
+        "a8a796340f3f30d9ad27c7d67bbd5ca503f719a74d09f87038740e6ca444594a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:25",
+      "sequence": 10454,
+      "chapter_label": "1CH 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "They trespassed against the God of their fathers, and played the prostitute after the gods of the peoples of the land whom God destroyed before them.",
+      "ko": "저희가 그 열조의 하나님께 범죄하여 하나님이 저희 앞에서 멸하신 그 땅 백성의 신들을 간음하듯 섬긴지라",
+      "source_text_hash": "fa9ae8f90ce556e2761b9c2bf51d063bb5864f0b2c3c83277b4d90efa4a79725",
+      "translation_text_hash": "709dc9bcf9b53257c484677b5e77f910b259c4b8e6441a3139d3c0f157f221fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 열조의 하나님께 범죄하여 하나님이 저희 앞에서 멸하신 그 땅 백성의 신들을 간음하듯 섬긴지라"
+      ],
+      "raw_text_hashes": [
+        "709dc9bcf9b53257c484677b5e77f910b259c4b8e6441a3139d3c0f157f221fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:5:26",
+      "sequence": 10455,
+      "chapter_label": "1CH 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "So the God of Israel stirred up the spirit of Pul king of Assyria, and the spirit of Tilgath Pilneser king of Assyria, and he carried away the Reubenites, the Gadites, and the half-tribe of Manasseh, and brought them to Halah, Habor, Hara, and to the river of Gozan, to this day.",
+      "ko": "그러므로 이스라엘 하나님이 앗수르 왕 불의 마음을 일으키시며 앗수르 왕 디글랏 빌레셀의 마음을 일으키시매 곧 르우벤과 갓과 므낫세 반 지파를 사로잡아 할라와 하볼과 하라와 고산 하숫가에 옮긴지라 저희가 오늘날까지 거기 있으니라",
+      "source_text_hash": "a33fa7b379d0d0724b9ff1822fa0caa8c947f25c9e5550893ec68f9c1debf564",
+      "translation_text_hash": "5150e40297ee20939174d446e6e64cfc7d799f062ccb8aff1b579bbf2914044b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 하나님이 앗수르 왕 불의 마음을 일으키시며 앗수르 왕 디글랏 빌레셀의 마음을 일으키시매 곧 르우벤과 갓과 므낫세 반 지파를 사로잡아 할라와 하볼과 하라와 고산 하숫가에 옮긴지라 저희가 오늘날까지 거기 있으니라"
+      ],
+      "raw_text_hashes": [
+        "5150e40297ee20939174d446e6e64cfc7d799f062ccb8aff1b579bbf2914044b"
+      ]
+    }
+  ]
+}

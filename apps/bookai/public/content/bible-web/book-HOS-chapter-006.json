@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:006",
+  "unit_ordinal": 868,
+  "unit_label": "HOS 6",
+  "book_code": "HOS",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:6:1",
+      "sequence": 22169,
+      "chapter_label": "HOS 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "“Come! Let’s return to the LORD; for he has torn us to pieces, and he will heal us; he has injured us, and he will bind up our wounds.",
+      "ko": "오라 우리가 여호와께로 돌아가자 여호와께서 우리를 찢으셨으나 도로 낫게 하실 것이요 우리를 치셨으나 싸매어 주실 것임이라",
+      "source_text_hash": "e2f5d96f42ab08e6e34b504470ad3a52a375f6ebabe53b32b093016d7f5eeae3",
+      "translation_text_hash": "004cfed5c349dc54d482deb5f6251297b5fd6042bf24e3ef411b510a61730fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오라 우리가 여호와께로 돌아가자 여호와께서 우리를 찢으셨으나 도로 낫게 하실 것이요 우리를 치셨으나 싸매어 주실 것임이라"
+      ],
+      "raw_text_hashes": [
+        "004cfed5c349dc54d482deb5f6251297b5fd6042bf24e3ef411b510a61730fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:2",
+      "sequence": 22170,
+      "chapter_label": "HOS 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "After two days he will revive us. On the third day he will raise us up, and we will live before him.",
+      "ko": "여호와께서 이틀 후에 우리를 살리시며 제 삼일에 우리를 일으키시리니 우리가 그 앞에서 살리라",
+      "source_text_hash": "42d8e605d9f5e6927ea71ae1e62f2606fef3ffc87717817af21d52f3f0317426",
+      "translation_text_hash": "e5edac10fdd997362d81213d7d949152eecd683b6898222443068b3213a1d333",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이틀 후에 우리를 살리시며 제 삼일에 우리를 일으키시리니 우리가 그 앞에서 살리라"
+      ],
+      "raw_text_hashes": [
+        "e5edac10fdd997362d81213d7d949152eecd683b6898222443068b3213a1d333"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:3",
+      "sequence": 22171,
+      "chapter_label": "HOS 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Let’s acknowledge the LORD. Let’s press on to know the LORD. As surely as the sun rises, the LORD will appear. He will come to us like the rain, like the spring rain that waters the earth.”",
+      "ko": "그러므로 우리가 여호와를 알자 힘써 여호와를 알자 그의 나오심은 새벽 빛 같이 일정하니 비와 같이, 땅을 적시는 늦은 비와 같이 우리에게 임하시리라 하리라",
+      "source_text_hash": "ec6e2c5730bf49a82b6c7956fe13771112202430f1de9801a26faf9380f89f29",
+      "translation_text_hash": "28a8fa71c4efb2a07a0f39db60b34f35f02f2c0da9aeb521618daf87635a5086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 여호와를 알자 힘써 여호와를 알자 그의 나오심은 새벽 빛 같이 일정하니 비와 같이, 땅을 적시는 늦은 비와 같이 우리에게 임하시리라 하리라"
+      ],
+      "raw_text_hashes": [
+        "28a8fa71c4efb2a07a0f39db60b34f35f02f2c0da9aeb521618daf87635a5086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:4",
+      "sequence": 22172,
+      "chapter_label": "HOS 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "“Ephraim, what shall I do to you? Judah, what shall I do to you? For your love is like a morning cloud, and like the dew that disappears early.",
+      "ko": "에브라임아 내가 네게 어떻게 하랴 유다야 내가 네게 어떻게 하랴 너희의 인애가 아침 구름이나 쉬 없어지는 이슬 같도다",
+      "source_text_hash": "2ea2ba97ca6e75d31c2e748e243d265345d7d813decc82b94c81b0650b2de163",
+      "translation_text_hash": "fe55b5e51ea6bf575ea4c94e11ea270abec7939a30f0f33ee708d39c2e9f17f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임아 내가 네게 어떻게 하랴 유다야 내가 네게 어떻게 하랴 너희의 인애가 아침 구름이나 쉬 없어지는 이슬 같도다"
+      ],
+      "raw_text_hashes": [
+        "fe55b5e51ea6bf575ea4c94e11ea270abec7939a30f0f33ee708d39c2e9f17f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:5",
+      "sequence": 22173,
+      "chapter_label": "HOS 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore I have cut them to pieces with the prophets; I killed them with the words of my mouth. Your judgments are like a flash of lightning.",
+      "ko": "그러므로 내가 선지자들로 저희를 치고 내 입의 말로 저희를 죽였노니 내 심판은 발하는 빛과 같으니라",
+      "source_text_hash": "a4d36c602476f8a139e590682b45d0b1fc830a4fd1e9f7d2e06f359b5916e9c0",
+      "translation_text_hash": "613126f966ab879e6b9c33b3cb87a785e957fa11fea2733c0954202ab70c4c3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 선지자들로 저희를 치고 내 입의 말로 저희를 죽였노니 내 심판은 발하는 빛과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "613126f966ab879e6b9c33b3cb87a785e957fa11fea2733c0954202ab70c4c3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:6",
+      "sequence": 22174,
+      "chapter_label": "HOS 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "For I desire mercy, and not sacrifice; and the knowledge of God more than burnt offerings.",
+      "ko": "나는 인애를 원하고 제사를 원치 아니하며 번제보다 하나님을 아는 것을 원하노라",
+      "source_text_hash": "59df4acf7dab3f15bb545292e876c71a8693cbc21876023e3706166f8fe2d688",
+      "translation_text_hash": "3ed0ae9795c9e5aeeafbbd31c0f6b7e4d2eba31b80297b0a0f92b371bcd89f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 인애를 원하고 제사를 원치 아니하며 번제보다 하나님을 아는 것을 원하노라"
+      ],
+      "raw_text_hashes": [
+        "3ed0ae9795c9e5aeeafbbd31c0f6b7e4d2eba31b80297b0a0f92b371bcd89f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:7",
+      "sequence": 22175,
+      "chapter_label": "HOS 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "But they, like Adam, have broken the covenant. They were unfaithful to me there.",
+      "ko": "저희는 아담처럼 언약을 어기고 거기서 내게 패역을 행하였느니라",
+      "source_text_hash": "6dcf8405634b09e6be75513db9717fac8a7d4c76364b734987af7b651513ac75",
+      "translation_text_hash": "070625455e184df8c70666d3375cbe84cb87fdca0c0032b3a58ae27155dfdca0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 아담처럼 언약을 어기고 거기서 내게 패역을 행하였느니라"
+      ],
+      "raw_text_hashes": [
+        "070625455e184df8c70666d3375cbe84cb87fdca0c0032b3a58ae27155dfdca0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:8",
+      "sequence": 22176,
+      "chapter_label": "HOS 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Gilead is a city of those who work iniquity; it is stained with blood.",
+      "ko": "길르앗은 행악자의 고을이라 피 발자취가 편만하도다",
+      "source_text_hash": "67b3bb0f55622b39af85a027e93b8fdce3f6805b1fb44071fae9644b3e5c30a6",
+      "translation_text_hash": "d166d0988aaf52f11f075fa801eb730c93c78e444c94db30eaf29468366c56a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗은 행악자의 고을이라 피 발자취가 편만하도다"
+      ],
+      "raw_text_hashes": [
+        "d166d0988aaf52f11f075fa801eb730c93c78e444c94db30eaf29468366c56a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:9",
+      "sequence": 22177,
+      "chapter_label": "HOS 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "As gangs of robbers wait to ambush a man, so the company of priests murder on the path toward Shechem, committing shameful crimes.",
+      "ko": "강도 떼가 사람을 기다림 같이 제사장의 무리가 세겜 길에서 살인하니 저희가 사악을 행하였느니라",
+      "source_text_hash": "cf4c8a825dd4d3cad4b4c06f5b07d2e5ba32a09a7cb2d38a05fdd4e5665022c3",
+      "translation_text_hash": "d6e7476f22aed35b6bb53d9255b9060e308caf336ddecb0a9e46eb8a41f8964d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강도 떼가 사람을 기다림 같이 제사장의 무리가 세겜 길에서 살인하니 저희가 사악을 행하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d6e7476f22aed35b6bb53d9255b9060e308caf336ddecb0a9e46eb8a41f8964d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:10",
+      "sequence": 22178,
+      "chapter_label": "HOS 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "In the house of Israel I have seen a horrible thing. There is prostitution in Ephraim. Israel is defiled.",
+      "ko": "내가 이스라엘 집에서 가증한 일을 보았나니 거기서 에브라임은 행음하였고 이스라엘은 더럽혔느니라",
+      "source_text_hash": "fc8e45d0092b975e6af2c13e20d0772a4bc818077c525a72f148b0565dfd5271",
+      "translation_text_hash": "4a3445cb70e4ec5ad4e8fcc12ea7821c1ecb4391d743e5b1cf6af17bd0a624e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 집에서 가증한 일을 보았나니 거기서 에브라임은 행음하였고 이스라엘은 더럽혔느니라"
+      ],
+      "raw_text_hashes": [
+        "4a3445cb70e4ec5ad4e8fcc12ea7821c1ecb4391d743e5b1cf6af17bd0a624e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:6:11",
+      "sequence": 22179,
+      "chapter_label": "HOS 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "“Also, Judah, there is a harvest appointed for you, when I restore the fortunes of my people.",
+      "ko": "유다여 내가 내 백성의 사로잡힘을 돌이킬 때에 네게도 추수할 일을 정하였느니라",
+      "source_text_hash": "d9e0edc7584efc2dc69e022fb8644657a3bec23bf1bbcc728fe678517b1d85a8",
+      "translation_text_hash": "9da34c4e28fa2804e27b52ca65ac70f8d1ccf98bf8e71656724adef618bff58e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다여 내가 내 백성의 사로잡힘을 돌이킬 때에 네게도 추수할 일을 정하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9da34c4e28fa2804e27b52ca65ac70f8d1ccf98bf8e71656724adef618bff58e"
+      ]
+    }
+  ]
+}

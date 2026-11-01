@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:010",
+  "unit_ordinal": 277,
+  "unit_label": "2SA 10",
+  "book_code": "2SA",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:10:1",
+      "sequence": 8242,
+      "chapter_label": "2SA 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "After this, the king of the children of Ammon died, and Hanun his son reigned in his place.",
+      "ko": "그 후에 암몬 자손의 왕이 죽고 그 아들 하눈이 대신하여 왕이 되니",
+      "source_text_hash": "c2e554db0bf7f1640a609d0ac49342cf3f1e465f5d3f9ccf3d1c129a98db5c36",
+      "translation_text_hash": "bea84f694ecfc3416c89fea71cf9140b621f7f29cf2b15c0245ed173090eee76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 암몬 자손의 왕이 죽고 그 아들 하눈이 대신하여 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "bea84f694ecfc3416c89fea71cf9140b621f7f29cf2b15c0245ed173090eee76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:2",
+      "sequence": 8243,
+      "chapter_label": "2SA 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "David said, “I will show kindness to Hanun the son of Nahash, as his father showed kindness to me.” So David sent by his servants to comfort him concerning his father. David’s servants came into the land of the children of Ammon.",
+      "ko": "다윗이 가로되 내가 나하스의 아들 하눈에게 은총을 베풀되 그 아비가 내게 은총을 베푼것 같이 하리라 하고 그 신복들을 명하여 그 아비 죽은 것을 조상하라 하니라 다윗의 신복들이 암몬 자손의 땅에 이르매",
+      "source_text_hash": "8f9e4311b7b86e79bc1cc6695eee688384cd308fdd2593eab7bb616e2233311e",
+      "translation_text_hash": "5690acca864c75e45bc69be4ceadf61934e8b7b181ea83558058b323b2a0d5fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 내가 나하스의 아들 하눈에게 은총을 베풀되 그 아비가 내게 은총을 베푼것 같이 하리라 하고 그 신복들을 명하여 그 아비 죽은 것을 조상하라 하니라 다윗의 신복들이 암몬 자손의 땅에 이르매"
+      ],
+      "raw_text_hashes": [
+        "5690acca864c75e45bc69be4ceadf61934e8b7b181ea83558058b323b2a0d5fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:3",
+      "sequence": 8244,
+      "chapter_label": "2SA 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "But the princes of the children of Ammon said to Hanun their lord, “Do you think that David honors your father, in that he has sent comforters to you? Hasn’t David sent his servants to you to search the city, to spy it out, and to overthrow it?”",
+      "ko": "암몬 자손의 방백들이 그 주 하눈에게 고하되 왕은 다윗이 조객을 보낸 것이 왕의 부친을 공경함인 줄로 여기시나이까 다윗이 그 신복을 보내어 이 성을 엿보고 탐지하여 함락시키고자 함이 아니니이까",
+      "source_text_hash": "70e9c39d0ed7db9d8c33c442e0d5bd4e1f197146e5741e9a1e5df69e429494c1",
+      "translation_text_hash": "310b64661683b2ecec19c6ebf577908940f188b031d6064c0e7723cfc63eca9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손의 방백들이 그 주 하눈에게 고하되 왕은 다윗이 조객을 보낸 것이 왕의 부친을 공경함인 줄로 여기시나이까 다윗이 그 신복을 보내어 이 성을 엿보고 탐지하여 함락시키고자 함이 아니니이까"
+      ],
+      "raw_text_hashes": [
+        "310b64661683b2ecec19c6ebf577908940f188b031d6064c0e7723cfc63eca9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:4",
+      "sequence": 8245,
+      "chapter_label": "2SA 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "So Hanun took David’s servants, shaved off one half of their beards, and cut off their garments in the middle, even to their buttocks, and sent them away.",
+      "ko": "이에 하눈이 다윗의 신복들을 잡아 그 수염 절반을 깎고 그 의복의 중동볼기까지 자르고 돌려보내매",
+      "source_text_hash": "a75f47031a0ceb62275e4837c435584bdd7440514b631ce9519bd5a6ed2626c7",
+      "translation_text_hash": "e0bdb7e7616c37348e827c457735e5ada33beafc19c6f8ae1780f8c49d26a17c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 하눈이 다윗의 신복들을 잡아 그 수염 절반을 깎고 그 의복의 중동볼기까지 자르고 돌려보내매"
+      ],
+      "raw_text_hashes": [
+        "e0bdb7e7616c37348e827c457735e5ada33beafc19c6f8ae1780f8c49d26a17c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:5",
+      "sequence": 8246,
+      "chapter_label": "2SA 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "When they told David this, he sent to meet them, for the men were greatly ashamed. The king said, “Wait at Jericho until your beards have grown, and then return.”",
+      "ko": "혹이 이 일을 다윗에게 고하니라 그 사람들이 크게 부끄러워하므로 왕이 저희를 맞으러 보내어 이르기를 너희는 수염이 자라기까지 여리고에서 머물다가 돌아오라 하니라",
+      "source_text_hash": "c0e41d746d15c110f4b0d0b857398d24bf08c685f4b7db220cf35ec990e3d193",
+      "translation_text_hash": "8de59ceab855cbbc898be1c775bdbae66f6a55551a380af3e68f474d9d1d9e1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 이 일을 다윗에게 고하니라 그 사람들이 크게 부끄러워하므로 왕이 저희를 맞으러 보내어 이르기를 너희는 수염이 자라기까지 여리고에서 머물다가 돌아오라 하니라"
+      ],
+      "raw_text_hashes": [
+        "8de59ceab855cbbc898be1c775bdbae66f6a55551a380af3e68f474d9d1d9e1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:6",
+      "sequence": 8247,
+      "chapter_label": "2SA 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "When the children of Ammon saw that they had become odious to David, the children of Ammon sent and hired the Syrians of Beth Rehob and the Syrians of Zobah, twenty thousand footmen, and the king of Maacah with one thousand men, and the men of Tob twelve thousand men.",
+      "ko": "암몬 자손이 자기가 다윗에게 미움이 된줄 알고 사람을 보내어 벧르홉 아람 사람과 소바 아람 사람의 보병 이만과 마아가 왕과 그 사람 일천과 돕 사람 일만 이천을 고용한지라",
+      "source_text_hash": "91f8d1fbd3d34cf53b4ed764e06a0a51741c39cb63ccea53ded5a371c9904c54",
+      "translation_text_hash": "ea823d529bb4c3b8316d5a50e83956c0decbd6fcfa96dd034fa43c0a3f35ba77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손이 자기가 다윗에게 미움이 된줄 알고 사람을 보내어 벧르홉 아람 사람과 소바 아람 사람의 보병 이만과 마아가 왕과 그 사람 일천과 돕 사람 일만 이천을 고용한지라"
+      ],
+      "raw_text_hashes": [
+        "ea823d529bb4c3b8316d5a50e83956c0decbd6fcfa96dd034fa43c0a3f35ba77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:7",
+      "sequence": 8248,
+      "chapter_label": "2SA 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "When David heard of it, he sent Joab and all the army of the mighty men.",
+      "ko": "다윗이 듣고 요압과 용사의 온 무리를 보내매",
+      "source_text_hash": "e5272b369ca5b6f4f8fbbb782fdd9f335540793a53f7252b693766d8c5bf1ca3",
+      "translation_text_hash": "27d2dbcac291c2802da4b8a32d593302213faea4e02932f14887b59b17ac1811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 듣고 요압과 용사의 온 무리를 보내매"
+      ],
+      "raw_text_hashes": [
+        "27d2dbcac291c2802da4b8a32d593302213faea4e02932f14887b59b17ac1811"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:8",
+      "sequence": 8249,
+      "chapter_label": "2SA 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Ammon came out, and put the battle in array at the entrance of the gate. The Syrians of Zobah and of Rehob and the men of Tob and Maacah were by themselves in the field.",
+      "ko": "암몬 자손은 나와서 성문 어귀에 진을 쳤고 소바와 르홉 아람 사람과 돕과 마아가 사람들은 따로 들에 있더라",
+      "source_text_hash": "760f5356b1450efdf1ca8f07f1464be9d56a0a707f9964bdfa9a01e4ca09c4d9",
+      "translation_text_hash": "7bed2454074b8c6b129fe453d108c6526cfdaa0dd956b24a002d7540c4f86673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손은 나와서 성문 어귀에 진을 쳤고 소바와 르홉 아람 사람과 돕과 마아가 사람들은 따로 들에 있더라"
+      ],
+      "raw_text_hashes": [
+        "7bed2454074b8c6b129fe453d108c6526cfdaa0dd956b24a002d7540c4f86673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:9",
+      "sequence": 8250,
+      "chapter_label": "2SA 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Now when Joab saw that the battle was set against him before and behind, he chose of all the choice men of Israel and put them in array against the Syrians.",
+      "ko": "요압이 앞 뒤에 친 적진을 보고 이스라엘의 뺀 자 중에서 또 빼서 아람 사람을 대하여 진 치고",
+      "source_text_hash": "c7660d3d7cf617bea58d99afbde83bf1b0221782add4dfc8955c0c6eff1b1593",
+      "translation_text_hash": "c1d5c24da26646dcf079951c045847e06486c210445c501c79eace1dbfcf5a7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 앞 뒤에 친 적진을 보고 이스라엘의 뺀 자 중에서 또 빼서 아람 사람을 대하여 진 치고"
+      ],
+      "raw_text_hashes": [
+        "c1d5c24da26646dcf079951c045847e06486c210445c501c79eace1dbfcf5a7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:10",
+      "sequence": 8251,
+      "chapter_label": "2SA 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The rest of the people he committed into the hand of Abishai his brother; and he put them in array against the children of Ammon.",
+      "ko": "그 남은 무리는 그 아우 아비새의 수하에 붙여 암몬 자손을 대하여 진 치게 하고",
+      "source_text_hash": "6c9df8f7ca63eec727c10a461e1432bb8c4487f2ea31e7328aae2026ff2dec52",
+      "translation_text_hash": "34ae031552b142258c7cfc163b3f59859039fdce0fa6402a9a3a8a8d539de63e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 무리는 그 아우 아비새의 수하에 붙여 암몬 자손을 대하여 진 치게 하고"
+      ],
+      "raw_text_hashes": [
+        "34ae031552b142258c7cfc163b3f59859039fdce0fa6402a9a3a8a8d539de63e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:11",
+      "sequence": 8252,
+      "chapter_label": "2SA 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "He said, “If the Syrians are too strong for me, then you shall help me; but if the children of Ammon are too strong for you, then I will come and help you.",
+      "ko": "가로되 만일 아람 사람이 나보다 강하면 네가 나를 돕고 만일 암몬 자손이 너보다 강하면 내가 가서 너를 도우리라",
+      "source_text_hash": "9c260df6da27615e7cf5320366ee2379b00d4a0ad174f30d54a48027af5e3fe1",
+      "translation_text_hash": "b7e159710266c72c4eeb085291d1c2011868e957b93e74aac51b103fde5a8d1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 만일 아람 사람이 나보다 강하면 네가 나를 돕고 만일 암몬 자손이 너보다 강하면 내가 가서 너를 도우리라"
+      ],
+      "raw_text_hashes": [
+        "b7e159710266c72c4eeb085291d1c2011868e957b93e74aac51b103fde5a8d1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:12",
+      "sequence": 8253,
+      "chapter_label": "2SA 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Be courageous, and let’s be strong for our people and for the cities of our God; and may the LORD do what seems good to him.”",
+      "ko": "너는 담대하라 우리가 우리 백성과 우리 하나님의 성읍들을 위하여 담대히 하자 여호와께서 선히 여기시는대로 행하시기를 원하노라 하고",
+      "source_text_hash": "51047a516197a1900c1dfa3f44bc76001ac3130d21992bcfaa20944a6bdb1ff8",
+      "translation_text_hash": "62a2d3fea5b6bdd6a6004137cce75f5f1e43b3da555f9eae9b6866cd4ecc77b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 담대하라 우리가 우리 백성과 우리 하나님의 성읍들을 위하여 담대히 하자 여호와께서 선히 여기시는대로 행하시기를 원하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "62a2d3fea5b6bdd6a6004137cce75f5f1e43b3da555f9eae9b6866cd4ecc77b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:13",
+      "sequence": 8254,
+      "chapter_label": "2SA 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "So Joab and the people who were with him came near to the battle against the Syrians, and they fled before him.",
+      "ko": "요압과 그 종자가 아람 사람을 향하여 싸우려고 나아가니 저희가 그 앞에서 도망하고",
+      "source_text_hash": "1576e34bf9a68e8f221dcbb913fdf82b3fee2948daf1a76460806c9561f53f66",
+      "translation_text_hash": "6a7a9ce22ae395e3c2f3e3b235f9cb085de5f987c83801a62294c0a291c19de2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압과 그 종자가 아람 사람을 향하여 싸우려고 나아가니 저희가 그 앞에서 도망하고"
+      ],
+      "raw_text_hashes": [
+        "6a7a9ce22ae395e3c2f3e3b235f9cb085de5f987c83801a62294c0a291c19de2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:14",
+      "sequence": 8255,
+      "chapter_label": "2SA 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "When the children of Ammon saw that the Syrians had fled, they likewise fled before Abishai, and entered into the city. Then Joab returned from the children of Ammon and came to Jerusalem.",
+      "ko": "암몬 자손은 아람 사람의 도망함을 보고 저희도 아비새 앞에서 도망하여 성으로 들어간지라 요압이 암몬 자손을 떠나 예루살렘으로 돌아오니라",
+      "source_text_hash": "6f55c17dfd03427e130604ef993817a8e0e5fcb2e378112d008186949e4ea853",
+      "translation_text_hash": "9b62fde6d768908fad7402a52aa755d3baa949875ae879a17becdfe0ae14887c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손은 아람 사람의 도망함을 보고 저희도 아비새 앞에서 도망하여 성으로 들어간지라 요압이 암몬 자손을 떠나 예루살렘으로 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "9b62fde6d768908fad7402a52aa755d3baa949875ae879a17becdfe0ae14887c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:15",
+      "sequence": 8256,
+      "chapter_label": "2SA 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "When the Syrians saw that they were defeated by Israel, they gathered themselves together.",
+      "ko": "아람 사람이 자기가 이스라엘 앞에서 패하였음을 보고 다 모이매",
+      "source_text_hash": "8366e041400344334f95e591e56cc874da2733c6fc91b7ca14bb14a1c1c73ecc",
+      "translation_text_hash": "103f0134d4c288fc371e78c72404f6c32e74376b1df2eb61fea96363fbbffd57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 사람이 자기가 이스라엘 앞에서 패하였음을 보고 다 모이매"
+      ],
+      "raw_text_hashes": [
+        "103f0134d4c288fc371e78c72404f6c32e74376b1df2eb61fea96363fbbffd57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:16",
+      "sequence": 8257,
+      "chapter_label": "2SA 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Hadadezer sent and brought out the Syrians who were beyond the River; and they came to Helam, with Shobach the captain of the army of Hadadezer at their head.",
+      "ko": "하닷에셀이 사람을 보내어 강 건너편에 있는 아람 사람을 불러내매 저희가 헬람에 이르니 하닷에셀의 군대 장관 소박이 저희를 거느린지라",
+      "source_text_hash": "c8459b8be2468807969ba92bc51dd28f71eec7d42fa24ab95d2c81de9680fcf2",
+      "translation_text_hash": "a493cf6197b4a851d7c50a22e8bf6d7e80acfbd8944b528b12724c7dbcd9fce0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷에셀이 사람을 보내어 강 건너편에 있는 아람 사람을 불러내매 저희가 헬람에 이르니 하닷에셀의 군대 장관 소박이 저희를 거느린지라"
+      ],
+      "raw_text_hashes": [
+        "a493cf6197b4a851d7c50a22e8bf6d7e80acfbd8944b528b12724c7dbcd9fce0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:17",
+      "sequence": 8258,
+      "chapter_label": "2SA 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "David was told that; and he gathered all Israel together, passed over the Jordan, and came to Helam. The Syrians set themselves in array against David and fought with him.",
+      "ko": "혹이 다윗에게 고하매 저가 온 이스라엘을 모으고 요단을 건너 헬람에 이르매 아람 사람들이 다윗을 향하여 진을 치고 더불어 싸우더니",
+      "source_text_hash": "407bdef1763827fae6b0052244164ff7940cf10359287053ddb5dbee3371e231",
+      "translation_text_hash": "a24ad776f85ab712a1cc146f42b2435de420c30ab3a19258a49adcedd3db7c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗에게 고하매 저가 온 이스라엘을 모으고 요단을 건너 헬람에 이르매 아람 사람들이 다윗을 향하여 진을 치고 더불어 싸우더니"
+      ],
+      "raw_text_hashes": [
+        "a24ad776f85ab712a1cc146f42b2435de420c30ab3a19258a49adcedd3db7c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:18",
+      "sequence": 8259,
+      "chapter_label": "2SA 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "The Syrians fled before Israel; and David killed seven hundred charioteers of the Syrians and forty thousand horsemen, and struck Shobach the captain of their army, so that he died there.",
+      "ko": "아람 사람이 이스라엘 앞에서 도망한지라 다윗이 아람 병거 칠백승의 사람과 마병 사만을 죽이고 또 그 군대 장관 소박을 치매 거기서 죽으니라",
+      "source_text_hash": "87bb07587762499bc2d085d00ecd801e59788c5074e95b291bc84a2f7190b467",
+      "translation_text_hash": "31ce4ef732fd24745d53eb6baf40fe0915064a13db374cea59daaf3b85b7f15a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 사람이 이스라엘 앞에서 도망한지라 다윗이 아람 병거 칠백승의 사람과 마병 사만을 죽이고 또 그 군대 장관 소박을 치매 거기서 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "31ce4ef732fd24745d53eb6baf40fe0915064a13db374cea59daaf3b85b7f15a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:10:19",
+      "sequence": 8260,
+      "chapter_label": "2SA 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "When all the kings who were servants to Hadadezer saw that they were defeated before Israel, they made peace with Israel and served them. So the Syrians were afraid to help the children of Ammon any more.",
+      "ko": "하닷에셀에게 속한 왕들이 자기가 이스라엘 앞에서 패함을 보고 이스라엘과 화친하고 섬기니 이러므로 아람 사람들이 두려워하여 다시는 암몬 자손을 돕지 아니하니라",
+      "source_text_hash": "3b0cde3711c5630b4673294226a54969a1fda357e8afd9d6180caa4883d27eb2",
+      "translation_text_hash": "3429bcfcb69ad11fa6724c333347f20801e25621f36ffab5f7cd98a10f7527ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷에셀에게 속한 왕들이 자기가 이스라엘 앞에서 패함을 보고 이스라엘과 화친하고 섬기니 이러므로 아람 사람들이 두려워하여 다시는 암몬 자손을 돕지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "3429bcfcb69ad11fa6724c333347f20801e25621f36ffab5f7cd98a10f7527ba"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:001",
+  "unit_ordinal": 437,
+  "unit_label": "JOB 1",
+  "book_code": "JOB",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:1:1",
+      "sequence": 12871,
+      "chapter_label": "JOB 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "There was a man in the land of Uz, whose name was Job. That man was blameless and upright, and one who feared God, and turned away from evil.",
+      "ko": "우스 땅에 욥이라 이름하는 사람이 있었는데 그 사람은 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자더라",
+      "source_text_hash": "7fd1410b918c9dcd0d754696dc9a20652781ec19ffa9accee5253fd754a9d62a",
+      "translation_text_hash": "e8e469a61186061e80164e79aabc20a4f885593c6943fcb97d1f15453598855d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우스 땅에 욥이라 이름하는 사람이 있었는데 그 사람은 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자더라"
+      ],
+      "raw_text_hashes": [
+        "e8e469a61186061e80164e79aabc20a4f885593c6943fcb97d1f15453598855d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:2",
+      "sequence": 12872,
+      "chapter_label": "JOB 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "There were born to him seven sons and three daughters.",
+      "ko": "그 소생은 남자가 일곱이요 여자가 셋이며",
+      "source_text_hash": "beec5e843a94184787037f011cd77b4898ebdf9d5ffaafffb535d25c37bca35a",
+      "translation_text_hash": "a4495503290a9c7eb31cd66ab49e78cbfa73957eab234cde4a9d3bed23ac17ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소생은 남자가 일곱이요 여자가 셋이며"
+      ],
+      "raw_text_hashes": [
+        "a4495503290a9c7eb31cd66ab49e78cbfa73957eab234cde4a9d3bed23ac17ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:3",
+      "sequence": 12873,
+      "chapter_label": "JOB 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "His possessions also were seven thousand sheep, three thousand camels, five hundred yoke of oxen, five hundred female donkeys, and a very great household; so that this man was the greatest of all the children of the east.",
+      "ko": "그 소유물은 양이 칠천이요 약대가 삼천이요 소가 오백 겨리요 암나귀가 오백이며 종도 많이 있었으니 이 사람은 동방 사람 중에 가장 큰 자라",
+      "source_text_hash": "7cf5a7ed95d55fb215205a1d6ab9cb5707db4564b6a85b9c2c7e15494b882173",
+      "translation_text_hash": "8e50438237211e8291fdbcf70b70fd7bb24e8fdf138ac69d1cb7f21e481b34e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소유물은 양이 칠천이요 약대가 삼천이요 소가 오백 겨리요 암나귀가 오백이며 종도 많이 있었으니 이 사람은 동방 사람 중에 가장 큰 자라"
+      ],
+      "raw_text_hashes": [
+        "8e50438237211e8291fdbcf70b70fd7bb24e8fdf138ac69d1cb7f21e481b34e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:4",
+      "sequence": 12874,
+      "chapter_label": "JOB 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "His sons went and held a feast in the house of each one on his birthday; and they sent and called for their three sisters to eat and to drink with them.",
+      "ko": "그 아들들이 자기 생일이면 각각 자기의 집에서 잔치를 베풀고 그 누이 셋도 청하여 함께 먹고 마시므로",
+      "source_text_hash": "b37e5d53d249a7372dc8da41f71b9a1dc37d1b0e09faa9bd21860ea4d539bb65",
+      "translation_text_hash": "a5a4da64f6a072b9402d12c6d7a698e12d680f733a08ad4f907e6cecc98ddc80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들들이 자기 생일이면 각각 자기의 집에서 잔치를 베풀고 그 누이 셋도 청하여 함께 먹고 마시므로"
+      ],
+      "raw_text_hashes": [
+        "a5a4da64f6a072b9402d12c6d7a698e12d680f733a08ad4f907e6cecc98ddc80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:5",
+      "sequence": 12875,
+      "chapter_label": "JOB 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "It was so, when the days of their feasting had run their course, that Job sent and sanctified them, and rose up early in the morning, and offered burnt offerings according to the number of them all. For Job said, “It may be that my sons have sinned, and renounced God in their hearts.” Job did so continually.",
+      "ko": "그 잔치 날이 지나면 욥이 그들을 불러다가 성결케 하되 아침에 일어나서 그들의 명수대로 번제를 드렸으니 이는 욥이 말하기를 혹시 내 아들들이 죄를 범하여 마음으로 하나님을 배반하였을까 함이라 욥의 행사가 항상 이러하였더라",
+      "source_text_hash": "7530b0ba997f2d382040eaab987c8cc60e365b7ee5e3eebcba4bc612b9d31f66",
+      "translation_text_hash": "bb62b5eb1d9cf60e365729578a5162d4d0949f2790c108f6b0f2fcc896bec355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잔치 날이 지나면 욥이 그들을 불러다가 성결케 하되 아침에 일어나서 그들의 명수대로 번제를 드렸으니 이는 욥이 말하기를 혹시 내 아들들이 죄를 범하여 마음으로 하나님을 배반하였을까 함이라 욥의 행사가 항상 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "bb62b5eb1d9cf60e365729578a5162d4d0949f2790c108f6b0f2fcc896bec355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:6",
+      "sequence": 12876,
+      "chapter_label": "JOB 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Now on the day when God’s sons came to present themselves before the LORD, Satan also came among them.",
+      "ko": "하루는 하나님의 아들들이 와서 여호와 앞에 섰고 사단도 그들 가운데 왔는지라",
+      "source_text_hash": "8d41f959388cd9fb87f9b5e27850711152f9c2812460aceaef6ef16e7eb19adf",
+      "translation_text_hash": "e27eb00aae338def0efc01a96d7cc1d383cc8c4dc8a46a1a573c3da367d97579",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 하나님의 아들들이 와서 여호와 앞에 섰고 사단도 그들 가운데 왔는지라"
+      ],
+      "raw_text_hashes": [
+        "e27eb00aae338def0efc01a96d7cc1d383cc8c4dc8a46a1a573c3da367d97579"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:7",
+      "sequence": 12877,
+      "chapter_label": "JOB 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD said to Satan, “Where have you come from?” Then Satan answered the LORD, and said, “From going back and forth on the earth, and from walking up and down in it.”",
+      "ko": "여호와께서 사단에게 이르시되 네가 어디서 왔느냐 사단이 여호와께 대답하여 가로되 땅에 두루 돌아 여기 저기 다녀 왔나이다",
+      "source_text_hash": "a7631d182c0ef90724219535eec5cbfb36702a85c6f4d4079663055490a74aba",
+      "translation_text_hash": "2308eaedf0bc0f6f6cc4a3d0067008261b035c7170b91506f90185f1e790e2e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 네가 어디서 왔느냐 사단이 여호와께 대답하여 가로되 땅에 두루 돌아 여기 저기 다녀 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "2308eaedf0bc0f6f6cc4a3d0067008261b035c7170b91506f90185f1e790e2e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:8",
+      "sequence": 12878,
+      "chapter_label": "JOB 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD said to Satan, “Have you considered my servant, Job? For there is no one like him on the earth, a blameless and an upright man, one who fears God, and turns away from evil.”",
+      "ko": "여호와께서 사단에게 이르시되 네가 내 종 욥을 유의하여 보았느냐 그와 같이 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자가 세상에 없느니라",
+      "source_text_hash": "de9e8f2b60d1cb37bcc8e1edd5427baeb7bd08715102f919288289e1db188b4c",
+      "translation_text_hash": "ddb0ed7d3b695774006aa0f23eca1663d8918f88fceedce770645571b02a36e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 네가 내 종 욥을 유의하여 보았느냐 그와 같이 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자가 세상에 없느니라"
+      ],
+      "raw_text_hashes": [
+        "ddb0ed7d3b695774006aa0f23eca1663d8918f88fceedce770645571b02a36e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:9",
+      "sequence": 12879,
+      "chapter_label": "JOB 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Then Satan answered the LORD, and said, “Does Job fear God for nothing?",
+      "ko": "사단이 여호와께 대답하여 가로되 욥이 어찌 까닭 없이 하나님을 경외하리이까",
+      "source_text_hash": "973cd6b9a257ae80fa0fc70c8df79b41750124181ce94e44617073ca902bd8fa",
+      "translation_text_hash": "bf2d0be15c36480ed95a55be54d771b2a12d237c4665efb578aefe5e79e10829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사단이 여호와께 대답하여 가로되 욥이 어찌 까닭 없이 하나님을 경외하리이까"
+      ],
+      "raw_text_hashes": [
+        "bf2d0be15c36480ed95a55be54d771b2a12d237c4665efb578aefe5e79e10829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:10",
+      "sequence": 12880,
+      "chapter_label": "JOB 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Haven’t you made a hedge around him, and around his house, and around all that he has, on every side? You have blessed the work of his hands, and his substance is increased in the land.",
+      "ko": "주께서 그와 그 집과 그 모든 소유물을 산울로 두르심이 아니니이까 주께서 그 손으로 하는바를 복되게 하사 그 소유물로 땅에 널리게 하셨음이니이다",
+      "source_text_hash": "135cf01d15d10b925bfcc1016381ec731f35bbcc586138b11756bff6c0cfd60b",
+      "translation_text_hash": "8bd922da1f925d7777eebdf86a4410a7bdf020cbc508c96871e014e91b46b2a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그와 그 집과 그 모든 소유물을 산울로 두르심이 아니니이까 주께서 그 손으로 하는바를 복되게 하사 그 소유물로 땅에 널리게 하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "8bd922da1f925d7777eebdf86a4410a7bdf020cbc508c96871e014e91b46b2a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:11",
+      "sequence": 12881,
+      "chapter_label": "JOB 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "But stretch out your hand now, and touch all that he has, and he will renounce you to your face.”",
+      "ko": "이제 주의 손을 펴서 그의 모든 소유물을 치소서 그리하시면 정녕 대면하여 주를 욕하리이다",
+      "source_text_hash": "8237666e95f1859820541845149efe426448cbae71e771392592de664a86494c",
+      "translation_text_hash": "95edafc25cba4058c77cad0184a2987d84af2268088556ec50cf9c368ca88aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 주의 손을 펴서 그의 모든 소유물을 치소서 그리하시면 정녕 대면하여 주를 욕하리이다"
+      ],
+      "raw_text_hashes": [
+        "95edafc25cba4058c77cad0184a2987d84af2268088556ec50cf9c368ca88aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:12",
+      "sequence": 12882,
+      "chapter_label": "JOB 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD said to Satan, “Behold, all that he has is in your power. Only on himself don’t stretch out your hand.” So Satan went out from the presence of the LORD.",
+      "ko": "여호와께서 사단에게 이르시되 내가 그의 소유물을 다 네 손에 붙이노라 오직 그의 몸에는 네 손을 대지 말지니라 사단이 곧 여호와 앞에서 물러가니라",
+      "source_text_hash": "b7049b3a3ee236f9fe870d6aeefc75725866d9183daeb31e42d4775b763d65aa",
+      "translation_text_hash": "503591d031e55993e4a1c6fff084ca81792476626419a1d77a3628d5d420d699",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 내가 그의 소유물을 다 네 손에 붙이노라 오직 그의 몸에는 네 손을 대지 말지니라 사단이 곧 여호와 앞에서 물러가니라"
+      ],
+      "raw_text_hashes": [
+        "503591d031e55993e4a1c6fff084ca81792476626419a1d77a3628d5d420d699"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:13",
+      "sequence": 12883,
+      "chapter_label": "JOB 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "It fell on a day when his sons and his daughters were eating and drinking wine in their oldest brother’s house,",
+      "ko": "하루는 욥의 자녀들이 그 맏형의 집에서 식물을 먹으며 포도주를 마실 때에",
+      "source_text_hash": "13462fff68c7141b4796ad06f1bad7cf949e1cfe838de7de7e7ce71803381443",
+      "translation_text_hash": "0eee971111be710d3a676d6425e4949592b61546e47bbefbc3e47d6ef64d8181",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 욥의 자녀들이 그 맏형의 집에서 식물을 먹으며 포도주를 마실 때에"
+      ],
+      "raw_text_hashes": [
+        "0eee971111be710d3a676d6425e4949592b61546e47bbefbc3e47d6ef64d8181"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:14",
+      "sequence": 12884,
+      "chapter_label": "JOB 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "that a messenger came to Job, and said, “The oxen were plowing, and the donkeys feeding beside them,",
+      "ko": "사자가 욥에게 와서 고하되 소는 밭을 갈고 나귀는 그 곁에서 풀을 먹는데",
+      "source_text_hash": "2cce070bda39a7251003b3b898637fface6adca55e9a3559a35eda7b393142c7",
+      "translation_text_hash": "2945e867fe5c30d870c12eb48ad645335c2a911873535f5bb5140a6326857afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 욥에게 와서 고하되 소는 밭을 갈고 나귀는 그 곁에서 풀을 먹는데"
+      ],
+      "raw_text_hashes": [
+        "2945e867fe5c30d870c12eb48ad645335c2a911873535f5bb5140a6326857afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:15",
+      "sequence": 12885,
+      "chapter_label": "JOB 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "and the Sabeans attacked, and took them away. Yes, they have killed the servants with the edge of the sword, and I alone have escaped to tell you.”",
+      "ko": "스바 사람이 갑자기 이르러 그것들을 빼앗고 칼로 종을 죽였나이다 나만 홀로 피한고로 주인께 고하러 왔나이다",
+      "source_text_hash": "b523d9c2d8ee880fa6d58dd79fc2058e373e7515356e5ad1797cf9ed9d58e8b6",
+      "translation_text_hash": "198dd00c26b0268cab8e28a2cd8faad7e8072f0a91fadefae3c9fd75e77f4db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바 사람이 갑자기 이르러 그것들을 빼앗고 칼로 종을 죽였나이다 나만 홀로 피한고로 주인께 고하러 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "198dd00c26b0268cab8e28a2cd8faad7e8072f0a91fadefae3c9fd75e77f4db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:16",
+      "sequence": 12886,
+      "chapter_label": "JOB 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "While he was still speaking, another also came and said, “The fire of God has fallen from the sky, and has burned up the sheep and the servants, and consumed them, and I alone have escaped to tell you.”",
+      "ko": "그가 아직 말할 때에 또 한 사람이 와서 고하되 하나님의 불이 하늘에서 내려와서 양과 종을 살라 버렸나이다 나만 홀로 피한고로 주인께 고하러 왔나이다",
+      "source_text_hash": "fa4b866549d3f40f3264d5a82e10d248b7fe6b273a1ceeb05182f6f7fcf786ef",
+      "translation_text_hash": "edbd170061d5d4349b989bca1a02c115a86914862fbbff11dce6c64bd7d7bd9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아직 말할 때에 또 한 사람이 와서 고하되 하나님의 불이 하늘에서 내려와서 양과 종을 살라 버렸나이다 나만 홀로 피한고로 주인께 고하러 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "edbd170061d5d4349b989bca1a02c115a86914862fbbff11dce6c64bd7d7bd9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:17",
+      "sequence": 12887,
+      "chapter_label": "JOB 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "While he was still speaking, another also came and said, “The Chaldeans made three bands, and swept down on the camels, and have taken them away, yes, and killed the servants with the edge of the sword; and I alone have escaped to tell you.”",
+      "ko": "그가 아직 말할 때에 또 한 사람이 와서 고하되 갈대아 사람이 세 떼를 지어 갑자기 약대에게 달려들어 그것을 빼앗으며 칼로 종을 죽였나이다 나만 홀로 피한고로 주인께 고하러 왔나이다",
+      "source_text_hash": "5f1547ca8c4e0203572d974762d006ba5c02df6ece535b9275c4f0580ab1e4c8",
+      "translation_text_hash": "f1a83845ea75797faf21b0a1dd824ceb22b60a18a8ce09e6dc232db1539881df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아직 말할 때에 또 한 사람이 와서 고하되 갈대아 사람이 세 떼를 지어 갑자기 약대에게 달려들어 그것을 빼앗으며 칼로 종을 죽였나이다 나만 홀로 피한고로 주인께 고하러 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "f1a83845ea75797faf21b0a1dd824ceb22b60a18a8ce09e6dc232db1539881df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:18",
+      "sequence": 12888,
+      "chapter_label": "JOB 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "While he was still speaking, there came also another, and said, “Your sons and your daughters were eating and drinking wine in their oldest brother’s house,",
+      "ko": "그가 아직 말할 때에 또 한 사람이 와서 고하되 주인의 자녀들이 그 맏형의 집에서 식물을 먹으며 포도주를 마시더니",
+      "source_text_hash": "5fab41fa1780b7ad1561dc4a6d0a51d610587b94bfa33640f3666f6bc87f9731",
+      "translation_text_hash": "44586683162becbd2c0fb30e51ef62ef259ba390dd881a05e72140eb9ea01f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아직 말할 때에 또 한 사람이 와서 고하되 주인의 자녀들이 그 맏형의 집에서 식물을 먹으며 포도주를 마시더니"
+      ],
+      "raw_text_hashes": [
+        "44586683162becbd2c0fb30e51ef62ef259ba390dd881a05e72140eb9ea01f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:19",
+      "sequence": 12889,
+      "chapter_label": "JOB 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "and behold, there came a great wind from the wilderness, and struck the four corners of the house, and it fell on the young men, and they are dead. I alone have escaped to tell you.”",
+      "ko": "거친 들에서 대풍이 와서 집 네 모퉁이를 치매 그 소년들 위에 무너지므로 그들이 죽었나이다 나만 홀로 피한고로 주인께 고하러 왔나이다 한지라",
+      "source_text_hash": "7f6170da1b5a9c65155b35c78443ab8229ed0a953fa3daaead0c65ea136acf68",
+      "translation_text_hash": "46a8cb4c8eda663dfcf6f17542a704e537bc5d3f9a6ff918cedd1d1f0bea5de6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거친 들에서 대풍이 와서 집 네 모퉁이를 치매 그 소년들 위에 무너지므로 그들이 죽었나이다 나만 홀로 피한고로 주인께 고하러 왔나이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "46a8cb4c8eda663dfcf6f17542a704e537bc5d3f9a6ff918cedd1d1f0bea5de6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:20",
+      "sequence": 12890,
+      "chapter_label": "JOB 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Then Job arose, and tore his robe, and shaved his head, and fell down on the ground, and worshiped.",
+      "ko": "욥이 일어나 겉옷을 찢고 머리털을 밀고 땅에 엎드려 경배하며",
+      "source_text_hash": "734dcab7931edc94528f7c68e36584304678ac42cbff2651fa0782fa2eb1fcd1",
+      "translation_text_hash": "2ca3bf4fc985882c04fe1193216dddd28ae5f39c3e49cc2c4d95100e7e900ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 일어나 겉옷을 찢고 머리털을 밀고 땅에 엎드려 경배하며"
+      ],
+      "raw_text_hashes": [
+        "2ca3bf4fc985882c04fe1193216dddd28ae5f39c3e49cc2c4d95100e7e900ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:21",
+      "sequence": 12891,
+      "chapter_label": "JOB 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "He said, “Naked I came out of my mother’s womb, and naked will I return there. The LORD gave, and the LORD has taken away. Blessed be the LORD’s name.”",
+      "ko": "가로되 내가 모태에서 적신이 나왔사온즉 또한 적신이 그리로 돌아 가올찌라 주신 자도 여호와시요 취하신 자도 여호와시오니 여호와의 이름이 찬송을 받으실찌니이다 하고",
+      "source_text_hash": "28bd434716083fb059fb05ca4c23c4824e780bc28bd533788dd9fa580196b60b",
+      "translation_text_hash": "581f337c14b9a7031762a67e5b7166ac49712151c8e1579e312254a13ed91a9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 모태에서 적신이 나왔사온즉 또한 적신이 그리로 돌아 가올찌라 주신 자도 여호와시요 취하신 자도 여호와시오니 여호와의 이름이 찬송을 받으실찌니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "581f337c14b9a7031762a67e5b7166ac49712151c8e1579e312254a13ed91a9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:1:22",
+      "sequence": 12892,
+      "chapter_label": "JOB 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "In all this, Job didn’t sin, nor charge God with wrongdoing.",
+      "ko": "이 모든 일에 욥이 범죄하지 아니하고 하나님을 향하여 어리석게 원망하지 아니하니라",
+      "source_text_hash": "6cb9c3e274e1903cb6b99de039227a36a2f1901fc74f4eb1dd8c62049168659b",
+      "translation_text_hash": "ffe0f5be2225cc657a3d9e3998eaff8916c03403d968a9ce7fa13264fc2549a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일에 욥이 범죄하지 아니하고 하나님을 향하여 어리석게 원망하지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "ffe0f5be2225cc657a3d9e3998eaff8916c03403d968a9ce7fa13264fc2549a5"
+      ]
+    }
+  ]
+}

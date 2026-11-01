@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:005",
+  "unit_ordinal": 684,
+  "unit_label": "ISA 5",
+  "book_code": "ISA",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:5:1",
+      "sequence": 17741,
+      "chapter_label": "ISA 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Let me sing for my well beloved a song of my beloved about his vineyard. My beloved had a vineyard on a very fruitful hill.",
+      "ko": "내가 나의 사랑하는 자를 위하여 노래하되 나의 사랑하는 자의 포도원을 노래하리라 나의 사랑하는 자에게 포도원이 있음이여 심히 기름진 산에로다",
+      "source_text_hash": "8eb9dade2d41c9da575557d9b280fafc322784ea072c918c6e2a36b27867c2ff",
+      "translation_text_hash": "b41b5556d9e7ebd56a44021c023752587caa4803226641e1dbb168ec9fb0489a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 사랑하는 자를 위하여 노래하되 나의 사랑하는 자의 포도원을 노래하리라 나의 사랑하는 자에게 포도원이 있음이여 심히 기름진 산에로다"
+      ],
+      "raw_text_hashes": [
+        "b41b5556d9e7ebd56a44021c023752587caa4803226641e1dbb168ec9fb0489a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:2",
+      "sequence": 17742,
+      "chapter_label": "ISA 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "He dug it up, gathered out its stones, planted it with the choicest vine, built a tower in the middle of it, and also cut out a wine press in it. He looked for it to yield grapes, but it yielded wild grapes.",
+      "ko": "땅을 파서 돌을 제하고 극상품 포도나무를 심었었도다 그 중에 망대를 세웠고 그 안에 술틀을 팠었도다 좋은 포도 맺기를 바랐더니 들 포도를 맺혔도다",
+      "source_text_hash": "de10a5547ec5ca9b2f0ca6fcc32cced223d357fdf62847d8bbd62190fae7118f",
+      "translation_text_hash": "7b98daf23914dbd6b6831785f6fc85938eff9c73eda8874a3775f0140614b509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅을 파서 돌을 제하고 극상품 포도나무를 심었었도다 그 중에 망대를 세웠고 그 안에 술틀을 팠었도다 좋은 포도 맺기를 바랐더니 들 포도를 맺혔도다"
+      ],
+      "raw_text_hashes": [
+        "7b98daf23914dbd6b6831785f6fc85938eff9c73eda8874a3775f0140614b509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:3",
+      "sequence": 17743,
+      "chapter_label": "ISA 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "“Now, inhabitants of Jerusalem and men of Judah, please judge between me and my vineyard.",
+      "ko": "예루살렘 거민과 유다 사람들아 구하노니 이제 나와 내 포도원 사이에 판단하라",
+      "source_text_hash": "1045072d050f2023e3b445bb1144d66a96d12cbcfd41efdbc951b39e8cbcff82",
+      "translation_text_hash": "417ddd2f444ef047ad8fa26dbdb73142aa59f664a4e9147495a452ab58382686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 거민과 유다 사람들아 구하노니 이제 나와 내 포도원 사이에 판단하라"
+      ],
+      "raw_text_hashes": [
+        "417ddd2f444ef047ad8fa26dbdb73142aa59f664a4e9147495a452ab58382686"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:4",
+      "sequence": 17744,
+      "chapter_label": "ISA 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "What could have been done more to my vineyard, that I have not done in it? Why, when I looked for it to yield grapes, did it yield wild grapes?",
+      "ko": "내가 내 포도원을 위하여 행한 것 외에 무엇을 더할 것이 있었으랴 내가 좋은 포도 맺기를 기다렸거늘 들포도를 맺힘은 어찜인고",
+      "source_text_hash": "2b4e9579d7e976509ae4cef9a858fbfec0df9f09a5c97fe3f7440abe3109797f",
+      "translation_text_hash": "04f024fa9756a057ce4ab1c6f85f8b0efe8e2710aff20761076162a487edaab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 포도원을 위하여 행한 것 외에 무엇을 더할 것이 있었으랴 내가 좋은 포도 맺기를 기다렸거늘 들포도를 맺힘은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "04f024fa9756a057ce4ab1c6f85f8b0efe8e2710aff20761076162a487edaab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:5",
+      "sequence": 17745,
+      "chapter_label": "ISA 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Now I will tell you what I will do to my vineyard. I will take away its hedge, and it will be eaten up. I will break down its wall, and it will be trampled down.",
+      "ko": "이제 내가 내 포도원에 어떻게 행할 것을 너희에게 이르리라 내가 그 울타리를 걷어 먹힘을 당케 하며 그 담을 헐어 짓밟히게 할 것이요",
+      "source_text_hash": "620cef1be0b7dca7c669bc9b3681656978c6f18ef5821c4d44e786d661ea998d",
+      "translation_text_hash": "917eae49cd91576fc6c6fed16f60a256f4d37bf9da68d71a9b2d5c4288de9744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 내 포도원에 어떻게 행할 것을 너희에게 이르리라 내가 그 울타리를 걷어 먹힘을 당케 하며 그 담을 헐어 짓밟히게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "917eae49cd91576fc6c6fed16f60a256f4d37bf9da68d71a9b2d5c4288de9744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:6",
+      "sequence": 17746,
+      "chapter_label": "ISA 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "I will lay it a wasteland. It won’t be pruned or hoed, but it will grow briers and thorns. I will also command the clouds that they rain no rain on it.”",
+      "ko": "내가 그것으로 황무케 하리니 다시는 가지를 자름이나 북을 돋우지 못하여 질려와 형극이 날 것이며 내가 또 구름을 명하여 그 위에 비를 내리지 말라 하리라 하셨으니",
+      "source_text_hash": "8915586be4c95c7baca332131893c9fa0fcc31f795061ffab4a283d48149ebdb",
+      "translation_text_hash": "6403d561b6c1d3bd436a6aa5a419fcebcc1098b5948e8d22a08b2365b52f85e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그것으로 황무케 하리니 다시는 가지를 자름이나 북을 돋우지 못하여 질려와 형극이 날 것이며 내가 또 구름을 명하여 그 위에 비를 내리지 말라 하리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "6403d561b6c1d3bd436a6aa5a419fcebcc1098b5948e8d22a08b2365b52f85e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:7",
+      "sequence": 17747,
+      "chapter_label": "ISA 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "For the vineyard of the LORD of Armies is the house of Israel, and the men of Judah his pleasant plant. He looked for justice, but behold, oppression, for righteousness, but behold, a cry of distress.",
+      "ko": "대저 만군의 여호와의 포도원은 이스라엘 족속이요 그의 기뻐하시는 나무는 유다 사람이라 그들에게 공평을 바라셨더니 도리어 포학이요 그들에게 의로움을 바라셨더니 도리어 부르짖음이었도다",
+      "source_text_hash": "aa34df2dba94354b65e58d98d0626805291c6bb8e98c2b8bdfdff80389a0114c",
+      "translation_text_hash": "bc004a2843c786494ddb7e39e21285af39590cab5eb8ddc479548ac5b61a6086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 만군의 여호와의 포도원은 이스라엘 족속이요 그의 기뻐하시는 나무는 유다 사람이라 그들에게 공평을 바라셨더니 도리어 포학이요 그들에게 의로움을 바라셨더니 도리어 부르짖음이었도다"
+      ],
+      "raw_text_hashes": [
+        "bc004a2843c786494ddb7e39e21285af39590cab5eb8ddc479548ac5b61a6086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:8",
+      "sequence": 17748,
+      "chapter_label": "ISA 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Woe to those who join house to house, who lay field to field, until there is no room, and you are made to dwell alone in the middle of the land!",
+      "ko": "가옥에 가옥을 연하며 전토에 전토를 더하여 빈 틈이 없도록 하고 이 땅 가운데서 홀로 거하려 하는 그들은 화 있을찐저",
+      "source_text_hash": "34abe6056da477863c9b5e6f712fa8d9d4b46913667f90cf0c9da749033e332e",
+      "translation_text_hash": "9a16be9859c26c44ddbe551137f183d8aef1b4607eb8857f93830c14b415ed42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가옥에 가옥을 연하며 전토에 전토를 더하여 빈 틈이 없도록 하고 이 땅 가운데서 홀로 거하려 하는 그들은 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "9a16be9859c26c44ddbe551137f183d8aef1b4607eb8857f93830c14b415ed42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:9",
+      "sequence": 17749,
+      "chapter_label": "ISA 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "In my ears, the LORD of Armies says: “Surely many houses will be desolate, even great and beautiful, unoccupied.",
+      "ko": "만군의 여호와께서 내 귀에 말씀하시되 정녕히 허다한 가옥이 황폐하리니 크고 아름다울찌라도 거할 자가 없을 것이며",
+      "source_text_hash": "d48649c539c14476a6768833f14b7b4d93c7377d6804a79a1cb1a35c0043fd1c",
+      "translation_text_hash": "823fbd0a0b6473dcbf9cc00c22311aed026fe1b4cd20501c0bcc27c5daab5357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 내 귀에 말씀하시되 정녕히 허다한 가옥이 황폐하리니 크고 아름다울찌라도 거할 자가 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "823fbd0a0b6473dcbf9cc00c22311aed026fe1b4cd20501c0bcc27c5daab5357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:10",
+      "sequence": 17750,
+      "chapter_label": "ISA 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "For ten acres of vineyard shall yield one bath, and a homer of seed shall yield an ephah.”",
+      "ko": "열흘갈이 포도원에 겨우 포도주 한 바트가 나겠고 한 호멜지기에는 간신히 한 에바가 나리라 하시도다",
+      "source_text_hash": "198917fe83497a0212bdd3f897dbaf861181a4c21fe9ade8fc0f4d1300f744cb",
+      "translation_text_hash": "8d1427b02019908a875aa2b557306bd4c293f5e7a4505a402b9fc029cd5d4e41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열흘갈이 포도원에 겨우 포도주 한 바트가 나겠고 한 호멜지기에는 간신히 한 에바가 나리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "8d1427b02019908a875aa2b557306bd4c293f5e7a4505a402b9fc029cd5d4e41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:11",
+      "sequence": 17751,
+      "chapter_label": "ISA 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Woe to those who rise up early in the morning, that they may follow strong drink, who stay late into the night, until wine inflames them!",
+      "ko": "아침에 일찌기 일어나 독주를 따라가며 밤이 깊도록 머물러 포도주에 취하는 그들은 화 있을찐저",
+      "source_text_hash": "a9c57fa0d9b19d7d57e17ae8670f09a41383570dfa046dd152fb4b13e940f443",
+      "translation_text_hash": "171fb3970b6ea69b19d2185826dda557e3c37dc9eb61f192d0f8a74b49ca7a21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 일찌기 일어나 독주를 따라가며 밤이 깊도록 머물러 포도주에 취하는 그들은 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "171fb3970b6ea69b19d2185826dda557e3c37dc9eb61f192d0f8a74b49ca7a21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:12",
+      "sequence": 17752,
+      "chapter_label": "ISA 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "The harp, lyre, tambourine, and flute, with wine, are at their feasts; but they don’t respect the work of the LORD, neither have they considered the operation of his hands.",
+      "ko": "그들이 연회에는 수금과 비파와 소고와 저와 포도주를 갖추었어도 여호와의 행하심을 관심치 아니하며 그의 손으로 하신 일을 생각지 아니하는도다",
+      "source_text_hash": "32be9604a19026e2e42d7fa6356370a4eb72dc242eae72ef635ca0098ffe61b1",
+      "translation_text_hash": "8c60f1c648cb2cbe0962bbca33d9aeb38842638456368d856eff1d39c6ab0cb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 연회에는 수금과 비파와 소고와 저와 포도주를 갖추었어도 여호와의 행하심을 관심치 아니하며 그의 손으로 하신 일을 생각지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "8c60f1c648cb2cbe0962bbca33d9aeb38842638456368d856eff1d39c6ab0cb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:13",
+      "sequence": 17753,
+      "chapter_label": "ISA 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore my people go into captivity for lack of knowledge. Their honorable men are famished, and their multitudes are parched with thirst.",
+      "ko": "이러므로 나의 백성이 무지함을 인하여 사로잡힐 것이요 그 귀한 자는 주릴 것이요 무리는 목마를 것이며",
+      "source_text_hash": "23c868e7e1e250685c98c0ddb44b88183ce2b047ace09634bdbc40c3ff27688d",
+      "translation_text_hash": "695b79bd9a8ffd22ac5f4c87b5dc5675cebfb4e21823ceed6846647b44daf2c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 나의 백성이 무지함을 인하여 사로잡힐 것이요 그 귀한 자는 주릴 것이요 무리는 목마를 것이며"
+      ],
+      "raw_text_hashes": [
+        "695b79bd9a8ffd22ac5f4c87b5dc5675cebfb4e21823ceed6846647b44daf2c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:14",
+      "sequence": 17754,
+      "chapter_label": "ISA 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore Sheol has enlarged its desire, and opened its mouth without measure; and their glory, their multitude, their pomp, and he who rejoices among them, descend into it.",
+      "ko": "음부가 그 욕망을 크게 내어 한량 없이 그 입을 벌린즉 그들의 호화로움과 그들의 많은 무리와 그들의 떠드는 것과 그 중에서 연락하는 자가 거기 빠질 것이라",
+      "source_text_hash": "ebd3db08d4e7ad9eedf5c78f0e66fb7fdcb2367beb6f3d4bc70785b08e274f1e",
+      "translation_text_hash": "89e348cad383bf825e0dc581f437743386bffee6b3ade11defb7fb0ce2e12bc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음부가 그 욕망을 크게 내어 한량 없이 그 입을 벌린즉 그들의 호화로움과 그들의 많은 무리와 그들의 떠드는 것과 그 중에서 연락하는 자가 거기 빠질 것이라"
+      ],
+      "raw_text_hashes": [
+        "89e348cad383bf825e0dc581f437743386bffee6b3ade11defb7fb0ce2e12bc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:15",
+      "sequence": 17755,
+      "chapter_label": "ISA 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "So man is brought low, mankind is humbled, and the eyes of the arrogant ones are humbled;",
+      "ko": "천한 자는 굴복되고 귀한 자는 낮아지고 오만한 자의 눈도 낮아질 것이로되",
+      "source_text_hash": "8993b0e5ce6e55c163008b1099d3f81ea5d2e85ca086b38da1d5131ed891bd9d",
+      "translation_text_hash": "fe26e27592c290982b67364422fde0a461f0a064b3fcc8a06432d5a8d8a375d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천한 자는 굴복되고 귀한 자는 낮아지고 오만한 자의 눈도 낮아질 것이로되"
+      ],
+      "raw_text_hashes": [
+        "fe26e27592c290982b67364422fde0a461f0a064b3fcc8a06432d5a8d8a375d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:16",
+      "sequence": 17756,
+      "chapter_label": "ISA 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "but the LORD of Armies is exalted in justice, and God the Holy One is sanctified in righteousness.",
+      "ko": "오직 만군의 여호와는 공평하므로 높임을 받으시며 거룩하신 하나님은 의로우시므로 거룩하다 함을 받으시리니",
+      "source_text_hash": "7538bbdb0891057c162ad1ccf9e281adec7fd42f09749f4ddd3bdc1b36912713",
+      "translation_text_hash": "88ab621bea379440327de2ffaef14afbf7180076e6a63fab643b08b9435f5939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 만군의 여호와는 공평하므로 높임을 받으시며 거룩하신 하나님은 의로우시므로 거룩하다 함을 받으시리니"
+      ],
+      "raw_text_hashes": [
+        "88ab621bea379440327de2ffaef14afbf7180076e6a63fab643b08b9435f5939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:17",
+      "sequence": 17757,
+      "chapter_label": "ISA 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Then the lambs will graze as in their pasture, and strangers will eat the ruins of the rich.",
+      "ko": "그 때에는 어린 양들이 자기 초장에 있는 것 같이 먹을 것이요 살찐 자의 황무한 밭의 소산은 유리하는 자들이 먹으리라",
+      "source_text_hash": "2f808c55a58973cd359b2ed333c2146e911e49e258885da282e34e173dbc9820",
+      "translation_text_hash": "65ddfa1cd5e4112faed0c525f376285ad2538bc4682995abacc3dc334532c41b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 어린 양들이 자기 초장에 있는 것 같이 먹을 것이요 살찐 자의 황무한 밭의 소산은 유리하는 자들이 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "65ddfa1cd5e4112faed0c525f376285ad2538bc4682995abacc3dc334532c41b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:18",
+      "sequence": 17758,
+      "chapter_label": "ISA 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Woe to those who draw iniquity with cords of falsehood, and wickedness as with cart rope,",
+      "ko": "거짓으로 끈을 삼아 죄악을 끌며 수레 줄로 함 같이 죄악을 끄는자는 화 있을찐저",
+      "source_text_hash": "03372dfae0e57b574d0578e2e6e57765c38a1d2de861e389056f50bc13e05cd9",
+      "translation_text_hash": "af315f25ce524ef8a4cf87b42abde6d58e09f2d04bac8c143bf6976b797b63f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓으로 끈을 삼아 죄악을 끌며 수레 줄로 함 같이 죄악을 끄는자는 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "af315f25ce524ef8a4cf87b42abde6d58e09f2d04bac8c143bf6976b797b63f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:19",
+      "sequence": 17759,
+      "chapter_label": "ISA 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "who say, “Let him make haste, let him hasten his work, that we may see it; let the counsel of the Holy One of Israel draw near and come, that we may know it!”",
+      "ko": "그들이 이르기를 그는 그 일을 속속히 이루어 우리로 보게 할 것이며 이스라엘의 거룩한 자는 그 도모를 속히 임하게 하여 우리로 알게 할 것이라 하는도다",
+      "source_text_hash": "e48e8c7ffc9625d1bbb8f2166ce529d0872a7a3ef4ab17761bc322f615f0551c",
+      "translation_text_hash": "9293bfe68021bf7bbfc405a19e0c70d37793f90e60d17e5d7c3e73c3d2880e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이르기를 그는 그 일을 속속히 이루어 우리로 보게 할 것이며 이스라엘의 거룩한 자는 그 도모를 속히 임하게 하여 우리로 알게 할 것이라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "9293bfe68021bf7bbfc405a19e0c70d37793f90e60d17e5d7c3e73c3d2880e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:20",
+      "sequence": 17760,
+      "chapter_label": "ISA 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "Woe to those who call evil good, and good evil; who put darkness for light, and light for darkness; who put bitter for sweet, and sweet for bitter!",
+      "ko": "악을 선하다 하며 선을 악하다 하며 흑암으로 광명을 삼으며 광명으로 흑암을 삼으며 쓴 것으로 단 것을 삼으며 단 것으로 쓴 것을 삼는 그들은 화 있을찐저",
+      "source_text_hash": "f55af8d6042f14623742999afbaf7be698e76f8fe2fbcfd7119352cb76845ab2",
+      "translation_text_hash": "5d25d5f4b7bb5186108fcba10ac7a04e68fad5913c5589059a7d30c2bb69a3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 선하다 하며 선을 악하다 하며 흑암으로 광명을 삼으며 광명으로 흑암을 삼으며 쓴 것으로 단 것을 삼으며 단 것으로 쓴 것을 삼는 그들은 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "5d25d5f4b7bb5186108fcba10ac7a04e68fad5913c5589059a7d30c2bb69a3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:21",
+      "sequence": 17761,
+      "chapter_label": "ISA 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "Woe to those who are wise in their own eyes, and prudent in their own sight!",
+      "ko": "스스로 지혜롭다 하며 스스로 명철하다 하는 그들은 화 있을찐저",
+      "source_text_hash": "21982755a19d5f8082e9f16e48e324a30ce36233205d38cebae556704ff179ca",
+      "translation_text_hash": "4d6b72ec24a71e8a98e6bffb40e863c353be0f9d3b5e657e0e71756035a1b05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 지혜롭다 하며 스스로 명철하다 하는 그들은 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "4d6b72ec24a71e8a98e6bffb40e863c353be0f9d3b5e657e0e71756035a1b05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:22",
+      "sequence": 17762,
+      "chapter_label": "ISA 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Woe to those who are mighty to drink wine, and champions at mixing strong drink;",
+      "ko": "포도주를 마시기에 용감하며 독주를 빚기에 유력한 그들은 화 있을찐저",
+      "source_text_hash": "860f90072e8edf86f0b265dee3b866d01b59baa6d7ac4270ff96824b30ff98dd",
+      "translation_text_hash": "3dca9daaa9fc6bee91fd16f94b9df4a81d6aaa22ef37b6e7fe0eb0d2a4d47f70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주를 마시기에 용감하며 독주를 빚기에 유력한 그들은 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "3dca9daaa9fc6bee91fd16f94b9df4a81d6aaa22ef37b6e7fe0eb0d2a4d47f70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:23",
+      "sequence": 17763,
+      "chapter_label": "ISA 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "who acquit the guilty for a bribe, but deny justice for the innocent!",
+      "ko": "그들은 뇌물로 인하여 악인을 의롭다 하고 의인에게서 그 의를 빼앗는도다",
+      "source_text_hash": "e8463201e5d9d894b71efda189a4bb51eb705272d8826f96830be7a1022d39b8",
+      "translation_text_hash": "8a5115a96534a2aa20d1ef578ee3e5e15a973e440ec06043599fcd4cc5e3ab78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 뇌물로 인하여 악인을 의롭다 하고 의인에게서 그 의를 빼앗는도다"
+      ],
+      "raw_text_hashes": [
+        "8a5115a96534a2aa20d1ef578ee3e5e15a973e440ec06043599fcd4cc5e3ab78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:24",
+      "sequence": 17764,
+      "chapter_label": "ISA 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore as the tongue of fire devours the stubble, and as the dry grass sinks down in the flame, so their root shall be as rottenness, and their blossom shall go up as dust, because they have rejected the law of the LORD of Armies, and despised the word of the Holy One of Israel.",
+      "ko": "이로 인하여 불꽃이 그루터기를 삼킴 같이, 마른 풀이 불속에 떨어짐 같이 그들의 뿌리가 썩겠고 꽃이 티끌처럼 날리리니 그들이 만군의 여호와의 율법을 버리며 이스라엘의 거룩하신 자의 말씀을 멸시하였음이라",
+      "source_text_hash": "251c959b24f482fb830ffd3a9a50a0acf24312987f8778a97373e4e5baa45170",
+      "translation_text_hash": "b6bb0a7dc19926e6677108a906d2b6b53c18d13262d6692c2b3ec3cab7829864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 불꽃이 그루터기를 삼킴 같이, 마른 풀이 불속에 떨어짐 같이 그들의 뿌리가 썩겠고 꽃이 티끌처럼 날리리니 그들이 만군의 여호와의 율법을 버리며 이스라엘의 거룩하신 자의 말씀을 멸시하였음이라"
+      ],
+      "raw_text_hashes": [
+        "b6bb0a7dc19926e6677108a906d2b6b53c18d13262d6692c2b3ec3cab7829864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:25",
+      "sequence": 17765,
+      "chapter_label": "ISA 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore the LORD’s anger burns against his people, and he has stretched out his hand against them and has struck them. The mountains tremble, and their dead bodies are as refuse in the middle of the streets. For all this, his anger is not turned away, but his hand is still stretched out.",
+      "ko": "그러므로 여호와께서 자기 백성에게 노를 발하시고 손을 들어 그들을 치신지라 산들은 진동하며 그들의 시체는 거리 가운데 분토 같이 되었으나 그 노가 돌아서지 아니하였고 그 손이 오히려 펴졌느니라",
+      "source_text_hash": "83e5ee9bde7103b62da0582d734f0f8699be6d7d03374a7c12cf5d1461c9d3a8",
+      "translation_text_hash": "fb2337688ccab2b4bdd159197d9b41f489f0c0e4b746d65f69e58d34417e30d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 자기 백성에게 노를 발하시고 손을 들어 그들을 치신지라 산들은 진동하며 그들의 시체는 거리 가운데 분토 같이 되었으나 그 노가 돌아서지 아니하였고 그 손이 오히려 펴졌느니라"
+      ],
+      "raw_text_hashes": [
+        "fb2337688ccab2b4bdd159197d9b41f489f0c0e4b746d65f69e58d34417e30d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:26",
+      "sequence": 17766,
+      "chapter_label": "ISA 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "He will lift up a banner to the nations from far away, and he will whistle for them from the end of the earth. Behold, they will come speedily and swiftly.",
+      "ko": "기를 세우시고 먼 나라들을 불러 땅 끝에서부터 오게 하실 것이라 보라 그들이 빨리 달려 올 것이로되",
+      "source_text_hash": "1a89c61234e1f49abdba109e21d47f33cff6f7fda386fbffea7957fe2bc1375c",
+      "translation_text_hash": "9577557f9218c14c91db26c2550c8259c46171abef3a78e81d75757b2d15c9a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기를 세우시고 먼 나라들을 불러 땅 끝에서부터 오게 하실 것이라 보라 그들이 빨리 달려 올 것이로되"
+      ],
+      "raw_text_hashes": [
+        "9577557f9218c14c91db26c2550c8259c46171abef3a78e81d75757b2d15c9a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:27",
+      "sequence": 17767,
+      "chapter_label": "ISA 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "No one shall be weary nor stumble among them; no one shall slumber nor sleep, neither shall the belt of their waist be untied, nor the strap of their sandals be broken,",
+      "ko": "그 중에 곤핍하여 넘어지는 자도 없을 것이며 조는 자나 자는 자도 없을 것이며 그들의 허리띠는 풀리지 아니하며 그들의 신들메는 끊어지지 아니하며",
+      "source_text_hash": "f81e29834182d65074a22e38d41583b2f8c1883d3a172d28e190ad4e72f8a243",
+      "translation_text_hash": "eebaada9192bfb527e789555b16dc3a6d18792b97d1069f4395d34cbb0e8b9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 곤핍하여 넘어지는 자도 없을 것이며 조는 자나 자는 자도 없을 것이며 그들의 허리띠는 풀리지 아니하며 그들의 신들메는 끊어지지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "eebaada9192bfb527e789555b16dc3a6d18792b97d1069f4395d34cbb0e8b9aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:28",
+      "sequence": 17768,
+      "chapter_label": "ISA 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "whose arrows are sharp, and all their bows bent. Their horses’ hoofs will be like flint, and their wheels like a whirlwind.",
+      "ko": "그들의 살은 날카롭고 모든 활은 당기어졌으며 그 말굽은 부싯돌 같고 차 바퀴는 회리바람 같을 것이며",
+      "source_text_hash": "86c6a32c4e483c8f6fe071cdb38ced236d7537be3d3c85e96efb7f8754d615a7",
+      "translation_text_hash": "30fbb9c01b18cf6623e183acf34c6a12723773f1e2a5d2b4540133e32cc3fe6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 살은 날카롭고 모든 활은 당기어졌으며 그 말굽은 부싯돌 같고 차 바퀴는 회리바람 같을 것이며"
+      ],
+      "raw_text_hashes": [
+        "30fbb9c01b18cf6623e183acf34c6a12723773f1e2a5d2b4540133e32cc3fe6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:29",
+      "sequence": 17769,
+      "chapter_label": "ISA 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "Their roaring will be like a lioness. They will roar like young lions. Yes, they shall roar, and seize their prey and carry it off, and there will be no one to deliver.",
+      "ko": "그 부르짖는 것은 암사자 같을 것이요 그 소리지름은 어린 사자들과 같을 것이라 그들이 부르짖으며 물건을 움키어 염려 없이 가져가도 건질 자가 없으리로다",
+      "source_text_hash": "9082ced2a76dc49c86171073a1b880ac0f38744f629b28a82f0291b85208a2c0",
+      "translation_text_hash": "cd8a0cb82634b787c25d788f0bef22472dfd370b5c65db732a8a28ca0e4106a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부르짖는 것은 암사자 같을 것이요 그 소리지름은 어린 사자들과 같을 것이라 그들이 부르짖으며 물건을 움키어 염려 없이 가져가도 건질 자가 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "cd8a0cb82634b787c25d788f0bef22472dfd370b5c65db732a8a28ca0e4106a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:5:30",
+      "sequence": 17770,
+      "chapter_label": "ISA 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "They will roar against them in that day like the roaring of the sea. If one looks to the land, behold, darkness and distress. The light is darkened in its clouds.",
+      "ko": "그 날에 그들이 바다 물결 소리 같이 백성을 향하여 부르짖으리니 사람이 그 땅을 바라보면 흑암과 고난이 있고 빛은 구름에 가리워져서 어두우리라",
+      "source_text_hash": "3e72833f2cb2e90ee878d109d031aa69bdaa48a32f5ab1da56b1152eb9bb9aa4",
+      "translation_text_hash": "5c82c074383520a9215982b6dae8aa3bcc283b2bfa369575f270fa1ee62fda17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그들이 바다 물결 소리 같이 백성을 향하여 부르짖으리니 사람이 그 땅을 바라보면 흑암과 고난이 있고 빛은 구름에 가리워져서 어두우리라"
+      ],
+      "raw_text_hashes": [
+        "5c82c074383520a9215982b6dae8aa3bcc283b2bfa369575f270fa1ee62fda17"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:030",
+  "unit_ordinal": 466,
+  "unit_label": "JOB 30",
+  "book_code": "JOB",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:30:1",
+      "sequence": 13559,
+      "chapter_label": "JOB 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "“But now those who are younger than I have me in derision, whose fathers I considered unworthy to put with my sheep dogs.",
+      "ko": "그러나 이제는 나보다 젊은 자들이 나를 기롱하는구나 그들의 아비들은 나의 보기에 나의 양떼 지키는 개 중에도 둘만하지 못한 자니라",
+      "source_text_hash": "82f66c41862046a8761e4661d67f5d114b8c7ff84297700342b35f7d0e8003fe",
+      "translation_text_hash": "c9c753ee03efdd797f76e6c9a29c0c4589471997b471614a84f5122c8da5da06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제는 나보다 젊은 자들이 나를 기롱하는구나 그들의 아비들은 나의 보기에 나의 양떼 지키는 개 중에도 둘만하지 못한 자니라"
+      ],
+      "raw_text_hashes": [
+        "c9c753ee03efdd797f76e6c9a29c0c4589471997b471614a84f5122c8da5da06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:2",
+      "sequence": 13560,
+      "chapter_label": "JOB 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "Of what use is the strength of their hands to me, men in whom ripe age has perished?",
+      "ko": "그들은 장년의 기력이 쇠한 자니 그 손의 힘이 내게 무엇이 유익하랴",
+      "source_text_hash": "905a2d12b6968df821580ee0537c28c3dd1b35c1af26cd437f4bcb11efb40cff",
+      "translation_text_hash": "89688f5784e5653325be41649c4468c7a7af6838bc4f5737853fa604086949da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 장년의 기력이 쇠한 자니 그 손의 힘이 내게 무엇이 유익하랴"
+      ],
+      "raw_text_hashes": [
+        "89688f5784e5653325be41649c4468c7a7af6838bc4f5737853fa604086949da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:3",
+      "sequence": 13561,
+      "chapter_label": "JOB 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "They are gaunt from lack and famine. They gnaw the dry ground, in the gloom of waste and desolation.",
+      "ko": "그들은 곧 궁핍과 기근으로 파리하매 캄캄하고 거친 들에서 마른 흙을 씹으며",
+      "source_text_hash": "9f49fff4f2ec5d424aec9cf1ebb33c6113d4d74384c1593638faeefd331eaeab",
+      "translation_text_hash": "c27576ae10b3406dfd87f57391d57ce17b9346fcfaf6e852f31a47797e55a9ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 곧 궁핍과 기근으로 파리하매 캄캄하고 거친 들에서 마른 흙을 씹으며"
+      ],
+      "raw_text_hashes": [
+        "c27576ae10b3406dfd87f57391d57ce17b9346fcfaf6e852f31a47797e55a9ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:4",
+      "sequence": 13562,
+      "chapter_label": "JOB 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "They pluck salt herbs by the bushes. The roots of the broom tree are their food.",
+      "ko": "떨기나무 가운데서 짠 나물도 꺾으며 대싸리 뿌리로 식물을 삼느니라",
+      "source_text_hash": "7aa93afc4bb817677fc6fa791175a0ca1d30ddf410821806ab96cdb823a7eb15",
+      "translation_text_hash": "8c2ad0b408985104f7b8baa65924cdb1a21c826242c12f5a2d139aca2bebb5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떨기나무 가운데서 짠 나물도 꺾으며 대싸리 뿌리로 식물을 삼느니라"
+      ],
+      "raw_text_hashes": [
+        "8c2ad0b408985104f7b8baa65924cdb1a21c826242c12f5a2d139aca2bebb5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:5",
+      "sequence": 13563,
+      "chapter_label": "JOB 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "They are driven out from among men. They cry after them as after a thief,",
+      "ko": "무리는 도적을 외침 같이 그들에게 소리지름으로 그들은 사람 가운데서 쫓겨나서",
+      "source_text_hash": "929c958f3a89b8f243a4585bd95c4cd0e272c5c9b2514cd1854ebaa8a4da6eea",
+      "translation_text_hash": "5ca34691a74ac6c0d3b7bebe4b2de02821de28841016de56c16f357bc805a3ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리는 도적을 외침 같이 그들에게 소리지름으로 그들은 사람 가운데서 쫓겨나서"
+      ],
+      "raw_text_hashes": [
+        "5ca34691a74ac6c0d3b7bebe4b2de02821de28841016de56c16f357bc805a3ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:6",
+      "sequence": 13564,
+      "chapter_label": "JOB 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "so that they live in frightful valleys, and in holes of the earth and of the rocks.",
+      "ko": "침침한 골짜기와 흙 구덩이와 바위 구멍에서 살며",
+      "source_text_hash": "57641d3155c422030f8e6d89dea3bb94b29439663290d7cd43e435a3a7cf0903",
+      "translation_text_hash": "c219fd5b2683e14f4fe1a37602bd3d9694c1afbc69028a8a37654c052cbf0a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "침침한 골짜기와 흙 구덩이와 바위 구멍에서 살며"
+      ],
+      "raw_text_hashes": [
+        "c219fd5b2683e14f4fe1a37602bd3d9694c1afbc69028a8a37654c052cbf0a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:7",
+      "sequence": 13565,
+      "chapter_label": "JOB 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "They bray among the bushes. They are gathered together under the nettles.",
+      "ko": "떨기나무 가운데서 나귀처럼 부르짖으며 가시나무 아래 모여 있느니라",
+      "source_text_hash": "98f480ebb1eea516514c9741fcbe4ae8e62f4b12000aa80f7ca9ba0262e64ea2",
+      "translation_text_hash": "b03a18a1bd0caf8e6a1cca555a784f6ee73f354610bee256e00e8ae5fa1b9746",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떨기나무 가운데서 나귀처럼 부르짖으며 가시나무 아래 모여 있느니라"
+      ],
+      "raw_text_hashes": [
+        "b03a18a1bd0caf8e6a1cca555a784f6ee73f354610bee256e00e8ae5fa1b9746"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:8",
+      "sequence": 13566,
+      "chapter_label": "JOB 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "They are children of fools, yes, children of wicked men. They were flogged out of the land.",
+      "ko": "그들은 본래 미련한 자의 자식이요 비천한 자의 자식으로서 고토에서 쫓겨난 자니라",
+      "source_text_hash": "fae24474dfda78725c9a6570dc79d66256f295e6e431a8decceaef9142ce5ec5",
+      "translation_text_hash": "92e6956b9628a1a3c6940a4c7babaa8814b58af93c02b9a180e8d07a3b9b0f0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 본래 미련한 자의 자식이요 비천한 자의 자식으로서 고토에서 쫓겨난 자니라"
+      ],
+      "raw_text_hashes": [
+        "92e6956b9628a1a3c6940a4c7babaa8814b58af93c02b9a180e8d07a3b9b0f0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:9",
+      "sequence": 13567,
+      "chapter_label": "JOB 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "“Now I have become their song. Yes, I am a byword to them.",
+      "ko": "이제는 내가 그들의 노래가 되며 그들의 조롱거리가 되었고",
+      "source_text_hash": "d6613631b075facb13abf76ceedbfb49ee4ccdd086715dda43c9fb2ed38de4ac",
+      "translation_text_hash": "bb7d787894f1a2a63ff2adad04e43e430def8024c4a492c2914b8fd69db60c1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 내가 그들의 노래가 되며 그들의 조롱거리가 되었고"
+      ],
+      "raw_text_hashes": [
+        "bb7d787894f1a2a63ff2adad04e43e430def8024c4a492c2914b8fd69db60c1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:10",
+      "sequence": 13568,
+      "chapter_label": "JOB 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "They abhor me, they stand aloof from me, and don’t hesitate to spit in my face.",
+      "ko": "그들은 나를 미워하여 멀리 하고 내 얼굴에 침 뱉기를 주저하지 아니하나니",
+      "source_text_hash": "7edb960216fa07e879baad9f1bf3e95686b94bf705f3a126d7a0cf1455445b70",
+      "translation_text_hash": "30f76c852d9e79556f8dcf8ca6489af9f39bef21fbbe5a7ee991e00ae31c86e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 나를 미워하여 멀리 하고 내 얼굴에 침 뱉기를 주저하지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "30f76c852d9e79556f8dcf8ca6489af9f39bef21fbbe5a7ee991e00ae31c86e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:11",
+      "sequence": 13569,
+      "chapter_label": "JOB 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "For he has untied his cord, and afflicted me; and they have thrown off restraint before me.",
+      "ko": "이는 하나님이 내 줄을 늘어지게 하시고 나를 곤고케 하시매 무리가 내 앞에서 굴레를 벗었음이니라",
+      "source_text_hash": "2b7af58db2cf0096ddc3f506f7bed529536fe8a4220f6e8150d6897163ba0b52",
+      "translation_text_hash": "61b7dc237aef4e7508a3214d16f9b021b86cb6bf039a808391a3c6e1062644bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님이 내 줄을 늘어지게 하시고 나를 곤고케 하시매 무리가 내 앞에서 굴레를 벗었음이니라"
+      ],
+      "raw_text_hashes": [
+        "61b7dc237aef4e7508a3214d16f9b021b86cb6bf039a808391a3c6e1062644bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:12",
+      "sequence": 13570,
+      "chapter_label": "JOB 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "On my right hand rise the rabble. They thrust aside my feet. They cast their ways of destruction up against me.",
+      "ko": "그 낮은 무리가 내 우편에서 일어나 내 발을 밀뜨리고 나를 대적하여 멸망시킬 길을 쌓으며",
+      "source_text_hash": "0ddc67adfb760058a1d7a5b77316e877f36b085765f600cb2096106fb75aa3ec",
+      "translation_text_hash": "3db838681c1151f0302520fed57e414acd8b9cebd4c632e25bd54de0d97b8e39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 낮은 무리가 내 우편에서 일어나 내 발을 밀뜨리고 나를 대적하여 멸망시킬 길을 쌓으며"
+      ],
+      "raw_text_hashes": [
+        "3db838681c1151f0302520fed57e414acd8b9cebd4c632e25bd54de0d97b8e39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:13",
+      "sequence": 13571,
+      "chapter_label": "JOB 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "They mar my path. They promote my destruction without anyone’s help.",
+      "ko": "도울 자 없는 그들이 내 길을 헐고 내 재앙을 재촉하는구나",
+      "source_text_hash": "2a7d035bc6ed08965dba316d0d604eb1b71eae05b953f0be1799f1a0a9a1ca8c",
+      "translation_text_hash": "cca724bec034859e310012b3c4ce68910fb378103ec437f3dc9a8cd1bc45a225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도울 자 없는 그들이 내 길을 헐고 내 재앙을 재촉하는구나"
+      ],
+      "raw_text_hashes": [
+        "cca724bec034859e310012b3c4ce68910fb378103ec437f3dc9a8cd1bc45a225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:14",
+      "sequence": 13572,
+      "chapter_label": "JOB 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "As through a wide breach they come. They roll themselves in amid the ruin.",
+      "ko": "성을 크게 파괴하고 그 파괴한 가운데로 몰려 들어 오는것 같이 그들이 내게로 달려드니",
+      "source_text_hash": "6fbc756cbb9a900a744c9ffe27f245927a661aeea15f663f227f99475b2f3e26",
+      "translation_text_hash": "b8c4b02c13c117a44d0ac19b6b55bbe69f8053e6558fd173619817be28ed3840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성을 크게 파괴하고 그 파괴한 가운데로 몰려 들어 오는것 같이 그들이 내게로 달려드니"
+      ],
+      "raw_text_hashes": [
+        "b8c4b02c13c117a44d0ac19b6b55bbe69f8053e6558fd173619817be28ed3840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:15",
+      "sequence": 13573,
+      "chapter_label": "JOB 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "Terrors have turned on me. They chase my honor as the wind. My welfare has passed away as a cloud.",
+      "ko": "놀람이 내게 임하는구나 그들이 내 영광을 바람 같이 모니 내 복록이 구름 같이 지나갔구나",
+      "source_text_hash": "9681fe1db08e6c45b564590b79a4f0e6dcc3a16a286d495bce986071836760fc",
+      "translation_text_hash": "bfacbf06e2541204f03dc81036bb822a0a67b7e36966084cd5326baec5a55dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "놀람이 내게 임하는구나 그들이 내 영광을 바람 같이 모니 내 복록이 구름 같이 지나갔구나"
+      ],
+      "raw_text_hashes": [
+        "bfacbf06e2541204f03dc81036bb822a0a67b7e36966084cd5326baec5a55dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:16",
+      "sequence": 13574,
+      "chapter_label": "JOB 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "“Now my soul is poured out within me. Days of affliction have taken hold of me.",
+      "ko": "이제는 내 마음이 내 속에서 녹으니 환난날이 나를 잡음이라",
+      "source_text_hash": "a7869649d5488ed8fe9ef766ddf8dc05a687d70e75f5df4cdbf4a539838df1ad",
+      "translation_text_hash": "5609fed75692b4c469a173a5c42d33b48d69a962f2ed9073391d05143a907b60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 내 마음이 내 속에서 녹으니 환난날이 나를 잡음이라"
+      ],
+      "raw_text_hashes": [
+        "5609fed75692b4c469a173a5c42d33b48d69a962f2ed9073391d05143a907b60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:17",
+      "sequence": 13575,
+      "chapter_label": "JOB 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "In the night season my bones are pierced in me, and the pains that gnaw me take no rest.",
+      "ko": "밤이 되면 내 뼈가 쑤시니 나의 몸에 아픔이 쉬지 아니하는구나",
+      "source_text_hash": "7e985da96647b26257b97d2de4cad63b2536471e25d2d04d85fbc798e67e5feb",
+      "translation_text_hash": "3f915b0e79bc03696d7c6ef8cb4b4e3ac95d599f8138ed51220ddd8c8fce150c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤이 되면 내 뼈가 쑤시니 나의 몸에 아픔이 쉬지 아니하는구나"
+      ],
+      "raw_text_hashes": [
+        "3f915b0e79bc03696d7c6ef8cb4b4e3ac95d599f8138ed51220ddd8c8fce150c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:18",
+      "sequence": 13576,
+      "chapter_label": "JOB 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "My garment is disfigured by great force. It binds me about as the collar of my tunic.",
+      "ko": "하나님의 큰 능력으로 하여 옷이 추하여져서 옷깃처럼 내 몸에 붙었구나",
+      "source_text_hash": "64f1dfbc140d2db1c2dfccc51a358a03e4ac3ee27b2966ae48dda3f4758f1a8f",
+      "translation_text_hash": "a8abef32770663b7b0491bf9d76332ee93aa808b2107bb4366ba41ac41f20096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 큰 능력으로 하여 옷이 추하여져서 옷깃처럼 내 몸에 붙었구나"
+      ],
+      "raw_text_hashes": [
+        "a8abef32770663b7b0491bf9d76332ee93aa808b2107bb4366ba41ac41f20096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:19",
+      "sequence": 13577,
+      "chapter_label": "JOB 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "He has cast me into the mire. I have become like dust and ashes.",
+      "ko": "하나님이 나를 진흙 가운데 던지셨고 나로 티끌과 재 같게 하셨구나",
+      "source_text_hash": "24b5cfb04119832e6c01c8db8ffceabbd034a8bb345302860313fc264bd1eb9d",
+      "translation_text_hash": "8a79052fb4480097b617a1e2635e5302aaffcae692ecb711658df963903db2d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나를 진흙 가운데 던지셨고 나로 티끌과 재 같게 하셨구나"
+      ],
+      "raw_text_hashes": [
+        "8a79052fb4480097b617a1e2635e5302aaffcae692ecb711658df963903db2d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:20",
+      "sequence": 13578,
+      "chapter_label": "JOB 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "I cry to you, and you do not answer me. I stand up, and you gaze at me.",
+      "ko": "내가 주께 부르짖으오나 주께서 대답지 아니하시오며 내가 섰사오나 주께서 굽어보시기만 하시나이다",
+      "source_text_hash": "b7ffa449b3974fc0341b7d1f006118de756e4d4d331a7e24a93951674add100b",
+      "translation_text_hash": "3528d8388ccb347fa4084c22505fd4cba7ccff23368a4b8fe68d892d67648eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 부르짖으오나 주께서 대답지 아니하시오며 내가 섰사오나 주께서 굽어보시기만 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "3528d8388ccb347fa4084c22505fd4cba7ccff23368a4b8fe68d892d67648eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:21",
+      "sequence": 13579,
+      "chapter_label": "JOB 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "You have turned to be cruel to me. With the might of your hand you persecute me.",
+      "ko": "주께서 돌이켜 내게 잔혹히 하시고 완력으로 나를 핍박하시오며",
+      "source_text_hash": "85f48ab3d6c1acd690fd4c754452adf7d0ab5a9449a938889f934606a5e6dc4a",
+      "translation_text_hash": "aca930258d0acc36c98fe7ccbe13820593c8d77ac54f99d544343d10083b070e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 돌이켜 내게 잔혹히 하시고 완력으로 나를 핍박하시오며"
+      ],
+      "raw_text_hashes": [
+        "aca930258d0acc36c98fe7ccbe13820593c8d77ac54f99d544343d10083b070e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:22",
+      "sequence": 13580,
+      "chapter_label": "JOB 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "You lift me up to the wind, and drive me with it. You dissolve me in the storm.",
+      "ko": "나를 바람 위에 들어 얹어 불려가게 하시며 대풍 중에 소멸케 하시나이다",
+      "source_text_hash": "0b46c9d0411adaef8b7b338cbf9d7b619f3aa7e6e94136af4f1bc826306150a9",
+      "translation_text_hash": "c3b2f9baeeae750ee8755983688a8ec5a36606ab30d2793e9664727a9dbc115c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 바람 위에 들어 얹어 불려가게 하시며 대풍 중에 소멸케 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "c3b2f9baeeae750ee8755983688a8ec5a36606ab30d2793e9664727a9dbc115c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:23",
+      "sequence": 13581,
+      "chapter_label": "JOB 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "For I know that you will bring me to death, to the house appointed for all living.",
+      "ko": "내가 아나이다 주께서 나를 죽게 하사 모든 생물을 위하여 정한 집으로 끌어 가시리이다",
+      "source_text_hash": "2faa7209117d77bfe64c392215a580e2305002d593de5f9d1cf0b31b48dd70a6",
+      "translation_text_hash": "962a44699cc8958f2ec2ca8336c5be68f4112cd501a48ea9859b89059ac3d999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아나이다 주께서 나를 죽게 하사 모든 생물을 위하여 정한 집으로 끌어 가시리이다"
+      ],
+      "raw_text_hashes": [
+        "962a44699cc8958f2ec2ca8336c5be68f4112cd501a48ea9859b89059ac3d999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:24",
+      "sequence": 13582,
+      "chapter_label": "JOB 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "“However doesn’t one stretch out a hand in his fall? Or in his calamity therefore cry for help?",
+      "ko": "그러나 사람이 넘어질 때에 어찌 손을 펴지 아니하며 재앙을 당할 때에 어찌 도움을 부르짖지 아니하겠는가",
+      "source_text_hash": "212fad622a14e0d888c8a8707394a782978b455ffd0e2b58c5616aadfbf855eb",
+      "translation_text_hash": "22f2958210a4635c9ebd562c2437b013cf13609edcc1c30a0079dd00079b7d67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사람이 넘어질 때에 어찌 손을 펴지 아니하며 재앙을 당할 때에 어찌 도움을 부르짖지 아니하겠는가"
+      ],
+      "raw_text_hashes": [
+        "22f2958210a4635c9ebd562c2437b013cf13609edcc1c30a0079dd00079b7d67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:25",
+      "sequence": 13583,
+      "chapter_label": "JOB 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "Didn’t I weep for him who was in trouble? Wasn’t my soul grieved for the needy?",
+      "ko": "고생의 날 보내는 자를 위하여 내가 울지 아니하였는가 빈궁한 자를 위하여 내 마음에 근심하지 아니하였는가",
+      "source_text_hash": "2a1ecafab20b6315f794e5343ade83e466563ae1bf41cf7e661d8a492362f41d",
+      "translation_text_hash": "73724aa2ca01d7aca1b66e13721a1d6cacf3bc3d32ea3adae576cc3f14b19014",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고생의 날 보내는 자를 위하여 내가 울지 아니하였는가 빈궁한 자를 위하여 내 마음에 근심하지 아니하였는가"
+      ],
+      "raw_text_hashes": [
+        "73724aa2ca01d7aca1b66e13721a1d6cacf3bc3d32ea3adae576cc3f14b19014"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:26",
+      "sequence": 13584,
+      "chapter_label": "JOB 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "When I looked for good, then evil came. When I waited for light, darkness came.",
+      "ko": "내가 복을 바랐더니 화가 왔고 광명을 기다렸더니 흑암이 왔구나",
+      "source_text_hash": "b4de94d997d6c3b66419ca10eaa78d6a317c10d39e18d901056d65938e403bbe",
+      "translation_text_hash": "49e1ce5d382b3cd38646df7788006946c96383ae2651ac05b3b825e8728cfef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 복을 바랐더니 화가 왔고 광명을 기다렸더니 흑암이 왔구나"
+      ],
+      "raw_text_hashes": [
+        "49e1ce5d382b3cd38646df7788006946c96383ae2651ac05b3b825e8728cfef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:27",
+      "sequence": 13585,
+      "chapter_label": "JOB 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "My heart is troubled, and doesn’t rest. Days of affliction have come on me.",
+      "ko": "내 마음이 어지러워서 쉬지 못하는구나 환난날이 내게 임하였구나",
+      "source_text_hash": "67fc0dc0ac6c9a7b7883828405474d5ba911e36b76a70bf36a7348287a9d1537",
+      "translation_text_hash": "79f729883fd9134d19e57dae8a62167406cf134ab7c90b0394d6d5fc5f8b8539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 어지러워서 쉬지 못하는구나 환난날이 내게 임하였구나"
+      ],
+      "raw_text_hashes": [
+        "79f729883fd9134d19e57dae8a62167406cf134ab7c90b0394d6d5fc5f8b8539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:28",
+      "sequence": 13586,
+      "chapter_label": "JOB 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "I go mourning without the sun. I stand up in the assembly, and cry for help.",
+      "ko": "나는 햇볕에 쬐지 않고 검어진 살을 가지고 걸으며 공회 중에 서서 도움을 부르짖고 있느니라",
+      "source_text_hash": "f817a454873f9c23c4d01de9663b05862044f9592b0b025923abba50205755a2",
+      "translation_text_hash": "a1e75ff7a19405a616bd47f4aef1dbeabe28af9fc83d29a4c01e33158022a164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 햇볕에 쬐지 않고 검어진 살을 가지고 걸으며 공회 중에 서서 도움을 부르짖고 있느니라"
+      ],
+      "raw_text_hashes": [
+        "a1e75ff7a19405a616bd47f4aef1dbeabe28af9fc83d29a4c01e33158022a164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:29",
+      "sequence": 13587,
+      "chapter_label": "JOB 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "I am a brother to jackals, and a companion to ostriches.",
+      "ko": "나는 이리의 형제요 타조의 벗이로구나",
+      "source_text_hash": "d842cd709c9c369665eda60649c93f0d3b56747ba90c32627643014d72336df9",
+      "translation_text_hash": "176f3f6b2fd6af9bf77dcd68b5a0a43bb23c29125c159a13f9c63afceb41b733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 이리의 형제요 타조의 벗이로구나"
+      ],
+      "raw_text_hashes": [
+        "176f3f6b2fd6af9bf77dcd68b5a0a43bb23c29125c159a13f9c63afceb41b733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:30",
+      "sequence": 13588,
+      "chapter_label": "JOB 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "My skin grows black and peels from me. My bones are burned with heat.",
+      "ko": "내 가죽은 검어져서 떨어졌고 내 뼈는 열기로하여 탔구나",
+      "source_text_hash": "984aa03112ca16d90fa9ce57e67125234306c23efc412213805af1f04cddd488",
+      "translation_text_hash": "c16ab9316f1e2dcdc1309331e6a18fef8c2de757df7d7955654d45cc94665ec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 가죽은 검어져서 떨어졌고 내 뼈는 열기로하여 탔구나"
+      ],
+      "raw_text_hashes": [
+        "c16ab9316f1e2dcdc1309331e6a18fef8c2de757df7d7955654d45cc94665ec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:30:31",
+      "sequence": 13589,
+      "chapter_label": "JOB 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 30,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore my harp has turned to mourning, and my pipe into the voice of those who weep.",
+      "ko": "내 수금은 애곡성이 되고 내 피리는 애통성이 되었구나",
+      "source_text_hash": "e792f122e4b5a851319b33f177da5f62dc158ad09e7ead8f927acd49783684b2",
+      "translation_text_hash": "1f9875c50faf48ddcdb2e8a5a41648eddb0f31576546df0524a4e0e05db56cf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 수금은 애곡성이 되고 내 피리는 애통성이 되었구나"
+      ],
+      "raw_text_hashes": [
+        "1f9875c50faf48ddcdb2e8a5a41648eddb0f31576546df0524a4e0e05db56cf1"
+      ]
+    }
+  ]
+}

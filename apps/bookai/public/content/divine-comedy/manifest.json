@@ -1,0 +1,3160 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "divine-comedy",
+  "title": "The Divine Comedy",
+  "author": "Dante Alighieri",
+  "passage_count": 4812,
+  "unit_count": 100,
+  "primary_locator": "canonical_locator",
+  "translation_language": "ko",
+  "units": [
+    {
+      "unit_key": "inferno:canto:01",
+      "unit_kind": "canto",
+      "unit_ordinal": 1,
+      "label": "Inferno CANTO 01",
+      "path": "inferno-canto-01.json",
+      "passage_count": 46,
+      "sha256": "c02bb7be4d1d822f1e3beb9d2e9f442db61d250bf2bf50995ca46c8c1a54f3a8",
+      "first_locator": "divine-comedy:canto:inferno-01:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-01:s5:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:02",
+      "unit_kind": "canto",
+      "unit_ordinal": 2,
+      "label": "Inferno CANTO 02",
+      "path": "inferno-canto-02.json",
+      "passage_count": 48,
+      "sha256": "e778fdcbd6f8a9d338c76b9c6fc4a43d34ad88fe820e000052f02c07c225c129",
+      "first_locator": "divine-comedy:canto:inferno-02:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-02:s5:row:048"
+    },
+    {
+      "unit_key": "inferno:canto:03",
+      "unit_kind": "canto",
+      "unit_ordinal": 3,
+      "label": "Inferno CANTO 03",
+      "path": "inferno-canto-03.json",
+      "passage_count": 46,
+      "sha256": "5e68918c7de84772b132b8f426f448c780fbd745eb33bf776ee8c228f7a6f50c",
+      "first_locator": "divine-comedy:canto:inferno-03:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-03:s5:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:04",
+      "unit_kind": "canto",
+      "unit_ordinal": 4,
+      "label": "Inferno CANTO 04",
+      "path": "inferno-canto-04.json",
+      "passage_count": 51,
+      "sha256": "d11a7da00e967703512a01dc50e5bac386ac98933e19381f677cfcf62e1940ec",
+      "first_locator": "divine-comedy:canto:inferno-04:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-04:s5:row:051"
+    },
+    {
+      "unit_key": "inferno:canto:05",
+      "unit_kind": "canto",
+      "unit_ordinal": 5,
+      "label": "Inferno CANTO 05",
+      "path": "inferno-canto-05.json",
+      "passage_count": 48,
+      "sha256": "1a762c62f82d5c3a1d61274f1d4baf47067b456d04b3a0f8edc6b46840428dcb",
+      "first_locator": "divine-comedy:canto:inferno-05:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-05:s5:row:048"
+    },
+    {
+      "unit_key": "inferno:canto:06",
+      "unit_kind": "canto",
+      "unit_ordinal": 6,
+      "label": "Inferno CANTO 06",
+      "path": "inferno-canto-06.json",
+      "passage_count": 39,
+      "sha256": "db6080ec33876639ed780313edec1d162e445917a6069343fe088255f63949bd",
+      "first_locator": "divine-comedy:canto:inferno-06:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-06:s5:row:039"
+    },
+    {
+      "unit_key": "inferno:canto:07",
+      "unit_kind": "canto",
+      "unit_ordinal": 7,
+      "label": "Inferno CANTO 07",
+      "path": "inferno-canto-07.json",
+      "passage_count": 44,
+      "sha256": "f49869724bf5ca51ed207318897bb1d8251de1f92a24deaff5e3495d8f45b4a3",
+      "first_locator": "divine-comedy:canto:inferno-07:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-07:s4:row:044"
+    },
+    {
+      "unit_key": "inferno:canto:08",
+      "unit_kind": "canto",
+      "unit_ordinal": 8,
+      "label": "Inferno CANTO 08",
+      "path": "inferno-canto-08.json",
+      "passage_count": 44,
+      "sha256": "cf7b63a0bc066367031ee2aad5df946cdd362663ffe5de458a4335d3af24e782",
+      "first_locator": "divine-comedy:canto:inferno-08:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-08:s4:row:044"
+    },
+    {
+      "unit_key": "inferno:canto:09",
+      "unit_kind": "canto",
+      "unit_ordinal": 9,
+      "label": "Inferno CANTO 09",
+      "path": "inferno-canto-09.json",
+      "passage_count": 45,
+      "sha256": "7e42a3eeaaf256e3973874ad2ea3caac45f2eb86ea2b35c46977584aa122ff0c",
+      "first_locator": "divine-comedy:canto:inferno-09:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-09:s4:row:045"
+    },
+    {
+      "unit_key": "inferno:canto:10",
+      "unit_kind": "canto",
+      "unit_ordinal": 10,
+      "label": "Inferno CANTO 10",
+      "path": "inferno-canto-10.json",
+      "passage_count": 46,
+      "sha256": "8f9cd86765916fa4987815e7abf4898be1cf5de349e34bfd2fb985e1568f9b45",
+      "first_locator": "divine-comedy:canto:inferno-10:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-10:s4:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:11",
+      "unit_kind": "canto",
+      "unit_ordinal": 11,
+      "label": "Inferno CANTO 11",
+      "path": "inferno-canto-11.json",
+      "passage_count": 39,
+      "sha256": "68f485604d1692b5aa1c35e50e48a8a8186c722e3a1b209beea6b5624a24e011",
+      "first_locator": "divine-comedy:canto:inferno-11:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-11:s4:row:039"
+    },
+    {
+      "unit_key": "inferno:canto:12",
+      "unit_kind": "canto",
+      "unit_ordinal": 12,
+      "label": "Inferno CANTO 12",
+      "path": "inferno-canto-12.json",
+      "passage_count": 47,
+      "sha256": "d496ec34d2d78ec64ab10f4fdecd9528279415903a1de5ba1739689243c6f0b4",
+      "first_locator": "divine-comedy:canto:inferno-12:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-12:s4:row:047"
+    },
+    {
+      "unit_key": "inferno:canto:13",
+      "unit_kind": "canto",
+      "unit_ordinal": 13,
+      "label": "Inferno CANTO 13",
+      "path": "inferno-canto-13.json",
+      "passage_count": 51,
+      "sha256": "1716843145e4688525a32604980767d61efe0670f4c6c9849c127ecaadde714c",
+      "first_locator": "divine-comedy:canto:inferno-13:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-13:s4:row:051"
+    },
+    {
+      "unit_key": "inferno:canto:14",
+      "unit_kind": "canto",
+      "unit_ordinal": 14,
+      "label": "Inferno CANTO 14",
+      "path": "inferno-canto-14.json",
+      "passage_count": 48,
+      "sha256": "54143576ed05d817e76768af1c5ea9ca1dc82d0c6223ebb6d152c38a1e91c190",
+      "first_locator": "divine-comedy:canto:inferno-14:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-14:s4:row:048"
+    },
+    {
+      "unit_key": "inferno:canto:15",
+      "unit_kind": "canto",
+      "unit_ordinal": 15,
+      "label": "Inferno CANTO 15",
+      "path": "inferno-canto-15.json",
+      "passage_count": 42,
+      "sha256": "a1beaae9a0d5b6d7306ba548c7ab67ea68ec35ac784c42af467d1d45d6ebcf97",
+      "first_locator": "divine-comedy:canto:inferno-15:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-15:s4:row:042"
+    },
+    {
+      "unit_key": "inferno:canto:16",
+      "unit_kind": "canto",
+      "unit_ordinal": 16,
+      "label": "Inferno CANTO 16",
+      "path": "inferno-canto-16.json",
+      "passage_count": 46,
+      "sha256": "4fe3db7b8de3660b9727c7c6d37ac23c833e56ea0a5511023305db1f7de314a7",
+      "first_locator": "divine-comedy:canto:inferno-16:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-16:s4:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:17",
+      "unit_kind": "canto",
+      "unit_ordinal": 17,
+      "label": "Inferno CANTO 17",
+      "path": "inferno-canto-17.json",
+      "passage_count": 46,
+      "sha256": "a22106a2d855e2b0304704fb887072467357c736e751952a4a312c247ae0ddf7",
+      "first_locator": "divine-comedy:canto:inferno-17:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-17:s4:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:18",
+      "unit_kind": "canto",
+      "unit_ordinal": 18,
+      "label": "Inferno CANTO 18",
+      "path": "inferno-canto-18.json",
+      "passage_count": 46,
+      "sha256": "f40c5994b12a435b8ef1c2331ab4f0a7c17db97b20860e504274a972ae464e64",
+      "first_locator": "divine-comedy:canto:inferno-18:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-18:s4:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:19",
+      "unit_kind": "canto",
+      "unit_ordinal": 19,
+      "label": "Inferno CANTO 19",
+      "path": "inferno-canto-19.json",
+      "passage_count": 45,
+      "sha256": "9f73cdac51bc7d2585254e29fdeab6d2c9b52abf48a7a2b3b97db425f33a9987",
+      "first_locator": "divine-comedy:canto:inferno-19:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-19:s4:row:045"
+    },
+    {
+      "unit_key": "inferno:canto:20",
+      "unit_kind": "canto",
+      "unit_ordinal": 20,
+      "label": "Inferno CANTO 20",
+      "path": "inferno-canto-20.json",
+      "passage_count": 44,
+      "sha256": "17ff68c456282b4ab2e46d195ac784b5738da51fd7dc8e0cfee6545a1ec78f32",
+      "first_locator": "divine-comedy:canto:inferno-20:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-20:s4:row:044"
+    },
+    {
+      "unit_key": "inferno:canto:21",
+      "unit_kind": "canto",
+      "unit_ordinal": 21,
+      "label": "Inferno CANTO 21",
+      "path": "inferno-canto-21.json",
+      "passage_count": 47,
+      "sha256": "5d5157f8648fd0e9e125040122d5e1e90847d2232cdae1db9faab0066253bbb4",
+      "first_locator": "divine-comedy:canto:inferno-21:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-21:s4:row:047"
+    },
+    {
+      "unit_key": "inferno:canto:22",
+      "unit_kind": "canto",
+      "unit_ordinal": 22,
+      "label": "Inferno CANTO 22",
+      "path": "inferno-canto-22.json",
+      "passage_count": 51,
+      "sha256": "8dbc4dea47a4888af67e772bef423e1deef37dc67a5fb09d0f3facc05f801906",
+      "first_locator": "divine-comedy:canto:inferno-22:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-22:s4:row:051"
+    },
+    {
+      "unit_key": "inferno:canto:23",
+      "unit_kind": "canto",
+      "unit_ordinal": 23,
+      "label": "Inferno CANTO 23",
+      "path": "inferno-canto-23.json",
+      "passage_count": 50,
+      "sha256": "2b88e512c41fb3390b51d353ae5fa4f5c65fc23423d315644cc271ccb61b32a8",
+      "first_locator": "divine-comedy:canto:inferno-23:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-23:s4:row:050"
+    },
+    {
+      "unit_key": "inferno:canto:24",
+      "unit_kind": "canto",
+      "unit_ordinal": 24,
+      "label": "Inferno CANTO 24",
+      "path": "inferno-canto-24.json",
+      "passage_count": 51,
+      "sha256": "4beb40668eddcd42c99319492be241adf5e92b46d858466bfb06051a00326823",
+      "first_locator": "divine-comedy:canto:inferno-24:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-24:s4:row:051"
+    },
+    {
+      "unit_key": "inferno:canto:25",
+      "unit_kind": "canto",
+      "unit_ordinal": 25,
+      "label": "Inferno CANTO 25",
+      "path": "inferno-canto-25.json",
+      "passage_count": 51,
+      "sha256": "5745c3ae03d3cef71534239c965788cd778ccd0b6b498c8c46766943a0487909",
+      "first_locator": "divine-comedy:canto:inferno-25:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-25:s4:row:051"
+    },
+    {
+      "unit_key": "inferno:canto:26",
+      "unit_kind": "canto",
+      "unit_ordinal": 26,
+      "label": "Inferno CANTO 26",
+      "path": "inferno-canto-26.json",
+      "passage_count": 48,
+      "sha256": "0af4cd1b45bbbbf4cdb9bbbc16f136b9be1ea3d7d130c744d1eb69083ff0d456",
+      "first_locator": "divine-comedy:canto:inferno-26:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-26:s4:row:048"
+    },
+    {
+      "unit_key": "inferno:canto:27",
+      "unit_kind": "canto",
+      "unit_ordinal": 27,
+      "label": "Inferno CANTO 27",
+      "path": "inferno-canto-27.json",
+      "passage_count": 46,
+      "sha256": "d4143f58be7aba58f86772f5352927713dad1eadf25dbfb1aee24e0a5ce721b1",
+      "first_locator": "divine-comedy:canto:inferno-27:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-27:s4:row:046"
+    },
+    {
+      "unit_key": "inferno:canto:28",
+      "unit_kind": "canto",
+      "unit_ordinal": 28,
+      "label": "Inferno CANTO 28",
+      "path": "inferno-canto-28.json",
+      "passage_count": 48,
+      "sha256": "09f8a713d4d51a22903a3ee0100fa23f430d7a957ba75d4e1161e4828a81daf5",
+      "first_locator": "divine-comedy:canto:inferno-28:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-28:s4:row:048"
+    },
+    {
+      "unit_key": "inferno:canto:29",
+      "unit_kind": "canto",
+      "unit_ordinal": 29,
+      "label": "Inferno CANTO 29",
+      "path": "inferno-canto-29.json",
+      "passage_count": 47,
+      "sha256": "a6fc281b5098c690f7ae43aa455b280ef5a7e66404dce068f0cab91bcc698bc6",
+      "first_locator": "divine-comedy:canto:inferno-29:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-29:s4:row:047"
+    },
+    {
+      "unit_key": "inferno:canto:30",
+      "unit_kind": "canto",
+      "unit_ordinal": 30,
+      "label": "Inferno CANTO 30",
+      "path": "inferno-canto-30.json",
+      "passage_count": 50,
+      "sha256": "3776e9220a04c5b50d483835e9266c7a5e64b458250f076f434306f5f7f4e0ef",
+      "first_locator": "divine-comedy:canto:inferno-30:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-30:s4:row:050"
+    },
+    {
+      "unit_key": "inferno:canto:31",
+      "unit_kind": "canto",
+      "unit_ordinal": 31,
+      "label": "Inferno CANTO 31",
+      "path": "inferno-canto-31.json",
+      "passage_count": 49,
+      "sha256": "da98afeeea63d16903094706635c9842aba334d93d891f28fb546d99f74a73af",
+      "first_locator": "divine-comedy:canto:inferno-31:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-31:s4:row:049"
+    },
+    {
+      "unit_key": "inferno:canto:32",
+      "unit_kind": "canto",
+      "unit_ordinal": 32,
+      "label": "Inferno CANTO 32",
+      "path": "inferno-canto-32.json",
+      "passage_count": 47,
+      "sha256": "6fee2bf041f382f3b48ec4a84b6edbfa4d1931b74b452cbc2a9e95af7440cf22",
+      "first_locator": "divine-comedy:canto:inferno-32:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-32:s4:row:047"
+    },
+    {
+      "unit_key": "inferno:canto:33",
+      "unit_kind": "canto",
+      "unit_ordinal": 33,
+      "label": "Inferno CANTO 33",
+      "path": "inferno-canto-33.json",
+      "passage_count": 53,
+      "sha256": "6eb7f3ec5e7b01df5575a8af5a95bec724270f02b01c97178b7a00508bfed762",
+      "first_locator": "divine-comedy:canto:inferno-33:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-33:s4:row:053"
+    },
+    {
+      "unit_key": "inferno:canto:34",
+      "unit_kind": "canto",
+      "unit_ordinal": 34,
+      "label": "Inferno CANTO 34",
+      "path": "inferno-canto-34.json",
+      "passage_count": 47,
+      "sha256": "24b575cbab69be199f4c68dcf0828466587171e564684492ec9a3a2659abb5de",
+      "first_locator": "divine-comedy:canto:inferno-34:s1:row:001",
+      "last_locator": "divine-comedy:canto:inferno-34:s4:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:01",
+      "unit_kind": "canto",
+      "unit_ordinal": 35,
+      "label": "Purgatorio CANTO 01",
+      "path": "purgatorio-canto-01.json",
+      "passage_count": 46,
+      "sha256": "57d8b509e8839c96cbe20deea1d8410d7999ab5e875e6311f9ec559ac742fe17",
+      "first_locator": "divine-comedy:canto:purgatorio-01:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-01:s6:row:046"
+    },
+    {
+      "unit_key": "purgatorio:canto:02",
+      "unit_kind": "canto",
+      "unit_ordinal": 36,
+      "label": "Purgatorio CANTO 02",
+      "path": "purgatorio-canto-02.json",
+      "passage_count": 45,
+      "sha256": "b0a380e60099a5c5211e86e2b2c7f4716eb7f5e6ed35ebffc65549248626107a",
+      "first_locator": "divine-comedy:canto:purgatorio-02:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-02:s6:row:045"
+    },
+    {
+      "unit_key": "purgatorio:canto:03",
+      "unit_kind": "canto",
+      "unit_ordinal": 37,
+      "label": "Purgatorio CANTO 03",
+      "path": "purgatorio-canto-03.json",
+      "passage_count": 49,
+      "sha256": "651fba8c93a0e889bc67b18afce27fa1db0f1c5e14364a7cf39dec36b9155521",
+      "first_locator": "divine-comedy:canto:purgatorio-03:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-03:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:04",
+      "unit_kind": "canto",
+      "unit_ordinal": 38,
+      "label": "Purgatorio CANTO 04",
+      "path": "purgatorio-canto-04.json",
+      "passage_count": 47,
+      "sha256": "55b6e42627556dd7a813cc52c0303d7a6717e56f44fb26e1512047a6e193060c",
+      "first_locator": "divine-comedy:canto:purgatorio-04:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-04:s5:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:05",
+      "unit_kind": "canto",
+      "unit_ordinal": 39,
+      "label": "Purgatorio CANTO 05",
+      "path": "purgatorio-canto-05.json",
+      "passage_count": 46,
+      "sha256": "66627ca6d9c15c96665072739a631497e437265fb3c6f470e821c4bbfc72cf61",
+      "first_locator": "divine-comedy:canto:purgatorio-05:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-05:s5:row:046"
+    },
+    {
+      "unit_key": "purgatorio:canto:06",
+      "unit_kind": "canto",
+      "unit_ordinal": 40,
+      "label": "Purgatorio CANTO 06",
+      "path": "purgatorio-canto-06.json",
+      "passage_count": 51,
+      "sha256": "6ba6cce0683c726757bd205211dc0a0ef4b389ae303bc5fb0ca87d3e6dbe2096",
+      "first_locator": "divine-comedy:canto:purgatorio-06:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-06:s5:row:051"
+    },
+    {
+      "unit_key": "purgatorio:canto:07",
+      "unit_kind": "canto",
+      "unit_ordinal": 41,
+      "label": "Purgatorio CANTO 07",
+      "path": "purgatorio-canto-07.json",
+      "passage_count": 46,
+      "sha256": "4ee71d1847de378d8018d2bf7cc455d4c3513fa50b46f9e094130ebf0622c1a7",
+      "first_locator": "divine-comedy:canto:purgatorio-07:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-07:s5:row:046"
+    },
+    {
+      "unit_key": "purgatorio:canto:08",
+      "unit_kind": "canto",
+      "unit_ordinal": 42,
+      "label": "Purgatorio CANTO 08",
+      "path": "purgatorio-canto-08.json",
+      "passage_count": 47,
+      "sha256": "7dbd49b165c7ed6d2f9d2a610d71f33a1cba9577d84497fa7d3da8ab984d9b4b",
+      "first_locator": "divine-comedy:canto:purgatorio-08:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-08:s5:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:09",
+      "unit_kind": "canto",
+      "unit_ordinal": 43,
+      "label": "Purgatorio CANTO 09",
+      "path": "purgatorio-canto-09.json",
+      "passage_count": 49,
+      "sha256": "ff33211bc2f8c66288a02d677060c5fe2461dbb720aeffe94456575d31b818e2",
+      "first_locator": "divine-comedy:canto:purgatorio-09:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-09:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:10",
+      "unit_kind": "canto",
+      "unit_ordinal": 44,
+      "label": "Purgatorio CANTO 10",
+      "path": "purgatorio-canto-10.json",
+      "passage_count": 47,
+      "sha256": "c44f7e95d47690e13be7ef99341b5aafb8b8b98085f801a785430729002bcc8e",
+      "first_locator": "divine-comedy:canto:purgatorio-10:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-10:s5:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:11",
+      "unit_kind": "canto",
+      "unit_ordinal": 45,
+      "label": "Purgatorio CANTO 11",
+      "path": "purgatorio-canto-11.json",
+      "passage_count": 48,
+      "sha256": "1588d991ab982ff8317238a5ef7d4e7ffa03a6c2263feba124dcda9a50366468",
+      "first_locator": "divine-comedy:canto:purgatorio-11:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-11:s5:row:048"
+    },
+    {
+      "unit_key": "purgatorio:canto:12",
+      "unit_kind": "canto",
+      "unit_ordinal": 46,
+      "label": "Purgatorio CANTO 12",
+      "path": "purgatorio-canto-12.json",
+      "passage_count": 46,
+      "sha256": "f2ccb179a2082d9c18f508d5c3abf4a5fb596c5490871ffd3e8bfb2293da3dcc",
+      "first_locator": "divine-comedy:canto:purgatorio-12:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-12:s5:row:046"
+    },
+    {
+      "unit_key": "purgatorio:canto:13",
+      "unit_kind": "canto",
+      "unit_ordinal": 47,
+      "label": "Purgatorio CANTO 13",
+      "path": "purgatorio-canto-13.json",
+      "passage_count": 52,
+      "sha256": "54925ce2e7433eeff55719a334bac84297e443d15b74052af19cd4079e987983",
+      "first_locator": "divine-comedy:canto:purgatorio-13:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-13:s5:row:052"
+    },
+    {
+      "unit_key": "purgatorio:canto:14",
+      "unit_kind": "canto",
+      "unit_ordinal": 48,
+      "label": "Purgatorio CANTO 14",
+      "path": "purgatorio-canto-14.json",
+      "passage_count": 51,
+      "sha256": "ccc8611cb8aa052b7a37e5ae03902e0e5c30fb101002349af85ca85672423c58",
+      "first_locator": "divine-comedy:canto:purgatorio-14:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-14:s5:row:051"
+    },
+    {
+      "unit_key": "purgatorio:canto:15",
+      "unit_kind": "canto",
+      "unit_ordinal": 49,
+      "label": "Purgatorio CANTO 15",
+      "path": "purgatorio-canto-15.json",
+      "passage_count": 49,
+      "sha256": "fae16fc4a0e769e8792886237c23623f9f53defb2ef37e7095ceda364c869bb8",
+      "first_locator": "divine-comedy:canto:purgatorio-15:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-15:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:16",
+      "unit_kind": "canto",
+      "unit_ordinal": 50,
+      "label": "Purgatorio CANTO 16",
+      "path": "purgatorio-canto-16.json",
+      "passage_count": 49,
+      "sha256": "33c38ad9c4aa8a6df42cfe69e038e153388a55153cbd7ba454642cd86b46ae4e",
+      "first_locator": "divine-comedy:canto:purgatorio-16:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-16:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:17",
+      "unit_kind": "canto",
+      "unit_ordinal": 51,
+      "label": "Purgatorio CANTO 17",
+      "path": "purgatorio-canto-17.json",
+      "passage_count": 47,
+      "sha256": "17cba097cfa1b396aa811794e0e9b880e45db8026e8499ae62361dff35a8f478",
+      "first_locator": "divine-comedy:canto:purgatorio-17:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-17:s5:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:18",
+      "unit_kind": "canto",
+      "unit_ordinal": 52,
+      "label": "Purgatorio CANTO 18",
+      "path": "purgatorio-canto-18.json",
+      "passage_count": 49,
+      "sha256": "dd339cc142bf8058037149216e4e655e89213157aa72343ac193ee073f93e2e9",
+      "first_locator": "divine-comedy:canto:purgatorio-18:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-18:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:19",
+      "unit_kind": "canto",
+      "unit_ordinal": 53,
+      "label": "Purgatorio CANTO 19",
+      "path": "purgatorio-canto-19.json",
+      "passage_count": 49,
+      "sha256": "92e7ad8f1b73a785443a6a7a727ba873c42264de13cc632df67964dc8d747e11",
+      "first_locator": "divine-comedy:canto:purgatorio-19:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-19:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:20",
+      "unit_kind": "canto",
+      "unit_ordinal": 54,
+      "label": "Purgatorio CANTO 20",
+      "path": "purgatorio-canto-20.json",
+      "passage_count": 51,
+      "sha256": "999405f626fa20096bf0fc8ae050c029354892492179984925a36034269d0317",
+      "first_locator": "divine-comedy:canto:purgatorio-20:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-20:s5:row:051"
+    },
+    {
+      "unit_key": "purgatorio:canto:21",
+      "unit_kind": "canto",
+      "unit_ordinal": 55,
+      "label": "Purgatorio CANTO 21",
+      "path": "purgatorio-canto-21.json",
+      "passage_count": 46,
+      "sha256": "450138237e4e13b91b6e383f345e6db7ddd8a0acd2aa54fcf7cb949782b15d3b",
+      "first_locator": "divine-comedy:canto:purgatorio-21:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-21:s5:row:046"
+    },
+    {
+      "unit_key": "purgatorio:canto:22",
+      "unit_kind": "canto",
+      "unit_ordinal": 56,
+      "label": "Purgatorio CANTO 22",
+      "path": "purgatorio-canto-22.json",
+      "passage_count": 52,
+      "sha256": "d8dcca6c4e11dec166f5d6e33bb91f6e6c6d6655d477d41a0d51f5e8b2f83d46",
+      "first_locator": "divine-comedy:canto:purgatorio-22:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-22:s5:row:052"
+    },
+    {
+      "unit_key": "purgatorio:canto:23",
+      "unit_kind": "canto",
+      "unit_ordinal": 57,
+      "label": "Purgatorio CANTO 23",
+      "path": "purgatorio-canto-23.json",
+      "passage_count": 45,
+      "sha256": "bde183ab087024f69a427a1ed13a1c59497ab50f12121eaac8505f99ea77a917",
+      "first_locator": "divine-comedy:canto:purgatorio-23:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-23:s5:row:045"
+    },
+    {
+      "unit_key": "purgatorio:canto:24",
+      "unit_kind": "canto",
+      "unit_ordinal": 58,
+      "label": "Purgatorio CANTO 24",
+      "path": "purgatorio-canto-24.json",
+      "passage_count": 52,
+      "sha256": "24bb7b4723b1badb5e14e829f5f823a1136422dab508d5592d38975400ea7bbd",
+      "first_locator": "divine-comedy:canto:purgatorio-24:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-24:s5:row:052"
+    },
+    {
+      "unit_key": "purgatorio:canto:25",
+      "unit_kind": "canto",
+      "unit_ordinal": 59,
+      "label": "Purgatorio CANTO 25",
+      "path": "purgatorio-canto-25.json",
+      "passage_count": 47,
+      "sha256": "11cdbf7a6fba462dd1026a0cbdb616d9211d12dc90d8080c6a4a1f544dec90b7",
+      "first_locator": "divine-comedy:canto:purgatorio-25:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-25:s5:row:047"
+    },
+    {
+      "unit_key": "purgatorio:canto:26",
+      "unit_kind": "canto",
+      "unit_ordinal": 60,
+      "label": "Purgatorio CANTO 26",
+      "path": "purgatorio-canto-26.json",
+      "passage_count": 51,
+      "sha256": "23084191449e09d22707db9cd8ec1ef07fbf8308c811d0a248593e9e9c41865b",
+      "first_locator": "divine-comedy:canto:purgatorio-26:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-26:s5:row:051"
+    },
+    {
+      "unit_key": "purgatorio:canto:27",
+      "unit_kind": "canto",
+      "unit_ordinal": 61,
+      "label": "Purgatorio CANTO 27",
+      "path": "purgatorio-canto-27.json",
+      "passage_count": 48,
+      "sha256": "9c3880c0fadcd864c88742f9b2ff2090881942bdfbf43eafb1142549a13ca5e2",
+      "first_locator": "divine-comedy:canto:purgatorio-27:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-27:s5:row:048"
+    },
+    {
+      "unit_key": "purgatorio:canto:28",
+      "unit_kind": "canto",
+      "unit_ordinal": 62,
+      "label": "Purgatorio CANTO 28",
+      "path": "purgatorio-canto-28.json",
+      "passage_count": 50,
+      "sha256": "db85079840b13bafee0bd9e7d4f01dbad089024bfd3ca1727746eb5f22165053",
+      "first_locator": "divine-comedy:canto:purgatorio-28:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-28:s5:row:050"
+    },
+    {
+      "unit_key": "purgatorio:canto:29",
+      "unit_kind": "canto",
+      "unit_ordinal": 63,
+      "label": "Purgatorio CANTO 29",
+      "path": "purgatorio-canto-29.json",
+      "passage_count": 52,
+      "sha256": "1a05a87df7abcad2d8000ac0e3f0a4696e1a4fbe41cc20ed8914050056d30f85",
+      "first_locator": "divine-comedy:canto:purgatorio-29:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-29:s5:row:052"
+    },
+    {
+      "unit_key": "purgatorio:canto:30",
+      "unit_kind": "canto",
+      "unit_ordinal": 64,
+      "label": "Purgatorio CANTO 30",
+      "path": "purgatorio-canto-30.json",
+      "passage_count": 49,
+      "sha256": "81a6de19776b94de9cab1852132c31eacb7a486013a05617057dc122382a075e",
+      "first_locator": "divine-comedy:canto:purgatorio-30:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-30:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:31",
+      "unit_kind": "canto",
+      "unit_ordinal": 65,
+      "label": "Purgatorio CANTO 31",
+      "path": "purgatorio-canto-31.json",
+      "passage_count": 49,
+      "sha256": "01d19f444259a88c1aa084ac008cffbb58308b16432d8aabc3b2a3c101555226",
+      "first_locator": "divine-comedy:canto:purgatorio-31:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-31:s5:row:049"
+    },
+    {
+      "unit_key": "purgatorio:canto:32",
+      "unit_kind": "canto",
+      "unit_ordinal": 66,
+      "label": "Purgatorio CANTO 32",
+      "path": "purgatorio-canto-32.json",
+      "passage_count": 54,
+      "sha256": "902b600914d700e8e5e7b3176c08006628caebcf61df9dbdaf16f1594cf9fbbe",
+      "first_locator": "divine-comedy:canto:purgatorio-32:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-32:s5:row:054"
+    },
+    {
+      "unit_key": "purgatorio:canto:33",
+      "unit_kind": "canto",
+      "unit_ordinal": 67,
+      "label": "Purgatorio CANTO 33",
+      "path": "purgatorio-canto-33.json",
+      "passage_count": 49,
+      "sha256": "c8c1a816594a2ccc730b6f7226a303383ae46a64233169c0d1320762e14d482f",
+      "first_locator": "divine-comedy:canto:purgatorio-33:s1:row:001",
+      "last_locator": "divine-comedy:canto:purgatorio-33:s5:row:049"
+    },
+    {
+      "unit_key": "paradiso:canto:01",
+      "unit_kind": "canto",
+      "unit_ordinal": 68,
+      "label": "Paradiso CANTO 01",
+      "path": "paradiso-canto-01.json",
+      "passage_count": 48,
+      "sha256": "a4bca2adc3672b1431258d5eaaf90e451704fd2ea0bca2bccd219b64af0bc030",
+      "first_locator": "divine-comedy:canto:paradiso-01:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-01:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:02",
+      "unit_kind": "canto",
+      "unit_ordinal": 69,
+      "label": "Paradiso CANTO 02",
+      "path": "paradiso-canto-02.json",
+      "passage_count": 50,
+      "sha256": "3414e0379ab1874356e91abacbc868151b44bf665d7b05bd214b6ed4fab98b42",
+      "first_locator": "divine-comedy:canto:paradiso-02:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-02:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:03",
+      "unit_kind": "canto",
+      "unit_ordinal": 70,
+      "label": "Paradiso CANTO 03",
+      "path": "paradiso-canto-03.json",
+      "passage_count": 44,
+      "sha256": "173f91c7a1665ff5c9cece3b1d8436e5ed68d772b733741f2adb9c17f2640ea3",
+      "first_locator": "divine-comedy:canto:paradiso-03:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-03:s5:row:044"
+    },
+    {
+      "unit_key": "paradiso:canto:04",
+      "unit_kind": "canto",
+      "unit_ordinal": 71,
+      "label": "Paradiso CANTO 04",
+      "path": "paradiso-canto-04.json",
+      "passage_count": 48,
+      "sha256": "b3aab65e1caebce5d4825c2b41b733416a0f0a1d572fc57fd9429b962c978644",
+      "first_locator": "divine-comedy:canto:paradiso-04:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-04:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:05",
+      "unit_kind": "canto",
+      "unit_ordinal": 72,
+      "label": "Paradiso CANTO 05",
+      "path": "paradiso-canto-05.json",
+      "passage_count": 47,
+      "sha256": "97de557d042532bddfea3a4d2ea7b3b8440e4f02644fb35f8091ee34a1aa44a6",
+      "first_locator": "divine-comedy:canto:paradiso-05:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-05:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:06",
+      "unit_kind": "canto",
+      "unit_ordinal": 73,
+      "label": "Paradiso CANTO 06",
+      "path": "paradiso-canto-06.json",
+      "passage_count": 48,
+      "sha256": "63354d565bdac0ac98f125f308bd058f48c431b4bd9b0c5b8df780a00b045985",
+      "first_locator": "divine-comedy:canto:paradiso-06:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-06:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:07",
+      "unit_kind": "canto",
+      "unit_ordinal": 74,
+      "label": "Paradiso CANTO 07",
+      "path": "paradiso-canto-07.json",
+      "passage_count": 50,
+      "sha256": "cd8610fef0d42f95302772344081ff61a65b31892e44459aa3e1730e3eff336f",
+      "first_locator": "divine-comedy:canto:paradiso-07:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-07:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:08",
+      "unit_kind": "canto",
+      "unit_ordinal": 75,
+      "label": "Paradiso CANTO 08",
+      "path": "paradiso-canto-08.json",
+      "passage_count": 50,
+      "sha256": "31bfec5ea97b21ace238f7e0e8b55d169fcf9f7b5964ec2a3269dd201bc668e8",
+      "first_locator": "divine-comedy:canto:paradiso-08:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-08:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:09",
+      "unit_kind": "canto",
+      "unit_ordinal": 76,
+      "label": "Paradiso CANTO 09",
+      "path": "paradiso-canto-09.json",
+      "passage_count": 48,
+      "sha256": "be81666c414246da238874662e68b2ac66e6f839a5ea362f427e68c67c0e09dd",
+      "first_locator": "divine-comedy:canto:paradiso-09:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-09:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:10",
+      "unit_kind": "canto",
+      "unit_ordinal": 77,
+      "label": "Paradiso CANTO 10",
+      "path": "paradiso-canto-10.json",
+      "passage_count": 50,
+      "sha256": "76695eec3b50d5b4647669a4a323b974966c2b8255999ffcdacac8086f99bc52",
+      "first_locator": "divine-comedy:canto:paradiso-10:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-10:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:11",
+      "unit_kind": "canto",
+      "unit_ordinal": 78,
+      "label": "Paradiso CANTO 11",
+      "path": "paradiso-canto-11.json",
+      "passage_count": 47,
+      "sha256": "d9177676ca6e9e5ff5a76be0423dfc1fba9fa13394365754a09b03d3b3bf4c7e",
+      "first_locator": "divine-comedy:canto:paradiso-11:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-11:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:12",
+      "unit_kind": "canto",
+      "unit_ordinal": 79,
+      "label": "Paradiso CANTO 12",
+      "path": "paradiso-canto-12.json",
+      "passage_count": 49,
+      "sha256": "09843b935a1a7e3e036a7f021f5b7995104f1c6036be5efe1a1fc81305a28259",
+      "first_locator": "divine-comedy:canto:paradiso-12:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-12:s5:row:049"
+    },
+    {
+      "unit_key": "paradiso:canto:13",
+      "unit_kind": "canto",
+      "unit_ordinal": 80,
+      "label": "Paradiso CANTO 13",
+      "path": "paradiso-canto-13.json",
+      "passage_count": 48,
+      "sha256": "a22b52cacaac46a7e3b8c68c89ff8f08bbe8c947b0613256d8854790c72177d2",
+      "first_locator": "divine-comedy:canto:paradiso-13:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-13:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:14",
+      "unit_kind": "canto",
+      "unit_ordinal": 81,
+      "label": "Paradiso CANTO 14",
+      "path": "paradiso-canto-14.json",
+      "passage_count": 47,
+      "sha256": "c9843328581599fa688d646444fbe6e441110ad45d5ec5f8e1144e0eae27eb87",
+      "first_locator": "divine-comedy:canto:paradiso-14:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-14:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:15",
+      "unit_kind": "canto",
+      "unit_ordinal": 82,
+      "label": "Paradiso CANTO 15",
+      "path": "paradiso-canto-15.json",
+      "passage_count": 50,
+      "sha256": "0477895c9cc3039494587858a0d1c3c690732d978debf3138685f61e015d9c39",
+      "first_locator": "divine-comedy:canto:paradiso-15:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-15:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:16",
+      "unit_kind": "canto",
+      "unit_ordinal": 83,
+      "label": "Paradiso CANTO 16",
+      "path": "paradiso-canto-16.json",
+      "passage_count": 52,
+      "sha256": "e158c0951610daccb2bfe5f64807ac360dff5fc9b8f0be9c24ffa566aabb732d",
+      "first_locator": "divine-comedy:canto:paradiso-16:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-16:s5:row:052"
+    },
+    {
+      "unit_key": "paradiso:canto:17",
+      "unit_kind": "canto",
+      "unit_ordinal": 84,
+      "label": "Paradiso CANTO 17",
+      "path": "paradiso-canto-17.json",
+      "passage_count": 48,
+      "sha256": "5b9444859b220da52427d60f33485d766aaf02d8c37f0b3212a4f55545c429a7",
+      "first_locator": "divine-comedy:canto:paradiso-17:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-17:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:18",
+      "unit_kind": "canto",
+      "unit_ordinal": 85,
+      "label": "Paradiso CANTO 18",
+      "path": "paradiso-canto-18.json",
+      "passage_count": 46,
+      "sha256": "31f6bbece68da1c031f732c08a500dc0775ed42d17ab57eff1fa253bcea3fd83",
+      "first_locator": "divine-comedy:canto:paradiso-18:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-18:s5:row:046"
+    },
+    {
+      "unit_key": "paradiso:canto:19",
+      "unit_kind": "canto",
+      "unit_ordinal": 86,
+      "label": "Paradiso CANTO 19",
+      "path": "paradiso-canto-19.json",
+      "passage_count": 50,
+      "sha256": "5230c51adf1422da010355890f7ffebd4d7ea7b7917de5fa9419d4168ee26460",
+      "first_locator": "divine-comedy:canto:paradiso-19:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-19:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:20",
+      "unit_kind": "canto",
+      "unit_ordinal": 87,
+      "label": "Paradiso CANTO 20",
+      "path": "paradiso-canto-20.json",
+      "passage_count": 50,
+      "sha256": "2f8e79f2f920a2d0fe7b1db7714bafa4dec140a6c0f6cdad8f1db7784fd03335",
+      "first_locator": "divine-comedy:canto:paradiso-20:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-20:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:21",
+      "unit_kind": "canto",
+      "unit_ordinal": 88,
+      "label": "Paradiso CANTO 21",
+      "path": "paradiso-canto-21.json",
+      "passage_count": 48,
+      "sha256": "7f7d4a1c2ddebee4fda31532cd42a31bf822c69b178f453cbeba319ffecdff0e",
+      "first_locator": "divine-comedy:canto:paradiso-21:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-21:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:22",
+      "unit_kind": "canto",
+      "unit_ordinal": 89,
+      "label": "Paradiso CANTO 22",
+      "path": "paradiso-canto-22.json",
+      "passage_count": 52,
+      "sha256": "6ee18b96a0eaf317afc77a212a2b228e460ce1973f20856e94bbc76199790842",
+      "first_locator": "divine-comedy:canto:paradiso-22:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-22:s5:row:052"
+    },
+    {
+      "unit_key": "paradiso:canto:23",
+      "unit_kind": "canto",
+      "unit_ordinal": 90,
+      "label": "Paradiso CANTO 23",
+      "path": "paradiso-canto-23.json",
+      "passage_count": 47,
+      "sha256": "de7b664da3e31005e88f4e52182a2a5528fd9fbefb735b4c0a085e8eac94e871",
+      "first_locator": "divine-comedy:canto:paradiso-23:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-23:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:24",
+      "unit_kind": "canto",
+      "unit_ordinal": 91,
+      "label": "Paradiso CANTO 24",
+      "path": "paradiso-canto-24.json",
+      "passage_count": 52,
+      "sha256": "b464619f54ff39edffa5e99070ea79d4e63c6503f5edd225e0ec57ddb6533fd5",
+      "first_locator": "divine-comedy:canto:paradiso-24:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-24:s5:row:052"
+    },
+    {
+      "unit_key": "paradiso:canto:25",
+      "unit_kind": "canto",
+      "unit_ordinal": 92,
+      "label": "Paradiso CANTO 25",
+      "path": "paradiso-canto-25.json",
+      "passage_count": 47,
+      "sha256": "2124a68d11d42eee87a284f5e96773316eff21f7a0bff927e4db4a0ea0cd0b58",
+      "first_locator": "divine-comedy:canto:paradiso-25:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-25:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:26",
+      "unit_kind": "canto",
+      "unit_ordinal": 93,
+      "label": "Paradiso CANTO 26",
+      "path": "paradiso-canto-26.json",
+      "passage_count": 48,
+      "sha256": "63b2856088ad872439819d097595e2a4fc396a4ac035acd08be243bc593e5098",
+      "first_locator": "divine-comedy:canto:paradiso-26:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-26:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:27",
+      "unit_kind": "canto",
+      "unit_ordinal": 94,
+      "label": "Paradiso CANTO 27",
+      "path": "paradiso-canto-27.json",
+      "passage_count": 50,
+      "sha256": "05b009b6f8c7b6e45638c40f51d7f825bf28c8ee3f6cb6c2ce3ef0b2cbc9e1ee",
+      "first_locator": "divine-comedy:canto:paradiso-27:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-27:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:28",
+      "unit_kind": "canto",
+      "unit_ordinal": 95,
+      "label": "Paradiso CANTO 28",
+      "path": "paradiso-canto-28.json",
+      "passage_count": 47,
+      "sha256": "71dbc92edfec62c882d43a7410a12bcbc8690686ecd96d49530e1088483230bd",
+      "first_locator": "divine-comedy:canto:paradiso-28:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-28:s5:row:047"
+    },
+    {
+      "unit_key": "paradiso:canto:29",
+      "unit_kind": "canto",
+      "unit_ordinal": 96,
+      "label": "Paradiso CANTO 29",
+      "path": "paradiso-canto-29.json",
+      "passage_count": 49,
+      "sha256": "85830781e61736fdd80eab17a1d61f3cbf4d0f8a7ee184597dba43dac3f7892c",
+      "first_locator": "divine-comedy:canto:paradiso-29:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-29:s5:row:049"
+    },
+    {
+      "unit_key": "paradiso:canto:30",
+      "unit_kind": "canto",
+      "unit_ordinal": 97,
+      "label": "Paradiso CANTO 30",
+      "path": "paradiso-canto-30.json",
+      "passage_count": 50,
+      "sha256": "49b2abebaaf5a01f8bb658660a4cd2e986a296fc6333ef5a6e7a191494b0d01b",
+      "first_locator": "divine-comedy:canto:paradiso-30:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-30:s5:row:050"
+    },
+    {
+      "unit_key": "paradiso:canto:31",
+      "unit_kind": "canto",
+      "unit_ordinal": 98,
+      "label": "Paradiso CANTO 31",
+      "path": "paradiso-canto-31.json",
+      "passage_count": 48,
+      "sha256": "3d9bcf6a711b8c00b6bcafdbad6f8edba0db4da9aa824e57bfaced2086a8f7ba",
+      "first_locator": "divine-comedy:canto:paradiso-31:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-31:s5:row:048"
+    },
+    {
+      "unit_key": "paradiso:canto:32",
+      "unit_kind": "canto",
+      "unit_ordinal": 99,
+      "label": "Paradiso CANTO 32",
+      "path": "paradiso-canto-32.json",
+      "passage_count": 51,
+      "sha256": "d80b2bf8687c39a489453525b112f6739fe931579c1edcdf321832d3c975a4f3",
+      "first_locator": "divine-comedy:canto:paradiso-32:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-32:s5:row:051"
+    },
+    {
+      "unit_key": "paradiso:canto:33",
+      "unit_kind": "canto",
+      "unit_ordinal": 100,
+      "label": "Paradiso CANTO 33",
+      "path": "paradiso-canto-33.json",
+      "passage_count": 49,
+      "sha256": "21d08ad61e932441cd56c564a9db4a8c8c6c5742726d65c324287ae11596efb0",
+      "first_locator": "divine-comedy:canto:paradiso-33:s1:row:001",
+      "last_locator": "divine-comedy:canto:paradiso-33:s5:row:049"
+    }
+  ],
+  "provenance": {
+    "ingestion_manifest_file": "DIVINE_COMEDY_FULL_CORPUS_INGESTION_MANIFEST_v1.json",
+    "ingestion_manifest_sha256": "1d5a205f31e2aa121d7cea03da5a008f55efc12c86ba4d44eb796cadf41790ec",
+    "source_jsonl_file": "divine_comedy_source_passages.jsonl",
+    "source_jsonl_sha256": "c3789f439d3fdd8aae188a43d8caaffa9b50c6fc14306f391ab638f80fbdfae3",
+    "translation_jsonl_file": "divine_comedy_translations_ko.jsonl",
+    "translation_jsonl_sha256": "7cb33c03d84d7886887510a0b5c0170bce792eb2e2f69233f121a491b36e88e4",
+    "translation_source_hash_mismatches": 0,
+    "upstream_manifest": {
+      "schema": "storymemory.full_corpus_ingestion_manifest.v1",
+      "generated_at_utc": "2026-08-25T00:31:32+00:00",
+      "work_key": "divine-comedy",
+      "title": "The Divine Comedy / 신곡",
+      "author": "Dante Alighieri",
+      "canonical_english_translation": "Henry Wadsworth Longfellow (1807–1882)",
+      "external_provenance": "Project Gutenberg eBook #1004",
+      "rights_mode": "public-domain-source + StoryMemory-derived Korean translation",
+      "rights_note": "Expansion candidate. Existing Korean bilingual build is structurally complete, but the prior translation audit was distributed/representative rather than a newly claimed exhaustive 100-canto human proofread.",
+      "canonical_source": {
+        "drive_id": "1HPzS49sghiv34lZxQbyTwKjr2xbkzzo-",
+        "file": "The_Divine_Comedy_Dante_Longfellow_Translation_CANONICAL.txt",
+        "sha256": "c233a7ef9444890cb7f16071ff54d997307a3c60dcd6506cfd415bae2430eac2",
+        "bytes": 709055,
+        "original_501_drive_id": "1iXPPpUkdu2gJTXi7KBB0FPxTTE6H9pJL",
+        "original_file": "The_Divine_Comedy_Dante_Longfellow_Translation.txt",
+        "original_sha256": "c233a7ef9444890cb7f16071ff54d997307a3c60dcd6506cfd415bae2430eac2",
+        "byte_identical_to_original_501": true
+      },
+      "unit_contract": {
+        "unit_kind": "canto",
+        "order": "Inferno 1-34 → Purgatorio 1-33 → Paradiso 1-33",
+        "total_units": 100,
+        "sequence_stride": 100000
+      },
+      "qa": {
+        "canto_files": 100,
+        "expected_cantos": 100,
+        "cantica_counts": {
+          "inferno": 34,
+          "purgatorio": 33,
+          "paradiso": 33
+        },
+        "source_passages": 4812,
+        "korean_translations": 4812,
+        "empty_english": 0,
+        "empty_korean": 0,
+        "canonical_locator_collisions": 0,
+        "sequence_collisions": 0,
+        "translation_source_hash_mismatches": 0,
+        "canonical_source_canto_exact_match_count": 100,
+        "canonical_source_canto_exact_match_expected": 100,
+        "legacy_recorded_hash_match_count": 93,
+        "legacy_recorded_hash_discrepancies": [
+          {
+            "cantica": "inferno",
+            "canto_number": 33,
+            "legacy_recorded_sha256": "1ae92e86037b524664955ed5fea5f01dff44395ec1a62a5b06ee04df8962f2c3",
+            "canonical_normalized_sha256": "c9df44d9eeb179d177145d6aba8b55c11f44e81bb081e150773ebb4b5460af5b"
+          },
+          {
+            "cantica": "inferno",
+            "canto_number": 34,
+            "legacy_recorded_sha256": "f3aca85764aab36ff238d64ee7e2bc084b629675ffa611f642d4858310429b50",
+            "canonical_normalized_sha256": "a812553ef97fb8dffc65ffeebcaa606cea807032073a88bd0a417640d54e69d7"
+          },
+          {
+            "cantica": "purgatorio",
+            "canto_number": 4,
+            "legacy_recorded_sha256": "b827439e01332da72af54ea61d2bfcd94c5a2820b8bfce787441e0ed3d27533a",
+            "canonical_normalized_sha256": "8aa0ac0023318345bb80ff6218542bcda62f2acf9b45a78ed93eb024e9ec372a"
+          },
+          {
+            "cantica": "purgatorio",
+            "canto_number": 12,
+            "legacy_recorded_sha256": "dc584bcb87d7b4300a4652c0cbab953ca6a4975c33c12ba195f93d1092f3a6b1",
+            "canonical_normalized_sha256": "a9a6ae422fcdc9b24d1df24a1aa7980a760b889e1f27c2e1fdcea9ca2aa7e3b6"
+          },
+          {
+            "cantica": "purgatorio",
+            "canto_number": 13,
+            "legacy_recorded_sha256": "933c0e45c4ec7437c18003a126f952e291472d8454469060392bde77ef47cc3b",
+            "canonical_normalized_sha256": "6bbcf888e6b7803fe296c4b769f6c20eb226f358d8bed3d7522866a3b15fb086"
+          },
+          {
+            "cantica": "purgatorio",
+            "canto_number": 14,
+            "legacy_recorded_sha256": "35a5fd59f2aa893e434067702ff94b128dad602001fe2541d8a7018f0e939b8c",
+            "canonical_normalized_sha256": "9753fd47f311fbb3f3b0fbd8964c9b257b0524dcf6dcbcd57dfdf2e319429b4a"
+          },
+          {
+            "cantica": "purgatorio",
+            "canto_number": 15,
+            "legacy_recorded_sha256": "250a6930a209ef9d5f8541155df80eab9adebf4b154a6f1640386cc451b0e137",
+            "canonical_normalized_sha256": "03477410b9a31a305e68452cbdf01ebb8fa28076207af05bc73ebe7790da76a9"
+          }
+        ],
+        "raw_original_equals_canonical_snapshot": true,
+        "issues": []
+      },
+      "per_cantica": {
+        "inferno": {
+          "cantos": 34,
+          "passages": 1596,
+          "english_lines": 4720
+        },
+        "purgatorio": {
+          "cantos": 33,
+          "passages": 1608,
+          "english_lines": 4763
+        },
+        "paradiso": {
+          "cantos": 33,
+          "passages": 1608,
+          "english_lines": 4758
+        }
+      },
+      "source_jsonl": {
+        "file": "divine_comedy_source_passages.jsonl",
+        "sha256": "c3789f439d3fdd8aae188a43d8caaffa9b50c6fc14306f391ab638f80fbdfae3",
+        "rows": 4812
+      },
+      "korean_translation_jsonl": {
+        "file": "divine_comedy_translations_ko.jsonl",
+        "sha256": "7cb33c03d84d7886887510a0b5c0170bce792eb2e2f69233f121a491b36e88e4",
+        "rows": 4812,
+        "translation_policy": "storymemory-derived-ko"
+      },
+      "cantos": [
+        {
+          "cantica": "inferno",
+          "canto_number": 1,
+          "unit_ordinal": 1,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_01.html",
+          "source_file_sha256": "dc6bb2d5fbdf1010f49679b6fefba3c08802d8208065e552750d98e531421027",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "41a8dc36bb6f0d4d2f4844d7acc2811c6f118e782f491a930721db64b370781a",
+          "canonical_normalized_sha256": "41a8dc36bb6f0d4d2f4844d7acc2811c6f118e782f491a930721db64b370781a",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 2,
+          "unit_ordinal": 2,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_02.html",
+          "source_file_sha256": "5f1c6760d7311d587f249ef4b4605e6bb9b72ca2a507f62b3f77a11b32b31780",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "8ab37dff55544139c42215a92a6a29d48692bcba016e218251ce8e7ffb249352",
+          "canonical_normalized_sha256": "8ab37dff55544139c42215a92a6a29d48692bcba016e218251ce8e7ffb249352",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 3,
+          "unit_ordinal": 3,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_03.html",
+          "source_file_sha256": "0b813e6d85d46f7ec0ae62a8f2d3916c8aa62e7b589031d2cfb0be5926a5c0bb",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "809f3f8d54cbed9670b25c32eca06b52d29f5abe6b905bdb7b46929a5d721908",
+          "canonical_normalized_sha256": "809f3f8d54cbed9670b25c32eca06b52d29f5abe6b905bdb7b46929a5d721908",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 4,
+          "unit_ordinal": 4,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_04.html",
+          "source_file_sha256": "e8662b20b88344891627b15bff8780234dc0ee998ce564ee364841e4b292cd4b",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "12cc82fd8224ba76032ccd4303077b2321d0e1b0f29e8458d26ac5682a04f13c",
+          "canonical_normalized_sha256": "12cc82fd8224ba76032ccd4303077b2321d0e1b0f29e8458d26ac5682a04f13c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 5,
+          "unit_ordinal": 5,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_05.html",
+          "source_file_sha256": "9dfabccf0835dbbb2743a35a521865795cf699093c8ed5611ef627eb5d5034c7",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "c459e79353f13534272a112600b4bcd9277c76b3ab91c0c9dc171a198058cb11",
+          "canonical_normalized_sha256": "c459e79353f13534272a112600b4bcd9277c76b3ab91c0c9dc171a198058cb11",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 6,
+          "unit_ordinal": 6,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_06.html",
+          "source_file_sha256": "812fd9b3a2e213615c0afc9b868e66c48f31cb1d8bffd9480ccb030d442f38b1",
+          "passages": 39,
+          "english_lines": 115,
+          "legacy_recorded_source_normalized_sha256": "670dac7943672bfffa619dedd5eb4981e27a5849bf5c252ac214556b388d642e",
+          "canonical_normalized_sha256": "670dac7943672bfffa619dedd5eb4981e27a5849bf5c252ac214556b388d642e",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 7,
+          "unit_ordinal": 7,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_07.html",
+          "source_file_sha256": "b9fc530cf40020238b79fc931ff986da0592be2bbaba991b46f330de8ff0512b",
+          "passages": 44,
+          "english_lines": 130,
+          "legacy_recorded_source_normalized_sha256": "e6b6cb6bd5c01be32e5b77448feee064b4f54baf29dcf3aa9fe9b8d75fe11e45",
+          "canonical_normalized_sha256": "e6b6cb6bd5c01be32e5b77448feee064b4f54baf29dcf3aa9fe9b8d75fe11e45",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 8,
+          "unit_ordinal": 8,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_08.html",
+          "source_file_sha256": "4d03a8495b7b99b35231dc914ae6dec883cfac9dc0e4652196b08fca3c2ebf5b",
+          "passages": 44,
+          "english_lines": 130,
+          "legacy_recorded_source_normalized_sha256": "f441510847e40af0182eea436dbb3ccf4b13d7c06dda12c071a6ef0c3c1566ed",
+          "canonical_normalized_sha256": "f441510847e40af0182eea436dbb3ccf4b13d7c06dda12c071a6ef0c3c1566ed",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 9,
+          "unit_ordinal": 9,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_09.html",
+          "source_file_sha256": "1695371398e78ae8f295b9b67a9bbd917c659da2277058465684d1d3d70dfa5b",
+          "passages": 45,
+          "english_lines": 133,
+          "legacy_recorded_source_normalized_sha256": "918dacf8d5a5477792d9e4e079b4cf980b5239479e356758cff0c0d71f85b3c4",
+          "canonical_normalized_sha256": "918dacf8d5a5477792d9e4e079b4cf980b5239479e356758cff0c0d71f85b3c4",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 10,
+          "unit_ordinal": 10,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_10.html",
+          "source_file_sha256": "d534bddf4654df1b56c0afc8bdc777c0368d03c8f0b4f0df70c06807a9fe9f8f",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "631bb93c54edd37a52129190a87561e7a9f2a12b5e38199dbaa2110acf8a6566",
+          "canonical_normalized_sha256": "631bb93c54edd37a52129190a87561e7a9f2a12b5e38199dbaa2110acf8a6566",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 11,
+          "unit_ordinal": 11,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_11.html",
+          "source_file_sha256": "0e77b5ea08f7395e877f5e3a7ade0386ad0ee2ad1c9d19690acc3853422b60bb",
+          "passages": 39,
+          "english_lines": 115,
+          "legacy_recorded_source_normalized_sha256": "4b38640689b3eddf747458678a73d623039d80af379b3cae6a74b42a6c69a88d",
+          "canonical_normalized_sha256": "4b38640689b3eddf747458678a73d623039d80af379b3cae6a74b42a6c69a88d",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 12,
+          "unit_ordinal": 12,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_12.html",
+          "source_file_sha256": "bd1907ea293a4ce058911adbab6d2a49ce7a4605b83b78de1d0a0587e002e9d0",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "644894c9c5215f9f2c5ed1742b40db6c4ac420d6de7f3f089a63eaa63dbc963d",
+          "canonical_normalized_sha256": "644894c9c5215f9f2c5ed1742b40db6c4ac420d6de7f3f089a63eaa63dbc963d",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 13,
+          "unit_ordinal": 13,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_13.html",
+          "source_file_sha256": "22d6184d8cf14a371922003f324fd7bf527e330ebfb85f30255e7468641bd708",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "50f7176026f5da580ce8eb4b10417c6d6af44a17465e7a91c89b01ed3a1b558c",
+          "canonical_normalized_sha256": "50f7176026f5da580ce8eb4b10417c6d6af44a17465e7a91c89b01ed3a1b558c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 14,
+          "unit_ordinal": 14,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_14.html",
+          "source_file_sha256": "e90c09d73fbb0669dd3f5e59f09f592f1c6a28a593719ae09b0b170b0fec07ea",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "2ccc2e743fe209544c8b5e5fb1d755dfcd49549e1766dcfc424bf94e46c6190c",
+          "canonical_normalized_sha256": "2ccc2e743fe209544c8b5e5fb1d755dfcd49549e1766dcfc424bf94e46c6190c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 15,
+          "unit_ordinal": 15,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_15.html",
+          "source_file_sha256": "cd1ae5270ba665a941a5fc035be8de445e60f9b5993c20f5a181f17be66b2286",
+          "passages": 42,
+          "english_lines": 124,
+          "legacy_recorded_source_normalized_sha256": "0a203d457a548fe40b99c9eae2d4ca793c97c4cc8f0f72bcc7321269991558c9",
+          "canonical_normalized_sha256": "0a203d457a548fe40b99c9eae2d4ca793c97c4cc8f0f72bcc7321269991558c9",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 16,
+          "unit_ordinal": 16,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_16.html",
+          "source_file_sha256": "c4951af8c118a90658472fdb7d38a4c27214a262af55d5a93ab124ac32c4e0e3",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "39a2db355bdf4b35d646a9840af3ca6560485dc8d4eb83f72f47694a8da9bea3",
+          "canonical_normalized_sha256": "39a2db355bdf4b35d646a9840af3ca6560485dc8d4eb83f72f47694a8da9bea3",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 17,
+          "unit_ordinal": 17,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_17.html",
+          "source_file_sha256": "f673ed15427f9d2a8b663289e1fef161afd39f26feec682acca57062ae16c09f",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "70a680470d8e38dae8a8a21b2429c08fc3cd17fad5cde1aa43243ef4d9bb0e95",
+          "canonical_normalized_sha256": "70a680470d8e38dae8a8a21b2429c08fc3cd17fad5cde1aa43243ef4d9bb0e95",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 18,
+          "unit_ordinal": 18,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_18.html",
+          "source_file_sha256": "2d48a11930f1ad019f3695230171a2e341f0df0f4bfef368bae2f88903eb7909",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "34559a7311b6ca5952f24a33b85f2cbb67f9651a7272fe5f9aaf97b4e5fea55e",
+          "canonical_normalized_sha256": "34559a7311b6ca5952f24a33b85f2cbb67f9651a7272fe5f9aaf97b4e5fea55e",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 19,
+          "unit_ordinal": 19,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_19.html",
+          "source_file_sha256": "2d2851412fa1f5abe5b03a471270b52c34bc91bbb4bdcfba360b4f613d7648f7",
+          "passages": 45,
+          "english_lines": 133,
+          "legacy_recorded_source_normalized_sha256": "e460058798b50e64cd144fb99cf9a6fee76db6991f4fd80a031ead817c6ce481",
+          "canonical_normalized_sha256": "e460058798b50e64cd144fb99cf9a6fee76db6991f4fd80a031ead817c6ce481",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 20,
+          "unit_ordinal": 20,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_20.html",
+          "source_file_sha256": "8cd64cf6c01134d09369c048c8a5f1ff4c7c85e3be5c73a133c67854b49f75cb",
+          "passages": 44,
+          "english_lines": 130,
+          "legacy_recorded_source_normalized_sha256": "304296a94b8ee722060a9d66afc5163f5924d6805b0360a06145e536bad18fae",
+          "canonical_normalized_sha256": "304296a94b8ee722060a9d66afc5163f5924d6805b0360a06145e536bad18fae",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 21,
+          "unit_ordinal": 21,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_21.html",
+          "source_file_sha256": "d6f76abb5bd08faa991327edf8106a502309be7c6acf1a59997b0c93f5e8d46a",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "c9e4815fe5a9896caac5e1144b32ad720737db62e52f890214f0c2f06c85f716",
+          "canonical_normalized_sha256": "c9e4815fe5a9896caac5e1144b32ad720737db62e52f890214f0c2f06c85f716",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 22,
+          "unit_ordinal": 22,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_22.html",
+          "source_file_sha256": "c19d2630f05ad8f1f8b6f19c6b2a49cc341137b73a8b5348810bc1adaf94a0f0",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "d47abd0cefefcd931b9f70a9d854de9d3b2b4ce2bd367b29a21f663c31e444e4",
+          "canonical_normalized_sha256": "d47abd0cefefcd931b9f70a9d854de9d3b2b4ce2bd367b29a21f663c31e444e4",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 23,
+          "unit_ordinal": 23,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_23.html",
+          "source_file_sha256": "7f209b35a54ed5c6779b2d36076e5b9657874dfc32dc3890c8213360b1db3c75",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "02914d8fc9b8b04780c15de0dbf421b33ef482e113c4b76d8644293118c202df",
+          "canonical_normalized_sha256": "02914d8fc9b8b04780c15de0dbf421b33ef482e113c4b76d8644293118c202df",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 24,
+          "unit_ordinal": 24,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_24.html",
+          "source_file_sha256": "9b4a4fb4f02783f5a383f48e53f62920404cc3df78fbfabb0562efab4021084f",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "418736178892167e0cb5f289fbb1b506d2f439e46c18f3acbffbc73db3b4257b",
+          "canonical_normalized_sha256": "418736178892167e0cb5f289fbb1b506d2f439e46c18f3acbffbc73db3b4257b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 25,
+          "unit_ordinal": 25,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_25.html",
+          "source_file_sha256": "0405fcc5fd366309aff3513c74b1c2df97d6bec01b20ed90ab6a0970ddf77b77",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "82fbde2d34705b03649258e3c8ac96133710df8bfb5e44d5b605113bb9a8e8d8",
+          "canonical_normalized_sha256": "82fbde2d34705b03649258e3c8ac96133710df8bfb5e44d5b605113bb9a8e8d8",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 26,
+          "unit_ordinal": 26,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_26.html",
+          "source_file_sha256": "908f9dde5b725bd05a43725a192dfbc2cf545e134c7e669e5f6aafdef36955f0",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "60c574c9d5353faff06c1b4a4c2d6493004910b614d33f5e9efd4007a9955887",
+          "canonical_normalized_sha256": "60c574c9d5353faff06c1b4a4c2d6493004910b614d33f5e9efd4007a9955887",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 27,
+          "unit_ordinal": 27,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_27.html",
+          "source_file_sha256": "cd576c0f68f365f4c653adf8628e437efbf95911c7909dea9b0c9a8d2e3a7127",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "a4f72d1505fea048eefcc54567284c855c3f0a52ce2750d3503cd3389facd398",
+          "canonical_normalized_sha256": "a4f72d1505fea048eefcc54567284c855c3f0a52ce2750d3503cd3389facd398",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 28,
+          "unit_ordinal": 28,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_28.html",
+          "source_file_sha256": "7ff3ac9bd3cf460eb82dac6a733281e7d3127fe9fb87cfa55b5bee77bce2e836",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "53aec48eb14e7ae154bd7efc75652ea0e823657ea735957f32a850a37fb16865",
+          "canonical_normalized_sha256": "53aec48eb14e7ae154bd7efc75652ea0e823657ea735957f32a850a37fb16865",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 29,
+          "unit_ordinal": 29,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_29.html",
+          "source_file_sha256": "3933455dae817c6fcb473827776a97d806030ebe6b50e50a1426641a09f0ebac",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "2ec3df7b3be76291ac2798cf5593dcc7b7a4794c444219a56b2b7dc41940e042",
+          "canonical_normalized_sha256": "2ec3df7b3be76291ac2798cf5593dcc7b7a4794c444219a56b2b7dc41940e042",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 30,
+          "unit_ordinal": 30,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_30.html",
+          "source_file_sha256": "2a0857100aaedae39a586841e7448b942a5748651685fcbb97e6d25281e8bd0c",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "d0728c60490227e3aab619b7ff690178df45126fec8fbedc9bedde78536565b9",
+          "canonical_normalized_sha256": "d0728c60490227e3aab619b7ff690178df45126fec8fbedc9bedde78536565b9",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 31,
+          "unit_ordinal": 31,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_31.html",
+          "source_file_sha256": "18d4bed4a39abfb48195e78a2e150a0cc02492ddd67dcef5c0ed22a928408ab1",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "d717671c3f3ed4f0205fb8f527d12c4f9e1a93435f7fab622c55b2eab20fb007",
+          "canonical_normalized_sha256": "d717671c3f3ed4f0205fb8f527d12c4f9e1a93435f7fab622c55b2eab20fb007",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 32,
+          "unit_ordinal": 32,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_32.html",
+          "source_file_sha256": "30d742472769087f9114ddcf2ab26cf22963407e934e7308799ea4d443a3cfd2",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "39dbab78d522d560d6b2e0cf66add5da1e1b43915573e4dc7ab01fae44acb1c1",
+          "canonical_normalized_sha256": "39dbab78d522d560d6b2e0cf66add5da1e1b43915573e4dc7ab01fae44acb1c1",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 33,
+          "unit_ordinal": 33,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_33.html",
+          "source_file_sha256": "817b8cd7f462b9391c82c4f492c37ccd54171b9add00ebac8f5fa9b81ceb5201",
+          "passages": 53,
+          "english_lines": 157,
+          "legacy_recorded_source_normalized_sha256": "1ae92e86037b524664955ed5fea5f01dff44395ec1a62a5b06ee04df8962f2c3",
+          "canonical_normalized_sha256": "c9df44d9eeb179d177145d6aba8b55c11f44e81bb081e150773ebb4b5460af5b",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "inferno",
+          "canto_number": 34,
+          "unit_ordinal": 34,
+          "source_file": "DIVINE_COMEDY_INFERNO_CANTO_34.html",
+          "source_file_sha256": "a26c55919499ec76309427bbb4373d508ef0c704080902f53a0acdd8b97d729a",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "f3aca85764aab36ff238d64ee7e2bc084b629675ffa611f642d4858310429b50",
+          "canonical_normalized_sha256": "a812553ef97fb8dffc65ffeebcaa606cea807032073a88bd0a417640d54e69d7",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 1,
+          "unit_ordinal": 35,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_01.html",
+          "source_file_sha256": "2ec6f41bf4c263ae9f570eedd1654f45b11a3460305c874d9df919f1048af529",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "9645686f176c444eafc8cb885efce9c7e4b6b1990aec0523653e6b7be387048b",
+          "canonical_normalized_sha256": "9645686f176c444eafc8cb885efce9c7e4b6b1990aec0523653e6b7be387048b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 2,
+          "unit_ordinal": 36,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_02.html",
+          "source_file_sha256": "d9859472c65d109f86c5358e966abeebfabd0ac3d534b7f59d697c152dd8c23d",
+          "passages": 45,
+          "english_lines": 133,
+          "legacy_recorded_source_normalized_sha256": "4658f4df7d2527f73ac1a5a4bec991629a5ec75771accf55a754ebc8ef27a135",
+          "canonical_normalized_sha256": "4658f4df7d2527f73ac1a5a4bec991629a5ec75771accf55a754ebc8ef27a135",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 3,
+          "unit_ordinal": 37,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_03.html",
+          "source_file_sha256": "f9c8898f9286b1d98c4da7c0b418307857973f785a2b95342d704e376cd04047",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "813420e23b042e2a235b118ed172884d4f7233acfa1dc24878ab9baf5e3cba90",
+          "canonical_normalized_sha256": "813420e23b042e2a235b118ed172884d4f7233acfa1dc24878ab9baf5e3cba90",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 4,
+          "unit_ordinal": 38,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_04.html",
+          "source_file_sha256": "7040cd68227fbee69a134d0a2d09d9ee9743a53a06e5fbbc5ea23dbd56ad7254",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "b827439e01332da72af54ea61d2bfcd94c5a2820b8bfce787441e0ed3d27533a",
+          "canonical_normalized_sha256": "8aa0ac0023318345bb80ff6218542bcda62f2acf9b45a78ed93eb024e9ec372a",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 5,
+          "unit_ordinal": 39,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_05.html",
+          "source_file_sha256": "4981bb116a1ea6d54dca1239c341de9b72e004d2f82b1933e83e93835ab6dc55",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "31f3d7950c4945b4641044c64c7b51b056a0af6589c0b566c3ee5701cfe644e8",
+          "canonical_normalized_sha256": "31f3d7950c4945b4641044c64c7b51b056a0af6589c0b566c3ee5701cfe644e8",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 6,
+          "unit_ordinal": 40,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_06.html",
+          "source_file_sha256": "0093bd8fdd0ddfbe6e208257f3f47af982d0593a319ab753d4354e6745c09ac7",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "0812e194169460f8dc76c8fea5e0d76be425fcd72291953bdd03202f5d58f9fb",
+          "canonical_normalized_sha256": "0812e194169460f8dc76c8fea5e0d76be425fcd72291953bdd03202f5d58f9fb",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 7,
+          "unit_ordinal": 41,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_07.html",
+          "source_file_sha256": "a467c74a04adca05c53f8d0c3845ac119486edbbb07fc326b865af8fedde631a",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "7781f2f7cff17aaf059b80e1678ced01a79927f3e01025fc1d396598fc3ca53c",
+          "canonical_normalized_sha256": "7781f2f7cff17aaf059b80e1678ced01a79927f3e01025fc1d396598fc3ca53c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 8,
+          "unit_ordinal": 42,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_08.html",
+          "source_file_sha256": "bc8b683241ba7d97f8b580c2dae5233b9a950fca05d5bf2977f7ade70ee90db8",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "836942352478867082b67e95b68051b1e6db2986288530e695f3b25a50a42814",
+          "canonical_normalized_sha256": "836942352478867082b67e95b68051b1e6db2986288530e695f3b25a50a42814",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 9,
+          "unit_ordinal": 43,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_09.html",
+          "source_file_sha256": "b65e708d53d77179d1373dbace32a77701f75fd556ea08d57cc9c70358142a07",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "819fc3420db0c7622cafd2a46f95b200d65fd54379dbe721582f1fb31ff5ca99",
+          "canonical_normalized_sha256": "819fc3420db0c7622cafd2a46f95b200d65fd54379dbe721582f1fb31ff5ca99",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 10,
+          "unit_ordinal": 44,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_10.html",
+          "source_file_sha256": "c2f153fb06545fa0a898301f024c49c6c68488eed1210976d278f329bc69f471",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "7fef5bf9f2afb9d1b824d9d5f41c3f2ed401392b103cc1364830803504912ec8",
+          "canonical_normalized_sha256": "7fef5bf9f2afb9d1b824d9d5f41c3f2ed401392b103cc1364830803504912ec8",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 11,
+          "unit_ordinal": 45,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_11.html",
+          "source_file_sha256": "5e8a2a6f38c699c7749f8d22035c3f671b8f89404d43746d004dbbb912288140",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "8c10a24d2676bb2fe106cef590f8e0fccaf2eb03a7721f5c6f54c15eacaefc3b",
+          "canonical_normalized_sha256": "8c10a24d2676bb2fe106cef590f8e0fccaf2eb03a7721f5c6f54c15eacaefc3b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 12,
+          "unit_ordinal": 46,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_12.html",
+          "source_file_sha256": "c939a48d9d481bee59d3152ccb547c79258b453a304261784f7e086d16c7ee06",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "dc584bcb87d7b4300a4652c0cbab953ca6a4975c33c12ba195f93d1092f3a6b1",
+          "canonical_normalized_sha256": "a9a6ae422fcdc9b24d1df24a1aa7980a760b889e1f27c2e1fdcea9ca2aa7e3b6",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 13,
+          "unit_ordinal": 47,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_13.html",
+          "source_file_sha256": "4b0cb8994ba2ebbc4ceea8446841b5203dd3da0ecbbb522be9a51ad9019408cb",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "933c0e45c4ec7437c18003a126f952e291472d8454469060392bde77ef47cc3b",
+          "canonical_normalized_sha256": "6bbcf888e6b7803fe296c4b769f6c20eb226f358d8bed3d7522866a3b15fb086",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 14,
+          "unit_ordinal": 48,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_14.html",
+          "source_file_sha256": "1197775217ce9d2df82e7d8f3206f4fa1c47fcb0c75358360ed25bbc297f926d",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "35a5fd59f2aa893e434067702ff94b128dad602001fe2541d8a7018f0e939b8c",
+          "canonical_normalized_sha256": "9753fd47f311fbb3f3b0fbd8964c9b257b0524dcf6dcbcd57dfdf2e319429b4a",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 15,
+          "unit_ordinal": 49,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_15.html",
+          "source_file_sha256": "bc8c901d5b83c2f8bcbe0d083661a318433a8aa7175cf3d88ba8de3d6d8ed6d1",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "250a6930a209ef9d5f8541155df80eab9adebf4b154a6f1640386cc451b0e137",
+          "canonical_normalized_sha256": "03477410b9a31a305e68452cbdf01ebb8fa28076207af05bc73ebe7790da76a9",
+          "legacy_recorded_hash_matches_canonical": false,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 16,
+          "unit_ordinal": 50,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_16.html",
+          "source_file_sha256": "5e687d7c3fbec3f7106251a3831be3649499d6c34eb93b6ee6d90e20d1672c1c",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "58016b506053d0269444879a6998dc28410b3bd53924015cb2d4ce241a1662d4",
+          "canonical_normalized_sha256": "58016b506053d0269444879a6998dc28410b3bd53924015cb2d4ce241a1662d4",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 17,
+          "unit_ordinal": 51,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_17.html",
+          "source_file_sha256": "d61ef8eb421d6a081f89c607b5a28d0afa0233d26a5a4e3f14c27cc8cad8b4de",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "12f4c6d76ddea2a5ffd281e8b4d9df3561e57870f15c9b0ed9b3f166042edd82",
+          "canonical_normalized_sha256": "12f4c6d76ddea2a5ffd281e8b4d9df3561e57870f15c9b0ed9b3f166042edd82",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 18,
+          "unit_ordinal": 52,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_18.html",
+          "source_file_sha256": "c590d7ffaeef55ee207bea925049ab14bc83cfbc02f7f31e8c6a17649f07bbd9",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "3f613b2f241b3c9052fd6c9a627135c5cf151dffd5b0b06781f9bc62c3c037cd",
+          "canonical_normalized_sha256": "3f613b2f241b3c9052fd6c9a627135c5cf151dffd5b0b06781f9bc62c3c037cd",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 19,
+          "unit_ordinal": 53,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_19.html",
+          "source_file_sha256": "947ca1f6f0ec1c836a36e44188c514fc3ce5f8dad71c8e5211d1bbf16a00b4cc",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "3e2d8184a90d79631a8e83137c1fc46d41bcf7782663be8a35cff352874ddc69",
+          "canonical_normalized_sha256": "3e2d8184a90d79631a8e83137c1fc46d41bcf7782663be8a35cff352874ddc69",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 20,
+          "unit_ordinal": 54,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_20.html",
+          "source_file_sha256": "1bd86c99ee8d7420277760e3b37c73ab8c841817b36d284c3736b04c83fa6c28",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "a09166305796a0ffa8d34af64990383150c9764f278a14f4c0e8f7bd0cb7a69a",
+          "canonical_normalized_sha256": "a09166305796a0ffa8d34af64990383150c9764f278a14f4c0e8f7bd0cb7a69a",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 21,
+          "unit_ordinal": 55,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_21.html",
+          "source_file_sha256": "25ceaea593202363fdfa4f8bec4761fb786d3b9c883c0966d525cc64641d8b2a",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "84e7909b0d34deb5692272ec81b41f22f0caa9fc95e127501e7924ddb3e417e4",
+          "canonical_normalized_sha256": "84e7909b0d34deb5692272ec81b41f22f0caa9fc95e127501e7924ddb3e417e4",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 22,
+          "unit_ordinal": 56,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_22.html",
+          "source_file_sha256": "771cd79680ad9de1be574a317084eb9ebbccfa1f1f2506246d33d7c035d4f1c6",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "5fe977c55f46f3143dc505cbb8ae230fe83f05a0050cde9bfeb69ad6f436e892",
+          "canonical_normalized_sha256": "5fe977c55f46f3143dc505cbb8ae230fe83f05a0050cde9bfeb69ad6f436e892",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 23,
+          "unit_ordinal": 57,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_23.html",
+          "source_file_sha256": "eb32c5947b72261c9ccef499d2e6bd6091865a438ae815e163dddf2999d998dc",
+          "passages": 45,
+          "english_lines": 133,
+          "legacy_recorded_source_normalized_sha256": "ad4b6d076814290c010030b90b61339ebda1a4980f8b96df9496e1db7a8b86a9",
+          "canonical_normalized_sha256": "ad4b6d076814290c010030b90b61339ebda1a4980f8b96df9496e1db7a8b86a9",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 24,
+          "unit_ordinal": 58,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_24.html",
+          "source_file_sha256": "e7632b9270f233c171399fc0327f375ca540ba9d83a2c8d8a5c2664c78489f3d",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "3a8e5f5a3c8c27311a924add963a5baf88f044bbbd437bda522f322336df6b92",
+          "canonical_normalized_sha256": "3a8e5f5a3c8c27311a924add963a5baf88f044bbbd437bda522f322336df6b92",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 25,
+          "unit_ordinal": 59,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_25.html",
+          "source_file_sha256": "ed13e563492c7aad2da8b2f5cf8c3afe35fdd1e09d29ce38a5648f4a1a62b80d",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "10f95f5a3a4ce3aac865cd1e1125fb5acb61736649c58ef420b9effee9d021a5",
+          "canonical_normalized_sha256": "10f95f5a3a4ce3aac865cd1e1125fb5acb61736649c58ef420b9effee9d021a5",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 26,
+          "unit_ordinal": 60,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_26.html",
+          "source_file_sha256": "b087353d766a771d6a4f63f209982a81298291b5ef58cfcb78d0dcb0c544d103",
+          "passages": 51,
+          "english_lines": 156,
+          "legacy_recorded_source_normalized_sha256": "d1eb18b8f65d734f4c71389fa3a630d230bdd66119060a49556f039a829f7866",
+          "canonical_normalized_sha256": "d1eb18b8f65d734f4c71389fa3a630d230bdd66119060a49556f039a829f7866",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 27,
+          "unit_ordinal": 61,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_27.html",
+          "source_file_sha256": "200e1783621dce1e3c7963260f80733d64f5a9fbb01a0aeadefecf305a4fed81",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "d903989c814f52ad01b718028cae268ec6a8d25516ba9e536190abfa293017af",
+          "canonical_normalized_sha256": "d903989c814f52ad01b718028cae268ec6a8d25516ba9e536190abfa293017af",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 28,
+          "unit_ordinal": 62,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_28.html",
+          "source_file_sha256": "01dc235992511bf4b0fb484c04361e81aea368b416315594ab79e39a5ab60e12",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "43a50cfb3960a8c9c252047e35e82fa477f178eeddb1e83b1b214f29c0c92cac",
+          "canonical_normalized_sha256": "43a50cfb3960a8c9c252047e35e82fa477f178eeddb1e83b1b214f29c0c92cac",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 29,
+          "unit_ordinal": 63,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_29.html",
+          "source_file_sha256": "84696caa58b25ed0a247d7a49cd401bb2f3151582ed4388ede0546dda3c5bbcb",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "74d395478a0aadfabdf80a8ea464938d6f0b15420358c470c661343e7e10ea9e",
+          "canonical_normalized_sha256": "74d395478a0aadfabdf80a8ea464938d6f0b15420358c470c661343e7e10ea9e",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 30,
+          "unit_ordinal": 64,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_30.html",
+          "source_file_sha256": "348363acf8ccd1de0f94ef29afbf8dc730dd82342f45af6e5c69ca34dbfb181f",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "9c23aeb25d8d3c913c22fe3e4b81890e6722c76960b11aa3518abf74c12bcf67",
+          "canonical_normalized_sha256": "9c23aeb25d8d3c913c22fe3e4b81890e6722c76960b11aa3518abf74c12bcf67",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 31,
+          "unit_ordinal": 65,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_31.html",
+          "source_file_sha256": "eabc1f8b9c0ad6e17555cf58c37bbf8e0c1d9f828729667bb275916f6be916b9",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "e414028f6b68181e942a117f0a79a2fdbb7596be8f3981cba749aecfd9d55f10",
+          "canonical_normalized_sha256": "e414028f6b68181e942a117f0a79a2fdbb7596be8f3981cba749aecfd9d55f10",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 32,
+          "unit_ordinal": 66,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_32.html",
+          "source_file_sha256": "83412de34da491cde59adffe0b985521d8667e818d54553036022b056d507f94",
+          "passages": 54,
+          "english_lines": 160,
+          "legacy_recorded_source_normalized_sha256": "e255737210ed117879d5d90a3920f95776f5c217414d2619b417824d0073b6ea",
+          "canonical_normalized_sha256": "e255737210ed117879d5d90a3920f95776f5c217414d2619b417824d0073b6ea",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "purgatorio",
+          "canto_number": 33,
+          "unit_ordinal": 67,
+          "source_file": "DIVINE_COMEDY_PURGATORIO_CANTO_33.html",
+          "source_file_sha256": "3194765f23bb9f05b3d04f649529e55b8e13e2fab2c6dc4c1562b839682d366c",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "f38b5dc5d9db49f49ff8cb9988c9396f1655de53006aa44b22ed653a961da475",
+          "canonical_normalized_sha256": "f38b5dc5d9db49f49ff8cb9988c9396f1655de53006aa44b22ed653a961da475",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 1,
+          "unit_ordinal": 68,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_01.html",
+          "source_file_sha256": "119f9dd7b092bab3bde05f9dc56f15c4361f48ce6a6a6e35d78ccbfabb1ed4ba",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "e84ae23b85c1264bbd78222e6966cadb0e73a1af1653a6b11d1c649d50e85660",
+          "canonical_normalized_sha256": "e84ae23b85c1264bbd78222e6966cadb0e73a1af1653a6b11d1c649d50e85660",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 2,
+          "unit_ordinal": 69,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_02.html",
+          "source_file_sha256": "f5c65dd8c5371d8b6576194bc62988d5d7d9156bdf56a70d7ceec83f3a89cc2a",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "ec321c53ddf6b78624a7c3941872dc88eb279bac83067dcf6a90f4a635931119",
+          "canonical_normalized_sha256": "ec321c53ddf6b78624a7c3941872dc88eb279bac83067dcf6a90f4a635931119",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 3,
+          "unit_ordinal": 70,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_03.html",
+          "source_file_sha256": "13e94d1a862ca87c2100cca9b1bf45c8a045575970a2c051b782f1c4e38bcf2d",
+          "passages": 44,
+          "english_lines": 130,
+          "legacy_recorded_source_normalized_sha256": "9e71752fdcd382297cf0d47b0b53ff4256cb333d0dac911ed5f82452b4df952b",
+          "canonical_normalized_sha256": "9e71752fdcd382297cf0d47b0b53ff4256cb333d0dac911ed5f82452b4df952b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 4,
+          "unit_ordinal": 71,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_04.html",
+          "source_file_sha256": "f761f948670db781011d5e87a9aab2c29ae67caae70b6502b250f759c5dd5e60",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "3242c68a7774374007047672fcdc9279ce04f118419c13b17fdbe64168ed9f9c",
+          "canonical_normalized_sha256": "3242c68a7774374007047672fcdc9279ce04f118419c13b17fdbe64168ed9f9c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 5,
+          "unit_ordinal": 72,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_05.html",
+          "source_file_sha256": "58ef798358bbd7f8d9a299baeb1118da9bfc2e57fdf76f9b5e69908b33744b73",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "ac98e57d0e80fd343fa1a272e5d450d1a9afd1c188daf06fb98cb55056212b60",
+          "canonical_normalized_sha256": "ac98e57d0e80fd343fa1a272e5d450d1a9afd1c188daf06fb98cb55056212b60",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 6,
+          "unit_ordinal": 73,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_06.html",
+          "source_file_sha256": "1f3922dccec59f9f7c6b40b484e5e6154fead8ca26fc19e043e24ed3c153c559",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "d81d92e104c84776c6b3645a34c9a07f717e237a0e52cfaffd28e7d5ff7a3c62",
+          "canonical_normalized_sha256": "d81d92e104c84776c6b3645a34c9a07f717e237a0e52cfaffd28e7d5ff7a3c62",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 7,
+          "unit_ordinal": 74,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_07.html",
+          "source_file_sha256": "0cb61fb198787e042a80da901117dd2037c9f3f3e8a73673d2133ed0e03a8571",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "3240c64274214f1bc5b00b459bb12c4769af13429b5e7e4966e14c12ec262d5e",
+          "canonical_normalized_sha256": "3240c64274214f1bc5b00b459bb12c4769af13429b5e7e4966e14c12ec262d5e",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 8,
+          "unit_ordinal": 75,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_08.html",
+          "source_file_sha256": "a5cffc8869e97520af5ca86b8eedb906b8a2f8ff7f42e18d11f0914ffcae3e5d",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "a1a4a5f614e5d46b9f6a6bbca0fcd601cb6cc66e18e6287f37b44a988dece8ad",
+          "canonical_normalized_sha256": "a1a4a5f614e5d46b9f6a6bbca0fcd601cb6cc66e18e6287f37b44a988dece8ad",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 9,
+          "unit_ordinal": 76,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_09.html",
+          "source_file_sha256": "e85ba37fb5feff7cf3f087f32527da4f4270b96ed8b64a3f08d7dcbfdd3b941b",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "a4ce876825c21b95569400a49352ac7beb20d99c02e9c8241ebc7d30f68e7263",
+          "canonical_normalized_sha256": "a4ce876825c21b95569400a49352ac7beb20d99c02e9c8241ebc7d30f68e7263",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 10,
+          "unit_ordinal": 77,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_10.html",
+          "source_file_sha256": "73c1b70ee900401ee8535d79502d873e9f84313ee3257f0b712a8c495fc46a06",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "a18b245f6118580c9384ff1f08da3967249a7f3cfbff09cde20726a57f655212",
+          "canonical_normalized_sha256": "a18b245f6118580c9384ff1f08da3967249a7f3cfbff09cde20726a57f655212",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 11,
+          "unit_ordinal": 78,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_11.html",
+          "source_file_sha256": "ed8a62141d5b9a947d2d1dc16ba77bc336c36b9fd5938ee24cf0771e2852aa94",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "9c8ed7e656058429e3b934e43934d0779cb8ac9e68ee6bf4d89cf1af2fb4c266",
+          "canonical_normalized_sha256": "9c8ed7e656058429e3b934e43934d0779cb8ac9e68ee6bf4d89cf1af2fb4c266",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 12,
+          "unit_ordinal": 79,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_12.html",
+          "source_file_sha256": "79ef5d8bc54ae996f5c1edd96f7911b5b70a3bf033d22a5c3ace07e72ad33b6b",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "c182074d4c78bbdeb5926a971050bac6d932853c0f1e55809a0f7a74211b1cab",
+          "canonical_normalized_sha256": "c182074d4c78bbdeb5926a971050bac6d932853c0f1e55809a0f7a74211b1cab",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 13,
+          "unit_ordinal": 80,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_13.html",
+          "source_file_sha256": "243d0f494d2825270ab2d1341903219f263952f15401e99fa168537bafef9a56",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "ea26fd0b9a86e69814b23a9fb0772d79a47bfb467304429b3a33a7379a29fbca",
+          "canonical_normalized_sha256": "ea26fd0b9a86e69814b23a9fb0772d79a47bfb467304429b3a33a7379a29fbca",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 14,
+          "unit_ordinal": 81,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_14.html",
+          "source_file_sha256": "60e38b9abce0abb9732b50b6dc031f01b9bff27d0db71035ac9f4e28f1d545cc",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "2b80a25683fffe192655c3ed995602fd6aeeae5d442d3e3f0e98a05c0e4c7d1d",
+          "canonical_normalized_sha256": "2b80a25683fffe192655c3ed995602fd6aeeae5d442d3e3f0e98a05c0e4c7d1d",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 15,
+          "unit_ordinal": 82,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_15.html",
+          "source_file_sha256": "373fdf5b1e2efb5bfee0026f6fc6823322524d436cb346a08325c43ad0ed717a",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "fd1d0ca69350c0c245f1810274c01606edfb2c0325f811354c1c1abb475e83b9",
+          "canonical_normalized_sha256": "fd1d0ca69350c0c245f1810274c01606edfb2c0325f811354c1c1abb475e83b9",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 16,
+          "unit_ordinal": 83,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_16.html",
+          "source_file_sha256": "5e52637750f9f425c327ad6cad71ebf324078dd6890815bd2e72b05db43f029d",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "138b98761cef1ed04b4690d62fb0af352b507e3f23cf3078e71966d071d2c6a5",
+          "canonical_normalized_sha256": "138b98761cef1ed04b4690d62fb0af352b507e3f23cf3078e71966d071d2c6a5",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 17,
+          "unit_ordinal": 84,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_17.html",
+          "source_file_sha256": "449b1add07fa3884e3af6a43236cc20e83752819e208b784a7a7de88a9ba52aa",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "b30af3a9f82a631996160d4c088746a00895f91a8283ee7491efcdd5fdc9de2b",
+          "canonical_normalized_sha256": "b30af3a9f82a631996160d4c088746a00895f91a8283ee7491efcdd5fdc9de2b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 18,
+          "unit_ordinal": 85,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_18.html",
+          "source_file_sha256": "a93efda2ebfd3672399336dd153282d018d29fb3bf52042b3100ec4cf7972e47",
+          "passages": 46,
+          "english_lines": 136,
+          "legacy_recorded_source_normalized_sha256": "5af7daf08df08d58a8d09e007091be705d0eabd2fee68cc3de77b5adc9c1470f",
+          "canonical_normalized_sha256": "5af7daf08df08d58a8d09e007091be705d0eabd2fee68cc3de77b5adc9c1470f",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 19,
+          "unit_ordinal": 86,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_19.html",
+          "source_file_sha256": "4f0e4081e7a4b23f8f0ce685aac67c4ba807a07482fcd97d891f2133315d2f6b",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "bd6cbde89da8a5cc098dd7b6a0a6cc38aba92e37fbc395ca375442c3feb0e081",
+          "canonical_normalized_sha256": "bd6cbde89da8a5cc098dd7b6a0a6cc38aba92e37fbc395ca375442c3feb0e081",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 20,
+          "unit_ordinal": 87,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_20.html",
+          "source_file_sha256": "6b267a55ae5ff1dd3492cef10ac64050cc15287d368edc85bd83bfbd8a59f7f5",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "0ea60d8940f8092fe52baae97ce44e98d0fd53207e7bbf571587f6a5e251cbe2",
+          "canonical_normalized_sha256": "0ea60d8940f8092fe52baae97ce44e98d0fd53207e7bbf571587f6a5e251cbe2",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 21,
+          "unit_ordinal": 88,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_21.html",
+          "source_file_sha256": "c1eab6f1f3b57db10fa8bc0618997eb52bb9d11e10d052048c5a46f4fc8e0f12",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "dba84ff621a7175f7ef77443d3d1fd9d1f5ad580ce98f48be43529bdaa69124a",
+          "canonical_normalized_sha256": "dba84ff621a7175f7ef77443d3d1fd9d1f5ad580ce98f48be43529bdaa69124a",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 22,
+          "unit_ordinal": 89,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_22.html",
+          "source_file_sha256": "812a48529af58c092504917726bfed9b3054c82f6d1038d3a6db8303191605dc",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "ccff9d66a3808b1a35b161b6ae65eb55b2d98e332fa5a66f35e77f4c8a2fc685",
+          "canonical_normalized_sha256": "ccff9d66a3808b1a35b161b6ae65eb55b2d98e332fa5a66f35e77f4c8a2fc685",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 23,
+          "unit_ordinal": 90,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_23.html",
+          "source_file_sha256": "69c21f88f5f51801fb41631decc3af3df4fab0feed474dbe6a9e116f1cdfdea6",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "50f2d99dd87e491f27685cb2944702190c1b91e0ff13a017486a8ed83a8863a1",
+          "canonical_normalized_sha256": "50f2d99dd87e491f27685cb2944702190c1b91e0ff13a017486a8ed83a8863a1",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 24,
+          "unit_ordinal": 91,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_24.html",
+          "source_file_sha256": "a8daa3be3a6b524f4af4b20ddbf6eea95811500f081356649904134404f52af1",
+          "passages": 52,
+          "english_lines": 154,
+          "legacy_recorded_source_normalized_sha256": "b3186d45d8ea0be5dd513915ba1a5136eb1da690c7b1bf00ffc5cf88defd834c",
+          "canonical_normalized_sha256": "b3186d45d8ea0be5dd513915ba1a5136eb1da690c7b1bf00ffc5cf88defd834c",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 25,
+          "unit_ordinal": 92,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_25.html",
+          "source_file_sha256": "3c26d9536e3c94157157eefbd23f62add69c3080ddcc2cd7c1286db002ee0e5b",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "63e1a8cab917b7ebd4809f9d5a574f2adce29c9fa2013128585f19c1dde5329b",
+          "canonical_normalized_sha256": "63e1a8cab917b7ebd4809f9d5a574f2adce29c9fa2013128585f19c1dde5329b",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 26,
+          "unit_ordinal": 93,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_26.html",
+          "source_file_sha256": "72e681130548f617b2f7e328bd21d491e2de552110f017acedb5218e77bff923",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "99b94bdb616c02dcb291c2ce05aee026e8d57e847a56a09fc8ffc736df6f25ef",
+          "canonical_normalized_sha256": "99b94bdb616c02dcb291c2ce05aee026e8d57e847a56a09fc8ffc736df6f25ef",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 27,
+          "unit_ordinal": 94,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_27.html",
+          "source_file_sha256": "f1db17a13df0c21128dfce62f205f1ea01fd72bf6850974181abff4873074b07",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "ec6de91315dab19ac61c6b7bf496a6598853f5d90fbc1b0d2458aee2ce55f9d8",
+          "canonical_normalized_sha256": "ec6de91315dab19ac61c6b7bf496a6598853f5d90fbc1b0d2458aee2ce55f9d8",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 28,
+          "unit_ordinal": 95,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_28.html",
+          "source_file_sha256": "d1e71929a30b917ae50a22a1a26b91b6a3420f0a2d5d3fe89b6a473c00376c0f",
+          "passages": 47,
+          "english_lines": 139,
+          "legacy_recorded_source_normalized_sha256": "9f3fc6798a183f53042efd01a86deba0bf8b98700ca1210de2a29a4d0cecfd49",
+          "canonical_normalized_sha256": "9f3fc6798a183f53042efd01a86deba0bf8b98700ca1210de2a29a4d0cecfd49",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 29,
+          "unit_ordinal": 96,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_29.html",
+          "source_file_sha256": "bc6b882134c874e77b9faaa8a01cb7b311d6357a41caa2d9909ca15389335ebe",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "30977190f790c39c0c68e0db9d764aba46e1759fc69894ee9a28fee58b100b27",
+          "canonical_normalized_sha256": "30977190f790c39c0c68e0db9d764aba46e1759fc69894ee9a28fee58b100b27",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 30,
+          "unit_ordinal": 97,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_30.html",
+          "source_file_sha256": "a7ec1b201fb60d3deb8cfcacde5bea454b4f9e6f4e7f68d831be690fcf87b2e8",
+          "passages": 50,
+          "english_lines": 148,
+          "legacy_recorded_source_normalized_sha256": "d57b7f1d793cdcff5dac8004d4e69165cd382aa46e94c4ff03db7654a892b325",
+          "canonical_normalized_sha256": "d57b7f1d793cdcff5dac8004d4e69165cd382aa46e94c4ff03db7654a892b325",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 31,
+          "unit_ordinal": 98,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_31.html",
+          "source_file_sha256": "f5698f560cf552d4c754dc0844d8d103f7567c53240267c35c3d0178cfff245c",
+          "passages": 48,
+          "english_lines": 142,
+          "legacy_recorded_source_normalized_sha256": "9231fb3b7ce2c222d69ce8ba06f1f0af6346824a37bc85c09b311238e6fc9404",
+          "canonical_normalized_sha256": "9231fb3b7ce2c222d69ce8ba06f1f0af6346824a37bc85c09b311238e6fc9404",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 32,
+          "unit_ordinal": 99,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_32.html",
+          "source_file_sha256": "5ac20ad327ea9e74e9e3e319f68992363d861e30ba0e2d1ce1bcd3ff94ccdf7e",
+          "passages": 51,
+          "english_lines": 151,
+          "legacy_recorded_source_normalized_sha256": "4c0b638f54f2d6c8287aa9278b14eba45720ac2e9cff94814fed4ef181e8f4a2",
+          "canonical_normalized_sha256": "4c0b638f54f2d6c8287aa9278b14eba45720ac2e9cff94814fed4ef181e8f4a2",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        },
+        {
+          "cantica": "paradiso",
+          "canto_number": 33,
+          "unit_ordinal": 100,
+          "source_file": "DIVINE_COMEDY_PARADISO_CANTO_33.html",
+          "source_file_sha256": "d94ff8441aa9f61a605370183ec7e3e251e6b4fa52e4fda48e0591cac9ca1f57",
+          "passages": 49,
+          "english_lines": 145,
+          "legacy_recorded_source_normalized_sha256": "e1885614e2f5c22dda4a96b0bb48f2b7d09dea39df080aaad5b38f35871b4ff5",
+          "canonical_normalized_sha256": "e1885614e2f5c22dda4a96b0bb48f2b7d09dea39df080aaad5b38f35871b4ff5",
+          "legacy_recorded_hash_matches_canonical": true,
+          "source_exact_match_after_paragraph_normalization": true,
+          "empty_korean": 0
+        }
+      ],
+      "raw_html_inventory": [
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_01.html",
+          "sha256": "dc6bb2d5fbdf1010f49679b6fefba3c08802d8208065e552750d98e531421027",
+          "bytes": 45657
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_02.html",
+          "sha256": "5f1c6760d7311d587f249ef4b4605e6bb9b72ca2a507f62b3f77a11b32b31780",
+          "bytes": 49094
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_03.html",
+          "sha256": "0b813e6d85d46f7ec0ae62a8f2d3916c8aa62e7b589031d2cfb0be5926a5c0bb",
+          "bytes": 46999
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_04.html",
+          "sha256": "e8662b20b88344891627b15bff8780234dc0ee998ce564ee364841e4b292cd4b",
+          "bytes": 50739
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_05.html",
+          "sha256": "9dfabccf0835dbbb2743a35a521865795cf699093c8ed5611ef627eb5d5034c7",
+          "bytes": 50862
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_06.html",
+          "sha256": "812fd9b3a2e213615c0afc9b868e66c48f31cb1d8bffd9480ccb030d442f38b1",
+          "bytes": 47302
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_07.html",
+          "sha256": "b9fc530cf40020238b79fc931ff986da0592be2bbaba991b46f330de8ff0512b",
+          "bytes": 45582
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_08.html",
+          "sha256": "4d03a8495b7b99b35231dc914ae6dec883cfac9dc0e4652196b08fca3c2ebf5b",
+          "bytes": 45329
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_09.html",
+          "sha256": "1695371398e78ae8f295b9b67a9bbd917c659da2277058465684d1d3d70dfa5b",
+          "bytes": 45322
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_10.html",
+          "sha256": "d534bddf4654df1b56c0afc8bdc777c0368d03c8f0b4f0df70c06807a9fe9f8f",
+          "bytes": 45906
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_11.html",
+          "sha256": "0e77b5ea08f7395e877f5e3a7ade0386ad0ee2ad1c9d19690acc3853422b60bb",
+          "bytes": 42015
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_12.html",
+          "sha256": "bd1907ea293a4ce058911adbab6d2a49ce7a4605b83b78de1d0a0587e002e9d0",
+          "bytes": 46238
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_13.html",
+          "sha256": "22d6184d8cf14a371922003f324fd7bf527e330ebfb85f30255e7468641bd708",
+          "bytes": 48585
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_14.html",
+          "sha256": "e90c09d73fbb0669dd3f5e59f09f592f1c6a28a593719ae09b0b170b0fec07ea",
+          "bytes": 46321
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_15.html",
+          "sha256": "cd1ae5270ba665a941a5fc035be8de445e60f9b5993c20f5a181f17be66b2286",
+          "bytes": 43927
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_16.html",
+          "sha256": "c4951af8c118a90658472fdb7d38a4c27214a262af55d5a93ab124ac32c4e0e3",
+          "bytes": 45256
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_17.html",
+          "sha256": "f673ed15427f9d2a8b663289e1fef161afd39f26feec682acca57062ae16c09f",
+          "bytes": 44182
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_18.html",
+          "sha256": "2d48a11930f1ad019f3695230171a2e341f0df0f4bfef368bae2f88903eb7909",
+          "bytes": 45304
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_19.html",
+          "sha256": "2d2851412fa1f5abe5b03a471270b52c34bc91bbb4bdcfba360b4f613d7648f7",
+          "bytes": 45059
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_20.html",
+          "sha256": "8cd64cf6c01134d09369c048c8a5f1ff4c7c85e3be5c73a133c67854b49f75cb",
+          "bytes": 43848
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_21.html",
+          "sha256": "d6f76abb5bd08faa991327edf8106a502309be7c6acf1a59997b0c93f5e8d46a",
+          "bytes": 45690
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_22.html",
+          "sha256": "c19d2630f05ad8f1f8b6f19c6b2a49cc341137b73a8b5348810bc1adaf94a0f0",
+          "bytes": 47174
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_23.html",
+          "sha256": "7f209b35a54ed5c6779b2d36076e5b9657874dfc32dc3890c8213360b1db3c75",
+          "bytes": 47609
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_24.html",
+          "sha256": "9b4a4fb4f02783f5a383f48e53f62920404cc3df78fbfabb0562efab4021084f",
+          "bytes": 47086
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_25.html",
+          "sha256": "0405fcc5fd366309aff3513c74b1c2df97d6bec01b20ed90ab6a0970ddf77b77",
+          "bytes": 47034
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_26.html",
+          "sha256": "908f9dde5b725bd05a43725a192dfbc2cf545e134c7e669e5f6aafdef36955f0",
+          "bytes": 46171
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_27.html",
+          "sha256": "cd576c0f68f365f4c653adf8628e437efbf95911c7909dea9b0c9a8d2e3a7127",
+          "bytes": 45210
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_28.html",
+          "sha256": "7ff3ac9bd3cf460eb82dac6a733281e7d3127fe9fb87cfa55b5bee77bce2e836",
+          "bytes": 45809
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_29.html",
+          "sha256": "3933455dae817c6fcb473827776a97d806030ebe6b50e50a1426641a09f0ebac",
+          "bytes": 44827
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_30.html",
+          "sha256": "2a0857100aaedae39a586841e7448b942a5748651685fcbb97e6d25281e8bd0c",
+          "bytes": 46981
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_31.html",
+          "sha256": "18d4bed4a39abfb48195e78a2e150a0cc02492ddd67dcef5c0ed22a928408ab1",
+          "bytes": 45562
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_32.html",
+          "sha256": "30d742472769087f9114ddcf2ab26cf22963407e934e7308799ea4d443a3cfd2",
+          "bytes": 45423
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_33.html",
+          "sha256": "817b8cd7f462b9391c82c4f492c37ccd54171b9add00ebac8f5fa9b81ceb5201",
+          "bytes": 48383
+        },
+        {
+          "file": "DIVINE_COMEDY_INFERNO_CANTO_34.html",
+          "sha256": "a26c55919499ec76309427bbb4373d508ef0c704080902f53a0acdd8b97d729a",
+          "bytes": 45203
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_01.html",
+          "sha256": "2ec6f41bf4c263ae9f570eedd1654f45b11a3460305c874d9df919f1048af529",
+          "bytes": 52006
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_02.html",
+          "sha256": "d9859472c65d109f86c5358e966abeebfabd0ac3d534b7f59d697c152dd8c23d",
+          "bytes": 50187
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_03.html",
+          "sha256": "f9c8898f9286b1d98c4da7c0b418307857973f785a2b95342d704e376cd04047",
+          "bytes": 50233
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_04.html",
+          "sha256": "7040cd68227fbee69a134d0a2d09d9ee9743a53a06e5fbbc5ea23dbd56ad7254",
+          "bytes": 46818
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_05.html",
+          "sha256": "4981bb116a1ea6d54dca1239c341de9b72e004d2f82b1933e83e93835ab6dc55",
+          "bytes": 48072
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_06.html",
+          "sha256": "0093bd8fdd0ddfbe6e208257f3f47af982d0593a319ab753d4354e6745c09ac7",
+          "bytes": 51023
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_07.html",
+          "sha256": "a467c74a04adca05c53f8d0c3845ac119486edbbb07fc326b865af8fedde631a",
+          "bytes": 47923
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_08.html",
+          "sha256": "bc8b683241ba7d97f8b580c2dae5233b9a950fca05d5bf2977f7ade70ee90db8",
+          "bytes": 46472
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_09.html",
+          "sha256": "b65e708d53d77179d1373dbace32a77701f75fd556ea08d57cc9c70358142a07",
+          "bytes": 46822
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_10.html",
+          "sha256": "c2f153fb06545fa0a898301f024c49c6c68488eed1210976d278f329bc69f471",
+          "bytes": 45947
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_11.html",
+          "sha256": "5e8a2a6f38c699c7749f8d22035c3f671b8f89404d43746d004dbbb912288140",
+          "bytes": 46934
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_12.html",
+          "sha256": "c939a48d9d481bee59d3152ccb547c79258b453a304261784f7e086d16c7ee06",
+          "bytes": 46386
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_13.html",
+          "sha256": "4b0cb8994ba2ebbc4ceea8446841b5203dd3da0ecbbb522be9a51ad9019408cb",
+          "bytes": 50705
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_14.html",
+          "sha256": "1197775217ce9d2df82e7d8f3206f4fa1c47fcb0c75358360ed25bbc297f926d",
+          "bytes": 48927
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_15.html",
+          "sha256": "bc8c901d5b83c2f8bcbe0d083661a318433a8aa7175cf3d88ba8de3d6d8ed6d1",
+          "bytes": 47360
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_16.html",
+          "sha256": "5e687d7c3fbec3f7106251a3831be3649499d6c34eb93b6ee6d90e20d1672c1c",
+          "bytes": 49816
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_17.html",
+          "sha256": "d61ef8eb421d6a081f89c607b5a28d0afa0233d26a5a4e3f14c27cc8cad8b4de",
+          "bytes": 47661
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_18.html",
+          "sha256": "c590d7ffaeef55ee207bea925049ab14bc83cfbc02f7f31e8c6a17649f07bbd9",
+          "bytes": 48657
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_19.html",
+          "sha256": "947ca1f6f0ec1c836a36e44188c514fc3ce5f8dad71c8e5211d1bbf16a00b4cc",
+          "bytes": 47845
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_20.html",
+          "sha256": "1bd86c99ee8d7420277760e3b37c73ab8c841817b36d284c3736b04c83fa6c28",
+          "bytes": 49013
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_21.html",
+          "sha256": "25ceaea593202363fdfa4f8bec4761fb786d3b9c883c0966d525cc64641d8b2a",
+          "bytes": 47111
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_22.html",
+          "sha256": "771cd79680ad9de1be574a317084eb9ebbccfa1f1f2506246d33d7c035d4f1c6",
+          "bytes": 49539
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_23.html",
+          "sha256": "eb32c5947b72261c9ccef499d2e6bd6091865a438ae815e163dddf2999d998dc",
+          "bytes": 45340
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_24.html",
+          "sha256": "e7632b9270f233c171399fc0327f375ca540ba9d83a2c8d8a5c2664c78489f3d",
+          "bytes": 50564
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_25.html",
+          "sha256": "ed13e563492c7aad2da8b2f5cf8c3afe35fdd1e09d29ce38a5648f4a1a62b80d",
+          "bytes": 46571
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_26.html",
+          "sha256": "b087353d766a771d6a4f63f209982a81298291b5ef58cfcb78d0dcb0c544d103",
+          "bytes": 49834
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_27.html",
+          "sha256": "200e1783621dce1e3c7963260f80733d64f5a9fbb01a0aeadefecf305a4fed81",
+          "bytes": 47119
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_28.html",
+          "sha256": "01dc235992511bf4b0fb484c04361e81aea368b416315594ab79e39a5ab60e12",
+          "bytes": 49079
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_29.html",
+          "sha256": "84696caa58b25ed0a247d7a49cd401bb2f3151582ed4388ede0546dda3c5bbcb",
+          "bytes": 47082
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_30.html",
+          "sha256": "348363acf8ccd1de0f94ef29afbf8dc730dd82342f45af6e5c69ca34dbfb181f",
+          "bytes": 45872
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_31.html",
+          "sha256": "eabc1f8b9c0ad6e17555cf58c37bbf8e0c1d9f828729667bb275916f6be916b9",
+          "bytes": 46382
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_32.html",
+          "sha256": "83412de34da491cde59adffe0b985521d8667e818d54553036022b056d507f94",
+          "bytes": 48789
+        },
+        {
+          "file": "DIVINE_COMEDY_PURGATORIO_CANTO_33.html",
+          "sha256": "3194765f23bb9f05b3d04f649529e55b8e13e2fab2c6dc4c1562b839682d366c",
+          "bytes": 46568
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_01.html",
+          "sha256": "119f9dd7b092bab3bde05f9dc56f15c4361f48ce6a6a6e35d78ccbfabb1ed4ba",
+          "bytes": 45868
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_02.html",
+          "sha256": "f5c65dd8c5371d8b6576194bc62988d5d7d9156bdf56a70d7ceec83f3a89cc2a",
+          "bytes": 47068
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_03.html",
+          "sha256": "13e94d1a862ca87c2100cca9b1bf45c8a045575970a2c051b782f1c4e38bcf2d",
+          "bytes": 43627
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_04.html",
+          "sha256": "f761f948670db781011d5e87a9aab2c29ae67caae70b6502b250f759c5dd5e60",
+          "bytes": 46231
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_05.html",
+          "sha256": "58ef798358bbd7f8d9a299baeb1118da9bfc2e57fdf76f9b5e69908b33744b73",
+          "bytes": 44623
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_06.html",
+          "sha256": "1f3922dccec59f9f7c6b40b484e5e6154fead8ca26fc19e043e24ed3c153c559",
+          "bytes": 45362
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_07.html",
+          "sha256": "0cb61fb198787e042a80da901117dd2037c9f3f3e8a73673d2133ed0e03a8571",
+          "bytes": 46001
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_08.html",
+          "sha256": "a5cffc8869e97520af5ca86b8eedb906b8a2f8ff7f42e18d11f0914ffcae3e5d",
+          "bytes": 46542
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_09.html",
+          "sha256": "e85ba37fb5feff7cf3f087f32527da4f4270b96ed8b64a3f08d7dcbfdd3b941b",
+          "bytes": 44694
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_10.html",
+          "sha256": "73c1b70ee900401ee8535d79502d873e9f84313ee3257f0b712a8c495fc46a06",
+          "bytes": 45643
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_11.html",
+          "sha256": "ed8a62141d5b9a947d2d1dc16ba77bc336c36b9fd5938ee24cf0771e2852aa94",
+          "bytes": 43726
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_12.html",
+          "sha256": "79ef5d8bc54ae996f5c1edd96f7911b5b70a3bf033d22a5c3ace07e72ad33b6b",
+          "bytes": 44814
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_13.html",
+          "sha256": "243d0f494d2825270ab2d1341903219f263952f15401e99fa168537bafef9a56",
+          "bytes": 43799
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_14.html",
+          "sha256": "60e38b9abce0abb9732b50b6dc031f01b9bff27d0db71035ac9f4e28f1d545cc",
+          "bytes": 43275
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_15.html",
+          "sha256": "373fdf5b1e2efb5bfee0026f6fc6823322524d436cb346a08325c43ad0ed717a",
+          "bytes": 44881
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_16.html",
+          "sha256": "5e52637750f9f425c327ad6cad71ebf324078dd6890815bd2e72b05db43f029d",
+          "bytes": 45799
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_17.html",
+          "sha256": "449b1add07fa3884e3af6a43236cc20e83752819e208b784a7a7de88a9ba52aa",
+          "bytes": 44571
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_18.html",
+          "sha256": "a93efda2ebfd3672399336dd153282d018d29fb3bf52042b3100ec4cf7972e47",
+          "bytes": 42889
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_19.html",
+          "sha256": "4f0e4081e7a4b23f8f0ce685aac67c4ba807a07482fcd97d891f2133315d2f6b",
+          "bytes": 45084
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_20.html",
+          "sha256": "6b267a55ae5ff1dd3492cef10ac64050cc15287d368edc85bd83bfbd8a59f7f5",
+          "bytes": 45387
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_21.html",
+          "sha256": "c1eab6f1f3b57db10fa8bc0618997eb52bb9d11e10d052048c5a46f4fc8e0f12",
+          "bytes": 43893
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_22.html",
+          "sha256": "812a48529af58c092504917726bfed9b3054c82f6d1038d3a6db8303191605dc",
+          "bytes": 46310
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_23.html",
+          "sha256": "69c21f88f5f51801fb41631decc3af3df4fab0feed474dbe6a9e116f1cdfdea6",
+          "bytes": 42892
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_24.html",
+          "sha256": "a8daa3be3a6b524f4af4b20ddbf6eea95811500f081356649904134404f52af1",
+          "bytes": 45972
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_25.html",
+          "sha256": "3c26d9536e3c94157157eefbd23f62add69c3080ddcc2cd7c1286db002ee0e5b",
+          "bytes": 43212
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_26.html",
+          "sha256": "72e681130548f617b2f7e328bd21d491e2de552110f017acedb5218e77bff923",
+          "bytes": 43956
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_27.html",
+          "sha256": "f1db17a13df0c21128dfce62f205f1ea01fd72bf6850974181abff4873074b07",
+          "bytes": 44966
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_28.html",
+          "sha256": "d1e71929a30b917ae50a22a1a26b91b6a3420f0a2d5d3fe89b6a473c00376c0f",
+          "bytes": 42767
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_29.html",
+          "sha256": "bc6b882134c874e77b9faaa8a01cb7b311d6357a41caa2d9909ca15389335ebe",
+          "bytes": 44745
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_30.html",
+          "sha256": "a7ec1b201fb60d3deb8cfcacde5bea454b4f9e6f4e7f68d831be690fcf87b2e8",
+          "bytes": 44745
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_31.html",
+          "sha256": "f5698f560cf552d4c754dc0844d8d103f7567c53240267c35c3d0178cfff245c",
+          "bytes": 43740
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_32.html",
+          "sha256": "5ac20ad327ea9e74e9e3e319f68992363d861e30ba0e2d1ce1bcd3ff94ccdf7e",
+          "bytes": 45621
+        },
+        {
+          "file": "DIVINE_COMEDY_PARADISO_CANTO_33.html",
+          "sha256": "d94ff8441aa9f61a605370183ec7e3e251e6b4fa52e4fda48e0591cac9ca1f57",
+          "bytes": 44923
+        }
+      ]
+    }
+  },
+  "qa": {
+    "passage_count": 4812,
+    "expected_passage_count": 4812,
+    "unit_count": 100,
+    "expected_unit_count": 100,
+    "empty_en": 0,
+    "empty_ko": 0,
+    "canonical_locator_duplicates": 0,
+    "sequence_duplicates": 0,
+    "source_hash_recompute_mismatches": 0,
+    "translation_hash_recompute_mismatches": 0,
+    "unit_sequence_formula_failures": 0,
+    "translation_source_hash_mismatches": 0,
+    "pass": true
+  }
+}

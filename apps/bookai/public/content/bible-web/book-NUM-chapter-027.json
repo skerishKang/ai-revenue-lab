@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:027",
+  "unit_ordinal": 144,
+  "unit_label": "NUM 27",
+  "book_code": "NUM",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:27:1",
+      "sequence": 4556,
+      "chapter_label": "NUM 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "Then the daughters of Zelophehad, the son of Hepher, the son of Gilead, the son of Machir, the son of Manasseh, of the families of Manasseh the son of Joseph came near. These are the names of his daughters: Mahlah, Noah, Hoglah, Milcah, and Tirzah.",
+      "ko": "요셉의 아들 므낫세 가족에 므낫세의 현손 마길의 증손 길르앗의 손자 헤벨의 아들 슬로브핫의 딸들이 나아왔으니 그 딸들의 이름은 말라와 노아와 호글라와 밀가와 디르사라",
+      "source_text_hash": "3eaebf3cf3295aa41f7b939d1697254018259e516f9a793c896d266f5b99202e",
+      "translation_text_hash": "3486df33720a62bdcef11c6900c5dffcec816c2e4f6df4f0eb3acf2c2c37d17f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 아들 므낫세 가족에 므낫세의 현손 마길의 증손 길르앗의 손자 헤벨의 아들 슬로브핫의 딸들이 나아왔으니 그 딸들의 이름은 말라와 노아와 호글라와 밀가와 디르사라"
+      ],
+      "raw_text_hashes": [
+        "3486df33720a62bdcef11c6900c5dffcec816c2e4f6df4f0eb3acf2c2c37d17f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:2",
+      "sequence": 4557,
+      "chapter_label": "NUM 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "They stood before Moses, before Eleazar the priest, and before the princes and all the congregation, at the door of the Tent of Meeting, saying,",
+      "ko": "그들이 회막 문에서 모세와 제사장 엘르아살과 족장들과 온 회중 앞에 서서 가로되",
+      "source_text_hash": "f53977f3c72a4fcda80843b4a3f23ca1135282e2e63d86fb8d86ac231177ec9a",
+      "translation_text_hash": "c71e4ecf255c1584a4bffdc9f44b247566f024953b876f1682bcb20271752fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 회막 문에서 모세와 제사장 엘르아살과 족장들과 온 회중 앞에 서서 가로되"
+      ],
+      "raw_text_hashes": [
+        "c71e4ecf255c1584a4bffdc9f44b247566f024953b876f1682bcb20271752fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:3",
+      "sequence": 4558,
+      "chapter_label": "NUM 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "“Our father died in the wilderness. He was not among the company of those who gathered themselves together against the LORD in the company of Korah, but he died in his own sin. He had no sons.",
+      "ko": "우리 아버지가 광야에서 죽었으나 여호와를 거스려 모인 고라의 무리에 들지 아니하고 자기 죄에 죽었고 아들이 없나이다",
+      "source_text_hash": "2abc9a2b9e8dc9e04a45633f15eff4b498f84ae6e8790193771ea3e0d2acbefc",
+      "translation_text_hash": "4ffa9288d550f63cfe0bf71f5bbc08bcd46320dcdb5794733448694e9ebb9bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 아버지가 광야에서 죽었으나 여호와를 거스려 모인 고라의 무리에 들지 아니하고 자기 죄에 죽었고 아들이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "4ffa9288d550f63cfe0bf71f5bbc08bcd46320dcdb5794733448694e9ebb9bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:4",
+      "sequence": 4559,
+      "chapter_label": "NUM 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Why should the name of our father be taken away from among his family, because he had no son? Give to us a possession among the brothers of our father.”",
+      "ko": "어찌하여 아들이 없다고 우리 아버지의 이름이 그 가족 중에서 삭제되리이까 우리 아버지의 형제 중에서 우리에게 기업을 주소서 하매",
+      "source_text_hash": "e0357d8e9fc91c3d82768d31bc1f5a2cf5ef2b0e234a77973117418129a4b16c",
+      "translation_text_hash": "edcd629afc2ce52051e650367a6b2052f7dff6af9b65aeaed54b68e5be66d782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 아들이 없다고 우리 아버지의 이름이 그 가족 중에서 삭제되리이까 우리 아버지의 형제 중에서 우리에게 기업을 주소서 하매"
+      ],
+      "raw_text_hashes": [
+        "edcd629afc2ce52051e650367a6b2052f7dff6af9b65aeaed54b68e5be66d782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:5",
+      "sequence": 4560,
+      "chapter_label": "NUM 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "Moses brought their cause before the LORD.",
+      "ko": "모세가 그 사연을 여호와께 품하니라",
+      "source_text_hash": "8fb02ef8144ccd933411c4f30dd6def252710f98e78a5df4fedbfe6519320b6a",
+      "translation_text_hash": "f9c46d0afe37813e1b62e096bafb5dc24526c319062510ae0a972f99912f5b05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 사연을 여호와께 품하니라"
+      ],
+      "raw_text_hashes": [
+        "f9c46d0afe37813e1b62e096bafb5dc24526c319062510ae0a972f99912f5b05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:6",
+      "sequence": 4561,
+      "chapter_label": "NUM 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:7",
+      "sequence": 4562,
+      "chapter_label": "NUM 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "“The daughters of Zelophehad speak right. You shall surely give them a possession of an inheritance among their father’s brothers. You shall cause the inheritance of their father to pass to them.",
+      "ko": "슬로브핫 딸들의 말이 옳으니 너는 반드시 그들의 아비의 형제 중에서 그들에게 기업을 주어 얻게 하되 그 아비의 기업으로 그들에게 돌릴찌니라",
+      "source_text_hash": "1c0c883d24196f2e6f40b529be01d864ffd0d0b3cca7f03cc4f0189be22afa97",
+      "translation_text_hash": "76b7769b1ea894b3199679766544a9a9c685826328e11daba1e42ea38f528146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬로브핫 딸들의 말이 옳으니 너는 반드시 그들의 아비의 형제 중에서 그들에게 기업을 주어 얻게 하되 그 아비의 기업으로 그들에게 돌릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "76b7769b1ea894b3199679766544a9a9c685826328e11daba1e42ea38f528146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:8",
+      "sequence": 4563,
+      "chapter_label": "NUM 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "You shall speak to the children of Israel, saying, ‘If a man dies, and has no son, then you shall cause his inheritance to pass to his daughter.",
+      "ko": "너는 이스라엘 자손에게 고하여 이르기를 사람이 죽고 아들이 없거든 그 기업을 그 딸에게 돌릴 것이요",
+      "source_text_hash": "ea5b853eb8dd6c82e5c08c3c16e15595cb1b80c9c345ff2e49709d59067097c0",
+      "translation_text_hash": "994bcc90b64f9ab00c3dc672052f2d3e0b06a4152ca452083bfc86b31395574e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 고하여 이르기를 사람이 죽고 아들이 없거든 그 기업을 그 딸에게 돌릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "994bcc90b64f9ab00c3dc672052f2d3e0b06a4152ca452083bfc86b31395574e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:9",
+      "sequence": 4564,
+      "chapter_label": "NUM 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "If he has no daughter, then you shall give his inheritance to his brothers.",
+      "ko": "딸도 없거든 그 기업을 그 형제에게 줄 것이요",
+      "source_text_hash": "f542397e08d46aabdf9b983d9a605e29bd0ec7884a524e58e6649a2ae8c69ad2",
+      "translation_text_hash": "7f71656e1a28cab423e0ff385a7b31293af8b498fbe137869d3ede78190a238c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸도 없거든 그 기업을 그 형제에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "7f71656e1a28cab423e0ff385a7b31293af8b498fbe137869d3ede78190a238c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:10",
+      "sequence": 4565,
+      "chapter_label": "NUM 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "If he has no brothers, then you shall give his inheritance to his father’s brothers.",
+      "ko": "형제도 없거든 그 기업을 그 아비의 형제에게 줄 것이요",
+      "source_text_hash": "49c3ae4531e505aa703ec8df944d54c8a54df9b37c38c541fe0a159ea16b9be1",
+      "translation_text_hash": "1526e427062b8cda3f39eaf250de70416f8ca98b2c086a338887f581be83a5cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제도 없거든 그 기업을 그 아비의 형제에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "1526e427062b8cda3f39eaf250de70416f8ca98b2c086a338887f581be83a5cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:11",
+      "sequence": 4566,
+      "chapter_label": "NUM 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "If his father has no brothers, then you shall give his inheritance to his kinsman who is next to him of his family, and he shall possess it. This shall be a statute and ordinance for the children of Israel, as the LORD commanded Moses.’”",
+      "ko": "그 아비의 형제도 없거든 그 기업을 가장 가까운 친족에게 주어 얻게 할찌니라 하고 나 여호와가 너 모세에게 명한대로 이스라엘 자손에게 판결의 율례가 되게 할찌니라",
+      "source_text_hash": "8fc949b012c61eaa5c678583d03f35f7db6e73908820159017ea673e238a3f1d",
+      "translation_text_hash": "34566cd059637500014fff2dce3afcd77e7ceb90806cc02a4f8aaeb16640e702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비의 형제도 없거든 그 기업을 가장 가까운 친족에게 주어 얻게 할찌니라 하고 나 여호와가 너 모세에게 명한대로 이스라엘 자손에게 판결의 율례가 되게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "34566cd059637500014fff2dce3afcd77e7ceb90806cc02a4f8aaeb16640e702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:12",
+      "sequence": 4567,
+      "chapter_label": "NUM 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD said to Moses, “Go up into this mountain of Abarim, and see the land which I have given to the children of Israel.",
+      "ko": "여호와께서 모세에게 이르시되 너는 이 아바림 산에 올라가서 내가 이스라엘 자손에게 준 땅을 바라보라",
+      "source_text_hash": "75591a55e19439177edf7f0d807fa917cd6e886e25925009a2d3c09842c074f0",
+      "translation_text_hash": "be0b0286f9196e9ec9b176aa2f4a910daff4a0c7bb1cd78949d80c6690fa27bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 이 아바림 산에 올라가서 내가 이스라엘 자손에게 준 땅을 바라보라"
+      ],
+      "raw_text_hashes": [
+        "be0b0286f9196e9ec9b176aa2f4a910daff4a0c7bb1cd78949d80c6690fa27bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:13",
+      "sequence": 4568,
+      "chapter_label": "NUM 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "When you have seen it, you also shall be gathered to your people, as Aaron your brother was gathered;",
+      "ko": "본 후에는 네 형 아론의 돌아간것 같이 너도 조상에게로 돌아가리니",
+      "source_text_hash": "0445026c39091f9ee0bf975395ca466c0a5fbf58ef969573a136762acddafbfd",
+      "translation_text_hash": "ba60d722f32207e8ffa0e9678266b146ba1c233d715dbe821ef57daa61f2d9fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "본 후에는 네 형 아론의 돌아간것 같이 너도 조상에게로 돌아가리니"
+      ],
+      "raw_text_hashes": [
+        "ba60d722f32207e8ffa0e9678266b146ba1c233d715dbe821ef57daa61f2d9fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:14",
+      "sequence": 4569,
+      "chapter_label": "NUM 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "because in the strife of the congregation, you rebelled against my word in the wilderness of Zin, to honor me as holy at the waters before their eyes.” (These are the waters of Meribah of Kadesh in the wilderness of Zin.)",
+      "ko": "이는 신 광야에서 회중이 분쟁할제 너희가 내 명을 거역하고 그 물 가에서 나의 거룩함을 그들의 목전에 나타내지 아니하였음이니라 이 물은 신 광야 가데스의 므리바 물이니라",
+      "source_text_hash": "3df1ed81f901cdbe384665f54a018ede5566113511350555c44fb7b877f91e45",
+      "translation_text_hash": "c9abfe441bf0fafcc6adae66f012af99c29965dd258baecc072ca5456e7678b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 신 광야에서 회중이 분쟁할제 너희가 내 명을 거역하고 그 물 가에서 나의 거룩함을 그들의 목전에 나타내지 아니하였음이니라 이 물은 신 광야 가데스의 므리바 물이니라"
+      ],
+      "raw_text_hashes": [
+        "c9abfe441bf0fafcc6adae66f012af99c29965dd258baecc072ca5456e7678b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:15",
+      "sequence": 4570,
+      "chapter_label": "NUM 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "Moses spoke to the LORD, saying,",
+      "ko": "모세가 여호와께 여짜와 가로되",
+      "source_text_hash": "15d6ecc7682eb87430598daa203e31d18872265228c38f12e4f0e9638ebf3f6d",
+      "translation_text_hash": "b497c49eb3bec8e774090e492d2234c01b427f1186d22f0def82b4526f31e5eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 여짜와 가로되"
+      ],
+      "raw_text_hashes": [
+        "b497c49eb3bec8e774090e492d2234c01b427f1186d22f0def82b4526f31e5eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:16",
+      "sequence": 4571,
+      "chapter_label": "NUM 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "“Let the LORD, the God of the spirits of all flesh, appoint a man over the congregation,",
+      "ko": "여호와, 모든 육체의 생명의 하나님이시여 원컨대 한 사람을 이 회중 위에 세워서",
+      "source_text_hash": "e75fa38521a5936aabd41577f5cf7421cbed3415fd5acecd6ed19ad55ed57e1c",
+      "translation_text_hash": "7b64d3938d456db756a6ef02c2e5bdd3301062f57d0791dd3baf73eea880c0b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와, 모든 육체의 생명의 하나님이시여 원컨대 한 사람을 이 회중 위에 세워서"
+      ],
+      "raw_text_hashes": [
+        "7b64d3938d456db756a6ef02c2e5bdd3301062f57d0791dd3baf73eea880c0b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:17",
+      "sequence": 4572,
+      "chapter_label": "NUM 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "who may go out before them, and who may come in before them, and who may lead them out, and who may bring them in, that the congregation of the LORD may not be as sheep which have no shepherd.”",
+      "ko": "그로 그들 앞에 출입하며 그들을 인도하여 출입하게 하사 여호와의 회중으로 목자 없는 양과 같이 되지 않게 하옵소서",
+      "source_text_hash": "31bb106555c697f83044bef9c4b063733a780055d1e9a2fc5b0aa38ff8d67d23",
+      "translation_text_hash": "13866097139802d597d6d6989793143cc1e38145211b6c4cfb25dcec456fd2e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그로 그들 앞에 출입하며 그들을 인도하여 출입하게 하사 여호와의 회중으로 목자 없는 양과 같이 되지 않게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "13866097139802d597d6d6989793143cc1e38145211b6c4cfb25dcec456fd2e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:18",
+      "sequence": 4573,
+      "chapter_label": "NUM 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD said to Moses, “Take Joshua the son of Nun, a man in whom is the Spirit, and lay your hand on him.",
+      "ko": "여호와께서 모세에게 이르시되 눈의 아들 여호수아는 신에 감동된 자니 너는 데려다가 그에게 안수하고",
+      "source_text_hash": "d6c3cc9ceceff984c46cbaf99ba27e22f6fa86dcfa64bb00538173036955d1cf",
+      "translation_text_hash": "d2a6d006addb40f15208c14489220e74717f48bf9e0882ca70932b17d32f5034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 눈의 아들 여호수아는 신에 감동된 자니 너는 데려다가 그에게 안수하고"
+      ],
+      "raw_text_hashes": [
+        "d2a6d006addb40f15208c14489220e74717f48bf9e0882ca70932b17d32f5034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:19",
+      "sequence": 4574,
+      "chapter_label": "NUM 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "Set him before Eleazar the priest, and before all the congregation; and commission him in their sight.",
+      "ko": "그를 제사장 엘르아살과 온 회중 앞에 세우고 그들의 목전에서 그에게 위탁하여",
+      "source_text_hash": "e52678e5581d4a61a7f600a1aed79b6b13980cd6e1e6ede429e2eb8aca752df1",
+      "translation_text_hash": "b2cfd090a303c8a71a1e125e6fb8f4d877ef5e402a492205bd1d2282164c39d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 제사장 엘르아살과 온 회중 앞에 세우고 그들의 목전에서 그에게 위탁하여"
+      ],
+      "raw_text_hashes": [
+        "b2cfd090a303c8a71a1e125e6fb8f4d877ef5e402a492205bd1d2282164c39d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:20",
+      "sequence": 4575,
+      "chapter_label": "NUM 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "You shall give authority to him, that all the congregation of the children of Israel may obey.",
+      "ko": "네 존귀를 그에게 돌려 이스라엘 자손의 온 회중으로 그에게 복종하게 하라",
+      "source_text_hash": "aeb9a8faaf954c635cd4c2a76737081a55852c5ee93ba683628204450f67f423",
+      "translation_text_hash": "fd10cb5512488e2be1a6edc11666998d66108d0d633fc2a65147873654e2b2ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 존귀를 그에게 돌려 이스라엘 자손의 온 회중으로 그에게 복종하게 하라"
+      ],
+      "raw_text_hashes": [
+        "fd10cb5512488e2be1a6edc11666998d66108d0d633fc2a65147873654e2b2ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:21",
+      "sequence": 4576,
+      "chapter_label": "NUM 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "He shall stand before Eleazar the priest, who shall inquire for him by the judgment of the Urim before the LORD. At his word they shall go out, and at his word they shall come in, both he and all the children of Israel with him, even all the congregation.”",
+      "ko": "그는 제사장 엘르아살 앞에 설 것이요 엘르아살은 그를 위하여 우림의 판결법으로 여호와 앞에 물을 것이며 그와 온 이스라엘 자손 곧 온 회중은 엘르아살의 말을 좇아 나가며 들어올 것이니라",
+      "source_text_hash": "009662f66a03ba3b2bf106bf3e4bcf13ca6d993c35ff643a55df32c8d65fa67f",
+      "translation_text_hash": "9ea2aa66df23cd51e57cf0309eb138cc90ad6fb8222a92c6218b70bb017fb580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 제사장 엘르아살 앞에 설 것이요 엘르아살은 그를 위하여 우림의 판결법으로 여호와 앞에 물을 것이며 그와 온 이스라엘 자손 곧 온 회중은 엘르아살의 말을 좇아 나가며 들어올 것이니라"
+      ],
+      "raw_text_hashes": [
+        "9ea2aa66df23cd51e57cf0309eb138cc90ad6fb8222a92c6218b70bb017fb580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:22",
+      "sequence": 4577,
+      "chapter_label": "NUM 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "Moses did as the LORD commanded him. He took Joshua, and set him before Eleazar the priest and before all the congregation.",
+      "ko": "모세가 여호와께서 자기에게 명하신대로 하여 여호수아를 데려다가 제사장 엘르아살과 온 회중 앞에 세우고",
+      "source_text_hash": "a804e3551ac6eb840d8225bbdd35960991a236d7ed5bc6f8e3bd38ba2e5f5c62",
+      "translation_text_hash": "428f61c64c5075a36bcc2257524ebef59ae5c49b3b72426fd8d9a43be8beb39d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께서 자기에게 명하신대로 하여 여호수아를 데려다가 제사장 엘르아살과 온 회중 앞에 세우고"
+      ],
+      "raw_text_hashes": [
+        "428f61c64c5075a36bcc2257524ebef59ae5c49b3b72426fd8d9a43be8beb39d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:27:23",
+      "sequence": 4578,
+      "chapter_label": "NUM 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "He laid his hands on him and commissioned him, as the LORD spoke by Moses.",
+      "ko": "그에게 안수하여 위탁하되 여호와께서 자기에게 명하신대로 하였더라",
+      "source_text_hash": "bf63d00dae26ad5d7b6ecb7aa90b1296d77a657e2708503a79cedbb6a3a25cc7",
+      "translation_text_hash": "7be5d6608272ecd0df2f8b5bc969a0b8e884f09369bce2652f3e5c1d7e4a05a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 안수하여 위탁하되 여호와께서 자기에게 명하신대로 하였더라"
+      ],
+      "raw_text_hashes": [
+        "7be5d6608272ecd0df2f8b5bc969a0b8e884f09369bce2652f3e5c1d7e4a05a4"
+      ]
+    }
+  ]
+}

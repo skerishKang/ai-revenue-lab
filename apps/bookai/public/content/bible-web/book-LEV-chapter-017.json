@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:017",
+  "unit_ordinal": 107,
+  "unit_label": "LEV 17",
+  "book_code": "LEV",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:17:1",
+      "sequence": 3237,
+      "chapter_label": "LEV 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:2",
+      "sequence": 3238,
+      "chapter_label": "LEV 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to Aaron, and to his sons, and to all the children of Israel, and say to them, ‘This is the thing which the LORD has commanded:",
+      "ko": "아론과 그 아들들과 이스라엘 모든 자손에게 고하여 그들에게 이르기를 여호와의 명령이 이러하시다 하라",
+      "source_text_hash": "56e2bd6484086d2a343c85303e44d3dc9d3f961af8b6463493fce6da0dbb1cab",
+      "translation_text_hash": "8356054707a1079491729b355678aea5d38aedd89627ff7d1a794a2ab9044a5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들과 이스라엘 모든 자손에게 고하여 그들에게 이르기를 여호와의 명령이 이러하시다 하라"
+      ],
+      "raw_text_hashes": [
+        "8356054707a1079491729b355678aea5d38aedd89627ff7d1a794a2ab9044a5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:3",
+      "sequence": 3239,
+      "chapter_label": "LEV 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "Whatever man there is of the house of Israel who kills a bull, or lamb, or goat in the camp, or who kills it outside the camp,",
+      "ko": "무릇 이스라엘 집의 누구든지 소나 어린 양이나 염소를 진 안에서 잡든지 진 밖에서 잡든지",
+      "source_text_hash": "0f9054b4cfaa980f277eb1844f3473e2f20d24252282dfa56b354054c8f4baef",
+      "translation_text_hash": "13586eda47ea11ba80f2bf6152d886fdf36381fd3f2b57acd62ee4b792b910c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 집의 누구든지 소나 어린 양이나 염소를 진 안에서 잡든지 진 밖에서 잡든지"
+      ],
+      "raw_text_hashes": [
+        "13586eda47ea11ba80f2bf6152d886fdf36381fd3f2b57acd62ee4b792b910c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:4",
+      "sequence": 3240,
+      "chapter_label": "LEV 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "and hasn’t brought it to the door of the Tent of Meeting to offer it as an offering to the LORD before the LORD’s tabernacle: blood shall be imputed to that man. He has shed blood. That man shall be cut off from among his people.",
+      "ko": "먼저 회막문으로 끌어다가 여호와의 장막 앞에서 여호와께 예물로 드리지 아니하는 자는 피흘린 자로 여길 것이라 그가 피를 흘렸은즉 자기 백성 중에서 끊쳐지리라",
+      "source_text_hash": "3c3e64b6fb425fe3b792c96d620fc5e9ca99d4ef1805c8998d54f2fb1282bbf4",
+      "translation_text_hash": "69f551eb0a2ec4e03787a35667521fd624f9ba2c092a8de1c02924bf63a41502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 회막문으로 끌어다가 여호와의 장막 앞에서 여호와께 예물로 드리지 아니하는 자는 피흘린 자로 여길 것이라 그가 피를 흘렸은즉 자기 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "69f551eb0a2ec4e03787a35667521fd624f9ba2c092a8de1c02924bf63a41502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:5",
+      "sequence": 3241,
+      "chapter_label": "LEV 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "This is to the end that the children of Israel may bring their sacrifices, which they sacrifice in the open field, that they may bring them to the LORD, to the door of the Tent of Meeting, to the priest, and sacrifice them for sacrifices of peace offerings to the LORD.",
+      "ko": "그런즉 이스라엘 자손이 들에서 잡던 희생을 회막문 여호와께로 끌어다가 제사장에게 주어 화목제로 여호와께 드려야 할 것이요",
+      "source_text_hash": "590e3e831a8e30f92db7757df546f49bd61673b21098d87572a0e6aef068954e",
+      "translation_text_hash": "5224cba6e5ad83ad5e7241ebb4d17cc57d7af567d92fde6a3f8aded09c54feb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이스라엘 자손이 들에서 잡던 희생을 회막문 여호와께로 끌어다가 제사장에게 주어 화목제로 여호와께 드려야 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "5224cba6e5ad83ad5e7241ebb4d17cc57d7af567d92fde6a3f8aded09c54feb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:6",
+      "sequence": 3242,
+      "chapter_label": "LEV 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "The priest shall sprinkle the blood on the LORD’s altar at the door of the Tent of Meeting, and burn the fat for a pleasant aroma to the LORD.",
+      "ko": "제사장은 그 피를 회막문 여호와의 단에 뿌리고 그 기름을 불살라 여호와께 향기로운 냄새가 되게 할 것이라",
+      "source_text_hash": "86c1785402d688b7a915f5c74ebf9bfa7733b9e0800f949797e82849a74fcab9",
+      "translation_text_hash": "8e544ac303b9e9d5a623ccc3f9efb60d028df40d2e721d389b06e7bf59799946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 피를 회막문 여호와의 단에 뿌리고 그 기름을 불살라 여호와께 향기로운 냄새가 되게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8e544ac303b9e9d5a623ccc3f9efb60d028df40d2e721d389b06e7bf59799946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:7",
+      "sequence": 3243,
+      "chapter_label": "LEV 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "They shall no more sacrifice their sacrifices to the goat idols, after which they play the prostitute. This shall be a statute forever to them throughout their generations.’",
+      "ko": "그들은 전에 음란히 섬기던 수염소에게 다시 제사하지 말 것이니라 이는 그들이 대대로 지킬 영원한 규례니라",
+      "source_text_hash": "78c4a1ae1a270da5083289f5bcc8ccc0303992a0838cedfd475a424588be4afc",
+      "translation_text_hash": "c9903045582589a85fe21826dfe9d900608ffbffbdf54b4ec2feff3389f6977f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 전에 음란히 섬기던 수염소에게 다시 제사하지 말 것이니라 이는 그들이 대대로 지킬 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "c9903045582589a85fe21826dfe9d900608ffbffbdf54b4ec2feff3389f6977f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:8",
+      "sequence": 3244,
+      "chapter_label": "LEV 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "“You shall say to them, ‘Any man there is of the house of Israel, or of the strangers who live as foreigners among them, who offers a burnt offering or sacrifice,",
+      "ko": "너는 또 그들에게 이르라 무릇 이스라엘 집 사람이나 혹시 그들 중에 우거하는 타국인이 번제나 희생을 드리되",
+      "source_text_hash": "59a901ad894ad8214db4f6db55ca6a3640df0d8429fe140e28de1c9a084f3a63",
+      "translation_text_hash": "972ca714fd18431a8b9ddcb8d93bfbd560a10fbeae656cd00782f9d13b13d65e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 그들에게 이르라 무릇 이스라엘 집 사람이나 혹시 그들 중에 우거하는 타국인이 번제나 희생을 드리되"
+      ],
+      "raw_text_hashes": [
+        "972ca714fd18431a8b9ddcb8d93bfbd560a10fbeae656cd00782f9d13b13d65e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:9",
+      "sequence": 3245,
+      "chapter_label": "LEV 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "and doesn’t bring it to the door of the Tent of Meeting to sacrifice it to the LORD, that man shall be cut off from his people.",
+      "ko": "회막문으로 가져다가 여호와께 드리지 아니하면 그는 백성 중에서 끊쳐지리라",
+      "source_text_hash": "43b27e1689f1172dd9df7057302c7266a45d9145f42a3688fb50d050262ad5cb",
+      "translation_text_hash": "1142fc2a46e6a0751e170575796f49238aa92e46d3651609f9ea22e3880fac5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회막문으로 가져다가 여호와께 드리지 아니하면 그는 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "1142fc2a46e6a0751e170575796f49238aa92e46d3651609f9ea22e3880fac5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:10",
+      "sequence": 3246,
+      "chapter_label": "LEV 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "“‘Any man of the house of Israel, or of the strangers who live as foreigners among them, who eats any kind of blood, I will set my face against that soul who eats blood, and will cut him off from among his people.",
+      "ko": "무릇 이스라엘 집 사람이나 그들 중에 우거하는 타국인 중에 어떤 피든지 먹는 자가 있으면 내가 그 피 먹는 사람에게 진노하여 그를 백성 중에서 끊으리니",
+      "source_text_hash": "06cdcbfa435eb7c44396b9faa40a1a7777895bd2b9532dc70330b88ae957261a",
+      "translation_text_hash": "21017e40b7823bbeb985fc39546cfed6e4ffcd6c0eef4642a5b4310a5ec4b7c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 집 사람이나 그들 중에 우거하는 타국인 중에 어떤 피든지 먹는 자가 있으면 내가 그 피 먹는 사람에게 진노하여 그를 백성 중에서 끊으리니"
+      ],
+      "raw_text_hashes": [
+        "21017e40b7823bbeb985fc39546cfed6e4ffcd6c0eef4642a5b4310a5ec4b7c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:11",
+      "sequence": 3247,
+      "chapter_label": "LEV 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "For the life of the flesh is in the blood. I have given it to you on the altar to make atonement for your souls; for it is the blood that makes atonement by reason of the life.",
+      "ko": "육체의 생명은 피에 있음이라 내가 이 피를 너희에게 주어 단에 뿌려 너희의 생명을 위하여 속하게 하였나니 생명이 피에 있으므로 피가 죄를 속하느니라",
+      "source_text_hash": "208526216adea6dd00ad98ef63a5ef284dc7ca8796fda009a70cac746e972509",
+      "translation_text_hash": "f63b787eb6d98e7abd723e96612a1f1c9279efa93791db573db81d3585191fa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체의 생명은 피에 있음이라 내가 이 피를 너희에게 주어 단에 뿌려 너희의 생명을 위하여 속하게 하였나니 생명이 피에 있으므로 피가 죄를 속하느니라"
+      ],
+      "raw_text_hashes": [
+        "f63b787eb6d98e7abd723e96612a1f1c9279efa93791db573db81d3585191fa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:12",
+      "sequence": 3248,
+      "chapter_label": "LEV 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore I have said to the children of Israel, “No person among you may eat blood, nor may any stranger who lives as a foreigner among you eat blood.”",
+      "ko": "그러므로 내가 이스라엘 자손에게 말하기를 너희 중에 아무도 피를 먹지 말며 너희 중에 우거하는 타국인이라도 피를 먹지 말라 하였나니",
+      "source_text_hash": "315f63d2ba6dd84bcc0b6a3cc46b91b9f698b1f93be4d26d67d0f442c783215d",
+      "translation_text_hash": "09450a63385601c5db9c1bd79570da1b46e8b196d6167a627bc4f29726aa01a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이스라엘 자손에게 말하기를 너희 중에 아무도 피를 먹지 말며 너희 중에 우거하는 타국인이라도 피를 먹지 말라 하였나니"
+      ],
+      "raw_text_hashes": [
+        "09450a63385601c5db9c1bd79570da1b46e8b196d6167a627bc4f29726aa01a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:13",
+      "sequence": 3249,
+      "chapter_label": "LEV 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "“‘Whatever man there is of the children of Israel, or of the strangers who live as foreigners among them, who takes in hunting any animal or bird that may be eaten, he shall pour out its blood, and cover it with dust.",
+      "ko": "무릇 이스라엘 자손이나 그들 중에 우거하는 타국인이 먹을만한 짐승이나 새를 사냥하여 잡거든 그 피를 흘리고 흙으로 덮을찌니라",
+      "source_text_hash": "599be99c60c9a0c88745ca9d1d0f633c4a36155d8aee01d538432c13cd3da2e5",
+      "translation_text_hash": "3588b71ba4d84a7b5bc95f6e8d2bcd3373bf021bc4c0055fd7093b7177844d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 자손이나 그들 중에 우거하는 타국인이 먹을만한 짐승이나 새를 사냥하여 잡거든 그 피를 흘리고 흙으로 덮을찌니라"
+      ],
+      "raw_text_hashes": [
+        "3588b71ba4d84a7b5bc95f6e8d2bcd3373bf021bc4c0055fd7093b7177844d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:14",
+      "sequence": 3250,
+      "chapter_label": "LEV 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "For as to the life of all flesh, its blood is with its life. Therefore I said to the children of Israel, “You shall not eat the blood of any kind of flesh; for the life of all flesh is its blood. Whoever eats it shall be cut off.”",
+      "ko": "모든 생물은 그 피가 생명과 일체라 그러므로 내가 이스라엘 자손에게 이르기를 너희는 어느 육체의 피든지 먹지 말라 하였나니 모든 육체의 생명은 그 피인즉 무릇 피를 먹는 자는 끊쳐지리라",
+      "source_text_hash": "9fc3749e25209ae7a28365c22863b2df3c41fbf4396725f5b780b80440cb2545",
+      "translation_text_hash": "01bbeb315ae7c82b49cde0f6432a97265b770d8bc27ac9f2fd1149c0d58bda10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 생물은 그 피가 생명과 일체라 그러므로 내가 이스라엘 자손에게 이르기를 너희는 어느 육체의 피든지 먹지 말라 하였나니 모든 육체의 생명은 그 피인즉 무릇 피를 먹는 자는 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "01bbeb315ae7c82b49cde0f6432a97265b770d8bc27ac9f2fd1149c0d58bda10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:15",
+      "sequence": 3251,
+      "chapter_label": "LEV 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "“‘Every person that eats what dies of itself, or that which is torn by animals, whether he is native-born or a foreigner, shall wash his clothes, and bathe himself in water, and be unclean until the evening. Then he shall be clean.",
+      "ko": "무릇 스스로 죽은 것이나 들짐승에게 찢겨 죽은 것을 먹은 자는 본토인이나 타국인이나 물론하고 그 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하고 그 후에 정하려니와",
+      "source_text_hash": "e24e64d36fd17124f515b6081eebc7c8d689711ec8f6fae06bff2ee33247171e",
+      "translation_text_hash": "770d56720144be53fd605cc220bc54a509c9342b6197125d61d1590afbf2446b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 스스로 죽은 것이나 들짐승에게 찢겨 죽은 것을 먹은 자는 본토인이나 타국인이나 물론하고 그 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하고 그 후에 정하려니와"
+      ],
+      "raw_text_hashes": [
+        "770d56720144be53fd605cc220bc54a509c9342b6197125d61d1590afbf2446b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:17:16",
+      "sequence": 3252,
+      "chapter_label": "LEV 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "But if he doesn’t wash them, or bathe his flesh, then he shall bear his iniquity.’”",
+      "ko": "그가 빨지 아니하거나 몸을 물로 씻지 아니하면 죄를 당하리라",
+      "source_text_hash": "d289c5572dddafd03672e699fd1ca6b98e615a6f98e46394d55d9cdc780fb2b2",
+      "translation_text_hash": "a56ad7da5ba6c6e3ce16bc3309b59f8e29eecf336d9402b6c81a2e2c61b78a61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 빨지 아니하거나 몸을 물로 씻지 아니하면 죄를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "a56ad7da5ba6c6e3ce16bc3309b59f8e29eecf336d9402b6c81a2e2c61b78a61"
+      ]
+    }
+  ]
+}

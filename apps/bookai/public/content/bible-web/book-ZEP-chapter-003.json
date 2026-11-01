@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEP:chapter:003",
+  "unit_ordinal": 909,
+  "unit_label": "ZEP 3",
+  "book_code": "ZEP",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEP:3:1",
+      "sequence": 22822,
+      "chapter_label": "ZEP 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to her who is rebellious and polluted, the oppressing city!",
+      "ko": "패역하고 더러운 곳, 포학한 그 성읍이 화 있을찐저",
+      "source_text_hash": "f561e6f4c59d7aa53d32aa3016f8c62cd212bb49c931ca44030d60c3326916aa",
+      "translation_text_hash": "8c5f962543a6bfca2d1f6cbddeb937ca4966e439bb36229de5a0dee7a6284ac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "패역하고 더러운 곳, 포학한 그 성읍이 화 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "8c5f962543a6bfca2d1f6cbddeb937ca4966e439bb36229de5a0dee7a6284ac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:2",
+      "sequence": 22823,
+      "chapter_label": "ZEP 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "She didn’t obey the voice. She didn’t receive correction. She didn’t trust in the LORD. She didn’t draw near to her God.",
+      "ko": "그가 명령을 듣지 아니하며 교훈을 받지 아니하며 여호와를 의뢰하지 아니하며 자기 하나님에게 가까이 나아가지 아니하였도다",
+      "source_text_hash": "9b6ed1161fb378ea4714c53f56d7c3bfb7203b68c759e9260a781c1f50b9990c",
+      "translation_text_hash": "8575bf92aa5a61b2c9a177b6b8d48c6e67a2b0b48ea83e8d10910199cecf3dae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 명령을 듣지 아니하며 교훈을 받지 아니하며 여호와를 의뢰하지 아니하며 자기 하나님에게 가까이 나아가지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "8575bf92aa5a61b2c9a177b6b8d48c6e67a2b0b48ea83e8d10910199cecf3dae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:3",
+      "sequence": 22824,
+      "chapter_label": "ZEP 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Her princes within her are roaring lions. Her judges are evening wolves. They leave nothing until the next day.",
+      "ko": "그 가운데 방백들은 부르짖는 사자요 그 재판장들은 이튿날까지 남겨 두는 것이 없는 저녁 이리요",
+      "source_text_hash": "0b70d592d000a1ecf5efb4100369d31c3e355da41a5b36d0865dd33e10ee3e67",
+      "translation_text_hash": "981ce273976bceb663e1e137e5a577a7b82173245000b84a675c8f127e6abcd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 방백들은 부르짖는 사자요 그 재판장들은 이튿날까지 남겨 두는 것이 없는 저녁 이리요"
+      ],
+      "raw_text_hashes": [
+        "981ce273976bceb663e1e137e5a577a7b82173245000b84a675c8f127e6abcd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:4",
+      "sequence": 22825,
+      "chapter_label": "ZEP 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Her prophets are arrogant and treacherous people. Her priests have profaned the sanctuary. They have done violence to the law.",
+      "ko": "그 선지자들은 위인이 경솔하고 간사한 자요 그 제사장들은 성소를 더럽히고 율법을 범하였도다",
+      "source_text_hash": "e6b7756c962f5175b4b3e3d075d7c9b0f502668b237b4758c21e22776369ce65",
+      "translation_text_hash": "471c40892b12a6e94f588cf92a7bc78c97259187daa9f18864165ff275425356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자들은 위인이 경솔하고 간사한 자요 그 제사장들은 성소를 더럽히고 율법을 범하였도다"
+      ],
+      "raw_text_hashes": [
+        "471c40892b12a6e94f588cf92a7bc78c97259187daa9f18864165ff275425356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:5",
+      "sequence": 22826,
+      "chapter_label": "ZEP 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD, within her, is righteous. He will do no wrong. Every morning he brings his justice to light. He doesn’t fail, but the unjust know no shame.",
+      "ko": "그 중에 거하신 여호와는 의로우사 불의를 행치 아니하시고 아침마다 간단 없이 자기의 공의를 나타내시거늘 불의한 자는 수치를 알지 못하는도다",
+      "source_text_hash": "bf43e4c530d4f2d60588a24265b40047544d375ab12ef2c46867be344bbad8c8",
+      "translation_text_hash": "7a2e6b37d8e5ed210c0c3f0106d1e973177df0dd3ba9cc7ebb7576fa25512e6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 거하신 여호와는 의로우사 불의를 행치 아니하시고 아침마다 간단 없이 자기의 공의를 나타내시거늘 불의한 자는 수치를 알지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "7a2e6b37d8e5ed210c0c3f0106d1e973177df0dd3ba9cc7ebb7576fa25512e6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:6",
+      "sequence": 22827,
+      "chapter_label": "ZEP 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "I have cut off nations. Their battlements are desolate. I have made their streets waste, so that no one passes by. Their cities are destroyed, so that there is no man, so that there is no inhabitant.",
+      "ko": "내가 열국을 끊어 버렸으므로 그 망대가 황무하였고 내가 그 거리를 비게 하여 지나는 자가 없게 하였으므로 그 모든 성읍이 황폐되며 사람이 없으며 거할 자가 없게 되었느니라",
+      "source_text_hash": "7517c17183b8b24100b024c85f5ff5ccd2464cd0a86f5579254a63c17028144b",
+      "translation_text_hash": "7539596e104e4e32e38bbc025ebf8bd6fc64a31d81ea634dd72c57aa75dcfb0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 열국을 끊어 버렸으므로 그 망대가 황무하였고 내가 그 거리를 비게 하여 지나는 자가 없게 하였으므로 그 모든 성읍이 황폐되며 사람이 없으며 거할 자가 없게 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "7539596e104e4e32e38bbc025ebf8bd6fc64a31d81ea634dd72c57aa75dcfb0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:7",
+      "sequence": 22828,
+      "chapter_label": "ZEP 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "I said, “Just fear me. Receive correction,” so that her dwelling won’t be cut off, according to all that I have appointed concerning her. But they rose early and corrupted all their doings.",
+      "ko": "내가 이르기를 너는 오직 나를 경외하고 교훈을 받으라 그리하면 내가 형벌을 내리기로 정하기는 하였거니와 너의 거처가 끊어지지 아니하리라 하였으나 그들이 부지런히 그 모든 행위를 더럽게 하였느니라",
+      "source_text_hash": "f0ad931934d2ee2f0280c2ced47782ecf36a1b497565cb90eb7ac2bd5e8556f3",
+      "translation_text_hash": "399d96f2d980e3b7b7bba0e83065b42f77131a2022c635d6d146c6e5d17ddb26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이르기를 너는 오직 나를 경외하고 교훈을 받으라 그리하면 내가 형벌을 내리기로 정하기는 하였거니와 너의 거처가 끊어지지 아니하리라 하였으나 그들이 부지런히 그 모든 행위를 더럽게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "399d96f2d980e3b7b7bba0e83065b42f77131a2022c635d6d146c6e5d17ddb26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:8",
+      "sequence": 22829,
+      "chapter_label": "ZEP 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "“Therefore wait for me”, says the LORD, “until the day that I rise up to the prey, for my determination is to gather the nations, that I may assemble the kingdoms to pour on them my indignation, even all my fierce anger, for all the earth will be devoured with the fire of my jealousy.",
+      "ko": "나 여호와가 말하노라 그러므로 내가 일어나 벌할 날까지 너희는 나를 기다리라 내가 뜻을 정하고 나의 분한과 모든 진노를 쏟으려고 나라들을 소집하며 열국을 모으리라 온 땅이 나의 질투의 불에 소멸되리라",
+      "source_text_hash": "cc340a950911a0172fb61679626942e911eab8b1d5ecb14150257ed4f2b3a4e9",
+      "translation_text_hash": "a3817a2b7c4dc62c6c0cd92f0df6fcf67867202159f918875ee9a10f513ebcc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그러므로 내가 일어나 벌할 날까지 너희는 나를 기다리라 내가 뜻을 정하고 나의 분한과 모든 진노를 쏟으려고 나라들을 소집하며 열국을 모으리라 온 땅이 나의 질투의 불에 소멸되리라"
+      ],
+      "raw_text_hashes": [
+        "a3817a2b7c4dc62c6c0cd92f0df6fcf67867202159f918875ee9a10f513ebcc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:9",
+      "sequence": 22830,
+      "chapter_label": "ZEP 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "For then I will purify the lips of the peoples, that they may all call on the LORD’s name, to serve him shoulder to shoulder.",
+      "ko": "그 때에 내가 열방의 입술을 깨끗케 하여 그들로 다 나 여호와의 이름을 부르며 일심으로 섬기게 하리니",
+      "source_text_hash": "1efac196acaec6a608a3ff5079ab362f265aa0372c6fd386662a5bc0dad7907b",
+      "translation_text_hash": "923235e8e7375a275653246f1a44e05fcaad3e4bd6153fb487a2430878812fdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 열방의 입술을 깨끗케 하여 그들로 다 나 여호와의 이름을 부르며 일심으로 섬기게 하리니"
+      ],
+      "raw_text_hashes": [
+        "923235e8e7375a275653246f1a44e05fcaad3e4bd6153fb487a2430878812fdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:10",
+      "sequence": 22831,
+      "chapter_label": "ZEP 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "From beyond the rivers of Cush, my worshipers, even the daughter of my dispersed people, will bring my offering.",
+      "ko": "내게 구하는 백성들 곧 내가 흩은 자의 딸이 구스 하수 건너편에서부터 예물을 가지고 와서 내게 드릴찌라",
+      "source_text_hash": "0423abf0b9e32afc8d9aed030bb6a458f15b79879b51482fc75d2518143f1ec4",
+      "translation_text_hash": "f5dd5ee287869d30abe4e3142271c1262bc79c9078f4abb09dab6b6d094a7e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 구하는 백성들 곧 내가 흩은 자의 딸이 구스 하수 건너편에서부터 예물을 가지고 와서 내게 드릴찌라"
+      ],
+      "raw_text_hashes": [
+        "f5dd5ee287869d30abe4e3142271c1262bc79c9078f4abb09dab6b6d094a7e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:11",
+      "sequence": 22832,
+      "chapter_label": "ZEP 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "In that day you will not be disappointed for all your doings in which you have transgressed against me; for then I will take away out from among you your proudly exulting ones, and you will no more be arrogant in my holy mountain.",
+      "ko": "그 날에 네가 내게 범죄한 모든 행위를 인하여 수치를 당하지 아니할 것은 그 때에 내가 너의 중에서 교만하여 자랑하는 자를 제하여 너로 나의 성산에서 다시는 교만하지 않게 할 것임이니라",
+      "source_text_hash": "1d8ccaefe06112c24917773d5ad5d880e070f0dae5274be20f4735fa08a83996",
+      "translation_text_hash": "90c4a54b0070c0d18726d312e84669f0cb2eaa5d17c8e09299e94c5ea953c836",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 네가 내게 범죄한 모든 행위를 인하여 수치를 당하지 아니할 것은 그 때에 내가 너의 중에서 교만하여 자랑하는 자를 제하여 너로 나의 성산에서 다시는 교만하지 않게 할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "90c4a54b0070c0d18726d312e84669f0cb2eaa5d17c8e09299e94c5ea953c836"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:12",
+      "sequence": 22833,
+      "chapter_label": "ZEP 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "But I will leave among you an afflicted and poor people, and they will take refuge in the LORD’s name.",
+      "ko": "내가 곤고하고 가난한 백성을 너의 중에 남겨 두리니 그들이 여호와의 이름을 의탁하여 보호를 받을찌라",
+      "source_text_hash": "bd9c36eebca424255db6d4118a3ec628d0de2a82f1cecdcd1b0d85d38e481074",
+      "translation_text_hash": "e726e8cd1f5173ae6a4a0a39f945c9f0e17959430edaabd28043d5ec42a0040c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 곤고하고 가난한 백성을 너의 중에 남겨 두리니 그들이 여호와의 이름을 의탁하여 보호를 받을찌라"
+      ],
+      "raw_text_hashes": [
+        "e726e8cd1f5173ae6a4a0a39f945c9f0e17959430edaabd28043d5ec42a0040c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:13",
+      "sequence": 22834,
+      "chapter_label": "ZEP 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "The remnant of Israel will not do iniquity nor speak lies, neither will a deceitful tongue be found in their mouth, for they will feed and lie down, and no one will make them afraid.”",
+      "ko": "이스라엘의 남은 자는 악을 행치 아니하며 거짓을 말하지 아니하며 입에 궤휼한 혀가 없으며 먹으며 누우나 놀라게 할 자가 없으리라",
+      "source_text_hash": "59921953b14d47f1e9606c46ef8dfa36be2d101049c93260faea4b13e1c41634",
+      "translation_text_hash": "5daa364bf760ddd9e487e564dbf1611ad172dd30fc5e9a39255e19c61920410b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 남은 자는 악을 행치 아니하며 거짓을 말하지 아니하며 입에 궤휼한 혀가 없으며 먹으며 누우나 놀라게 할 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "5daa364bf760ddd9e487e564dbf1611ad172dd30fc5e9a39255e19c61920410b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:14",
+      "sequence": 22835,
+      "chapter_label": "ZEP 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Sing, daughter of Zion! Shout, Israel! Be glad and rejoice with all your heart, daughter of Jerusalem.",
+      "ko": "시온의 딸아 노래할찌어다 이스라엘아 기쁘게 부를찌어다 예루살렘 딸아 전심으로 기뻐하며 즐거워할찌어다",
+      "source_text_hash": "1ca23c1888c025c49794df1a4245eeb8b8316b7202507c584fcb1bf6938f7782",
+      "translation_text_hash": "54b4fd3fdaf7070b8d42f9b431bf09f97b7eb6dd4616fef89aa080d2d13e1672",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 딸아 노래할찌어다 이스라엘아 기쁘게 부를찌어다 예루살렘 딸아 전심으로 기뻐하며 즐거워할찌어다"
+      ],
+      "raw_text_hashes": [
+        "54b4fd3fdaf7070b8d42f9b431bf09f97b7eb6dd4616fef89aa080d2d13e1672"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:15",
+      "sequence": 22836,
+      "chapter_label": "ZEP 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD has taken away your judgments. He has thrown out your enemy. The King of Israel, the LORD, is among you. You will not be afraid of evil any more.",
+      "ko": "여호와가 너의 형벌을 제하였고 너의 원수를 쫓아내었으며 이스라엘 왕 여호와가 너의 중에 있으니 네가 다시는 화를 당할까 두려워하지 아니할 것이라",
+      "source_text_hash": "cdff469e06ce4ca84cf446306be91fafdd7862d0b86670d8c3935cb83632ae43",
+      "translation_text_hash": "47ee8d9068caa085a52a8127ab82543ab4e4f31f2c2af79a13bf68bcc277cc9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 너의 형벌을 제하였고 너의 원수를 쫓아내었으며 이스라엘 왕 여호와가 너의 중에 있으니 네가 다시는 화를 당할까 두려워하지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "47ee8d9068caa085a52a8127ab82543ab4e4f31f2c2af79a13bf68bcc277cc9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:16",
+      "sequence": 22837,
+      "chapter_label": "ZEP 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "In that day, it will be said to Jerusalem, “Don’t be afraid, Zion. Don’t let your hands be weak.”",
+      "ko": "그 날에 사람이 예루살렘에게 이르기를 두려워하지 말라 시온아 네 손을 늘어뜨리지 말라",
+      "source_text_hash": "b75f962581726d61a1003d6d8039cb6acce22d203832f720daa66110403116e4",
+      "translation_text_hash": "f87d8e5f07bdda5ad503d0054ca38854c4d679b7f4943560068ff337f08f2f2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 사람이 예루살렘에게 이르기를 두려워하지 말라 시온아 네 손을 늘어뜨리지 말라"
+      ],
+      "raw_text_hashes": [
+        "f87d8e5f07bdda5ad503d0054ca38854c4d679b7f4943560068ff337f08f2f2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:17",
+      "sequence": 22838,
+      "chapter_label": "ZEP 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD, your God, is among you, a mighty one who will save. He will rejoice over you with joy. He will calm you in his love. He will rejoice over you with singing.",
+      "ko": "너의 하나님 여호와가 너의 가운데 계시니 그는 구원을 베푸실 전능자시라 그가 너로 인하여 기쁨을 이기지 못하여 하시며 너를 잠잠히 사랑하시며 너로 인하여 즐거이 부르며 기뻐하시리라 하리라",
+      "source_text_hash": "ae1a2a3d9adb64b8c8da0d2d32cb847f5fe68f1ec5857904d7bdda4c036c0900",
+      "translation_text_hash": "c24b8ef4d565828dba3536e3c47af7cf8d66a321ece9f2f2676f547649a64164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 하나님 여호와가 너의 가운데 계시니 그는 구원을 베푸실 전능자시라 그가 너로 인하여 기쁨을 이기지 못하여 하시며 너를 잠잠히 사랑하시며 너로 인하여 즐거이 부르며 기뻐하시리라 하리라"
+      ],
+      "raw_text_hashes": [
+        "c24b8ef4d565828dba3536e3c47af7cf8d66a321ece9f2f2676f547649a64164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:18",
+      "sequence": 22839,
+      "chapter_label": "ZEP 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "I will remove those who grieve about the appointed feasts from you. They are a burden and a reproach to you.",
+      "ko": "내가 대회로 인하여 근심하는 자를 모으리니 그들은 네게 속한 자라 너의 치욕이 그들에게 무거운 짐이 되었느니라",
+      "source_text_hash": "fe7215a6c1c38f48ce701341313d59cfaf8a9bd175745386babdaf53fb0b120c",
+      "translation_text_hash": "40ea5c60786973420b4f79f4a09da48521d035fc295844808159cfe36f3ed7cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대회로 인하여 근심하는 자를 모으리니 그들은 네게 속한 자라 너의 치욕이 그들에게 무거운 짐이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "40ea5c60786973420b4f79f4a09da48521d035fc295844808159cfe36f3ed7cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:19",
+      "sequence": 22840,
+      "chapter_label": "ZEP 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, at that time I will deal with all those who afflict you; and I will save those who are lame and gather those who were driven away. I will give them praise and honor, whose shame has been in all the earth.",
+      "ko": "그 때에 내가 너를 괴롭게 하는 자를 다 벌하고 저는 자를 구원하며 쫓겨난 자를 모으며 온 세상에서 수욕 받는 자로 칭찬과 명성을 얻게 하리라",
+      "source_text_hash": "9fe209c837466643d2639039194de80a142d084b3d1a841f2f11acea826e0f1e",
+      "translation_text_hash": "a2c26f58b950fdd90052cde78fcea36c966ffd182ccccb99eb4c7b0a24dcdad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 너를 괴롭게 하는 자를 다 벌하고 저는 자를 구원하며 쫓겨난 자를 모으며 온 세상에서 수욕 받는 자로 칭찬과 명성을 얻게 하리라"
+      ],
+      "raw_text_hashes": [
+        "a2c26f58b950fdd90052cde78fcea36c966ffd182ccccb99eb4c7b0a24dcdad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEP:3:20",
+      "sequence": 22841,
+      "chapter_label": "ZEP 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "ZEP",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ZEP",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "At that time I will bring you in, and at that time I will gather you; for I will give you honor and praise among all the peoples of the earth when I restore your fortunes before your eyes, says the LORD.",
+      "ko": "내가 그 때에 너희를 이끌고 그 때에 너희를 모을찌라 내가 너희 목전에서 너희 사로잡힘을 돌이킬 때에 너희로 천하 만민 중에서 명성과 칭찬을 얻게 하리라 나 여호와의 말이니라",
+      "source_text_hash": "1936e328c5c92f51498c4eb004fec9713b771c03b792f6a62ef4258fd950f012",
+      "translation_text_hash": "390e71c06c126a80a3ee4c9c42f69ded8c357050dc3592d789e1961439b2a77d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 때에 너희를 이끌고 그 때에 너희를 모을찌라 내가 너희 목전에서 너희 사로잡힘을 돌이킬 때에 너희로 천하 만민 중에서 명성과 칭찬을 얻게 하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "390e71c06c126a80a3ee4c9c42f69ded8c357050dc3592d789e1961439b2a77d"
+      ]
+    }
+  ]
+}

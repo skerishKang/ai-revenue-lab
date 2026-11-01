@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:010",
+  "unit_ordinal": 755,
+  "unit_label": "JER 10",
+  "book_code": "JER",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:10:1",
+      "sequence": 19203,
+      "chapter_label": "JER 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Hear the word which the LORD speaks to you, house of Israel!",
+      "ko": "이스라엘 집이여 여호와께서 너희에게 이르시는 말씀을 들을찌어다",
+      "source_text_hash": "947d2360f80003510085d79599dc0de4adbf45d4e8d84fe5cc6d1eb824e062c0",
+      "translation_text_hash": "620be8723479498ee08e0ddd4469a8e036c648e5ee6f8af66bf91d66ceeae1af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 집이여 여호와께서 너희에게 이르시는 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "620be8723479498ee08e0ddd4469a8e036c648e5ee6f8af66bf91d66ceeae1af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:2",
+      "sequence": 19204,
+      "chapter_label": "JER 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD says, “Don’t learn the way of the nations, and don’t be dismayed at the signs of the sky; for the nations are dismayed at them.",
+      "ko": "여호와께서 이같이 말씀하시되 열방의 길을 배우지 말라 열방인은 하늘의 징조를 두려워하거니와 너희는 그것을 두려워 말라",
+      "source_text_hash": "4f9c1821349b19d5370395258f6ef2a9fe7bd689887c343b01142c6597d229d8",
+      "translation_text_hash": "869a4918109e4e6683236478987984bbf96621daa961461c457a322b72efc6cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 열방의 길을 배우지 말라 열방인은 하늘의 징조를 두려워하거니와 너희는 그것을 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "869a4918109e4e6683236478987984bbf96621daa961461c457a322b72efc6cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:3",
+      "sequence": 19205,
+      "chapter_label": "JER 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "For the customs of the peoples are vanity; for one cuts a tree out of the forest, the work of the hands of the workman with the ax.",
+      "ko": "열방의 규례는 헛된 것이라 그 위하는 것은 삼림에서 벤 나무요 공장의 손이 도끼로 만든 것이라",
+      "source_text_hash": "e317a2ebdfa7f53111ad38afc17036769c4956013ef9c860adeffd9e865cc8a5",
+      "translation_text_hash": "00848dd6b892bc113b19cfa35531d931d623d930e4733d4b0e37411e3edb09c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 규례는 헛된 것이라 그 위하는 것은 삼림에서 벤 나무요 공장의 손이 도끼로 만든 것이라"
+      ],
+      "raw_text_hashes": [
+        "00848dd6b892bc113b19cfa35531d931d623d930e4733d4b0e37411e3edb09c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:4",
+      "sequence": 19206,
+      "chapter_label": "JER 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "They deck it with silver and with gold. They fasten it with nails and with hammers, so that it can’t move.",
+      "ko": "그들이 은과 금으로 그것에 꾸미고 못과 장도리로 그것을 든든히 하여 요동치 않게 하나니",
+      "source_text_hash": "818a080b76daea81de2fe22fba618e6e562170305a91c54fdd0cf68f2061f2d0",
+      "translation_text_hash": "adacbcaea00aa122fc122ba7965fcac037d394de29cd3ea62407d54c87ae106a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 은과 금으로 그것에 꾸미고 못과 장도리로 그것을 든든히 하여 요동치 않게 하나니"
+      ],
+      "raw_text_hashes": [
+        "adacbcaea00aa122fc122ba7965fcac037d394de29cd3ea62407d54c87ae106a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:5",
+      "sequence": 19207,
+      "chapter_label": "JER 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "They are like a palm tree, of turned work, and don’t speak. They must be carried, because they can’t move. Don’t be afraid of them; for they can’t do evil, neither is it in them to do good.”",
+      "ko": "그것이 갈린 기둥 같아서 말도 못하며 걸어다니지도 못하므로 사람에게 메임을 입느니라 그것이 화를 주거나 복을 주지 못하나니 너희는 두려워 말라 하셨느니라",
+      "source_text_hash": "db52e8714b5c89c2975eb3128472809865550fb7f4885b16ea79a7671991260a",
+      "translation_text_hash": "fc2f338d201491ddf62bed33af4ad8b9d05b8281c0872da14b85ddc80146ebc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 갈린 기둥 같아서 말도 못하며 걸어다니지도 못하므로 사람에게 메임을 입느니라 그것이 화를 주거나 복을 주지 못하나니 너희는 두려워 말라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "fc2f338d201491ddf62bed33af4ad8b9d05b8281c0872da14b85ddc80146ebc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:6",
+      "sequence": 19208,
+      "chapter_label": "JER 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "There is no one like you, LORD. You are great, and your name is great in might.",
+      "ko": "여호와여 주와 같은 자 없나이다 주는 크시니 주의 이름이 그 권능으로 인하여 크시니이다",
+      "source_text_hash": "36b355da3103a218f93d6311e140254f6476d100d278bb72d9a450c685c8b9a6",
+      "translation_text_hash": "6b0bb07d2aeb2c3314801cbc12fcfd75b003edc149a800af1b5ac503ae0ebabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주와 같은 자 없나이다 주는 크시니 주의 이름이 그 권능으로 인하여 크시니이다"
+      ],
+      "raw_text_hashes": [
+        "6b0bb07d2aeb2c3314801cbc12fcfd75b003edc149a800af1b5ac503ae0ebabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:7",
+      "sequence": 19209,
+      "chapter_label": "JER 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Who shouldn’t fear you, King of the nations? For it belongs to you. Because among all the wise men of the nations, and in all their royal estate, there is no one like you.",
+      "ko": "열방의 왕이시여 주를 경외치 아니할 자가 누구리이까 이는 주께 당연한 일이라 열방의 지혜로운 자들과 왕족 중에 주와 같은 자 없음이니이다",
+      "source_text_hash": "2294521abd3a8b3ae0b369a6e048d7cdf1b8441a3abb99907a47fd2e167dbe67",
+      "translation_text_hash": "db76ce3a3fbdcba52b042b0a44b05c8b23c2e10469a95a8c978714019d1adaa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 왕이시여 주를 경외치 아니할 자가 누구리이까 이는 주께 당연한 일이라 열방의 지혜로운 자들과 왕족 중에 주와 같은 자 없음이니이다"
+      ],
+      "raw_text_hashes": [
+        "db76ce3a3fbdcba52b042b0a44b05c8b23c2e10469a95a8c978714019d1adaa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:8",
+      "sequence": 19210,
+      "chapter_label": "JER 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "But they are together brutish and foolish, instructed by idols! It is just wood.",
+      "ko": "그들은 다 무지하고 어리석은 것이니 우상의 도는 나무 뿐이라",
+      "source_text_hash": "accf27057be2f9f083ed123b303343356d251bfa98e5ce35531a14ae6daae676",
+      "translation_text_hash": "f1b25571ea4ce982f21465c38774a8a2f3013df96e2b7374f8b540c1bb4b97e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다 무지하고 어리석은 것이니 우상의 도는 나무 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "f1b25571ea4ce982f21465c38774a8a2f3013df96e2b7374f8b540c1bb4b97e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:9",
+      "sequence": 19211,
+      "chapter_label": "JER 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "There is silver beaten into plates, which is brought from Tarshish, and gold from Uphaz, the work of the engraver and of the hands of the goldsmith. Their clothing is blue and purple. They are all the work of skillful men.",
+      "ko": "다시스에서 가져온 은박과 우바스에서 가져온 금으로 꾸미되 공장과 장색의 손으로 만들었고 청색 자색 감으로 그 옷을 삼았나니 이는 공교한 사람의 만든 것이어니와",
+      "source_text_hash": "29f7895205927d7c57673099037dcd57564c81464db324af374fe5ba0a743942",
+      "translation_text_hash": "59e25a227a0505bdd35daada5c7118dec93c6034b40cf80fa517d4a5d0819021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시스에서 가져온 은박과 우바스에서 가져온 금으로 꾸미되 공장과 장색의 손으로 만들었고 청색 자색 감으로 그 옷을 삼았나니 이는 공교한 사람의 만든 것이어니와"
+      ],
+      "raw_text_hashes": [
+        "59e25a227a0505bdd35daada5c7118dec93c6034b40cf80fa517d4a5d0819021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:10",
+      "sequence": 19212,
+      "chapter_label": "JER 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "But the LORD is the true God. He is the living God, and an everlasting King. At his wrath, the earth trembles. The nations aren’t able to withstand his indignation.",
+      "ko": "오직 여호와는 참 하나님이시요 사시는 하나님이시요 영원한 왕이시라 그 진노하심에 땅이 진동하며 그 분노하심을 열방이 능히 당치 못하느니라",
+      "source_text_hash": "db40e37694cbf05043ee897ae8af2c8f143d221066497433af5b206ef7bb2d30",
+      "translation_text_hash": "7e39be81b3df456a55487a57966dcf953ca9eba1589e83f7c1f54f4fa12e0041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와는 참 하나님이시요 사시는 하나님이시요 영원한 왕이시라 그 진노하심에 땅이 진동하며 그 분노하심을 열방이 능히 당치 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "7e39be81b3df456a55487a57966dcf953ca9eba1589e83f7c1f54f4fa12e0041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:11",
+      "sequence": 19213,
+      "chapter_label": "JER 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "“You shall say this to them: ‘The gods that have not made the heavens and the earth will perish from the earth, and from under the heavens.’”",
+      "ko": "너희는 이같이 그들에게 이르기를 천지를 짓지 아니한 신들은 땅 위에서, 이 하늘 아래서 망하리라 하라",
+      "source_text_hash": "ec12d2e6e32125d0a8917977164f876d3ae64a6424fda339f7eb23aa55e068cc",
+      "translation_text_hash": "bad746f4bc2a115ed79f628b3ae5c96f4972b10a4773af3e09db2b916161dc1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이같이 그들에게 이르기를 천지를 짓지 아니한 신들은 땅 위에서, 이 하늘 아래서 망하리라 하라"
+      ],
+      "raw_text_hashes": [
+        "bad746f4bc2a115ed79f628b3ae5c96f4972b10a4773af3e09db2b916161dc1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:12",
+      "sequence": 19214,
+      "chapter_label": "JER 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "God has made the earth by his power. He has established the world by his wisdom, and by his understanding has he stretched out the heavens.",
+      "ko": "여호와께서 그 권능으로 땅을 지으셨고 그 지혜로 세계를 세우셨고 그 명철로 하늘들을 펴셨으며",
+      "source_text_hash": "d6857e729e5c6321ca820785f6975c617b50190714984d41de42765278555238",
+      "translation_text_hash": "cc4d929fffa502720800f3bf25c24f2ad17ed3f63d9abadd31bc866cd36b7a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 권능으로 땅을 지으셨고 그 지혜로 세계를 세우셨고 그 명철로 하늘들을 펴셨으며"
+      ],
+      "raw_text_hashes": [
+        "cc4d929fffa502720800f3bf25c24f2ad17ed3f63d9abadd31bc866cd36b7a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:13",
+      "sequence": 19215,
+      "chapter_label": "JER 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "When he utters his voice, the waters in the heavens roar, and he causes the vapors to ascend from the ends of the earth. He makes lightnings for the rain, and brings the wind out of his treasuries.",
+      "ko": "그가 목소리를 발하신즉 하늘에 많은 물이 생기나니 그는 땅 끝에서 구름이 오르게 하시며 비를 위하여 번개하게 하시며 그 곳간에서 바람을 내시거늘",
+      "source_text_hash": "a1db9f87fb277130599a63b43bb055e0ec9e59e4f64c653338b3bb1e8a0c033a",
+      "translation_text_hash": "eaf82dccda085913ef08602b26d5732f24f83aac77bd48382de217533655c427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 목소리를 발하신즉 하늘에 많은 물이 생기나니 그는 땅 끝에서 구름이 오르게 하시며 비를 위하여 번개하게 하시며 그 곳간에서 바람을 내시거늘"
+      ],
+      "raw_text_hashes": [
+        "eaf82dccda085913ef08602b26d5732f24f83aac77bd48382de217533655c427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:14",
+      "sequence": 19216,
+      "chapter_label": "JER 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Every man has become brutish and without knowledge. Every goldsmith is disappointed by his engraved image; for his molten image is falsehood, and there is no breath in them.",
+      "ko": "사람마다 우준하고 무식하도다 금 장색마다 자기의 조각한 신상으로 인하여 수치를 당하나니 이는 그 부어만든 우상은 거짓 것이요 그 속에 생기가 없음이라",
+      "source_text_hash": "558fccea36254f9892c5bd938f826ba16e37abe05b1fcbd7d00c6caa8fadba76",
+      "translation_text_hash": "0e43f92cf10065a5ce965153b8e4dcbb7b769c0cb9a3050f875066c06b1de4d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람마다 우준하고 무식하도다 금 장색마다 자기의 조각한 신상으로 인하여 수치를 당하나니 이는 그 부어만든 우상은 거짓 것이요 그 속에 생기가 없음이라"
+      ],
+      "raw_text_hashes": [
+        "0e43f92cf10065a5ce965153b8e4dcbb7b769c0cb9a3050f875066c06b1de4d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:15",
+      "sequence": 19217,
+      "chapter_label": "JER 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "They are vanity, a work of delusion. In the time of their visitation they will perish.",
+      "ko": "그것들은 헛 것이요 망령되이 만든 것인즉 징벌하실 때에 멸망할 것이나",
+      "source_text_hash": "79590671fa9a795a338542d8469783614da12b9c8f9fc1f8bb77189850faeab4",
+      "translation_text_hash": "caf7e531403396a3619879a97b9731e741d93c0ed888dbc28254d7f8a7abd69d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들은 헛 것이요 망령되이 만든 것인즉 징벌하실 때에 멸망할 것이나"
+      ],
+      "raw_text_hashes": [
+        "caf7e531403396a3619879a97b9731e741d93c0ed888dbc28254d7f8a7abd69d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:16",
+      "sequence": 19218,
+      "chapter_label": "JER 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "The portion of Jacob is not like these; for he is the maker of all things; and Israel is the tribe of his inheritance. The LORD of Armies is his name.",
+      "ko": "야곱의 분깃은 이같지 아니하시니 그는 만물의 조성자요 이스라엘은 그 산업의 지파라 그 이름은 만군의 여호와시니라",
+      "source_text_hash": "eb2b13b12b6ed5ccc2878d9d3935e4d9666c22880fec0cbd35a928d5124cf080",
+      "translation_text_hash": "e6faaa605f83a72e314242acdf2aa83dc15f31cd2e04ef5e8c261af0d61bf9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 분깃은 이같지 아니하시니 그는 만물의 조성자요 이스라엘은 그 산업의 지파라 그 이름은 만군의 여호와시니라"
+      ],
+      "raw_text_hashes": [
+        "e6faaa605f83a72e314242acdf2aa83dc15f31cd2e04ef5e8c261af0d61bf9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:17",
+      "sequence": 19219,
+      "chapter_label": "JER 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Gather up your wares out of the land, you who live under siege.",
+      "ko": "에워싸인 가운데 앉은 자여 네 꾸러미를 이 땅에서 수습하라",
+      "source_text_hash": "ece2ef6c707e76770d1885aba2fa3a70c0ace065abbbde26e0e33cd50bb93e08",
+      "translation_text_hash": "fb312d2b379470341fcec8801a9317432ab559fa415b0fad2b261cc2bbf11e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에워싸인 가운데 앉은 자여 네 꾸러미를 이 땅에서 수습하라"
+      ],
+      "raw_text_hashes": [
+        "fb312d2b379470341fcec8801a9317432ab559fa415b0fad2b261cc2bbf11e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:18",
+      "sequence": 19220,
+      "chapter_label": "JER 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "For the LORD says, “Behold, I will sling out the inhabitants of the land at this time, and will distress them, that they may feel it.”",
+      "ko": "여호와께서 이같이 말씀하시되 보라 내가 이 땅에 거하는 자를 이번에는 내어던질 것이라 그들을 괴롭게 하여 깨닫게 하리라 하셨느니라",
+      "source_text_hash": "552e83f8387e5d258ad51f850626432ccbe69c944039462c2318396e724e8f3b",
+      "translation_text_hash": "2e9d631bb0cb7f7855e7c48ebfe540d5607971df06ec862f825d93a84e35a11d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 보라 내가 이 땅에 거하는 자를 이번에는 내어던질 것이라 그들을 괴롭게 하여 깨닫게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2e9d631bb0cb7f7855e7c48ebfe540d5607971df06ec862f825d93a84e35a11d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:19",
+      "sequence": 19221,
+      "chapter_label": "JER 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Woe is me because of my injury! My wound is serious; but I said, “Truly this is my grief, and I must bear it.”",
+      "ko": "슬프다 내 상처여 내가 중상을 당하였도다 그러나 내가 말하노라 이는 참으로 나의 고난이라 내가 참아야 하리로다",
+      "source_text_hash": "0bebb227857bf5b704acd64f588c2515017b3218d98afb37e46611078fdf45d0",
+      "translation_text_hash": "7b4fca3c383f2fb6d0569f214495312d4ae5446a668ca99baabf379d7d7fef5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 내 상처여 내가 중상을 당하였도다 그러나 내가 말하노라 이는 참으로 나의 고난이라 내가 참아야 하리로다"
+      ],
+      "raw_text_hashes": [
+        "7b4fca3c383f2fb6d0569f214495312d4ae5446a668ca99baabf379d7d7fef5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:20",
+      "sequence": 19222,
+      "chapter_label": "JER 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "My tent has been destroyed, and all my cords are broken. My children have gone away from me, and they are no more. There is no one to spread my tent any more, to set up my curtains.",
+      "ko": "내 장막이 훼파되고 나의 모든 줄이 끊어졌으며 내 자녀가 나를 떠나가고 있지 아니하니 내 장막을 세울 자와 내 장을 칠 자가 다시 없도다",
+      "source_text_hash": "7dc53aaf9c90b1319f7bb68eb417561f596fd2a772a00fe032aaea10c512937c",
+      "translation_text_hash": "1ce1e432fac4de5b29a8eca280dd1257c3edbab3e2322dde93e2556fbbae0d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 장막이 훼파되고 나의 모든 줄이 끊어졌으며 내 자녀가 나를 떠나가고 있지 아니하니 내 장막을 세울 자와 내 장을 칠 자가 다시 없도다"
+      ],
+      "raw_text_hashes": [
+        "1ce1e432fac4de5b29a8eca280dd1257c3edbab3e2322dde93e2556fbbae0d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:21",
+      "sequence": 19223,
+      "chapter_label": "JER 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "For the shepherds have become brutish, and have not inquired of the LORD. Therefore they have not prospered, and all their flocks have scattered.",
+      "ko": "목자들은 우준하여 여호와를 찾지 아니하므로 형통치 못하며 그 모든 양떼는 흩어졌도다",
+      "source_text_hash": "759c5ddc6cf57871cdaca36d83a7c6c1efc1eade55d41a164cfc8d487d5b4ff8",
+      "translation_text_hash": "9d0f5fed46f5b26ea59546d65c899c87a906d7cd060bdbc3c4b9cd26974644f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자들은 우준하여 여호와를 찾지 아니하므로 형통치 못하며 그 모든 양떼는 흩어졌도다"
+      ],
+      "raw_text_hashes": [
+        "9d0f5fed46f5b26ea59546d65c899c87a906d7cd060bdbc3c4b9cd26974644f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:22",
+      "sequence": 19224,
+      "chapter_label": "JER 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "The voice of news, behold, it comes, and a great commotion out of the north country, to make the cities of Judah a desolation, a dwelling place of jackals.",
+      "ko": "들을찌어다 북방에서부터 크게 떠드는 풍성이 오니 유다 성읍들로 황폐케 하여 시랑의 거처가 되게 하리로다",
+      "source_text_hash": "5ca853efa28c793e77cf2ae118118c58673e92c1e0ff7138841a6ea80cdf9d31",
+      "translation_text_hash": "0c351918579fb8e802e09fbabe25d52d358c1bd6eb73b577d1e0b5706be16892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들을찌어다 북방에서부터 크게 떠드는 풍성이 오니 유다 성읍들로 황폐케 하여 시랑의 거처가 되게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "0c351918579fb8e802e09fbabe25d52d358c1bd6eb73b577d1e0b5706be16892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:23",
+      "sequence": 19225,
+      "chapter_label": "JER 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "LORD, I know that the way of man is not in himself. It is not in man who walks to direct his steps.",
+      "ko": "여호와여 내가 알거니와 인생의 길이 자기에게 있지 아니하니 걸음을 지도함이 걷는 자에게 있지 아니하니이다",
+      "source_text_hash": "8018af1eef168015e409cba2383cc14436c5b4c38616ad7bc8f95446b0e40b72",
+      "translation_text_hash": "3b380bdb7d0624ddd9ca75feba407e2c5adc5ebb83ba880aa5781c863627f5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 알거니와 인생의 길이 자기에게 있지 아니하니 걸음을 지도함이 걷는 자에게 있지 아니하니이다"
+      ],
+      "raw_text_hashes": [
+        "3b380bdb7d0624ddd9ca75feba407e2c5adc5ebb83ba880aa5781c863627f5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:24",
+      "sequence": 19226,
+      "chapter_label": "JER 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "LORD, correct me, but gently; not in your anger, lest you reduce me to nothing.",
+      "ko": "여호와여 나를 징계하옵시되 너그러이 하시고 진노로 하지 마옵소서 주께서 나로 없어지게 하실까 두려워하나이다",
+      "source_text_hash": "f6c9bca54f382955f534890ad6c6983ca35ecbd908649dbd22691031cde1b413",
+      "translation_text_hash": "4c51038ce674d5eaa89133d2576bd7673af54e0b11a2a4b6bf72b1de8c31d4a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 징계하옵시되 너그러이 하시고 진노로 하지 마옵소서 주께서 나로 없어지게 하실까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "4c51038ce674d5eaa89133d2576bd7673af54e0b11a2a4b6bf72b1de8c31d4a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:10:25",
+      "sequence": 19227,
+      "chapter_label": "JER 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Pour out your wrath on the nations that don’t know you, and on the families that don’t call on your name; for they have devoured Jacob. Yes, they have devoured him, consumed him, and have laid waste his habitation.",
+      "ko": "주를 알지 못하는 열방과 주의 이름으로 기도하지 아니하는 족속들에게 주의 분노를 부으소서 그들은 야곱을 씹어 삼켜 멸하고 그 거처를 황폐케 하였나이다",
+      "source_text_hash": "99a6ffa3f476d8a74396841a0e8a12539a7574fdf69bbeccc8e1e466a5ef1d1f",
+      "translation_text_hash": "f196775189efcf4c9493e3f0edc48c22c9a4317e60a9abe03747f85a1ee46538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 알지 못하는 열방과 주의 이름으로 기도하지 아니하는 족속들에게 주의 분노를 부으소서 그들은 야곱을 씹어 삼켜 멸하고 그 거처를 황폐케 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f196775189efcf4c9493e3f0edc48c22c9a4317e60a9abe03747f85a1ee46538"
+      ]
+    }
+  ]
+}

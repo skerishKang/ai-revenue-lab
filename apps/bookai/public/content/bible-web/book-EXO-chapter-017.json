@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:017",
+  "unit_ordinal": 67,
+  "unit_label": "EXO 17",
+  "book_code": "EXO",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:17:1",
+      "sequence": 1985,
+      "chapter_label": "EXO 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "All the congregation of the children of Israel traveled from the wilderness of Sin, starting according to the LORD’s commandment, and encamped in Rephidim; but there was no water for the people to drink.",
+      "ko": "이스라엘 자손의 온 회중이 여호와의 명령대로 신 광야에서 떠나 그 노정대로 행하여 르비딤에 장막을 쳤으나 백성이 마실 물이 없는지라",
+      "source_text_hash": "ef58c804975508abb50cdb482804cf91163fde89d990a51b756fa024ff6ff937",
+      "translation_text_hash": "3785599ef9f521768e66f9ac1b7ed508cd914cedd957a30b0a537a70e23b7b1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중이 여호와의 명령대로 신 광야에서 떠나 그 노정대로 행하여 르비딤에 장막을 쳤으나 백성이 마실 물이 없는지라"
+      ],
+      "raw_text_hashes": [
+        "3785599ef9f521768e66f9ac1b7ed508cd914cedd957a30b0a537a70e23b7b1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:2",
+      "sequence": 1986,
+      "chapter_label": "EXO 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore the people quarreled with Moses, and said, “Give us water to drink.” Moses said to them, “Why do you quarrel with me? Why do you test the LORD?”",
+      "ko": "백성이 모세와 다투어 가로되 우리에게 물을 주어 마시게 하라 모세가 그들에게 이르되 너희가 어찌하여 나와 다투느냐 너희가 어찌하여 여호와를 시험하느냐",
+      "source_text_hash": "b3ec6bee31555a4ffd92925da054f82e95e7831887cbe1d0234cde3fc49319a5",
+      "translation_text_hash": "d1b175c0efad870e8de805da7fb07832afe14da0df893a0cc6e8490112f96fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세와 다투어 가로되 우리에게 물을 주어 마시게 하라 모세가 그들에게 이르되 너희가 어찌하여 나와 다투느냐 너희가 어찌하여 여호와를 시험하느냐"
+      ],
+      "raw_text_hashes": [
+        "d1b175c0efad870e8de805da7fb07832afe14da0df893a0cc6e8490112f96fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:3",
+      "sequence": 1987,
+      "chapter_label": "EXO 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "The people were thirsty for water there; so the people murmured against Moses, and said, “Why have you brought us up out of Egypt, to kill us, our children, and our livestock with thirst?”",
+      "ko": "거기서 백성이 물에 갈하매 그들이 모세를 대하여 원망하여 가로되 당신이 어찌하여 우리를 애굽에서 인도하여 내어서 우리와 우리 자녀와 우리 생축으로 목말라 죽게 하느냐",
+      "source_text_hash": "b8965adb5fe725de3c1846622808861ffe01314cb454e50023d38da3101ed7ec",
+      "translation_text_hash": "a9d9af91082d5fcb859563e5be58db80005f2a29f38d8033dd5d5a27dd38b2ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 백성이 물에 갈하매 그들이 모세를 대하여 원망하여 가로되 당신이 어찌하여 우리를 애굽에서 인도하여 내어서 우리와 우리 자녀와 우리 생축으로 목말라 죽게 하느냐"
+      ],
+      "raw_text_hashes": [
+        "a9d9af91082d5fcb859563e5be58db80005f2a29f38d8033dd5d5a27dd38b2ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:4",
+      "sequence": 1988,
+      "chapter_label": "EXO 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "Moses cried to the LORD, saying, “What shall I do with these people? They are almost ready to stone me.”",
+      "ko": "모세가 여호와께 부르짖어 가로되 내가 이 백성에게 어떻게 하리이까 그들이 얼마 아니면 내게 돌질 하겠나이다",
+      "source_text_hash": "4d45bcdb244a43a4d78f12d6338e7c4efdf2a520a97449addc9f2744f80c96f5",
+      "translation_text_hash": "b744c7cded99acb18c4f1f943013510e3a9397fec131043d291a5d7b90eb686f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 부르짖어 가로되 내가 이 백성에게 어떻게 하리이까 그들이 얼마 아니면 내게 돌질 하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "b744c7cded99acb18c4f1f943013510e3a9397fec131043d291a5d7b90eb686f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:5",
+      "sequence": 1989,
+      "chapter_label": "EXO 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD said to Moses, “Walk on before the people, and take the elders of Israel with you, and take the rod in your hand with which you struck the Nile, and go.",
+      "ko": "여호와께서 모세에게 이르시되 백성 앞을 지나가서 이스라엘 장로들을 데리고 하수를 치던 네 지팡이를 손에 잡고 가라",
+      "source_text_hash": "d94506b215a1f08ae51bcd29f0383a3395281fc0e8a3b0b7ae81938ab01470b5",
+      "translation_text_hash": "99333a7e3fd3ee4475316d8799dcdd4901256c9b0544cff13ee05418f357c358",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 백성 앞을 지나가서 이스라엘 장로들을 데리고 하수를 치던 네 지팡이를 손에 잡고 가라"
+      ],
+      "raw_text_hashes": [
+        "99333a7e3fd3ee4475316d8799dcdd4901256c9b0544cff13ee05418f357c358"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:6",
+      "sequence": 1990,
+      "chapter_label": "EXO 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, I will stand before you there on the rock in Horeb. You shall strike the rock, and water will come out of it, that the people may drink.” Moses did so in the sight of the elders of Israel.",
+      "ko": "내가 거기서 호렙산 반석 위에 너를 대하여 서리니 너는 반석을 치라 그것에서 물이 나리니 백성이 마시리라 모세가 이스라엘 장로들의 목전에서 그대로 행하니라",
+      "source_text_hash": "2d520df9618629613bd61c44ecefdd986f8ca9c132a52815b8d626857aed0e98",
+      "translation_text_hash": "79c3cda645869405264c33f2c43f5353d054b3cca112d0c3cd6b525e40c18ec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 거기서 호렙산 반석 위에 너를 대하여 서리니 너는 반석을 치라 그것에서 물이 나리니 백성이 마시리라 모세가 이스라엘 장로들의 목전에서 그대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "79c3cda645869405264c33f2c43f5353d054b3cca112d0c3cd6b525e40c18ec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:7",
+      "sequence": 1991,
+      "chapter_label": "EXO 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "He called the name of the place Massah, and Meribah, because the children of Israel quarreled, and because they tested the LORD, saying, “Is the LORD among us, or not?”",
+      "ko": "그가 그곳 이름을 맛사라 또는 므리바라 불렀으니 이는 이스라엘 자손이 다투었음이요 또는 그들이 여호와를 시험하여 이르기를 여호와께서 우리 중에 계신가 아닌가 하였음이더라",
+      "source_text_hash": "5bcdc8a29602026d4f1cbcc9832bc773964810e7abe477d4a2634f6fd5619f82",
+      "translation_text_hash": "f31674845e91893abd6a9e133ed68b9e7c97bcd74033d9213d11d2cd425c78d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그곳 이름을 맛사라 또는 므리바라 불렀으니 이는 이스라엘 자손이 다투었음이요 또는 그들이 여호와를 시험하여 이르기를 여호와께서 우리 중에 계신가 아닌가 하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "f31674845e91893abd6a9e133ed68b9e7c97bcd74033d9213d11d2cd425c78d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:8",
+      "sequence": 1992,
+      "chapter_label": "EXO 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "Then Amalek came and fought with Israel in Rephidim.",
+      "ko": "때에 아말렉이 이르러 이스라엘과 르비딤에서 싸우니라",
+      "source_text_hash": "04bf7281e8f80473a5681fe5c02f8adef9746c587af1684c8db0f82e718d0835",
+      "translation_text_hash": "054834a294108f4833050eaf245e42b903c116ba9bca1d2250bc34de32b15d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 아말렉이 이르러 이스라엘과 르비딤에서 싸우니라"
+      ],
+      "raw_text_hashes": [
+        "054834a294108f4833050eaf245e42b903c116ba9bca1d2250bc34de32b15d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:9",
+      "sequence": 1993,
+      "chapter_label": "EXO 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "Moses said to Joshua, “Choose men for us, and go out to fight with Amalek. Tomorrow I will stand on the top of the hill with God’s rod in my hand.”",
+      "ko": "모세가 여호수아에게 이르되 우리를 위하여 사람들을 택하여 나가서 아말렉과 싸우라 내일 내가 하나님의 지팡이를 손에 잡고 산꼭대기에 서리라",
+      "source_text_hash": "1a84339a706b216ea7597e297bb4704bd3cae2d8770a70703da2a633e0bcbf14",
+      "translation_text_hash": "eb4a7f9487b2b20b4caed14882a0385e005273b0cdee3db98c44e0f81f28fc3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호수아에게 이르되 우리를 위하여 사람들을 택하여 나가서 아말렉과 싸우라 내일 내가 하나님의 지팡이를 손에 잡고 산꼭대기에 서리라"
+      ],
+      "raw_text_hashes": [
+        "eb4a7f9487b2b20b4caed14882a0385e005273b0cdee3db98c44e0f81f28fc3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:10",
+      "sequence": 1994,
+      "chapter_label": "EXO 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "So Joshua did as Moses had told him, and fought with Amalek; and Moses, Aaron, and Hur went up to the top of the hill.",
+      "ko": "여호수아가 모세의 말대로 행하여 아말렉과 싸우고 모세와 아론과 훌은 산꼭대기에 올라가서",
+      "source_text_hash": "0812731ff2e5d5bc23a8ceb4053c80f5318063289488a53b1b485416a60c469c",
+      "translation_text_hash": "e59c0c7e2bc3049d625ba92c8be427ff262265e2e9e80e4546d7d20008ea2188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 모세의 말대로 행하여 아말렉과 싸우고 모세와 아론과 훌은 산꼭대기에 올라가서"
+      ],
+      "raw_text_hashes": [
+        "e59c0c7e2bc3049d625ba92c8be427ff262265e2e9e80e4546d7d20008ea2188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:11",
+      "sequence": 1995,
+      "chapter_label": "EXO 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "When Moses held up his hand, Israel prevailed. When he let down his hand, Amalek prevailed.",
+      "ko": "모세가 손을 들면 이스라엘이 이기고 손을 내리면 아말렉이 이기더니",
+      "source_text_hash": "048ee25d8613a6f769a430ffb03ea1c0edb571d3d17f825f914bf93374003f67",
+      "translation_text_hash": "8d17d8add475be88d351b996a1ccb8d8b21d1fedbf23a7e1d3361a60db5b9dde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 손을 들면 이스라엘이 이기고 손을 내리면 아말렉이 이기더니"
+      ],
+      "raw_text_hashes": [
+        "8d17d8add475be88d351b996a1ccb8d8b21d1fedbf23a7e1d3361a60db5b9dde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:12",
+      "sequence": 1996,
+      "chapter_label": "EXO 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "But Moses’ hands were heavy; so they took a stone, and put it under him, and he sat on it. Aaron and Hur held up his hands, the one on the one side, and the other on the other side. His hands were steady until sunset.",
+      "ko": "모세의 팔이 피곤하매 그들이 돌을 가져다가 모세의 아래에 놓아 그로 그 위에 앉게 하고 아론과 훌이 하나는 이편에서, 하나는 저편에서 모세의 손을 붙들어 올렸더니 그 손이 해가 지도록 내려오지 아니한지라",
+      "source_text_hash": "8643626eb9f3a8064b02e3011bd5531ef204fbac2728b91873295b87b272f03d",
+      "translation_text_hash": "275bd70728bc825536f35c331ef9c38f4f43551a5646c9478fe44dbdbf7486a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 팔이 피곤하매 그들이 돌을 가져다가 모세의 아래에 놓아 그로 그 위에 앉게 하고 아론과 훌이 하나는 이편에서, 하나는 저편에서 모세의 손을 붙들어 올렸더니 그 손이 해가 지도록 내려오지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "275bd70728bc825536f35c331ef9c38f4f43551a5646c9478fe44dbdbf7486a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:13",
+      "sequence": 1997,
+      "chapter_label": "EXO 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Joshua defeated Amalek and his people with the edge of the sword.",
+      "ko": "여호수아가 칼날로 아말렉과 그 백성을 쳐서 파하니라",
+      "source_text_hash": "e3204f3f83bbf3ae77c96b30f048c2380db0f76d44d888079e153da5e0bf9b7c",
+      "translation_text_hash": "2157c548f0a9395105325fd52679268801de50d653a0ed31819325fe2e25c392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 칼날로 아말렉과 그 백성을 쳐서 파하니라"
+      ],
+      "raw_text_hashes": [
+        "2157c548f0a9395105325fd52679268801de50d653a0ed31819325fe2e25c392"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:14",
+      "sequence": 1998,
+      "chapter_label": "EXO 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD said to Moses, “Write this for a memorial in a book, and rehearse it in the ears of Joshua: that I will utterly blot out the memory of Amalek from under the sky.”",
+      "ko": "여호와께서 모세에게 이르시되 이것을 책에 기록하여 기념하게 하고 여호수아의 귀에 외워 들리라 내가 아말렉을 도말하여 천하에서 기억함이 없게 하리라",
+      "source_text_hash": "2ca45082b6f821ced6efa429550fd47a4ac60de27baa96f49e6196364d0bbf57",
+      "translation_text_hash": "0bca946a65dedb132fbb54c85ce01172799275bd7e351200350e3faab1e288fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 이것을 책에 기록하여 기념하게 하고 여호수아의 귀에 외워 들리라 내가 아말렉을 도말하여 천하에서 기억함이 없게 하리라"
+      ],
+      "raw_text_hashes": [
+        "0bca946a65dedb132fbb54c85ce01172799275bd7e351200350e3faab1e288fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:15",
+      "sequence": 1999,
+      "chapter_label": "EXO 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "Moses built an altar, and called its name “The LORD our Banner”.",
+      "ko": "모세가 단을 쌓고 그 이름을 여호와 닛시라 하고",
+      "source_text_hash": "f147d20c7a219d8e6ff3fcf303c108c5e31fd9c9ba5c80803a1ccd9b2b20d624",
+      "translation_text_hash": "81e23bbd5af53f0507f6989481259441f6b8c3f6f5c7bbc43d122013c93dc3de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 단을 쌓고 그 이름을 여호와 닛시라 하고"
+      ],
+      "raw_text_hashes": [
+        "81e23bbd5af53f0507f6989481259441f6b8c3f6f5c7bbc43d122013c93dc3de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:17:16",
+      "sequence": 2000,
+      "chapter_label": "EXO 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “The LORD has sworn: ‘The LORD will have war with Amalek from generation to generation.’”",
+      "ko": "가로되 여호와께서 맹세하시기를 여호와가 아말렉으로 더불어 대대로 싸우리라 하셨다 하였더라",
+      "source_text_hash": "051ced5d2c522fe76a67cebfb9cb34475e96be8cf5cbae36808d65853f6594ce",
+      "translation_text_hash": "d2cf9a34debb0b2f7ee7cfaf82f561c04ebb189d594915236716b1903ba20f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와께서 맹세하시기를 여호와가 아말렉으로 더불어 대대로 싸우리라 하셨다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d2cf9a34debb0b2f7ee7cfaf82f561c04ebb189d594915236716b1903ba20f2c"
+      ]
+    }
+  ]
+}

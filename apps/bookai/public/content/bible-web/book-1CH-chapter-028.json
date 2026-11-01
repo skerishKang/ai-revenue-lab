@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:028",
+  "unit_ordinal": 366,
+  "unit_label": "1CH 28",
+  "book_code": "1CH",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:28:1",
+      "sequence": 11145,
+      "chapter_label": "1CH 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "David assembled all the princes of Israel, the princes of the tribes, the captains of the companies who served the king by division, the captains of thousands, the captains of hundreds, and the rulers over all the substance and possessions of the king and of his sons, with the officers and the mighty men, even all the mighty men of valor, to Jerusalem.",
+      "ko": "다윗이 이스라엘 모든 방백 곧 각 지파의 어른과 체번하여 왕을 섬기는 반장들과 천부장들과 백부장들과 및 왕과 왕자의 산업과 생축의 감독과 환관과 장사와 용사를 예루살렘으로 소집하고",
+      "source_text_hash": "ac17b834cacdd6d594f313d11a4573f5622e03fca5d0493e1fa15223b2324e7f",
+      "translation_text_hash": "e185884db8a2b4c360045514d5bd4fb66b295e00ce5c724eb246191596681b0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이스라엘 모든 방백 곧 각 지파의 어른과 체번하여 왕을 섬기는 반장들과 천부장들과 백부장들과 및 왕과 왕자의 산업과 생축의 감독과 환관과 장사와 용사를 예루살렘으로 소집하고"
+      ],
+      "raw_text_hashes": [
+        "e185884db8a2b4c360045514d5bd4fb66b295e00ce5c724eb246191596681b0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:2",
+      "sequence": 11146,
+      "chapter_label": "1CH 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Then David the king stood up on his feet and said, “Hear me, my brothers and my people! As for me, it was in my heart to build a house of rest for the ark of the LORD’s covenant, and for the footstool of our God; and I had prepared for the building.",
+      "ko": "이에 다윗왕이 일어서서 가로되 나의 형제들, 나의 백성들아 내 말을 들으라 나는 여호와의 언약궤 곧 우리 하나님의 발등상을 봉안할 전 건축할 마음이 있어서 건축할 재료를 준비하였으나",
+      "source_text_hash": "da3447879b1bf1d0d28b71cfab1d3623d00d4c1e2300af3f265b10605de992e1",
+      "translation_text_hash": "4ccef75717aa60c02648052948c595688a2861fce2d3e7b1597ca94288f6f408",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗왕이 일어서서 가로되 나의 형제들, 나의 백성들아 내 말을 들으라 나는 여호와의 언약궤 곧 우리 하나님의 발등상을 봉안할 전 건축할 마음이 있어서 건축할 재료를 준비하였으나"
+      ],
+      "raw_text_hashes": [
+        "4ccef75717aa60c02648052948c595688a2861fce2d3e7b1597ca94288f6f408"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:3",
+      "sequence": 11147,
+      "chapter_label": "1CH 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "But God said to me, ‘You shall not build a house for my name, because you are a man of war and have shed blood.’",
+      "ko": "오직 하나님이 내게 이르시되 너는 군인이라 피를 흘렸으니 내 이름을 위하여 전을 건축하지 못하리라 하셨느니라",
+      "source_text_hash": "e0ae2f193dec1323a0c7593d8aecc9fe8d747789aba0db299b6711e7d8ee78f9",
+      "translation_text_hash": "d916a8b054c01e072943468af5196fa8aedbc12489f88bf49ad9f36d9127309c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 하나님이 내게 이르시되 너는 군인이라 피를 흘렸으니 내 이름을 위하여 전을 건축하지 못하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d916a8b054c01e072943468af5196fa8aedbc12489f88bf49ad9f36d9127309c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:4",
+      "sequence": 11148,
+      "chapter_label": "1CH 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "However the LORD, the God of Israel, chose me out of all the house of my father to be king over Israel forever. For he has chosen Judah to be prince; and in the house of Judah, the house of my father; and among the sons of my father he took pleasure in me to make me king over all Israel.",
+      "ko": "그러나 이스라엘 하나님 여호와께서 전에 나를 내 부친의 온 집에서 택하여 영원히 이스라엘 왕이 되게 하셨나니 곧 하나님이 유다 지파를 택하사 머리를 삼으시고 유다의 족속에서 내 부친의 집을 택하시고 내 부친의 아들들 중에서 나를 기뻐하사 온 이스라엘의 왕을 삼으셨느니라",
+      "source_text_hash": "bef48afd2b348e9c7d3ea391a7dd4a5617c718fe9c9faa1c5f7f7c91ad1e0bbc",
+      "translation_text_hash": "2fa6d80d65c344ec889f9edd1dfc9edd3e3177e72fb1b13b83db49af067e4ae5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘 하나님 여호와께서 전에 나를 내 부친의 온 집에서 택하여 영원히 이스라엘 왕이 되게 하셨나니 곧 하나님이 유다 지파를 택하사 머리를 삼으시고 유다의 족속에서 내 부친의 집을 택하시고 내 부친의 아들들 중에서 나를 기뻐하사 온 이스라엘의 왕을 삼으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2fa6d80d65c344ec889f9edd1dfc9edd3e3177e72fb1b13b83db49af067e4ae5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:5",
+      "sequence": 11149,
+      "chapter_label": "1CH 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Of all my sons (for the LORD has given me many sons), he has chosen Solomon my son to sit on the throne of the LORD’s kingdom over Israel.",
+      "ko": "여호와께서 내게 여러 아들을 주시고 그 모든 아들 중에서 내 아들 솔로몬을 택하사 여호와의 나라 위에 앉혀 이스라엘을 다스리게 하려 하실쌔",
+      "source_text_hash": "d5fd16c2cb0cb54e9f4e3fb72209bc7fa03a51f1d5d0f84cf9c3b71bfca1ab26",
+      "translation_text_hash": "055549fbbdae8e566f08425faa4c43f798136490eaaadd63d859abe393ba1296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 여러 아들을 주시고 그 모든 아들 중에서 내 아들 솔로몬을 택하사 여호와의 나라 위에 앉혀 이스라엘을 다스리게 하려 하실쌔"
+      ],
+      "raw_text_hashes": [
+        "055549fbbdae8e566f08425faa4c43f798136490eaaadd63d859abe393ba1296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:6",
+      "sequence": 11150,
+      "chapter_label": "1CH 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "He said to me, ‘Solomon, your son, shall build my house and my courts; for I have chosen him to be my son, and I will be his father.",
+      "ko": "내게 이르시기를 네 아들 솔로몬 그가 내 전을 건축하고 내 여러 뜰을 만들리니 이는 내가 저를 택하여 내 아들을 삼고 나는 그 아비가 될 것임이라",
+      "source_text_hash": "cb6ab89ba01df29f7306fe0c8185a21d7dbcc13df473d7c60fa5d2531684247f",
+      "translation_text_hash": "7acc086fdf351e3d1524a837a3edadd7b58a95d71034f7b866a6b2a341b4c057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시기를 네 아들 솔로몬 그가 내 전을 건축하고 내 여러 뜰을 만들리니 이는 내가 저를 택하여 내 아들을 삼고 나는 그 아비가 될 것임이라"
+      ],
+      "raw_text_hashes": [
+        "7acc086fdf351e3d1524a837a3edadd7b58a95d71034f7b866a6b2a341b4c057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:7",
+      "sequence": 11151,
+      "chapter_label": "1CH 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "I will establish his kingdom forever if he continues to do my commandments and my ordinances, as it is today.’",
+      "ko": "저가 만일 나의 계명과 규례를 힘써 준행하기를 오늘날과 같이 하면 내가 그 나라를 영원히 견고케 하리라 하셨느니라",
+      "source_text_hash": "e736c0b6125b43de84f079b1ad0a1e09e69627a31bf59148a6d47b366e242403",
+      "translation_text_hash": "0640e2459c14729ba608e53594cfda0e3c508fc5a562a0b89f9228ef06e5b14e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 만일 나의 계명과 규례를 힘써 준행하기를 오늘날과 같이 하면 내가 그 나라를 영원히 견고케 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "0640e2459c14729ba608e53594cfda0e3c508fc5a562a0b89f9228ef06e5b14e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:8",
+      "sequence": 11152,
+      "chapter_label": "1CH 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "Now therefore, in the sight of all Israel, the LORD’s assembly, and in the audience of our God, observe and seek out all the commandments of the LORD your God, that you may possess this good land, and leave it for an inheritance to your children after you forever.",
+      "ko": "이제 너희는 온 이스라엘 곧 여호와의 회중의 보는데와 우리 하나님의 들으시는데서 너희 하나님 여호와의 모든 계명을 구하여 지키기로 하라 그리하면 너희가 이 아름다운 땅을 누리고 너희 후손에게 끼쳐 영원한 기업이 되게 하리라",
+      "source_text_hash": "96a2f91f3a0834215421b466ffbdd7c105903e5710c77ebb3a58d4fcfd83759e",
+      "translation_text_hash": "d1d77b72d2a958f29775275768bfa80f3a20f3afdeffd199d28b595d8d807972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 온 이스라엘 곧 여호와의 회중의 보는데와 우리 하나님의 들으시는데서 너희 하나님 여호와의 모든 계명을 구하여 지키기로 하라 그리하면 너희가 이 아름다운 땅을 누리고 너희 후손에게 끼쳐 영원한 기업이 되게 하리라"
+      ],
+      "raw_text_hashes": [
+        "d1d77b72d2a958f29775275768bfa80f3a20f3afdeffd199d28b595d8d807972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:9",
+      "sequence": 11153,
+      "chapter_label": "1CH 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "You, Solomon my son, know the God of your father, and serve him with a perfect heart and with a willing mind; for the LORD searches all hearts, and understands all the imaginations of the thoughts. If you seek him, he will be found by you; but if you forsake him, he will cast you off forever.",
+      "ko": "내 아들 솔로몬아 너는 네 아비의 하나님을 알고 온전한 마음과 기쁜 뜻으로 섬길찌어다 여호와께서는 뭇 마음을 감찰하사 모든 사상을 아시나니 네가 저를 찾으면 만날 것이요 버리면 저가 너를 영원히 버리시리라",
+      "source_text_hash": "d5bc892d661bbd8a68afdb112c129416831aa0d44ecd427e3046307151fadd22",
+      "translation_text_hash": "931c376c23f4b1296a85885703329901ec162c2629b82dc9110e95510eca92f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들 솔로몬아 너는 네 아비의 하나님을 알고 온전한 마음과 기쁜 뜻으로 섬길찌어다 여호와께서는 뭇 마음을 감찰하사 모든 사상을 아시나니 네가 저를 찾으면 만날 것이요 버리면 저가 너를 영원히 버리시리라"
+      ],
+      "raw_text_hashes": [
+        "931c376c23f4b1296a85885703329901ec162c2629b82dc9110e95510eca92f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:10",
+      "sequence": 11154,
+      "chapter_label": "1CH 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Take heed now, for the LORD has chosen you to build a house for the sanctuary. Be strong, and do it.”",
+      "ko": "그런즉 너는 삼갈찌어다 여호와께서 너를 택하여 성소의 전을 건축하게 하셨으니 힘써 행할찌니라",
+      "source_text_hash": "4ff5acb88dad057d00dd0ba8066fbe912c31ac12bf595d9a9297e36dafea2d2a",
+      "translation_text_hash": "ddd95664563d2f27b54cd393d4deae81bf1a1a79bfe68dda45aa42b3f627d59b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 삼갈찌어다 여호와께서 너를 택하여 성소의 전을 건축하게 하셨으니 힘써 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ddd95664563d2f27b54cd393d4deae81bf1a1a79bfe68dda45aa42b3f627d59b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:11",
+      "sequence": 11155,
+      "chapter_label": "1CH 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Then David gave to Solomon his son the plans for the porch of the temple, for its houses, for its treasuries, for its upper rooms, for its inner rooms, for the place of the mercy seat;",
+      "ko": "다윗이 전의 낭실과 그 집들과 그 곳간과 다락과 골방과 속죄소의 식양을 그 아들 솔로몬에게 주고",
+      "source_text_hash": "34f05378112c570a962261e7e0a2ccac1843d447a8b522b74401d52addfbea51",
+      "translation_text_hash": "7ed1f99fb26d01cdb3592344fb97af5eec5fa24efecf6a4f5867a94b2cd12849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 전의 낭실과 그 집들과 그 곳간과 다락과 골방과 속죄소의 식양을 그 아들 솔로몬에게 주고"
+      ],
+      "raw_text_hashes": [
+        "7ed1f99fb26d01cdb3592344fb97af5eec5fa24efecf6a4f5867a94b2cd12849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:12",
+      "sequence": 11156,
+      "chapter_label": "1CH 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "and the plans of all that he had by the Spirit, for the courts of the LORD’s house, for all the surrounding rooms, for the treasuries of God’s house, and for the treasuries of the dedicated things;",
+      "ko": "또 성신의 가르치신 모든 식양 곧 여호와의 전의 뜰과 사면의 모든 방과 하나님의 전 곳간과 성물 곳간의 식양을 주고",
+      "source_text_hash": "299a89dd68fc8729410131dd5c5829c1e29b8ea0da59564a0854eba310d9d64a",
+      "translation_text_hash": "83769fbc19ecd53b05fa9786f7ec50aab5ff1f6b10a54ea76274b6ca20208c9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성신의 가르치신 모든 식양 곧 여호와의 전의 뜰과 사면의 모든 방과 하나님의 전 곳간과 성물 곳간의 식양을 주고"
+      ],
+      "raw_text_hashes": [
+        "83769fbc19ecd53b05fa9786f7ec50aab5ff1f6b10a54ea76274b6ca20208c9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:13",
+      "sequence": 11157,
+      "chapter_label": "1CH 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "also for the divisions of the priests and the Levites, for all the work of the service of the LORD’s house, and for all the vessels of service in the LORD’s house—",
+      "ko": "또 제사장과 레위 사람의 반열과 여호와의 전에 섬기는 모든 일과 섬기는데 쓰는 모든 그릇의 식양을 설명하고",
+      "source_text_hash": "4d62394fa1d4ab89a8f6aaa4c55b2d72d9867ed50735a43a0592a5f55a665afe",
+      "translation_text_hash": "de8b929a39bdfccc8308381332aebb5ec185dbfdaa38bed5b4924d60845b758e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제사장과 레위 사람의 반열과 여호와의 전에 섬기는 모든 일과 섬기는데 쓰는 모든 그릇의 식양을 설명하고"
+      ],
+      "raw_text_hashes": [
+        "de8b929a39bdfccc8308381332aebb5ec185dbfdaa38bed5b4924d60845b758e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:14",
+      "sequence": 11158,
+      "chapter_label": "1CH 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "of gold by weight for the gold for all vessels of every kind of service, for all the vessels of silver by weight, for all vessels of every kind of service;",
+      "ko": "또 모든 섬기는데 쓰는 금기명을 만들 금의 중량과 모든 섬기는데 쓰는 은기명을 만들 은의 중량을 정하고",
+      "source_text_hash": "2dd0ebbcb41149265bb86961abaf62150626084dbb070f5d551cafd6f8835bb8",
+      "translation_text_hash": "0a0829c1ce018121689b4438e1ac9ac8b293ebbd01539080f24e700063f0c7b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 모든 섬기는데 쓰는 금기명을 만들 금의 중량과 모든 섬기는데 쓰는 은기명을 만들 은의 중량을 정하고"
+      ],
+      "raw_text_hashes": [
+        "0a0829c1ce018121689b4438e1ac9ac8b293ebbd01539080f24e700063f0c7b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:15",
+      "sequence": 11159,
+      "chapter_label": "1CH 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "by weight also for the lamp stands of gold, and for its lamps, of gold, by weight for every lamp stand and for its lamps; and for the lamp stands of silver, by weight for every lamp stand and for its lamps, according to the use of every lamp stand;",
+      "ko": "또 금등대들과 그 등잔 곧 각 등대와 그 등잔을 만들 금의 중량과 은등대와 그 등잔을 만들 은의 중량을 각기 적당하게 하고",
+      "source_text_hash": "cd633e828e5ba26f3eceffdf84a6491707e051a54ee8f22cea6cf05195a068dc",
+      "translation_text_hash": "ce46dec6e2014b132442b3a201a774b88e1862d51ed34ad1de763d2ea2a71ccc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금등대들과 그 등잔 곧 각 등대와 그 등잔을 만들 금의 중량과 은등대와 그 등잔을 만들 은의 중량을 각기 적당하게 하고"
+      ],
+      "raw_text_hashes": [
+        "ce46dec6e2014b132442b3a201a774b88e1862d51ed34ad1de763d2ea2a71ccc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:16",
+      "sequence": 11160,
+      "chapter_label": "1CH 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "and the gold by weight for the tables of show bread, for every table; and silver for the tables of silver;",
+      "ko": "또 진설병의 각 상을 만들 금의 중량을 정하고 은상을 만들 은도 그렇게 하고",
+      "source_text_hash": "ab9ea2d21cc30676eda33cbc3de3dd439afcabc23f0a0be1faa3c2e9fb673065",
+      "translation_text_hash": "c18d8424e9c4f5f48b0af15a3cb9aa280c1cf0ebfa773ee0e7b397f9dfdb21b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 진설병의 각 상을 만들 금의 중량을 정하고 은상을 만들 은도 그렇게 하고"
+      ],
+      "raw_text_hashes": [
+        "c18d8424e9c4f5f48b0af15a3cb9aa280c1cf0ebfa773ee0e7b397f9dfdb21b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:17",
+      "sequence": 11161,
+      "chapter_label": "1CH 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "and the forks, the basins, and the cups, of pure gold; and for the golden bowls by weight for every bowl; and for the silver bowls by weight for every bowl;",
+      "ko": "고기 갈고리와 대접과 종자를 만들 정금과 금잔 곧 각 잔을 만들 금의 중량과 또 은잔 곧 각 잔을 만들 은의 중량을 정하고",
+      "source_text_hash": "d65de992f31455e88908d0f41ab95befaf8047ba975554a0645475db912dd926",
+      "translation_text_hash": "90cb7ac60f75592ae773f1bd62b47810288f4da274c38534b56a34e806a4f6a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고기 갈고리와 대접과 종자를 만들 정금과 금잔 곧 각 잔을 만들 금의 중량과 또 은잔 곧 각 잔을 만들 은의 중량을 정하고"
+      ],
+      "raw_text_hashes": [
+        "90cb7ac60f75592ae773f1bd62b47810288f4da274c38534b56a34e806a4f6a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:18",
+      "sequence": 11162,
+      "chapter_label": "1CH 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "and for the altar of incense, refined gold by weight; and gold for the plans for the chariot, and the cherubim that spread out and cover the ark of the LORD’s covenant.",
+      "ko": "또 향단에 쓸 정금과 또 타시는 처소된 그룹들의 식양대로 만들 금의 중량을 정하여 주니 이 그룹들은 날개를 펴서 여호와의 언약궤를 덮는 것이더라",
+      "source_text_hash": "2eae6406e2862b7bd1d2f607c2b185137c9decd631525c2a8c830285d00cae41",
+      "translation_text_hash": "cfc3477306efbb0b3b0af8b9ee4fdedd330a3b8b9b68f673a872928484a02f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 향단에 쓸 정금과 또 타시는 처소된 그룹들의 식양대로 만들 금의 중량을 정하여 주니 이 그룹들은 날개를 펴서 여호와의 언약궤를 덮는 것이더라"
+      ],
+      "raw_text_hashes": [
+        "cfc3477306efbb0b3b0af8b9ee4fdedd330a3b8b9b68f673a872928484a02f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:19",
+      "sequence": 11163,
+      "chapter_label": "1CH 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "“All this”, David said, “I have been made to understand in writing from the LORD’s hand, even all the works of this pattern.”",
+      "ko": "다윗이 가로되 이 위의 모든 것의 식양을 여호와의 손이 내게 임하여 그려 나로 알게 하셨느니라",
+      "source_text_hash": "8db95615231c9b1da1914d2b51e8ff0eea44efabe0712b7c7af44bb7dc457fc5",
+      "translation_text_hash": "6b821c18c8b9f2ecd768565b8c8cfb05d5f29ea17dc71c1a23ed54b2d5e18697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 이 위의 모든 것의 식양을 여호와의 손이 내게 임하여 그려 나로 알게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6b821c18c8b9f2ecd768565b8c8cfb05d5f29ea17dc71c1a23ed54b2d5e18697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:20",
+      "sequence": 11164,
+      "chapter_label": "1CH 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "David said to Solomon his son, “Be strong and courageous, and do it. Don’t be afraid, nor be dismayed, for the LORD God, even my God, is with you. He will not fail you nor forsake you, until all the work for the service of the LORD’s house is finished.",
+      "ko": "또 그 아들 솔로몬에게 이르되 너는 강하고 담대하게 이 일을 행하고 두려워 말며 놀라지 말라 네가 여호와의 전 역사의 모든 일을 마칠 동안에 여호와 하나님 나의 하나님이 너와 함께하사 네게서 떠나지 아니하시고 너를 버리지 아니하시리라",
+      "source_text_hash": "b1c26f6b842a00a623b7947dbe3f1735f8b7304b1c8cb4d8fa261627c83af66c",
+      "translation_text_hash": "5bc48da9f983f69121c3d3c6e84f6f819d9dd3096b2e7cdc3ac6bab2f5257d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 아들 솔로몬에게 이르되 너는 강하고 담대하게 이 일을 행하고 두려워 말며 놀라지 말라 네가 여호와의 전 역사의 모든 일을 마칠 동안에 여호와 하나님 나의 하나님이 너와 함께하사 네게서 떠나지 아니하시고 너를 버리지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "5bc48da9f983f69121c3d3c6e84f6f819d9dd3096b2e7cdc3ac6bab2f5257d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:28:21",
+      "sequence": 11165,
+      "chapter_label": "1CH 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "Behold, there are the divisions of the priests and the Levites for all the service of God’s house. Every willing man who has skill for any kind of service shall be with you in all kinds of work. Also the captains and all the people will be entirely at your command.”",
+      "ko": "제사장과 레위 사람의 반열이 있으니 여호와의 전의 모든 역사를 도울 것이요 또 모든 공역에 공교한 공장이 기쁜 마음으로 너와 함께 할것이요 또 모든 장관과 백성이 온전히 네 명령 아래 있으리라",
+      "source_text_hash": "c9542f52e160a0b78f87a1bd27d8f73011efb30d30f8b1e1821560e36be119a7",
+      "translation_text_hash": "dd5139adfc4fc6d35527e1727b2c96187f30a75c64bb9a0cb86fa7911d2483a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장과 레위 사람의 반열이 있으니 여호와의 전의 모든 역사를 도울 것이요 또 모든 공역에 공교한 공장이 기쁜 마음으로 너와 함께 할것이요 또 모든 장관과 백성이 온전히 네 명령 아래 있으리라"
+      ],
+      "raw_text_hashes": [
+        "dd5139adfc4fc6d35527e1727b2c96187f30a75c64bb9a0cb86fa7911d2483a0"
+      ]
+    }
+  ]
+}

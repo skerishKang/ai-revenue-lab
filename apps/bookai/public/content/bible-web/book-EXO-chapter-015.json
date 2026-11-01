@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:015",
+  "unit_ordinal": 65,
+  "unit_label": "EXO 15",
+  "book_code": "EXO",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:15:1",
+      "sequence": 1922,
+      "chapter_label": "EXO 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Then Moses and the children of Israel sang this song to the LORD, and said, “I will sing to the LORD, for he has triumphed gloriously. He has thrown the horse and his rider into the sea.",
+      "ko": "이 때에 모세와 이스라엘 자손이 이 노래로 여호와께 노래하니 일렀으되 내가 여호와를 찬송하리니 그는 높고 영화로우심이요 말과 그 탄 자를 바다에 던지셨음이로다",
+      "source_text_hash": "1c5a1c00047e9dd8bdd27afdb917b3ea861540a8215c7b7c4bbb32c38ec6c884",
+      "translation_text_hash": "f6833e8a9d4babb94a9593feca75887a436a70c99af3e1cf36c31f4ee51e4524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 모세와 이스라엘 자손이 이 노래로 여호와께 노래하니 일렀으되 내가 여호와를 찬송하리니 그는 높고 영화로우심이요 말과 그 탄 자를 바다에 던지셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "f6833e8a9d4babb94a9593feca75887a436a70c99af3e1cf36c31f4ee51e4524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:2",
+      "sequence": 1923,
+      "chapter_label": "EXO 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD is my strength and song. He has become my salvation. This is my God, and I will praise him; my father’s God, and I will exalt him.",
+      "ko": "여호와는 나의 힘이요 노래시며 나의 구원이시로다 그는 나의 하나님이시니 내가 그를 찬송할 것이요 내 아비의 하나님이시니 내가 그를 높이리로다",
+      "source_text_hash": "1072a22bb987148f2b3436085a648898f228f243da0e01118be6545915cd2a5d",
+      "translation_text_hash": "56e7295f009c6d49661a4fdbdc7b170d8e43bef5f506ab1e2c823d4094ef14f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 힘이요 노래시며 나의 구원이시로다 그는 나의 하나님이시니 내가 그를 찬송할 것이요 내 아비의 하나님이시니 내가 그를 높이리로다"
+      ],
+      "raw_text_hashes": [
+        "56e7295f009c6d49661a4fdbdc7b170d8e43bef5f506ab1e2c823d4094ef14f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:3",
+      "sequence": 1924,
+      "chapter_label": "EXO 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD is a man of war. The LORD is his name.",
+      "ko": "여호와는 용사시니 여호와는 그의 이름이시로다",
+      "source_text_hash": "68babf047d2131247fa2d472b4a3c09aa1152411ab3d1088c39519cb536043f3",
+      "translation_text_hash": "16f9a63da9c22a6d47bf475b26d86625fc07ea54bea727be71b588920d6debac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 용사시니 여호와는 그의 이름이시로다"
+      ],
+      "raw_text_hashes": [
+        "16f9a63da9c22a6d47bf475b26d86625fc07ea54bea727be71b588920d6debac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:4",
+      "sequence": 1925,
+      "chapter_label": "EXO 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "He has cast Pharaoh’s chariots and his army into the sea. His chosen captains are sunk in the Red Sea.",
+      "ko": "그가 바로의 병거와 그 군대를 바다에 던지시니 그 택한 장관이 홍해에 잠겼고",
+      "source_text_hash": "f52cbf57ce130f7e90e6bed7610a5bdc8c35b1cdce8b2dc0f2d945cdcaff1857",
+      "translation_text_hash": "4b478bdaa12681dcf69db44a87c2c28e952daa9598b9061a634d03b97b776456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 바로의 병거와 그 군대를 바다에 던지시니 그 택한 장관이 홍해에 잠겼고"
+      ],
+      "raw_text_hashes": [
+        "4b478bdaa12681dcf69db44a87c2c28e952daa9598b9061a634d03b97b776456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:5",
+      "sequence": 1926,
+      "chapter_label": "EXO 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "The deeps cover them. They went down into the depths like a stone.",
+      "ko": "큰 물이 그들을 덮으니 그들이 돌처럼 깊음에 내렸도다",
+      "source_text_hash": "24969be720e64285215ea068074522fb2597ea4ad4341e9c511aa81ffe821a55",
+      "translation_text_hash": "2a239e7b8e98276fb8150931e6da11dc6dfb2518070ac8d8972e8fb60bf1d72b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 물이 그들을 덮으니 그들이 돌처럼 깊음에 내렸도다"
+      ],
+      "raw_text_hashes": [
+        "2a239e7b8e98276fb8150931e6da11dc6dfb2518070ac8d8972e8fb60bf1d72b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:6",
+      "sequence": 1927,
+      "chapter_label": "EXO 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Your right hand, LORD, is glorious in power. Your right hand, LORD, dashes the enemy in pieces.",
+      "ko": "여호와여 주의 오른손이 권능으로 영광을 나타내시니이다 여호와여 주의 오른손이 원수를 부수시니이다",
+      "source_text_hash": "0ef88641717e455c8a5d6fd1ab1c6f1000e552d9dc6492cb0d9c5eb9cd3e1b37",
+      "translation_text_hash": "fe4b1fa550b12dd0ade516967888d953fefbfb2e8f097985732a88f3581bfdd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 오른손이 권능으로 영광을 나타내시니이다 여호와여 주의 오른손이 원수를 부수시니이다"
+      ],
+      "raw_text_hashes": [
+        "fe4b1fa550b12dd0ade516967888d953fefbfb2e8f097985732a88f3581bfdd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:7",
+      "sequence": 1928,
+      "chapter_label": "EXO 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "In the greatness of your excellency, you overthrow those who rise up against you. You send out your wrath. It consumes them as stubble.",
+      "ko": "주께서 주의 큰 위엄으로 주를 거스리는 자를 엎으시니이다 주께서 진노를 발하시니 그 진노가 그들을 초개 같이 사르니이다",
+      "source_text_hash": "e2c9527e2a739e4d9010a704264bda5874565bb0d990530a0b05a931ed528ff8",
+      "translation_text_hash": "bb8491dddbfc275ab596816cb1cd1010849bd0b533c6b6340c9d34e3f3990046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 큰 위엄으로 주를 거스리는 자를 엎으시니이다 주께서 진노를 발하시니 그 진노가 그들을 초개 같이 사르니이다"
+      ],
+      "raw_text_hashes": [
+        "bb8491dddbfc275ab596816cb1cd1010849bd0b533c6b6340c9d34e3f3990046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:8",
+      "sequence": 1929,
+      "chapter_label": "EXO 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "With the blast of your nostrils, the waters were piled up. The floods stood upright as a heap. The deeps were congealed in the heart of the sea.",
+      "ko": "주의 콧김에 물이 쌓이되 파도가 언덕 같이 일어서고 큰 물이 바다 가운데 엉기니이다",
+      "source_text_hash": "28765255d42fcb243618a8adb8c04751e3bf52ac7729a09b931e52a258c42d08",
+      "translation_text_hash": "85e6ba0fcf2878bc7bb8af04b8c8c648c766750902f0cf3850fb13cd4a904597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 콧김에 물이 쌓이되 파도가 언덕 같이 일어서고 큰 물이 바다 가운데 엉기니이다"
+      ],
+      "raw_text_hashes": [
+        "85e6ba0fcf2878bc7bb8af04b8c8c648c766750902f0cf3850fb13cd4a904597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:9",
+      "sequence": 1930,
+      "chapter_label": "EXO 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "The enemy said, ‘I will pursue. I will overtake. I will divide the plunder. My desire will be satisfied on them. I will draw my sword. My hand will destroy them.’",
+      "ko": "대적의 말이 내가 쫓아 미쳐 탈취물을 나누리라, 내가 그들로 인하여 내 마음을 채우리라, 내가 내 칼을 빼리니 내 손이 그들을 멸하리라 하였으나",
+      "source_text_hash": "4f28e9dff5a2902c70959bf6736cad0613ad267dd08be6e26334a838a2a07451",
+      "translation_text_hash": "23b3fe559c73f582b18034f08d8b21490335c4ffa2d40baf4e019ed60cd18301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적의 말이 내가 쫓아 미쳐 탈취물을 나누리라, 내가 그들로 인하여 내 마음을 채우리라, 내가 내 칼을 빼리니 내 손이 그들을 멸하리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "23b3fe559c73f582b18034f08d8b21490335c4ffa2d40baf4e019ed60cd18301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:10",
+      "sequence": 1931,
+      "chapter_label": "EXO 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "You blew with your wind. The sea covered them. They sank like lead in the mighty waters.",
+      "ko": "주께서 주의 바람을 일으키시매 바다가 그들을 덮으니 그들이 흉용한 물에 납 같이 잠겼나이다",
+      "source_text_hash": "4dd228c9348ea51ceb71dd25281853d3fd5a08cc2fe4f9d518958254454d953e",
+      "translation_text_hash": "3fbc38211f6e0b0663cfb750c54657fc0b4e749d690720cf89f43a5c84639b92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 바람을 일으키시매 바다가 그들을 덮으니 그들이 흉용한 물에 납 같이 잠겼나이다"
+      ],
+      "raw_text_hashes": [
+        "3fbc38211f6e0b0663cfb750c54657fc0b4e749d690720cf89f43a5c84639b92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:11",
+      "sequence": 1932,
+      "chapter_label": "EXO 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Who is like you, LORD, among the gods? Who is like you, glorious in holiness, fearful in praises, doing wonders?",
+      "ko": "여호와여 신 중에 주와 같은 자 누구니이까 주와 같이 거룩함에 영광스러우며 찬송할만한 위엄이 있으며 기이한 일을 행하는 자 누구니이까",
+      "source_text_hash": "e3d5f96960607fa494930503755c4187d98acbfd27e3c333df2ba036c801afe5",
+      "translation_text_hash": "9cf743d2541c6d06d3ad6408b86c96077d32cb0ee9b9bd4f8dea3c940eaaf6c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 신 중에 주와 같은 자 누구니이까 주와 같이 거룩함에 영광스러우며 찬송할만한 위엄이 있으며 기이한 일을 행하는 자 누구니이까"
+      ],
+      "raw_text_hashes": [
+        "9cf743d2541c6d06d3ad6408b86c96077d32cb0ee9b9bd4f8dea3c940eaaf6c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:12",
+      "sequence": 1933,
+      "chapter_label": "EXO 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "You stretched out your right hand. The earth swallowed them.",
+      "ko": "주께서 오른손을 드신즉 땅이 그들을 삼켰나이다",
+      "source_text_hash": "b2195b8fe6036eb73bc2f29eb2fac28cce35f050f178e148b8c259350a67e1c9",
+      "translation_text_hash": "ce48e0286182d2835e4dee86b2e0be25bcd9c198615b8acaa3381eb858873d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 오른손을 드신즉 땅이 그들을 삼켰나이다"
+      ],
+      "raw_text_hashes": [
+        "ce48e0286182d2835e4dee86b2e0be25bcd9c198615b8acaa3381eb858873d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:13",
+      "sequence": 1934,
+      "chapter_label": "EXO 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "“You, in your loving kindness, have led the people that you have redeemed. You have guided them in your strength to your holy habitation.",
+      "ko": "주께서 그 구속하신 백성을 은혜로 인도하시되 주의 힘으로 그들을 주의 성결한 처소에 들어가게 하시나이다",
+      "source_text_hash": "72cd166c0f2ae4c36ec957789f1ff5dae8b22eeba6aa112498987329748659a6",
+      "translation_text_hash": "6fc3c7fb316d7cf7cdde3dbb1d72dbe49c943b43d3302fc01ccbc079e201ddcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그 구속하신 백성을 은혜로 인도하시되 주의 힘으로 그들을 주의 성결한 처소에 들어가게 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "6fc3c7fb316d7cf7cdde3dbb1d72dbe49c943b43d3302fc01ccbc079e201ddcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:14",
+      "sequence": 1935,
+      "chapter_label": "EXO 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "The peoples have heard. They tremble. Pangs have taken hold of the inhabitants of Philistia.",
+      "ko": "열방이 듣고 떨며 블레셋 거민이 두려움에 잡히며",
+      "source_text_hash": "8f39a1ed5b689ccb8039f85a73ec7f59a71b6b6b08ecd4c1f090c4b407ac8867",
+      "translation_text_hash": "d0c2709971fe5216e5089e32c83f908ff4388896b151eef36eabfcd7306c5767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이 듣고 떨며 블레셋 거민이 두려움에 잡히며"
+      ],
+      "raw_text_hashes": [
+        "d0c2709971fe5216e5089e32c83f908ff4388896b151eef36eabfcd7306c5767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:15",
+      "sequence": 1936,
+      "chapter_label": "EXO 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Then the chiefs of Edom were dismayed. Trembling takes hold of the mighty men of Moab. All the inhabitants of Canaan have melted away.",
+      "ko": "에돔 방백이 놀라고 모압 영웅이 떨림에 잡히며 가나안 거민이 다 낙담하나이다",
+      "source_text_hash": "57a222eb5a4e694b2cd6a81e9e66e81326f96462027f3e91bab803d753c79f8f",
+      "translation_text_hash": "c5bee1ebca332dfa759ef16c8389c43c5b8c0aa292cc439d0b88235fb110dab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔 방백이 놀라고 모압 영웅이 떨림에 잡히며 가나안 거민이 다 낙담하나이다"
+      ],
+      "raw_text_hashes": [
+        "c5bee1ebca332dfa759ef16c8389c43c5b8c0aa292cc439d0b88235fb110dab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:16",
+      "sequence": 1937,
+      "chapter_label": "EXO 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Terror and dread falls on them. By the greatness of your arm they are as still as a stone, until your people pass over, LORD, until the people you have purchased pass over.",
+      "ko": "놀람과 두려움이 그들에게 미치매 주의 팔이 큼을 인하여 그들이 돌같이 고요하였사오되 여호와여 주의 백성이 통과하기까지 곧 주의 사신 백성이 통과하기까지였나이다",
+      "source_text_hash": "90dd99d602c257b1a3271b3ad4e78cffad0b79131acf4b72470dbe0b1c47298f",
+      "translation_text_hash": "c4f50b9bcd437438a73d806e30ba6e8001ab268cc0efd4f859bb15ac8a20c6b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "놀람과 두려움이 그들에게 미치매 주의 팔이 큼을 인하여 그들이 돌같이 고요하였사오되 여호와여 주의 백성이 통과하기까지 곧 주의 사신 백성이 통과하기까지였나이다"
+      ],
+      "raw_text_hashes": [
+        "c4f50b9bcd437438a73d806e30ba6e8001ab268cc0efd4f859bb15ac8a20c6b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:17",
+      "sequence": 1938,
+      "chapter_label": "EXO 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "You will bring them in, and plant them in the mountain of your inheritance, the place, LORD, which you have made for yourself to dwell in: the sanctuary, Lord, which your hands have established.",
+      "ko": "주께서 백성을 인도하사 그들을 주의 기업의 산에 심으시리이다 여호와여 이는 주의 처소를 삼으시려고 예비하신 것이라 주여 이것이 주의 손으로 세우신 성소로소이다",
+      "source_text_hash": "e781e94cecb0151a29d450b0feec64febdba1f3c44feb75753e246c394aaf865",
+      "translation_text_hash": "7ce29dc95ef94984ea5a5d23fbc5cc3f12d2b0e94920dea3c8cda1697b2773ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 백성을 인도하사 그들을 주의 기업의 산에 심으시리이다 여호와여 이는 주의 처소를 삼으시려고 예비하신 것이라 주여 이것이 주의 손으로 세우신 성소로소이다"
+      ],
+      "raw_text_hashes": [
+        "7ce29dc95ef94984ea5a5d23fbc5cc3f12d2b0e94920dea3c8cda1697b2773ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:18",
+      "sequence": 1939,
+      "chapter_label": "EXO 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD will reign forever and ever.”",
+      "ko": "여호와의 다스리심이 영원무궁하시도다 하였더라",
+      "source_text_hash": "44c587b2efe73e700a8160921b6ccb9ede61a584fc25e05c9a4e23bf77d7e0e3",
+      "translation_text_hash": "858222c1dc0cc8027e679ac634ea4306595a5154440339af0ee4ae4128e9df21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 다스리심이 영원무궁하시도다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "858222c1dc0cc8027e679ac634ea4306595a5154440339af0ee4ae4128e9df21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:19",
+      "sequence": 1940,
+      "chapter_label": "EXO 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "For the horses of Pharaoh went in with his chariots and with his horsemen into the sea, and the LORD brought back the waters of the sea on them; but the children of Israel walked on dry land in the middle of the sea.",
+      "ko": "바로의 말과 병거와 마병이 함께 바다에 들어가매 여호와께서 바닷물로 그들 위에 돌이켜 흐르게 하셨으나 이스라엘 자손은 바다 가운데서 육지로 행한지라",
+      "source_text_hash": "34eddcb92e83add38b141bae5d215d44b91ca75a29058942f2159802924f04ef",
+      "translation_text_hash": "237645dd1b6184735ad3f8149eb5cf5b2dd055a7723134b8602eb382d43c43f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 말과 병거와 마병이 함께 바다에 들어가매 여호와께서 바닷물로 그들 위에 돌이켜 흐르게 하셨으나 이스라엘 자손은 바다 가운데서 육지로 행한지라"
+      ],
+      "raw_text_hashes": [
+        "237645dd1b6184735ad3f8149eb5cf5b2dd055a7723134b8602eb382d43c43f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:20",
+      "sequence": 1941,
+      "chapter_label": "EXO 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Miriam the prophetess, the sister of Aaron, took a tambourine in her hand; and all the women went out after her with tambourines and with dances.",
+      "ko": "아론의 누이 선지자 미리암이 손에 소고를 잡으매 모든 여인도 그를 따라 나오며 소고를 잡고 춤추니",
+      "source_text_hash": "56f0bbf144d141b98f2a8ee4e202daf2eb91aaa135350c762359c3bf09c36ede",
+      "translation_text_hash": "dde483eda33d0a2504d0d81ce529d09859cb2d6e1508da57624f8e9253c06bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 누이 선지자 미리암이 손에 소고를 잡으매 모든 여인도 그를 따라 나오며 소고를 잡고 춤추니"
+      ],
+      "raw_text_hashes": [
+        "dde483eda33d0a2504d0d81ce529d09859cb2d6e1508da57624f8e9253c06bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:21",
+      "sequence": 1942,
+      "chapter_label": "EXO 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Miriam answered them, “Sing to the LORD, for he has triumphed gloriously. He has thrown the horse and his rider into the sea.”",
+      "ko": "미리암이 그들에게 화답하여 가로되 너희는 여호와를 찬송하라 그는 높고 영화로우심이요 말과 그 탄 자를 바다에 던지셨음이로다 하였더라",
+      "source_text_hash": "7ab19a3fcd816d26786ac2be70b2b6a85f10e079a3d65c3e6cc2be3e794cc013",
+      "translation_text_hash": "4f94434dde4d1dc4c8e57d280db86a6d311635d05ad1c342aa2f54e21aaad5a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미리암이 그들에게 화답하여 가로되 너희는 여호와를 찬송하라 그는 높고 영화로우심이요 말과 그 탄 자를 바다에 던지셨음이로다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "4f94434dde4d1dc4c8e57d280db86a6d311635d05ad1c342aa2f54e21aaad5a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:22",
+      "sequence": 1943,
+      "chapter_label": "EXO 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Moses led Israel onward from the Red Sea, and they went out into the wilderness of Shur; and they went three days in the wilderness, and found no water.",
+      "ko": "모세가 홍해에서 이스라엘을 인도하매 그들이 나와서 수르 광야로 들어가서 거기서 사흘길을 행하였으나 물을 얻지 못하고",
+      "source_text_hash": "516e71a32d7ec9379d10baa110f58780cda0a5cd71228b48d5cef41fac4543ed",
+      "translation_text_hash": "6a284debe360ca918442544aab608d1db51871b8885b4ec917501eefb9c7df17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 홍해에서 이스라엘을 인도하매 그들이 나와서 수르 광야로 들어가서 거기서 사흘길을 행하였으나 물을 얻지 못하고"
+      ],
+      "raw_text_hashes": [
+        "6a284debe360ca918442544aab608d1db51871b8885b4ec917501eefb9c7df17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:23",
+      "sequence": 1944,
+      "chapter_label": "EXO 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "When they came to Marah, they couldn’t drink from the waters of Marah, for they were bitter. Therefore its name was called Marah.",
+      "ko": "마라에 이르렀더니 그곳 물이 써서 마시지 못하겠으므로 그 이름을 마라라 하였더라",
+      "source_text_hash": "6defb21670d6e3c35575fda32fc390a9cd0a916f41e35d69d3107f105a23f7a2",
+      "translation_text_hash": "aaef06913a87312db663552897892c3cbc699585c1817811a445941f8e87b680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마라에 이르렀더니 그곳 물이 써서 마시지 못하겠으므로 그 이름을 마라라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "aaef06913a87312db663552897892c3cbc699585c1817811a445941f8e87b680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:24",
+      "sequence": 1945,
+      "chapter_label": "EXO 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "The people murmured against Moses, saying, “What shall we drink?”",
+      "ko": "백성이 모세를 대하여 원망하여 가로되 우리가 무엇을 마실까 하매",
+      "source_text_hash": "71b8e709d9ab48b25a8c7d160bee487827c1985bd4c32b88115ef371ee8ed659",
+      "translation_text_hash": "5323aa2cf28bd0c3b27f5aeda03d0df35de4132d3363af0b89974fbd1b21364e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세를 대하여 원망하여 가로되 우리가 무엇을 마실까 하매"
+      ],
+      "raw_text_hashes": [
+        "5323aa2cf28bd0c3b27f5aeda03d0df35de4132d3363af0b89974fbd1b21364e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:25",
+      "sequence": 1946,
+      "chapter_label": "EXO 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "Then he cried to the LORD. The LORD showed him a tree, and he threw it into the waters, and the waters were made sweet. There he made a statute and an ordinance for them, and there he tested them.",
+      "ko": "모세가 여호와께 부르짖었더니 여호와께서 그에게 한 나무를 지시하시니 그가 물에 던지매 물이 달아졌더라 거기서 여호와께서 그들을 위하여 법도와 율례를 정하시고 그들을 시험하실쌔",
+      "source_text_hash": "ec840eb51c1a148e97c58042d223336e8cbe7e79a0c4a9cf00caeac2c71fb1b2",
+      "translation_text_hash": "478f22a41a27d4daf93b0b3c4b72cb99e0e357bea0accf0fbe88c9c0921a2fa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 부르짖었더니 여호와께서 그에게 한 나무를 지시하시니 그가 물에 던지매 물이 달아졌더라 거기서 여호와께서 그들을 위하여 법도와 율례를 정하시고 그들을 시험하실쌔"
+      ],
+      "raw_text_hashes": [
+        "478f22a41a27d4daf93b0b3c4b72cb99e0e357bea0accf0fbe88c9c0921a2fa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:26",
+      "sequence": 1947,
+      "chapter_label": "EXO 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "He said, “If you will diligently listen to the LORD your God’s voice, and will do that which is right in his eyes, and will pay attention to his commandments, and keep all his statutes, I will put none of the diseases on you which I have put on the Egyptians; for I am the LORD who heals you.”",
+      "ko": "가라사대 너희가 너희 하나님 나 여호와의 말을 청종하고 나의 보기에 의를 행하며 내 계명에 귀를 기울이며 내 모든 규례를 지키면 내가 애굽 사람에게 내린 모든 질병의 하나도 너희에게 내리지 아니하리니 나는 너희를 치료하는 여호와임이니라",
+      "source_text_hash": "d1bd54561b496f1c49c8d77ab15cc61fa4c94823c3ec972d23236f3a95e18a4f",
+      "translation_text_hash": "021e61258238bc4103dbfcee4d80d637c9957e823cd550d13fdac267a2e2916f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희가 너희 하나님 나 여호와의 말을 청종하고 나의 보기에 의를 행하며 내 계명에 귀를 기울이며 내 모든 규례를 지키면 내가 애굽 사람에게 내린 모든 질병의 하나도 너희에게 내리지 아니하리니 나는 너희를 치료하는 여호와임이니라"
+      ],
+      "raw_text_hashes": [
+        "021e61258238bc4103dbfcee4d80d637c9957e823cd550d13fdac267a2e2916f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:15:27",
+      "sequence": 1948,
+      "chapter_label": "EXO 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "They came to Elim, where there were twelve springs of water and seventy palm trees. They encamped there by the waters.",
+      "ko": "그들이 엘림에 이르니 거기 물샘 열 둘과 종려 칠십주가 있는지라 거기서 그들이 그 물 곁에 장막을 치니라",
+      "source_text_hash": "da885c85b7ec13114f841cb6f2ed2c0ed352ec03797ea26a8dfe3409c4c3c891",
+      "translation_text_hash": "3303d373bbba746b8b747cb66c666aaff2c42a1cc6be975dc43ef025ed013143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 엘림에 이르니 거기 물샘 열 둘과 종려 칠십주가 있는지라 거기서 그들이 그 물 곁에 장막을 치니라"
+      ],
+      "raw_text_hashes": [
+        "3303d373bbba746b8b747cb66c666aaff2c42a1cc6be975dc43ef025ed013143"
+      ]
+    }
+  ]
+}

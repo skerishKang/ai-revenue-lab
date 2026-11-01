@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:122",
+  "unit_ordinal": 600,
+  "unit_label": "PSA 122",
+  "book_code": "PSA",
+  "chapter_number": 122,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:122:1",
+      "sequence": 16091,
+      "chapter_label": "PSA 122",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 1
+        }
+      ],
+      "en": "I was glad when they said to me, “Let’s go to the LORD’s house!”",
+      "ko": "사람이 내게 말하기를 여호와의 집에 올라가자 할 때에 내가 기뻐하였도다",
+      "source_text_hash": "cd18b784d9a58a583fddd1e179adb884b5a19196e270023c7227aa9d63387a35",
+      "translation_text_hash": "0ee2ba98b5fc0f6caf9f3f1d59fc691b6a61ab9c2b6740d022738c4484bfc5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 내게 말하기를 여호와의 집에 올라가자 할 때에 내가 기뻐하였도다"
+      ],
+      "raw_text_hashes": [
+        "0ee2ba98b5fc0f6caf9f3f1d59fc691b6a61ab9c2b6740d022738c4484bfc5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:2",
+      "sequence": 16092,
+      "chapter_label": "PSA 122",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 2
+        }
+      ],
+      "en": "Our feet are standing within your gates, Jerusalem!",
+      "ko": "예루살렘아 우리 발이 네 성문 안에 섰도다",
+      "source_text_hash": "d743588f6c0f694d8fc431a32f9316e7a04eb751de5ed6a4316627a77215a5c8",
+      "translation_text_hash": "82692ffdb0506f414ebab01a12eede6080bc649bcd5503562cbf72b9e08e0587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 우리 발이 네 성문 안에 섰도다"
+      ],
+      "raw_text_hashes": [
+        "82692ffdb0506f414ebab01a12eede6080bc649bcd5503562cbf72b9e08e0587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:3",
+      "sequence": 16093,
+      "chapter_label": "PSA 122",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 3
+        }
+      ],
+      "en": "Jerusalem is built as a city that is compact together,",
+      "ko": "예루살렘아 너는 조밀한 성읍과 같이 건설되었도다",
+      "source_text_hash": "38273600726207b6f722c87f5003a370f9920f0fc5b7f5f6119c256ec6dc8d28",
+      "translation_text_hash": "f31fe1a473bdfdcc11f8d88084058e0600d8141aa06aa308b106d8475067555c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 너는 조밀한 성읍과 같이 건설되었도다"
+      ],
+      "raw_text_hashes": [
+        "f31fe1a473bdfdcc11f8d88084058e0600d8141aa06aa308b106d8475067555c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:4",
+      "sequence": 16094,
+      "chapter_label": "PSA 122",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 4
+        }
+      ],
+      "en": "where the tribes go up, even the LORD’s tribes, according to an ordinance for Israel, to give thanks to the LORD’s name.",
+      "ko": "지파들 곧 여호와의 지파들이 여호와의 이름에 감사하려고 이스라엘의 전례대로 그리로 올라가는도다",
+      "source_text_hash": "7f2d4c76b79467036a3eae108b63381d5b0395b68173368c710c7ef3535df949",
+      "translation_text_hash": "6fa9fab132930e6231c0859868e3473b9b7fc5e6abddea93a1b48b03164b0285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지파들 곧 여호와의 지파들이 여호와의 이름에 감사하려고 이스라엘의 전례대로 그리로 올라가는도다"
+      ],
+      "raw_text_hashes": [
+        "6fa9fab132930e6231c0859868e3473b9b7fc5e6abddea93a1b48b03164b0285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:5",
+      "sequence": 16095,
+      "chapter_label": "PSA 122",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 5
+        }
+      ],
+      "en": "For there are set thrones for judgment, the thrones of David’s house.",
+      "ko": "거기 판단의 보좌를 두셨으니 곧 다윗 집의 보좌로다",
+      "source_text_hash": "487c8909cf82b656304f6b14bbc9d1e7e841e24adffaec2ebe98fcae30b8f079",
+      "translation_text_hash": "bdd6a7bf94363778b531eb5c7715edfdd8f83389233cbf1440526c28711cdad2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 판단의 보좌를 두셨으니 곧 다윗 집의 보좌로다"
+      ],
+      "raw_text_hashes": [
+        "bdd6a7bf94363778b531eb5c7715edfdd8f83389233cbf1440526c28711cdad2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:6",
+      "sequence": 16096,
+      "chapter_label": "PSA 122",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 6
+        }
+      ],
+      "en": "Pray for the peace of Jerusalem. Those who love you will prosper.",
+      "ko": "예루살렘을 위하여 평안을 구하라 예루살렘을 사랑하는 자는 형통하리로다",
+      "source_text_hash": "7cccc73861f430fc5e5185a6d74ada6ff8f006a6380af405275b406b94a2d9bd",
+      "translation_text_hash": "b987e9f1f57d1c7275a3909e8cb563ef6806ea7b6c2f937258ddf96a904649f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘을 위하여 평안을 구하라 예루살렘을 사랑하는 자는 형통하리로다"
+      ],
+      "raw_text_hashes": [
+        "b987e9f1f57d1c7275a3909e8cb563ef6806ea7b6c2f937258ddf96a904649f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:7",
+      "sequence": 16097,
+      "chapter_label": "PSA 122",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 7
+        }
+      ],
+      "en": "Peace be within your walls, and prosperity within your palaces.",
+      "ko": "네 성 안에는 평강이 있고 네 궁중에는 형통이 있을찌어다",
+      "source_text_hash": "d673618997929a60b405760f8dbbc47d076bc25738cefcd2989e0aaef107c8b5",
+      "translation_text_hash": "34af471580c4af7d5f6f9af768aa5555ea9ed44034038e925a886608f68f40cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 성 안에는 평강이 있고 네 궁중에는 형통이 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "34af471580c4af7d5f6f9af768aa5555ea9ed44034038e925a886608f68f40cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:8",
+      "sequence": 16098,
+      "chapter_label": "PSA 122",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 8
+        }
+      ],
+      "en": "For my brothers’ and companions’ sakes, I will now say, “Peace be within you.”",
+      "ko": "내가 내 형제와 붕우를 위하여 이제 말하리니 네 가운데 평강이 있을찌어다",
+      "source_text_hash": "ef9cc899147e32249ab689b9f12aab8692b70dcda694b2975c001eef3038bd68",
+      "translation_text_hash": "cd179085d4d3fca728d5e6ebf254a9fcc65b086474fdae5febd04a36f9d615f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 형제와 붕우를 위하여 이제 말하리니 네 가운데 평강이 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "cd179085d4d3fca728d5e6ebf254a9fcc65b086474fdae5febd04a36f9d615f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:122:9",
+      "sequence": 16099,
+      "chapter_label": "PSA 122",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 122,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 122,
+          "verse": 9
+        }
+      ],
+      "en": "For the sake of the house of the LORD our God, I will seek your good.",
+      "ko": "여호와 우리 하나님의 집을 위하여 내가 네 복을 구하리로다",
+      "source_text_hash": "94cdf21a922b4ca180085a4264242e061532336aa4257f0e6acc199fcc165192",
+      "translation_text_hash": "37bfbc12d7f735ceeff20be04c49e0dc4ed3eb714b0ebf0cd04cebc2007aa2b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 하나님의 집을 위하여 내가 네 복을 구하리로다"
+      ],
+      "raw_text_hashes": [
+        "37bfbc12d7f735ceeff20be04c49e0dc4ed3eb714b0ebf0cd04cebc2007aa2b0"
+      ]
+    }
+  ]
+}

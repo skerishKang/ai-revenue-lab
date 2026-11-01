@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TI:chapter:002",
+  "unit_ordinal": 1127,
+  "unit_label": "2TI 2",
+  "book_code": "2TI",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TI:2:1",
+      "sequence": 29825,
+      "chapter_label": "2TI 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "You therefore, my child, be strengthened in the grace that is in Christ Jesus.",
+      "ko": "내 아들아 그러므로 네가 그리스도 예수 안에 있는 은혜 속에서 강하고",
+      "source_text_hash": "b0fb896f2c5e4ceb8f0d2c384e031853553067c246e379324bc2a79d2c8977a6",
+      "translation_text_hash": "3771fcfd00b4c0532b82c72a466d4b66a7598d6b735717e04194552837ea55e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 그러므로 네가 그리스도 예수 안에 있는 은혜 속에서 강하고"
+      ],
+      "raw_text_hashes": [
+        "3771fcfd00b4c0532b82c72a466d4b66a7598d6b735717e04194552837ea55e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:2",
+      "sequence": 29826,
+      "chapter_label": "2TI 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The things which you have heard from me among many witnesses, commit the same things to faithful men who will be able to teach others also.",
+      "ko": "또 네가 많은 증인 앞에서 내게 들은 바를 충성된 사람들에게 부탁하라 저희가 또 다른 사람들을 가르칠수 있으리라",
+      "source_text_hash": "740c5ba4756b7dea48b56809670d1f37f45bd9debc6a6283eb629b13e7e93c79",
+      "translation_text_hash": "debebec117394041b94200293902cde221b4a46a1ef368ef844a7403830528fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 많은 증인 앞에서 내게 들은 바를 충성된 사람들에게 부탁하라 저희가 또 다른 사람들을 가르칠수 있으리라"
+      ],
+      "raw_text_hashes": [
+        "debebec117394041b94200293902cde221b4a46a1ef368ef844a7403830528fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:3",
+      "sequence": 29827,
+      "chapter_label": "2TI 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "You therefore must endure hardship as a good soldier of Christ Jesus.",
+      "ko": "네가 그리스도 예수의 좋은 군사로 나와 함께 고난을 받을찌니",
+      "source_text_hash": "4d9a76c144eded44852a075d3300f6df433755ef17f4a9c2d21c3a52b21e69d1",
+      "translation_text_hash": "efbc9adb7263a26cd707f8a6135da78f55c6d4dfe4b3bc291600f347f777fd33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그리스도 예수의 좋은 군사로 나와 함께 고난을 받을찌니"
+      ],
+      "raw_text_hashes": [
+        "efbc9adb7263a26cd707f8a6135da78f55c6d4dfe4b3bc291600f347f777fd33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:4",
+      "sequence": 29828,
+      "chapter_label": "2TI 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "No soldier on duty entangles himself in the affairs of life, that he may please him who enrolled him as a soldier.",
+      "ko": "군사로 다니는 자는 자기 생활에 얽매이는 자가 하나도 없나니 이는 군사로 모집한 자를 기쁘게 하려 함이라",
+      "source_text_hash": "9ac8651db7b1357f9fe04cae530782b01a87468621819da283b86b0fb9584825",
+      "translation_text_hash": "079ae601b2411532884fa0d6be50e6beaed2dce1c5dfb0ef8ef32c02889c28f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군사로 다니는 자는 자기 생활에 얽매이는 자가 하나도 없나니 이는 군사로 모집한 자를 기쁘게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "079ae601b2411532884fa0d6be50e6beaed2dce1c5dfb0ef8ef32c02889c28f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:5",
+      "sequence": 29829,
+      "chapter_label": "2TI 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Also, if anyone competes in athletics, he isn’t crowned unless he has competed by the rules.",
+      "ko": "경기하는 자가 법대로 경기하지 아니하면 면류관을 얻지 못할 것이며",
+      "source_text_hash": "910be200d931d6a86951597fe247216feed496c3c60c7b3e17cb649951e57cc1",
+      "translation_text_hash": "bb4299b09ffb11cb04ee45611cf417a6ddac55b394204fd7b67af6a45c380231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경기하는 자가 법대로 경기하지 아니하면 면류관을 얻지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "bb4299b09ffb11cb04ee45611cf417a6ddac55b394204fd7b67af6a45c380231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:6",
+      "sequence": 29830,
+      "chapter_label": "2TI 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The farmer who labors must be the first to get a share of the crops.",
+      "ko": "수고하는 농부가 곡식을 먼저 받는 것이 마땅하니라",
+      "source_text_hash": "2af36452fece5a3ba65d5e92e5a1a5fd7dc0172662c37431bc824746b09bb382",
+      "translation_text_hash": "996d1897fcc2e28459a24e8ab7997148f00f0672b7a07dd187ff14c5ba8aa241",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수고하는 농부가 곡식을 먼저 받는 것이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "996d1897fcc2e28459a24e8ab7997148f00f0672b7a07dd187ff14c5ba8aa241"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:7",
+      "sequence": 29831,
+      "chapter_label": "2TI 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Consider what I say, and may the Lord give you understanding in all things.",
+      "ko": "내 말하는 것을 생각하라 주께서 범사에 네게 총명을 주시리라",
+      "source_text_hash": "7f185796c276e802d75a761374c2c2bc8939be03af99a9175089cac7549ab819",
+      "translation_text_hash": "806d6a937f96eeea8a84f5c09b23da7f66c085f79c364238c4e76a3c3c432f0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 말하는 것을 생각하라 주께서 범사에 네게 총명을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "806d6a937f96eeea8a84f5c09b23da7f66c085f79c364238c4e76a3c3c432f0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:8",
+      "sequence": 29832,
+      "chapter_label": "2TI 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Remember Jesus Christ, risen from the dead, of the offspring of David, according to my Good News,",
+      "ko": "나의 복음과 같이 다윗의 씨로 죽은 자 가운데서 다시 살으신 예수 그리스도를 기억하라",
+      "source_text_hash": "05b1b9b6a3c1538c7b88e365b2a618e21d785309f94a389805b6b5d00cc29a40",
+      "translation_text_hash": "66b0135531aed797f6012167c6cc5536b1f97cdca2c3d16cb759390eea4c364e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 복음과 같이 다윗의 씨로 죽은 자 가운데서 다시 살으신 예수 그리스도를 기억하라"
+      ],
+      "raw_text_hashes": [
+        "66b0135531aed797f6012167c6cc5536b1f97cdca2c3d16cb759390eea4c364e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:9",
+      "sequence": 29833,
+      "chapter_label": "2TI 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "in which I suffer hardship to the point of chains as a criminal. But God’s word isn’t chained.",
+      "ko": "복음을 인하여 내가 죄인과 같이 매이는 데까지 고난을 받았으나 하나님의 말씀은 매이지 아니하니라",
+      "source_text_hash": "c6045fcb1ed664c874edb7d73a57c5b22309e59c1b2fe546ba3ca1c5b2443852",
+      "translation_text_hash": "f3fc1fb19eb08d9fd7a9f71be0f25e9872aaad0f840d8b7a2677464bf7be7253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복음을 인하여 내가 죄인과 같이 매이는 데까지 고난을 받았으나 하나님의 말씀은 매이지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "f3fc1fb19eb08d9fd7a9f71be0f25e9872aaad0f840d8b7a2677464bf7be7253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:10",
+      "sequence": 29834,
+      "chapter_label": "2TI 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore I endure all things for the chosen ones’ sake, that they also may obtain the salvation which is in Christ Jesus with eternal glory.",
+      "ko": "그러므로 내가 택하신 자를 위하여 모든 것을 참음은 저희로도 그리스도 예수 안에 있는 구원을 영원한 영광과 함께 얻게 하려 함이로라",
+      "source_text_hash": "eb8c0a1aea2d320028de8bc682580e246a7f29abd61fb40e0fa39f57ee54147a",
+      "translation_text_hash": "60e2c3d0beffd052dd2c9a94e87b5dbc918a8ca6a3108e00e22714b28ef60f91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 택하신 자를 위하여 모든 것을 참음은 저희로도 그리스도 예수 안에 있는 구원을 영원한 영광과 함께 얻게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "60e2c3d0beffd052dd2c9a94e87b5dbc918a8ca6a3108e00e22714b28ef60f91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:11",
+      "sequence": 29835,
+      "chapter_label": "2TI 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "This saying is trustworthy: “For if we died with him, we will also live with him.",
+      "ko": "미쁘다 이 말이여, 우리가 주와 함께 죽었으면 또한 함께 살 것이요",
+      "source_text_hash": "66e624a766a822ad8861cb039ad6003b1a191f5428e52e914df37ef5591cee43",
+      "translation_text_hash": "3c01322b82fddcbec57f06044d4bdec66702b733279aba34f39a791abac21931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미쁘다 이 말이여, 우리가 주와 함께 죽었으면 또한 함께 살 것이요"
+      ],
+      "raw_text_hashes": [
+        "3c01322b82fddcbec57f06044d4bdec66702b733279aba34f39a791abac21931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:12",
+      "sequence": 29836,
+      "chapter_label": "2TI 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "If we endure, we will also reign with him. If we deny him, he also will deny us.",
+      "ko": "참으면 또한 함께 왕노릇할 것이요 우리가 주를 부인하면 주도 우리를 부인하실 것이라",
+      "source_text_hash": "d336fa54f4eb7211d1ffae9c588a8280faa712e43a4db83c03a649f2909f8eff",
+      "translation_text_hash": "0ea1dadcb14b80fc8489ccca8b06aa5733b5e8216dc10542e7c0ee7921d91f11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참으면 또한 함께 왕노릇할 것이요 우리가 주를 부인하면 주도 우리를 부인하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "0ea1dadcb14b80fc8489ccca8b06aa5733b5e8216dc10542e7c0ee7921d91f11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:13",
+      "sequence": 29837,
+      "chapter_label": "2TI 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "If we are faithless, he remains faithful; for he can’t deny himself.”",
+      "ko": "우리는 미쁨이 없을찌라도 주는 일향 미쁘시니 자기를 부인하실 수 없으시리라",
+      "source_text_hash": "0ba64ec2ff697067caefb944aec294d8b235565d3fc00cad817f3eb7f3263e2a",
+      "translation_text_hash": "141388b26f2777559e0a0f5cac28ba1c99a809f4acb103dee9fb1bdf4b2d1887",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 미쁨이 없을찌라도 주는 일향 미쁘시니 자기를 부인하실 수 없으시리라"
+      ],
+      "raw_text_hashes": [
+        "141388b26f2777559e0a0f5cac28ba1c99a809f4acb103dee9fb1bdf4b2d1887"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:14",
+      "sequence": 29838,
+      "chapter_label": "2TI 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Remind them of these things, charging them in the sight of the Lord that they don’t argue about words to no profit, to the subverting of those who hear.",
+      "ko": "너는 저희로 이 일을 기억하게 하여 말다툼을 하지 말라고 하나님 앞에서 엄히 명하라 이는 유익이 하나도 없고 도리어 듣는 자들을 망하게 함이니라",
+      "source_text_hash": "4bbe55d660a730744164f860627d4c63c32fa13e98ad0f0cf2431cf138a5f0fc",
+      "translation_text_hash": "ee1c14218dec6102e6b37df0b5c7bf3c0b16f57fb5f8946d802258dc83f19df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 저희로 이 일을 기억하게 하여 말다툼을 하지 말라고 하나님 앞에서 엄히 명하라 이는 유익이 하나도 없고 도리어 듣는 자들을 망하게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "ee1c14218dec6102e6b37df0b5c7bf3c0b16f57fb5f8946d802258dc83f19df8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:15",
+      "sequence": 29839,
+      "chapter_label": "2TI 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Give diligence to present yourself approved by God, a workman who doesn’t need to be ashamed, properly handling the Word of Truth.",
+      "ko": "네가 진리의 말씀을 옳게 분변하며 부끄러울 것이 없는 일군으로 인정된 자로 자신을 하나님 앞에 드리기를 힘쓰라",
+      "source_text_hash": "86e9475d0b84c999afa2031315c10f3e4affd9fa1c9c1d0443edea9d1dd9fcbc",
+      "translation_text_hash": "94d1d235f43c3db26cc6cd0eb1dc069d8fcebce273dc84f271a0bfb572f2df1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 진리의 말씀을 옳게 분변하며 부끄러울 것이 없는 일군으로 인정된 자로 자신을 하나님 앞에 드리기를 힘쓰라"
+      ],
+      "raw_text_hashes": [
+        "94d1d235f43c3db26cc6cd0eb1dc069d8fcebce273dc84f271a0bfb572f2df1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:16",
+      "sequence": 29840,
+      "chapter_label": "2TI 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "But shun empty chatter, for it will go further in ungodliness,",
+      "ko": "망령되고 헛된 말을 버리라 저희는 경건치 아니함에 점점 나아가나니",
+      "source_text_hash": "602a0e09e1506767e6d87dceaae2c65bd641bfd1626dc0c01d4a2cf02ff849c0",
+      "translation_text_hash": "6167f79b9b394fb653099f575baec73d4a0d6c89942d2f37b0c486ee861b6fe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "망령되고 헛된 말을 버리라 저희는 경건치 아니함에 점점 나아가나니"
+      ],
+      "raw_text_hashes": [
+        "6167f79b9b394fb653099f575baec73d4a0d6c89942d2f37b0c486ee861b6fe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:17",
+      "sequence": 29841,
+      "chapter_label": "2TI 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "and those words will consume like gangrene, of whom is Hymenaeus and Philetus:",
+      "ko": "저희 말은 독한 창질의 썩어져감과 같은데 그 중에 후메내오와 빌레도가 있느니라",
+      "source_text_hash": "7ae8447d4087d78fdf0a8181d3cb4089eb84293e0d5235d6ea960c6cf6aa412a",
+      "translation_text_hash": "61d8c9482a342d91b874c33e738b02b5e03dc9d4e282aa88d36ba9d127effa55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 말은 독한 창질의 썩어져감과 같은데 그 중에 후메내오와 빌레도가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "61d8c9482a342d91b874c33e738b02b5e03dc9d4e282aa88d36ba9d127effa55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:18",
+      "sequence": 29842,
+      "chapter_label": "2TI 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "men who have erred concerning the truth, saying that the resurrection is already past, and overthrowing the faith of some.",
+      "ko": "진리에 관하여는 저희가 그릇되었도다 부활이 이미 지나갔다 하므로 어떤 사람들의 믿음을 무너뜨리느니라",
+      "source_text_hash": "548c5349fe96d716722f5ddca828ac123707ffbf1d14f2ac54bbf53812515eec",
+      "translation_text_hash": "8840e96af3eb851127eed676807ea833a476b00039a5c6f90b55a656623d6af4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리에 관하여는 저희가 그릇되었도다 부활이 이미 지나갔다 하므로 어떤 사람들의 믿음을 무너뜨리느니라"
+      ],
+      "raw_text_hashes": [
+        "8840e96af3eb851127eed676807ea833a476b00039a5c6f90b55a656623d6af4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:19",
+      "sequence": 29843,
+      "chapter_label": "2TI 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "However, God’s firm foundation stands, having this seal: “The Lord knows those who are his,” and, “Let every one who names the name of the Lord depart from unrighteousness.”",
+      "ko": "그러나 하나님의 견고한 터는 섰으니 인침이 있어 일렀으되 주께서 자기 백성을 아신다 하며 또 주의 이름을 부르는 자마다 불의에서 떠날찌어다 하였느니라",
+      "source_text_hash": "8342cfce7e5a50479a5d0b3d7eb0a74290b369934b39ea218bdbe5d26d142b6b",
+      "translation_text_hash": "bfb8209c84c0282dc52ae39ca78abc760ab7b184e4676c198e76877d75c772cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 하나님의 견고한 터는 섰으니 인침이 있어 일렀으되 주께서 자기 백성을 아신다 하며 또 주의 이름을 부르는 자마다 불의에서 떠날찌어다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "bfb8209c84c0282dc52ae39ca78abc760ab7b184e4676c198e76877d75c772cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:20",
+      "sequence": 29844,
+      "chapter_label": "2TI 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Now in a large house there are not only vessels of gold and of silver, but also of wood and of clay. Some are for honor and some for dishonor.",
+      "ko": "큰 집에는 금과 은의 그릇이 있을뿐 아니요 나무와 질그릇도 있어 귀히 쓰는 것도 있고 천히 쓰는 것도 있나니",
+      "source_text_hash": "7e9ea6cd98e1994ecefef29ab7a8c156f745c1fdf857c9f01503e428c8432156",
+      "translation_text_hash": "6582b84c72201e6f5e8fa0b724794351595c921c520af388a22fb7a3feab6bc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 집에는 금과 은의 그릇이 있을뿐 아니요 나무와 질그릇도 있어 귀히 쓰는 것도 있고 천히 쓰는 것도 있나니"
+      ],
+      "raw_text_hashes": [
+        "6582b84c72201e6f5e8fa0b724794351595c921c520af388a22fb7a3feab6bc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:21",
+      "sequence": 29845,
+      "chapter_label": "2TI 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "If anyone therefore purges himself from these, he will be a vessel for honor, sanctified, and suitable for the master’s use, prepared for every good work.",
+      "ko": "그러므로 누구든지 이런 것에서 자기를 깨끗하게 하면 귀히 쓰는 그릇이 되어 거룩하고 주인의 쓰심에 합당하며 모든 선한 일에 예비함이 되리라",
+      "source_text_hash": "c3047d7dede5a7bc38a6fdabed4c6e21212ec839c37335b0b2c1f0dc64566845",
+      "translation_text_hash": "3f112631bd6f4f207cc5e45109f5e089ed2f387b6fcef0d7b39dc9c91130aabb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 이런 것에서 자기를 깨끗하게 하면 귀히 쓰는 그릇이 되어 거룩하고 주인의 쓰심에 합당하며 모든 선한 일에 예비함이 되리라"
+      ],
+      "raw_text_hashes": [
+        "3f112631bd6f4f207cc5e45109f5e089ed2f387b6fcef0d7b39dc9c91130aabb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:22",
+      "sequence": 29846,
+      "chapter_label": "2TI 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Flee from youthful lusts; but pursue righteousness, faith, love, and peace with those who call on the Lord out of a pure heart.",
+      "ko": "또한 네가 청년의 정욕을 피하고 주를 깨끗한 마음으로 부르는 자들과 함께 의와 믿음과 사랑과 화평을 좇으라",
+      "source_text_hash": "e0aace5a422c08139f19d69116bc388de98edf5ea9540e480d9ac2900aa44892",
+      "translation_text_hash": "881f77b3826f28d21d6f906b5861fb3339e429316103b8bb3b16529ac4b71fd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 네가 청년의 정욕을 피하고 주를 깨끗한 마음으로 부르는 자들과 함께 의와 믿음과 사랑과 화평을 좇으라"
+      ],
+      "raw_text_hashes": [
+        "881f77b3826f28d21d6f906b5861fb3339e429316103b8bb3b16529ac4b71fd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:23",
+      "sequence": 29847,
+      "chapter_label": "2TI 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "But refuse foolish and ignorant questionings, knowing that they generate strife.",
+      "ko": "어리석고 무식한 변론을 버리라 이에서 다툼이 나는 줄 앎이라",
+      "source_text_hash": "0cd38e5f1eec1fbf0c3f23213b0fad5d3fddb7d6c2dd13c3be3f545f2e0dd99a",
+      "translation_text_hash": "1a4fd53ce38047a96cfdf0c0e9999060e45600c87ad708f3c3cd4ad3b724ca4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석고 무식한 변론을 버리라 이에서 다툼이 나는 줄 앎이라"
+      ],
+      "raw_text_hashes": [
+        "1a4fd53ce38047a96cfdf0c0e9999060e45600c87ad708f3c3cd4ad3b724ca4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:24",
+      "sequence": 29848,
+      "chapter_label": "2TI 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "The Lord’s servant must not quarrel, but be gentle toward all, able to teach, patient,",
+      "ko": "마땅히 주의 종은 다투지 아니하고 모든 사람을 대하여 온유하며 가르치기를 잘하며 참으며",
+      "source_text_hash": "0958e8420ed3654756fcf89cfc459d90a836b6a765c09e7cd265bab7185833f0",
+      "translation_text_hash": "ffce6b027241b1cc7d1181d8c1f9d84d97a28c697dde52ca88989e0420b490d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마땅히 주의 종은 다투지 아니하고 모든 사람을 대하여 온유하며 가르치기를 잘하며 참으며"
+      ],
+      "raw_text_hashes": [
+        "ffce6b027241b1cc7d1181d8c1f9d84d97a28c697dde52ca88989e0420b490d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:25",
+      "sequence": 29849,
+      "chapter_label": "2TI 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "in gentleness correcting those who oppose him. Perhaps God may give them repentance leading to a full knowledge of the truth,",
+      "ko": "거역하는 자를 온유함으로 징계할찌니 혹 하나님이 저희에게 회개함을 주사 진리를 알게 하실까 하며",
+      "source_text_hash": "cb0f732fbcd6610967aa9a6ac9d4f10bc4b795b1354bbaa03223772920f3583f",
+      "translation_text_hash": "b15950876c5bed188072a71b1882c34ba8ba7189e1e3f0a062b9201793e7083e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거역하는 자를 온유함으로 징계할찌니 혹 하나님이 저희에게 회개함을 주사 진리를 알게 하실까 하며"
+      ],
+      "raw_text_hashes": [
+        "b15950876c5bed188072a71b1882c34ba8ba7189e1e3f0a062b9201793e7083e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:2:26",
+      "sequence": 29850,
+      "chapter_label": "2TI 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "2TI",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "and they may recover themselves out of the devil’s snare, having been taken captive by him to do his will.",
+      "ko": "저희로 깨어 마귀의 올무에서 벗어나 하나님께 사로잡힌바 되어 그 뜻을 좇게 하실까 함이라",
+      "source_text_hash": "0ba16254593ac69e0b1f7e49dd7d73485d6b4904048277717ce41b035db07858",
+      "translation_text_hash": "0d783e0690ffaa10ea0267c87ae3ddac1f728a1df8a57bd5ac0d9dcab15def25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 깨어 마귀의 올무에서 벗어나 하나님께 사로잡힌바 되어 그 뜻을 좇게 하실까 함이라"
+      ],
+      "raw_text_hashes": [
+        "0d783e0690ffaa10ea0267c87ae3ddac1f728a1df8a57bd5ac0d9dcab15def25"
+      ]
+    }
+  ]
+}

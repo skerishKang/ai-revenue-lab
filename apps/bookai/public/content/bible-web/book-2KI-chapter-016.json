@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:016",
+  "unit_ordinal": 329,
+  "unit_label": "2KI 16",
+  "book_code": "2KI",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:16:1",
+      "sequence": 9965,
+      "chapter_label": "2KI 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "In the seventeenth year of Pekah the son of Remaliah, Ahaz the son of Jotham king of Judah began to reign.",
+      "ko": "르말랴의 아들 베가 십 칠년에 유다 왕 요담의 아들 아하스가 왕이 되니",
+      "source_text_hash": "3b0e80fa2799154e237fd8aff28994d9fa96a9544a8671c3822bd11fe6a9936f",
+      "translation_text_hash": "673c544ce9d2a56ee85eaa78809ff2d09fbcbf811f0ec133205091b73b31d7d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르말랴의 아들 베가 십 칠년에 유다 왕 요담의 아들 아하스가 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "673c544ce9d2a56ee85eaa78809ff2d09fbcbf811f0ec133205091b73b31d7d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:2",
+      "sequence": 9966,
+      "chapter_label": "2KI 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "Ahaz was twenty years old when he began to reign, and he reigned sixteen years in Jerusalem. He didn’t do that which was right in the LORD his God’s eyes, like David his father.",
+      "ko": "아하스가 위에 나아갈 때에 나이 이십세라 예루살렘에서 십 륙년을 치리하였으나 그 조상 다윗과 같지 아니하여 그 하나님 여호와 보시기에 정직히 행치 아니하고",
+      "source_text_hash": "08eee3f056c48f7d2a42d0fd996a35a597f53c2502ef189e0a78af80d71ff757",
+      "translation_text_hash": "0a548a05d568aa6b9ed5a7cdc1ec9d0ecbe8d34e3afaed50324b0dcd0a453ea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 위에 나아갈 때에 나이 이십세라 예루살렘에서 십 륙년을 치리하였으나 그 조상 다윗과 같지 아니하여 그 하나님 여호와 보시기에 정직히 행치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "0a548a05d568aa6b9ed5a7cdc1ec9d0ecbe8d34e3afaed50324b0dcd0a453ea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:3",
+      "sequence": 9967,
+      "chapter_label": "2KI 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "But he walked in the way of the kings of Israel, and even made his son to pass through the fire, according to the abominations of the nations whom the LORD cast out from before the children of Israel.",
+      "ko": "이스라엘 열왕의 길로 행하며 또 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아 자기 아들을 불 가운데로 지나가게 하며",
+      "source_text_hash": "d633ca4ae2b4a6fbd0037eed44778bb56141e1746ae4fd740cf7163758750907",
+      "translation_text_hash": "e6a998fffb2d62a12709e1f6c8304263bf7c985d5cd26b07508d4de568848196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 열왕의 길로 행하며 또 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아 자기 아들을 불 가운데로 지나가게 하며"
+      ],
+      "raw_text_hashes": [
+        "e6a998fffb2d62a12709e1f6c8304263bf7c985d5cd26b07508d4de568848196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:4",
+      "sequence": 9968,
+      "chapter_label": "2KI 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "He sacrificed and burned incense in the high places, on the hills, and under every green tree.",
+      "ko": "또 산당과 작은 산 위와 모든 푸른 나무 아래서 제사를 드리며 분향하였더라",
+      "source_text_hash": "81b7b0b46f7773080377845321498f62cb91e839ccb344b10e806864ea85f81c",
+      "translation_text_hash": "8e2442dd6d5c4838f1c3e4261a5c04c152c06a3e6b48daa647531a9b8d450157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 산당과 작은 산 위와 모든 푸른 나무 아래서 제사를 드리며 분향하였더라"
+      ],
+      "raw_text_hashes": [
+        "8e2442dd6d5c4838f1c3e4261a5c04c152c06a3e6b48daa647531a9b8d450157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:5",
+      "sequence": 9969,
+      "chapter_label": "2KI 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Then Rezin king of Syria and Pekah son of Remaliah king of Israel came up to Jerusalem to wage war. They besieged Ahaz, but could not overcome him.",
+      "ko": "이 때에 아람 왕 르신과 이스라엘 왕 르말랴의 아들 베가가 예루살렘에 올라와서 싸우려 하여 아하스를 에워쌌으나 이기지 못하니라",
+      "source_text_hash": "29bf06641073597bcc772d37122aa740ed98c5f5def61a8bf768ab30e5ab7946",
+      "translation_text_hash": "586dd03f0a049ccdfd91b6573ac934700ae0d4132b42cb84cc3e3fac60f5e354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 아람 왕 르신과 이스라엘 왕 르말랴의 아들 베가가 예루살렘에 올라와서 싸우려 하여 아하스를 에워쌌으나 이기지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "586dd03f0a049ccdfd91b6573ac934700ae0d4132b42cb84cc3e3fac60f5e354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:6",
+      "sequence": 9970,
+      "chapter_label": "2KI 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "At that time Rezin king of Syria recovered Elath to Syria, and drove the Jews from Elath; and the Syrians came to Elath, and live there to this day.",
+      "ko": "당시에 아람 왕 르신이 엘랏을 회복하여 아람에 돌리고 유다 사람을 엘랏에서 쫓아내었고 아람 사람이 엘랏에 이르러 거하여 오늘날까지 이르렀더라",
+      "source_text_hash": "4ddb0c6df05135c2d266e16a28f36dc0205c95d70b06a6769499c43009d6bb25",
+      "translation_text_hash": "f81922bd0ccaf06bfdefe02dbfe5045920d2b4c73b8915b7330011c8acffb459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당시에 아람 왕 르신이 엘랏을 회복하여 아람에 돌리고 유다 사람을 엘랏에서 쫓아내었고 아람 사람이 엘랏에 이르러 거하여 오늘날까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "f81922bd0ccaf06bfdefe02dbfe5045920d2b4c73b8915b7330011c8acffb459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:7",
+      "sequence": 9971,
+      "chapter_label": "2KI 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "So Ahaz sent messengers to Tiglath Pileser king of Assyria, saying, “I am your servant and your son. Come up and save me out of the hand of the king of Syria and out of the hand of the king of Israel, who rise up against me.”",
+      "ko": "아하스가 앗수르 왕 디글랏 빌레셀에게 사자를 보내어 이르되 나는 왕의 신복이요 왕의 아들이라 이제 아람 왕과 이스라엘 왕이 나를 치니 청컨대 올라와서 나를 그 손에서 구원하소서 하고",
+      "source_text_hash": "ae3b8200522b350952e82dee949bd26341c94d270e9e0d62e9e0ca123429c7b8",
+      "translation_text_hash": "cdd953635dd77ea4f56bb0ff95a0a81159f1d85291649cd88551b0f4b11c7ee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 앗수르 왕 디글랏 빌레셀에게 사자를 보내어 이르되 나는 왕의 신복이요 왕의 아들이라 이제 아람 왕과 이스라엘 왕이 나를 치니 청컨대 올라와서 나를 그 손에서 구원하소서 하고"
+      ],
+      "raw_text_hashes": [
+        "cdd953635dd77ea4f56bb0ff95a0a81159f1d85291649cd88551b0f4b11c7ee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:8",
+      "sequence": 9972,
+      "chapter_label": "2KI 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Ahaz took the silver and gold that was found in the LORD’s house, and in the treasures of the king’s house, and sent it for a present to the king of Assyria.",
+      "ko": "여호와의 전과 왕궁 곳간에 있는 은금을 취하여 앗수르 왕에게 예물로 보내었더니",
+      "source_text_hash": "9ba7c3c34ae85621b29194baaaaf3398841dd17e54eada74137ae111bd09da2c",
+      "translation_text_hash": "d93c6744f0227f698a9a2c993314c4a14cbc453fc79d6271fcdfefb5a4b826e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 전과 왕궁 곳간에 있는 은금을 취하여 앗수르 왕에게 예물로 보내었더니"
+      ],
+      "raw_text_hashes": [
+        "d93c6744f0227f698a9a2c993314c4a14cbc453fc79d6271fcdfefb5a4b826e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:9",
+      "sequence": 9973,
+      "chapter_label": "2KI 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "The king of Assyria listened to him; and the king of Assyria went up against Damascus and took it, and carried its people captive to Kir, and killed Rezin.",
+      "ko": "앗수르 왕이 그 청을 듣고 곧 올라와서 다메섹을 쳐서 취하여 그 백성을 사로잡아 길로 옮기고 또 르신을 죽였더라",
+      "source_text_hash": "bc1a84e34549203a4b4ecddac19f97b59d9ffc56fb5863477f2d1c3c79299e36",
+      "translation_text_hash": "cd3e5685647e82ea080c83cda3dce7b8e7c7da40e900fec12776fe37617965b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 그 청을 듣고 곧 올라와서 다메섹을 쳐서 취하여 그 백성을 사로잡아 길로 옮기고 또 르신을 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "cd3e5685647e82ea080c83cda3dce7b8e7c7da40e900fec12776fe37617965b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:10",
+      "sequence": 9974,
+      "chapter_label": "2KI 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "King Ahaz went to Damascus to meet Tiglath Pileser king of Assyria, and saw the altar that was at Damascus; and King Ahaz sent to Urijah the priest a drawing of the altar and plans to build it.",
+      "ko": "아하스왕이 앗수르 왕 디글랏 빌레셀을 만나러 다메섹에 갔다가 거기 있는 단을 보고 드디어 그 구조와 제도의 식양을 그려 제사장 우리야에게 보내었더니",
+      "source_text_hash": "cf4be41dc7488dee0f45afa16384d0396c88d99679b3c1a9dc391715569059bc",
+      "translation_text_hash": "e03e1e4717a634982a3be91c24ba9b803ea938c7b3605c968b1676144fdb1407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스왕이 앗수르 왕 디글랏 빌레셀을 만나러 다메섹에 갔다가 거기 있는 단을 보고 드디어 그 구조와 제도의 식양을 그려 제사장 우리야에게 보내었더니"
+      ],
+      "raw_text_hashes": [
+        "e03e1e4717a634982a3be91c24ba9b803ea938c7b3605c968b1676144fdb1407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:11",
+      "sequence": 9975,
+      "chapter_label": "2KI 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Urijah the priest built an altar. According to all that King Ahaz had sent from Damascus, so Urijah the priest made it for the coming of King Ahaz from Damascus.",
+      "ko": "아하스왕이 다메섹에서 돌아오기 전에 제사장 우리야가 아하스왕이 다메섹에서 보낸 모든 것대로 단을 만든지라",
+      "source_text_hash": "9cc79384ea2fe890187de599d088d36b433319983ee9fa729edd7a47f69ef440",
+      "translation_text_hash": "9bae5927842e4b2f62e0bf4ce30691dd3587318d51ed633ec9d5f6c3809774ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스왕이 다메섹에서 돌아오기 전에 제사장 우리야가 아하스왕이 다메섹에서 보낸 모든 것대로 단을 만든지라"
+      ],
+      "raw_text_hashes": [
+        "9bae5927842e4b2f62e0bf4ce30691dd3587318d51ed633ec9d5f6c3809774ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:12",
+      "sequence": 9976,
+      "chapter_label": "2KI 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "When the king had come from Damascus, the king saw the altar; and the king came near to the altar, and offered on it.",
+      "ko": "왕이 다메섹에서 돌아와서 단을 보고 단 앞에 나아가 그 위에 제사를 드리되",
+      "source_text_hash": "8b81a1d4ec1919a32db8529252f61fbe95b2b3fdf0135f7563e4e4827966b75c",
+      "translation_text_hash": "fd20a4155355789039d79011631e93ee66a9f76f6e061b8718146ca8cbeefe9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 다메섹에서 돌아와서 단을 보고 단 앞에 나아가 그 위에 제사를 드리되"
+      ],
+      "raw_text_hashes": [
+        "fd20a4155355789039d79011631e93ee66a9f76f6e061b8718146ca8cbeefe9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:13",
+      "sequence": 9977,
+      "chapter_label": "2KI 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "He burned his burnt offering and his meal offering, poured his drink offering, and sprinkled the blood of his peace offerings on the altar.",
+      "ko": "자기의 번제와 소제를 불사르고 또 전제를 붓고 수은제 짐승의 피를 단에 뿌리고",
+      "source_text_hash": "5783638b2fe630062f208889a1ca077b52519327f24bab3b165a5ea3b01bf4c5",
+      "translation_text_hash": "673275a14c9b911d5c1b5d51dcc3629823aebb4ab7b59ecefd7682f9e4b02ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 번제와 소제를 불사르고 또 전제를 붓고 수은제 짐승의 피를 단에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "673275a14c9b911d5c1b5d51dcc3629823aebb4ab7b59ecefd7682f9e4b02ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:14",
+      "sequence": 9978,
+      "chapter_label": "2KI 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "The bronze altar, which was before the LORD, he brought from the front of the house, from between his altar and the LORD’s house, and put it on the north side of his altar.",
+      "ko": "또 여호와의 앞 곧 전 앞에 있던 놋단을 옮기되 새 단과 여호와의 전 사이에서 옮겨다가 그 단 북편에 두니라",
+      "source_text_hash": "400fb72bf6bca2110383630c44caef551f0643d9d60e4c2aad4dce16e499a5e0",
+      "translation_text_hash": "d1f593ba2640ec57514e6a13ad05e48b33af32070daa621236e1d5721321694c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 앞 곧 전 앞에 있던 놋단을 옮기되 새 단과 여호와의 전 사이에서 옮겨다가 그 단 북편에 두니라"
+      ],
+      "raw_text_hashes": [
+        "d1f593ba2640ec57514e6a13ad05e48b33af32070daa621236e1d5721321694c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:15",
+      "sequence": 9979,
+      "chapter_label": "2KI 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "King Ahaz commanded Urijah the priest, saying, “On the great altar burn the morning burnt offering, the evening meal offering, the king’s burnt offering and his meal offering, with the burnt offering of all the people of the land, their meal offering, and their drink offerings; and sprinkle on it all the blood of the burnt offering, and all the blood of the sacrifice; but the bronze altar will be for me to inquire by.”",
+      "ko": "아하스왕이 제사장 우리야에게 명하여 가로되 아침 번제와 저녁 소제와 왕의 번제와 그 소제와 모든 국민의 번제와 그 소제와 전제를 다 이 큰 단 위에 불사르고 또 번제물의 피와 다른 제물의 피를 다 그 위에 뿌리고 오직 놋단은 나의 물을 일에 쓰게 하라 하매",
+      "source_text_hash": "6c1a07066a6e9b2791bb0cb925210e63824c7031cc0ce4445dc2afbd0c339c7f",
+      "translation_text_hash": "06c72d5b3c32d42b67cf3187597336dc1f01ce194d427a6b97ed338b9eaa41be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스왕이 제사장 우리야에게 명하여 가로되 아침 번제와 저녁 소제와 왕의 번제와 그 소제와 모든 국민의 번제와 그 소제와 전제를 다 이 큰 단 위에 불사르고 또 번제물의 피와 다른 제물의 피를 다 그 위에 뿌리고 오직 놋단은 나의 물을 일에 쓰게 하라 하매"
+      ],
+      "raw_text_hashes": [
+        "06c72d5b3c32d42b67cf3187597336dc1f01ce194d427a6b97ed338b9eaa41be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:16",
+      "sequence": 9980,
+      "chapter_label": "2KI 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "Urijah the priest did so, according to all that King Ahaz commanded.",
+      "ko": "제사장 우리야가 아하스왕의 모든 명대로 행하였더라",
+      "source_text_hash": "2a31883ab5f3299984355ed5a0433f36002c5a1c4c76e9675a3d558df71ba191",
+      "translation_text_hash": "1eb6fbf843dfb0baa406d04296163eac40999fd6b20a1f393a7000ad630e9c72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 우리야가 아하스왕의 모든 명대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "1eb6fbf843dfb0baa406d04296163eac40999fd6b20a1f393a7000ad630e9c72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:17",
+      "sequence": 9981,
+      "chapter_label": "2KI 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "King Ahaz cut off the panels of the bases, and removed the basin from off them, and took down the sea from off the bronze oxen that were under it, and put it on a pavement of stone.",
+      "ko": "아하스왕이 물두멍 받침의 옆판을 떼어내고 물두멍을 그 자리에서 옮기고 또 놋바다를 놋소 위에서 내려다가 돌판 위에 두며",
+      "source_text_hash": "2fb0dcfb9e46d0d47d656fb34eda8ed8f095ad099daaf608560c76043f7f303b",
+      "translation_text_hash": "ab94d51f59639c7012c721908c9fa6bfadf1776b8e3f0d4713dfd601162da48d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스왕이 물두멍 받침의 옆판을 떼어내고 물두멍을 그 자리에서 옮기고 또 놋바다를 놋소 위에서 내려다가 돌판 위에 두며"
+      ],
+      "raw_text_hashes": [
+        "ab94d51f59639c7012c721908c9fa6bfadf1776b8e3f0d4713dfd601162da48d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:18",
+      "sequence": 9982,
+      "chapter_label": "2KI 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "He removed the covered way for the Sabbath that they had built in the house, and the king’s outer entrance to the LORD’s house, because of the king of Assyria.",
+      "ko": "또 안식일에 쓰기 위하여 성전에 건축한 낭실과 왕이 밖에서 들어가는 낭실을 앗수르 왕을 인하여 여호와의 전에 옮겨 세웠더라",
+      "source_text_hash": "f86452cad89035442090c34df13146691e203317cff4e4bc9b925d996dd08e76",
+      "translation_text_hash": "94443c095e060847e79b51c791de4cf8c93b8078628a7c42c2a38b6e38063775",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 안식일에 쓰기 위하여 성전에 건축한 낭실과 왕이 밖에서 들어가는 낭실을 앗수르 왕을 인하여 여호와의 전에 옮겨 세웠더라"
+      ],
+      "raw_text_hashes": [
+        "94443c095e060847e79b51c791de4cf8c93b8078628a7c42c2a38b6e38063775"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:19",
+      "sequence": 9983,
+      "chapter_label": "2KI 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "Now the rest of the acts of Ahaz which he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "아하스의 그 남은 사적은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "e33ae44a31bece886a53495cdd179d375df224fcd3a9a3f5ec99383e7c1bbc9c",
+      "translation_text_hash": "e7dd1fc92a9a691187991b8030ceca131c1f5bb2d5cfe71c72d07462d7ed079b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스의 그 남은 사적은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "e7dd1fc92a9a691187991b8030ceca131c1f5bb2d5cfe71c72d07462d7ed079b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:16:20",
+      "sequence": 9984,
+      "chapter_label": "2KI 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Ahaz slept with his fathers, and was buried with his fathers in David’s city; and Hezekiah his son reigned in his place.",
+      "ko": "아하스가 그 열조와 함께 자매 다윗성에 그 열조와 함께 장사되고 그 아들 히스기야가 대신하여 왕이 되니라",
+      "source_text_hash": "d9f0f0b224b9dc29e203abde697482f501568d046af8402851175a12f23a1442",
+      "translation_text_hash": "84548189551bd85e943ad3e3e15376ae6521443f647830df3f8198a93182fc94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 그 열조와 함께 자매 다윗성에 그 열조와 함께 장사되고 그 아들 히스기야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "84548189551bd85e943ad3e3e15376ae6521443f647830df3f8198a93182fc94"
+      ]
+    }
+  ]
+}

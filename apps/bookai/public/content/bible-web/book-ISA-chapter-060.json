@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:060",
+  "unit_ordinal": 739,
+  "unit_label": "ISA 60",
+  "book_code": "ISA",
+  "chapter_number": 60,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:60:1",
+      "sequence": 18823,
+      "chapter_label": "ISA 60",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 1
+        }
+      ],
+      "en": "“Arise, shine; for your light has come, and the LORD’s glory has risen on you!",
+      "ko": "일어나라 빛을 발하라 이는 네 빛이 이르렀고 여호와의 영광이 네 위에 임하였음이니라",
+      "source_text_hash": "eb20f1eb1493b939ce4a644e85bbcc13019e1c1922f0dfc4e7b159b0047d58ae",
+      "translation_text_hash": "463cce7e29ae29ef3d2c0c37e78db8e467555a87764b0705a73ec7b64bc65738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나라 빛을 발하라 이는 네 빛이 이르렀고 여호와의 영광이 네 위에 임하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "463cce7e29ae29ef3d2c0c37e78db8e467555a87764b0705a73ec7b64bc65738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:2",
+      "sequence": 18824,
+      "chapter_label": "ISA 60",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 2
+        }
+      ],
+      "en": "For behold, darkness will cover the earth, and thick darkness the peoples; but the LORD will arise on you, and his glory shall be seen on you.",
+      "ko": "보라 어두움이 땅을 덮을 것이며 캄캄함이 만민을 가리우려니와 오직 여호와께서 네 위에 임하실 것이며 그 영광이 네 위에 나타나리니",
+      "source_text_hash": "870d8fedb1f35706b30b27496eff8dd831c277839ccc3103986c7dee527bee2e",
+      "translation_text_hash": "798206e8d8c5c1682ae5822a52213a8ba267f79b2412e978fe4d247730b7b82c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 어두움이 땅을 덮을 것이며 캄캄함이 만민을 가리우려니와 오직 여호와께서 네 위에 임하실 것이며 그 영광이 네 위에 나타나리니"
+      ],
+      "raw_text_hashes": [
+        "798206e8d8c5c1682ae5822a52213a8ba267f79b2412e978fe4d247730b7b82c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:3",
+      "sequence": 18825,
+      "chapter_label": "ISA 60",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 3
+        }
+      ],
+      "en": "Nations will come to your light, and kings to the brightness of your rising.",
+      "ko": "열방은 네 빛으로, 열왕은 비취는 네 광명으로 나아오리라",
+      "source_text_hash": "916c5304e7513b70afb199501e80a04500e0ad4deb9513b9e14c6a743399fce3",
+      "translation_text_hash": "d8b3549dd03a29235a4954556194a8c081dc492e59580f45bc795bf1ecefe736",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방은 네 빛으로, 열왕은 비취는 네 광명으로 나아오리라"
+      ],
+      "raw_text_hashes": [
+        "d8b3549dd03a29235a4954556194a8c081dc492e59580f45bc795bf1ecefe736"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:4",
+      "sequence": 18826,
+      "chapter_label": "ISA 60",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 4
+        }
+      ],
+      "en": "“Lift up your eyes all around, and see: they all gather themselves together. They come to you. Your sons will come from far away, and your daughters will be carried in arms.",
+      "ko": "네 눈을 들어 사면을 보라 무리가 다 모여 네게로 오느니라 네 아들들은 원방에서 오겠고 네 딸들은 안기워 올것이라",
+      "source_text_hash": "c9bb63f2cad3853a0ca54da803355d3fbedfc07dccc3a160a4012ff5d4954eaf",
+      "translation_text_hash": "50937c6d88dde17abddf2f74b9ac548fe87d3898e40d80abd8d788e2fa39ee48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈을 들어 사면을 보라 무리가 다 모여 네게로 오느니라 네 아들들은 원방에서 오겠고 네 딸들은 안기워 올것이라"
+      ],
+      "raw_text_hashes": [
+        "50937c6d88dde17abddf2f74b9ac548fe87d3898e40d80abd8d788e2fa39ee48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:5",
+      "sequence": 18827,
+      "chapter_label": "ISA 60",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 5
+        }
+      ],
+      "en": "Then you shall see and be radiant, and your heart will thrill and be enlarged; because the abundance of the sea will be turned to you. The wealth of the nations will come to you.",
+      "ko": "그 때에 네가 보고 희색을 발하며 네 마음이 놀라고 또 화창하리니 이는 바다의 풍부가 네게로 돌아오며 열방의 재물이 네게로 옴이라",
+      "source_text_hash": "49a8c8a20a4d7174a1c53f501d879fa429562da2f0d1df8a01fb0ef3b4d24198",
+      "translation_text_hash": "851ff39f177d9944279b711d524c4711e47266e9f77b68f5e20f8e13115bf38d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 네가 보고 희색을 발하며 네 마음이 놀라고 또 화창하리니 이는 바다의 풍부가 네게로 돌아오며 열방의 재물이 네게로 옴이라"
+      ],
+      "raw_text_hashes": [
+        "851ff39f177d9944279b711d524c4711e47266e9f77b68f5e20f8e13115bf38d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:6",
+      "sequence": 18828,
+      "chapter_label": "ISA 60",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 6
+        }
+      ],
+      "en": "A multitude of camels will cover you, the dromedaries of Midian and Ephah. All from Sheba will come. They will bring gold and frankincense, and will proclaim the praises of the LORD.",
+      "ko": "허다한 약대, 미디안과 에바의 젊은 약대가 네 가운데 편만할 것이며 스바의 사람들은 다 금과 유향을 가지고 와서 여호와의 찬송을 전파할 것이며",
+      "source_text_hash": "71195b74848ca2ea3bada0980c9e48dea086b1fc2f2f7277db1f9c40ff1800e3",
+      "translation_text_hash": "a831eca945d090577b8f60dd74cff81b4a84868eb5969bf480e7fd128ac0dde4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허다한 약대, 미디안과 에바의 젊은 약대가 네 가운데 편만할 것이며 스바의 사람들은 다 금과 유향을 가지고 와서 여호와의 찬송을 전파할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a831eca945d090577b8f60dd74cff81b4a84868eb5969bf480e7fd128ac0dde4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:7",
+      "sequence": 18829,
+      "chapter_label": "ISA 60",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 7
+        }
+      ],
+      "en": "All the flocks of Kedar will be gathered together to you. The rams of Nebaioth will serve you. They will be accepted as offerings on my altar; and I will beautify my glorious house.",
+      "ko": "게달의 양 무리는 다 네게로 모여지고 느바욧의 수양은 네게 공급되고 내 단에 올라 기꺼이 받음이 되리니 내가 내 영광의 집을 영화롭게 하리라",
+      "source_text_hash": "f66c42bd28a126e02a2ce209d8c0aae4ad159bc1e1f67fd0ab647d91f882f304",
+      "translation_text_hash": "3aa1e8453971bb8a03dc6c9415a82125833a85437e20de3f8f945a0ed73168b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게달의 양 무리는 다 네게로 모여지고 느바욧의 수양은 네게 공급되고 내 단에 올라 기꺼이 받음이 되리니 내가 내 영광의 집을 영화롭게 하리라"
+      ],
+      "raw_text_hashes": [
+        "3aa1e8453971bb8a03dc6c9415a82125833a85437e20de3f8f945a0ed73168b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:8",
+      "sequence": 18830,
+      "chapter_label": "ISA 60",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 8
+        }
+      ],
+      "en": "“Who are these who fly as a cloud, and as the doves to their windows?",
+      "ko": "저 구름 같이, 비둘기가 그 보금자리로 날아 오는 것 같이 날아 오는 자들이 누구뇨",
+      "source_text_hash": "8949084a519afd58671726e12214f5b34382330caf108026be64abb6f01fe45f",
+      "translation_text_hash": "8764d4caca15f77e465d1d67e4617baf3d4c933825b8d681bb078fc8cf11c137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저 구름 같이, 비둘기가 그 보금자리로 날아 오는 것 같이 날아 오는 자들이 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "8764d4caca15f77e465d1d67e4617baf3d4c933825b8d681bb078fc8cf11c137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:9",
+      "sequence": 18831,
+      "chapter_label": "ISA 60",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 9
+        }
+      ],
+      "en": "Surely the islands will wait for me, and the ships of Tarshish first, to bring your sons from far away, their silver and their gold with them, for the name of the LORD your God, and for the Holy One of Israel, because he has glorified you.",
+      "ko": "곧 섬들이 나를 앙망하고 다시스의 배들이 먼저 이르되 원방에서 네 자손과 그 은금을 아울러 싣고 와서 네 하나님 여호와의 이름에 드리려 하며 이스라엘의 거룩한 자에게 드리려 하는 자들이라 이는 내가 너를 영화롭게 하였음이니라",
+      "source_text_hash": "d57d8ce28cdfbd372dd6adaef937314650f66e799fc1942eaa255c2f425a7732",
+      "translation_text_hash": "c61a256bfe155b263ef731ef7595ad1a00719a123b8875f615bf9ed96dd58761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 섬들이 나를 앙망하고 다시스의 배들이 먼저 이르되 원방에서 네 자손과 그 은금을 아울러 싣고 와서 네 하나님 여호와의 이름에 드리려 하며 이스라엘의 거룩한 자에게 드리려 하는 자들이라 이는 내가 너를 영화롭게 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "c61a256bfe155b263ef731ef7595ad1a00719a123b8875f615bf9ed96dd58761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:10",
+      "sequence": 18832,
+      "chapter_label": "ISA 60",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 10
+        }
+      ],
+      "en": "“Foreigners will build up your walls, and their kings will serve you; for in my wrath I struck you, but in my favor I have had mercy on you.",
+      "ko": "내가 노하여 너를 쳤으나 이제는 나의 은혜로 너를 긍휼히 여겼은즉 이방인들이 네 성벽을 쌓을 것이요 그 왕들이 너를 봉사할 것이며",
+      "source_text_hash": "b2c730b25ab870b832f87079b7d05f126bc0874e7c42ea638aff4ad56432143a",
+      "translation_text_hash": "53f1115f256d8d32e66aa2a946b6797fab0b7f5bd4b2b1acdc05e2946fcc2d09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 노하여 너를 쳤으나 이제는 나의 은혜로 너를 긍휼히 여겼은즉 이방인들이 네 성벽을 쌓을 것이요 그 왕들이 너를 봉사할 것이며"
+      ],
+      "raw_text_hashes": [
+        "53f1115f256d8d32e66aa2a946b6797fab0b7f5bd4b2b1acdc05e2946fcc2d09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:11",
+      "sequence": 18833,
+      "chapter_label": "ISA 60",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 11
+        }
+      ],
+      "en": "Your gates also shall be open continually; they shall not be shut day nor night, that men may bring to you the wealth of the nations, and their kings led captive.",
+      "ko": "네 성문이 항상 열려 주야로 닫히지 아니하리니 이는 사람들이 네게로 열방의 재물을 가져오며 그 왕들을 포로로 이끌어 옴이라",
+      "source_text_hash": "744c6a61814cda4b41f04a7648ad1e37e300a50ebf06ed54a3d67390f3cbc9f3",
+      "translation_text_hash": "eac3a2c42636815cae5de5448925c9940142034aa8fb740c36affff0573a449b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 성문이 항상 열려 주야로 닫히지 아니하리니 이는 사람들이 네게로 열방의 재물을 가져오며 그 왕들을 포로로 이끌어 옴이라"
+      ],
+      "raw_text_hashes": [
+        "eac3a2c42636815cae5de5448925c9940142034aa8fb740c36affff0573a449b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:12",
+      "sequence": 18834,
+      "chapter_label": "ISA 60",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 12
+        }
+      ],
+      "en": "For that nation and kingdom that will not serve you shall perish; yes, those nations shall be utterly wasted.",
+      "ko": "너를 섬기지 아니하는 백성과 나라는 파멸하리니 그 백성들은 반드시 진멸되리라",
+      "source_text_hash": "0b424a755579f855803b3289e43243b81157190af3ee96fb1a9357f41a624fda",
+      "translation_text_hash": "955c41ef2c168b0293a5f4a55ca2ea491efd1dbed640a3806a6c4abf6815aa13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 섬기지 아니하는 백성과 나라는 파멸하리니 그 백성들은 반드시 진멸되리라"
+      ],
+      "raw_text_hashes": [
+        "955c41ef2c168b0293a5f4a55ca2ea491efd1dbed640a3806a6c4abf6815aa13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:13",
+      "sequence": 18835,
+      "chapter_label": "ISA 60",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 13
+        }
+      ],
+      "en": "“The glory of Lebanon shall come to you, the cypress tree, the pine, and the box tree together, to beautify the place of my sanctuary; and I will make the place of my feet glorious.",
+      "ko": "레바논의 영광 곧 잣나무와 소나무와 황양목이 함께 네게 이르러 내 거룩한 곳을 아름답게 할 것이며 내가 나의 발 둘 곳을 영화롭게 할것이라",
+      "source_text_hash": "cb92e8666a10da2612bf3a084650c1166f0a385bb33d33592f6309f0f5d03ab7",
+      "translation_text_hash": "d2d7d05638514536a6efd3b21e66a7728e85f48871ad64ad801f316e058ca72a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레바논의 영광 곧 잣나무와 소나무와 황양목이 함께 네게 이르러 내 거룩한 곳을 아름답게 할 것이며 내가 나의 발 둘 곳을 영화롭게 할것이라"
+      ],
+      "raw_text_hashes": [
+        "d2d7d05638514536a6efd3b21e66a7728e85f48871ad64ad801f316e058ca72a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:14",
+      "sequence": 18836,
+      "chapter_label": "ISA 60",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 14
+        }
+      ],
+      "en": "The sons of those who afflicted you will come bowing to you; and all those who despised you will bow themselves down at the soles of your feet. They will call you the LORD’s City, the Zion of the Holy One of Israel.",
+      "ko": "너를 괴롭게 하던 자의 자손이 몸을 굽혀 네게 나아오며 너를 멸시하던 모든 자가 네 발 아래 엎드리어 너를 일컬어 여호와의 성읍이라, 이스라엘의 거룩한 자의 시온이라 하리라",
+      "source_text_hash": "e075a9057a829e0c61e792fb6a66e7861c451a55b96802bbfceceaef35f75350",
+      "translation_text_hash": "467a876f821d30e0cfc7a2d962266299075acf5a929d36565d8f0429db70c753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 괴롭게 하던 자의 자손이 몸을 굽혀 네게 나아오며 너를 멸시하던 모든 자가 네 발 아래 엎드리어 너를 일컬어 여호와의 성읍이라, 이스라엘의 거룩한 자의 시온이라 하리라"
+      ],
+      "raw_text_hashes": [
+        "467a876f821d30e0cfc7a2d962266299075acf5a929d36565d8f0429db70c753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:15",
+      "sequence": 18837,
+      "chapter_label": "ISA 60",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 15
+        }
+      ],
+      "en": "“Whereas you have been forsaken and hated, so that no one passed through you, I will make you an eternal excellency, a joy of many generations.",
+      "ko": "전에는 네가 버림을 입으며 미움을 당하였으므로 네게로 지나는 자가 없었으나 이제는 내가 너로 영영한 아름다움과 대대의 기쁨이 되게 하리니",
+      "source_text_hash": "bba6b66cb15837c750e56a51f495724d6637447b27017d1c3ff31ab9e37b43a7",
+      "translation_text_hash": "be6d6f6201221466499f67f8f3ac5e068e76e306c5fc2aca105ccd7c31454a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 네가 버림을 입으며 미움을 당하였으므로 네게로 지나는 자가 없었으나 이제는 내가 너로 영영한 아름다움과 대대의 기쁨이 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "be6d6f6201221466499f67f8f3ac5e068e76e306c5fc2aca105ccd7c31454a55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:16",
+      "sequence": 18838,
+      "chapter_label": "ISA 60",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 16
+        }
+      ],
+      "en": "You will also drink the milk of the nations, and will nurse from royal breasts. Then you will know that I, the LORD, am your Savior, your Redeemer, the Mighty One of Jacob.",
+      "ko": "네가 열방의 젖을 빨며 열왕의 유방을 빨고 나 여호와는 네 구원자, 네 구속자, 야곱의 전능자인줄 알리라",
+      "source_text_hash": "36a8fd6b68c7f6e63f67278e26d241f4662a10b832a9ab4ec5f587491e1db46a",
+      "translation_text_hash": "e59270a7114aca3fa9ebe02b75874cd19f9c2eef6529713e181e4d1d06a4f078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 열방의 젖을 빨며 열왕의 유방을 빨고 나 여호와는 네 구원자, 네 구속자, 야곱의 전능자인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "e59270a7114aca3fa9ebe02b75874cd19f9c2eef6529713e181e4d1d06a4f078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:17",
+      "sequence": 18839,
+      "chapter_label": "ISA 60",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 17
+        }
+      ],
+      "en": "For bronze I will bring gold; for iron I will bring silver; for wood, bronze, and for stones, iron. I will also make peace your governor, and righteousness your ruler.",
+      "ko": "내가 금을 가져 놋을 대신하며 은을 가져 철을 대신하며 놋으로 나무를 대신하며 철로 돌을 대신하며 화평을 세워 관원을 삼으며 의를 세워 감독을 삼으리니",
+      "source_text_hash": "ab5cf43cf57be9c0e932ee996dd961ab8eae31cf3975496314523cfd4b27ba72",
+      "translation_text_hash": "10666911c2b72110954c09ac6fcd5222e14084fa23f315b9f3389acb945da3ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 금을 가져 놋을 대신하며 은을 가져 철을 대신하며 놋으로 나무를 대신하며 철로 돌을 대신하며 화평을 세워 관원을 삼으며 의를 세워 감독을 삼으리니"
+      ],
+      "raw_text_hashes": [
+        "10666911c2b72110954c09ac6fcd5222e14084fa23f315b9f3389acb945da3ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:18",
+      "sequence": 18840,
+      "chapter_label": "ISA 60",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 18
+        }
+      ],
+      "en": "Violence shall no more be heard in your land, nor desolation or destruction within your borders; but you will call your walls Salvation, and your gates Praise.",
+      "ko": "다시는 강포한 일이 네 땅에 들리지 않을 것이요 황폐와 파멸이 네 경내에 다시 없을 것이며 네가 네 성벽을 구원이라, 네 성문을 찬송이라 칭할 것이라",
+      "source_text_hash": "7ff3dd79320311fcf045a07c0dc47ff3a9dabfc5632151d8c67df31593a4f0d6",
+      "translation_text_hash": "c0c532e95237b2f433e939415f45030bcb264596d29f46d9ab7eb39618a3a883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 강포한 일이 네 땅에 들리지 않을 것이요 황폐와 파멸이 네 경내에 다시 없을 것이며 네가 네 성벽을 구원이라, 네 성문을 찬송이라 칭할 것이라"
+      ],
+      "raw_text_hashes": [
+        "c0c532e95237b2f433e939415f45030bcb264596d29f46d9ab7eb39618a3a883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:19",
+      "sequence": 18841,
+      "chapter_label": "ISA 60",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 19
+        }
+      ],
+      "en": "The sun will be no more your light by day, nor will the brightness of the moon give light to you, but the LORD will be your everlasting light, and your God will be your glory.",
+      "ko": "다시는 낮에 해가 네 빛이 되지 아니하며 달도 네게 빛을 비취지 않을 것이요 오직 여호와가 네게 영영한 빛이 되며 네 하나님이 네 영광이 되리니",
+      "source_text_hash": "33d617e5bc3abc77c7b1e5bffa295ad2cac4f3e56a7d2cc9ec7f182eed389068",
+      "translation_text_hash": "2f1a3e4d576e18fe913e7b346cbebd71d71d24d8c39754d084912279417f3cb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 낮에 해가 네 빛이 되지 아니하며 달도 네게 빛을 비취지 않을 것이요 오직 여호와가 네게 영영한 빛이 되며 네 하나님이 네 영광이 되리니"
+      ],
+      "raw_text_hashes": [
+        "2f1a3e4d576e18fe913e7b346cbebd71d71d24d8c39754d084912279417f3cb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:20",
+      "sequence": 18842,
+      "chapter_label": "ISA 60",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 20
+        }
+      ],
+      "en": "Your sun will not go down any more, nor will your moon withdraw itself; for the LORD will be your everlasting light, and the days of your mourning will end.",
+      "ko": "다시는 네 해가 지지 아니하며 네 달이 물러가지 아니할 것은 여호와가 네 영영한 빛이 되고 네 슬픔의 날이 마칠 것임이니라",
+      "source_text_hash": "9589cb810ccd4922fc84866d6c5fa7834e883506c7526e9d5c6cecbcd91632f1",
+      "translation_text_hash": "a8369f05bb0651b049908aed9f378cb86bed3f5a5b552e6752779a42ca898ffa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 네 해가 지지 아니하며 네 달이 물러가지 아니할 것은 여호와가 네 영영한 빛이 되고 네 슬픔의 날이 마칠 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "a8369f05bb0651b049908aed9f378cb86bed3f5a5b552e6752779a42ca898ffa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:21",
+      "sequence": 18843,
+      "chapter_label": "ISA 60",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 21
+        }
+      ],
+      "en": "Then your people will all be righteous. They will inherit the land forever, the branch of my planting, the work of my hands, that I may be glorified.",
+      "ko": "네 백성이 다 의롭게 되어 영영히 땅을 차지하리니 그들은 나의 심은 가지요 나의 손으로 만든 것으로서 나의 영광을 나타낼 것인즉",
+      "source_text_hash": "abb562af20fc995d8e2d1f4661e781d126ce000a5fd29981d7104f12d9b222af",
+      "translation_text_hash": "d625b7d836197ebf266f87184e2075e7f48a6a73e1b2aa8a2cf3dbe9a9ccef77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 백성이 다 의롭게 되어 영영히 땅을 차지하리니 그들은 나의 심은 가지요 나의 손으로 만든 것으로서 나의 영광을 나타낼 것인즉"
+      ],
+      "raw_text_hashes": [
+        "d625b7d836197ebf266f87184e2075e7f48a6a73e1b2aa8a2cf3dbe9a9ccef77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:60:22",
+      "sequence": 18844,
+      "chapter_label": "ISA 60",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 60,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 60,
+          "verse": 22
+        }
+      ],
+      "en": "The little one will become a thousand, and the small one a strong nation. I, the LORD, will do this quickly in its time.”",
+      "ko": "그 작은 자가 천을 이루겠고 그 약한 자가 강국을 이룰 것이라 때가 되면 나 여호와가 속히 이루리라",
+      "source_text_hash": "5efbdd87a5fb04af7adeb9f74ee966732569e21edbbc999feba885d09a10c95f",
+      "translation_text_hash": "a80aa00fca8032057419cede9c46c4c5fd59125c2a78b1956d7fd07a6b8df01f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 작은 자가 천을 이루겠고 그 약한 자가 강국을 이룰 것이라 때가 되면 나 여호와가 속히 이루리라"
+      ],
+      "raw_text_hashes": [
+        "a80aa00fca8032057419cede9c46c4c5fd59125c2a78b1956d7fd07a6b8df01f"
+      ]
+    }
+  ]
+}

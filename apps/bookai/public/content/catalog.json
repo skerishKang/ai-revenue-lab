@@ -1,0 +1,78 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "build_id": "SM-053+B61-KRV1961-MAPPING-v1",
+  "delivery_model": "static-unit-json",
+  "primary_locator": "canonical_locator",
+  "works": [
+    {
+      "work_key": "iliad",
+      "title": "The Iliad",
+      "author": "Homer",
+      "manifest_path": "iliad/manifest.json",
+      "manifest_sha256": "fd316c2ba45a13c28a5dd3421d583d94bd9248717c92fd7c2b3af4876c3e7f50",
+      "unit_count": 24,
+      "passage_count": 4994
+    },
+    {
+      "work_key": "odyssey",
+      "title": "The Odyssey",
+      "author": "Homer",
+      "manifest_path": "odyssey/manifest.json",
+      "manifest_sha256": "f53be2d30355c78be5109a0c9efe9c4f05caa0064b6c0f88e8a6b0838a832321",
+      "unit_count": 24,
+      "passage_count": 1274
+    },
+    {
+      "work_key": "aeneid",
+      "title": "The Aeneid",
+      "author": "Virgil",
+      "manifest_path": "aeneid/manifest.json",
+      "manifest_sha256": "695521aebb2268e2daaa8eb6fa310c08cb245670ea167ba787c48b49a43c00d4",
+      "unit_count": 12,
+      "passage_count": 528
+    },
+    {
+      "work_key": "metamorphoses",
+      "title": "Metamorphoses",
+      "author": "Ovid",
+      "manifest_path": "metamorphoses/manifest.json",
+      "manifest_sha256": "ebb59042856ecbc4370c6f1f60319356bc7a3f3c9cb2586d1ffae876d5344ca4",
+      "unit_count": 15,
+      "passage_count": 662
+    },
+    {
+      "work_key": "paradise-lost",
+      "title": "Paradise Lost",
+      "author": "John Milton",
+      "manifest_path": "paradise-lost/manifest.json",
+      "manifest_sha256": "4ebe224b001677d9d90495e825dd79d1e3892b308586872752f86e752861ecbe",
+      "unit_count": 10,
+      "passage_count": 358
+    },
+    {
+      "work_key": "divine-comedy",
+      "title": "The Divine Comedy",
+      "author": "Dante Alighieri",
+      "manifest_path": "divine-comedy/manifest.json",
+      "manifest_sha256": "215038b9c7308097ae5e33d8d0704df937e335563b28e5e3de62c81eb2b1b9fe",
+      "unit_count": 100,
+      "passage_count": 4812
+    },
+    {
+      "work_key": "bible-web",
+      "title": "The Holy Bible",
+      "author": "World English Bible / KRV-1961",
+      "manifest_path": "bible-web/manifest.json",
+      "manifest_sha256": "da69a0dbc9dbc6118946f8a255d376a4691c7c2ca21e0ae8da9ed3a67f0e156e",
+      "unit_count": 1189,
+      "passage_count": 31098
+    }
+  ],
+  "totals": {
+    "works": 7,
+    "units": 1374,
+    "bilingual_passages": 43726,
+    "english_passages": 43726,
+    "korean_translations": 43726
+  }
+}

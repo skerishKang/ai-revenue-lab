@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:030",
+  "unit_ordinal": 266,
+  "unit_label": "1SA 30",
+  "book_code": "1SA",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:30:1",
+      "sequence": 7980,
+      "chapter_label": "1SA 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "When David and his men had come to Ziklag on the third day, the Amalekites had made a raid on the South and on Ziklag, and had struck Ziklag and burned it with fire,",
+      "ko": "다윗과 그의 사람들이 제 삼일에 시글락에 이를 때에 아말렉 사람들이 이미 남방과 시글락을 침로하였는데 그들이 시글락을 쳐서 불사르고",
+      "source_text_hash": "c3d3dba04428ec50cd955947b813bc07931bde4b788e58d6ffe09908c36eac08",
+      "translation_text_hash": "fce9fdb5c3bd8c5ee9950add4451059723833090cad7aa00a5c8f8b2783a9cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람들이 제 삼일에 시글락에 이를 때에 아말렉 사람들이 이미 남방과 시글락을 침로하였는데 그들이 시글락을 쳐서 불사르고"
+      ],
+      "raw_text_hashes": [
+        "fce9fdb5c3bd8c5ee9950add4451059723833090cad7aa00a5c8f8b2783a9cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:2",
+      "sequence": 7981,
+      "chapter_label": "1SA 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "and had taken captive the women and all who were in it, both small and great. They didn’t kill any, but carried them off and went their way.",
+      "ko": "거기 있는 대소 여인들을 하나도 죽이지 아니하고 다 사로잡아 끌고 자기 길을 갔더라",
+      "source_text_hash": "c6353ce22224dee23c50901a71957bf51583f94e605676b293205b8fe3d1d6da",
+      "translation_text_hash": "17b4f5cbb5420a8fc2d223594b17686a2d2c899f5934831a33570bed35f71d7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 있는 대소 여인들을 하나도 죽이지 아니하고 다 사로잡아 끌고 자기 길을 갔더라"
+      ],
+      "raw_text_hashes": [
+        "17b4f5cbb5420a8fc2d223594b17686a2d2c899f5934831a33570bed35f71d7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:3",
+      "sequence": 7982,
+      "chapter_label": "1SA 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "When David and his men came to the city, behold, it was burned with fire; and their wives, their sons, and their daughters were taken captive.",
+      "ko": "다윗과 그의 사람들이 성에 이르러 본즉 성이 불탔고 자기들의 아내와 자녀들이 사로잡혔는지라",
+      "source_text_hash": "1daa01f7b911e369a2c379fc79c10b39702ce05e38868cae91e6405041b79aca",
+      "translation_text_hash": "439813d00a554bcd014284d510011208da64fbd36047adb498a51a9c6ee2b297",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람들이 성에 이르러 본즉 성이 불탔고 자기들의 아내와 자녀들이 사로잡혔는지라"
+      ],
+      "raw_text_hashes": [
+        "439813d00a554bcd014284d510011208da64fbd36047adb498a51a9c6ee2b297"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:4",
+      "sequence": 7983,
+      "chapter_label": "1SA 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "Then David and the people who were with him lifted up their voice and wept until they had no more power to weep.",
+      "ko": "다윗과 그와 함께한 백성이 울 기력이 없도록 소리를 높여 울었더라",
+      "source_text_hash": "1525e6ab02801f50df37a6f293a8b7115b54c5e8ec17840bc4665cd69fffda45",
+      "translation_text_hash": "b378684ed90f7585af952693dc4a0cbcccaa159d7a05506f92af5c9d13fcb812",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그와 함께한 백성이 울 기력이 없도록 소리를 높여 울었더라"
+      ],
+      "raw_text_hashes": [
+        "b378684ed90f7585af952693dc4a0cbcccaa159d7a05506f92af5c9d13fcb812"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:5",
+      "sequence": 7984,
+      "chapter_label": "1SA 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "David’s two wives were taken captive, Ahinoam the Jezreelitess, and Abigail the wife of Nabal the Carmelite.",
+      "ko": "(다윗의 두 아내 이스르엘 여인 아히노암과 갈멜 사람 나발의 아내 되었던 아비가일도 사로잡혔더라)",
+      "source_text_hash": "7e8aa4aa0bbac674cb4a0c3b4875b4c36912356c1e1a9286ec8580996298c5c7",
+      "translation_text_hash": "07f5a29a44fcd574b942eb7961c7f0c47014476b5f90bde0668746f0344a2b00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(다윗의 두 아내 이스르엘 여인 아히노암과 갈멜 사람 나발의 아내 되었던 아비가일도 사로잡혔더라)"
+      ],
+      "raw_text_hashes": [
+        "07f5a29a44fcd574b942eb7961c7f0c47014476b5f90bde0668746f0344a2b00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:6",
+      "sequence": 7985,
+      "chapter_label": "1SA 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "David was greatly distressed, for the people spoke of stoning him, because the souls of all the people were grieved, every man for his sons and for his daughters; but David strengthened himself in the LORD his God.",
+      "ko": "백성이 각기 자녀들을 위하여 마음이 슬퍼서 다윗을 돌로 치자 하니 다윗이 크게 군급하였으나 그 하나님 여호와를 힘입고 용기를 얻었더라",
+      "source_text_hash": "027978ff86a65312f9873f460b9cac613fb9a989823a775e75e160aad90a072a",
+      "translation_text_hash": "16213d4022867845a47bdfbc9b795a974781515a8db7b4f317bb3a54236fe7b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 각기 자녀들을 위하여 마음이 슬퍼서 다윗을 돌로 치자 하니 다윗이 크게 군급하였으나 그 하나님 여호와를 힘입고 용기를 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "16213d4022867845a47bdfbc9b795a974781515a8db7b4f317bb3a54236fe7b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:7",
+      "sequence": 7986,
+      "chapter_label": "1SA 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "David said to Abiathar the priest, the son of Ahimelech, “Please bring the ephod here to me.” Abiathar brought the ephod to David.",
+      "ko": "다윗이 아히멜렉의 아들 제사장 아비아달에게 이르되 청컨대 에봇을 내게로 가져오라 아비아달이 에봇을 다윗에게로 가져오매",
+      "source_text_hash": "8299f0d303c099f434e4d801aa0b80b1e1e323f123f59563654dcf64372310ae",
+      "translation_text_hash": "611eaa371573ab59c7c3ec39e5879fbb80bf0f490c6d200f25379ef772a2f847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아히멜렉의 아들 제사장 아비아달에게 이르되 청컨대 에봇을 내게로 가져오라 아비아달이 에봇을 다윗에게로 가져오매"
+      ],
+      "raw_text_hashes": [
+        "611eaa371573ab59c7c3ec39e5879fbb80bf0f490c6d200f25379ef772a2f847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:8",
+      "sequence": 7987,
+      "chapter_label": "1SA 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "David inquired of the LORD, saying, “If I pursue after this troop, will I overtake them?” He answered him, “Pursue, for you will surely overtake them, and will without fail recover all.”",
+      "ko": "다윗이 여호와께 묻자와 가로되 내가 이 군대를 쫓아 가면 미치겠나이까 여호와께서 대답하시되 쫓아가라 네가 반드시 미치고 정녕 도로 찾으리라",
+      "source_text_hash": "7b3043525a20930a3eaea82fbe0ee70c309dc47ffab603c45e077798cc0ce29a",
+      "translation_text_hash": "dc2953f495d97ec16f0db61e0756449010ad7ab243cfff5e26dd4988eaf604d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께 묻자와 가로되 내가 이 군대를 쫓아 가면 미치겠나이까 여호와께서 대답하시되 쫓아가라 네가 반드시 미치고 정녕 도로 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "dc2953f495d97ec16f0db61e0756449010ad7ab243cfff5e26dd4988eaf604d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:9",
+      "sequence": 7988,
+      "chapter_label": "1SA 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "So David went, he and the six hundred men who were with him, and came to the brook Besor, where those who were left behind stayed.",
+      "ko": "이에 다윗과 그와 함께한 육백명이 가서 브솔 시내에 이르러는 뒤떨어진 자를 거기 머물렀으되",
+      "source_text_hash": "9a8ec4f044b23ce9278526b2b5009df6e7010bd84a3f64f6eb810454fa5fa63a",
+      "translation_text_hash": "fe88f27e2604dcee8feb93f08340a62d125032482c7d7b8d7c09c9b50e9e64ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗과 그와 함께한 육백명이 가서 브솔 시내에 이르러는 뒤떨어진 자를 거기 머물렀으되"
+      ],
+      "raw_text_hashes": [
+        "fe88f27e2604dcee8feb93f08340a62d125032482c7d7b8d7c09c9b50e9e64ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:10",
+      "sequence": 7989,
+      "chapter_label": "1SA 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "But David pursued, he and four hundred men; for two hundred stayed behind, who were so faint that they couldn’t go over the brook Besor.",
+      "ko": "곧 피곤하여 브솔 시내를 건너지 못하는 이백인을 머물렀고 다윗은 사백인을 거느리고 쫓아가니라",
+      "source_text_hash": "3a3013299510d37f0f2530a77be0879f374e5a5ff7a145edf08830a7f72a0f3a",
+      "translation_text_hash": "f8aa79d98dd94a99e6739ceb79de4a61daf9f3caccfbc9b74a6ca211367a01bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 피곤하여 브솔 시내를 건너지 못하는 이백인을 머물렀고 다윗은 사백인을 거느리고 쫓아가니라"
+      ],
+      "raw_text_hashes": [
+        "f8aa79d98dd94a99e6739ceb79de4a61daf9f3caccfbc9b74a6ca211367a01bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:11",
+      "sequence": 7990,
+      "chapter_label": "1SA 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "They found an Egyptian in the field, and brought him to David, and gave him bread, and he ate; and they gave him water to drink.",
+      "ko": "무리가 들에서 애굽 사람 하나를 만나 다윗에게로 데려다가 떡을 주어 먹게 하며 물을 마시우고",
+      "source_text_hash": "7c0ebc3d9e1de4b6b986fc673d525c78bbf61510676d748724505ece3504d7e3",
+      "translation_text_hash": "fdaf6761fe4edf169aad24c75251eae08cf97b6877cb1ce448a4ac82dd617a80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 들에서 애굽 사람 하나를 만나 다윗에게로 데려다가 떡을 주어 먹게 하며 물을 마시우고"
+      ],
+      "raw_text_hashes": [
+        "fdaf6761fe4edf169aad24c75251eae08cf97b6877cb1ce448a4ac82dd617a80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:12",
+      "sequence": 7991,
+      "chapter_label": "1SA 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "They gave him a piece of a cake of figs and two clusters of raisins. When he had eaten, his spirit came again to him; for he had eaten no bread, and drank no water for three days and three nights.",
+      "ko": "무화과 뭉치에서 뗀 덩이 하나와 건포도 두 송이를 주었으니 그가 낮 사흘, 밤 사흘을 떡도 먹지 못하였고 물도 마시지 못하였음이라 그가 먹고 정신을 차리매",
+      "source_text_hash": "c383fa3c580573d8510352d06769a327239a509f489e75649535461b4ab99d27",
+      "translation_text_hash": "597c39e29351a23828f316b7d09d5bb00727591f3ed4a18114cfaa087bf61ae6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무화과 뭉치에서 뗀 덩이 하나와 건포도 두 송이를 주었으니 그가 낮 사흘, 밤 사흘을 떡도 먹지 못하였고 물도 마시지 못하였음이라 그가 먹고 정신을 차리매"
+      ],
+      "raw_text_hashes": [
+        "597c39e29351a23828f316b7d09d5bb00727591f3ed4a18114cfaa087bf61ae6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:13",
+      "sequence": 7992,
+      "chapter_label": "1SA 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "David asked him, “To whom do you belong? Where are you from?” He said, “I am a young man of Egypt, servant to an Amalekite; and my master left me, because three days ago I got sick.",
+      "ko": "다윗이 그에게 이르되 너는 뉘게 속하였으며 어디로서냐 가로되 나는 애굽 소년이요 아말렉 사람의 종이더니 사흘 전에 병이 들매 주인이 나를 버렸나이다",
+      "source_text_hash": "b8d0b022c19572ef01782d3d4f65fd9fc085c801dd5b2ae60ceecbd711e4aab0",
+      "translation_text_hash": "feb6a7f923e976a3dc816c55115186d955f0e76568678a475479cc19bf3363f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그에게 이르되 너는 뉘게 속하였으며 어디로서냐 가로되 나는 애굽 소년이요 아말렉 사람의 종이더니 사흘 전에 병이 들매 주인이 나를 버렸나이다"
+      ],
+      "raw_text_hashes": [
+        "feb6a7f923e976a3dc816c55115186d955f0e76568678a475479cc19bf3363f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:14",
+      "sequence": 7993,
+      "chapter_label": "1SA 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "We made a raid on the South of the Cherethites, and on that which belongs to Judah, and on the South of Caleb; and we burned Ziklag with fire.”",
+      "ko": "우리가 그렛 사람의 남방과 유다에 속한 지방과 갈멜 남방을 침로하고 시글락을 불살랐나이다",
+      "source_text_hash": "0dd7ecd0a7c1b7ce654571f928c8b9d831ee7eb4ae044d3b08757ad2451cd120",
+      "translation_text_hash": "ebe8b9a2a4d6cb634cecc2e55a49bb63cff993344bb52915760f1d44ce01de93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그렛 사람의 남방과 유다에 속한 지방과 갈멜 남방을 침로하고 시글락을 불살랐나이다"
+      ],
+      "raw_text_hashes": [
+        "ebe8b9a2a4d6cb634cecc2e55a49bb63cff993344bb52915760f1d44ce01de93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:15",
+      "sequence": 7994,
+      "chapter_label": "1SA 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "David said to him, “Will you bring me down to this troop?” He said, “Swear to me by God that you will not kill me and not deliver me up into the hands of my master, and I will bring you down to this troop.”",
+      "ko": "다윗이 그에게 이르되 네가 나를 그 군대에게로 인도하겠느냐 그가 가로되 당신이 나를 죽이지도 아니하고 내 주인의 수중에 붙이지도 아니하겠다고 하나님으로 맹세하소서 그리하면 내가 당신을 이 군대에게로 인도하리이다",
+      "source_text_hash": "7858c465372701c905ce048614212552e758e756d8d36585c1aca40111005c83",
+      "translation_text_hash": "82583befd36af0c15bea198e7e895ef3d703fbc125885f798d132793d14d1cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그에게 이르되 네가 나를 그 군대에게로 인도하겠느냐 그가 가로되 당신이 나를 죽이지도 아니하고 내 주인의 수중에 붙이지도 아니하겠다고 하나님으로 맹세하소서 그리하면 내가 당신을 이 군대에게로 인도하리이다"
+      ],
+      "raw_text_hashes": [
+        "82583befd36af0c15bea198e7e895ef3d703fbc125885f798d132793d14d1cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:16",
+      "sequence": 7995,
+      "chapter_label": "1SA 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "When he had brought him down, behold, they were spread around over all the ground, eating, drinking, and dancing, because of all the great plunder that they had taken out of the land of the Philistines, and out of the land of Judah.",
+      "ko": "그가 인도하여 내려가니 그들이 온 땅에 편만하여 블레셋 사람의 땅과 유다 땅에서 크게 탈취하였음을 인하여 먹고 마시며 춤추는지라",
+      "source_text_hash": "3222374155bf4af71dadf15b459db1d3914222de3e8824d82dfe56c023cc3c3f",
+      "translation_text_hash": "60dcaadd11fbab74f254e743d318cd2203656fb0edf11dcba96a09fbe4dec994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 인도하여 내려가니 그들이 온 땅에 편만하여 블레셋 사람의 땅과 유다 땅에서 크게 탈취하였음을 인하여 먹고 마시며 춤추는지라"
+      ],
+      "raw_text_hashes": [
+        "60dcaadd11fbab74f254e743d318cd2203656fb0edf11dcba96a09fbe4dec994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:17",
+      "sequence": 7996,
+      "chapter_label": "1SA 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "David struck them from the twilight even to the evening of the next day. Not a man of them escaped from there, except four hundred young men who rode on camels and fled.",
+      "ko": "다윗이 새벽부터 이튿날 저물때까지 그들을 치매 약대 타고 도망한 소년 사백명 외에는 피한 사람이 없었더라",
+      "source_text_hash": "b051bc24ceef822b6d6b3b907e3a46f532e053766d77b82a396a1a8ef7e1a45c",
+      "translation_text_hash": "5dd66f253c2bcd729b3d111450b913053f3f3c2bd5329417baa354ed8edd8dcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 새벽부터 이튿날 저물때까지 그들을 치매 약대 타고 도망한 소년 사백명 외에는 피한 사람이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "5dd66f253c2bcd729b3d111450b913053f3f3c2bd5329417baa354ed8edd8dcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:18",
+      "sequence": 7997,
+      "chapter_label": "1SA 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "David recovered all that the Amalekites had taken, and David rescued his two wives.",
+      "ko": "다윗이 아말렉 사람의 취하였던 모든 것을 도로 찾고 그 두 아내를 구원하였고",
+      "source_text_hash": "81458d95aff7ab481ce8a2146fa3ad1f087ee364748ab10086968ffd17b8acf5",
+      "translation_text_hash": "1a2a17c2eac9957a758e2aa99213643aafaa1a7078bc0b9d7c030c963f426256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아말렉 사람의 취하였던 모든 것을 도로 찾고 그 두 아내를 구원하였고"
+      ],
+      "raw_text_hashes": [
+        "1a2a17c2eac9957a758e2aa99213643aafaa1a7078bc0b9d7c030c963f426256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:19",
+      "sequence": 7998,
+      "chapter_label": "1SA 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "There was nothing lacking to them, neither small nor great, neither sons nor daughters, neither plunder, nor anything that they had taken. David brought them all back.",
+      "ko": "그들의 탈취하였던것 곧 무리의 자녀들이나 빼앗겼던 것의 대소를 물론하고 아무 것도 잃은 것이 없이 다윗이 도로 찾아왔고",
+      "source_text_hash": "da324fb7b0d75b2366993dde0ff3ae663c5139ea08061209356efa5560fe7c5f",
+      "translation_text_hash": "90c87468de04f8a068c0ddcb1af6d7a0ec60bc1e2cb1dc6794061221b6f76194",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 탈취하였던것 곧 무리의 자녀들이나 빼앗겼던 것의 대소를 물론하고 아무 것도 잃은 것이 없이 다윗이 도로 찾아왔고"
+      ],
+      "raw_text_hashes": [
+        "90c87468de04f8a068c0ddcb1af6d7a0ec60bc1e2cb1dc6794061221b6f76194"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:20",
+      "sequence": 7999,
+      "chapter_label": "1SA 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "David took all the flocks and the herds, which they drove before those other livestock, and said, “This is David’s plunder.”",
+      "ko": "또 양떼와 소떼를 다 탈취하였더니 무리가 그 가축 앞에 몰고 가며 가로되 이는 다윗의 탈취한 것이라 하였더라",
+      "source_text_hash": "2defa72db6652568d062fec3b7f9955bc075f1bffe2a2474b646262d2e3ad85e",
+      "translation_text_hash": "c81efe976f00dcea0ebbe2e97c4c90a7363982b06d13f7d616fd7cc1d9af14e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 양떼와 소떼를 다 탈취하였더니 무리가 그 가축 앞에 몰고 가며 가로되 이는 다윗의 탈취한 것이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c81efe976f00dcea0ebbe2e97c4c90a7363982b06d13f7d616fd7cc1d9af14e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:21",
+      "sequence": 8000,
+      "chapter_label": "1SA 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "David came to the two hundred men, who were so faint that they could not follow David, whom also they had made to stay at the brook Besor; and they went out to meet David, and to meet the people who were with him. When David came near to the people, he greeted them.",
+      "ko": "다윗이 이왕에 피곤하여 능히 자기를 따르지 못하므로 브솔 시내에 머물게 한 이백인에게 오매 그들이 다윗과 그와 함께한 백성을 영접하러 나온지라 다윗이 그 백성에게 이르러 문안하매",
+      "source_text_hash": "5d8f0c294b21cb0859ae8db65ed72cbe8107627a1b5474609c411fc2cdfa761f",
+      "translation_text_hash": "64e95d55b468f655cbdf6085e942f63e6d667a31d6e38c5fb55c94ee77863b2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이왕에 피곤하여 능히 자기를 따르지 못하므로 브솔 시내에 머물게 한 이백인에게 오매 그들이 다윗과 그와 함께한 백성을 영접하러 나온지라 다윗이 그 백성에게 이르러 문안하매"
+      ],
+      "raw_text_hashes": [
+        "64e95d55b468f655cbdf6085e942f63e6d667a31d6e38c5fb55c94ee77863b2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:22",
+      "sequence": 8001,
+      "chapter_label": "1SA 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "Then all the wicked men and worthless fellows of those who went with David answered and said, “Because they didn’t go with us, we will not give them anything of the plunder that we have recovered, except to every man his wife and his children, that he may lead them away and depart.”",
+      "ko": "다윗과 함께 갔던 자 중에 악한 자와 비류들이 다 가로되 그들이 우리와 함께 가지 아니하였은즉 우리가 도로 찾은 물건은 무엇이든지 그들에게 주지 말고 각 사람의 처자만 주어서 데리고 떠나가게 하라 하는지라",
+      "source_text_hash": "2fb821e48cf335009abe1c9f781637cb867e405d638d77af1759bd96570ef418",
+      "translation_text_hash": "b39c60b9e8465e2d62b00e028f6c5c2de173bfbb0541d3f1d68deb9910e2e6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 함께 갔던 자 중에 악한 자와 비류들이 다 가로되 그들이 우리와 함께 가지 아니하였은즉 우리가 도로 찾은 물건은 무엇이든지 그들에게 주지 말고 각 사람의 처자만 주어서 데리고 떠나가게 하라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "b39c60b9e8465e2d62b00e028f6c5c2de173bfbb0541d3f1d68deb9910e2e6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:23",
+      "sequence": 8002,
+      "chapter_label": "1SA 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "Then David said, “Do not do so, my brothers, with that which the LORD has given to us, who has preserved us, and delivered the troop that came against us into our hand.",
+      "ko": "다윗이 가로되 나의 형제들아 여호와께서 우리를 보호하시고 우리를 치러 온 그 군대를 우리 손에 붙이셨은즉 그가 우리에게 주신 것을 너희가 이같이 못하리라",
+      "source_text_hash": "a31b9a67b91c59589c5daa9d3be38d03e4a26f64967d92b008a1e8169639d423",
+      "translation_text_hash": "2084a7091a210102813d8c072b1db2af88ca4a6e6b91a13a86a1e045ade39e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 나의 형제들아 여호와께서 우리를 보호하시고 우리를 치러 온 그 군대를 우리 손에 붙이셨은즉 그가 우리에게 주신 것을 너희가 이같이 못하리라"
+      ],
+      "raw_text_hashes": [
+        "2084a7091a210102813d8c072b1db2af88ca4a6e6b91a13a86a1e045ade39e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:24",
+      "sequence": 8003,
+      "chapter_label": "1SA 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "Who will listen to you in this matter? For as his share is who goes down to the battle, so shall his share be who stays with the baggage. They shall share alike.”",
+      "ko": "이 일에 누가 너희를 듣겠느냐 전장에 내려갔던 자의 분깃이나 소유물 곁에 머물렀던 자의 분깃이 일반일찌니 같이 분배할것이니라 하고",
+      "source_text_hash": "f5fabf7bab673903186dd51e274f35df8e2c4caf713d9fdc51ce7ce47270f660",
+      "translation_text_hash": "b4f902508f41a4741941a841160f4b11af8dadcdc22dc591344ad446b5d3c96a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일에 누가 너희를 듣겠느냐 전장에 내려갔던 자의 분깃이나 소유물 곁에 머물렀던 자의 분깃이 일반일찌니 같이 분배할것이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "b4f902508f41a4741941a841160f4b11af8dadcdc22dc591344ad446b5d3c96a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:25",
+      "sequence": 8004,
+      "chapter_label": "1SA 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "It was so from that day forward that he made it a statute and an ordinance for Israel to this day.",
+      "ko": "그 날부터 다윗이 이것으로 이스라엘의 율례와 규례를 삼았더니 오늘까지 이르니라",
+      "source_text_hash": "463b0cb76445206a12c73bed90f0b6e135ad8979bfb6d2393ee31256dd4ef1e3",
+      "translation_text_hash": "7818856576e2fd8f4667745f02062c3d7f89c865868f1ff7dccab82ccab577f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날부터 다윗이 이것으로 이스라엘의 율례와 규례를 삼았더니 오늘까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "7818856576e2fd8f4667745f02062c3d7f89c865868f1ff7dccab82ccab577f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:26",
+      "sequence": 8005,
+      "chapter_label": "1SA 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "When David came to Ziklag, he sent some of the plunder to the elders of Judah, even to his friends, saying, “Behold, a present for you from the plunder of the LORD’s enemies.”",
+      "ko": "다윗이 시글락에 이르러 탈취물을 그 친구 유다 장로들에게 보내어 가로되 보라 여호와의 원수에게서 탈취한 것을 너희에게 선사하노라 하고",
+      "source_text_hash": "776e942b04d17983b1fdd257d28537edb9f483d5ce5d37c8d074bbf5e72af89d",
+      "translation_text_hash": "55df51f843d1179bc538fcfc1daec3a620ea90150f66cf267293651096072e9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 시글락에 이르러 탈취물을 그 친구 유다 장로들에게 보내어 가로되 보라 여호와의 원수에게서 탈취한 것을 너희에게 선사하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "55df51f843d1179bc538fcfc1daec3a620ea90150f66cf267293651096072e9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:27",
+      "sequence": 8006,
+      "chapter_label": "1SA 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "He sent it to those who were in Bethel, to those who were in Ramoth of the South, to those who were in Jattir,",
+      "ko": "벧엘에 있는 자와 남방 라못에 있는 자와 얏딜에 있는 자와",
+      "source_text_hash": "6326d54f0b6463968bf32316ff67d719897c5e08a0856c0f44bc0fae2556c5ad",
+      "translation_text_hash": "3174a54eacd66d1d199e67ca1c76dd88af74ffcaad3b70d63f06b1485a54f7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧엘에 있는 자와 남방 라못에 있는 자와 얏딜에 있는 자와"
+      ],
+      "raw_text_hashes": [
+        "3174a54eacd66d1d199e67ca1c76dd88af74ffcaad3b70d63f06b1485a54f7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:28",
+      "sequence": 8007,
+      "chapter_label": "1SA 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "to those who were in Aroer, to those who were in Siphmoth, to those who were in Eshtemoa,",
+      "ko": "아로엘에 있는 자와 십못에 있는 자와 에스드모아에 있는 자와",
+      "source_text_hash": "167cb1a4f88b193b765bd906c52eb179a430d0a8811f7d48e802b685f4ccbcc9",
+      "translation_text_hash": "adbc547b7f65155c86acd42337a47a911cf7038cbc8934ecf6969044645c1206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아로엘에 있는 자와 십못에 있는 자와 에스드모아에 있는 자와"
+      ],
+      "raw_text_hashes": [
+        "adbc547b7f65155c86acd42337a47a911cf7038cbc8934ecf6969044645c1206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:29",
+      "sequence": 8008,
+      "chapter_label": "1SA 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "to those who were in Racal, to those who were in the cities of the Jerahmeelites, to those who were in the cities of the Kenites,",
+      "ko": "라갈에 있는 자와 여라므엘 사람의 성읍들에 있는 자와 겐 사람의 성읍들에 있는 자와",
+      "source_text_hash": "02a47bc41e4b8d633cd194896e48f12cae7ef86cf2c8ad1d7016999c510583f1",
+      "translation_text_hash": "2083a1c8757b6f84505438091bb798e03153c8587f7ef3eaf1d38715b5a8b091",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라갈에 있는 자와 여라므엘 사람의 성읍들에 있는 자와 겐 사람의 성읍들에 있는 자와"
+      ],
+      "raw_text_hashes": [
+        "2083a1c8757b6f84505438091bb798e03153c8587f7ef3eaf1d38715b5a8b091"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:30",
+      "sequence": 8009,
+      "chapter_label": "1SA 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "to those who were in Hormah, to those who were in Borashan, to those who were in Athach,",
+      "ko": "홀마에 있는 자와 고라산에 있는 자와 아닥에 있는 자와 헤브론에 있는 자에게와 다윗과 그의 사람들의 왕래하던 모든 곳에 보내었더라",
+      "source_text_hash": "d576065412e17cae1644dc26724cd3baee94965babb5b3228bbf83733ee4546a",
+      "translation_text_hash": "8da2813ef8b096ea377398bc14ef9ea1317f5eabd48ad7096851bf69e3d6e01c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV 1SA 30:30 contains the WEB 30/31 boundary.",
+      "raw_texts": [
+        "홀마에 있는 자와 고라산에 있는 자와 아닥에 있는 자와 헤브론에 있는 자에게와 다윗과 그의 사람들의 왕래하던 모든 곳에 보내었더라"
+      ],
+      "raw_text_hashes": [
+        "8da2813ef8b096ea377398bc14ef9ea1317f5eabd48ad7096851bf69e3d6e01c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:30:31",
+      "sequence": 8010,
+      "chapter_label": "1SA 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "to those who were in Hebron, and to all the places where David himself and his men used to stay.",
+      "ko": "홀마에 있는 자와 고라산에 있는 자와 아닥에 있는 자와 헤브론에 있는 자에게와 다윗과 그의 사람들의 왕래하던 모든 곳에 보내었더라",
+      "source_text_hash": "2adbf8e9d86143de2aca6bcd27b613dbd829a9a2e66bae6e93dae2b60b3fddcd",
+      "translation_text_hash": "8da2813ef8b096ea377398bc14ef9ea1317f5eabd48ad7096851bf69e3d6e01c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "merge",
+      "mapping_note": "KRV 1SA 30:30 contains the WEB 30/31 boundary.",
+      "raw_texts": [
+        "홀마에 있는 자와 고라산에 있는 자와 아닥에 있는 자와 헤브론에 있는 자에게와 다윗과 그의 사람들의 왕래하던 모든 곳에 보내었더라"
+      ],
+      "raw_text_hashes": [
+        "8da2813ef8b096ea377398bc14ef9ea1317f5eabd48ad7096851bf69e3d6e01c"
+      ]
+    }
+  ]
+}
