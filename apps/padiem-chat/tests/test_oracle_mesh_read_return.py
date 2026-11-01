@@ -1290,10 +1290,35 @@ def test_the_monitor_reads_the_lane_as_counts_and_ages(monkeypatch):
 
     # A request with no body is the plain read; a body must still be a JSON object.
     for bad in ("not json", [1, 2], {"device_ids": "not a list"},
-                {"device_ids": ["d-%d" % i for i in range(9)]},
                 {"device_ids": [None]}):
         status, body, _ = _lane_status_read(History(), payload=bad)
         assert status == 400, (bad, body)
+
+
+def test_lane_status_accepts_more_devices_than_the_old_arbitrary_cap(monkeypatch):
+    """#5882 2차: the eight-device presence cap was an arbitrary bound.
+
+    The trusted executor names its own devices; the 8KiB request-body ceiling is
+    the real bound on how many ids can arrive, so twelve ids — one more than the
+    old cap allowed — must read like any other poll instead of a 400.
+    """
+    setup_auth(monkeypatch)
+    loaded = {}
+
+    class _Presence:
+        async def load(self, device_id):
+            return loaded.get(device_id)
+
+    ids = ["device-%02d" % index for index in range(12)]
+    loaded["device-00"] = {"connected": 1, "received_at": "2026-11-02T00:00:00Z"}
+    status, body, _ = _lane_status_read(
+        History(), payload={"device_ids": ids}, presence=_Presence(),
+    )
+    assert status == 200, body
+    beats = body["beats"]
+    assert [beat["device_id"] for beat in beats] == ids
+    assert beats[0]["seen"] is True and beats[0]["connected"] is True
+    assert all(beat["seen"] is False for beat in beats[1:])
 
 
 def test_the_lane_status_reports_the_executor_beat_only_for_devices_it_is_asked_about(
@@ -1301,9 +1326,9 @@ def test_the_lane_status_reports_the_executor_beat_only_for_devices_it_is_asked_
 ):
     """The presence beat is the only real evidence of "the executor was alive".
 
-    The caller names the devices, bounded by the same limit the poll beat uses, and
-    a device with no row is reported as ``seen: false`` rather than as an offline
-    device: absence of a record and a recorded disconnection are different facts.
+    The caller names the devices, and a device with no row is reported as
+    ``seen: false`` rather than as an offline device: absence of a record and a
+    recorded disconnection are different facts.
     """
     setup_auth(monkeypatch)
     loaded = {}
