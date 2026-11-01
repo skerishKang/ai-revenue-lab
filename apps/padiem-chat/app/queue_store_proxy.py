@@ -196,24 +196,31 @@ class QueueStoreClient:
         # for the identity lane). One client per event loop is kept instead: a
         # cron tick runs its own loop, so the client is keyed by loop rather
         # than cached globally. An injected factory keeps its per-call shape.
-        self._clients: dict[int, Any] = {}
+        self._clients: dict[int, tuple[asyncio.AbstractEventLoop, Any]] = {}
 
     def _loop_client(self) -> Any:
         """The pooled queue client for the running event loop."""
-        loop_key = id(asyncio.get_running_loop())
-        client = self._clients.get(loop_key)
+        loop = asyncio.get_running_loop()
+        loop_key = id(loop)
+        # id(loop) is reused once a finished loop is collected: drop clients of
+        # closed loops and check the owner, so a later loop never gets a client
+        # bound to a dead loop (and entries do not pile up per cron tick).
+        for key in [k for k, (owner, _) in self._clients.items() if owner.is_closed()]:
+            del self._clients[key]
+        entry = self._clients.get(loop_key)
+        client = entry[1] if entry is not None and entry[0] is loop else None
         if client is None:
             client = httpx.AsyncClient(
                 timeout=httpx.Timeout(self._timeout, connect=3.0),
                 follow_redirects=False,
             )
-            self._clients[loop_key] = client
+            self._clients[loop_key] = (loop, client)
         return client
 
     async def aclose(self) -> None:
         """Close every pooled queue client (host shutdown)."""
         clients, self._clients = self._clients, {}
-        for client in clients.values():
+        for _owner, client in clients.values():
             await client.aclose()
 
     @timed_async('queue')

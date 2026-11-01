@@ -138,7 +138,7 @@ class LocalEngineHttpTransport:
         # loop. A cron tick builds its own loop, so the client is keyed by loop
         # rather than cached globally — the reason this module used to open one
         # per request no longer applies to the completed lane.
-        self._clients: dict[int, httpx.AsyncClient] = {}
+        self._clients: dict[int, tuple[asyncio.AbstractEventLoop, httpx.AsyncClient]] = {}
         self._timeout = timeout
         self._max_response_bytes = max_response_bytes
         self._stream_timeout = stream_timeout
@@ -172,17 +172,24 @@ class LocalEngineHttpTransport:
 
     def _loop_client(self) -> httpx.AsyncClient:
         """The completed-lane client for the running loop, created on first use."""
-        loop_key = id(asyncio.get_running_loop())
-        client = self._clients.get(loop_key)
+        loop = asyncio.get_running_loop()
+        loop_key = id(loop)
+        # id(loop) is reused once a finished loop is collected: drop clients of
+        # closed loops and check the owner, so a later loop never gets a client
+        # bound to a dead loop (and entries do not pile up per cron tick).
+        for key in [k for k, (owner, _) in self._clients.items() if owner.is_closed()]:
+            del self._clients[key]
+        entry = self._clients.get(loop_key)
+        client = entry[1] if entry is not None and entry[0] is loop else None
         if client is None:
             client = httpx.AsyncClient(follow_redirects=False, timeout=self._timeout)
-            self._clients[loop_key] = client
+            self._clients[loop_key] = (loop, client)
         return client
 
     async def aclose(self) -> None:
         """Close every pooled completed-lane client (host shutdown)."""
         clients, self._clients = self._clients, {}
-        for client in clients.values():
+        for _owner, client in clients.values():
             await client.aclose()
 
     async def stream_request(

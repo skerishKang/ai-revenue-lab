@@ -387,7 +387,7 @@ class LocalB14Binding:
         # full TCP handshake and pool teardown on every P01 model request.
         # An injected client belongs to the caller and is never closed here.
         self._client = client
-        self._clients: dict[int, Any] = {}
+        self._clients: dict[int, tuple[asyncio.AbstractEventLoop, Any]] = {}
         source = os.environ if values is None else values
         self._values = {name: source.get(name, "") for name in (B14_PROOF_SECRET_ENV, B14_SECRET_DIR_ENV)}
 
@@ -395,17 +395,24 @@ class LocalB14Binding:
         """The running loop's B14 client, created on first use."""
         if self._client is not None:
             return self._client
-        loop_key = id(asyncio.get_running_loop())
-        client = self._clients.get(loop_key)
+        loop = asyncio.get_running_loop()
+        loop_key = id(loop)
+        # id(loop) is reused once a finished loop is collected: drop clients of
+        # closed loops and check the owner, so a later loop never gets a client
+        # bound to a dead loop (and entries do not pile up per cron tick).
+        for key in [k for k, (owner, _) in self._clients.items() if owner.is_closed()]:
+            del self._clients[key]
+        entry = self._clients.get(loop_key)
+        client = entry[1] if entry is not None and entry[0] is loop else None
         if client is None:
             client = httpx.AsyncClient(follow_redirects=False, timeout=self._timeout)
-            self._clients[loop_key] = client
+            self._clients[loop_key] = (loop, client)
         return client
 
     async def aclose(self) -> None:
         """Close every pooled client on host shutdown; an injected one is the caller's."""
         clients, self._clients = self._clients, {}
-        for client in clients.values():
+        for _owner, client in clients.values():
             await client.aclose()
 
     def _proof_secret(self) -> str:
