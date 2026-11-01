@@ -47,9 +47,13 @@ from urllib.parse import unquote
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from padiem_ai_core.document_normalization import DocumentNormalizationError
+
 from .bounded_request_body import RequestBodyTooLarge, open_bounded_spooled_request
-from .project_files import BINARY_PROJECT_FILE_MEDIA
+from .documents import DocumentValidationError
+from .project_files import BINARY_PROJECT_FILE_MEDIA, ProjectFileLimitError
 from .project_file_routes import (
+    OriginalStorageUnavailable,
     _identity,
     save_binary_project_file,
 )
@@ -276,21 +280,49 @@ def _owns(meta: dict, uid: str, pid: str) -> bool:
     return meta.get("user_id") == uid and meta.get("project_id") == pid
 
 
+def _unavailable_result() -> dict:
+    return {
+        "status": 503,
+        "body": {"error": {"code": "project_files_unavailable", "message": "프로젝트 파일을 현재 사용할 수 없습니다."}},
+    }
+
+
+def _validation_failure(exc: Exception, media_type: str) -> dict:
+    # The direct route's exact 422 mapping, so both entry points answer alike.
+    if media_type == "application/hwp+zip":
+        from .binary_documents import guidance_for_reason_code
+        message = guidance_for_reason_code(getattr(exc, "code", ""), media_type)
+        message = message or "HWPX 파일을 읽지 못했습니다. 파일을 확인해 주세요."
+    else:
+        message = str(exc)
+    return {"status": 422, "body": {"error": {"code": "invalid_document", "message": message}}}
+
+
 async def _finalize(request: Request, meta: dict) -> dict:
     """Run the unchanged project-file save flow over the completed chunk file."""
 
     data_path = os.path.join(_upload_root(), str(meta["upload_id"]), _DATA_NAME)
-    with open(data_path, "rb") as data:
-        try:
-            created = await save_binary_project_file(
-                request,
-                uid=str(meta["user_id"]), pid=str(meta["project_id"]),
-                name=str(meta["filename"]), media_type=str(meta["media_type"]),
-                data=data,
-            )
-        except RequestBodyTooLarge:
-            return {"status": 413, "body": {"error": {"code": "invalid_document", "message": "파일이 너무 커요."}}}
-    return {"status": 201, "body": {"file": created.public_dict()}}
+    media_type = str(meta["media_type"])
+    try:
+        with open(data_path, "rb") as data:
+            try:
+                created = await save_binary_project_file(
+                    request,
+                    uid=str(meta["user_id"]), pid=str(meta["project_id"]),
+                    name=str(meta["filename"]), media_type=media_type,
+                    data=data,
+                )
+            except RequestBodyTooLarge:
+                return {"status": 413, "body": {"error": {"code": "invalid_document", "message": "파일이 너무 커요."}}}
+            except (ValueError, DocumentNormalizationError, DocumentValidationError, ProjectFileLimitError) as exc:
+                return _validation_failure(exc, media_type)
+            except OriginalStorageUnavailable:
+                return _unavailable_result()
+            except Exception:
+                return _unavailable_result()
+        return {"status": 201, "body": {"file": created.public_dict()}}
+    except OSError:
+        return _unavailable_result()
 
 
 async def project_file_tus_item(request: Request):
