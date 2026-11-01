@@ -1,0 +1,10 @@
+/* Reuses the existing sidebar and theme tokens. */
+.quick-launch { padding: 0 12px; }
+.quick-launch h2, .quick-launch h3 { font-size: .8rem; margin: 12px 0 6px; }
+.quick-launch-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.quick-launch button { cursor: pointer; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: 8px; padding: 6px 8px; font: inherit; }
+.quick-launch-tools button { font-size: .78rem; }
+.quick-recent-files { display: grid; gap: 4px; min-width: 0; font-size: .8rem; }
+.quick-recent-files button { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; border: 0; }
+#quickAllFiles { margin-top: 5px; font-size: .78rem; }
+.project-file-row.quick-selected-file { outline: 3px solid #7c74f0; outline-offset: -3px; border-radius: 8px; }

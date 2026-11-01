@@ -922,6 +922,16 @@
     // its one owner); the two Claw cards route to the existing Claw workspace
     // and its own chip handler stays the owner of the quote action — no
     // second engine, no duplicated state here.
+    document.querySelectorAll("[data-quick-util]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.quickUtil;
+        const target = document.querySelector('[data-util-tool="' + key + '"]');
+        if (!target) return;
+        showUtil();
+        target.click();
+        closeMobileSidebar();
+      });
+    });
     const toolGrid = document.getElementById("utilToolGrid");
     const toolButtons = toolGrid
       ? Array.from(toolGrid.querySelectorAll("[data-util-tool]"))
