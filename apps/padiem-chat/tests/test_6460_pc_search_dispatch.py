@@ -80,6 +80,9 @@ def test_content_search_uses_ripgrep_and_defers_office_documents():
     script = pc_search_command(roots=ROOTS, query="장성군", mode="content")
     assert "\r" not in script
     assert "Get-Command rg.exe" in script
+    # -H keeps path:line:byte:text even when one chunk holds one file, and
+    # --byte-offset is what a range read starts from.
+    assert "rg.Source -H --no-heading --line-number --byte-offset" in script
     assert "--fixed-strings --max-count 1 -- $query $paths" in script
     # The scan is bounded and says so instead of running unbounded.
     assert "$scan=" + str(PC_SEARCH_SCAN_MAX_FILES) in script

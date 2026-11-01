@@ -56,6 +56,11 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
+from .claw_pc_read_command import (
+    pc_read_chunk_command,
+    pc_read_length,
+    pc_read_offset,
+)
 from .claw_pc_search_command import (
     PC_SEARCH_MAX_LIMIT,
     pc_search_command,
@@ -3634,7 +3639,7 @@ def _pc_files_powershell_literal(value: str) -> str:
 
 
 #: The closed operation set this lane serves: readers, one search, three writers.
-_PC_FILES_OPS = ("list", "read", "search", "write", "move", "delete")
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "move", "delete")
 _PC_WRITE_OPS = ("write", "move", "delete")
 
 
@@ -3645,6 +3650,10 @@ def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:
     checked against ``search_name`` or ``search_content`` rather than the one
     wire-level word both tools share.
     """
+    if op == "read_chunk":
+        # A range read is the same read authority as read_file; the file is
+        # never sent whole, and the claim's `read` already covers it.
+        return "read"
     if op != "search":
         return op if op in _PC_FILES_OPS else None
     mode = pc_search_mode(search_mode)
@@ -4111,7 +4120,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         # else may add a field, and the operation itself is validated below.
         # A search names its query and which side of the file it looks at.
         extra_fields = {"write": {"content"}, "move": {"destination"},
-                        "search": {"query", "search_mode"}}
+                        "search": {"query", "search_mode"},
+                        "read_chunk": {"offset", "length"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
@@ -4340,6 +4350,25 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 relative=relative,
                 destination=destination_path,
                 content_b64=content_b64,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+            )
+        if op == "read_chunk":
+            offset = pc_read_offset(payload.get("offset"))
+            length = pc_read_length(payload.get("length"))
+            if offset is None or length is None or not relative:
+                return _error(422, "oracle_mesh_file_range_invalid")
+            command = pc_read_chunk_command(
+                root=root, relative=relative, offset=offset, length=length,
             )
             return await dispatch_oracle_mesh_command_intent(
                 request, command=command,

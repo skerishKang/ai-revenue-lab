@@ -118,6 +118,7 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         engine_driver.PC_DELETE_FILE_TOOL_ID,
         engine_driver.PC_SEARCH_FILES_TOOL_ID,
         engine_driver.PC_SEARCH_CONTENT_TOOL_ID,
+        engine_driver.PC_READ_CHUNK_TOOL_ID,
     }
     canonical = {entry.canonical_tool_id for entry in binding.registry.entries}
     assert canonical == {
@@ -129,6 +130,7 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         product_adapter.PC_READ_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_SEARCH_FILES_CANONICAL_TOOL_ID,
         product_adapter.PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
+        product_adapter.PC_READ_CHUNK_CANONICAL_TOOL_ID,
     }
     authority = binding.authorities[product_adapter.PC_QUERY_AGENT_ID]
     assert authority.authorization.granted_auth_scopes == (
@@ -140,6 +142,7 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         product_adapter.PC_DELETE_FILE_SCOPE,
         product_adapter.PC_SEARCH_FILES_SCOPE,
         product_adapter.PC_SEARCH_CONTENT_SCOPE,
+        product_adapter.PC_READ_CHUNK_SCOPE,
     )
 
 

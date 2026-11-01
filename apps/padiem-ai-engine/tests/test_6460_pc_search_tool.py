@@ -111,6 +111,7 @@ def test_search_ceiling_comes_from_the_shared_scope_table():
     assert files == {
         PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+        driver.PC_READ_CHUNK_TOOL_ID,
     }
     # A write plan keeps its previous behaviour: its own plan ceiling, never a
     # broader read/search ceiling invented here.
@@ -239,10 +240,12 @@ def test_scope_claim_reports_search_capabilities():
             granted_auth_scopes=(
                 PC_QUERY_SCOPE, "claw.pc.list_files", "claw.pc.read_file",
                 "claw.pc.search_files", "claw.pc.search_contents",
+                "claw.pc.read_file_chunk",
             ),
             externally_authorized_tools=frozenset({
                 PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
                 PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+                driver.PC_READ_CHUNK_TOOL_ID,
             }),
         ),
         declared_plan="files",

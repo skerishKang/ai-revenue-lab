@@ -92,6 +92,10 @@ PC_SEARCH_FILES_TOOL_ID = "claw.pc.search_files"
 PC_SEARCH_FILES_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-search-files@1"
 PC_SEARCH_CONTENT_TOOL_ID = "claw.pc.search_contents"
 PC_SEARCH_CONTENT_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-search-contents@1"
+# #6460-4: one range of a file. The read authority is the same one read_file
+# already carries; the range keeps a large file out of one model input.
+PC_READ_CHUNK_TOOL_ID = "claw.pc.read_file_chunk"
+PC_READ_CHUNK_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-read-file-chunk@1"
 PC_QUERY_SCOPE = "claw.pc.query_drives"
 PC_LIST_FILES_SCOPE = "claw.pc.list_files"
 PC_READ_FILE_SCOPE = "claw.pc.read_file"
@@ -100,6 +104,7 @@ PC_MOVE_FILE_SCOPE = "claw.pc.move_file"
 PC_DELETE_FILE_SCOPE = "claw.pc.delete_file"
 PC_SEARCH_FILES_SCOPE = "claw.pc.search_files"
 PC_SEARCH_CONTENT_SCOPE = "claw.pc.search_contents"
+PC_READ_CHUNK_SCOPE = "claw.pc.read_file_chunk"
 PC_SEARCH_TOOL_IDS = frozenset({PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID})
 PC_FILE_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
 # #4434: the connected PC is written, moved and deleted as well as read. These
@@ -146,8 +151,9 @@ PC_REQUEST_SCOPE_TOOLS = {
     # A name search is offered exactly where a listing is: it only reports
     # which files match; it never reads one.
     "files_list": frozenset({PC_LIST_FILES_TOOL_ID, PC_SEARCH_FILES_TOOL_ID}),
-    # A content search reads text files, so it sits with the read grant.
-    "files": PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS,
+    # A content search and a range read both read text files, so they sit
+    # with the read grant.
+    "files": PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS | frozenset({PC_READ_CHUNK_TOOL_ID}),
     "files_write": PC_FILE_WRITE_TOOL_IDS,
     "query_drives": frozenset({PC_DRIVES_TOOL_ID}),
     "none": frozenset(),
@@ -490,6 +496,23 @@ def pc_search_content_tool_spec() -> ToolSpec:
         output_contract={"type":"object"}, timeout_seconds=None)
 
 
+def pc_read_chunk_tool_spec() -> ToolSpec:
+    return ToolSpec(id=PC_READ_CHUNK_TOOL_ID,
+        title="Read one range of a file on the verified PC",
+        description=("Read one byte range of a UTF-8 text file, or one character range of a "
+                     "document's extracted text, inside the approved scope. Returns the "
+                     "range, its next offset and whether the end was reached; the file is "
+                     "never sent whole"),
+        owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
+        auth_scope=(PC_READ_CHUNK_SCOPE,),
+        input_schema={"type":"object","properties":{
+            "path":{"type":"string","minLength":1,"maxLength":2048},
+            "offset":{"type":"integer","minimum":0},
+            "length":{"type":"integer","minimum":1}},
+            "required":["path","offset"],"additionalProperties":False},
+        output_contract={"type":"object"}, timeout_seconds=None)
+
+
 def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
     return BoundedAgentDefinition(agent_id=agent_id, publisher_id="padiem",
         title="Verified PC drive and file tools",
@@ -501,7 +524,8 @@ def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
                           PC_READ_FILE_CANONICAL_TOOL_ID, PC_WRITE_FILE_CANONICAL_TOOL_ID,
                           PC_MOVE_FILE_CANONICAL_TOOL_ID, PC_DELETE_FILE_CANONICAL_TOOL_ID,
                           PC_SEARCH_FILES_CANONICAL_TOOL_ID,
-                          PC_SEARCH_CONTENT_CANONICAL_TOOL_ID),
+                          PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
+                          PC_READ_CHUNK_CANONICAL_TOOL_ID),
         execution_budget=AgentExecutionBudget())
 
 
@@ -518,6 +542,7 @@ def pc_query_agent_policy() -> TrustedAgentRuntimePolicy:
             ToolRuntimeBinding(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_DELETE_FILE_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_SEARCH_FILES_CANONICAL_TOOL_ID, runtime_tool_id=PC_SEARCH_FILES_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_SEARCH_CONTENT_CANONICAL_TOOL_ID, runtime_tool_id=PC_SEARCH_CONTENT_TOOL_ID),
+            ToolRuntimeBinding(canonical_tool_id=PC_READ_CHUNK_CANONICAL_TOOL_ID, runtime_tool_id=PC_READ_CHUNK_TOOL_ID),
         ))
 
 
@@ -525,11 +550,12 @@ def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolA
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
             PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
-            PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE),
+            PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE),
         externally_authorized_tools=frozenset({
             PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
             PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
             PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+            PC_READ_CHUNK_TOOL_ID,
         }))
 
 
@@ -551,6 +577,8 @@ def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
                                  runtime_spec=pc_search_files_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_search_content_tool_spec()),
+        RegisteredTool.from_spec(canonical_tool_id=PC_READ_CHUNK_CANONICAL_TOOL_ID,
+                                 runtime_spec=pc_read_chunk_tool_spec()),
     )
 
 
@@ -651,7 +679,7 @@ class StructuredPCQueryStepDriver:
             # A server that withholds read also withholds content search, so
             # the reduced grant still names a real scope (list + name search).
             self._allowed_tool_ids = self._allowed_tool_ids - {
-                PC_SEARCH_CONTENT_TOOL_ID,
+                PC_SEARCH_CONTENT_TOOL_ID, PC_READ_CHUNK_TOOL_ID,
             }
         existing = self.scope_state.get("claim")
         if isinstance(existing, dict):
@@ -675,6 +703,7 @@ class StructuredPCQueryStepDriver:
                 PC_DELETE_FILE_TOOL_ID: "files_write",
                 PC_SEARCH_FILES_TOOL_ID: "files_list",
                 PC_SEARCH_CONTENT_TOOL_ID: "files",
+                PC_READ_CHUNK_TOOL_ID: "files",
             }.get(first_tool) if decision.get("action") == "tool" and isinstance(first_tool, str) else None
         if not isinstance(proposed, str) or proposed not in PC_REQUEST_SCOPE_TOOLS or proposed == "none":
             proposed, source = "none", "missing"
@@ -777,6 +806,35 @@ class StructuredPCQueryStepDriver:
                     invocation = ToolInvocation(tool_id=PC_DRIVES_TOOL_ID,
                                                 arguments=dict(self._static_arguments))
                 pc_core_log("drives_branch", tool_id, "done")
+                return AgentStepDecision.use_tool(invocation)
+            if tool_id == PC_READ_CHUNK_TOOL_ID and isinstance(arguments, Mapping):
+                path = arguments.get("path")
+                offset = arguments.get("offset")
+                length = arguments.get("length")
+                # A range request names a path and where to start; the length
+                # is optional so the server's own chunk setting applies.
+                if (
+                    set(arguments) - {"path", "offset", "length"}
+                    or "path" not in arguments or "offset" not in arguments
+                    or not isinstance(path, str) or not 0 < len(path) <= 2048
+                    or any(ord(ch) < 32 for ch in path)
+                    or type(offset) is not int or offset < 0
+                    or (
+                        length is not None
+                        and (type(length) is not int or not 0 < length <= 1_000_000)
+                    )
+                ):
+                    raise PCQueryStepError(
+                        "model tool selection is invalid or unauthorized",
+                        detail="tool_selection_invalid",
+                    )
+                step_arguments = {"path": path, "offset": offset}
+                if length is not None:
+                    step_arguments["length"] = length
+                with pc_core_stage("invocation", tool_id):
+                    invocation = ToolInvocation(
+                        tool_id=PC_READ_CHUNK_TOOL_ID, arguments=step_arguments,
+                    )
                 return AgentStepDecision.use_tool(invocation)
             if tool_id in PC_SEARCH_TOOL_IDS and isinstance(arguments, Mapping):
                 query = arguments.get("query")
@@ -889,6 +947,9 @@ __all__ = [
     "PC_QUERY_CANONICAL_AGENT_ID",
     "PC_QUERY_OWNER",
     "PC_QUERY_SCOPE",
+    "PC_READ_CHUNK_CANONICAL_TOOL_ID",
+    "PC_READ_CHUNK_SCOPE",
+    "PC_READ_CHUNK_TOOL_ID",
     "PC_READ_FILE_CANONICAL_TOOL_ID",
     "PC_READ_FILE_SCOPE",
     "PC_READ_FILE_TOOL_ID",
@@ -918,6 +979,7 @@ __all__ = [
     "pc_query_agent_policy",
     "pc_query_authorization",
     "pc_query_registry_entries",
+    "pc_read_chunk_tool_spec",
     "pc_read_file_tool_spec",
     "pc_search_content_tool_spec",
     "pc_search_files_tool_spec",
