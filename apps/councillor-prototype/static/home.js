@@ -1,7 +1,7 @@
 // Home-page renderers for #5972.
-// app.js keeps the shared features (theme toggle, activity list/detail, media
-// grid, news list). This file only fills the blocks that exist on index.html and
-// reads the same verified arrays, so no inner page is affected by it.
+// The shared renderers live in app.js; this file fills the blocks on index.html
+// from the same static/miraen.json data that app.js loads, so no content is
+// copied into JavaScript.
 (function () {
   "use strict";
 
@@ -29,19 +29,28 @@
     );
   }
 
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[ch]);
+  }
+
+  function href(value) {
+    try {
+      const url = new URL(String(value), window.location.href);
+      return /^https?:$/.test(url.protocol) ? url.href : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
   // Meeting kind -> icon. A record of a 회의 reads as a minute/record, a 본회의 as the
   // assembly itself, a 기념식 as a flag; anything else falls back to the record glyph.
-  const TAG_ICON = { 회의: "record", 위원회: "people", 본회의: "building", 기념식: "flag" };
-
-  // Only the records that the council actually photographed get a photo, and the
-  // photo is the one filed under that same meeting: 6·25 기념식 and 제344회 제3차
-  // 본회의. The 7·1 개원 record has no photo in the gallery, so it gets no image
-  // rather than someone else's.
-  const THUMBS = [
-    null,
-    "./static/images/activity-01.jpg",
-    "./static/images/activity-02.jpg"
-  ];
+  const TAG_ICON = { 회의: "record", 위원회: "people", 본회의: "building", 기념식: "flag", 토론회: "people", "5분발언": "record" };
 
   const LINKS = [
     { icon: "\u25C6", label: "정책자료", href: "./policy.html" },
@@ -54,26 +63,26 @@
 
   // Three verified records plus a fourth slot that states the record count.
   // The reference mockup shows four cards; we do not invent a fourth activity.
-  function renderKeyActivities() {
+  function renderKeyActivities(activities) {
     const grid = document.getElementById("keyActivities");
     if (!grid) return;
     grid.innerHTML = "";
-    ACTIVITIES.slice(0, 3).forEach((a, i) => {
+    activities.slice(0, 3).forEach((a) => {
       const card = document.createElement("a");
       card.className = "key-activity-card";
       card.href = "./activity.html";
       card.innerHTML =
-        (THUMBS[i]
+        (a.thumb
           ? '<div class="ka-media">' +
-              '<img class="ka-thumb" src="' + THUMBS[i] + '" alt="" loading="lazy" ' +
+              '<img class="ka-thumb" src="' + esc(href(a.thumb)) + '" alt="" loading="lazy" ' +
                 'onerror="this.style.visibility=\'hidden\'" />' +
               '<span class="ka-badge" aria-hidden="true">' + icon(TAG_ICON[a.tag] || "record") + "</span>" +
             "</div>"
           : "") +
         '<div class="ka-body">' +
-          '<span class="ka-date">' + a.date + " · " + a.tag + "</span>" +
-          '<p class="ka-title">' + a.title + "</p>" +
-          '<p class="ka-desc">' + (a.body || "") + "</p>" +
+          '<span class="ka-date">' + esc(a.date) + " · " + esc(a.tag) + "</span>" +
+          '<p class="ka-title">' + esc(a.title) + "</p>" +
+          '<p class="ka-desc">' + esc(a.body || "") + "</p>" +
         "</div>";
       grid.appendChild(card);
     });
@@ -84,7 +93,7 @@
     summary.innerHTML =
       '<div class="ka-body">' +
         '<span class="ka-date">전체 기록</span>' +
-        '<span class="ka-count">' + ACTIVITIES.length + "건</span>" +
+        '<span class="ka-count">' + activities.length + "건</span>" +
         '<p class="ka-desc">의회 공개 자료로 확인한 의정활동 기록입니다.</p>' +
         '<span class="ka-foot">전체 목록 보기 →</span>' +
       "</div>";
@@ -92,16 +101,16 @@
   }
 
   // Counts of material held on this page — not achievement or performance data.
-  function renderStats() {
+  function renderStats(activities, mediaTiles, newsItems) {
     const list = document.getElementById("statList");
     if (!list) return;
     const items = [
-      ["record", "의정활동 기록", ACTIVITIES.length + "건"],
-      ["photo", "사진·영상 자료", MEDIA.length + "건"],
-      ["news", "의정소식", NEWS.length + "건"],
+      ["record", "의정활동 기록", activities.length + "건"],
+      ["photo", "사진·영상 자료", mediaTiles.length + "건"],
+      ["news", "의정소식", newsItems.length + "건"],
       ["source", "자료 출처", "3곳"]
     ];
-    list.innerHTML = items.map(it =>
+    list.innerHTML = items.map((it) =>
       '<li class="stat-item">' +
         '<span class="stat-icon" aria-hidden="true">' + icon(it[0]) + "</span>" +
         "<span>" +
@@ -112,38 +121,42 @@
     ).join("");
   }
 
-  function renderNewsColumn() {
+  function renderNewsColumn(newsItems) {
     const list = document.getElementById("homeNews");
     if (!list) return;
-    const items = NEWS.slice(0, 3);
+    const items = newsItems.slice(0, 3);
     if (items.length === 0) {
       list.innerHTML =
         '<li><p class="col-item-meta">확인된 의정소식이 아직 없습니다. ' +
         "새 소식은 의회 공식 페이지와 같은 기준으로 확인한 뒤 올립니다.</p></li>";
       return;
     }
-    list.innerHTML = items.map(n =>
-      "<li>" +
-        '<p class="col-item-meta">' + n.date + "</p>" +
-        '<p class="col-item-title">' + n.title + "</p>" +
-        '<p class="col-item-meta">' + n.body + "</p>" +
-      "</li>"
-    ).join("");
+    list.innerHTML = items.map((n) => {
+      const url = href(n.url);
+      const title = url
+        ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(n.title) + "</a>"
+        : esc(n.title);
+      return "<li>" +
+        '<p class="col-item-meta">' + esc(n.date) + (n.source ? " · " + esc(n.source) : "") + "</p>" +
+        '<p class="col-item-title">' + title + "</p>" +
+        '<p class="col-item-meta">' + esc(n.body || "") + "</p>" +
+      "</li>";
+    }).join("");
   }
 
-  function renderMediaColumn() {
+  function renderMediaColumn(mediaTiles) {
     const list = document.getElementById("homeMedia");
     if (!list) return;
     // Only tiles that own an image: the video links have no thumbnail of their own.
-    const picks = MEDIA.filter(m => m.thumb).slice(1, 4);
-    list.innerHTML = picks.map(m =>
+    const picks = mediaTiles.filter((m) => m.thumb).slice(1, 4);
+    list.innerHTML = picks.map((m) =>
       "<li>" +
-        '<a class="col-item" href="' + m.url + '" target="_blank" rel="noopener">' +
-          '<img class="col-thumb" src="' + m.thumb + '" alt="" loading="lazy" ' +
+        '<a class="col-item" href="' + esc(href(m.url) || "#") + '" target="_blank" rel="noopener">' +
+          '<img class="col-thumb" src="' + esc(href(m.thumb)) + '" alt="" loading="lazy" ' +
             'onerror="this.style.visibility=\'hidden\'" />' +
           "<div>" +
-            '<p class="col-item-title">' + m.title + "</p>" +
-            '<p class="col-item-meta">' + m.kind + "</p>" +
+            '<p class="col-item-title">' + esc(m.title) + "</p>" +
+            '<p class="col-item-meta">' + esc(m.kind) + "</p>" +
           "</div>" +
         "</a>" +
       "</li>"
@@ -153,7 +166,7 @@
   function renderLinkColumn() {
     const grid = document.getElementById("homeLinks");
     if (!grid) return;
-    grid.innerHTML = LINKS.map(l =>
+    grid.innerHTML = LINKS.map((l) =>
       '<a class="col-tile" href="' + l.href + '"' +
         (l.external ? ' target="_blank" rel="noopener"' : "") + ">" +
         '<span class="col-tile-icon" aria-hidden="true">' + l.icon + "</span>" +
@@ -162,13 +175,28 @@
     ).join("");
   }
 
+  function renderHomeDataError() {
+    const grid = document.getElementById("keyActivities");
+    if (grid) grid.innerHTML = '<p class="source-note">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
+    const news = document.getElementById("homeNews");
+    if (news) news.innerHTML = '<li><p class="col-item-meta">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p></li>';
+    const media = document.getElementById("homeMedia");
+    if (media) media.innerHTML = '<li><p class="col-item-meta">자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p></li>';
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
-    // app.js defines the data arrays; without them there is nothing to render.
-    if (typeof ACTIVITIES === "undefined" || typeof MEDIA === "undefined" || typeof NEWS === "undefined") return;
-    renderKeyActivities();
-    renderStats();
-    renderNewsColumn();
-    renderMediaColumn();
     renderLinkColumn();
+    const ready = window.COUNCILLOR_DATA_READY;
+    if (!ready) { renderHomeDataError(); return; }
+    ready.then(function (data) {
+      if (!data) { renderHomeDataError(); return; }
+      const activities = data.activity.items;
+      const mediaTiles = data.media.tiles;
+      const NEWS = activities.filter((item) => item.featured === true);
+      renderKeyActivities(activities);
+      renderStats(activities, mediaTiles, NEWS);
+      renderNewsColumn(NEWS);
+      renderMediaColumn(mediaTiles);
+    });
   });
 })();
