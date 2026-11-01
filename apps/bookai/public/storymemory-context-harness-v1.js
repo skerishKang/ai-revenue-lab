@@ -56,7 +56,7 @@ function getAnnotationContextV1(){
   var rc=getReaderContextV1();
   var unitKey=rc.current_unit_key;
   var visSet=null; try{ visSet=new Set(rc.visible_locators||[]); }catch(_){ visSet=new Set(); }
-  var raw=[]; try{ if(window.__smAnnotationLayerV1 && typeof window.__smAnnotationLayerV1.list==='function'){ raw=window.__smAnnotationLayerV1.list()||[]; } else { var v=localStorage.getItem('storymemory.annotations.v1'); if(v){ var p=JSON.parse(v); if(p && p.version===1 && Array.isArray(p.items)) raw=p.items; else raw=[]; } } }catch(_){ raw=[]; }
+  var raw=[]; try{ if(window.__smAnnotationLayerV1 && typeof window.__smAnnotationLayerV1.list==='function'){ raw=window.__smAnnotationLayerV1.list()||[]; } else { var v=BookAIStorage.getItem('storymemory.annotations.v1'); if(v){ var p=JSON.parse(v); if(p && p.version===1 && Array.isArray(p.items)) raw=p.items; else raw=[]; } } }catch(_){ raw=[]; }
   var filtered=[];
   if(!auth){ filtered=[]; }
   else {

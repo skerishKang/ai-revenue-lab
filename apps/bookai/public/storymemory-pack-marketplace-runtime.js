@@ -7,7 +7,7 @@
     root.createStoryMemoryNeonPackRegistryProvider=api.createStoryMemoryNeonPackRegistryProvider;
     root.storyMemoryPackMarketplace=root.storyMemoryPackMarketplace||api.createStoryMemoryPackMarketplaceRuntime({
       universalRuntime:root.storyMemoryUniversalSource||null,
-      storage:root.localStorage||null
+      storage:root.BookAIStorage||null
     });
     if(root.document?.documentElement)root.document.documentElement.dataset.storymemoryMarketplace='v1.0.0';
   }
@@ -104,7 +104,7 @@
     let runtime=universalRuntime||root.storyMemoryUniversalSource||null;
     let loader=typeof artifactLoader==='function'?artifactLoader:null;
     let provider=registryProvider&&typeof registryProvider==='object'?registryProvider:null;
-    let installs=installProvider&&typeof installProvider==='object'?installProvider:createMemoryInstallStore(storage||root.localStorage||null);
+    let installs=installProvider&&typeof installProvider==='object'?installProvider:createMemoryInstallStore(storage||root.BookAIStorage||null);
     const catalog=new Map();
     const listeners=new Set();
     function emit(type,data={}){const evt={type,at:nowIso(),...clone(data)};for(const fn of listeners){try{fn(evt)}catch(_){}}return evt}
@@ -112,7 +112,7 @@
     function setUniversalRuntime(x){runtime=x||null;wireVerifier();return Boolean(runtime)}
     function setArtifactLoader(fn){loader=typeof fn==='function'?fn:null;return Boolean(loader)}
     function setRegistryProvider(x){provider=x&&typeof x==='object'?x:null;return Boolean(provider)}
-    function setInstallProvider(x){installs=x&&typeof x==='object'?x:createMemoryInstallStore(storage||root.localStorage||null);return true}
+    function setInstallProvider(x){installs=x&&typeof x==='object'?x:createMemoryInstallStore(storage||root.BookAIStorage||null);return true}
     function replaceCatalog(rows=[]){catalog.clear();for(const row of rows){const n=normalizeListing(row);catalog.set(n.packId,n)}emit('CATALOG_REPLACED',{count:catalog.size});return listCatalog()}
     function mergeCatalog(rows=[]){for(const row of rows){const n=normalizeListing(row);catalog.set(n.packId,n)}emit('CATALOG_MERGED',{count:catalog.size});return listCatalog()}
     function listCatalog(){return [...catalog.values()].map(clone)}

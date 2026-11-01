@@ -6,7 +6,7 @@
   const state=document.getElementById('authGateState');
   const copy=document.getElementById('authGateCopy');
   if(!primary||!secondary||!state||!copy)return;
-  let authenticated=false;
+  let authenticated=false,accountId=null;
   function show(){
     if(label)label.textContent=authenticated?'로그인됨':'기기 저장';
     primary.textContent=authenticated?'로그아웃':'파디엠으로 로그인';
@@ -27,9 +27,10 @@
         if(refreshed.ok){response=await fetch('/auth/session',{credentials:'same-origin',cache:'no-store'});data=await response.json();}
       }
       authenticated=data.authenticated===true;
-    } catch(_){authenticated=false;}
+      accountId=authenticated&&/^sub_[A-Za-z0-9_-]+$/.test(data.account_id||'')?data.account_id:null;
+    } catch(_){authenticated=false;accountId=null;}
     show();
-    window.dispatchEvent(new CustomEvent('bookai-session',{detail:{authenticated}}));
+    window.dispatchEvent(new CustomEvent('bookai-session',{detail:{authenticated,accountId}}));
     return authenticated;
   }
   primary.addEventListener('click',async event=>{
@@ -39,7 +40,7 @@
     try{
       const result=await fetch('/auth/logout',{method:'POST',credentials:'same-origin'});
       if(!result.ok)throw Error('logout_failed');
-      authenticated=false;show();window.dispatchEvent(new CustomEvent('bookai-session',{detail:{authenticated:false}}));
+      authenticated=false;accountId=null;show();window.dispatchEvent(new CustomEvent('bookai-session',{detail:{authenticated:false,accountId:null}}));
     }catch(_){primary.disabled=false;copy.textContent='로그아웃하지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요.';}
   },true);
   secondary.addEventListener('click',event=>{
@@ -49,6 +50,6 @@
   },true);
   document.getElementById('todayCloudButton')?.addEventListener('click',()=>queueMicrotask(show));
   new MutationObserver(()=>{if(document.body.classList.contains('auth-gate-open'))show();}).observe(document.body,{attributes:true,attributeFilter:['class']});
-  window.BookAISession=Object.freeze({refresh:refreshSession,isAuthenticated:()=>authenticated});
+  window.BookAISession=Object.freeze({refresh:refreshSession,isAuthenticated:()=>authenticated,getAccountId:()=>accountId});
   show();refreshSession();
 })();

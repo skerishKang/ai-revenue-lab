@@ -40,7 +40,7 @@ export function createBookAIAuth({fetcher=fetch,clock=()=>Date.now()}={}){
     const tokens=await exchange(env,{grant_type:'authorization_code',code:codes[0],redirect_uri:CALLBACK,code_verifier:state.verifier});
     return withCookies(new Response(null,{status:303,headers:{...noStore,location:'/'}}),[...sessionCookies(tokens),cookie('__Host_bookai_state','',0)]);
    }
-   if(path==='/auth/session'&&request.method==='GET'){const who=await identity(request);return reply({authenticated:!!who});}
+   if(path==='/auth/session'&&request.method==='GET'){const who=await identity(request);return reply({authenticated:!!who,account_id:who?.accountId||null});}
    if(path==='/auth/refresh'&&request.method==='POST'){
     if(!sameOrigin(request))return reply({error:'invalid_origin'},403);
     const refresh=cookies(request).__Host_bookai_refresh;if(!refresh)return reply({error:'not_authenticated'},401);

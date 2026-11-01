@@ -317,7 +317,7 @@ function buildUI(){
   if(stage)stage.appendChild(dock);
   pop=document.createElement('div');pop.id='smalPop';pop.setAttribute('role','dialog');pop.setAttribute('aria-label','메모');
   var q=document.createElement('div');q.className='smal-pop-quote';q.id='smalPopQuote';
-  ta=document.createElement('textarea');ta.id='smalPopNote';ta.maxLength=MAX_NOTE;ta.placeholder='이 구절에 대한 메모…';ta.setAttribute('aria-label','메모 내용');
+  ta=document.createElement('textarea');ta.id='smalPopNote';if(Number.isFinite(MAX_NOTE))ta.maxLength=MAX_NOTE;ta.placeholder='이 구절에 대한 메모…';ta.setAttribute('aria-label','메모 내용');
   var acts=document.createElement('div');acts.className='smal-pop-actions';
   var del=document.createElement('button');del.type='button';del.className='smal-pop-del';del.id='smalPopDel';del.textContent='삭제';
   var cancel=document.createElement('button');cancel.type='button';cancel.className='smal-pop-cancel';cancel.textContent='취소';
@@ -414,7 +414,8 @@ function init(){
   renderAll();
   window.__smAnnotationLayerV1={
     version:'1',key:KEY,
-    list:function(){return JSON.parse(JSON.stringify(items));},
+    reload:function(){items.forEach(function(it){unwrapId(it.id);});load();renderAll();syncAnnotationPanel();},
+  list:function(){return JSON.parse(JSON.stringify(items));},
     count:function(){return items.length;},
     addItem:function(kind,locator,start,end,text,extra){return addItem(kind,{locator:locator,start:start,end:end,text:text},extra);},
     removeItem:removeItem,undo:doUndo,toggleBookmark:toggleBookmark,
