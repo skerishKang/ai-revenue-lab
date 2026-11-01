@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:092",
+  "unit_ordinal": 570,
+  "unit_label": "PSA 92",
+  "book_code": "PSA",
+  "chapter_number": 92,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:92:1",
+      "sequence": 15413,
+      "chapter_label": "PSA 92",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 1
+        }
+      ],
+      "en": "It is a good thing to give thanks to the LORD, to sing praises to your name, Most High,",
+      "ko": "지존자여 십현금과 비파와 수금의 정숙한 소리로 여호와께 감사하며 주의 이름을 찬양하며 아침에 주의 인자하심을 나타내며 밤마다 주의 성실하심을 베풂이 좋으니이다",
+      "source_text_hash": "86b9a44ffe729cd384ab10cd7d87c8abf15d8685a87311b46eeca73e1ecd0592",
+      "translation_text_hash": "1cc7a40e4bd47db1d2b216b570fa9d802b0b697299c751a0e05ecda618ffb786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지존자여 십현금과 비파와 수금의 정숙한 소리로 여호와께 감사하며 주의 이름을 찬양하며 아침에 주의 인자하심을 나타내며 밤마다 주의 성실하심을 베풂이 좋으니이다"
+      ],
+      "raw_text_hashes": [
+        "1cc7a40e4bd47db1d2b216b570fa9d802b0b697299c751a0e05ecda618ffb786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:2",
+      "sequence": 15414,
+      "chapter_label": "PSA 92",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 2
+        }
+      ],
+      "en": "to proclaim your loving kindness in the morning, and your faithfulness every night,",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "a453930c85aaccd5e95ad77363a76b66c9bd1550cc4c0499a48f2b92b86eedf0",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:3",
+      "sequence": 15415,
+      "chapter_label": "PSA 92",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 3
+        }
+      ],
+      "en": "with the ten-stringed lute, with the harp, and with the melody of the lyre.",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "8cf8eb1d3a9dc67b382390a050b3452ebf0bb16b269da98ad77a6446b0296010",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:4",
+      "sequence": 15416,
+      "chapter_label": "PSA 92",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 4
+        }
+      ],
+      "en": "For you, LORD, have made me glad through your work. I will triumph in the works of your hands.",
+      "ko": "여호와여 주의 행사로 나를 기쁘게 하셨으니 주의 손의 행사를 인하여 내가 높이 부르리이다",
+      "source_text_hash": "327a4e3a7b9035cf4d0975be89c8b66b0a10affc61e88e77a0f97895af7b9cf8",
+      "translation_text_hash": "c19e3ac4816058189c2ab93e3f1732861dd310c6f002057ac68f0a4c307c12c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 행사로 나를 기쁘게 하셨으니 주의 손의 행사를 인하여 내가 높이 부르리이다"
+      ],
+      "raw_text_hashes": [
+        "c19e3ac4816058189c2ab93e3f1732861dd310c6f002057ac68f0a4c307c12c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:5",
+      "sequence": 15417,
+      "chapter_label": "PSA 92",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 5
+        }
+      ],
+      "en": "How great are your works, LORD! Your thoughts are very deep.",
+      "ko": "여호와여 주의 행사가 어찌 그리 크신지요 주의 생각이 심히 깊으시니이다",
+      "source_text_hash": "966a79a5f7a8087ae835836ecb2a0ccaeafbd4d72cb6b1f855103893f17db444",
+      "translation_text_hash": "754812deec5a475211046ed909e7310223a955f18004661f6e9c3ee0f1515de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 행사가 어찌 그리 크신지요 주의 생각이 심히 깊으시니이다"
+      ],
+      "raw_text_hashes": [
+        "754812deec5a475211046ed909e7310223a955f18004661f6e9c3ee0f1515de5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:6",
+      "sequence": 15418,
+      "chapter_label": "PSA 92",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 6
+        }
+      ],
+      "en": "A senseless man doesn’t know, neither does a fool understand this:",
+      "ko": "우준한 자는 알지 못하며 무지한 자도 이를 깨닫지 못하나이다",
+      "source_text_hash": "75c50b1df1d63189fbf96f9402a9f34c45dc38b0e25614723562425d67d0b152",
+      "translation_text_hash": "a859d0c85a42c8566bbb5e12c96f879eb6d218b01cc9777e41b0f181e7515e94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우준한 자는 알지 못하며 무지한 자도 이를 깨닫지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "a859d0c85a42c8566bbb5e12c96f879eb6d218b01cc9777e41b0f181e7515e94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:7",
+      "sequence": 15419,
+      "chapter_label": "PSA 92",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 7
+        }
+      ],
+      "en": "though the wicked spring up as the grass, and all the evildoers flourish, they will be destroyed forever.",
+      "ko": "악인은 풀 같이 생장하고 죄악을 행하는 자는 다 흥왕할찌라도 영원히 멸망하리이다",
+      "source_text_hash": "da2f6e86b3dc70af89f43db33f3f5e1d16097e647885620112307aae084c6bf2",
+      "translation_text_hash": "98e1e139221f93a7e27bb441b98311749d759dd21e593555daadda6d10723080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 풀 같이 생장하고 죄악을 행하는 자는 다 흥왕할찌라도 영원히 멸망하리이다"
+      ],
+      "raw_text_hashes": [
+        "98e1e139221f93a7e27bb441b98311749d759dd21e593555daadda6d10723080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:8",
+      "sequence": 15420,
+      "chapter_label": "PSA 92",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 8
+        }
+      ],
+      "en": "But you, LORD, are on high forever more.",
+      "ko": "여호와여 주는 영원토록 지존하시니이다",
+      "source_text_hash": "8bd8a349b2642079b13310fe77c30c62ece84d8aa21f3150bd66b0147bade4e5",
+      "translation_text_hash": "bd0ab46f920febee14ef3dd947bb1198519e42e16f67415f0a3eddf1bf99b324",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 영원토록 지존하시니이다"
+      ],
+      "raw_text_hashes": [
+        "bd0ab46f920febee14ef3dd947bb1198519e42e16f67415f0a3eddf1bf99b324"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:9",
+      "sequence": 15421,
+      "chapter_label": "PSA 92",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 9
+        }
+      ],
+      "en": "For behold, your enemies, LORD, for behold, your enemies shall perish. All the evildoers will be scattered.",
+      "ko": "여호와여 주의 원수 곧 주의 원수가 패망하리니 죄악을 행하는 자는 다 흩어지리이다",
+      "source_text_hash": "5b860e7748ff1ee4692775e27343ffbc13cbae6a04309b17c00c34b34ddf7d80",
+      "translation_text_hash": "cb0ade35873d40d92ccd777510520f2ec2ada932d2ef24c8dcb964d7e7c3e045",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 원수 곧 주의 원수가 패망하리니 죄악을 행하는 자는 다 흩어지리이다"
+      ],
+      "raw_text_hashes": [
+        "cb0ade35873d40d92ccd777510520f2ec2ada932d2ef24c8dcb964d7e7c3e045"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:10",
+      "sequence": 15422,
+      "chapter_label": "PSA 92",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 10
+        }
+      ],
+      "en": "But you have exalted my horn like that of the wild ox. I am anointed with fresh oil.",
+      "ko": "그러나 주께서 내 뿔을 들소의 뿔 같이 높이셨으며 내게 신선한 기름으로 부으셨나이다",
+      "source_text_hash": "7748af90631c03a732d2aab44c4bcc38cec3a1b2c6d035bc2e08355c64c03cc5",
+      "translation_text_hash": "68ebfb65df69f0a362924b0e76e40a03d4f87d5fa78db19a2b998c75835ab9a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 주께서 내 뿔을 들소의 뿔 같이 높이셨으며 내게 신선한 기름으로 부으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "68ebfb65df69f0a362924b0e76e40a03d4f87d5fa78db19a2b998c75835ab9a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:11",
+      "sequence": 15423,
+      "chapter_label": "PSA 92",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 11
+        }
+      ],
+      "en": "My eye has also seen my enemies. My ears have heard of the wicked enemies who rise up against me.",
+      "ko": "내 원수의 보응 받는 것을 내 눈으로 보며 일어나 나를 치는 행악자에게 보응하심을 내 귀로 들었도다",
+      "source_text_hash": "f161da8eac739f36041f9935e8a0c3b84263158730629bac7bded9a92f404cbb",
+      "translation_text_hash": "386c7dbc375988d943e374dd35e779cc1f690b7bd17c1751347e95b0897ab5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 원수의 보응 받는 것을 내 눈으로 보며 일어나 나를 치는 행악자에게 보응하심을 내 귀로 들었도다"
+      ],
+      "raw_text_hashes": [
+        "386c7dbc375988d943e374dd35e779cc1f690b7bd17c1751347e95b0897ab5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:12",
+      "sequence": 15424,
+      "chapter_label": "PSA 92",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 12
+        }
+      ],
+      "en": "The righteous shall flourish like the palm tree. He will grow like a cedar in Lebanon.",
+      "ko": "의인은 종려나무 같이 번성하며 레바논의 백향목 같이 발육하리로다",
+      "source_text_hash": "35688c1990d78f74d4c7a511c03263fb4e18fec36bf090eaa1e535ba5f97a80f",
+      "translation_text_hash": "ae1c42cc7fb6642cab38f537836407aa02369ecb06d2f3c6cd0d4ee19f9cd35f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인은 종려나무 같이 번성하며 레바논의 백향목 같이 발육하리로다"
+      ],
+      "raw_text_hashes": [
+        "ae1c42cc7fb6642cab38f537836407aa02369ecb06d2f3c6cd0d4ee19f9cd35f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:13",
+      "sequence": 15425,
+      "chapter_label": "PSA 92",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 13
+        }
+      ],
+      "en": "They are planted in the LORD’s house. They will flourish in our God’s courts.",
+      "ko": "여호와의 집에 심겼음이여 우리 하나님의 궁정에서 흥왕하리로다",
+      "source_text_hash": "94f1d230d080ba0216cee1310b66af2f7b1737309b4faf7e0f60b9960a9ed040",
+      "translation_text_hash": "3a3a0ad50631b358622501d54fa0a50b8de0f4bb090bcbe355ee1e3da8e2f688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 집에 심겼음이여 우리 하나님의 궁정에서 흥왕하리로다"
+      ],
+      "raw_text_hashes": [
+        "3a3a0ad50631b358622501d54fa0a50b8de0f4bb090bcbe355ee1e3da8e2f688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:14",
+      "sequence": 15426,
+      "chapter_label": "PSA 92",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 14
+        }
+      ],
+      "en": "They will still produce fruit in old age. They will be full of sap and green,",
+      "ko": "늙어도 결실하며 진액이 풍족하고 빛이 청청하여",
+      "source_text_hash": "0a388ecd6d3f5480db3dd009c02e90eca02fa4a11a76ddafdafec9b125497856",
+      "translation_text_hash": "6cc4b70b263c02c638507c548641741d4900d2bd96e00a835484a25900be2f9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙어도 결실하며 진액이 풍족하고 빛이 청청하여"
+      ],
+      "raw_text_hashes": [
+        "6cc4b70b263c02c638507c548641741d4900d2bd96e00a835484a25900be2f9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:92:15",
+      "sequence": 15427,
+      "chapter_label": "PSA 92",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 92,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 92,
+          "verse": 15
+        }
+      ],
+      "en": "to show that the LORD is upright. He is my rock, and there is no unrighteousness in him.",
+      "ko": "여호와의 정직하심을 나타내리로다 여호와는 나의 바위시라 그에게는 불의가 없도다",
+      "source_text_hash": "6ac56dd542e45e049e3fc8a0e86a76f2fe299d8977f1aea5020cd6ceb28a658e",
+      "translation_text_hash": "7479f269e9db774b52256dc6e671c1299c124a8227475aa5079f0b5cb4b64de4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 정직하심을 나타내리로다 여호와는 나의 바위시라 그에게는 불의가 없도다"
+      ],
+      "raw_text_hashes": [
+        "7479f269e9db774b52256dc6e671c1299c124a8227475aa5079f0b5cb4b64de4"
+      ]
+    }
+  ]
+}

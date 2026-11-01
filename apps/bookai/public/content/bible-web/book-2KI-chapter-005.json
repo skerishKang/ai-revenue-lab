@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:005",
+  "unit_ordinal": 318,
+  "unit_label": "2KI 5",
+  "book_code": "2KI",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:5:1",
+      "sequence": 9649,
+      "chapter_label": "2KI 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Now Naaman, captain of the army of the king of Syria, was a great man with his master, and honorable, because by him the LORD had given victory to Syria; he was also a mighty man of valor, but he was a leper.",
+      "ko": "아람 왕의 군대장관 나아만은 그 주인 앞에서 크고 존귀한 자니 이는 여호와께서 전에 저로 아람을 구원하게 하셨음이라 저는 큰 용사나 문둥병자더라",
+      "source_text_hash": "286584c6c1e2df5ca5632920be787273743f2c00904bd603e46d3ccc0e0bc7c2",
+      "translation_text_hash": "80c1f6af069d27086bc0bcd70d338ec25d0d2ae32dc5d2768714f58963d333ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕의 군대장관 나아만은 그 주인 앞에서 크고 존귀한 자니 이는 여호와께서 전에 저로 아람을 구원하게 하셨음이라 저는 큰 용사나 문둥병자더라"
+      ],
+      "raw_text_hashes": [
+        "80c1f6af069d27086bc0bcd70d338ec25d0d2ae32dc5d2768714f58963d333ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:2",
+      "sequence": 9650,
+      "chapter_label": "2KI 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "The Syrians had gone out in bands, and had brought away captive out of the land of Israel a little girl, and she waited on Naaman’s wife.",
+      "ko": "전에 아람 사람이 떼를 지어 나가서 이스라엘 땅에서 작은 계집아이 하나를 사로잡으매 저가 나아만의 아내에게 수종들더니",
+      "source_text_hash": "6945c69959d2534b4d3e7116bd555248e474edbc8fb8c84b0469754e10432d31",
+      "translation_text_hash": "2018da9734580c3357f3e26038800904ff7694b46510879f3e88ed21b3b43dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 아람 사람이 떼를 지어 나가서 이스라엘 땅에서 작은 계집아이 하나를 사로잡으매 저가 나아만의 아내에게 수종들더니"
+      ],
+      "raw_text_hashes": [
+        "2018da9734580c3357f3e26038800904ff7694b46510879f3e88ed21b3b43dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:3",
+      "sequence": 9651,
+      "chapter_label": "2KI 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "She said to her mistress, “I wish that my lord were with the prophet who is in Samaria! Then he would heal him of his leprosy.”",
+      "ko": "그 주모에게 이르되 우리 주인이 사마리아에 계신 선지자 앞에 계셨으면 좋겠나이다 저가 그 문둥병을 고치리이다",
+      "source_text_hash": "aac49c0b5e0da44c3eb42acfc2600b00a534c844d6f2ec9a8fee861944d03b6a",
+      "translation_text_hash": "7d5c24c7682e831bf6bf2945436186bf209ffeeea74d702c538599ffdbd6d46e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주모에게 이르되 우리 주인이 사마리아에 계신 선지자 앞에 계셨으면 좋겠나이다 저가 그 문둥병을 고치리이다"
+      ],
+      "raw_text_hashes": [
+        "7d5c24c7682e831bf6bf2945436186bf209ffeeea74d702c538599ffdbd6d46e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:4",
+      "sequence": 9652,
+      "chapter_label": "2KI 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Someone went in and told his lord, saying, “The girl who is from the land of Israel said this.”",
+      "ko": "나아만이 들어가서 그 주인에게 고하여 가로되 이스라엘 땅에서 온 계집아이의 말이 이러이러하더이다",
+      "source_text_hash": "dafe1dad68393183e0e1811883217ef746edd1b808dea89129395cddacbbbf9e",
+      "translation_text_hash": "0e4058ca113169fccc22d27ef284da420eff24020581bc2a7cf0eced17edb2ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 들어가서 그 주인에게 고하여 가로되 이스라엘 땅에서 온 계집아이의 말이 이러이러하더이다"
+      ],
+      "raw_text_hashes": [
+        "0e4058ca113169fccc22d27ef284da420eff24020581bc2a7cf0eced17edb2ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:5",
+      "sequence": 9653,
+      "chapter_label": "2KI 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "The king of Syria said, “Go now, and I will send a letter to the king of Israel.” He departed, and took with him ten talents of silver, six thousand pieces of gold, and ten changes of clothing.",
+      "ko": "아람 왕이 가로되 갈찌어다 이제 내가 이스라엘 왕에게 글을 보내리라 나아만이 곧 떠날쌔 은 십 달란트와 금 육천개와 의복 열벌을 가지고 가서",
+      "source_text_hash": "12d12bdf9f1bab435c4a509d3104039854bfb1065b221a67b0fe1325c5306d89",
+      "translation_text_hash": "6406381a9205f990f1a8bf655bff2df68b0d300f49d5711d5dc17a980bc59bef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕이 가로되 갈찌어다 이제 내가 이스라엘 왕에게 글을 보내리라 나아만이 곧 떠날쌔 은 십 달란트와 금 육천개와 의복 열벌을 가지고 가서"
+      ],
+      "raw_text_hashes": [
+        "6406381a9205f990f1a8bf655bff2df68b0d300f49d5711d5dc17a980bc59bef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:6",
+      "sequence": 9654,
+      "chapter_label": "2KI 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "He brought the letter to the king of Israel, saying, “Now when this letter has come to you, behold, I have sent Naaman my servant to you, that you may heal him of his leprosy.”",
+      "ko": "이스라엘 왕에게 그 글을 전하니 일렀으되 내가 내 신하 나아만을 당신에게 보내오니 이 글이 당신에게 이르거든 당신은 그 문둥병을 고쳐주소서 하였더라",
+      "source_text_hash": "2b9ca6c5d1f69e05bc041f24a2a8ce50f9368722dfb6099710903b284499f223",
+      "translation_text_hash": "25e50a328915afb2e4b304dddf4e70c5754b1d3062d38de1252c1afdddc05a9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕에게 그 글을 전하니 일렀으되 내가 내 신하 나아만을 당신에게 보내오니 이 글이 당신에게 이르거든 당신은 그 문둥병을 고쳐주소서 하였더라"
+      ],
+      "raw_text_hashes": [
+        "25e50a328915afb2e4b304dddf4e70c5754b1d3062d38de1252c1afdddc05a9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:7",
+      "sequence": 9655,
+      "chapter_label": "2KI 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "When the king of Israel had read the letter, he tore his clothes and said, “Am I God, to kill and to make alive, that this man sends to me to heal a man of his leprosy? But please consider and see how he seeks a quarrel against me.”",
+      "ko": "이스라엘 왕이 그 글을 읽고 자기 옷을 찢으며 가로되 내가 어찌 하나님이관대 능히 사람을 죽이며 살릴 수 있으랴 저가 어찌하여 사람을 내게 보내어 그 문둥병을 고치라 하느냐 너희는 깊이 생각하고 저 왕이 틈을 타서 나로 더불어 시비하려 함인줄 알라 하니라",
+      "source_text_hash": "0c7985072aad3619b55743e1554b51e527c78f1a7e1aebad737e6f37dc20f949",
+      "translation_text_hash": "6125e165c81044357cf4d7b1fd0463e69d42932624bfa3c91bb5932446a8d4e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 그 글을 읽고 자기 옷을 찢으며 가로되 내가 어찌 하나님이관대 능히 사람을 죽이며 살릴 수 있으랴 저가 어찌하여 사람을 내게 보내어 그 문둥병을 고치라 하느냐 너희는 깊이 생각하고 저 왕이 틈을 타서 나로 더불어 시비하려 함인줄 알라 하니라"
+      ],
+      "raw_text_hashes": [
+        "6125e165c81044357cf4d7b1fd0463e69d42932624bfa3c91bb5932446a8d4e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:8",
+      "sequence": 9656,
+      "chapter_label": "2KI 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "It was so, when Elisha the man of God heard that the king of Israel had torn his clothes, that he sent to the king, saying, “Why have you torn your clothes? Let him come now to me, and he shall know that there is a prophet in Israel.”",
+      "ko": "하나님의 사람 엘리사가 이스라엘 왕이 자기 옷을 찢었다 함을 듣고 왕에게 보내어 가로되 왕이 어찌하여 옷을 찢었나이까 그 사람을 내게로 오게 하소서 저가 이스라엘 중에 선지자가 있는 줄을 알리이다",
+      "source_text_hash": "dbc1a984da29c345be442ece8754a5245c00ac3f4417e0f9cd434356713b730c",
+      "translation_text_hash": "c33608b89920d716a566773db0b5b1aa304725435049cbd1579ffeca444b1c8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람 엘리사가 이스라엘 왕이 자기 옷을 찢었다 함을 듣고 왕에게 보내어 가로되 왕이 어찌하여 옷을 찢었나이까 그 사람을 내게로 오게 하소서 저가 이스라엘 중에 선지자가 있는 줄을 알리이다"
+      ],
+      "raw_text_hashes": [
+        "c33608b89920d716a566773db0b5b1aa304725435049cbd1579ffeca444b1c8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:9",
+      "sequence": 9657,
+      "chapter_label": "2KI 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "So Naaman came with his horses and with his chariots, and stood at the door of the house of Elisha.",
+      "ko": "나아만이 이에 말들과 병거들을 거느리고 이르러 엘리사의 집 문에 서니",
+      "source_text_hash": "22ec4f5c7040e5529eb113ac635de185ff3dca9fd7b172d568dc25bc684edf28",
+      "translation_text_hash": "3ff4ebb548dc92a0c732aad02e33c217e36a7352d891dcb1fbcb451e59489aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 이에 말들과 병거들을 거느리고 이르러 엘리사의 집 문에 서니"
+      ],
+      "raw_text_hashes": [
+        "3ff4ebb548dc92a0c732aad02e33c217e36a7352d891dcb1fbcb451e59489aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:10",
+      "sequence": 9658,
+      "chapter_label": "2KI 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Elisha sent a messenger to him, saying, “Go and wash in the Jordan seven times, and your flesh shall come again to you, and you shall be clean.”",
+      "ko": "엘리사가 사자를 저에게 보내어 가로되 너는 가서 요단강에 몸을 일곱번 씻으라 네 살이 여전하여 깨끗하리라",
+      "source_text_hash": "dcdac6e67bc20684a20c516f57a718143d51676872e58f5a012c375f61fcdb5b",
+      "translation_text_hash": "fa63df9e8d8b530ad7f0853e0cef78ba0b815e6531f2fb7030605e0c24692707",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 사자를 저에게 보내어 가로되 너는 가서 요단강에 몸을 일곱번 씻으라 네 살이 여전하여 깨끗하리라"
+      ],
+      "raw_text_hashes": [
+        "fa63df9e8d8b530ad7f0853e0cef78ba0b815e6531f2fb7030605e0c24692707"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:11",
+      "sequence": 9659,
+      "chapter_label": "2KI 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "But Naaman was angry, and went away and said, “Behold, I thought, ‘He will surely come out to me, and stand, and call on the name of the LORD his God, and wave his hand over the place, and heal the leper.’",
+      "ko": "나아만이 노하여 물러가며 가로되 내 생각에는 저가 내게로 나아와 서서 그 하나님 여호와의 이름을 부르고 당처 위에 손을 흔들어 문둥병을 고칠까 하였도다",
+      "source_text_hash": "14799f62b1072dbd030ae9349f058f9b31fdb3a7eea4b2054a82b1a36a2a98f4",
+      "translation_text_hash": "0d261baa99b922f5e4c312a603471b1b1e70c22381ea0b2813b48d14e417ed45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 노하여 물러가며 가로되 내 생각에는 저가 내게로 나아와 서서 그 하나님 여호와의 이름을 부르고 당처 위에 손을 흔들어 문둥병을 고칠까 하였도다"
+      ],
+      "raw_text_hashes": [
+        "0d261baa99b922f5e4c312a603471b1b1e70c22381ea0b2813b48d14e417ed45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:12",
+      "sequence": 9660,
+      "chapter_label": "2KI 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Aren’t Abanah and Pharpar, the rivers of Damascus, better than all the waters of Israel? Couldn’t I wash in them and be clean?” So he turned and went away in a rage.",
+      "ko": "다메섹강 아마나와 바르발은 이스라엘 모든 강물보다 낫지 아니하냐 내가 거기서 몸을 씻으면 깨끗하게 되지 아니하랴 하고 몸을 돌이켜 분한 모양으로 떠나니",
+      "source_text_hash": "bbea4f65f49dafe29eb1525a453786c8e7dc1e7a49e053c44bd438ce69966e30",
+      "translation_text_hash": "02c38ef0300a08200fcd61658d35b4106f5ba44a7e73f84a8021f59150ceb0ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹강 아마나와 바르발은 이스라엘 모든 강물보다 낫지 아니하냐 내가 거기서 몸을 씻으면 깨끗하게 되지 아니하랴 하고 몸을 돌이켜 분한 모양으로 떠나니"
+      ],
+      "raw_text_hashes": [
+        "02c38ef0300a08200fcd61658d35b4106f5ba44a7e73f84a8021f59150ceb0ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:13",
+      "sequence": 9661,
+      "chapter_label": "2KI 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "His servants came near and spoke to him, and said, “My father, if the prophet had asked you do some great thing, wouldn’t you have done it? How much rather then, when he says to you, ‘Wash, and be clean’?”",
+      "ko": "그 종들이 나아와서 말하여 가로되 내 아버지여 선지자가 당신을 명하여 큰 일을 행하라 하였더면 행치 아니하였으리이까 하물며 당신에게 이르기를 씻어 깨끗하게 하라 함이리이까",
+      "source_text_hash": "f9cc2c6459dafaba863d2cfbf5e53809657507058ac9d69935acb430565e77bd",
+      "translation_text_hash": "9afd6801fe9d5b3a71df3c0956f06b927a4b44b5de8333d6cfe7552cc521b2a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종들이 나아와서 말하여 가로되 내 아버지여 선지자가 당신을 명하여 큰 일을 행하라 하였더면 행치 아니하였으리이까 하물며 당신에게 이르기를 씻어 깨끗하게 하라 함이리이까"
+      ],
+      "raw_text_hashes": [
+        "9afd6801fe9d5b3a71df3c0956f06b927a4b44b5de8333d6cfe7552cc521b2a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:14",
+      "sequence": 9662,
+      "chapter_label": "2KI 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Then went he down and dipped himself seven times in the Jordan, according to the saying of the man of God; and his flesh was restored like the flesh of a little child, and he was clean.",
+      "ko": "나아만이 이에 내려가서 하나님의 사람의 말씀대로 요단강에 일곱번 몸을 잠그니 그 살이 여전하여 어린아이의 살 같아서 깨끗하게 되었더라",
+      "source_text_hash": "9d7d5211e766fe8d5054293825104647a90aded6fdc09e3d631c52f2b79d1d8c",
+      "translation_text_hash": "0f17cc9900b6dffd9b7cdfaeef9e3dad67b82f959d9b4ecb52eb2903a9e5617e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 이에 내려가서 하나님의 사람의 말씀대로 요단강에 일곱번 몸을 잠그니 그 살이 여전하여 어린아이의 살 같아서 깨끗하게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "0f17cc9900b6dffd9b7cdfaeef9e3dad67b82f959d9b4ecb52eb2903a9e5617e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:15",
+      "sequence": 9663,
+      "chapter_label": "2KI 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "He returned to the man of God, he and all his company, and came, and stood before him; and he said, “See now, I know that there is no God in all the earth, but in Israel. Now therefore, please take a gift from your servant.”",
+      "ko": "나아만이 모든 종자와 함께 하나님의 사람에게로 도로 와서 그 앞에 서서 가로되 내가 이제 이스라엘 외에는 온 천하에 신이 없는줄을 아나이다 청컨대 당신의 종에게서 예물을 받으소서",
+      "source_text_hash": "c8a49da807d62419e0bfc0dbdfdc1ec9aca878c79155e6cb4a99890ca12b40e4",
+      "translation_text_hash": "e86e9e25c6731ee74c28f992df7d212801543e1879c3545a1a413ff447a6858f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 모든 종자와 함께 하나님의 사람에게로 도로 와서 그 앞에 서서 가로되 내가 이제 이스라엘 외에는 온 천하에 신이 없는줄을 아나이다 청컨대 당신의 종에게서 예물을 받으소서"
+      ],
+      "raw_text_hashes": [
+        "e86e9e25c6731ee74c28f992df7d212801543e1879c3545a1a413ff447a6858f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:16",
+      "sequence": 9664,
+      "chapter_label": "2KI 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "But he said, “As the LORD lives, before whom I stand, I will receive none.” He urged him to take it; but he refused.",
+      "ko": "가로되 나의 섬기는 여호와의 사심을 가리켜 맹세하노니 내가 받지 아니하리라 나아만이 받으라 강권하되 저가 고사한지라",
+      "source_text_hash": "2d619f394665ec6e3d8fd6966d25c2b8c498e75270727ed5928961f6cbe6165d",
+      "translation_text_hash": "98bd8a90113b76f8db019a87e6e44f143d261bfa0cbaed50249bf1d30e0a5d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 나의 섬기는 여호와의 사심을 가리켜 맹세하노니 내가 받지 아니하리라 나아만이 받으라 강권하되 저가 고사한지라"
+      ],
+      "raw_text_hashes": [
+        "98bd8a90113b76f8db019a87e6e44f143d261bfa0cbaed50249bf1d30e0a5d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:17",
+      "sequence": 9665,
+      "chapter_label": "2KI 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Naaman said, “If not, then, please let two mules’ load of earth be given to your servant; for your servant will from now on offer neither burnt offering nor sacrifice to other gods, but to the LORD.",
+      "ko": "나아만이 가로되 그러면 청컨대 노새 두 바리에 실을 흙을 당신의 종에게 주소서 이제부터는 종이 번제든지 다른 제든지 다른 신에게는 드리지 아니하고 다만 여호와께 드리겠나이다",
+      "source_text_hash": "59cd77febf2de8f0775b10b915faa5dc2d6bf280fb25490a6c47746a82436943",
+      "translation_text_hash": "62140ff7f9a9c360df2a6e16675c13bb223ee8a307405548ca97f2efe9483b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 가로되 그러면 청컨대 노새 두 바리에 실을 흙을 당신의 종에게 주소서 이제부터는 종이 번제든지 다른 제든지 다른 신에게는 드리지 아니하고 다만 여호와께 드리겠나이다"
+      ],
+      "raw_text_hashes": [
+        "62140ff7f9a9c360df2a6e16675c13bb223ee8a307405548ca97f2efe9483b2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:18",
+      "sequence": 9666,
+      "chapter_label": "2KI 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "In this thing may the LORD pardon your servant: when my master goes into the house of Rimmon to worship there, and he leans on my hand, and I bow myself in the house of Rimmon. When I bow myself in the house of Rimmon, may the LORD pardon your servant in this thing.”",
+      "ko": "오직 한가지 일이 있사오니 여호와께서 당신의 종을 사유하시기를 원하나이다 곧 내 주인께서 림몬의 당에 들어가 거기서 숭배하며 내 손을 의지하시매 내가 림몬의 당에서 몸을 굽히오니 내가 림몬의 당에서 몸을 굽힐 때에 여호와께서 이 일에 대하여 당신의 종을 사유하시기를 원하나이다",
+      "source_text_hash": "e2302b60e101febbfbe6e9f96fba0ed718d1046445a73637318ae0fe9804dd57",
+      "translation_text_hash": "cd8ab0722aea2cce13d1578280e71ef998d5d684f0b5816e4d20d8c287d2e71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 한가지 일이 있사오니 여호와께서 당신의 종을 사유하시기를 원하나이다 곧 내 주인께서 림몬의 당에 들어가 거기서 숭배하며 내 손을 의지하시매 내가 림몬의 당에서 몸을 굽히오니 내가 림몬의 당에서 몸을 굽힐 때에 여호와께서 이 일에 대하여 당신의 종을 사유하시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "cd8ab0722aea2cce13d1578280e71ef998d5d684f0b5816e4d20d8c287d2e71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:19",
+      "sequence": 9667,
+      "chapter_label": "2KI 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "He said to him, “Go in peace.” So he departed from him a little way.",
+      "ko": "엘리사가 가로되 너는 평안히 가라 저가 엘리사를 떠나 조금 진행하니라",
+      "source_text_hash": "46316c9195853d3b74c69ce286d4209c2842e5d01f952b7b0dfb7f63872cf6b0",
+      "translation_text_hash": "8d80c66f92ac2feaaa4c11552a6f947dfcc7f7951c161d4389d4e4709b0fb8c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 너는 평안히 가라 저가 엘리사를 떠나 조금 진행하니라"
+      ],
+      "raw_text_hashes": [
+        "8d80c66f92ac2feaaa4c11552a6f947dfcc7f7951c161d4389d4e4709b0fb8c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:20",
+      "sequence": 9668,
+      "chapter_label": "2KI 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "But Gehazi the servant of Elisha the man of God, said, “Behold, my master has spared this Naaman the Syrian, in not receiving at his hands that which he brought. As the LORD lives, I will run after him, and take something from him.”",
+      "ko": "하나님의 사람 엘리사의 사환 게하시가 스스로 이르되 내 주인이 이 아람 사람 나아만에게 면하여 주고 그 가지고 온 것을 그 손에서 받지 아니하였도다 여호와의 사심을 가리켜 맹세하노니 내가 저를 쫓아가서 무엇이든지 그에게서 취하리라 하고",
+      "source_text_hash": "31d73abd8ccc13e6378b766f50034a3a19f9047dd51f5f183f8ecd222716f4f4",
+      "translation_text_hash": "37fd26727797e9834c1da6c2522e26dcc527a45b88369e66da4b1808ba7e5a6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람 엘리사의 사환 게하시가 스스로 이르되 내 주인이 이 아람 사람 나아만에게 면하여 주고 그 가지고 온 것을 그 손에서 받지 아니하였도다 여호와의 사심을 가리켜 맹세하노니 내가 저를 쫓아가서 무엇이든지 그에게서 취하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "37fd26727797e9834c1da6c2522e26dcc527a45b88369e66da4b1808ba7e5a6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:21",
+      "sequence": 9669,
+      "chapter_label": "2KI 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "So Gehazi followed after Naaman. When Naaman saw one running after him, he came down from the chariot to meet him, and said, “Is all well?”",
+      "ko": "나아만의 뒤를 쫓아가니 나아만이 자기 뒤에 달려옴을 보고 수레에 내려서 맞아 가로되 평안이냐",
+      "source_text_hash": "1e2ae62e1c74f33e816576f1cf48860f8c26aa8ad8ee5cf5c80e33ec2185cd89",
+      "translation_text_hash": "3ad65405f424db2a71a2b6fad8f9c5c3b99476f5fc39d4cc14c46c738b7a9842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만의 뒤를 쫓아가니 나아만이 자기 뒤에 달려옴을 보고 수레에 내려서 맞아 가로되 평안이냐"
+      ],
+      "raw_text_hashes": [
+        "3ad65405f424db2a71a2b6fad8f9c5c3b99476f5fc39d4cc14c46c738b7a9842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:22",
+      "sequence": 9670,
+      "chapter_label": "2KI 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "He said, “All is well. My master has sent me, saying, ‘Behold, even now two young men of the sons of the prophets have come to me from the hill country of Ephraim. Please give them a talent of silver and two changes of clothing.’”",
+      "ko": "저가 가로되 평안이니이다 우리 주인께서 나를 보내시며 말씀하시기를 지금 선지자의 생도 중에 두 소년이 에브라임 산지에서부터 내게 왔으니 청컨대 당신은 저희에게 은 한 달란트와 옷 두 벌을 주라 하시더이다",
+      "source_text_hash": "82496021c832d9d1f9f486687f79ef92b6eade82ea9daf532794cabcad0e09c1",
+      "translation_text_hash": "227e4b3aedc077c9a3ec0c1af16b41bd53f8588006173ef6140ff63ac9e50b3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가로되 평안이니이다 우리 주인께서 나를 보내시며 말씀하시기를 지금 선지자의 생도 중에 두 소년이 에브라임 산지에서부터 내게 왔으니 청컨대 당신은 저희에게 은 한 달란트와 옷 두 벌을 주라 하시더이다"
+      ],
+      "raw_text_hashes": [
+        "227e4b3aedc077c9a3ec0c1af16b41bd53f8588006173ef6140ff63ac9e50b3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:23",
+      "sequence": 9671,
+      "chapter_label": "2KI 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "Naaman said, “Be pleased to take two talents.” He urged him, and bound two talents of silver in two bags, with two changes of clothing, and laid them on two of his servants; and they carried them before him.",
+      "ko": "나아만이 가로되 바라건대 두 달란트를 받으라 하고 저를 억제하여 은 두 달란트를 두 전대에 넣어 매고 옷 두벌을 아울러 두 사환에게 지우매 저희가 게하시 앞에서 지고 가니라",
+      "source_text_hash": "ef37451ad4e52cda66648c4550ee605e2dacd47116731d86dfb6d8999ac89078",
+      "translation_text_hash": "e0c2a4b5b2960bcdea839fb712632f710b2f1173b3d95e726208b4685ad89fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아만이 가로되 바라건대 두 달란트를 받으라 하고 저를 억제하여 은 두 달란트를 두 전대에 넣어 매고 옷 두벌을 아울러 두 사환에게 지우매 저희가 게하시 앞에서 지고 가니라"
+      ],
+      "raw_text_hashes": [
+        "e0c2a4b5b2960bcdea839fb712632f710b2f1173b3d95e726208b4685ad89fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:24",
+      "sequence": 9672,
+      "chapter_label": "2KI 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "When he came to the hill, he took them from their hand, and stored them in the house. Then he let the men go, and they departed.",
+      "ko": "언덕에 이르러는 게하시가 그 물건을 두 사환의 손에서 취하여 집에 감추고 저희를 보내어 가게 한후",
+      "source_text_hash": "13b0371eb07c60754dd217fbff1dc21fd7e671ad6fe3e3274e67a2435f21dedd",
+      "translation_text_hash": "1ff1d1b4535190eb7a436a6e340cf1003035e2483138c2f16ec1bd32840a937d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언덕에 이르러는 게하시가 그 물건을 두 사환의 손에서 취하여 집에 감추고 저희를 보내어 가게 한후"
+      ],
+      "raw_text_hashes": [
+        "1ff1d1b4535190eb7a436a6e340cf1003035e2483138c2f16ec1bd32840a937d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:25",
+      "sequence": 9673,
+      "chapter_label": "2KI 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "But he went in, and stood before his master. Elisha said to him, “Where did you come from, Gehazi?” He said, “Your servant went nowhere.”",
+      "ko": "들어가서 그 주인 앞에 서니 엘리사가 이르되 게하시야 네가 어디서 오느냐 대답하되 종이 아무데도 가지 아니하였나이다",
+      "source_text_hash": "8aa5ef419ecd8529f4448ac8be677ce7bdacc785b80c1450d58130358264733f",
+      "translation_text_hash": "3a8248982249f3cd6e1e33645aaa60e3ed4caa16aba7ad6213c47c278ac6a2b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가서 그 주인 앞에 서니 엘리사가 이르되 게하시야 네가 어디서 오느냐 대답하되 종이 아무데도 가지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "3a8248982249f3cd6e1e33645aaa60e3ed4caa16aba7ad6213c47c278ac6a2b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:26",
+      "sequence": 9674,
+      "chapter_label": "2KI 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "He said to him, “Didn’t my heart go with you when the man turned from his chariot to meet you? Is it a time to receive money, and to receive garments, and olive groves and vineyards, and sheep and cattle, and male servants and female servants?",
+      "ko": "엘리사가 이르되 그 사람이 수레에서 내려 너를 맞을 때에 내 심령이 감각되지 아니하였느냐 지금이 어찌 은을 받으며 옷을 받으며 감람원이나 포도원이나 양이나 소나 남종이나 여종을 받을 때냐",
+      "source_text_hash": "460a0f6f6a5607d1ac1c3468c1ecbf435fc6da64b22023e12d09bbe32a2e957d",
+      "translation_text_hash": "5bbe78f030f932224c41fffc130dc708a158f7d0aada1d774fb71b23b90f5b8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 이르되 그 사람이 수레에서 내려 너를 맞을 때에 내 심령이 감각되지 아니하였느냐 지금이 어찌 은을 받으며 옷을 받으며 감람원이나 포도원이나 양이나 소나 남종이나 여종을 받을 때냐"
+      ],
+      "raw_text_hashes": [
+        "5bbe78f030f932224c41fffc130dc708a158f7d0aada1d774fb71b23b90f5b8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:5:27",
+      "sequence": 9675,
+      "chapter_label": "2KI 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore the leprosy of Naaman will cling to you and to your offspring forever.” He went out from his presence a leper, as white as snow.",
+      "ko": "그러므로 나아만의 문둥병이 네게 들어 네 자손에게 미쳐 영원토록 이르리라 게하시가 그 앞에서 물러나오매 문둥병이 발하여 눈 같이 되었더라",
+      "source_text_hash": "67fb7f2b46a2c0ed062b5245262a359b42655f541b85a44a207483f2bd08cb86",
+      "translation_text_hash": "b57bec19ad415434d5aa00d4eb48000a74279bdd49cf17570c51133e3e4caa8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나아만의 문둥병이 네게 들어 네 자손에게 미쳐 영원토록 이르리라 게하시가 그 앞에서 물러나오매 문둥병이 발하여 눈 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "b57bec19ad415434d5aa00d4eb48000a74279bdd49cf17570c51133e3e4caa8e"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:011",
+  "unit_ordinal": 349,
+  "unit_label": "1CH 11",
+  "book_code": "1CH",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:11:1",
+      "sequence": 10675,
+      "chapter_label": "1CH 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Then all Israel gathered themselves to David to Hebron, saying, “Behold, we are your bone and your flesh.",
+      "ko": "온 이스라엘이 헤브론에 모여 다윗을 보고 가로되 우리는 왕의 골육이니이다",
+      "source_text_hash": "040df6ebdcd754ac2efd9cf20dead56125f7b778a1ecedf19dee48b428d1c353",
+      "translation_text_hash": "8ebfe9070075a9570b2168e86dc10c9211d3104e0c8dd53564b835599961df7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 헤브론에 모여 다윗을 보고 가로되 우리는 왕의 골육이니이다"
+      ],
+      "raw_text_hashes": [
+        "8ebfe9070075a9570b2168e86dc10c9211d3104e0c8dd53564b835599961df7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:2",
+      "sequence": 10676,
+      "chapter_label": "1CH 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "In times past, even when Saul was king, it was you who led out and brought in Israel. The LORD your God said to you, ‘You shall be shepherd of my people Israel, and you shall be prince over my people Israel.’”",
+      "ko": "전일 곧 사울이 왕이 되었을 때에도 이스라엘을 거느려 출입하게 한 자가 왕이시었고 왕의 하나님 여호와께서도 왕에게 말씀하시기를 네가 내 백성 이스라엘의 목자가 되며 내 백성 이스라엘의 주권자가 되리라 하셨나이다 하니라",
+      "source_text_hash": "f6bad71dcfc46802f0f02e33ba6d95213457e50bc5f8ddf148646ab0430f4934",
+      "translation_text_hash": "00a3d64cc97c0858e615201eabb731697e781dc4301dbd6e70e0e76f3a3ecabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전일 곧 사울이 왕이 되었을 때에도 이스라엘을 거느려 출입하게 한 자가 왕이시었고 왕의 하나님 여호와께서도 왕에게 말씀하시기를 네가 내 백성 이스라엘의 목자가 되며 내 백성 이스라엘의 주권자가 되리라 하셨나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "00a3d64cc97c0858e615201eabb731697e781dc4301dbd6e70e0e76f3a3ecabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:3",
+      "sequence": 10677,
+      "chapter_label": "1CH 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "So all the elders of Israel came to the king to Hebron; and David made a covenant with them in Hebron before the LORD. They anointed David king over Israel, according to the LORD’s word by Samuel.",
+      "ko": "이에 이스라엘 모든 장로가 헤브론에 이르러 왕에게 나아오니 다윗이 헤브론에서 여호와 앞에서 저희와 언약을 세우매 저희가 다윗에게 기름을 부어 이스라엘 왕을 삼으니 여호와께서 사무엘로 전하신 말씀대로 되었더라",
+      "source_text_hash": "b57b8fd05c02312edadd5df9e9b262da978f36d4b5fa12195d612f3bac46b234",
+      "translation_text_hash": "4ea1042c92bd391fb74535e4c859a5d606a28f4a26311d75e63de6d903403730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 모든 장로가 헤브론에 이르러 왕에게 나아오니 다윗이 헤브론에서 여호와 앞에서 저희와 언약을 세우매 저희가 다윗에게 기름을 부어 이스라엘 왕을 삼으니 여호와께서 사무엘로 전하신 말씀대로 되었더라"
+      ],
+      "raw_text_hashes": [
+        "4ea1042c92bd391fb74535e4c859a5d606a28f4a26311d75e63de6d903403730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:4",
+      "sequence": 10678,
+      "chapter_label": "1CH 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "David and all Israel went to Jerusalem (also called Jebus); and the Jebusites, the inhabitants of the land, were there.",
+      "ko": "다윗이 온 이스라엘로 더불어 예루살렘 곧 여브스에 이르니 여브스 토인이 거기 거하였더라",
+      "source_text_hash": "96edb491a77aafc324a5e0b0f99c67612600fffc128862fef4c76f13ebcae51c",
+      "translation_text_hash": "def6bb6b42b91fb1772ec543ea7afba0e290c03690a6a6ffa0fc8af025a381a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 온 이스라엘로 더불어 예루살렘 곧 여브스에 이르니 여브스 토인이 거기 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "def6bb6b42b91fb1772ec543ea7afba0e290c03690a6a6ffa0fc8af025a381a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:5",
+      "sequence": 10679,
+      "chapter_label": "1CH 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The inhabitants of Jebus said to David, “You will not come in here!” Nevertheless David took the stronghold of Zion. The same is David’s city.",
+      "ko": "여브스 토인이 다윗에게 이르기를 네가 이리로 들어오지 못하리라 하나 다윗이 시온산 성을 빼앗았으니 이는 다윗성이더라",
+      "source_text_hash": "c2c4112452184076e6f2719a195b0b6eceabb96c5af37ef4b9d09fbfeb7575c9",
+      "translation_text_hash": "67619766b4ef76921f0cb036c32ff7f1b0496bc8826a9a59b1367687625282ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여브스 토인이 다윗에게 이르기를 네가 이리로 들어오지 못하리라 하나 다윗이 시온산 성을 빼앗았으니 이는 다윗성이더라"
+      ],
+      "raw_text_hashes": [
+        "67619766b4ef76921f0cb036c32ff7f1b0496bc8826a9a59b1367687625282ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:6",
+      "sequence": 10680,
+      "chapter_label": "1CH 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "David had said, “Whoever strikes the Jebusites first shall be chief and captain.” Joab the son of Zeruiah went up first, and was made chief.",
+      "ko": "다윗이 가로되 먼저 여브스 사람을 치는 자는 두목과 장관을 삼으리라 하였더니 스루야의 아들 요압이 먼저 올라갔으므로 두목이 되었고",
+      "source_text_hash": "bd3f4a4b9026e61f23382ab64c21d003907ffa4f7d94077cb8029fa13d077998",
+      "translation_text_hash": "4087ed636da9ac0f304e3e2f0bf795090dea6eef63031e22c96ef6c5f96b6fea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 먼저 여브스 사람을 치는 자는 두목과 장관을 삼으리라 하였더니 스루야의 아들 요압이 먼저 올라갔으므로 두목이 되었고"
+      ],
+      "raw_text_hashes": [
+        "4087ed636da9ac0f304e3e2f0bf795090dea6eef63031e22c96ef6c5f96b6fea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:7",
+      "sequence": 10681,
+      "chapter_label": "1CH 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "David lived in the stronghold; therefore they called it David’s city.",
+      "ko": "다윗이 그 산성에 거한고로 무리가 다윗성이라 일컬었으며",
+      "source_text_hash": "2ac6e56a357e7fbcd5863e2688922d93ed82718c8f1af31845a6042f6c97cb90",
+      "translation_text_hash": "16155658d234a76005d39e6ae6b58198c3abba7bfcc81586554e567a9a336bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 산성에 거한고로 무리가 다윗성이라 일컬었으며"
+      ],
+      "raw_text_hashes": [
+        "16155658d234a76005d39e6ae6b58198c3abba7bfcc81586554e567a9a336bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:8",
+      "sequence": 10682,
+      "chapter_label": "1CH 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "He built the city all around, from Millo even around; and Joab repaired the rest of the city.",
+      "ko": "다윗이 밀로에서부터 두루 성을 쌓았고 그 남은 성은 요압이 중수하였더라",
+      "source_text_hash": "8d801464bbc3d9f7a483e795d266e07406e0c76af00b17453eba39c43c6fc9a4",
+      "translation_text_hash": "57dd35c1f1bbc64084dd2438109cbdb716f40df7d572f0ab0fe954b8a6e6eff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 밀로에서부터 두루 성을 쌓았고 그 남은 성은 요압이 중수하였더라"
+      ],
+      "raw_text_hashes": [
+        "57dd35c1f1bbc64084dd2438109cbdb716f40df7d572f0ab0fe954b8a6e6eff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:9",
+      "sequence": 10683,
+      "chapter_label": "1CH 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "David grew greater and greater, for the LORD of Armies was with him.",
+      "ko": "만군의 여호와께서 함께 계시니 다윗이 점점 강성하여 가니라",
+      "source_text_hash": "ebf5acbe16e71b133d8c5cda5683077b01d16afe1d4d9a508d6b272783db1e05",
+      "translation_text_hash": "d8b6dfa9657a1de91ae992e337e498837faaacd4a5627563734fdc84a68a19f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 함께 계시니 다윗이 점점 강성하여 가니라"
+      ],
+      "raw_text_hashes": [
+        "d8b6dfa9657a1de91ae992e337e498837faaacd4a5627563734fdc84a68a19f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:10",
+      "sequence": 10684,
+      "chapter_label": "1CH 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Now these are the chief of the mighty men whom David had, who showed themselves strong with him in his kingdom, together with all Israel, to make him king, according to the LORD’s word concerning Israel.",
+      "ko": "다윗에게 있는 용사의 두목은 이러하니라 이 사람들이 온 이스라엘로 더불어 다윗의 힘을 도와 나라를 얻게 하고 세워 왕을 삼았으니 이는 여호와께서 이스라엘에 대하여 이르신 말씀대로 함이었더라",
+      "source_text_hash": "486009d390e847bcc765fcd234809ae13372b072962c209ed93f2b7f75ca4cf0",
+      "translation_text_hash": "85abafbf93ed3417e0123e8788a11a72e9def8c6203513a9f4ccad38004835b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗에게 있는 용사의 두목은 이러하니라 이 사람들이 온 이스라엘로 더불어 다윗의 힘을 도와 나라를 얻게 하고 세워 왕을 삼았으니 이는 여호와께서 이스라엘에 대하여 이르신 말씀대로 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "85abafbf93ed3417e0123e8788a11a72e9def8c6203513a9f4ccad38004835b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:11",
+      "sequence": 10685,
+      "chapter_label": "1CH 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "This is the number of the mighty men whom David had: Jashobeam, the son of a Hachmonite, the chief of the thirty; he lifted up his spear against three hundred and killed them at one time.",
+      "ko": "다윗에게 있는 용사의 수효가 이러하니라 학몬 사람의 아들 야소브암은 삼십인의 두목이라 저가 창을 들어 한 때에 삼백인을 죽였고",
+      "source_text_hash": "2c872467dad0eb67e0ece95388d5015989b855c5b9b147cae66c435359be656b",
+      "translation_text_hash": "216938f417da2c1192c1f8b2b89661b7dc87a8b5ef275f9540e96af55318014c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗에게 있는 용사의 수효가 이러하니라 학몬 사람의 아들 야소브암은 삼십인의 두목이라 저가 창을 들어 한 때에 삼백인을 죽였고"
+      ],
+      "raw_text_hashes": [
+        "216938f417da2c1192c1f8b2b89661b7dc87a8b5ef275f9540e96af55318014c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:12",
+      "sequence": 10686,
+      "chapter_label": "1CH 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "After him was Eleazar the son of Dodo, the Ahohite, who was one of the three mighty men.",
+      "ko": "그 다음은 아호아 사람 도도의 아들 엘르아살이니 세 용사 중 하나이라",
+      "source_text_hash": "55c7166bd586f6cdd247bff889da68b937146acbf261999af8e2aef430416e8b",
+      "translation_text_hash": "a74aae4a1bada769ffc7ee41c9d2a853cc99ca14c73365ec436276cb756cdc72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 아호아 사람 도도의 아들 엘르아살이니 세 용사 중 하나이라"
+      ],
+      "raw_text_hashes": [
+        "a74aae4a1bada769ffc7ee41c9d2a853cc99ca14c73365ec436276cb756cdc72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:13",
+      "sequence": 10687,
+      "chapter_label": "1CH 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "He was with David at Pasdammim, and there the Philistines were gathered together to battle, where there was a plot of ground full of barley; and the people fled from before the Philistines.",
+      "ko": "저가 바스담밈에서 다윗과 함께하였더니 블레셋 사람이 그곳에 모여와서 치니 거기 보리가 많이 난 밭이 있더라 백성들이 블레셋 사람 앞에서 도망하되",
+      "source_text_hash": "a9ff5d585f5f6e368e385408bc37e13f28d24da74e775a8fb94a389d7090327f",
+      "translation_text_hash": "04f84ad9c72bda2b418841f69c7955698e95742c10f1afd1625558672e4f9a59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 바스담밈에서 다윗과 함께하였더니 블레셋 사람이 그곳에 모여와서 치니 거기 보리가 많이 난 밭이 있더라 백성들이 블레셋 사람 앞에서 도망하되"
+      ],
+      "raw_text_hashes": [
+        "04f84ad9c72bda2b418841f69c7955698e95742c10f1afd1625558672e4f9a59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:14",
+      "sequence": 10688,
+      "chapter_label": "1CH 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "They stood in the middle of the plot, defended it, and killed the Philistines; and the LORD saved them by a great victory.",
+      "ko": "저희가 그 밭 가운데 서서 그 밭을 보호하여 블레셋 사람을 죽였으니 여호와께서 큰 구원으로 구원하심이었더라",
+      "source_text_hash": "694496e438299d21de5af1be80be0b2e2d3244ebae6a021c69dd40621e88d3e2",
+      "translation_text_hash": "d66159a7a82efb89938eb9a924cfba62cc7ce6037e383bc754fb2e746f5d7bec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 밭 가운데 서서 그 밭을 보호하여 블레셋 사람을 죽였으니 여호와께서 큰 구원으로 구원하심이었더라"
+      ],
+      "raw_text_hashes": [
+        "d66159a7a82efb89938eb9a924cfba62cc7ce6037e383bc754fb2e746f5d7bec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:15",
+      "sequence": 10689,
+      "chapter_label": "1CH 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "Three of the thirty chief men went down to the rock to David, into the cave of Adullam; and the army of the Philistines were encamped in the valley of Rephaim.",
+      "ko": "삼십 두목 중 세 사람이 바위로 내려가서 아둘람굴 다윗에게 이를 때에 블레셋 군대가 르바임 골짜기에 진 쳤더라",
+      "source_text_hash": "d185908582b7ffb3b4fe3a88572ad92cfbeca88ec9bb83365f9248a152c3d68e",
+      "translation_text_hash": "ac4eb8b3f7a2a79ac7bd91324900a0cbcd1df2e62ff8d44b6ed90cf6e22eedc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십 두목 중 세 사람이 바위로 내려가서 아둘람굴 다윗에게 이를 때에 블레셋 군대가 르바임 골짜기에 진 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "ac4eb8b3f7a2a79ac7bd91324900a0cbcd1df2e62ff8d44b6ed90cf6e22eedc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:16",
+      "sequence": 10690,
+      "chapter_label": "1CH 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "David was then in the stronghold, and the garrison of the Philistines was in Bethlehem at that time.",
+      "ko": "그 때에 다윗은 산성에 있고 블레셋 사람의 영채는 베들레헴에 있는지라",
+      "source_text_hash": "aa570ff5923520f06ab7ec85b4b6ea8115ed6f5d984d373e7dcb6414890a1981",
+      "translation_text_hash": "fd1d779b5bda5de262eb0bd8f069badac1e8ddf4c1f1654988b96eb1975629bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 다윗은 산성에 있고 블레셋 사람의 영채는 베들레헴에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "fd1d779b5bda5de262eb0bd8f069badac1e8ddf4c1f1654988b96eb1975629bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:17",
+      "sequence": 10691,
+      "chapter_label": "1CH 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "David longed, and said, “Oh, that someone would give me water to drink from the well of Bethlehem, which is by the gate!”",
+      "ko": "다윗이 사모하여 가로되 베들레헴 성문 곁 우물 물을 누가 나로 마시게 할꼬 하매",
+      "source_text_hash": "911ce83d34b60567d2ba3394bf66c0cc3cfce1b9915d7d0e710fe9c7068248b4",
+      "translation_text_hash": "293a839e3e7ba28203d9281b543720192be498218e394e29778adc4412878ddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사모하여 가로되 베들레헴 성문 곁 우물 물을 누가 나로 마시게 할꼬 하매"
+      ],
+      "raw_text_hashes": [
+        "293a839e3e7ba28203d9281b543720192be498218e394e29778adc4412878ddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:18",
+      "sequence": 10692,
+      "chapter_label": "1CH 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "The three broke through the army of the Philistines, and drew water out of the well of Bethlehem that was by the gate, took it, and brought it to David; but David would not drink any of it, but poured it out to the LORD,",
+      "ko": "이 세 사람이 블레셋 사람의 군대를 충돌하고 지나가서 베들레헴 성문 곁 우물 물을 길어가지고 다윗에게로 왔으나 다윗이 마시기를 기뻐 아니하고 그 물을 여호와께 부어드리고",
+      "source_text_hash": "729bbdb454a023f033773ab9cd3e30092beabab0b744051d2ce1d3d39f30b99d",
+      "translation_text_hash": "228d38022f06cde540603033eb893c603ad44017f3f24f65ea22c792a4263ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세 사람이 블레셋 사람의 군대를 충돌하고 지나가서 베들레헴 성문 곁 우물 물을 길어가지고 다윗에게로 왔으나 다윗이 마시기를 기뻐 아니하고 그 물을 여호와께 부어드리고"
+      ],
+      "raw_text_hashes": [
+        "228d38022f06cde540603033eb893c603ad44017f3f24f65ea22c792a4263ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:19",
+      "sequence": 10693,
+      "chapter_label": "1CH 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "and said, “My God forbid me, that I should do this! Shall I drink the blood of these men who have put their lives in jeopardy?” For they risked their lives to bring it. Therefore he would not drink it. The three mighty men did these things.",
+      "ko": "가로되 내 하나님이여 내가 결단코 이런 일을 하지 아니하리이다 생명을 돌아보지 아니하고 갔던 사람들의 피를 어찌 마시리이까 하고 마시기를 즐겨 아니하니라 세 용사가 이런 일을 행하였더라",
+      "source_text_hash": "596727298409528ac6d5f93ed554dbaa8f0f9cfb4f931e346114b755e0d844c9",
+      "translation_text_hash": "feb2c67eb7c515e2614a3c25e5d0f337ec8315843249ffb2f8fc4897c632f88a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내 하나님이여 내가 결단코 이런 일을 하지 아니하리이다 생명을 돌아보지 아니하고 갔던 사람들의 피를 어찌 마시리이까 하고 마시기를 즐겨 아니하니라 세 용사가 이런 일을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "feb2c67eb7c515e2614a3c25e5d0f337ec8315843249ffb2f8fc4897c632f88a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:20",
+      "sequence": 10694,
+      "chapter_label": "1CH 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "Abishai, the brother of Joab, was chief of the three; for he lifted up his spear against three hundred and killed them, and had a name among the three.",
+      "ko": "요압의 아우 아비새는 그 삼인의 두목이라 저가 창을 들어 삼백인을 죽이고 그 삼인 중에 이름을 얻었으니",
+      "source_text_hash": "c535786bb2fc50b5e64f91ee18d7ac23c6f321390d1f4b99132c92700f9d7f18",
+      "translation_text_hash": "6cbeb90b3b3fe683ee85c6995a2fd91e104744228aafe9f6d286c1b3cba83246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압의 아우 아비새는 그 삼인의 두목이라 저가 창을 들어 삼백인을 죽이고 그 삼인 중에 이름을 얻었으니"
+      ],
+      "raw_text_hashes": [
+        "6cbeb90b3b3fe683ee85c6995a2fd91e104744228aafe9f6d286c1b3cba83246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:21",
+      "sequence": 10695,
+      "chapter_label": "1CH 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Of the three, he was more honorable than the two, and was made their captain; however he wasn’t included in the three.",
+      "ko": "저는 둘째 삼인 중에 가장 존귀하여 저희의 두목이 되었으나 그러나 첫째 삼인에게는 미치지 못하니라",
+      "source_text_hash": "7600635cc0ad2635d6baf89dc09ca09ce3d898dc07d5f2bd5b379c4cb48cbefb",
+      "translation_text_hash": "690304155b8741447846c07f37caac6e704e2c78a715bb8a49dd2326683b0f5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 둘째 삼인 중에 가장 존귀하여 저희의 두목이 되었으나 그러나 첫째 삼인에게는 미치지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "690304155b8741447846c07f37caac6e704e2c78a715bb8a49dd2326683b0f5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:22",
+      "sequence": 10696,
+      "chapter_label": "1CH 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Benaiah the son of Jehoiada, the son of a valiant man of Kabzeel, who had done mighty deeds, killed the two sons of Ariel of Moab. He also went down and killed a lion in the middle of a pit on a snowy day.",
+      "ko": "갑스엘 용사의 손자 여호야다의 아들 브나야는 효용한 일을 행한 자라 저가 모압 아리엘의 아들 둘을 죽였고 또 눈 올 때에 함정에 내려가서 한 사자를 죽였으며",
+      "source_text_hash": "b10ef44df8c3f0c7f4b0684f40b02c9f4257be371ccb5224dae73257fb24bf94",
+      "translation_text_hash": "644172091b75db70f3a940e87c1714514bbe764586179e42e39d715ed8e0cd60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갑스엘 용사의 손자 여호야다의 아들 브나야는 효용한 일을 행한 자라 저가 모압 아리엘의 아들 둘을 죽였고 또 눈 올 때에 함정에 내려가서 한 사자를 죽였으며"
+      ],
+      "raw_text_hashes": [
+        "644172091b75db70f3a940e87c1714514bbe764586179e42e39d715ed8e0cd60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:23",
+      "sequence": 10697,
+      "chapter_label": "1CH 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "He killed an Egyptian, a man of great stature, five cubits high. In the Egyptian’s hand was a spear like a weaver’s beam; and he went down to him with a staff, plucked the spear out of the Egyptian’s hand, and killed him with his own spear.",
+      "ko": "또 장대한 애굽 사람을 죽였는데 그 사람의 키가 다섯 규빗이요 그 손에 든 창이 베틀채 같으나 저가 막대기를 가지고 내려가서 그 애굽 사람의 손에서 창을 빼앗아 그 창으로 죽였더라",
+      "source_text_hash": "de206709bfb5355a971722ffb433f24107656eeb86f45856e1454be47c811719",
+      "translation_text_hash": "6621fc2fcfd1a89eb4285cde2574c98db9de358a5fa50cdbba321bcfefe07d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 장대한 애굽 사람을 죽였는데 그 사람의 키가 다섯 규빗이요 그 손에 든 창이 베틀채 같으나 저가 막대기를 가지고 내려가서 그 애굽 사람의 손에서 창을 빼앗아 그 창으로 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "6621fc2fcfd1a89eb4285cde2574c98db9de358a5fa50cdbba321bcfefe07d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:24",
+      "sequence": 10698,
+      "chapter_label": "1CH 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Benaiah the son of Jehoiada did these things and had a name among the three mighty men.",
+      "ko": "여호야다의 아들 브나야가 이런 일을 행하였으므로 세 용사 중에 이름을 얻고",
+      "source_text_hash": "5c53e0d79d1fe98cd605e1d63757285487d3eef6259e9c7d943a90c4b0810069",
+      "translation_text_hash": "cfd93c7d3274d89c30c9841be7dc61b07b7115992f40ba493b7d3fc268134a0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야가 이런 일을 행하였으므로 세 용사 중에 이름을 얻고"
+      ],
+      "raw_text_hashes": [
+        "cfd93c7d3274d89c30c9841be7dc61b07b7115992f40ba493b7d3fc268134a0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:25",
+      "sequence": 10699,
+      "chapter_label": "1CH 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Behold, he was more honorable than the thirty, but he didn’t attain to the three; and David set him over his guard.",
+      "ko": "삼십인보다 존귀하나 그러나 첫 삼인에게는 미치지 못하니라 다윗이 저를 세워 시위대 장관을 삼았더라",
+      "source_text_hash": "3a71e508fadf2b49b258c8d3376e6a9991c0c5c13a65c0e653b6a662d2f34ef7",
+      "translation_text_hash": "c0abbe99ea1dba6005ab71c6a3f9028dcb0266d1d13debff51729cb05cd106d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼십인보다 존귀하나 그러나 첫 삼인에게는 미치지 못하니라 다윗이 저를 세워 시위대 장관을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "c0abbe99ea1dba6005ab71c6a3f9028dcb0266d1d13debff51729cb05cd106d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:26",
+      "sequence": 10700,
+      "chapter_label": "1CH 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "The mighty men of the armies also include Asahel the brother of Joab, Elhanan the son of Dodo of Bethlehem,",
+      "ko": "또 군중의 큰 용사는 요압의 아우 아사헬과 베들레헴 사람 도도의 아들 엘하난과",
+      "source_text_hash": "2059e3276f3506f4d494456e418d077dd6b594212f31ffe8a714e0d1aa2af58b",
+      "translation_text_hash": "b7ca5fc3d18e8f2fe555ca6d832918e7fa18ce5cd1f14964379b119a90953146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 군중의 큰 용사는 요압의 아우 아사헬과 베들레헴 사람 도도의 아들 엘하난과"
+      ],
+      "raw_text_hashes": [
+        "b7ca5fc3d18e8f2fe555ca6d832918e7fa18ce5cd1f14964379b119a90953146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:27",
+      "sequence": 10701,
+      "chapter_label": "1CH 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "Shammoth the Harorite, Helez the Pelonite,",
+      "ko": "하롤 사람 삼훗과 블론 사람 헬레스와",
+      "source_text_hash": "dcb99848e6671d742e6b967f40c9b26ebf449c9453d7ba2a624f8a20bf150a05",
+      "translation_text_hash": "d2845ec49a5fc7446b0932aa71bc1167c34e7d38f9a544d2bcc9ed81a1c9cd52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하롤 사람 삼훗과 블론 사람 헬레스와"
+      ],
+      "raw_text_hashes": [
+        "d2845ec49a5fc7446b0932aa71bc1167c34e7d38f9a544d2bcc9ed81a1c9cd52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:28",
+      "sequence": 10702,
+      "chapter_label": "1CH 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "Ira the son of Ikkesh the Tekoite, Abiezer the Anathothite,",
+      "ko": "드고아 사람 익게스의 아들 이라와 아나돗 사람 아비에셀과",
+      "source_text_hash": "31807642667e3269b27eb7dd08a295a2ee364b9a3a04f463d5f7135d27e99d24",
+      "translation_text_hash": "5a28992967ffa067c5ba083c09e68050a45e6e446198409eb2a8d08293c02a00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드고아 사람 익게스의 아들 이라와 아나돗 사람 아비에셀과"
+      ],
+      "raw_text_hashes": [
+        "5a28992967ffa067c5ba083c09e68050a45e6e446198409eb2a8d08293c02a00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:29",
+      "sequence": 10703,
+      "chapter_label": "1CH 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "Sibbecai the Hushathite, Ilai the Ahohite,",
+      "ko": "후사 사람 십브개와 아호아 사람 일래와",
+      "source_text_hash": "aee6156189f2c50945f395ef637cfb98d7a3fcc5ef969cec53c3cf43fef61490",
+      "translation_text_hash": "0f27577335e4720a73601895486f9dcda94287981be136a600b5d67de60ebeab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후사 사람 십브개와 아호아 사람 일래와"
+      ],
+      "raw_text_hashes": [
+        "0f27577335e4720a73601895486f9dcda94287981be136a600b5d67de60ebeab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:30",
+      "sequence": 10704,
+      "chapter_label": "1CH 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Maharai the Netophathite, Heled the son of Baanah the Netophathite,",
+      "ko": "느도바 사람 마하래와 느도바 사람 바아나의 아들 헬렛과",
+      "source_text_hash": "6acdb22050ea49be4a29c52397230ef223993e73cac4f6222f1283bade5497c7",
+      "translation_text_hash": "542918b708f8f27284e3b04f0a5e67cf0afc0836469fa1641eb859084c3c1a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느도바 사람 마하래와 느도바 사람 바아나의 아들 헬렛과"
+      ],
+      "raw_text_hashes": [
+        "542918b708f8f27284e3b04f0a5e67cf0afc0836469fa1641eb859084c3c1a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:31",
+      "sequence": 10705,
+      "chapter_label": "1CH 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "Ithai the son of Ribai of Gibeah of the children of Benjamin, Benaiah the Pirathonite,",
+      "ko": "베냐민 자손에 속한 기브아 사람 리배의 아들 이대와 비라돈 사람 브나야와",
+      "source_text_hash": "a9472d14c53844460bbea28d0c3cb006f46203d469f6fda573f16f2f2b144299",
+      "translation_text_hash": "8f8b99977b76114b944c1d74f3bf461a8c9059f4ea0c74fb4d4c344013117de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손에 속한 기브아 사람 리배의 아들 이대와 비라돈 사람 브나야와"
+      ],
+      "raw_text_hashes": [
+        "8f8b99977b76114b944c1d74f3bf461a8c9059f4ea0c74fb4d4c344013117de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:32",
+      "sequence": 10706,
+      "chapter_label": "1CH 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "Hurai of the brooks of Gaash, Abiel the Arbathite,",
+      "ko": "가아스 시냇가에 사는 후래와 아르바 사람 아비엘과",
+      "source_text_hash": "2d7e69dd8595461da5d3fe3299cb0a10c36681e95661a5119cb0141c1fdc19d2",
+      "translation_text_hash": "2ae2874a4fee114823ef15dbf7968851a22a754b5bb103bb4066a938ee1eba98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가아스 시냇가에 사는 후래와 아르바 사람 아비엘과"
+      ],
+      "raw_text_hashes": [
+        "2ae2874a4fee114823ef15dbf7968851a22a754b5bb103bb4066a938ee1eba98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:33",
+      "sequence": 10707,
+      "chapter_label": "1CH 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "Azmaveth the Baharumite, Eliahba the Shaalbonite,",
+      "ko": "바하룸 사람 아스마웻과 사알본 사람 엘리아바와",
+      "source_text_hash": "20911469e61cb886383b1f67528e5eff1899019cb4fac3ead471bf1e267d8110",
+      "translation_text_hash": "af24ea52c72a83e6fb8564c2f2feb3011d27e3336ed5d435133d2a28ba52bd35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바하룸 사람 아스마웻과 사알본 사람 엘리아바와"
+      ],
+      "raw_text_hashes": [
+        "af24ea52c72a83e6fb8564c2f2feb3011d27e3336ed5d435133d2a28ba52bd35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:34",
+      "sequence": 10708,
+      "chapter_label": "1CH 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "the sons of Hashem the Gizonite, Jonathan the son of Shagee the Hararite,",
+      "ko": "기손 사람 하셈의 아들들과 하랄 사람 사게의 아들 요나단과",
+      "source_text_hash": "e11d0ace5c836bd39b4e2ddad3fe766ca1c56b4a126aadadd2f6e801c9dcd62d",
+      "translation_text_hash": "de31dee303c495599e22d8d46e096ea5ade124dce1756f4da06df5af6920e5a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기손 사람 하셈의 아들들과 하랄 사람 사게의 아들 요나단과"
+      ],
+      "raw_text_hashes": [
+        "de31dee303c495599e22d8d46e096ea5ade124dce1756f4da06df5af6920e5a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:35",
+      "sequence": 10709,
+      "chapter_label": "1CH 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Ahiam the son of Sacar the Hararite, Eliphal the son of Ur,",
+      "ko": "하랄 사람 사갈의 아들 아히암과 울의 아들 엘리발과",
+      "source_text_hash": "4054cbde6ad8b1f87962e645ecea2c43c8f091fb49546518fd6b2bfd8a2096e9",
+      "translation_text_hash": "616a5a43fdc1fa6ab6dae1ad7a50e1e1af6f2c8b9c850d6a1dd3d47cefb8f431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하랄 사람 사갈의 아들 아히암과 울의 아들 엘리발과"
+      ],
+      "raw_text_hashes": [
+        "616a5a43fdc1fa6ab6dae1ad7a50e1e1af6f2c8b9c850d6a1dd3d47cefb8f431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:36",
+      "sequence": 10710,
+      "chapter_label": "1CH 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "Hepher the Mecherathite, Ahijah the Pelonite,",
+      "ko": "므게랏 사람 헤벨과 블론 사람 아히야와",
+      "source_text_hash": "064ec92cb5c666f05f924f7127143f41b831476b09975d26c2445c99d895d7e0",
+      "translation_text_hash": "2917941d68151664f9613457a40119152917c0cc4f50d55938e643e4669f35c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므게랏 사람 헤벨과 블론 사람 아히야와"
+      ],
+      "raw_text_hashes": [
+        "2917941d68151664f9613457a40119152917c0cc4f50d55938e643e4669f35c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:37",
+      "sequence": 10711,
+      "chapter_label": "1CH 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "Hezro the Carmelite, Naarai the son of Ezbai,",
+      "ko": "갈멜 사람 헤스로와 에스배의 아들 나아래와",
+      "source_text_hash": "57c1c639f68724708c0c5129beaa13715b5ce6cb71771882ac984438919532fd",
+      "translation_text_hash": "e9c5287ebe33cd1ff9ff2e4f1e1137b8f6ee96d43226d99a1d7025726433d40d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈멜 사람 헤스로와 에스배의 아들 나아래와"
+      ],
+      "raw_text_hashes": [
+        "e9c5287ebe33cd1ff9ff2e4f1e1137b8f6ee96d43226d99a1d7025726433d40d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:38",
+      "sequence": 10712,
+      "chapter_label": "1CH 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "Joel the brother of Nathan, Mibhar the son of Hagri,",
+      "ko": "나단의 아우 요엘과 하그리의 아들 밉할과",
+      "source_text_hash": "98c8048ba3f3373c6225882284898770b5c3739e60ba77b1a16ece17f788dbb9",
+      "translation_text_hash": "6526c444bfca70c9997dce54e132d87f30365bc4fe3b6a4ffa4adee07c628a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단의 아우 요엘과 하그리의 아들 밉할과"
+      ],
+      "raw_text_hashes": [
+        "6526c444bfca70c9997dce54e132d87f30365bc4fe3b6a4ffa4adee07c628a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:39",
+      "sequence": 10713,
+      "chapter_label": "1CH 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "Zelek the Ammonite, Naharai the Berothite (the armor bearer of Joab the son of Zeruiah),",
+      "ko": "암몬 사람 셀렉과 스루야의 아들 요압의 병기 잡은 자 베롯 사람 나하래와",
+      "source_text_hash": "261ce6cb72f117e867709f4dac53e847599fa6bcba0fa5e44b59ea84e82c93bf",
+      "translation_text_hash": "a8b589960cf6a2aa78472bad88538c9258cc7bb70e5949a9077b52994891a361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 사람 셀렉과 스루야의 아들 요압의 병기 잡은 자 베롯 사람 나하래와"
+      ],
+      "raw_text_hashes": [
+        "a8b589960cf6a2aa78472bad88538c9258cc7bb70e5949a9077b52994891a361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:40",
+      "sequence": 10714,
+      "chapter_label": "1CH 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "Ira the Ithrite, Gareb the Ithrite,",
+      "ko": "이델 사람 이라와 이델 사람 가렙과",
+      "source_text_hash": "449b72344fc5e384e196c3870b2b44f10b1cd70a0be5efe97e49813adc607db8",
+      "translation_text_hash": "59e5c87fc8f6dce62c1c37d4d95acf8d567dafb5a739a14cb4033f73b6187ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이델 사람 이라와 이델 사람 가렙과"
+      ],
+      "raw_text_hashes": [
+        "59e5c87fc8f6dce62c1c37d4d95acf8d567dafb5a739a14cb4033f73b6187ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:41",
+      "sequence": 10715,
+      "chapter_label": "1CH 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "Uriah the Hittite, Zabad the son of Ahlai,",
+      "ko": "헷 사람 우리아와 알래의 아들 사밧과",
+      "source_text_hash": "c8d91d0fa99a262f82112215af32ceab24bcc894c5af285c105a2393a5b11540",
+      "translation_text_hash": "6280be10e40d94f3cea1a244ef0f3e17a473d9fd37c8fe94825c2bb6d5b7b560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헷 사람 우리아와 알래의 아들 사밧과"
+      ],
+      "raw_text_hashes": [
+        "6280be10e40d94f3cea1a244ef0f3e17a473d9fd37c8fe94825c2bb6d5b7b560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:42",
+      "sequence": 10716,
+      "chapter_label": "1CH 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "Adina the son of Shiza the Reubenite (a chief of the Reubenites), and thirty with him,",
+      "ko": "르우벤 자손 시사의 아들 곧 르우벤 자손의 두목 아디나와 그 종자 삼십인과",
+      "source_text_hash": "09971aacae26e0f2a56e7331098ba79896799f1c26a95329b2c52529a2735b73",
+      "translation_text_hash": "24be92a485cb1d4098f7f7846604ce0053616686cd53219240fbc04012862479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손 시사의 아들 곧 르우벤 자손의 두목 아디나와 그 종자 삼십인과"
+      ],
+      "raw_text_hashes": [
+        "24be92a485cb1d4098f7f7846604ce0053616686cd53219240fbc04012862479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:43",
+      "sequence": 10717,
+      "chapter_label": "1CH 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "Hanan the son of Maacah, Joshaphat the Mithnite,",
+      "ko": "마아가의 아들 하난과 미덴 사람 요사밧과",
+      "source_text_hash": "4781e7473e6050d78e6d3561a6f2c7e508e6b037f16e4abb7eb56500f1c5d0d3",
+      "translation_text_hash": "6ddc6667d37cb3cb85cdc247d0a91156b43b50145024485bc4b10059ccd8746e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마아가의 아들 하난과 미덴 사람 요사밧과"
+      ],
+      "raw_text_hashes": [
+        "6ddc6667d37cb3cb85cdc247d0a91156b43b50145024485bc4b10059ccd8746e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:44",
+      "sequence": 10718,
+      "chapter_label": "1CH 11",
+      "verse_label": "44",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 44
+        }
+      ],
+      "en": "Uzzia the Ashterathite, Shama and Jeiel the sons of Hotham the Aroerite,",
+      "ko": "아스드랏 사람 웃시야와 아로엘 사람 호담의 아들 사마와 여이엘과",
+      "source_text_hash": "f81f9d2cc84130a05eebea585d6362200e313212aea344b628efa077dba4a8cf",
+      "translation_text_hash": "425e6b26c1ca151eb8dcb2afb90a400d581e0156a22f571c98c8e56d3b84d1d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스드랏 사람 웃시야와 아로엘 사람 호담의 아들 사마와 여이엘과"
+      ],
+      "raw_text_hashes": [
+        "425e6b26c1ca151eb8dcb2afb90a400d581e0156a22f571c98c8e56d3b84d1d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:45",
+      "sequence": 10719,
+      "chapter_label": "1CH 11",
+      "verse_label": "45",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 45
+        }
+      ],
+      "en": "Jediael the son of Shimri, and Joha his brother, the Tizite,",
+      "ko": "시므리의 아들 여디아엘과 그 아우 디스 사람 요하와",
+      "source_text_hash": "c970348350d38458b254f3512fce9edabd9f95ef4d98f3d279ebae509f39e9f0",
+      "translation_text_hash": "4043db9c0db1b80bdb3c3311d9ee8f099b74ee3b8928ca917ee43a476c92d973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므리의 아들 여디아엘과 그 아우 디스 사람 요하와"
+      ],
+      "raw_text_hashes": [
+        "4043db9c0db1b80bdb3c3311d9ee8f099b74ee3b8928ca917ee43a476c92d973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:46",
+      "sequence": 10720,
+      "chapter_label": "1CH 11",
+      "verse_label": "46",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 46
+        }
+      ],
+      "en": "Eliel the Mahavite, and Jeribai, and Joshaviah, the sons of Elnaam, and Ithmah the Moabite,",
+      "ko": "마하위 사람 엘리엘과 엘라암의 아들 여리배와 요사위야와 모압 사람 이드마와",
+      "source_text_hash": "203db5fb6a55ceebc918b76ee30b7b72461e86ea905731916e5c6bc22f6d34b3",
+      "translation_text_hash": "6f6e0b0adbd56cd75f241a778b48152595f7a27aff8cb31da85e9a2f4e6ed912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마하위 사람 엘리엘과 엘라암의 아들 여리배와 요사위야와 모압 사람 이드마와"
+      ],
+      "raw_text_hashes": [
+        "6f6e0b0adbd56cd75f241a778b48152595f7a27aff8cb31da85e9a2f4e6ed912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:11:47",
+      "sequence": 10721,
+      "chapter_label": "1CH 11",
+      "verse_label": "47",
+      "locator": {
+        "book": "1CH",
+        "chapter": 11,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 11,
+          "verse": 47
+        }
+      ],
+      "en": "Eliel, Obed, and Jaasiel the Mezobaite.",
+      "ko": "엘리엘과 오벳과 므소바 사람 야아시엘이더라",
+      "source_text_hash": "453a87031706ccd786e64c822ea5e75282b1f754b7e780da80f0004a4df0ae16",
+      "translation_text_hash": "14436104a6287f817abf5420214cbbd24679f1958f7652da0959cf6f15d51945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리엘과 오벳과 므소바 사람 야아시엘이더라"
+      ],
+      "raw_text_hashes": [
+        "14436104a6287f817abf5420214cbbd24679f1958f7652da0959cf6f15d51945"
+      ]
+    }
+  ]
+}

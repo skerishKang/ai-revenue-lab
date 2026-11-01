@@ -1,0 +1,2125 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:027",
+  "unit_ordinal": 956,
+  "unit_label": "MAT 27",
+  "book_code": "MAT",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:27:1",
+      "sequence": 24131,
+      "chapter_label": "MAT 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "Now when morning had come, all the chief priests and the elders of the people took counsel against Jesus to put him to death.",
+      "ko": "새벽에 모든 대제사장과 백성의 장로들이 예수를 죽이려고 함께 의논하고",
+      "source_text_hash": "1f93873af893937eb09abf4bcdf830295a25406f4ee9b014744ecb933b7c14b4",
+      "translation_text_hash": "4bca1e9e33a669810efde4c1851c9030f91d6383efbcfd15bb295d026f7d4a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새벽에 모든 대제사장과 백성의 장로들이 예수를 죽이려고 함께 의논하고"
+      ],
+      "raw_text_hashes": [
+        "4bca1e9e33a669810efde4c1851c9030f91d6383efbcfd15bb295d026f7d4a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:2",
+      "sequence": 24132,
+      "chapter_label": "MAT 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "They bound him, led him away, and delivered him up to Pontius Pilate, the governor.",
+      "ko": "결박하여 끌고 가서 총독 빌라도에게 넘겨주니라",
+      "source_text_hash": "1e259c4e06fe7330ea578b5aee8fb09df183d640a19ab247f74cb93f697f83a9",
+      "translation_text_hash": "b32a31695b49b4d1a44f002ca8e85fb12cd5075fcdb26cde30a62edea75b3d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "결박하여 끌고 가서 총독 빌라도에게 넘겨주니라"
+      ],
+      "raw_text_hashes": [
+        "b32a31695b49b4d1a44f002ca8e85fb12cd5075fcdb26cde30a62edea75b3d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:3",
+      "sequence": 24133,
+      "chapter_label": "MAT 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "Then Judas, who betrayed him, when he saw that Jesus was condemned, felt remorse, and brought back the thirty pieces of silver to the chief priests and elders,",
+      "ko": "때에 예수를 판 유다가 그의 정죄됨을 보고 스스로 뉘우쳐 그 은 삼십을 대제사장들과 장로들에게 도로 갖다 주며",
+      "source_text_hash": "275fcd1209b5578bb1f399dbc6addba0e371f91efca3f95d9980e564a5579af5",
+      "translation_text_hash": "d54b1e7f24ccf3619eba36c8571be9b23f87209956f79321b217fc77333daec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 예수를 판 유다가 그의 정죄됨을 보고 스스로 뉘우쳐 그 은 삼십을 대제사장들과 장로들에게 도로 갖다 주며"
+      ],
+      "raw_text_hashes": [
+        "d54b1e7f24ccf3619eba36c8571be9b23f87209956f79321b217fc77333daec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:4",
+      "sequence": 24134,
+      "chapter_label": "MAT 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "saying, “I have sinned in that I betrayed innocent blood.” But they said, “What is that to us? You see to it.”",
+      "ko": "가로되 내가 무죄한 피를 팔고 죄를 범하였도다 하니 저희가 가로되 그것이 우리에게 무슨 상관이 있느냐 네가 당하라 하거늘",
+      "source_text_hash": "d45af04cc3fc617e2150c199ee6bb10777259718e0e5de8fc636e8f0be5a6a30",
+      "translation_text_hash": "9d9f286cca85b4b40b77aa589c26559641afcc4fc04158a9bebf497bb81c0715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 무죄한 피를 팔고 죄를 범하였도다 하니 저희가 가로되 그것이 우리에게 무슨 상관이 있느냐 네가 당하라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "9d9f286cca85b4b40b77aa589c26559641afcc4fc04158a9bebf497bb81c0715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:5",
+      "sequence": 24135,
+      "chapter_label": "MAT 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "He threw down the pieces of silver in the sanctuary and departed. Then he went away and hanged himself.",
+      "ko": "유다가 은을 성소에 던져 넣고 물러가서 스스로 목매어 죽은지라",
+      "source_text_hash": "4edce23d7d78be61c7598c231e3b83c03a7dcfbacdd1f550bc99bfe3771ebf59",
+      "translation_text_hash": "4d9bc1258a984251211fd94212175f3ae89573057e81eeb2564c14893c551187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 은을 성소에 던져 넣고 물러가서 스스로 목매어 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "4d9bc1258a984251211fd94212175f3ae89573057e81eeb2564c14893c551187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:6",
+      "sequence": 24136,
+      "chapter_label": "MAT 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "The chief priests took the pieces of silver and said, “It’s not lawful to put them into the treasury, since it is the price of blood.”",
+      "ko": "대제사장들이 그 은을 거두며 가로되 이것은 피 값이라 성전고에 넣어 둠이 옳지 않다 하고",
+      "source_text_hash": "9bcbf05b135b61fb6cc5a07a085d08b02a69bc65907e5da9c137a8e04a318540",
+      "translation_text_hash": "b308cfde172573ecf2e759f5ac1ac6b1fbf3a58cac845d1859246c9aafc7265c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들이 그 은을 거두며 가로되 이것은 피 값이라 성전고에 넣어 둠이 옳지 않다 하고"
+      ],
+      "raw_text_hashes": [
+        "b308cfde172573ecf2e759f5ac1ac6b1fbf3a58cac845d1859246c9aafc7265c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:7",
+      "sequence": 24137,
+      "chapter_label": "MAT 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "They took counsel, and bought the potter’s field with them to bury strangers in.",
+      "ko": "의논한 후 이것으로 토기장이의 밭을 사서 나그네의 묘지를 삼았으니",
+      "source_text_hash": "58c38a1e3194e42fe7cf55104fcd0b98f4de35e4c75ed0afdb7b321d1d12803b",
+      "translation_text_hash": "3a6906ca398482f38461504ddaae2cd857e710caf7c62c5b2e75d8dac9f8572a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의논한 후 이것으로 토기장이의 밭을 사서 나그네의 묘지를 삼았으니"
+      ],
+      "raw_text_hashes": [
+        "3a6906ca398482f38461504ddaae2cd857e710caf7c62c5b2e75d8dac9f8572a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:8",
+      "sequence": 24138,
+      "chapter_label": "MAT 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore that field has been called “The Field of Blood” to this day.",
+      "ko": "그러므로 오늘날까지 그 밭을 피밭이라 일컫느니라",
+      "source_text_hash": "e93dc5f75528b7d92c6f002f3a189d9467608d50638dc3a1711bab843bce4efa",
+      "translation_text_hash": "4d8ee3931c6509118ba83f09c3e39e8dc5301d71032d6124000a26be6ea4a0eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 오늘날까지 그 밭을 피밭이라 일컫느니라"
+      ],
+      "raw_text_hashes": [
+        "4d8ee3931c6509118ba83f09c3e39e8dc5301d71032d6124000a26be6ea4a0eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:9",
+      "sequence": 24139,
+      "chapter_label": "MAT 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "Then that which was spoken through Jeremiah the prophet was fulfilled, saying, “They took the thirty pieces of silver, the price of him upon whom a price had been set, whom some of the children of Israel priced,",
+      "ko": "이에 선지자 예레미야로 하신 말씀이 이루었나니 일렀으되 저희가 그 정가 된 자 곧 이스라엘 자손 중에서 정가한 자의 가격 곧 은 삼십을 가지고",
+      "source_text_hash": "869baa0504d5958463a150576528840c1095dddb442f2cb99329a0094261e817",
+      "translation_text_hash": "daa5b1406445fee4572e5708e556d7d2e24cc00493bd5a986b0ad36a30c13bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 선지자 예레미야로 하신 말씀이 이루었나니 일렀으되 저희가 그 정가 된 자 곧 이스라엘 자손 중에서 정가한 자의 가격 곧 은 삼십을 가지고"
+      ],
+      "raw_text_hashes": [
+        "daa5b1406445fee4572e5708e556d7d2e24cc00493bd5a986b0ad36a30c13bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:10",
+      "sequence": 24140,
+      "chapter_label": "MAT 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "and they gave them for the potter’s field, as the Lord commanded me.”",
+      "ko": "토기장이의 밭 값으로 주었으니 이는 주께서 내게 명하신 바와 같으니라 하였더라",
+      "source_text_hash": "1d56aa455eb0f7780effc55531dde311fe4897c6747ffe560e669ec11e017025",
+      "translation_text_hash": "dee08b169b43a6c396c2d2238ee7d36e6eed6d752fef1e7925958dd855137fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토기장이의 밭 값으로 주었으니 이는 주께서 내게 명하신 바와 같으니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "dee08b169b43a6c396c2d2238ee7d36e6eed6d752fef1e7925958dd855137fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:11",
+      "sequence": 24141,
+      "chapter_label": "MAT 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "Now Jesus stood before the governor; and the governor asked him, saying, “Are you the King of the Jews?” Jesus said to him, “So you say.”",
+      "ko": "예수께서 총독 앞에 섰으매 총독이 물어 가로되 네가 유대인의 왕이냐 예수께서 대답하시되 네 말이 옳도다 하시고",
+      "source_text_hash": "933e4a9c0c6bffa17fbcef31eb0a716965c767acee0acc682a0a5262dd85e521",
+      "translation_text_hash": "453ef090f8faa10a909e6e487adc6b13e379602f71e7eca4180057ed0b93e885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 총독 앞에 섰으매 총독이 물어 가로되 네가 유대인의 왕이냐 예수께서 대답하시되 네 말이 옳도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "453ef090f8faa10a909e6e487adc6b13e379602f71e7eca4180057ed0b93e885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:12",
+      "sequence": 24142,
+      "chapter_label": "MAT 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "When he was accused by the chief priests and elders, he answered nothing.",
+      "ko": "대제사장들과 장로들에게 고소를 당하되 아무 대답도 아니하시는지라",
+      "source_text_hash": "21f6c01e54fd6f7da7411ad5b26452ed7c9326ff3a7d16b727872b56c39503b6",
+      "translation_text_hash": "fe14d427016394d5ecc428ea5e6585f3cff46a42dff8dc05dd217fc9d9b03f5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 장로들에게 고소를 당하되 아무 대답도 아니하시는지라"
+      ],
+      "raw_text_hashes": [
+        "fe14d427016394d5ecc428ea5e6585f3cff46a42dff8dc05dd217fc9d9b03f5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:13",
+      "sequence": 24143,
+      "chapter_label": "MAT 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "Then Pilate said to him, “Don’t you hear how many things they testify against you?”",
+      "ko": "이에 빌라도가 이르되 저희가 너를 쳐서 얼마나 많은 것으로 증거하는지 듣지 못하느냐 하되",
+      "source_text_hash": "99dd4033fca8e123a5378fc780f18278df697c8f5d9ec627049db124ca08764c",
+      "translation_text_hash": "26be47160d9e32e9c6b2b3e99bdeb6ebe037f9a6886fd52a7df050d3b8eab6bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 빌라도가 이르되 저희가 너를 쳐서 얼마나 많은 것으로 증거하는지 듣지 못하느냐 하되"
+      ],
+      "raw_text_hashes": [
+        "26be47160d9e32e9c6b2b3e99bdeb6ebe037f9a6886fd52a7df050d3b8eab6bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:14",
+      "sequence": 24144,
+      "chapter_label": "MAT 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "He gave him no answer, not even one word, so that the governor marveled greatly.",
+      "ko": "한마디도 대답지 아니하시니 총독이 심히 기이히 여기더라",
+      "source_text_hash": "b38101cd8fbaf0a54a668c113df573d468f2eaf2c99378e9d3e00df0ec24f6db",
+      "translation_text_hash": "4806414a1cc05887001fd425e2f78bcc1edbfa7d71cb91f08dde8f1c63ff7c17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한마디도 대답지 아니하시니 총독이 심히 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "4806414a1cc05887001fd425e2f78bcc1edbfa7d71cb91f08dde8f1c63ff7c17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:15",
+      "sequence": 24145,
+      "chapter_label": "MAT 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "Now at the feast the governor was accustomed to release to the multitude one prisoner whom they desired.",
+      "ko": "명절을 당하면 총독이 무리의 소원대로 죄수 하나를 놓아 주는 전례가 있더니",
+      "source_text_hash": "107fbe36aa3b2b1e06b87eff1a71a17d5ee95ad03b321784992b7d5f3e005a48",
+      "translation_text_hash": "47d9aae7725de3391ba9bcaa6ae74ac20edbe1e981e3a7c98f54978aa88d2c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명절을 당하면 총독이 무리의 소원대로 죄수 하나를 놓아 주는 전례가 있더니"
+      ],
+      "raw_text_hashes": [
+        "47d9aae7725de3391ba9bcaa6ae74ac20edbe1e981e3a7c98f54978aa88d2c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:16",
+      "sequence": 24146,
+      "chapter_label": "MAT 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "They had then a notable prisoner called Barabbas.",
+      "ko": "그 때에 바라바라 하는 유명한 죄수가 있는데",
+      "source_text_hash": "e31bea2860688ec6e9887d885a8a66170edb84dc2842813860b8429576a96601",
+      "translation_text_hash": "3da48fff7727da9d58466db4d0b3760f860d568678c3bc7be442af2004610a86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 바라바라 하는 유명한 죄수가 있는데"
+      ],
+      "raw_text_hashes": [
+        "3da48fff7727da9d58466db4d0b3760f860d568678c3bc7be442af2004610a86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:17",
+      "sequence": 24147,
+      "chapter_label": "MAT 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "When therefore they were gathered together, Pilate said to them, “Whom do you want me to release to you? Barabbas, or Jesus who is called Christ?”",
+      "ko": "저희가 모였을 때에 빌라도가 물어 가로되 너희는 내가 누구를 너희에게 놓아 주기를 원하느냐 바라바냐 그리스도라 하는 예수냐 하니",
+      "source_text_hash": "1eb40074281068cc00aa4bda7f078b78f1d9d72d1aa37d4bfd85ce76f8892b92",
+      "translation_text_hash": "ed74c19616ef1cd7128a6a70900001fd408006f5b861d2da6ba785190f1b13c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 모였을 때에 빌라도가 물어 가로되 너희는 내가 누구를 너희에게 놓아 주기를 원하느냐 바라바냐 그리스도라 하는 예수냐 하니"
+      ],
+      "raw_text_hashes": [
+        "ed74c19616ef1cd7128a6a70900001fd408006f5b861d2da6ba785190f1b13c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:18",
+      "sequence": 24148,
+      "chapter_label": "MAT 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "For he knew that because of envy they had delivered him up.",
+      "ko": "이는 저가 그들의 시기로 예수를 넘겨준줄 앎이러라",
+      "source_text_hash": "9fa088fbd4d2e22fcd703f102bcc49b4cd9cf1649914a01dd93458b108bcaea9",
+      "translation_text_hash": "132710f234d65a721903a9e7468285e6e16356edda2dd840af9c14f2574ade73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 그들의 시기로 예수를 넘겨준줄 앎이러라"
+      ],
+      "raw_text_hashes": [
+        "132710f234d65a721903a9e7468285e6e16356edda2dd840af9c14f2574ade73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:19",
+      "sequence": 24149,
+      "chapter_label": "MAT 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "While he was sitting on the judgment seat, his wife sent to him, saying, “Have nothing to do with that righteous man, for I have suffered many things today in a dream because of him.”",
+      "ko": "총독이 재판 자리에 앉았을 때에 그 아내가 사람을 보내어 가로되 저 옳은 사람에게 아무 상관도 하지 마옵소서 오늘 꿈에 내가 그 사람을 인하여 애를 많이 썼나이다 하더라",
+      "source_text_hash": "be0ff7790a7002a398cbc3dba3721451ed91c859f6d4c312a12ea71bcbd326c5",
+      "translation_text_hash": "e1ce103544570a56e39054987020e9d96c6ffedc5172b7f622de0c811eb3d048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "총독이 재판 자리에 앉았을 때에 그 아내가 사람을 보내어 가로되 저 옳은 사람에게 아무 상관도 하지 마옵소서 오늘 꿈에 내가 그 사람을 인하여 애를 많이 썼나이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "e1ce103544570a56e39054987020e9d96c6ffedc5172b7f622de0c811eb3d048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:20",
+      "sequence": 24150,
+      "chapter_label": "MAT 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "Now the chief priests and the elders persuaded the multitudes to ask for Barabbas and destroy Jesus.",
+      "ko": "대제사장들과 장로들이 무리를 권하여 바라바를 달라 하게 하고 예수를 멸하자 하게 하였더니",
+      "source_text_hash": "ae622dd1593c3107ba08d7978ab02b97f191c71b7cda542a54646c0fc5b2d9fb",
+      "translation_text_hash": "28c0bba0e157f48f67686feb98c68efc1b23b136a837b8083c57ff4b5e1fd337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 장로들이 무리를 권하여 바라바를 달라 하게 하고 예수를 멸하자 하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "28c0bba0e157f48f67686feb98c68efc1b23b136a837b8083c57ff4b5e1fd337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:21",
+      "sequence": 24151,
+      "chapter_label": "MAT 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "But the governor answered them, “Which of the two do you want me to release to you?” They said, “Barabbas!”",
+      "ko": "총독이 대답하여 가로되 둘 중에 누구를 너희에게 놓아 주기를 원하느냐 가로되 바라바로소이다",
+      "source_text_hash": "5b5f61af3c8717a64235e988162395777b269b349b98e2edcabaf6d984146e4e",
+      "translation_text_hash": "3501d361b5cc6a3004e44366663f64a089c97ade138f921263a0eb8da000259f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "총독이 대답하여 가로되 둘 중에 누구를 너희에게 놓아 주기를 원하느냐 가로되 바라바로소이다"
+      ],
+      "raw_text_hashes": [
+        "3501d361b5cc6a3004e44366663f64a089c97ade138f921263a0eb8da000259f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:22",
+      "sequence": 24152,
+      "chapter_label": "MAT 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "Pilate said to them, “What then shall I do to Jesus who is called Christ?” They all said to him, “Let him be crucified!”",
+      "ko": "빌라도가 가로되 그러면 그리스도라 하는 예수를 내가 어떻게 하랴 저희가 다 가로되 십자가에 못 박혀야 하겠나이다",
+      "source_text_hash": "2d3a110d9e41fcb9a2d7d0452f38b7ef1a8d5858210a3394ab950debeb1d5fd8",
+      "translation_text_hash": "64b792aab1a966a13a367dce5e0bf3fe0c5d620fad96f7469a504b0798c2bb52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 그러면 그리스도라 하는 예수를 내가 어떻게 하랴 저희가 다 가로되 십자가에 못 박혀야 하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "64b792aab1a966a13a367dce5e0bf3fe0c5d620fad96f7469a504b0798c2bb52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:23",
+      "sequence": 24153,
+      "chapter_label": "MAT 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "But the governor said, “Why? What evil has he done?” But they cried out exceedingly, saying, “Let him be crucified!”",
+      "ko": "빌라도가 가로되 어찜이뇨 무슨 악한 일을 하였느냐 저희가 더욱 소리질러 가로되 십자가에 못 박혀야 하겠나이다 하는지라",
+      "source_text_hash": "bee92623fc1be0765406a9b6b54ccd6e252567a00559d9b2c8071a2b5a58920c",
+      "translation_text_hash": "8b10968e51621a6372c2ae73c0c292d0902983e52be556b426cc6d0de89da283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 어찜이뇨 무슨 악한 일을 하였느냐 저희가 더욱 소리질러 가로되 십자가에 못 박혀야 하겠나이다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "8b10968e51621a6372c2ae73c0c292d0902983e52be556b426cc6d0de89da283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:24",
+      "sequence": 24154,
+      "chapter_label": "MAT 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "So when Pilate saw that nothing was being gained, but rather that a disturbance was starting, he took water and washed his hands before the multitude, saying, “I am innocent of the blood of this righteous person. You see to it.”",
+      "ko": "빌라도가 아무 효험도 없이 도리어 민란이 나려는 것을 보고 물을 가져다가 무리 앞에서 손을 씻으며 가로되 이 사람의 피에 대하여 나는 무죄하니 너희가 당하라",
+      "source_text_hash": "d49b6c967455a1937125d96f5545f5aa52655c91e2e37ac651c95c26ea21f653",
+      "translation_text_hash": "1d503d2dfa005c81dec12c476a210be1acec42abd72a2b09a67f7df24a8035e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 아무 효험도 없이 도리어 민란이 나려는 것을 보고 물을 가져다가 무리 앞에서 손을 씻으며 가로되 이 사람의 피에 대하여 나는 무죄하니 너희가 당하라"
+      ],
+      "raw_text_hashes": [
+        "1d503d2dfa005c81dec12c476a210be1acec42abd72a2b09a67f7df24a8035e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:25",
+      "sequence": 24155,
+      "chapter_label": "MAT 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "All the people answered, “May his blood be on us and on our children!”",
+      "ko": "백성이 다 대답하여 가로되 그 피를 우리와 우리 자손에게 돌릴찌어다 하거늘",
+      "source_text_hash": "f5dde170f823a536e3ff0de901428a44e6e9aa533ef56ee705ee825e5e8970b6",
+      "translation_text_hash": "ffde5c1cf3a596a4ab9a987d1a436fe1eaf361fe59d4a02ff61ca9631c9073c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 다 대답하여 가로되 그 피를 우리와 우리 자손에게 돌릴찌어다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "ffde5c1cf3a596a4ab9a987d1a436fe1eaf361fe59d4a02ff61ca9631c9073c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:26",
+      "sequence": 24156,
+      "chapter_label": "MAT 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "Then he released Barabbas to them, but Jesus he flogged and delivered to be crucified.",
+      "ko": "이에 바라바는 저희에게 놓아주고 예수는 채찍질하고 십자가에 못 박히게 넘겨주니라",
+      "source_text_hash": "6693672768c2e748fcd3cab739d992c61ffb20369f7c3e33ee9a2a8bb4c3ecaa",
+      "translation_text_hash": "66dff64f78ac1fdd9aa31e0656bd2180568ec1eba4a35a04a462da48308b3535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바라바는 저희에게 놓아주고 예수는 채찍질하고 십자가에 못 박히게 넘겨주니라"
+      ],
+      "raw_text_hashes": [
+        "66dff64f78ac1fdd9aa31e0656bd2180568ec1eba4a35a04a462da48308b3535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:27",
+      "sequence": 24157,
+      "chapter_label": "MAT 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "Then the governor’s soldiers took Jesus into the Praetorium, and gathered the whole garrison together against him.",
+      "ko": "이에 총독의 군병들이 예수를 데리고 관정 안으로 들어가서 온 군대를 그에게로 모으고",
+      "source_text_hash": "1da1ffcb36e532880227aef3cbbbeafafc6e534f1b570b844d6f89ecf769cf20",
+      "translation_text_hash": "4a1eddf7c5671a547a1625d295b02692baa15bcb502f0cb7715d6fd9a3ff100b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 총독의 군병들이 예수를 데리고 관정 안으로 들어가서 온 군대를 그에게로 모으고"
+      ],
+      "raw_text_hashes": [
+        "4a1eddf7c5671a547a1625d295b02692baa15bcb502f0cb7715d6fd9a3ff100b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:28",
+      "sequence": 24158,
+      "chapter_label": "MAT 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "They stripped him and put a scarlet robe on him.",
+      "ko": "그의 옷을 벗기고 홍포를 입히며",
+      "source_text_hash": "4d026735a63c49b91c7fdaa918ea8ac6bad301242abb6f0106b3b70d7944b1a1",
+      "translation_text_hash": "1805e371556685031c1ece27ecd3c1e60e474a769c006e2b13ac52083cb13fbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 옷을 벗기고 홍포를 입히며"
+      ],
+      "raw_text_hashes": [
+        "1805e371556685031c1ece27ecd3c1e60e474a769c006e2b13ac52083cb13fbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:29",
+      "sequence": 24159,
+      "chapter_label": "MAT 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "They braided a crown of thorns and put it on his head, and a reed in his right hand; and they kneeled down before him and mocked him, saying, “Hail, King of the Jews!”",
+      "ko": "가시 면류관을 엮어 그 머리에 씌우고 갈대를 그 오른손에 들리고 그 앞에서 무릎을 꿇고 희롱하여 가로되 유대인의 왕이여 평안할찌어다 하며",
+      "source_text_hash": "c8d897d3e893976f6cc6af18dd977300d25886050d2aa562ab3ecf70da5a770d",
+      "translation_text_hash": "4ceec7ba4987234921826478ec78989964bb9f01c7ce054a243d6ff37425173e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가시 면류관을 엮어 그 머리에 씌우고 갈대를 그 오른손에 들리고 그 앞에서 무릎을 꿇고 희롱하여 가로되 유대인의 왕이여 평안할찌어다 하며"
+      ],
+      "raw_text_hashes": [
+        "4ceec7ba4987234921826478ec78989964bb9f01c7ce054a243d6ff37425173e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:30",
+      "sequence": 24160,
+      "chapter_label": "MAT 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "They spat on him, and took the reed and struck him on the head.",
+      "ko": "그에게 침 뱉고 갈대를 빼앗아 그의 머리를 치더라",
+      "source_text_hash": "3690e81396f53be0c66914ec3130f7ab821ac1176c281bb3765d32a15469bbad",
+      "translation_text_hash": "d518e202ba3ae67e0cb5a838659f471899be0566c5c900f55651234d9e5905a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 침 뱉고 갈대를 빼앗아 그의 머리를 치더라"
+      ],
+      "raw_text_hashes": [
+        "d518e202ba3ae67e0cb5a838659f471899be0566c5c900f55651234d9e5905a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:31",
+      "sequence": 24161,
+      "chapter_label": "MAT 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "When they had mocked him, they took the robe off him, and put his clothes on him, and led him away to crucify him.",
+      "ko": "희롱을 다한 후 홍포를 벗기고 도로 그의 옷을 입혀 십자가에 못 박으려고 끌고 나가니라",
+      "source_text_hash": "791d478abff05a34cdfbaa998d0e0ec26ad93f25c63151fca01fcbca2c49d4b0",
+      "translation_text_hash": "f52fedad21edef19d7ee716e2880c484f9803fdc9e407eb1fccdee2d127a5209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "희롱을 다한 후 홍포를 벗기고 도로 그의 옷을 입혀 십자가에 못 박으려고 끌고 나가니라"
+      ],
+      "raw_text_hashes": [
+        "f52fedad21edef19d7ee716e2880c484f9803fdc9e407eb1fccdee2d127a5209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:32",
+      "sequence": 24162,
+      "chapter_label": "MAT 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "As they came out, they found a man of Cyrene, Simon by name, and they compelled him to go with them, that he might carry his cross.",
+      "ko": "나가다가 시몬이란 구레네 사람을 만나매 그를 억지로 같이 가게 하여 예수의 십자가를 지웠더라",
+      "source_text_hash": "e4b5329f888b433a74f018d2db66142b3d64b110bb61cc4baa9fe444c44081bb",
+      "translation_text_hash": "4aca5df755930b3be53bd8d1e86adda2963b5b7086273d5365bec9ff1367a81b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나가다가 시몬이란 구레네 사람을 만나매 그를 억지로 같이 가게 하여 예수의 십자가를 지웠더라"
+      ],
+      "raw_text_hashes": [
+        "4aca5df755930b3be53bd8d1e86adda2963b5b7086273d5365bec9ff1367a81b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:33",
+      "sequence": 24163,
+      "chapter_label": "MAT 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "When they came to a place called “Golgotha”, that is to say, “The place of a skull,”",
+      "ko": "골고다 즉 해골의 곳이라는 곳에 이르러",
+      "source_text_hash": "91869280439fdeda009324aa6e597c0743d7340e12d33ea2171eab0f74a04273",
+      "translation_text_hash": "ce1651db36f3f78cdf86c6b641561ddb0cfc0a78de71577d4ce20f6799c0b8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골고다 즉 해골의 곳이라는 곳에 이르러"
+      ],
+      "raw_text_hashes": [
+        "ce1651db36f3f78cdf86c6b641561ddb0cfc0a78de71577d4ce20f6799c0b8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:34",
+      "sequence": 24164,
+      "chapter_label": "MAT 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "they gave him sour wine to drink mixed with gall. When he had tasted it, he would not drink.",
+      "ko": "쓸개탄 포도주를 예수께 주어 마시게 하려 하였더니 예수께서 맛보시고 마시고자 아니 하시더라",
+      "source_text_hash": "340f2c95604de7455c27da1c21b62f66268e49cfac5ed7b27edccfcae221dee3",
+      "translation_text_hash": "e5f0c1e44fcca771f9199a67bddb0ed5322045ea0764fbfe14c02958eed81a67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "쓸개탄 포도주를 예수께 주어 마시게 하려 하였더니 예수께서 맛보시고 마시고자 아니 하시더라"
+      ],
+      "raw_text_hashes": [
+        "e5f0c1e44fcca771f9199a67bddb0ed5322045ea0764fbfe14c02958eed81a67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:35",
+      "sequence": 24165,
+      "chapter_label": "MAT 27",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 35
+        }
+      ],
+      "en": "When they had crucified him, they divided his clothing among them, casting lots,",
+      "ko": "저희가 예수를 십자가에 못 박은 후에 그 옷을 제비 뽑아 나누고",
+      "source_text_hash": "77b7cb85665e26732c594d566074cc0bfd56441a6e4b50785b2a334fe279494f",
+      "translation_text_hash": "3d65886c3faf913a81f098b948c3267c17cd991d0791c9e7176f9c3e9e029fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 십자가에 못 박은 후에 그 옷을 제비 뽑아 나누고"
+      ],
+      "raw_text_hashes": [
+        "3d65886c3faf913a81f098b948c3267c17cd991d0791c9e7176f9c3e9e029fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:36",
+      "sequence": 24166,
+      "chapter_label": "MAT 27",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 36
+        }
+      ],
+      "en": "and they sat and watched him there.",
+      "ko": "거기 앉아 지키더라",
+      "source_text_hash": "dab552526d19f92b064dd04274c42b1233d119ff436bc1d3740c20947531be46",
+      "translation_text_hash": "16b7bc7d95cfe3e239cd2fb90432fca19550fd688ee462425c89bab0e5495837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 앉아 지키더라"
+      ],
+      "raw_text_hashes": [
+        "16b7bc7d95cfe3e239cd2fb90432fca19550fd688ee462425c89bab0e5495837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:37",
+      "sequence": 24167,
+      "chapter_label": "MAT 27",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 37
+        }
+      ],
+      "en": "They set up over his head the accusation against him written, “THIS IS JESUS, THE KING OF THE JEWS.”",
+      "ko": "그 머리 위에 이는 유대인의 왕 예수라 쓴 죄패를 붙였더라",
+      "source_text_hash": "ad930f7a6e1b7ad87c11b6342846c8153277e52764e0041be32b0dcdd8904f89",
+      "translation_text_hash": "f5fb5431b438d8708430185b83fc290c1f31802f2316da039a9fb23353767a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리 위에 이는 유대인의 왕 예수라 쓴 죄패를 붙였더라"
+      ],
+      "raw_text_hashes": [
+        "f5fb5431b438d8708430185b83fc290c1f31802f2316da039a9fb23353767a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:38",
+      "sequence": 24168,
+      "chapter_label": "MAT 27",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 38
+        }
+      ],
+      "en": "Then there were two robbers crucified with him, one on his right hand and one on the left.",
+      "ko": "이때에 예수와 함께 강도 둘이 십자가에 못 박히니 하나는 우편에, 하나는 좌편에 있더라",
+      "source_text_hash": "33f67898a19be118e382edc141ed3b243897019d679db16c01b834efc8d2bd38",
+      "translation_text_hash": "bca12ee7981708ec1fda30ae5bd2832ae7e8b7c8104b88673ad9e1de1c8c4919",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이때에 예수와 함께 강도 둘이 십자가에 못 박히니 하나는 우편에, 하나는 좌편에 있더라"
+      ],
+      "raw_text_hashes": [
+        "bca12ee7981708ec1fda30ae5bd2832ae7e8b7c8104b88673ad9e1de1c8c4919"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:39",
+      "sequence": 24169,
+      "chapter_label": "MAT 27",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 39
+        }
+      ],
+      "en": "Those who passed by blasphemed him, wagging their heads",
+      "ko": "지나가는 자들은 자기 머리를 흔들며 예수를 모욕하여",
+      "source_text_hash": "59b3786d39307ad1c18bd51c4e10f74caa7dd9eacc8d4942d810c660ed4de051",
+      "translation_text_hash": "d84a36d5e4a6ee5bba4fd43dbf2ce3dacc436904125c587f751c9ad411a4da7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나가는 자들은 자기 머리를 흔들며 예수를 모욕하여"
+      ],
+      "raw_text_hashes": [
+        "d84a36d5e4a6ee5bba4fd43dbf2ce3dacc436904125c587f751c9ad411a4da7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:40",
+      "sequence": 24170,
+      "chapter_label": "MAT 27",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 40
+        }
+      ],
+      "en": "and saying, “You who destroy the temple and build it in three days, save yourself! If you are the Son of God, come down from the cross!”",
+      "ko": "가로되 성전을 헐고 사흘에 짓는 자여 네가 만일 하나님의 아들이어든 자기를 구원하고 십자가에서 내려오라 하며",
+      "source_text_hash": "6e4661efdd89a9c1fbc26b738e29eff814732c94616a402881a11fa1d177ff1c",
+      "translation_text_hash": "2ea909691978997b4403db83e298fc76529d28c37cf979c5f90404618befdae6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 성전을 헐고 사흘에 짓는 자여 네가 만일 하나님의 아들이어든 자기를 구원하고 십자가에서 내려오라 하며"
+      ],
+      "raw_text_hashes": [
+        "2ea909691978997b4403db83e298fc76529d28c37cf979c5f90404618befdae6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:41",
+      "sequence": 24171,
+      "chapter_label": "MAT 27",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 41
+        }
+      ],
+      "en": "Likewise the chief priests also mocking with the scribes, the Pharisees, and the elders, said,",
+      "ko": "그와 같이 대제사장들도 서기관들과 장로들과 함께 희롱하여 가로되",
+      "source_text_hash": "6530857ef83c734cb5896bf2304ff04e391fa68da9f97cbe7019848a8553b2ae",
+      "translation_text_hash": "4bae9d30d4373cc550908b3fc7aceb33b981a2c887c59f8aa53354df7072fdcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 같이 대제사장들도 서기관들과 장로들과 함께 희롱하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "4bae9d30d4373cc550908b3fc7aceb33b981a2c887c59f8aa53354df7072fdcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:42",
+      "sequence": 24172,
+      "chapter_label": "MAT 27",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 42
+        }
+      ],
+      "en": "“He saved others, but he can’t save himself. If he is the King of Israel, let him come down from the cross now, and we will believe in him.",
+      "ko": "저가 남은 구원하였으되 자기는 구원할 수 없도다 저가 이스라엘의 왕이로다 지금 십자가에서 내려올찌어다 그러면 우리가 믿겠노라",
+      "source_text_hash": "dcfd86a2436ab3235b44502de2fdc4446b024dd74f0deacd979abc62394887bf",
+      "translation_text_hash": "240874737cff679257a63ba2a5f8fd3d381c859161f28da2fa77548679700891",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 남은 구원하였으되 자기는 구원할 수 없도다 저가 이스라엘의 왕이로다 지금 십자가에서 내려올찌어다 그러면 우리가 믿겠노라"
+      ],
+      "raw_text_hashes": [
+        "240874737cff679257a63ba2a5f8fd3d381c859161f28da2fa77548679700891"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:43",
+      "sequence": 24173,
+      "chapter_label": "MAT 27",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 43
+        }
+      ],
+      "en": "He trusts in God. Let God deliver him now, if he wants him; for he said, ‘I am the Son of God.’”",
+      "ko": "저가 하나님을 신뢰하니 하나님이 저를 기뻐하시면 이제 구원하실찌라 제 말이 나는 하나님의 아들이라 하였도다 하며",
+      "source_text_hash": "34b22e690b6c7f7ee21f6bd4c87dc481b4608832146a70c856af2e7ed9071a3a",
+      "translation_text_hash": "4be9197dd06f22d647120f94c17177f5a9c28d00806b72dd5964bdce907bae27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 하나님을 신뢰하니 하나님이 저를 기뻐하시면 이제 구원하실찌라 제 말이 나는 하나님의 아들이라 하였도다 하며"
+      ],
+      "raw_text_hashes": [
+        "4be9197dd06f22d647120f94c17177f5a9c28d00806b72dd5964bdce907bae27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:44",
+      "sequence": 24174,
+      "chapter_label": "MAT 27",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 44
+        }
+      ],
+      "en": "The robbers also who were crucified with him cast on him the same reproach.",
+      "ko": "함께 십자가에 못 박힌 강도들도 이와 같이 욕하더라",
+      "source_text_hash": "f0f81eba1f1fae2772b574baa005058bccfd85f37910695540e85bed7e7beebd",
+      "translation_text_hash": "a4e4e31b582300bd48fb3d96a37e472d874b187689a2b9b6e0e8b569806f7d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함께 십자가에 못 박힌 강도들도 이와 같이 욕하더라"
+      ],
+      "raw_text_hashes": [
+        "a4e4e31b582300bd48fb3d96a37e472d874b187689a2b9b6e0e8b569806f7d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:45",
+      "sequence": 24175,
+      "chapter_label": "MAT 27",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 45
+        }
+      ],
+      "en": "Now from the sixth hour there was darkness over all the land until the ninth hour.",
+      "ko": "제 육시로부터 온 땅에 어두움이 임하여 제 구시까지 계속하더니",
+      "source_text_hash": "4501560346fc320acece7391ae2af1f5ada5b1c9af815ac22fe99994ad1b3ede",
+      "translation_text_hash": "cb13398e8a01083175085bd0b0f626770e5fa0ad381ce500e7cd91e6fc1f121f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육시로부터 온 땅에 어두움이 임하여 제 구시까지 계속하더니"
+      ],
+      "raw_text_hashes": [
+        "cb13398e8a01083175085bd0b0f626770e5fa0ad381ce500e7cd91e6fc1f121f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:46",
+      "sequence": 24176,
+      "chapter_label": "MAT 27",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 46
+        }
+      ],
+      "en": "About the ninth hour Jesus cried with a loud voice, saying, “Eli, Eli, limasabachthani?” That is, “My God, my God, why have you forsaken me?”",
+      "ko": "제 구시 즈음에 예수께서 크게 소리질러 가라사대 엘리 엘리 라마 사박다니 하시니 이는 곧 나의 하나님, 나의 하나님, 어찌하여 나를 버리셨나이까 하는 뜻이라",
+      "source_text_hash": "7939bcad1a9479330a7bdf03a8aa93630a22208f45bc44f68026118f7c1f909e",
+      "translation_text_hash": "1481a15189dd02b25bb034a463895f9bf10591f92caf3ef0d719857b4a35a766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 구시 즈음에 예수께서 크게 소리질러 가라사대 엘리 엘리 라마 사박다니 하시니 이는 곧 나의 하나님, 나의 하나님, 어찌하여 나를 버리셨나이까 하는 뜻이라"
+      ],
+      "raw_text_hashes": [
+        "1481a15189dd02b25bb034a463895f9bf10591f92caf3ef0d719857b4a35a766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:47",
+      "sequence": 24177,
+      "chapter_label": "MAT 27",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 47
+        }
+      ],
+      "en": "Some of them who stood there, when they heard it, said, “This man is calling Elijah.”",
+      "ko": "거기 섰던 자 중 어떤이들이 듣고 가로되 이 사람이 엘리야를 부른다 하고",
+      "source_text_hash": "51bfb75e4abb8268975bf610c0273b24336e7c1d2bbc0cd31f8b9915646bf3ec",
+      "translation_text_hash": "114a48ad2a069be1cdc3e19cc0472f24c2a6f19e27450c42d56b52d67a249158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 섰던 자 중 어떤이들이 듣고 가로되 이 사람이 엘리야를 부른다 하고"
+      ],
+      "raw_text_hashes": [
+        "114a48ad2a069be1cdc3e19cc0472f24c2a6f19e27450c42d56b52d67a249158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:48",
+      "sequence": 24178,
+      "chapter_label": "MAT 27",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 48
+        }
+      ],
+      "en": "Immediately one of them ran and took a sponge, filled it with vinegar, put it on a reed, and gave him a drink.",
+      "ko": "그 중에 한 사람이 곧 달려가서 해융을 가지고 신 포도주를 머금게 하여 갈대에 꿰어 마시우거늘",
+      "source_text_hash": "804eb2b48450b3f8e71386383b02bffe4dd9e43422633fa6f20ad49625015501",
+      "translation_text_hash": "0183dd633c5fb7082dd024f6ebe2043ed48cd769b58aea7ba5bbed182e2a0821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 한 사람이 곧 달려가서 해융을 가지고 신 포도주를 머금게 하여 갈대에 꿰어 마시우거늘"
+      ],
+      "raw_text_hashes": [
+        "0183dd633c5fb7082dd024f6ebe2043ed48cd769b58aea7ba5bbed182e2a0821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:49",
+      "sequence": 24179,
+      "chapter_label": "MAT 27",
+      "verse_label": "49",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 49
+        }
+      ],
+      "en": "The rest said, “Let him be. Let’s see whether Elijah comes to save him.”",
+      "ko": "그 남은 사람들이 가로되 가만 두어라 엘리야가 와서 저를 구원하나 보자 하더라",
+      "source_text_hash": "c831270c2d0196d2ef4c65dcfc33b10df5fcc771fc2a235a7df63a49b6b63e0b",
+      "translation_text_hash": "6b7a07a52a9c079d78de1705d9d9ff365f55576657baa235de713180d534acad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 사람들이 가로되 가만 두어라 엘리야가 와서 저를 구원하나 보자 하더라"
+      ],
+      "raw_text_hashes": [
+        "6b7a07a52a9c079d78de1705d9d9ff365f55576657baa235de713180d534acad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:50",
+      "sequence": 24180,
+      "chapter_label": "MAT 27",
+      "verse_label": "50",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 50
+        }
+      ],
+      "en": "Jesus cried again with a loud voice, and yielded up his spirit.",
+      "ko": "예수께서 다시 크게 소리지르시고 영혼이 떠나시다",
+      "source_text_hash": "bf48e13cc5d48f6be6954f772606dcd6ab7922c54107485a06b484edb4d530f6",
+      "translation_text_hash": "a36c044fad7cfe82d058c593a91822914e10887ace8c46a1bbcadc2d0ff1b26c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 크게 소리지르시고 영혼이 떠나시다"
+      ],
+      "raw_text_hashes": [
+        "a36c044fad7cfe82d058c593a91822914e10887ace8c46a1bbcadc2d0ff1b26c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:51",
+      "sequence": 24181,
+      "chapter_label": "MAT 27",
+      "verse_label": "51",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 51
+        }
+      ],
+      "en": "Behold, the veil of the temple was torn in two from the top to the bottom. The earth quaked and the rocks were split.",
+      "ko": "이에 성소 휘장이 위로부터 아래까지 찢어져 둘이 되고 땅이 진동하며 바위가 터지고",
+      "source_text_hash": "6075941f7ed7170aa93e1908b1c78745a99c6e48da491e2abc0cedd91154617b",
+      "translation_text_hash": "ea2fb46ac50e59bc4a3a01082910ebf40183c5c2888a5bda74358abacbde5f07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 성소 휘장이 위로부터 아래까지 찢어져 둘이 되고 땅이 진동하며 바위가 터지고"
+      ],
+      "raw_text_hashes": [
+        "ea2fb46ac50e59bc4a3a01082910ebf40183c5c2888a5bda74358abacbde5f07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:52",
+      "sequence": 24182,
+      "chapter_label": "MAT 27",
+      "verse_label": "52",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 52
+        }
+      ],
+      "en": "The tombs were opened, and many bodies of the saints who had fallen asleep were raised;",
+      "ko": "무덤들이 열리며 자던 성도의 몸이 많이 일어나되",
+      "source_text_hash": "386efcdf3ddfa779f2b4eb0d69bca0ca709a29e312daaa8d9153335182a82281",
+      "translation_text_hash": "794d6fa1239c2f77ddee1677c2e06548eb5de15632aa93a2b7996276fe6a10e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무덤들이 열리며 자던 성도의 몸이 많이 일어나되"
+      ],
+      "raw_text_hashes": [
+        "794d6fa1239c2f77ddee1677c2e06548eb5de15632aa93a2b7996276fe6a10e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:53",
+      "sequence": 24183,
+      "chapter_label": "MAT 27",
+      "verse_label": "53",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 53
+        }
+      ],
+      "en": "and coming out of the tombs after his resurrection, they entered into the holy city and appeared to many.",
+      "ko": "예수의 부활 후에 저희가 무덤에서 나와서 거룩한 성에 들어가 많은 사람에게 보이니라",
+      "source_text_hash": "740fbf9289ab29110da2ec56fdb79cbbb6ece02a216ba16fcae67c4d155a0db1",
+      "translation_text_hash": "856749cfb33d083e0ca93ed07fe559ca42f9348d9990e2a7ffebd862b39f90ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 부활 후에 저희가 무덤에서 나와서 거룩한 성에 들어가 많은 사람에게 보이니라"
+      ],
+      "raw_text_hashes": [
+        "856749cfb33d083e0ca93ed07fe559ca42f9348d9990e2a7ffebd862b39f90ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:54",
+      "sequence": 24184,
+      "chapter_label": "MAT 27",
+      "verse_label": "54",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 54
+        }
+      ],
+      "en": "Now the centurion and those who were with him watching Jesus, when they saw the earthquake and the things that were done, were terrified, saying, “Truly this was the Son of God!”",
+      "ko": "백부장과 및 함께 예수를 지키던 자들이 지진과 그 되는 일들을 보고 심히 두려워하여 가로되 이는 진실로 하나님의 아들이었도다 하더라",
+      "source_text_hash": "00895de20b8b5714c3947d5eee138f7ebfc06a8417c2fc3b537bdc96c8bd705f",
+      "translation_text_hash": "3d45d6f90c127455898a3eadde1cfe0d1b1141a57f516ad6edb68cda53bc5160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장과 및 함께 예수를 지키던 자들이 지진과 그 되는 일들을 보고 심히 두려워하여 가로되 이는 진실로 하나님의 아들이었도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "3d45d6f90c127455898a3eadde1cfe0d1b1141a57f516ad6edb68cda53bc5160"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:55",
+      "sequence": 24185,
+      "chapter_label": "MAT 27",
+      "verse_label": "55",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 55
+        }
+      ],
+      "en": "Many women were there watching from afar, who had followed Jesus from Galilee, serving him.",
+      "ko": "예수를 섬기며 갈릴리에서 부터 좇아온 많은 여자가 거기 있어 멀리서 바라보고 있으니",
+      "source_text_hash": "820772ec229f2f78701a53b856cb964a6b82b3a37b7e7c3b08d2759c8ed534e6",
+      "translation_text_hash": "5e7226ccb9ed1c64c2467cd9eedaf22530ec191881ef1cdb278aff6f3cb93134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 섬기며 갈릴리에서 부터 좇아온 많은 여자가 거기 있어 멀리서 바라보고 있으니"
+      ],
+      "raw_text_hashes": [
+        "5e7226ccb9ed1c64c2467cd9eedaf22530ec191881ef1cdb278aff6f3cb93134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:56",
+      "sequence": 24186,
+      "chapter_label": "MAT 27",
+      "verse_label": "56",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 56
+        }
+      ],
+      "en": "Among them were Mary Magdalene, Mary the mother of James and Joses, and the mother of the sons of Zebedee.",
+      "ko": "그 중에 막달라 마리아와 또 야고보와 요셉의 어머니 마리아와 또 세베대의 아들들의 어머니도 있더라",
+      "source_text_hash": "38043dbeb8512a2d4a047670b08356ebc4bccc50ac6aa8e2fd4030b997c225e7",
+      "translation_text_hash": "39b4812b972e2057ecb7a168e485c08e450a92445574fa9b2236860ef7630f8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 막달라 마리아와 또 야고보와 요셉의 어머니 마리아와 또 세베대의 아들들의 어머니도 있더라"
+      ],
+      "raw_text_hashes": [
+        "39b4812b972e2057ecb7a168e485c08e450a92445574fa9b2236860ef7630f8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:57",
+      "sequence": 24187,
+      "chapter_label": "MAT 27",
+      "verse_label": "57",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 57
+        }
+      ],
+      "en": "When evening had come, a rich man from Arimathaea named Joseph, who himself was also Jesus’ disciple, came.",
+      "ko": "저물었을 때에 아리마대 부자 요셉이라 하는 사람이 왔으니 그도 예수의 제자라",
+      "source_text_hash": "094a0f056009fe45b871db74f0e2d00d8c427d016e4c6b368cf03bacf59c2ce7",
+      "translation_text_hash": "8ec42778058c4bc2d7859d150b30588b3a406b57a6ee53bcf730c87fa82ac13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물었을 때에 아리마대 부자 요셉이라 하는 사람이 왔으니 그도 예수의 제자라"
+      ],
+      "raw_text_hashes": [
+        "8ec42778058c4bc2d7859d150b30588b3a406b57a6ee53bcf730c87fa82ac13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:58",
+      "sequence": 24188,
+      "chapter_label": "MAT 27",
+      "verse_label": "58",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 58
+        }
+      ],
+      "en": "This man went to Pilate and asked for Jesus’ body. Then Pilate commanded the body to be given up.",
+      "ko": "빌라도에게 가서 예수의 시체를 달라 하니 이에 빌라도가 내어주라 분부하거늘",
+      "source_text_hash": "bd5c81921055636936ffa4ead18f9f98ae240b1c0fc9fc798c820050bdc785e4",
+      "translation_text_hash": "da0ea4aa4235b72a8170fa7f0e2f6511a7f1a3086dac149a1044a9e4af01236f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도에게 가서 예수의 시체를 달라 하니 이에 빌라도가 내어주라 분부하거늘"
+      ],
+      "raw_text_hashes": [
+        "da0ea4aa4235b72a8170fa7f0e2f6511a7f1a3086dac149a1044a9e4af01236f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:59",
+      "sequence": 24189,
+      "chapter_label": "MAT 27",
+      "verse_label": "59",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 59
+        }
+      ],
+      "en": "Joseph took the body and wrapped it in a clean linen cloth",
+      "ko": "요셉이 시체를 가져다가 정한 세마포로 싸서",
+      "source_text_hash": "1b360f31be7744fa6e5f143547d81c8fb74bb46e9228a7a1d7435cf6fbcf0d08",
+      "translation_text_hash": "6060449b4c9ead420525f8d9236ce6e433a06a7eccbffef725663cf3982246c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 시체를 가져다가 정한 세마포로 싸서"
+      ],
+      "raw_text_hashes": [
+        "6060449b4c9ead420525f8d9236ce6e433a06a7eccbffef725663cf3982246c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:60",
+      "sequence": 24190,
+      "chapter_label": "MAT 27",
+      "verse_label": "60",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 60
+        }
+      ],
+      "en": "and laid it in his own new tomb, which he had cut out in the rock. Then he rolled a large stone against the door of the tomb, and departed.",
+      "ko": "바위 속에 판 자기 새무덤에 넣어 두고 큰 돌을 굴려 무덤 문에 놓고 가니",
+      "source_text_hash": "c6051f5111240fa1fc2d3970cf87dd3dc41aa58aea29185cf95a8520af16539d",
+      "translation_text_hash": "34e6c2b5f1b53ba56160670f69f6f7b91a468b38273bfbcbc8f35df45b28305c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위 속에 판 자기 새무덤에 넣어 두고 큰 돌을 굴려 무덤 문에 놓고 가니"
+      ],
+      "raw_text_hashes": [
+        "34e6c2b5f1b53ba56160670f69f6f7b91a468b38273bfbcbc8f35df45b28305c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:61",
+      "sequence": 24191,
+      "chapter_label": "MAT 27",
+      "verse_label": "61",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 61
+        }
+      ],
+      "en": "Mary Magdalene was there, and the other Mary, sitting opposite the tomb.",
+      "ko": "거기 막달라 마리아와 다른 마리아가 무덤을 향하여 앉았더라",
+      "source_text_hash": "e05342cfdb7c28a461348975691c7953cf0695fd54ce40829a1331fbfe4d87c6",
+      "translation_text_hash": "9f9329448b44487477206cc74abb0f4062fd7092f58ea1e20e9e1a61ca7bb71e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 막달라 마리아와 다른 마리아가 무덤을 향하여 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "9f9329448b44487477206cc74abb0f4062fd7092f58ea1e20e9e1a61ca7bb71e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:62",
+      "sequence": 24192,
+      "chapter_label": "MAT 27",
+      "verse_label": "62",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 62
+        }
+      ],
+      "en": "Now on the next day, which was the day after the Preparation Day, the chief priests and the Pharisees were gathered together to Pilate,",
+      "ko": "그 이튿날은 예비일 다음 날이라 대제사장들과 바리새인들이 함께 빌라도에게 모여 가로되",
+      "source_text_hash": "adf186053f7a86779d4c5276fdbfc81dad2000379aa98bd91faa8e75e8624149",
+      "translation_text_hash": "c3717adc1e51e954cb0c09b1e1e9e230f6a4a2c47578e54ad4668fa1c9a2cf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날은 예비일 다음 날이라 대제사장들과 바리새인들이 함께 빌라도에게 모여 가로되"
+      ],
+      "raw_text_hashes": [
+        "c3717adc1e51e954cb0c09b1e1e9e230f6a4a2c47578e54ad4668fa1c9a2cf5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:63",
+      "sequence": 24193,
+      "chapter_label": "MAT 27",
+      "verse_label": "63",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 63
+        }
+      ],
+      "en": "saying, “Sir, we remember what that deceiver said while he was still alive: ‘After three days I will rise again.’",
+      "ko": "주여 저 유혹하던 자가 살았을 때에 말하되 내가 사흘후에 다시 살아나리라 한 것을 우리가 기억하노니",
+      "source_text_hash": "e226aca48b587c161db080dfca1376a125b4216e352ca3b717ec8ceab3f99202",
+      "translation_text_hash": "4ff0f77e58a52b5e14a23e430f8cc2ef6040ac32a4bf21d95b0852ef84362083",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 저 유혹하던 자가 살았을 때에 말하되 내가 사흘후에 다시 살아나리라 한 것을 우리가 기억하노니"
+      ],
+      "raw_text_hashes": [
+        "4ff0f77e58a52b5e14a23e430f8cc2ef6040ac32a4bf21d95b0852ef84362083"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:64",
+      "sequence": 24194,
+      "chapter_label": "MAT 27",
+      "verse_label": "64",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 64
+        }
+      ],
+      "en": "Command therefore that the tomb be made secure until the third day, lest perhaps his disciples come at night and steal him away, and tell the people, ‘He is risen from the dead;’ and the last deception will be worse than the first.”",
+      "ko": "그러므로 분부하여 그 무덤을 사흘까지 굳게 지키게 하소서 그의 제자들이 와서 시체를 도적질하여 가고 백성에게 말하되 그가 죽은 자 가운데서 살아났다 하면 후의 유혹이 전보다 더 될까 하나이다 하니",
+      "source_text_hash": "64acc2545d1e2a130ef94c5a9b4aabc329be894589a91888f3b6bf42aa499397",
+      "translation_text_hash": "dd7c2fd694736ed530f2bcfb6bff24887201fe503e2e6aae46b5b9a0655bffbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 분부하여 그 무덤을 사흘까지 굳게 지키게 하소서 그의 제자들이 와서 시체를 도적질하여 가고 백성에게 말하되 그가 죽은 자 가운데서 살아났다 하면 후의 유혹이 전보다 더 될까 하나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "dd7c2fd694736ed530f2bcfb6bff24887201fe503e2e6aae46b5b9a0655bffbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:65",
+      "sequence": 24195,
+      "chapter_label": "MAT 27",
+      "verse_label": "65",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 65
+        }
+      ],
+      "en": "Pilate said to them, “You have a guard. Go, make it as secure as you can.”",
+      "ko": "빌라도가 가로되 너희에게 파숫군이 있으니 가서 힘대로 굳게 하라 하거늘",
+      "source_text_hash": "3dd22f8ed34b58a158c2c19092f17cf799ad0a78d88ac2e46f02f0bc894ebc12",
+      "translation_text_hash": "cfd94f9da4f98c4bf32a7b15a2995053538929ff1acaa32fde8e29415b6d35ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 너희에게 파숫군이 있으니 가서 힘대로 굳게 하라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "cfd94f9da4f98c4bf32a7b15a2995053538929ff1acaa32fde8e29415b6d35ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:27:66",
+      "sequence": 24196,
+      "chapter_label": "MAT 27",
+      "verse_label": "66",
+      "locator": {
+        "book": "MAT",
+        "chapter": 27,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 27,
+          "verse": 66
+        }
+      ],
+      "en": "So they went with the guard and made the tomb secure, sealing the stone.",
+      "ko": "저희가 파숫군과 함께 가서 돌을 인봉하고 무덤을 굳게 하니라",
+      "source_text_hash": "1a79807c50637f5a7948dcc1b2f30568c4ca36471fb05efeb35e193a67431ca9",
+      "translation_text_hash": "bc527336dcdbabffac027db3ba44a6fb90d386da85c1e6bf90cdb724cf867ba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 파숫군과 함께 가서 돌을 인봉하고 무덤을 굳게 하니라"
+      ],
+      "raw_text_hashes": [
+        "bc527336dcdbabffac027db3ba44a6fb90d386da85c1e6bf90cdb724cf867ba7"
+      ]
+    }
+  ]
+}

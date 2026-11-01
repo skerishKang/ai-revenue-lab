@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:010",
+  "unit_ordinal": 921,
+  "unit_label": "ZEC 10",
+  "book_code": "ZEC",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:10:1",
+      "sequence": 23018,
+      "chapter_label": "ZEC 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Ask of the LORD rain in the spring time, the LORD who makes storm clouds, and he gives rain showers to everyone for the plants in the field.",
+      "ko": "봄비 때에 여호와 곧 번개를 내는 여호와께 비를 구하라 무리에게 소낙비를 내려서 밭의 채소를 각 사람에게 주리라",
+      "source_text_hash": "fa31f81a5accb72fb1676328870eb8e910796c5b21527097ba4d5e75610d3612",
+      "translation_text_hash": "54e6c12bc8b29ce3dd181dfb6c3fa5f244253e4358cab8b7be506c4725eb1599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "봄비 때에 여호와 곧 번개를 내는 여호와께 비를 구하라 무리에게 소낙비를 내려서 밭의 채소를 각 사람에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "54e6c12bc8b29ce3dd181dfb6c3fa5f244253e4358cab8b7be506c4725eb1599"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:2",
+      "sequence": 23019,
+      "chapter_label": "ZEC 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "For the teraphim have spoken vanity, and the diviners have seen a lie; and they have told false dreams. They comfort in vain. Therefore they go their way like sheep. They are oppressed, because there is no shepherd.",
+      "ko": "대저 드라빔들은 허탄한 것을 말하며 복술자는 진실치 않은 것을 보고 거짓꿈을 말한즉 그 위로함이 헛되므로 백성이 양 같이 유리하며 목자가 없으므로 곤고를 당하나니",
+      "source_text_hash": "ae9ad6cbf40900069e306be2cbc28132ce41b8f9b21439327d41831721574657",
+      "translation_text_hash": "114aec29cdbaee2a5ee603fb08ee48ff07eec221b6aa09b17c3b5a1707557f18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 드라빔들은 허탄한 것을 말하며 복술자는 진실치 않은 것을 보고 거짓꿈을 말한즉 그 위로함이 헛되므로 백성이 양 같이 유리하며 목자가 없으므로 곤고를 당하나니"
+      ],
+      "raw_text_hashes": [
+        "114aec29cdbaee2a5ee603fb08ee48ff07eec221b6aa09b17c3b5a1707557f18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:3",
+      "sequence": 23020,
+      "chapter_label": "ZEC 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "My anger is kindled against the shepherds, and I will punish the male goats, for the LORD of Armies has visited his flock, the house of Judah, and will make them as his majestic horse in the battle.",
+      "ko": "내가 목자들에게 노를 발하며 내가 수염소들을 벌하리라 만군의 여호와가 그 무리 곧 유다 족속을 권고하여 그들로 전쟁의 준마와 같게 하리니",
+      "source_text_hash": "5f73eb9a626e9ae8854f28285cbd9f4b6ac3fbf49f0f12ce761e21dbed926fef",
+      "translation_text_hash": "3522efa81738c49d69507bf58529912614c0d38a11ca105364fed40b2d361169",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 목자들에게 노를 발하며 내가 수염소들을 벌하리라 만군의 여호와가 그 무리 곧 유다 족속을 권고하여 그들로 전쟁의 준마와 같게 하리니"
+      ],
+      "raw_text_hashes": [
+        "3522efa81738c49d69507bf58529912614c0d38a11ca105364fed40b2d361169"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:4",
+      "sequence": 23021,
+      "chapter_label": "ZEC 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "From him will come the cornerstone, from him the tent peg, from him the battle bow, from him every ruler together.",
+      "ko": "모퉁이 돌이 그에게로서, 말뚝이 그에게로서, 싸우는 활이 그에게로서, 권세 잡은 자가 다 일제히 그에게로서 나와서",
+      "source_text_hash": "727718e8a3a9fcf834c9c702680fe9298883af5603df2c0b332c99315c3afff9",
+      "translation_text_hash": "616be9066c08e9ae0ddb6c39bef4178b6a94692a5e9abde125714100235b953f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모퉁이 돌이 그에게로서, 말뚝이 그에게로서, 싸우는 활이 그에게로서, 권세 잡은 자가 다 일제히 그에게로서 나와서"
+      ],
+      "raw_text_hashes": [
+        "616be9066c08e9ae0ddb6c39bef4178b6a94692a5e9abde125714100235b953f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:5",
+      "sequence": 23022,
+      "chapter_label": "ZEC 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "They will be as mighty men, treading down muddy streets in the battle. They will fight, because the LORD is with them. The riders on horses will be confounded.",
+      "ko": "싸울 때에 용사 같이 거리의 진흙 중에 대적을 밟을 것이라 여호와가 그들과 함께한즉 그들이 싸와 말 탄 자들로 부끄러워하게 하리라",
+      "source_text_hash": "98a4e865a0b021b81492b3a58fb39fbad33fd014e78963d83bb4ff24c08c2686",
+      "translation_text_hash": "c040ae35a9cdc794174b82758936efa0ad28693fc79dfe8b23e03809dc7fe453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싸울 때에 용사 같이 거리의 진흙 중에 대적을 밟을 것이라 여호와가 그들과 함께한즉 그들이 싸와 말 탄 자들로 부끄러워하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "c040ae35a9cdc794174b82758936efa0ad28693fc79dfe8b23e03809dc7fe453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:6",
+      "sequence": 23023,
+      "chapter_label": "ZEC 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "“I will strengthen the house of Judah, and I will save the house of Joseph. I will bring them back, for I have mercy on them. They will be as though I had not cast them off, for I am the LORD their God, and I will hear them.",
+      "ko": "내가 유다 족속을 견고하게 하며 요셉 족속을 구원할지라 내가 그들을 긍휼히 여김으로 그들로 돌아오게 하리니 그들이 내게 내어 버리움이 없었음같이 되리라 나는 그들의 하나님 여호와라 내가 그들을 들으리라",
+      "source_text_hash": "cfa046fbe05ecd83218c8983643e958b5987401ad46d0ad680ee390ca3c1a104",
+      "translation_text_hash": "751b363eb14f49fb648b169b1717ed142509965d89ad0f51620990a4fcdd7ca0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다 족속을 견고하게 하며 요셉 족속을 구원할지라 내가 그들을 긍휼히 여김으로 그들로 돌아오게 하리니 그들이 내게 내어 버리움이 없었음같이 되리라 나는 그들의 하나님 여호와라 내가 그들을 들으리라"
+      ],
+      "raw_text_hashes": [
+        "751b363eb14f49fb648b169b1717ed142509965d89ad0f51620990a4fcdd7ca0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:7",
+      "sequence": 23024,
+      "chapter_label": "ZEC 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Ephraim will be like a mighty man, and their heart will rejoice as through wine. Yes, their children will see it and rejoice. Their heart will be glad in the LORD.",
+      "ko": "에브라임이 용사 같아서 포도주를 마심 같이 마음이 즐거울 것이요 그 자손은 보고 기뻐하며 여호와를 인하여 마음에 즐거워하리라",
+      "source_text_hash": "f7ba2c492014edd9484371d9a0a02d820a34478d849c3a3ba1ae85751bca5f72",
+      "translation_text_hash": "4d07c7ccea75a00a248742763e06906a4d66a3e1a805630357ee63cf730c6069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 용사 같아서 포도주를 마심 같이 마음이 즐거울 것이요 그 자손은 보고 기뻐하며 여호와를 인하여 마음에 즐거워하리라"
+      ],
+      "raw_text_hashes": [
+        "4d07c7ccea75a00a248742763e06906a4d66a3e1a805630357ee63cf730c6069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:8",
+      "sequence": 23025,
+      "chapter_label": "ZEC 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "I will signal for them and gather them, for I have redeemed them. They will increase as they were before.",
+      "ko": "내가 그들을 향하여 휘파람 불어 모을 것은 내가 그들을 구속하였음이라 그들이 전에 번성하던 것 같이 번성하리라",
+      "source_text_hash": "046d74ddbd29784a676fc5d4133bdd4869f446627f5ca5766f9f7d01daa646a5",
+      "translation_text_hash": "e644af21355d7036f06a508f71b25a4524216da90930e9666381f643eaace4d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 향하여 휘파람 불어 모을 것은 내가 그들을 구속하였음이라 그들이 전에 번성하던 것 같이 번성하리라"
+      ],
+      "raw_text_hashes": [
+        "e644af21355d7036f06a508f71b25a4524216da90930e9666381f643eaace4d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:9",
+      "sequence": 23026,
+      "chapter_label": "ZEC 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "I will sow them among the peoples. They will remember me in far countries. They will live with their children and will return.",
+      "ko": "내가 그들을 열방에 뿌리려니와 그들이 원방에서 나를 기억하고 그들의 자녀와 함께 다 생존하여 돌아올찌라",
+      "source_text_hash": "da077bb6cd6bf5300ce9ef8bb813e60a3f75f5e18107f27f8e220e29d9a247d4",
+      "translation_text_hash": "a79f6801d9463ddd551f918f1d6a84d2b57c98c237ff3e11b4c677f61c710ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 열방에 뿌리려니와 그들이 원방에서 나를 기억하고 그들의 자녀와 함께 다 생존하여 돌아올찌라"
+      ],
+      "raw_text_hashes": [
+        "a79f6801d9463ddd551f918f1d6a84d2b57c98c237ff3e11b4c677f61c710ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:10",
+      "sequence": 23027,
+      "chapter_label": "ZEC 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "I will bring them again also out of the land of Egypt, and gather them out of Assyria. I will bring them into the land of Gilead and Lebanon; and there won’t be room enough for them.",
+      "ko": "내가 그들을 애굽 땅에서 이끌어 돌아오며 그들을 앗수르에서부터 모으며 길르앗 땅과 레바논으로 그들을 이끌어 가리니 그 거할 곳이 부족하리라",
+      "source_text_hash": "36c2364d491bfb576564e8e1f24b452c49c583d0a55d1bbd520212bde6c212bf",
+      "translation_text_hash": "f16abfa2dfaba64204235c96f139a5e40ec1b328847270c2955ccd62f344dcdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 애굽 땅에서 이끌어 돌아오며 그들을 앗수르에서부터 모으며 길르앗 땅과 레바논으로 그들을 이끌어 가리니 그 거할 곳이 부족하리라"
+      ],
+      "raw_text_hashes": [
+        "f16abfa2dfaba64204235c96f139a5e40ec1b328847270c2955ccd62f344dcdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:11",
+      "sequence": 23028,
+      "chapter_label": "ZEC 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "He will pass through the sea of affliction, and will strike the waves in the sea, and all the depths of the Nile will dry up; and the pride of Assyria will be brought down, and the scepter of Egypt will depart.",
+      "ko": "내가 그들로 고해를 지나게 하며 바다 물결을 치리니 나일의 깊은 곳이 다 마르겠고 앗수르의 교만이 낮아지겠고 애굽의 홀이 없어지리라",
+      "source_text_hash": "92200cce91ab45f951e83495f57cf3ad289bfbaa9f1f7bd81d92ceb2dfd6b5bf",
+      "translation_text_hash": "2d6f33071ad116441ce1919ac831c369aa3eb237cd5e861748ba6b89eff72965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들로 고해를 지나게 하며 바다 물결을 치리니 나일의 깊은 곳이 다 마르겠고 앗수르의 교만이 낮아지겠고 애굽의 홀이 없어지리라"
+      ],
+      "raw_text_hashes": [
+        "2d6f33071ad116441ce1919ac831c369aa3eb237cd5e861748ba6b89eff72965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:10:12",
+      "sequence": 23029,
+      "chapter_label": "ZEC 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "I will strengthen them in the LORD. They will walk up and down in his name,” says the LORD.",
+      "ko": "내가 그들로 나 여호와를 의지하여 견고케 하리니 그들이 내 이름을 받들어 왕래하리라 나 여호와의 말이니라",
+      "source_text_hash": "f87f95f05c6109fe6e3877f08d4d2e5f9f9633c3fccf8e59a519181e58be4e39",
+      "translation_text_hash": "7ada1a4b60ba7ecdc888f75f7abc49181fb9f6c54740a00e2effea1b635bc00c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들로 나 여호와를 의지하여 견고케 하리니 그들이 내 이름을 받들어 왕래하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "7ada1a4b60ba7ecdc888f75f7abc49181fb9f6c54740a00e2effea1b635bc00c"
+      ]
+    }
+  ]
+}

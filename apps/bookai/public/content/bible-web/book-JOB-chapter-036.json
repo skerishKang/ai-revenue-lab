@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:036",
+  "unit_ordinal": 472,
+  "unit_label": "JOB 36",
+  "book_code": "JOB",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:36:1",
+      "sequence": 13738,
+      "chapter_label": "JOB 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "Elihu also continued, and said,",
+      "ko": "엘리후가 말을 이어 가로되",
+      "source_text_hash": "eb1048fa0787bb49169835aad25e72ce8f2dfa8179ca928211cfc5dc340e4210",
+      "translation_text_hash": "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리후가 말을 이어 가로되"
+      ],
+      "raw_text_hashes": [
+        "e605e20edf46f5b31db6256f698b9e49cdac3db820ff27278dcd3522816e8f27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:2",
+      "sequence": 13739,
+      "chapter_label": "JOB 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "“Bear with me a little, and I will show you; for I still have something to say on God’s behalf.",
+      "ko": "나를 잠간 용납하라 내가 네게 보이리니 이는 내가 하나님을 위하여 오히려 할 말이 있음이라",
+      "source_text_hash": "24e39f0b48283f6db0ce8ebb599149d3a4e2a099e0956a24fefb3405e1801b04",
+      "translation_text_hash": "bec8a09d2b87138243634285c88c9bde7c1c1afc5663d15f5a2aa75a7b3371c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 잠간 용납하라 내가 네게 보이리니 이는 내가 하나님을 위하여 오히려 할 말이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "bec8a09d2b87138243634285c88c9bde7c1c1afc5663d15f5a2aa75a7b3371c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:3",
+      "sequence": 13740,
+      "chapter_label": "JOB 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "I will get my knowledge from afar, and will ascribe righteousness to my Maker.",
+      "ko": "내가 먼데서 지식을 취하고 나를 지으신 자에게 의를 돌려 보내리라",
+      "source_text_hash": "49f3ab81aacef20f73f0c3f9ff92a3c1db87d66c5c5a3dbbf25e984f6a38a33f",
+      "translation_text_hash": "5434321af1b0f6fbcc4574e3f9a477a6d1fe303f1c7da92f03e4db88b17a6192",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 먼데서 지식을 취하고 나를 지으신 자에게 의를 돌려 보내리라"
+      ],
+      "raw_text_hashes": [
+        "5434321af1b0f6fbcc4574e3f9a477a6d1fe303f1c7da92f03e4db88b17a6192"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:4",
+      "sequence": 13741,
+      "chapter_label": "JOB 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "For truly my words are not false. One who is perfect in knowledge is with you.",
+      "ko": "진실로 내 말이 거짓이 아니라 지식이 구비한 자가 너와 함께 있느니라",
+      "source_text_hash": "6ff6a175d85a45e0a27d629230fae51cbb483f68fdc3e5348b2ee4ef67f94055",
+      "translation_text_hash": "41431dfe7250924ae4d044e3e532380299fb07274576f9aa81a1ce9809d10951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 내 말이 거짓이 아니라 지식이 구비한 자가 너와 함께 있느니라"
+      ],
+      "raw_text_hashes": [
+        "41431dfe7250924ae4d044e3e532380299fb07274576f9aa81a1ce9809d10951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:5",
+      "sequence": 13742,
+      "chapter_label": "JOB 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "“Behold, God is mighty, and doesn’t despise anyone. He is mighty in strength of understanding.",
+      "ko": "하나님은 전능하시나 아무도 멸시치 아니하시며 그 지능이 무궁하사",
+      "source_text_hash": "496c94a7ecdc98dfbb442b7d98135a7e82a649f37d33e4a12cdecfd499661737",
+      "translation_text_hash": "ed955e2a7735a5b3c242d64cb055173fbda203b877751bba32d6688091f71246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 전능하시나 아무도 멸시치 아니하시며 그 지능이 무궁하사"
+      ],
+      "raw_text_hashes": [
+        "ed955e2a7735a5b3c242d64cb055173fbda203b877751bba32d6688091f71246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:6",
+      "sequence": 13743,
+      "chapter_label": "JOB 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "He doesn’t preserve the life of the wicked, but gives justice to the afflicted.",
+      "ko": "악인을 살려 두지 않으시며 고난 받는 자를 위하여 신원하시며",
+      "source_text_hash": "fac0df629a889cd8a2d035ae61b19e4cda69c0ce3ba9159c830e2e272761ba8b",
+      "translation_text_hash": "fde6981b3a290d81a915a1c03a52633cc0ab9e4dbfee3f60b0b6764d007f9b9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인을 살려 두지 않으시며 고난 받는 자를 위하여 신원하시며"
+      ],
+      "raw_text_hashes": [
+        "fde6981b3a290d81a915a1c03a52633cc0ab9e4dbfee3f60b0b6764d007f9b9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:7",
+      "sequence": 13744,
+      "chapter_label": "JOB 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "He doesn’t withdraw his eyes from the righteous, but with kings on the throne, he sets them forever, and they are exalted.",
+      "ko": "그 눈을 의인에게서 돌이키지 아니하시고 그를 왕과 함께 영원히 위에 앉히사 존귀하게 하시며",
+      "source_text_hash": "dbe9a1499a5de68b03e94d5b980eaa3ab380295bf791a2572dc4fc666b202242",
+      "translation_text_hash": "5ebd06977492a31afe5ebd2a166224c50d1fa82efe8869a500409dd98385d3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 눈을 의인에게서 돌이키지 아니하시고 그를 왕과 함께 영원히 위에 앉히사 존귀하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "5ebd06977492a31afe5ebd2a166224c50d1fa82efe8869a500409dd98385d3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:8",
+      "sequence": 13745,
+      "chapter_label": "JOB 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "If they are bound in fetters, and are taken in the cords of afflictions,",
+      "ko": "혹시 그들이 누설에 매이거나 환난의 줄에 얽혔으면",
+      "source_text_hash": "27cbe24a2258be93764359105764348d8cd9e498c711cc5e67afc6e22256167a",
+      "translation_text_hash": "7fcc992e540aa82d17a920acfcf1280fd673979eb0bc74296605da08386ec4bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 그들이 누설에 매이거나 환난의 줄에 얽혔으면"
+      ],
+      "raw_text_hashes": [
+        "7fcc992e540aa82d17a920acfcf1280fd673979eb0bc74296605da08386ec4bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:9",
+      "sequence": 13746,
+      "chapter_label": "JOB 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "then he shows them their work, and their transgressions, that they have behaved themselves proudly.",
+      "ko": "그들의 소행과 허물을 보이사 그 교만한 행위를 알게 하시고",
+      "source_text_hash": "6d2a7c9d6a2c6ad29e4f738073e6373a5beda2a388808cf22aad166490374018",
+      "translation_text_hash": "f942e364a05e855ec74f58859a94d09080bf811b18fe66c407745f2379416e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 소행과 허물을 보이사 그 교만한 행위를 알게 하시고"
+      ],
+      "raw_text_hashes": [
+        "f942e364a05e855ec74f58859a94d09080bf811b18fe66c407745f2379416e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:10",
+      "sequence": 13747,
+      "chapter_label": "JOB 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "He also opens their ears to instruction, and commands that they return from iniquity.",
+      "ko": "그들의 귀를 열어 교훈을 듣게 하시며 명하여 죄악에서 돌아오게 하시나니",
+      "source_text_hash": "e5d2f8fcea420c6a87a818f88e7583e361aa1beab72d9bb688d42eb4ef43a67e",
+      "translation_text_hash": "3a96e84278d4c1548cd6e06e024f128cbc1712b464f2fa3d356c45910dbde649",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 귀를 열어 교훈을 듣게 하시며 명하여 죄악에서 돌아오게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "3a96e84278d4c1548cd6e06e024f128cbc1712b464f2fa3d356c45910dbde649"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:11",
+      "sequence": 13748,
+      "chapter_label": "JOB 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "If they listen and serve him, they will spend their days in prosperity, and their years in pleasures.",
+      "ko": "만일 그들이 청종하여 섬기면 형통히 날을 보내며 즐거이 해를 지낼 것이요",
+      "source_text_hash": "18ddea64cad5c1e22caac19d50606afb2911e05770c02a3136f2482acdd947cd",
+      "translation_text_hash": "bff2a5dc1a8a3b0c6be9476b9c6b8cb6f1fb9f941f3c8726448ee309750a4ca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그들이 청종하여 섬기면 형통히 날을 보내며 즐거이 해를 지낼 것이요"
+      ],
+      "raw_text_hashes": [
+        "bff2a5dc1a8a3b0c6be9476b9c6b8cb6f1fb9f941f3c8726448ee309750a4ca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:12",
+      "sequence": 13749,
+      "chapter_label": "JOB 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "But if they don’t listen, they will perish by the sword; they will die without knowledge.",
+      "ko": "만일 그들이 청종치 아니하면 칼에 망하며 지식 없이 죽을 것이니라",
+      "source_text_hash": "027a63034eb76dd54f03d2ce78e6523eca9a2f89c1f552bb2958a7d29816cff0",
+      "translation_text_hash": "d5d13d9c3943fa2ad5af7d3d3cd9690ee3d72f102d81e8508e15208f4c119db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그들이 청종치 아니하면 칼에 망하며 지식 없이 죽을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d5d13d9c3943fa2ad5af7d3d3cd9690ee3d72f102d81e8508e15208f4c119db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:13",
+      "sequence": 13750,
+      "chapter_label": "JOB 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "“But those who are godless in heart lay up anger. They don’t cry for help when he binds them.",
+      "ko": "마음이 사곡한 자들은 분노를 쌓으며 하나님께 속박을 받을찌라도 도우심을 구하지 아니하나니",
+      "source_text_hash": "23579b1404742f258e80a7545ce21b75cbfe2460234c7fe2557a2d0212b6d4c1",
+      "translation_text_hash": "2cbfec4f2bd1fb227339ce5f958cc40e1f6615b5c11b8f099be483ef549c9cb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 사곡한 자들은 분노를 쌓으며 하나님께 속박을 받을찌라도 도우심을 구하지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "2cbfec4f2bd1fb227339ce5f958cc40e1f6615b5c11b8f099be483ef549c9cb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:14",
+      "sequence": 13751,
+      "chapter_label": "JOB 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "They die in youth. Their life perishes among the unclean.",
+      "ko": "그들은 젊어서 죽으며 그 생명이 남창과 함께 망하려니와",
+      "source_text_hash": "6955be9fd144f675d762ab038e67ba8eb40a3ff3c9ab10bd09c79512ee49e0b1",
+      "translation_text_hash": "dad1e1889502af3086b5972bd973bcc4e44e26696bf473710255c9a1ee3e1e5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 젊어서 죽으며 그 생명이 남창과 함께 망하려니와"
+      ],
+      "raw_text_hashes": [
+        "dad1e1889502af3086b5972bd973bcc4e44e26696bf473710255c9a1ee3e1e5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:15",
+      "sequence": 13752,
+      "chapter_label": "JOB 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "He delivers the afflicted by their affliction, and opens their ear in oppression.",
+      "ko": "하나님은 곤고한 자를 그 곤고할 즈음에 구원하시며 학대 당할 즈음에 그 귀를 여시나니",
+      "source_text_hash": "a18e54d483b7ab38b77159cf71a2005195bddcb82024eab6e90ddb2ac5a48321",
+      "translation_text_hash": "71bea39540f5c48461bba0abdb388a591123fefd48e38c365852125a9748f27b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 곤고한 자를 그 곤고할 즈음에 구원하시며 학대 당할 즈음에 그 귀를 여시나니"
+      ],
+      "raw_text_hashes": [
+        "71bea39540f5c48461bba0abdb388a591123fefd48e38c365852125a9748f27b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:16",
+      "sequence": 13753,
+      "chapter_label": "JOB 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "Yes, he would have allured you out of distress, into a wide place, where there is no restriction. That which is set on your table would be full of fatness.",
+      "ko": "그러므로 하나님이 너를 곤고함에서 이끌어 내사 좁지 않고 넓은 곳으로 옮기려 하셨은즉 무릇 네 상에 차린 것은 살진 것이 되었으리라",
+      "source_text_hash": "0b12d77aee9bf3ff42585b09472861551f390fb8fb7b3630e825343db4601b20",
+      "translation_text_hash": "2a30c015f30a3727c0a92209c304048bfe8db714fc424fa8b592bbb24ebbaea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님이 너를 곤고함에서 이끌어 내사 좁지 않고 넓은 곳으로 옮기려 하셨은즉 무릇 네 상에 차린 것은 살진 것이 되었으리라"
+      ],
+      "raw_text_hashes": [
+        "2a30c015f30a3727c0a92209c304048bfe8db714fc424fa8b592bbb24ebbaea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:17",
+      "sequence": 13754,
+      "chapter_label": "JOB 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "“But you are full of the judgment of the wicked. Judgment and justice take hold of you.",
+      "ko": "이제는 악인의 받을 벌이 네게 가득하였고 심판과 공의가 너를 잡았나니",
+      "source_text_hash": "e16b2ea0b17db4f098bc991d9f7aac93c825c2fc177b3d2553d6e2d24c97589a",
+      "translation_text_hash": "b8231396b5faaf3e35c46f8829840e0164efd8fd9adfef6218a497cee2b4e9ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 악인의 받을 벌이 네게 가득하였고 심판과 공의가 너를 잡았나니"
+      ],
+      "raw_text_hashes": [
+        "b8231396b5faaf3e35c46f8829840e0164efd8fd9adfef6218a497cee2b4e9ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:18",
+      "sequence": 13755,
+      "chapter_label": "JOB 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "Don’t let riches entice you to wrath, neither let the great size of a bribe turn you aside.",
+      "ko": "너는 분격함을 인하여 징책을 대적하지 말라 대속함을 얻을 일이 큰즉 스스로 그릇되게 말찌니라",
+      "source_text_hash": "fd777c95017464f1fa7eede691e471277c8ac3c8c8c44db76fb366394b1afa03",
+      "translation_text_hash": "8191ed2bb590bba4ad86779b054ff53818fbea357cbc52b58c496c149843994f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 분격함을 인하여 징책을 대적하지 말라 대속함을 얻을 일이 큰즉 스스로 그릇되게 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "8191ed2bb590bba4ad86779b054ff53818fbea357cbc52b58c496c149843994f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:19",
+      "sequence": 13756,
+      "chapter_label": "JOB 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "Would your wealth sustain you in distress, or all the might of your strength?",
+      "ko": "너의 부르짖음이나 너의 세력이 어찌 능히 너의 곤고한 가운데서 너로 유익하게 하겠느냐",
+      "source_text_hash": "083227861b2539d52286de8ca26929e638e30d251f702ea043c8be31720aa255",
+      "translation_text_hash": "f8371b633e638c3257f4b89a005d5814feae6177a7b8308f611ebd5021d204f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 부르짖음이나 너의 세력이 어찌 능히 너의 곤고한 가운데서 너로 유익하게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f8371b633e638c3257f4b89a005d5814feae6177a7b8308f611ebd5021d204f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:20",
+      "sequence": 13757,
+      "chapter_label": "JOB 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t desire the night, when people are cut off in their place.",
+      "ko": "너는 밤 곧 인생이 자기 곳에서 제함을 받는 때를 사모하지 말것이니라",
+      "source_text_hash": "5b0a11529b718de39a72a4b1c5fca9b48cb63e51068e8a0b0043a2df865ea658",
+      "translation_text_hash": "195dc98cd80af2cd48b829b5e20980186ea707df2c381d2e18f27ea2e8d59fb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 밤 곧 인생이 자기 곳에서 제함을 받는 때를 사모하지 말것이니라"
+      ],
+      "raw_text_hashes": [
+        "195dc98cd80af2cd48b829b5e20980186ea707df2c381d2e18f27ea2e8d59fb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:21",
+      "sequence": 13758,
+      "chapter_label": "JOB 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "Take heed, don’t regard iniquity; for you have chosen this rather than affliction.",
+      "ko": "삼가 악으로 치우치지 말라 네가 환난보다 이것을 택하였느니라",
+      "source_text_hash": "7b33c80cce17ed900aeed2d2dcf76d5680dcb2974ad8f192cb0592e7453feb3e",
+      "translation_text_hash": "a8b7f44faf2283d337dc2a2fe253e466a7642d33fe8c6b1a1a1f0c392d976807",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼가 악으로 치우치지 말라 네가 환난보다 이것을 택하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a8b7f44faf2283d337dc2a2fe253e466a7642d33fe8c6b1a1a1f0c392d976807"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:22",
+      "sequence": 13759,
+      "chapter_label": "JOB 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, God is exalted in his power. Who is a teacher like him?",
+      "ko": "하나님은 그 권능으로 큰 일을 행하시나니 누가 그같이 교훈을 베풀겠느냐",
+      "source_text_hash": "5e0657afa0e697042bb26e2e2ad60bb8b21229da93aa0158f8d97156fb8d0e49",
+      "translation_text_hash": "8e9b6bdaa309c8f7640da8a96fac7ee3182cdde4d71ee44e4e7967de84d88986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 그 권능으로 큰 일을 행하시나니 누가 그같이 교훈을 베풀겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8e9b6bdaa309c8f7640da8a96fac7ee3182cdde4d71ee44e4e7967de84d88986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:23",
+      "sequence": 13760,
+      "chapter_label": "JOB 36",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 23
+        }
+      ],
+      "en": "Who has prescribed his way for him? Or who can say, ‘You have committed unrighteousness’?",
+      "ko": "누가 그를 위하여 그의 길을 정하였느냐 누가 말하기를 주께서 불의를 행하셨나이다 할 수 있으랴",
+      "source_text_hash": "974f65b36b3d1531a25653d6f5940cb0f2e28a109122a1be9b1d8aff0ecdbafc",
+      "translation_text_hash": "ba01063c9395af7915e5ba799db0b26f816b842bc0228aac97c20e7dbb58e330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 그를 위하여 그의 길을 정하였느냐 누가 말하기를 주께서 불의를 행하셨나이다 할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "ba01063c9395af7915e5ba799db0b26f816b842bc0228aac97c20e7dbb58e330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:24",
+      "sequence": 13761,
+      "chapter_label": "JOB 36",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 24
+        }
+      ],
+      "en": "“Remember that you magnify his work, about which men have sung.",
+      "ko": "너는 하나님의 하신 일 찬송하기를 잊지 말찌니라 인생이 그 일을 노래하였느니라",
+      "source_text_hash": "2a73cbed219af38aeb1ee6f317c7153c96c9ffca972782f48dac67cdaacb27d3",
+      "translation_text_hash": "36746ab517b04b1eb86b418d7ff35ba6909acde922584168569f2c658a905e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 하나님의 하신 일 찬송하기를 잊지 말찌니라 인생이 그 일을 노래하였느니라"
+      ],
+      "raw_text_hashes": [
+        "36746ab517b04b1eb86b418d7ff35ba6909acde922584168569f2c658a905e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:25",
+      "sequence": 13762,
+      "chapter_label": "JOB 36",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 25
+        }
+      ],
+      "en": "All men have looked on it. Man sees it afar off.",
+      "ko": "그 일을 모든 사람이 우러러 보나니 먼데서도 보느니라",
+      "source_text_hash": "752e4e1f049ab84b63704c1d3b7b3a37401d4516fc08c2df5a375be1c0f0e35e",
+      "translation_text_hash": "6812ed4f9d761df0a3a8382fcf454701356f686f3f5704f7ed1fc70c94abadf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 일을 모든 사람이 우러러 보나니 먼데서도 보느니라"
+      ],
+      "raw_text_hashes": [
+        "6812ed4f9d761df0a3a8382fcf454701356f686f3f5704f7ed1fc70c94abadf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:26",
+      "sequence": 13763,
+      "chapter_label": "JOB 36",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 26
+        }
+      ],
+      "en": "Behold, God is great, and we don’t know him. The number of his years is unsearchable.",
+      "ko": "하나님은 크시니 우리가 그를 알 수 없고 그 년수를 계산할 수 없느니라",
+      "source_text_hash": "cf753a36fe17246935907ecb202ff4ae3fb4f3fa2f1fc0875b5b1fc71e8793fd",
+      "translation_text_hash": "3dc2594916c0028842af95b754df09be611b509568f75917a535d0f06e2c998f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 크시니 우리가 그를 알 수 없고 그 년수를 계산할 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "3dc2594916c0028842af95b754df09be611b509568f75917a535d0f06e2c998f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:27",
+      "sequence": 13764,
+      "chapter_label": "JOB 36",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 27
+        }
+      ],
+      "en": "For he draws up the drops of water, which distill in rain from his vapor,",
+      "ko": "그가 물을 가늘게 이끌어 올리신즉 그것이 안개 되어 비를 이루고",
+      "source_text_hash": "94b2fb5811a4860a66b69b9c62761eaa7991b0f39549e32379e61f20317e639f",
+      "translation_text_hash": "7b9482481dfb7269d9a7018c24878cb48c225b34ee37f13646b5c474f9e1775a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 물을 가늘게 이끌어 올리신즉 그것이 안개 되어 비를 이루고"
+      ],
+      "raw_text_hashes": [
+        "7b9482481dfb7269d9a7018c24878cb48c225b34ee37f13646b5c474f9e1775a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:28",
+      "sequence": 13765,
+      "chapter_label": "JOB 36",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 28
+        }
+      ],
+      "en": "which the skies pour down and which drop on man abundantly.",
+      "ko": "그것이 공중에서 내려 사람 위에 쏟아지느니라",
+      "source_text_hash": "4d4ddc756236d2ad44d24566588429a7b4020419bb1db7c856ca682bed0cf1ce",
+      "translation_text_hash": "531c4d1466a974536a2f8c346ea169bb9d48cbc6c0c02c13787627e9d3c69705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 공중에서 내려 사람 위에 쏟아지느니라"
+      ],
+      "raw_text_hashes": [
+        "531c4d1466a974536a2f8c346ea169bb9d48cbc6c0c02c13787627e9d3c69705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:29",
+      "sequence": 13766,
+      "chapter_label": "JOB 36",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 29
+        }
+      ],
+      "en": "Indeed, can anyone understand the spreading of the clouds and the thunderings of his pavilion?",
+      "ko": "구름의 폐임과 그의 장막의 울리는 소리를 누가 능히 깨달으랴",
+      "source_text_hash": "a825c12485dc07c19971a3f52f5805210628d8c94951a56127c898ab787e54b7",
+      "translation_text_hash": "b15f7958201a4eedb951563242d1d9cf53dfc0a2f8267296257e7acfd5375011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름의 폐임과 그의 장막의 울리는 소리를 누가 능히 깨달으랴"
+      ],
+      "raw_text_hashes": [
+        "b15f7958201a4eedb951563242d1d9cf53dfc0a2f8267296257e7acfd5375011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:30",
+      "sequence": 13767,
+      "chapter_label": "JOB 36",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 30
+        }
+      ],
+      "en": "Behold, he spreads his light around him. He covers the bottom of the sea.",
+      "ko": "그가 번개 빛으로 자기의 사면에 두르시며 바다 밑도 가리우시며",
+      "source_text_hash": "969c1fe445f1df1bf7cf0d75ac6ec4c1040fb1ff7d677d4dd162229ad14d7b1a",
+      "translation_text_hash": "9b199912a8622689dd33b0a258aefbb49a5fd727da688b977d2829c1a7eb78f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 번개 빛으로 자기의 사면에 두르시며 바다 밑도 가리우시며"
+      ],
+      "raw_text_hashes": [
+        "9b199912a8622689dd33b0a258aefbb49a5fd727da688b977d2829c1a7eb78f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:31",
+      "sequence": 13768,
+      "chapter_label": "JOB 36",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 31
+        }
+      ],
+      "en": "For by these he judges the people. He gives food in abundance.",
+      "ko": "이런 것들로 만민을 징벌하시며 이런 것들로 식물을 풍비히 주시느니라",
+      "source_text_hash": "c3ff795cc1924d7d0a2f5cb6d3e3306eca0f271d0f7c56c64dcc2fc731e537bf",
+      "translation_text_hash": "cb174cc10bdf106788d5be1f8cd97030cdb8afbc59861a29b69f7d5d4b156b7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것들로 만민을 징벌하시며 이런 것들로 식물을 풍비히 주시느니라"
+      ],
+      "raw_text_hashes": [
+        "cb174cc10bdf106788d5be1f8cd97030cdb8afbc59861a29b69f7d5d4b156b7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:32",
+      "sequence": 13769,
+      "chapter_label": "JOB 36",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 32
+        }
+      ],
+      "en": "He covers his hands with the lightning, and commands it to strike the mark.",
+      "ko": "그는 번개 빛으로 그 두 손을 싸시고 그것을 명하사 푯대를 맞추게 하시나니",
+      "source_text_hash": "0f6614ad6239be77fbfd6eb242dac9596cb53a969fa2c29ea551547bfe10b141",
+      "translation_text_hash": "c529f24bfda792f690e259e41422997f69184f4f87ef032d52e7b1eb12c5a962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 번개 빛으로 그 두 손을 싸시고 그것을 명하사 푯대를 맞추게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "c529f24bfda792f690e259e41422997f69184f4f87ef032d52e7b1eb12c5a962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:36:33",
+      "sequence": 13770,
+      "chapter_label": "JOB 36",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 36,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 36,
+          "verse": 33
+        }
+      ],
+      "en": "Its noise tells about him, and the livestock also, concerning the storm that comes up.",
+      "ko": "그 울리는 소리가 풍우를 표시하고 육축에게까지 그 올라 오는 것을 표시하느니라",
+      "source_text_hash": "73fda6a5322462f8192530c19e5cc9a6747053201b719f04f959b8f7c99d7e84",
+      "translation_text_hash": "f39a5eec604352700a219f5b4ce9e8d98a1f8c3a9b6f2f3e4c19269471a889fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 울리는 소리가 풍우를 표시하고 육축에게까지 그 올라 오는 것을 표시하느니라"
+      ],
+      "raw_text_hashes": [
+        "f39a5eec604352700a219f5b4ce9e8d98a1f8c3a9b6f2f3e4c19269471a889fb"
+      ]
+    }
+  ]
+}

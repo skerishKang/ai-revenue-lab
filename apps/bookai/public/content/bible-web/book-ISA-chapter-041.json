@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:041",
+  "unit_ordinal": 720,
+  "unit_label": "ISA 41",
+  "book_code": "ISA",
+  "chapter_number": 41,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:41:1",
+      "sequence": 18453,
+      "chapter_label": "ISA 41",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 1
+        }
+      ],
+      "en": "“Keep silent before me, islands, and let the peoples renew their strength. Let them come near, then let them speak. Let’s meet together for judgment.",
+      "ko": "섬들아 내 앞에 잠잠하라 민족들아 힘을 새롭게 하라 가까이 나아오라 그리하고 말하라 우리가 가까이 하여 서로 변론하자",
+      "source_text_hash": "862d33f558598e7047bc08e0c7e91d7d85af4a94c457abf989d4bbfdf22eb333",
+      "translation_text_hash": "f3d9d8535c4e845bdfbd886daa9f2d250170572162f6c989402796d1ca8943b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "섬들아 내 앞에 잠잠하라 민족들아 힘을 새롭게 하라 가까이 나아오라 그리하고 말하라 우리가 가까이 하여 서로 변론하자"
+      ],
+      "raw_text_hashes": [
+        "f3d9d8535c4e845bdfbd886daa9f2d250170572162f6c989402796d1ca8943b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:2",
+      "sequence": 18454,
+      "chapter_label": "ISA 41",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 2
+        }
+      ],
+      "en": "Who has raised up one from the east? Who called him to his feet in righteousness? He hands over nations to him and makes him rule over kings. He gives them like the dust to his sword, like the driven stubble to his bow.",
+      "ko": "누가 동방에서 사람을 일으키며 의로 불러서 자기 발 앞에 이르게 하였느뇨 열국으로 그 앞에 굴복케 하며 그로 왕들을 치리하게 하되 그들로 그의 칼에 티끌 같게, 그의 활에 불리는 초개 같게 하매",
+      "source_text_hash": "8ba2183d5b97db4fd6be0e8387aa1cd98bd372b26b4908c088ac40e7689dafea",
+      "translation_text_hash": "06e2671a697adb3405daeb1c3aedfdd670b9b3b7a5350559077b41077389d76e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 동방에서 사람을 일으키며 의로 불러서 자기 발 앞에 이르게 하였느뇨 열국으로 그 앞에 굴복케 하며 그로 왕들을 치리하게 하되 그들로 그의 칼에 티끌 같게, 그의 활에 불리는 초개 같게 하매"
+      ],
+      "raw_text_hashes": [
+        "06e2671a697adb3405daeb1c3aedfdd670b9b3b7a5350559077b41077389d76e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:3",
+      "sequence": 18455,
+      "chapter_label": "ISA 41",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 3
+        }
+      ],
+      "en": "He pursues them and passes by safely, even by a way that he had not gone with his feet.",
+      "ko": "그가 그들을 쫓아서 그 발로 가 보지 못한 길을 안전히 지났나니",
+      "source_text_hash": "54e89cbe6c50af26fbf0979f2a3a194b46cd7da5d8cbb9a6d8adae00058ae978",
+      "translation_text_hash": "89b03fd2d519771e62aa0eea75b9d85e27653d45ffb01f1139cf10bfb8f82947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그들을 쫓아서 그 발로 가 보지 못한 길을 안전히 지났나니"
+      ],
+      "raw_text_hashes": [
+        "89b03fd2d519771e62aa0eea75b9d85e27653d45ffb01f1139cf10bfb8f82947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:4",
+      "sequence": 18456,
+      "chapter_label": "ISA 41",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 4
+        }
+      ],
+      "en": "Who has worked and done it, calling the generations from the beginning? I, the LORD, the first, and with the last, I am he.”",
+      "ko": "이 일을 누가 행하였느냐 누가 이루었느냐 누가 태초부터 만대를 명정하였느냐 나 여호와라 태초에도 나요 나중 있을 자에게도 내가 곧 그니라",
+      "source_text_hash": "445864fcf5b4939729d32d49909a4452abd87794dd35abeaa50035f756929de7",
+      "translation_text_hash": "533e518afe0ef64f0327ede5d37ec7eb143dbb3f4b25cf5058b4112df1850f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 누가 행하였느냐 누가 이루었느냐 누가 태초부터 만대를 명정하였느냐 나 여호와라 태초에도 나요 나중 있을 자에게도 내가 곧 그니라"
+      ],
+      "raw_text_hashes": [
+        "533e518afe0ef64f0327ede5d37ec7eb143dbb3f4b25cf5058b4112df1850f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:5",
+      "sequence": 18457,
+      "chapter_label": "ISA 41",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 5
+        }
+      ],
+      "en": "The islands have seen, and fear. The ends of the earth tremble. They approach, and come.",
+      "ko": "섬들이 보고 두려워하며 땅 끝이 무서워 떨며 함께 모여 와서",
+      "source_text_hash": "588ca038fe4049ed9d106eca09a5ee919a7e9f834ecea6ac220e1850f6287b27",
+      "translation_text_hash": "2cf090021901c44592f2c824595f8a9401cdb0abd294af7e119447a2f57ce6e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "섬들이 보고 두려워하며 땅 끝이 무서워 떨며 함께 모여 와서"
+      ],
+      "raw_text_hashes": [
+        "2cf090021901c44592f2c824595f8a9401cdb0abd294af7e119447a2f57ce6e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:6",
+      "sequence": 18458,
+      "chapter_label": "ISA 41",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 6
+        }
+      ],
+      "en": "Everyone helps his neighbor. They say to their brothers, “Be strong!”",
+      "ko": "각기 이웃을 도우며 그 형제에게 이르기를 너는 담대하라 하고",
+      "source_text_hash": "84cb0736855efa68360d1b2768eff794c09fa09ae024356621e644a4e059b27c",
+      "translation_text_hash": "c8c836a4abd15078f9a3231b2a9bd102b184d67d47a379a0088cdfb1a75860ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각기 이웃을 도우며 그 형제에게 이르기를 너는 담대하라 하고"
+      ],
+      "raw_text_hashes": [
+        "c8c836a4abd15078f9a3231b2a9bd102b184d67d47a379a0088cdfb1a75860ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:7",
+      "sequence": 18459,
+      "chapter_label": "ISA 41",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 7
+        }
+      ],
+      "en": "So the carpenter encourages the goldsmith. He who smooths with the hammer encourages him who strikes the anvil, saying of the soldering, “It is good;” and he fastens it with nails, that it might not totter.",
+      "ko": "목공은 금장색을 장려하며 마치로 고르게 하는 자는 메질군을 장려하며 가로되 땜이 잘 된다 하며 못을 단단히 박아 우상으로 흔들리지 않게 하는도다",
+      "source_text_hash": "1ecf8933201af31330016fc981a367e4ff4b78dd7e0893184266e86e16a0a642",
+      "translation_text_hash": "22ea124adf3812e830073415ea0a49ac178f6506de967496501391e33ef757ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목공은 금장색을 장려하며 마치로 고르게 하는 자는 메질군을 장려하며 가로되 땜이 잘 된다 하며 못을 단단히 박아 우상으로 흔들리지 않게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "22ea124adf3812e830073415ea0a49ac178f6506de967496501391e33ef757ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:8",
+      "sequence": 18460,
+      "chapter_label": "ISA 41",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 8
+        }
+      ],
+      "en": "“But you, Israel, my servant, Jacob whom I have chosen, the offspring of Abraham my friend,",
+      "ko": "그러나 나의 종 너 이스라엘아 나의 택한 야곱아 나의 벗 아브라함의 자손아",
+      "source_text_hash": "5e976bc54d2846d33f316c5bf07c267109d7fbde79f59495544dee1731fa7405",
+      "translation_text_hash": "0cd0fd9b1e19ccb7e1ec1d17434c81c1f2bdda5c8ca2e715e5569a449da848fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나의 종 너 이스라엘아 나의 택한 야곱아 나의 벗 아브라함의 자손아"
+      ],
+      "raw_text_hashes": [
+        "0cd0fd9b1e19ccb7e1ec1d17434c81c1f2bdda5c8ca2e715e5569a449da848fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:9",
+      "sequence": 18461,
+      "chapter_label": "ISA 41",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 9
+        }
+      ],
+      "en": "you whom I have taken hold of from the ends of the earth, and called from its corners, and said to you, ‘You are my servant. I have chosen you and have not cast you away.’",
+      "ko": "내가 땅 끝에서부터 너를 붙들며 땅 모퉁이에서부터 너를 부르고 네게 이르기를 너는 나의 종이라 내가 너를 택하고 싫어버리지 아니하였다 하였노라",
+      "source_text_hash": "4c764a866914fbe31e45ae91a2e98f55e666207637ef140b2c6cace9a22c09d4",
+      "translation_text_hash": "19a5eb66f35759c756b539fadb018e2bb1e367ca4571a7a92f74ca5553e0246a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅 끝에서부터 너를 붙들며 땅 모퉁이에서부터 너를 부르고 네게 이르기를 너는 나의 종이라 내가 너를 택하고 싫어버리지 아니하였다 하였노라"
+      ],
+      "raw_text_hashes": [
+        "19a5eb66f35759c756b539fadb018e2bb1e367ca4571a7a92f74ca5553e0246a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:10",
+      "sequence": 18462,
+      "chapter_label": "ISA 41",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t you be afraid, for I am with you. Don’t be dismayed, for I am your God. I will strengthen you. Yes, I will help you. Yes, I will uphold you with the right hand of my righteousness.",
+      "ko": "두려워 말라 내가 너와 함께 함이니라 놀라지 말라 나는 네 하나님이 됨이니라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라 참으로 나의 의로운 오른손으로 너를 붙들리라",
+      "source_text_hash": "7b2c36abd4800c29b409567168a8ff8ab5646328a3886fcd3617efe3a12658c6",
+      "translation_text_hash": "75dcfd7accc9546ef7ec24d72d83ffe0eef2e158c377e3ab095f643d2d95347c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워 말라 내가 너와 함께 함이니라 놀라지 말라 나는 네 하나님이 됨이니라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라 참으로 나의 의로운 오른손으로 너를 붙들리라"
+      ],
+      "raw_text_hashes": [
+        "75dcfd7accc9546ef7ec24d72d83ffe0eef2e158c377e3ab095f643d2d95347c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:11",
+      "sequence": 18463,
+      "chapter_label": "ISA 41",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, all those who are incensed against you will be disappointed and confounded. Those who strive with you will be like nothing, and shall perish.",
+      "ko": "보라 네게 노하던 자들이 수치와 욕을 당할 것이요 너와 다투는 자들이 아무 것도 아닌 것 같이 될 것이며 멸망할 것이라",
+      "source_text_hash": "3debfc876a6a911beef6adedfff89b1b717a7d4d006b84d723ed04b4cd174673",
+      "translation_text_hash": "7777187d5fab9ccdaceef38e42d7cea47f672e8bc69c2f2f3d8a312bf26c2f2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네게 노하던 자들이 수치와 욕을 당할 것이요 너와 다투는 자들이 아무 것도 아닌 것 같이 될 것이며 멸망할 것이라"
+      ],
+      "raw_text_hashes": [
+        "7777187d5fab9ccdaceef38e42d7cea47f672e8bc69c2f2f3d8a312bf26c2f2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:12",
+      "sequence": 18464,
+      "chapter_label": "ISA 41",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 12
+        }
+      ],
+      "en": "You will seek them, and won’t find them, even those who contend with you. Those who war against you will be as nothing, as a nonexistent thing.",
+      "ko": "네가 찾아도 너와 싸우던 자들을 만나지 못할 것이요 너를 치는 자들은 아무 것도 아닌 것 같이, 허무한 것 같이 되리니",
+      "source_text_hash": "02068ff7fa1375147edb406c70107e476a0c686a86b93cc0bc7e9f933b85d79f",
+      "translation_text_hash": "c417bd44dc10dabd612bdfcaaa1618a0887e6146a625726ec6495aab3df218d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 찾아도 너와 싸우던 자들을 만나지 못할 것이요 너를 치는 자들은 아무 것도 아닌 것 같이, 허무한 것 같이 되리니"
+      ],
+      "raw_text_hashes": [
+        "c417bd44dc10dabd612bdfcaaa1618a0887e6146a625726ec6495aab3df218d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:13",
+      "sequence": 18465,
+      "chapter_label": "ISA 41",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 13
+        }
+      ],
+      "en": "For I, the LORD your God, will hold your right hand, saying to you, ‘Don’t be afraid. I will help you.’",
+      "ko": "이는 나 여호와 너의 하나님이 네 오른손을 붙들고 네게 이르기를 두려워 말라 내가 너를 도우리라 할 것임이니라",
+      "source_text_hash": "6e44526693af522eb59bb309b44a0bb04a1a79a4477e852799409dcfd08fe1db",
+      "translation_text_hash": "259cdb68a7c5e71722fa7a326b8843e6c293ea4aeda9c6f0704baaaa52b47824",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 나 여호와 너의 하나님이 네 오른손을 붙들고 네게 이르기를 두려워 말라 내가 너를 도우리라 할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "259cdb68a7c5e71722fa7a326b8843e6c293ea4aeda9c6f0704baaaa52b47824"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:14",
+      "sequence": 18466,
+      "chapter_label": "ISA 41",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t be afraid, you worm Jacob, and you men of Israel. I will help you,” says the LORD. “Your Redeemer is the Holy One of Israel.",
+      "ko": "지렁이 같은 너 야곱아, 너희 이스라엘 사람들아 두려워 말라 나 여호와가 말하노니 내가 너를 도울 것이라 네 구속자는 이스라엘의 거룩한 자니라",
+      "source_text_hash": "7aa61b35bf9b8a283fa4f6d9b4f2e0d34ccc0ba7a561a2be5a4397c83701c031",
+      "translation_text_hash": "b7f8e0dbb641b4676ba0fe7a4e511b01781a24cde383b576c944cc164dec719a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지렁이 같은 너 야곱아, 너희 이스라엘 사람들아 두려워 말라 나 여호와가 말하노니 내가 너를 도울 것이라 네 구속자는 이스라엘의 거룩한 자니라"
+      ],
+      "raw_text_hashes": [
+        "b7f8e0dbb641b4676ba0fe7a4e511b01781a24cde383b576c944cc164dec719a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:15",
+      "sequence": 18467,
+      "chapter_label": "ISA 41",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, I have made you into a new sharp threshing instrument with teeth. You will thresh the mountains, and beat them small, and will make the hills like chaff.",
+      "ko": "보라 내가 너로 이가 날카로운 새 타작 기계를 삼으리니 네가 산들을 쳐서 부스러기를 만들 것이며 작은 산들로 겨 같게 할 것이라",
+      "source_text_hash": "70272653dc8ab78a2902e0f358c71a8e658abaf8a91e4378478af9c560dfaab8",
+      "translation_text_hash": "63f94d8be7bfee0b9fa9d363ff6ffc4e7794210855fb7dd54c7680aa7c7ede0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너로 이가 날카로운 새 타작 기계를 삼으리니 네가 산들을 쳐서 부스러기를 만들 것이며 작은 산들로 겨 같게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "63f94d8be7bfee0b9fa9d363ff6ffc4e7794210855fb7dd54c7680aa7c7ede0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:16",
+      "sequence": 18468,
+      "chapter_label": "ISA 41",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 16
+        }
+      ],
+      "en": "You will winnow them, and the wind will carry them away, and the whirlwind will scatter them. You will rejoice in the LORD. You will glory in the Holy One of Israel.",
+      "ko": "네가 그들을 까부른즉 바람이 그것을 날리겠고 회리바람이 그것을 흩어버릴 것이로되 너는 여호와로 인하여 즐거워하겠고 이스라엘의 거룩한 자로 인하여 자랑하리라",
+      "source_text_hash": "e7ee248dc2560ff6a032e028cc087a759e0da3d405af9c1c589e913060ed03fd",
+      "translation_text_hash": "4e652b1be9298c3c40e497fe50f22935472612ed36cf830820044774c0308958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그들을 까부른즉 바람이 그것을 날리겠고 회리바람이 그것을 흩어버릴 것이로되 너는 여호와로 인하여 즐거워하겠고 이스라엘의 거룩한 자로 인하여 자랑하리라"
+      ],
+      "raw_text_hashes": [
+        "4e652b1be9298c3c40e497fe50f22935472612ed36cf830820044774c0308958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:17",
+      "sequence": 18469,
+      "chapter_label": "ISA 41",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 17
+        }
+      ],
+      "en": "The poor and needy seek water, and there is none. Their tongue fails for thirst. I, the LORD, will answer them. I, the God of Israel, will not forsake them.",
+      "ko": "가련하고 빈핍한 자가 물을 구하되 물이 없어서 갈증으로 그들의 혀가 마를 때에 나 여호와가 그들에게 응답하겠고 나 이스라엘의 하나님이 그들을 버리지 아니할 것이라",
+      "source_text_hash": "01de3df2436e9abee6d38bd99c1b823690e01104f0f862765b23a1b28cea233d",
+      "translation_text_hash": "4a751b957253d672cb82dd8e9aac4b8977e9a2d41a730eb7b2b2df0f1966a4de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가련하고 빈핍한 자가 물을 구하되 물이 없어서 갈증으로 그들의 혀가 마를 때에 나 여호와가 그들에게 응답하겠고 나 이스라엘의 하나님이 그들을 버리지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "4a751b957253d672cb82dd8e9aac4b8977e9a2d41a730eb7b2b2df0f1966a4de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:18",
+      "sequence": 18470,
+      "chapter_label": "ISA 41",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 18
+        }
+      ],
+      "en": "I will open rivers on the bare heights, and springs in the middle of the valleys. I will make the wilderness a pool of water, and the dry land springs of water.",
+      "ko": "내가 자산에 강을 열며 골짜기 가운데 샘이 나게 하며 광야로 못이 되게 하며 마른 땅으로 샘 근원이 되게 할 것이며",
+      "source_text_hash": "291723e6530035885997121acff0696e8a14633fda6ca65ced04c5ec7fcb045c",
+      "translation_text_hash": "7f458007b91d8d7a3cc46dcb1e32af12c76509ba5b40f85503b18c96b9b5a8ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 자산에 강을 열며 골짜기 가운데 샘이 나게 하며 광야로 못이 되게 하며 마른 땅으로 샘 근원이 되게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7f458007b91d8d7a3cc46dcb1e32af12c76509ba5b40f85503b18c96b9b5a8ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:19",
+      "sequence": 18471,
+      "chapter_label": "ISA 41",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 19
+        }
+      ],
+      "en": "I will put cedar, acacia, myrtle, and oil trees in the wilderness. I will set cypress trees, pine, and box trees together in the desert;",
+      "ko": "내가 광야에는 백향목과 싯딤나무와 화석류와 들 감람나무를 심고 사막에는 잣나무와 소나무와 황양목을 함께 두리니",
+      "source_text_hash": "f794d7de3b70a6ab3972da3c45f1483579c80ee7e8735f8111399461c88f924c",
+      "translation_text_hash": "85ad144d1fb6f1ebfeba1ab86d946eb903b9b1ff240f7476bc56b07048c616e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 광야에는 백향목과 싯딤나무와 화석류와 들 감람나무를 심고 사막에는 잣나무와 소나무와 황양목을 함께 두리니"
+      ],
+      "raw_text_hashes": [
+        "85ad144d1fb6f1ebfeba1ab86d946eb903b9b1ff240f7476bc56b07048c616e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:20",
+      "sequence": 18472,
+      "chapter_label": "ISA 41",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 20
+        }
+      ],
+      "en": "that they may see, know, consider, and understand together, that the LORD’s hand has done this, and the Holy One of Israel has created it.",
+      "ko": "무리가 그것을 보고 여호와의 손이 지은 바요 이스라엘의 거룩한 자가 창조한 바인줄 알며 헤아리며 깨달으리라",
+      "source_text_hash": "adb4957fdf5df515897d82b029f0681f9e917834c8a0c6394634cf943dab8662",
+      "translation_text_hash": "47521f833806be766c07b8676687d332e9044044329e8b2daceabc61124e8483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 그것을 보고 여호와의 손이 지은 바요 이스라엘의 거룩한 자가 창조한 바인줄 알며 헤아리며 깨달으리라"
+      ],
+      "raw_text_hashes": [
+        "47521f833806be766c07b8676687d332e9044044329e8b2daceabc61124e8483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:21",
+      "sequence": 18473,
+      "chapter_label": "ISA 41",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 21
+        }
+      ],
+      "en": "Produce your cause,” says the LORD. “Bring out your strong reasons!” says the King of Jacob.",
+      "ko": "나 여호와가 말하노니 너희 우상들은 소송을 일으키라 야곱의 왕이 말하노니 너희는 확실한 증거를 보이라",
+      "source_text_hash": "2d7f959626c6837561b94524657be3c652e88d0468f13e19b1ae3667856a0bac",
+      "translation_text_hash": "3423dc32957ea925b7ca22a9a51379e7f549f5afff398c95f9b525f6aa672f9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노니 너희 우상들은 소송을 일으키라 야곱의 왕이 말하노니 너희는 확실한 증거를 보이라"
+      ],
+      "raw_text_hashes": [
+        "3423dc32957ea925b7ca22a9a51379e7f549f5afff398c95f9b525f6aa672f9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:22",
+      "sequence": 18474,
+      "chapter_label": "ISA 41",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 22
+        }
+      ],
+      "en": "“Let them announce and declare to us what will happen! Declare the former things, what they are, that we may consider them, and know the latter end of them; or show us things to come.",
+      "ko": "장차 당할 일을 우리에게 진술하라 또 이전 일의 어떠한 것도 고하라 우리가 연구하여 그 결국을 알리라 혹 장래사를 보이며",
+      "source_text_hash": "3dce836ae8699100466bdc12e2c55e37f83896cb8633d9bcd86cbfe7ece2c434",
+      "translation_text_hash": "60346cd798d3289b2b68dc36b2dcebc01ec7f01ed71846919a338946f3b63cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차 당할 일을 우리에게 진술하라 또 이전 일의 어떠한 것도 고하라 우리가 연구하여 그 결국을 알리라 혹 장래사를 보이며"
+      ],
+      "raw_text_hashes": [
+        "60346cd798d3289b2b68dc36b2dcebc01ec7f01ed71846919a338946f3b63cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:23",
+      "sequence": 18475,
+      "chapter_label": "ISA 41",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 23
+        }
+      ],
+      "en": "Declare the things that are to come hereafter, that we may know that you are gods. Yes, do good, or do evil, that we may be dismayed, and see it together.",
+      "ko": "후래사를 진술하라 너희의 신 됨을 우리가 알리라 또 복을 내리든지 화를 내리라 우리가 함께 보고 놀라리라",
+      "source_text_hash": "f7ae30c54adc26b6899f3bfe823bc3cd2780d33a7b49c0303cc0d6e1c9d327df",
+      "translation_text_hash": "597a780df8cd5be00885dbf4958ff3adf8fe8f80171d6816d0c376d725ade2fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후래사를 진술하라 너희의 신 됨을 우리가 알리라 또 복을 내리든지 화를 내리라 우리가 함께 보고 놀라리라"
+      ],
+      "raw_text_hashes": [
+        "597a780df8cd5be00885dbf4958ff3adf8fe8f80171d6816d0c376d725ade2fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:24",
+      "sequence": 18476,
+      "chapter_label": "ISA 41",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, you are nothing, and your work is nothing. He who chooses you is an abomination.",
+      "ko": "과연 너희는 아무 것도 아니며 너희 일은 허망하며 너희를 택한 자는 가증하니라",
+      "source_text_hash": "607b0ec53021064b626805fe5365ade25158481c95c1d45643681cacaeb35033",
+      "translation_text_hash": "9decf9c9948b8db23af4b4b923f81952485e47337271a5938e789410cfc4fc71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 너희는 아무 것도 아니며 너희 일은 허망하며 너희를 택한 자는 가증하니라"
+      ],
+      "raw_text_hashes": [
+        "9decf9c9948b8db23af4b4b923f81952485e47337271a5938e789410cfc4fc71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:25",
+      "sequence": 18477,
+      "chapter_label": "ISA 41",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 25
+        }
+      ],
+      "en": "“I have raised up one from the north, and he has come, from the rising of the sun, one who calls on my name, and he shall come on rulers as on mortar, and as the potter treads clay.",
+      "ko": "내가 한 사람을 일으켜 북방에서 오게 하며 내 이름을 부르는 자를 해 돋는 곳에서 오게 하였나니 그가 이르러 방백들을 회삼물 같이, 토기장이의 진흙을 밟음 같이 밟을 것이니",
+      "source_text_hash": "0457747f417e204ec34ec43e524cc24c8e8158b252dd07ff5d552d5a11230ff1",
+      "translation_text_hash": "837ddd707f419a5fd8bbd8aaf2e302e649ab1c2470488dca7c7227c1b441b3b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 한 사람을 일으켜 북방에서 오게 하며 내 이름을 부르는 자를 해 돋는 곳에서 오게 하였나니 그가 이르러 방백들을 회삼물 같이, 토기장이의 진흙을 밟음 같이 밟을 것이니"
+      ],
+      "raw_text_hashes": [
+        "837ddd707f419a5fd8bbd8aaf2e302e649ab1c2470488dca7c7227c1b441b3b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:26",
+      "sequence": 18478,
+      "chapter_label": "ISA 41",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 26
+        }
+      ],
+      "en": "Who has declared it from the beginning, that we may know? and before, that we may say, ‘He is right’? Surely, there is no one who declares. Surely, there is no one who shows. Surely, there is no one who hears your words.",
+      "ko": "누가 처음부터 이 일을 우리에게 고하여 알게 하였느뇨 누가 이전부터 우리에게 고하여 이가 옳다고 말하게 하였느뇨 능히 고하는 자도 없고 보이는 자도 없고 너희 말을 듣는 자도 없도다",
+      "source_text_hash": "339256095bc23914c6847d6785777f75cd46275bb67b78f581ebd1aa5e69eb66",
+      "translation_text_hash": "5818fa4745c5b33a63122e09af329aa78c41f7ae3a844eaf46f5acd0ec8fa445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 처음부터 이 일을 우리에게 고하여 알게 하였느뇨 누가 이전부터 우리에게 고하여 이가 옳다고 말하게 하였느뇨 능히 고하는 자도 없고 보이는 자도 없고 너희 말을 듣는 자도 없도다"
+      ],
+      "raw_text_hashes": [
+        "5818fa4745c5b33a63122e09af329aa78c41f7ae3a844eaf46f5acd0ec8fa445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:27",
+      "sequence": 18479,
+      "chapter_label": "ISA 41",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 27
+        }
+      ],
+      "en": "I am the first to say to Zion, ‘Behold, look at them;’ and I will give one who brings good news to Jerusalem.",
+      "ko": "내가 비로소 시온에 이르기를 너희는 보라 그들을 보라 하였노라 내가 기쁜 소식 전할 자를 예루살렘에 주리라",
+      "source_text_hash": "8b3e5ef83b1959879ff55004eb4c6bad6e9bc09d4f961a4c8b763d627f34c554",
+      "translation_text_hash": "b5338d9d1a93442366a7e154d6c43677d0d6989b33367a0c7c3f28ccf91cb956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 비로소 시온에 이르기를 너희는 보라 그들을 보라 하였노라 내가 기쁜 소식 전할 자를 예루살렘에 주리라"
+      ],
+      "raw_text_hashes": [
+        "b5338d9d1a93442366a7e154d6c43677d0d6989b33367a0c7c3f28ccf91cb956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:28",
+      "sequence": 18480,
+      "chapter_label": "ISA 41",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 28
+        }
+      ],
+      "en": "When I look, there is no man, even among them there is no counselor who, when I ask, can answer a word.",
+      "ko": "내가 본즉 한 사람도 없으며 내가 물어도 그들 가운데 한 말도 능히 대답할 모사가 없도다",
+      "source_text_hash": "80ddd2f9307cfa03142714862211a554b1fee2d3f6884f5d38b4294573604a7b",
+      "translation_text_hash": "aff2de074c70bc0bfafc86f955613c44d9565e2caadd6a4955bf527f3c808833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 한 사람도 없으며 내가 물어도 그들 가운데 한 말도 능히 대답할 모사가 없도다"
+      ],
+      "raw_text_hashes": [
+        "aff2de074c70bc0bfafc86f955613c44d9565e2caadd6a4955bf527f3c808833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:41:29",
+      "sequence": 18481,
+      "chapter_label": "ISA 41",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 41,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 41,
+          "verse": 29
+        }
+      ],
+      "en": "Behold, all of their deeds are vanity and nothing. Their molten images are wind and confusion.",
+      "ko": "과연 그들의 모든 행사는 공허하며 허무하며 그들의 부어만든 우상은 바람이요 허탄한 것 뿐이니라",
+      "source_text_hash": "8a8b278ee984f47908122b5c56ae711abd7c1908d6bf01d5eff85649ef58d0da",
+      "translation_text_hash": "4c3fe57feb7a47dc9551277b423310e9714f5a227631e2daf92e446f1cc9d7ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 그들의 모든 행사는 공허하며 허무하며 그들의 부어만든 우상은 바람이요 허탄한 것 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "4c3fe57feb7a47dc9551277b423310e9714f5a227631e2daf92e446f1cc9d7ab"
+      ]
+    }
+  ]
+}

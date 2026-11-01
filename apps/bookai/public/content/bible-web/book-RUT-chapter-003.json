@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:RUT:chapter:003",
+  "unit_ordinal": 235,
+  "unit_label": "RUT 3",
+  "book_code": "RUT",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:RUT:3:1",
+      "sequence": 7174,
+      "chapter_label": "RUT 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Naomi her mother-in-law said to her, “My daughter, shall I not seek rest for you, that it may be well with you?",
+      "ko": "룻의 시모 나오미가 그에게 이르되 내 딸아 내가 너를 위하여 안식할 곳을 구하여 너로 복되게 하여야 하지 않겠느냐",
+      "source_text_hash": "15dfad8fc95d7bee0fac325af2a8bb437523d01fb79aafda51acb7c01b9cab46",
+      "translation_text_hash": "1d4ef2f8a67896020d44435a3619fada6a887827cb3a2eb28c8de247de085d1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻의 시모 나오미가 그에게 이르되 내 딸아 내가 너를 위하여 안식할 곳을 구하여 너로 복되게 하여야 하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1d4ef2f8a67896020d44435a3619fada6a887827cb3a2eb28c8de247de085d1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:2",
+      "sequence": 7175,
+      "chapter_label": "RUT 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Now isn’t Boaz our kinsman, with whose maidens you were? Behold, he will be winnowing barley tonight on the threshing floor.",
+      "ko": "네가 함께 하던 시녀들을 둔 보아스는 우리의 친족이 아니냐 그가 오늘 밤에 타작 마당에서 보리를 까불리라",
+      "source_text_hash": "5b02d3834f1901fcec7ba09c2736f19b9055568e64a2981ee0ea7c2de16f556a",
+      "translation_text_hash": "310b975c6973bfd58216641257119e7f0e42f751a03f03a8cdc60511036115b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 함께 하던 시녀들을 둔 보아스는 우리의 친족이 아니냐 그가 오늘 밤에 타작 마당에서 보리를 까불리라"
+      ],
+      "raw_text_hashes": [
+        "310b975c6973bfd58216641257119e7f0e42f751a03f03a8cdc60511036115b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:3",
+      "sequence": 7176,
+      "chapter_label": "RUT 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore wash yourself, anoint yourself, get dressed, and go down to the threshing floor; but don’t make yourself known to the man until he has finished eating and drinking.",
+      "ko": "그런즉 너는 목욕하고 기름을 바르고 의복을 입고 타작 마당에 내려가서 그 사람이 먹고 마시기를 다 하기까지는 그에게 보이지 말고",
+      "source_text_hash": "eaf7b80175fdaaa13d697ee4bc982f874dda4836fad61a162f5cab9327437b87",
+      "translation_text_hash": "68b880c6d72b6e68cfb04af972ab53592b9b54b6c2ccc3648ac3552b936d2972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 목욕하고 기름을 바르고 의복을 입고 타작 마당에 내려가서 그 사람이 먹고 마시기를 다 하기까지는 그에게 보이지 말고"
+      ],
+      "raw_text_hashes": [
+        "68b880c6d72b6e68cfb04af972ab53592b9b54b6c2ccc3648ac3552b936d2972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:4",
+      "sequence": 7177,
+      "chapter_label": "RUT 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "It shall be, when he lies down, that you shall note the place where he is lying. Then you shall go in, uncover his feet, and lie down. Then he will tell you what to do.”",
+      "ko": "그가 누울 때에 너는 그 눕는 곳을 알았다가 들어 가서 그 발치 이불을 들고 거기 누우라 그가 너의 할일을 네게 고하리라",
+      "source_text_hash": "dce0ca3bf9b8e4da8a70daff4b6b5245159ccd2912fb681b67ef4956b5e6a8bb",
+      "translation_text_hash": "7c886cbb1f77472cbdfaea8e6e64645ba4faf66d74fed5bd678c41d20ead8e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 누울 때에 너는 그 눕는 곳을 알았다가 들어 가서 그 발치 이불을 들고 거기 누우라 그가 너의 할일을 네게 고하리라"
+      ],
+      "raw_text_hashes": [
+        "7c886cbb1f77472cbdfaea8e6e64645ba4faf66d74fed5bd678c41d20ead8e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:5",
+      "sequence": 7178,
+      "chapter_label": "RUT 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "She said to her, “All that you say, I will do.”",
+      "ko": "룻이 시모에게 이르되 어머니의 말씀대로 내가 다 행하리이다 하니라",
+      "source_text_hash": "1c4bc7270bf544584626346abf08e8402e99dbdb21f5dee1427eec84ec8571d8",
+      "translation_text_hash": "6dd41fcee74a80fe782d1022d52b2331c8ddf58d8e48892f89b4fa44b4a33da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 시모에게 이르되 어머니의 말씀대로 내가 다 행하리이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "6dd41fcee74a80fe782d1022d52b2331c8ddf58d8e48892f89b4fa44b4a33da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:6",
+      "sequence": 7179,
+      "chapter_label": "RUT 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "She went down to the threshing floor, and did everything that her mother-in-law told her.",
+      "ko": "그가 타작 마당으로 내려가서 시모의 명대로 다 하니라",
+      "source_text_hash": "3e06bf345b6fa8a487e6cfe62f7afcd85ee0657b195d69b7af861edbdb9d1b2b",
+      "translation_text_hash": "3a65484a4ac860fc44b69b706928e9394932c8e0532292eba6054e7d6a7dcc8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 타작 마당으로 내려가서 시모의 명대로 다 하니라"
+      ],
+      "raw_text_hashes": [
+        "3a65484a4ac860fc44b69b706928e9394932c8e0532292eba6054e7d6a7dcc8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:7",
+      "sequence": 7180,
+      "chapter_label": "RUT 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "When Boaz had eaten and drunk, and his heart was merry, he went to lie down at the end of the heap of grain. She came softly, uncovered his feet, and lay down.",
+      "ko": "보아스가 먹고 마시고 마음이 즐거워서 가서 노적가리 곁에 눕는지라 룻이 가만히 가서 그 발치 이불을 들고 거기 누웠더라",
+      "source_text_hash": "fce61b43d148bc68f7563851931eb8c28ae73d13d62235676feed8056b48210b",
+      "translation_text_hash": "3e8f1af630f71b4279a03b942ad3282e8059a3b06d62c5ff07cc0908b16c8468",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 먹고 마시고 마음이 즐거워서 가서 노적가리 곁에 눕는지라 룻이 가만히 가서 그 발치 이불을 들고 거기 누웠더라"
+      ],
+      "raw_text_hashes": [
+        "3e8f1af630f71b4279a03b942ad3282e8059a3b06d62c5ff07cc0908b16c8468"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:8",
+      "sequence": 7181,
+      "chapter_label": "RUT 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "At midnight, the man was startled and turned himself; and behold, a woman lay at his feet.",
+      "ko": "밤중에 그 사람이 놀라 몸을 돌이켜 본즉 한 여인이 자기 발치에 누웠는지라",
+      "source_text_hash": "66bb7d8020c8319b05e6c751173cf95b82f12ee2bb89dcf6cd9b2bcb720aa903",
+      "translation_text_hash": "6029fc309c01663745b4b1c219fca83da7f5959b7ff578e6d50f534357f31355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤중에 그 사람이 놀라 몸을 돌이켜 본즉 한 여인이 자기 발치에 누웠는지라"
+      ],
+      "raw_text_hashes": [
+        "6029fc309c01663745b4b1c219fca83da7f5959b7ff578e6d50f534357f31355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:9",
+      "sequence": 7182,
+      "chapter_label": "RUT 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “Who are you?” She answered, “I am Ruth your servant. Therefore spread the corner of your garment over your servant; for you are a near kinsman.”",
+      "ko": "가로되 네가 누구뇨 대답하되 나는 당신의 시녀 룻이오니 당신의 옷자락으로 시녀를 덮으소서 당신은 우리 기업을 무를 자가 됨이니이다",
+      "source_text_hash": "b797ca257a18e21ee4dcd63a6e30faa55d1ff06214449b5d1dfeb59780ed961b",
+      "translation_text_hash": "174524bd8a28a552319ffa18148c6bb0f3291f8c4d0b79bca7763b3318f733ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 누구뇨 대답하되 나는 당신의 시녀 룻이오니 당신의 옷자락으로 시녀를 덮으소서 당신은 우리 기업을 무를 자가 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "174524bd8a28a552319ffa18148c6bb0f3291f8c4d0b79bca7763b3318f733ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:10",
+      "sequence": 7183,
+      "chapter_label": "RUT 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "He said, “You are blessed by the LORD, my daughter. You have shown more kindness in the latter end than at the beginning, because you didn’t follow young men, whether poor or rich.",
+      "ko": "가로되 내 딸아 여호와께서 네게 복 주시기를 원하노라 네가 빈부를 물론하고 연소한 자를 좇지 아니하였으니 너의 베푼 인애가 처음보다 나중이 더하도다",
+      "source_text_hash": "4a58c7049f1b6bc70e29672de0ade8f60954a751b77acecf018f8533b820e513",
+      "translation_text_hash": "0f888b0c144a16f880d65d7357349cb4e34f5bf9c136e2db6ceaee7c8f9225a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내 딸아 여호와께서 네게 복 주시기를 원하노라 네가 빈부를 물론하고 연소한 자를 좇지 아니하였으니 너의 베푼 인애가 처음보다 나중이 더하도다"
+      ],
+      "raw_text_hashes": [
+        "0f888b0c144a16f880d65d7357349cb4e34f5bf9c136e2db6ceaee7c8f9225a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:11",
+      "sequence": 7184,
+      "chapter_label": "RUT 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Now, my daughter, don’t be afraid. I will do to you all that you say; for all the city of my people knows that you are a worthy woman.",
+      "ko": "내 딸아 두려워 말라 내가 네 말대로 네게 다 행하리라 네가 현숙한 여자인줄 나의 성읍 백성이 다 아느니라",
+      "source_text_hash": "fc2db5e5f8b56667a2835b04bd7835d03816c5ca104cedc41043179c045a1888",
+      "translation_text_hash": "6315ebd8cd5d91209814c30fd08cc4433df05c7c1dc28ddc21da5c7e1401db80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 딸아 두려워 말라 내가 네 말대로 네게 다 행하리라 네가 현숙한 여자인줄 나의 성읍 백성이 다 아느니라"
+      ],
+      "raw_text_hashes": [
+        "6315ebd8cd5d91209814c30fd08cc4433df05c7c1dc28ddc21da5c7e1401db80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:12",
+      "sequence": 7185,
+      "chapter_label": "RUT 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Now it is true that I am a near kinsman. However, there is a kinsman nearer than I.",
+      "ko": "참으로 나는 네 기업을 무를 자나 무를 자가 나보다 더 가까운 친족이 있으니",
+      "source_text_hash": "2e95cb544e1f29a890d74300a0e79990bbac91ee737477965c52259616a7a4d7",
+      "translation_text_hash": "b82f1cba4340701991224c78b639a266fbb7f112b4d079493bfbddea23c1a898",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참으로 나는 네 기업을 무를 자나 무를 자가 나보다 더 가까운 친족이 있으니"
+      ],
+      "raw_text_hashes": [
+        "b82f1cba4340701991224c78b639a266fbb7f112b4d079493bfbddea23c1a898"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:13",
+      "sequence": 7186,
+      "chapter_label": "RUT 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Stay this night, and in the morning, if he will perform for you the part of a kinsman, good. Let him do the kinsman’s duty. But if he will not do the duty of a kinsman for you, then I will do the duty of a kinsman for you, as the LORD lives. Lie down until the morning.”",
+      "ko": "이 밤에 여기서 머무르라 아침에 그가 기업 무를 자의 책임을 네게 이행하려 하면 좋으니 그가 그 기업 무를 자의 책임을 행할 것이니라 만일 그가 기업 무를 자의 책임을 네게 이행코자 아니하면 여호와의 사심으로 맹세하노니 내가 기업 무를 자의 책임을 네게 행하리라 아침까지 누울찌니라",
+      "source_text_hash": "244bc6d1e154cf2f819aaf2e238f19f9944c822694dd1909caccd6962621764c",
+      "translation_text_hash": "fa85f55ace38dbc70f0b0ee0c07f55ae3ec575640e3c3f2f98e6c25ddb48ea95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤에 여기서 머무르라 아침에 그가 기업 무를 자의 책임을 네게 이행하려 하면 좋으니 그가 그 기업 무를 자의 책임을 행할 것이니라 만일 그가 기업 무를 자의 책임을 네게 이행코자 아니하면 여호와의 사심으로 맹세하노니 내가 기업 무를 자의 책임을 네게 행하리라 아침까지 누울찌니라"
+      ],
+      "raw_text_hashes": [
+        "fa85f55ace38dbc70f0b0ee0c07f55ae3ec575640e3c3f2f98e6c25ddb48ea95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:14",
+      "sequence": 7187,
+      "chapter_label": "RUT 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "She lay at his feet until the morning, then she rose up before one could discern another. For he said, “Let it not be known that the woman came to the threshing floor.”",
+      "ko": "룻이 새벽까지 그 발치에 누웠다가 사람이 피차 알아보기 어려울 때에 일어났으니 보아스의 말에 여인이 타작 마당에 들어온 것을 사람이 알지 못하여야 할 것이라 하였음이라",
+      "source_text_hash": "7e66c2cc3cb2b24146c787ae436eed0679b49ae6e70702da0ef2a510f8f289fd",
+      "translation_text_hash": "609074fb7f50238756b4d90d75a24e10b46cbc4333771e796f94c4cd9ad8717c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 새벽까지 그 발치에 누웠다가 사람이 피차 알아보기 어려울 때에 일어났으니 보아스의 말에 여인이 타작 마당에 들어온 것을 사람이 알지 못하여야 할 것이라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "609074fb7f50238756b4d90d75a24e10b46cbc4333771e796f94c4cd9ad8717c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:15",
+      "sequence": 7188,
+      "chapter_label": "RUT 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "He said, “Bring the mantle that is on you, and hold it.” She held it; and he measured six measures of barley, and laid it on her; then he went into the city.",
+      "ko": "보아스가 가로되 네 겉옷을 가져다가 펴서 잡으라 펴서 잡으니 보리를 여섯번 되어 룻에게 이워주고 성으로 들어가니라",
+      "source_text_hash": "5ccdc02d4a259cc81b4d015ff0965e77ead0c1d6b4a3171d85c67af5f5e4cca4",
+      "translation_text_hash": "92f96cd214a33a66c15cd0ef5d6832558c14159beec170d69b1a7bd3ec88333b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 가로되 네 겉옷을 가져다가 펴서 잡으라 펴서 잡으니 보리를 여섯번 되어 룻에게 이워주고 성으로 들어가니라"
+      ],
+      "raw_text_hashes": [
+        "92f96cd214a33a66c15cd0ef5d6832558c14159beec170d69b1a7bd3ec88333b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:16",
+      "sequence": 7189,
+      "chapter_label": "RUT 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "When she came to her mother-in-law, she said, “How did it go, my daughter?” She told her all that the man had done for her.",
+      "ko": "룻이 시모에게 이르니 그가 가로되 내 딸아 어떻게 되었느냐 룻이 그 사람의 자기에게 행한 것을 다 고하고",
+      "source_text_hash": "7c426b762ce08b6a5b736c68380abc35a1d2080384bc61b849e6f4c74d4666d2",
+      "translation_text_hash": "9baab370ebf838a488083b7d9b1d54af3ed21ab8c40175705c236258993fd0db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 시모에게 이르니 그가 가로되 내 딸아 어떻게 되었느냐 룻이 그 사람의 자기에게 행한 것을 다 고하고"
+      ],
+      "raw_text_hashes": [
+        "9baab370ebf838a488083b7d9b1d54af3ed21ab8c40175705c236258993fd0db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:17",
+      "sequence": 7190,
+      "chapter_label": "RUT 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "She said, “He gave me these six measures of barley; for he said, ‘Don’t go empty to your mother-in-law.’”",
+      "ko": "가로되 그가 내게 이 보리를 여섯번 되어 주며 이르기를 빈손으로 네 시모에게 가지 말라 하더이다",
+      "source_text_hash": "149341ff4475d6ad37b2776c4645d960c5c13381e713c922d3f87a2a885b9ea0",
+      "translation_text_hash": "195a8c7d57e6c25e09b37c333bc3b92b3fc977530c818c598c3b20d58f1a8f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그가 내게 이 보리를 여섯번 되어 주며 이르기를 빈손으로 네 시모에게 가지 말라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "195a8c7d57e6c25e09b37c333bc3b92b3fc977530c818c598c3b20d58f1a8f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:3:18",
+      "sequence": 7191,
+      "chapter_label": "RUT 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "RUT",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Then she said, “Wait, my daughter, until you know what will happen; for the man will not rest until he has settled this today.”",
+      "ko": "이에 시모가 가로되 내 딸아 이 사건이 어떻게 되는 것을 알기까지 가만히 앉아 있으라 그 사람이 오늘날 이 일을 성취하기 전에는 쉬지 아니하리라",
+      "source_text_hash": "8d406603fe60e4ed46dd24c30bbc3b5182b61e843174c1fc87b42b691b14d288",
+      "translation_text_hash": "6791af4c45c3f1cb32f26129f62d50ed87d22199546554bf4dfeb0f95232207e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 시모가 가로되 내 딸아 이 사건이 어떻게 되는 것을 알기까지 가만히 앉아 있으라 그 사람이 오늘날 이 일을 성취하기 전에는 쉬지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "6791af4c45c3f1cb32f26129f62d50ed87d22199546554bf4dfeb0f95232207e"
+      ]
+    }
+  ]
+}

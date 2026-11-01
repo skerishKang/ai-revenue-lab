@@ -519,7 +519,7 @@ ${THEME_CSS_SHELL_INSET}
           <span class="brand-divider" aria-hidden="true"></span>
           <span class="brand-product">AI Reward Router</span>
         </a>
-        <span class="trust-note">확인된 적립만 표시</span>
+        <span class="trust-note">공개 정보와 확인 상태 표시</span>
         ${toggleButton}
         <nav class="primary-nav" aria-label="주요 메뉴">${navItems}</nav>
       </div>

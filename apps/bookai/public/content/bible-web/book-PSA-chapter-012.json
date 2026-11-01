@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:012",
+  "unit_ordinal": 490,
+  "unit_label": "PSA 12",
+  "book_code": "PSA",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:12:1",
+      "sequence": 14068,
+      "chapter_label": "PSA 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Help, LORD; for the godly man ceases. For the faithful fail from among the children of men.",
+      "ko": "여호와여 도우소서 경건한 자가 끊어지며 충실한 자가 인생 중에 없어지도소이다",
+      "source_text_hash": "86ce8601c1c9ae109707a1c860c4593764f5a6d82c415024f36b92a530a84c39",
+      "translation_text_hash": "c31bdd55f1c958ef8302ef81ba2077e5c6b0ce1b95aa653ea475bbdba6342df9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 도우소서 경건한 자가 끊어지며 충실한 자가 인생 중에 없어지도소이다"
+      ],
+      "raw_text_hashes": [
+        "c31bdd55f1c958ef8302ef81ba2077e5c6b0ce1b95aa653ea475bbdba6342df9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:2",
+      "sequence": 14069,
+      "chapter_label": "PSA 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Everyone lies to his neighbor. They speak with flattering lips, and with a double heart.",
+      "ko": "저희가 이웃에게 각기 거짓을 말함이여 아첨하는 입술과 두 마음으로 말하는도다",
+      "source_text_hash": "18a9cd2198b06632ef794c3029e5501255351ed34497fda07f15b336b1c148db",
+      "translation_text_hash": "b5cc29918690ab0b20fde74e35d2e7835e3c378bd6a174b1c4cb095e232fb94b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이웃에게 각기 거짓을 말함이여 아첨하는 입술과 두 마음으로 말하는도다"
+      ],
+      "raw_text_hashes": [
+        "b5cc29918690ab0b20fde74e35d2e7835e3c378bd6a174b1c4cb095e232fb94b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:3",
+      "sequence": 14070,
+      "chapter_label": "PSA 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "May the LORD cut off all flattering lips, and the tongue that boasts,",
+      "ko": "여호와께서 모든 아첨하는 입술과 자랑하는 혀를 끊으시리니",
+      "source_text_hash": "276e653624845d867a190606fa4b935b14aeac61abcd09cfca3fdadb7e471d38",
+      "translation_text_hash": "15217c2cc430b95b7261fcc284fce5d3968b39cdc93e55d850e80ebceba95dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모든 아첨하는 입술과 자랑하는 혀를 끊으시리니"
+      ],
+      "raw_text_hashes": [
+        "15217c2cc430b95b7261fcc284fce5d3968b39cdc93e55d850e80ebceba95dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:4",
+      "sequence": 14071,
+      "chapter_label": "PSA 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "who have said, “With our tongue we will prevail. Our lips are our own. Who is lord over us?”",
+      "ko": "저희가 말하기를 우리의 혀로 이길찌라 우리 입술은 우리 것이니 우리를 주관할 자 누구리요 함이로다",
+      "source_text_hash": "9e545ab3e3a6afac592c540d9374c42104c894da916e5cb813f1dffbc8710089",
+      "translation_text_hash": "60410247d7e6e1144993d05d0249484003c03bd0b3554d306411824d206a6f1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하기를 우리의 혀로 이길찌라 우리 입술은 우리 것이니 우리를 주관할 자 누구리요 함이로다"
+      ],
+      "raw_text_hashes": [
+        "60410247d7e6e1144993d05d0249484003c03bd0b3554d306411824d206a6f1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:5",
+      "sequence": 14072,
+      "chapter_label": "PSA 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "“Because of the oppression of the weak and because of the groaning of the needy, I will now arise,” says the LORD; “I will set him in safety from those who malign him.”",
+      "ko": "여호와의 말씀에 가련한 자의 눌림과 궁핍한 자의 탄식을 인하여 내가 이제 일어나 저를 그 원하는 안전 지대에 두리라 하시도다",
+      "source_text_hash": "a6414aaff3fbf9609eed4cefbb05a5d7c9f4e053d803929564ab508e7b05ff12",
+      "translation_text_hash": "edd132b5e66c1a9ec6a1c53786bf8082ca394ad46f6e4e3a83dcfc3e4b896869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 가련한 자의 눌림과 궁핍한 자의 탄식을 인하여 내가 이제 일어나 저를 그 원하는 안전 지대에 두리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "edd132b5e66c1a9ec6a1c53786bf8082ca394ad46f6e4e3a83dcfc3e4b896869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:6",
+      "sequence": 14073,
+      "chapter_label": "PSA 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD’s words are flawless words, as silver refined in a clay furnace, purified seven times.",
+      "ko": "여호와의 말씀은 순결함이여 흙 도가니에 일곱번 단련한 은 같도다",
+      "source_text_hash": "715a90a8c400ea899e902be6e17ec379d0d3de40af2e765cbc9a3dfddb113f3b",
+      "translation_text_hash": "997ed28357b62a49c85dc519f47091b411f54fbffed462905aacbc836ef97503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀은 순결함이여 흙 도가니에 일곱번 단련한 은 같도다"
+      ],
+      "raw_text_hashes": [
+        "997ed28357b62a49c85dc519f47091b411f54fbffed462905aacbc836ef97503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:7",
+      "sequence": 14074,
+      "chapter_label": "PSA 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "You will keep them, LORD. You will preserve them from this generation forever.",
+      "ko": "여호와여 저희를 지키사 이 세대로부터 영영토록 보존하시리이다",
+      "source_text_hash": "a90c8e7ee608dee8d0b0a550bdca344dd7977fcbc1ae479b81f00048a547c64f",
+      "translation_text_hash": "a14b8ce39b9aa17e1e1b8eef2f40addc9f68b58274d55d84cc17fa54d3a6a64a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 저희를 지키사 이 세대로부터 영영토록 보존하시리이다"
+      ],
+      "raw_text_hashes": [
+        "a14b8ce39b9aa17e1e1b8eef2f40addc9f68b58274d55d84cc17fa54d3a6a64a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:12:8",
+      "sequence": 14075,
+      "chapter_label": "PSA 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "The wicked walk on every side, when what is vile is exalted among the sons of men.",
+      "ko": "비루함이 인생 중에 높아지는 때에 악인이 처처에 횡행하는도다",
+      "source_text_hash": "3d53417c929afd110081b23817da627f595acaae69877570ebb930f7b177161d",
+      "translation_text_hash": "ca0472e75b6c5c3fadda579e1438f4643da2f7e2a58bb85e63ad357d7da866c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비루함이 인생 중에 높아지는 때에 악인이 처처에 횡행하는도다"
+      ],
+      "raw_text_hashes": [
+        "ca0472e75b6c5c3fadda579e1438f4643da2f7e2a58bb85e63ad357d7da866c5"
+      ]
+    }
+  ]
+}

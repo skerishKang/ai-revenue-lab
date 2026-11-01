@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:009",
+  "unit_ordinal": 422,
+  "unit_label": "NEH 9",
+  "book_code": "NEH",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:9:1",
+      "sequence": 12513,
+      "chapter_label": "NEH 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the twenty-fourth day of this month the children of Israel were assembled with fasting, with sackcloth, and dirt on them.",
+      "ko": "그 달 이십 사일에 이스라엘 자손이 다 모여 금식하며 굵은 베를 입고 티끌을 무릅쓰며",
+      "source_text_hash": "931dea79bf3c4c97ef8a68155a1b632a6084f29140400ed2e63514352efff8cc",
+      "translation_text_hash": "052aea242d5170a2e7837b33354d652548cb4b111f60c03624265a4cf4dc3878",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 달 이십 사일에 이스라엘 자손이 다 모여 금식하며 굵은 베를 입고 티끌을 무릅쓰며"
+      ],
+      "raw_text_hashes": [
+        "052aea242d5170a2e7837b33354d652548cb4b111f60c03624265a4cf4dc3878"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:2",
+      "sequence": 12514,
+      "chapter_label": "NEH 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "The offspring of Israel separated themselves from all foreigners and stood and confessed their sins and the iniquities of their fathers.",
+      "ko": "모든 이방 사람과 절교하고 서서 자기의 죄와 열조의 허물을 자복하고",
+      "source_text_hash": "ea4c09c3b9601e171d6faad1c255ef5348c6f3a82067c2cad78c2eb85012bfe2",
+      "translation_text_hash": "9535556071b107b00999160854ef300c30887ce0914c79ec2dabd9d6b279fab4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 이방 사람과 절교하고 서서 자기의 죄와 열조의 허물을 자복하고"
+      ],
+      "raw_text_hashes": [
+        "9535556071b107b00999160854ef300c30887ce0914c79ec2dabd9d6b279fab4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:3",
+      "sequence": 12515,
+      "chapter_label": "NEH 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "They stood up in their place, and read in the book of the law of the LORD their God a fourth part of the day; and a fourth part they confessed and worshiped the LORD their God.",
+      "ko": "이 날에 낮 사분지 일은 그 처소에 서서 그 하나님 여호와의 율법책을 낭독하고 낮 사분지 일은 죄를 자복하며 그 하나님 여호와께 경배하는데",
+      "source_text_hash": "df99d0f5fdc04d28914abb3ea5fc6eab06cfec37a1e3cb144434bc18655f9ec6",
+      "translation_text_hash": "b387e2d5e588de3070e9177e35a87900ce3e9a95c3e55eef1c14b4d9f60bc9d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 낮 사분지 일은 그 처소에 서서 그 하나님 여호와의 율법책을 낭독하고 낮 사분지 일은 죄를 자복하며 그 하나님 여호와께 경배하는데"
+      ],
+      "raw_text_hashes": [
+        "b387e2d5e588de3070e9177e35a87900ce3e9a95c3e55eef1c14b4d9f60bc9d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:4",
+      "sequence": 12516,
+      "chapter_label": "NEH 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Then Jeshua, Bani, Kadmiel, Shebaniah, Bunni, Sherebiah, Bani, and Chenani of the Levites stood up on the stairs, and cried with a loud voice to the LORD their God.",
+      "ko": "레위 사람 예수아와 바니와 갓미엘과 스바냐와 분니와 세레뱌와 바니와 그나니는 대에 올라서서 큰 소리로 그 하나님 여호와께 부르짖고",
+      "source_text_hash": "ba2c8056cb7a3bde03328a27cc324fbe148fd0fcfa93e1eb028048167ebd55c9",
+      "translation_text_hash": "81788909a99f25dd0d45c18497b95bc2f28ca2d884dcdbfa7386a724f8af96d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 예수아와 바니와 갓미엘과 스바냐와 분니와 세레뱌와 바니와 그나니는 대에 올라서서 큰 소리로 그 하나님 여호와께 부르짖고"
+      ],
+      "raw_text_hashes": [
+        "81788909a99f25dd0d45c18497b95bc2f28ca2d884dcdbfa7386a724f8af96d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:5",
+      "sequence": 12517,
+      "chapter_label": "NEH 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Then the Levites, Jeshua, and Kadmiel, Bani, Hashabneiah, Sherebiah, Hodiah, Shebaniah, and Pethahiah, said, “Stand up and bless the LORD your God from everlasting to everlasting! Blessed be your glorious name, which is exalted above all blessing and praise!",
+      "ko": "또 레위 사람 예수아와 갓미엘과 바니와 하삽느야와 세레뱌와 호디야와 스바냐와 브다히야는 이르기를 너희 무리는 마땅히 일어나 영원부터 영원까지 계신 너희 하나님 여호와를 송축할찌어다 주여 주의 영화로운 이름을 송축하올 것은 주의 이름이 존귀하여 모든 송축이나 찬양에서 뛰어남이니이다",
+      "source_text_hash": "541134f0eebfbd4ebdad754fcc5b27b850dcaa90b9eb4a838e92d99a3f32aa3b",
+      "translation_text_hash": "a1985a217fde98ca0a4f34c2d56e6adfff71d6e2188fe11f9d0dbaee0b6cdbd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레위 사람 예수아와 갓미엘과 바니와 하삽느야와 세레뱌와 호디야와 스바냐와 브다히야는 이르기를 너희 무리는 마땅히 일어나 영원부터 영원까지 계신 너희 하나님 여호와를 송축할찌어다 주여 주의 영화로운 이름을 송축하올 것은 주의 이름이 존귀하여 모든 송축이나 찬양에서 뛰어남이니이다"
+      ],
+      "raw_text_hashes": [
+        "a1985a217fde98ca0a4f34c2d56e6adfff71d6e2188fe11f9d0dbaee0b6cdbd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:6",
+      "sequence": 12518,
+      "chapter_label": "NEH 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "You are the LORD, even you alone. You have made heaven, the heaven of heavens, with all their army, the earth and all things that are on it, the seas and all that is in them, and you preserve them all. The army of heaven worships you.",
+      "ko": "오직 주는 여호와시라 하늘과 하늘들의 하늘과 일월 성신과 땅과 땅 위의 만물과 바다와 그 가운데 모든 것을 지으시고 다 보존하시오니 모든 천군이 주께 경배하나이다",
+      "source_text_hash": "7107109f7eeb9fbd7d7d32130318a6b5d37fb4012d28eb99008670cec5bbf58f",
+      "translation_text_hash": "c0da5683eeb7035221a9e493e49b474c3cc54daff8d40c602fa4a1f1afe1d004",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주는 여호와시라 하늘과 하늘들의 하늘과 일월 성신과 땅과 땅 위의 만물과 바다와 그 가운데 모든 것을 지으시고 다 보존하시오니 모든 천군이 주께 경배하나이다"
+      ],
+      "raw_text_hashes": [
+        "c0da5683eeb7035221a9e493e49b474c3cc54daff8d40c602fa4a1f1afe1d004"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:7",
+      "sequence": 12519,
+      "chapter_label": "NEH 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "You are the LORD, the God who chose Abram, brought him out of Ur of the Chaldees, gave him the name of Abraham,",
+      "ko": "주는 하나님 여호와시라 옛적에 아브람을 택하시고 갈대아 우르에서 인도하여 내시고 아브라함이라는 이름을 주시고",
+      "source_text_hash": "5fa51f1da8477f0bdffa27d211035363f78ba8f7e5f73cffc76347651e111045",
+      "translation_text_hash": "97648972d754dbc65da755145e23e5f957ffdd762c37a7e2d15ddc5601c1850b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 하나님 여호와시라 옛적에 아브람을 택하시고 갈대아 우르에서 인도하여 내시고 아브라함이라는 이름을 주시고"
+      ],
+      "raw_text_hashes": [
+        "97648972d754dbc65da755145e23e5f957ffdd762c37a7e2d15ddc5601c1850b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:8",
+      "sequence": 12520,
+      "chapter_label": "NEH 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "found his heart faithful before you, and made a covenant with him to give the land of the Canaanite, the Hittite, the Amorite, the Perizzite, the Jebusite, and the Girgashite, to give it to his offspring, and have performed your words, for you are righteous.",
+      "ko": "그 마음이 주 앞에서 충성됨을 보시고 더불어 언약을 세우사 가나안 족속과 헷 족속과 아모리 족속과 브리스 족속과 여부스 족속과 기르가스 족속의 땅을 그 씨에게 주리라 하시더니 그 말씀대로 이루셨사오니 주는 의로우심이로소이다",
+      "source_text_hash": "4423d25fd66ea7d7225299c51b140f3d7be84d738fcd3b6f66a20ef952940402",
+      "translation_text_hash": "f921a2294bd6d4749d70151927a2d550a5c0bf80377af6525967ea757daf1194",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음이 주 앞에서 충성됨을 보시고 더불어 언약을 세우사 가나안 족속과 헷 족속과 아모리 족속과 브리스 족속과 여부스 족속과 기르가스 족속의 땅을 그 씨에게 주리라 하시더니 그 말씀대로 이루셨사오니 주는 의로우심이로소이다"
+      ],
+      "raw_text_hashes": [
+        "f921a2294bd6d4749d70151927a2d550a5c0bf80377af6525967ea757daf1194"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:9",
+      "sequence": 12521,
+      "chapter_label": "NEH 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "“You saw the affliction of our fathers in Egypt, and heard their cry by the Red Sea,",
+      "ko": "주께서 우리 열조가 애굽에서 고난 받는 것을 감찰하시며 홍해에서 부르짖음을 들으시고",
+      "source_text_hash": "00b334e9bcd0443bf27c22cf75c7acdd043271c4221ee2bf6d0cfbbf32aeb0c8",
+      "translation_text_hash": "ddfea2f6cd27a8968a25049082ad023e78a5a7415f9cc550da860a4e3fca3bbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리 열조가 애굽에서 고난 받는 것을 감찰하시며 홍해에서 부르짖음을 들으시고"
+      ],
+      "raw_text_hashes": [
+        "ddfea2f6cd27a8968a25049082ad023e78a5a7415f9cc550da860a4e3fca3bbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:10",
+      "sequence": 12522,
+      "chapter_label": "NEH 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "and showed signs and wonders against Pharaoh, against all his servants, and against all the people of his land, for you knew that they dealt proudly against them, and made a name for yourself, as it is today.",
+      "ko": "이적과 기사를 베푸사 바로와 그 모든 신하와 그 나라 온 백성을 치셨사오니 이는 저희가 우리의 열조에게 교만히 행함을 아셨음이라 오늘날과 같이 명예를 얻으셨나이다",
+      "source_text_hash": "ffe95408be34380b77762bcb21e76df51b3ffdca15bd63b0f629d752ef2cc952",
+      "translation_text_hash": "acf0c13fc5f2f6bb5d5f7d0911dc5ae72d38d89dede672b67bf28a5d14481e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이적과 기사를 베푸사 바로와 그 모든 신하와 그 나라 온 백성을 치셨사오니 이는 저희가 우리의 열조에게 교만히 행함을 아셨음이라 오늘날과 같이 명예를 얻으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "acf0c13fc5f2f6bb5d5f7d0911dc5ae72d38d89dede672b67bf28a5d14481e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:11",
+      "sequence": 12523,
+      "chapter_label": "NEH 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "You divided the sea before them, so that they went through the middle of the sea on the dry land; and you cast their pursuers into the depths, as a stone into the mighty waters.",
+      "ko": "주께서 또 우리 열조 앞에서 바다를 갈라지게 하시사 저희로 바다 가운데를 육지 같이 통과하게 하시고 쫓아 오는 자를 돌을 큰 물에 던짐 같이 깊은 물에 던지시고",
+      "source_text_hash": "759fa3cf7e96896232f2cb89152a082df8d4137782567752e05e61bcbe96de62",
+      "translation_text_hash": "4f9f3637e7b15de14c7dc3082881f212c2b2205c9f0dc2318ab7bb00cb9b650e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 우리 열조 앞에서 바다를 갈라지게 하시사 저희로 바다 가운데를 육지 같이 통과하게 하시고 쫓아 오는 자를 돌을 큰 물에 던짐 같이 깊은 물에 던지시고"
+      ],
+      "raw_text_hashes": [
+        "4f9f3637e7b15de14c7dc3082881f212c2b2205c9f0dc2318ab7bb00cb9b650e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:12",
+      "sequence": 12524,
+      "chapter_label": "NEH 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Moreover, in a pillar of cloud you led them by day; and in a pillar of fire by night, to give them light in the way in which they should go.",
+      "ko": "낮에는 구름 기둥으로 인도하시고 밤에는 불 기둥으로 그 행할 길을 비취셨사오며",
+      "source_text_hash": "8e256f403524cb3e8458d21eb31e235c87474cffc4e71647f69455975a1749f5",
+      "translation_text_hash": "fd3a5b0812e405b198eed0cefa5533dc72eeb695dd4f38c5c355b0b0e7bc8af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에는 구름 기둥으로 인도하시고 밤에는 불 기둥으로 그 행할 길을 비취셨사오며"
+      ],
+      "raw_text_hashes": [
+        "fd3a5b0812e405b198eed0cefa5533dc72eeb695dd4f38c5c355b0b0e7bc8af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:13",
+      "sequence": 12525,
+      "chapter_label": "NEH 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "“You also came down on Mount Sinai, and spoke with them from heaven, and gave them right ordinances and true laws, good statutes and commandments,",
+      "ko": "또 시내 산에 강림하시고 하늘에서부터 저희와 말씀하사 정직한 규례와 진정한 율법과 선한 율례와 계명을 저희에게 주시고",
+      "source_text_hash": "170fddd11ecfec99fd181e326b35e738e27ccb2d519d14dcb709523b15703d84",
+      "translation_text_hash": "0689a95fbcda536544e76396f3a788a94aa17eb6e5011d3bea03b264806c88ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 시내 산에 강림하시고 하늘에서부터 저희와 말씀하사 정직한 규례와 진정한 율법과 선한 율례와 계명을 저희에게 주시고"
+      ],
+      "raw_text_hashes": [
+        "0689a95fbcda536544e76396f3a788a94aa17eb6e5011d3bea03b264806c88ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:14",
+      "sequence": 12526,
+      "chapter_label": "NEH 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "and made known to them your holy Sabbath, and commanded them commandments, statutes, and a law, by Moses your servant,",
+      "ko": "거룩한 안식일을 저희에게 알리시며 주의 종 모세로 계명과 율례와 율법을 저희에게 명하시고",
+      "source_text_hash": "30436429c9b7b256f93cf29cd1255af41903356d5176220783dbccdad00e269e",
+      "translation_text_hash": "edb734d2ddd857c158fb160091ebbe083f0d3d13a24eac76b81f022d80d00cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 안식일을 저희에게 알리시며 주의 종 모세로 계명과 율례와 율법을 저희에게 명하시고"
+      ],
+      "raw_text_hashes": [
+        "edb734d2ddd857c158fb160091ebbe083f0d3d13a24eac76b81f022d80d00cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:15",
+      "sequence": 12527,
+      "chapter_label": "NEH 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "and gave them bread from the sky for their hunger, and brought water out of the rock for them for their thirst, and commanded them that they should go in to possess the land which you had sworn to give them.",
+      "ko": "저희의 주림을 인하여 하늘에서 양식을 주시며 저희의 목마름을 인하여 반석에서 물을 내시고 또 주께서 옛적에 손을 들어 맹세하시고 주마 하신 땅을 들어가서 차지하라 명하셨사오나",
+      "source_text_hash": "bb315e2394360d7c11e2a6b1b1b10b7071c17f004b2233a141a4e09a5c0314c6",
+      "translation_text_hash": "ff341b6b2cd68165b510042f3d9f25d82819172bf6c5d16b3c0a7eea56604c57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 주림을 인하여 하늘에서 양식을 주시며 저희의 목마름을 인하여 반석에서 물을 내시고 또 주께서 옛적에 손을 들어 맹세하시고 주마 하신 땅을 들어가서 차지하라 명하셨사오나"
+      ],
+      "raw_text_hashes": [
+        "ff341b6b2cd68165b510042f3d9f25d82819172bf6c5d16b3c0a7eea56604c57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:16",
+      "sequence": 12528,
+      "chapter_label": "NEH 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "“But they and our fathers behaved proudly, hardened their neck, didn’t listen to your commandments,",
+      "ko": "저희와 우리 열조가 교만히 하고 목을 굳게 하여 주의 명령을 듣지 아니하고",
+      "source_text_hash": "983b3c6821eeb3d5c3a2290c828c045b3d8d188ae25af8349a262bf2a03095b5",
+      "translation_text_hash": "b8e48a77142b63cbad1449348b67a85de34952ffbd49e1c33cb8c825446b581f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희와 우리 열조가 교만히 하고 목을 굳게 하여 주의 명령을 듣지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "b8e48a77142b63cbad1449348b67a85de34952ffbd49e1c33cb8c825446b581f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:17",
+      "sequence": 12529,
+      "chapter_label": "NEH 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "and refused to obey. They weren’t mindful of your wonders that you did among them, but hardened their neck, and in their rebellion appointed a captain to return to their bondage. But you are a God ready to pardon, gracious and merciful, slow to anger, and abundant in loving kindness, and didn’t forsake them.",
+      "ko": "거역하며 주께서 저희 가운데 행하신 기사를 생각지 아니하고 목을 굳게하며 패역하여 스스로 한 두목을 세우고 종 되었던 땅으로 돌아가고자 하였사오나 오직 주는 사유하시는 하나님이시라 은혜로우시며 긍휼히 여기시며 더디 노하시며 인자가 풍부하시므로 저희를 버리지 아니하셨나이다",
+      "source_text_hash": "91a3f958ba3272dd81075af817bb3dbc40fe50750f909b9acf1496c349bb16ce",
+      "translation_text_hash": "1151a36b4e1caf54e35f6cf672dc78d503d858154f9f0c384e3139c8d4105f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거역하며 주께서 저희 가운데 행하신 기사를 생각지 아니하고 목을 굳게하며 패역하여 스스로 한 두목을 세우고 종 되었던 땅으로 돌아가고자 하였사오나 오직 주는 사유하시는 하나님이시라 은혜로우시며 긍휼히 여기시며 더디 노하시며 인자가 풍부하시므로 저희를 버리지 아니하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "1151a36b4e1caf54e35f6cf672dc78d503d858154f9f0c384e3139c8d4105f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:18",
+      "sequence": 12530,
+      "chapter_label": "NEH 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Yes, when they had made themselves a molded calf, and said, ‘This is your God who brought you up out of Egypt,’ and had committed awful blasphemies,",
+      "ko": "또 저희가 송아지를 부어 만들고 이르기를 이는 곧 너희를 인도하여 애굽에서 나오게 하신 하나님이라 하여 크게 설만하게 하였사오나",
+      "source_text_hash": "4229f1513bdb326ffd2d4c71fde9a7af2b1871de0647f4ed9576b7e0a5c23015",
+      "translation_text_hash": "36466f35b73a3f7f5d9d4921f6252960f442a0dfe893970b1ba6d5af54e1d803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희가 송아지를 부어 만들고 이르기를 이는 곧 너희를 인도하여 애굽에서 나오게 하신 하나님이라 하여 크게 설만하게 하였사오나"
+      ],
+      "raw_text_hashes": [
+        "36466f35b73a3f7f5d9d4921f6252960f442a0dfe893970b1ba6d5af54e1d803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:19",
+      "sequence": 12531,
+      "chapter_label": "NEH 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "yet you in your manifold mercies didn’t forsake them in the wilderness. The pillar of cloud didn’t depart from over them by day, to lead them in the way; neither did the pillar of fire by night, to show them light, and the way in which they should go.",
+      "ko": "주께서는 연하여 긍휼을 베푸사 저희를 광야에 버리지 아니하시고 낮에는 구름 기둥으로 길을 인도하시며 밤에는 불 기둥으로 그 행할 길을 비취사 떠나게 아니하셨사오며",
+      "source_text_hash": "c1453a1f8118200b569cb6d21694d229798578d95ed6ad12663f97c58cf425e7",
+      "translation_text_hash": "4fa7d9507775eb52cbc849426b7844d94660adb3f71aeb5ab76f4692ab87e202",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 연하여 긍휼을 베푸사 저희를 광야에 버리지 아니하시고 낮에는 구름 기둥으로 길을 인도하시며 밤에는 불 기둥으로 그 행할 길을 비취사 떠나게 아니하셨사오며"
+      ],
+      "raw_text_hashes": [
+        "4fa7d9507775eb52cbc849426b7844d94660adb3f71aeb5ab76f4692ab87e202"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:20",
+      "sequence": 12532,
+      "chapter_label": "NEH 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "You gave also your good Spirit to instruct them, and didn’t withhold your manna from their mouth, and gave them water for their thirst.",
+      "ko": "또 주의 선한 신을 주사 저희를 가르치시며 주의 만나로 저희 입에 끊어지지 않게 하시고 저희의 목마름을 인하여 물을 주시사",
+      "source_text_hash": "e2cc3e4f3da5a0654348e4d86fcc4036dfac5674ed372b9e1e02d135c530d0e3",
+      "translation_text_hash": "a3f7135e1ef5493c3b317a4873aca85ac0c34450dde6b83ec5ecdc6fddf21705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 선한 신을 주사 저희를 가르치시며 주의 만나로 저희 입에 끊어지지 않게 하시고 저희의 목마름을 인하여 물을 주시사"
+      ],
+      "raw_text_hashes": [
+        "a3f7135e1ef5493c3b317a4873aca85ac0c34450dde6b83ec5ecdc6fddf21705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:21",
+      "sequence": 12533,
+      "chapter_label": "NEH 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "“Yes, forty years you sustained them in the wilderness. They lacked nothing. Their clothes didn’t grow old, and their feet didn’t swell.",
+      "ko": "사십년 동안을 들에서 기르시되 결핍함이 없게 하시므로 그 옷이 해어지지 아니하였고 발이 부릍지 아니하였사오며",
+      "source_text_hash": "c2809adc287a82ef497a6844492c05fc987d7b50069cb6416d6aad349eae4aab",
+      "translation_text_hash": "2b6aa00e2ff26d5300b0a0fca28d7c6d4cdc05215a489e651efe2aba1736f79c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십년 동안을 들에서 기르시되 결핍함이 없게 하시므로 그 옷이 해어지지 아니하였고 발이 부릍지 아니하였사오며"
+      ],
+      "raw_text_hashes": [
+        "2b6aa00e2ff26d5300b0a0fca28d7c6d4cdc05215a489e651efe2aba1736f79c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:22",
+      "sequence": 12534,
+      "chapter_label": "NEH 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Moreover you gave them kingdoms and peoples, which you allotted according to their portions. So they possessed the land of Sihon, even the land of the king of Heshbon, and the land of Og king of Bashan.",
+      "ko": "또 나라들과 족속들을 저희에게 각각 나누어 주시매 저희가 시혼의 땅 곧 헤스본 왕의 땅과 바산 왕 옥의 땅을 차지하였나이다",
+      "source_text_hash": "5b62ca1a01c928b6eaea8a1563c5e9044fba859e9185f6e1e6b91d590333b5f0",
+      "translation_text_hash": "5ac1457dd99a08ee7de192f59f04504a0691d6d4ea47b081b4f33b1cf27e37de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나라들과 족속들을 저희에게 각각 나누어 주시매 저희가 시혼의 땅 곧 헤스본 왕의 땅과 바산 왕 옥의 땅을 차지하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5ac1457dd99a08ee7de192f59f04504a0691d6d4ea47b081b4f33b1cf27e37de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:23",
+      "sequence": 12535,
+      "chapter_label": "NEH 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "You also multiplied their children as the stars of the sky, and brought them into the land concerning which you said to their fathers that they should go in to possess it.",
+      "ko": "주께서 그 자손을 하늘의 별 같이 많게 하시고 전에 그 열조에게 명하사 들어가서 차지하라고 하신 땅으로 인도하여 이르게 하셨으므로",
+      "source_text_hash": "02e7d29fccf1c529065f7e408bee678def83188fb9f481740445b30119510bcd",
+      "translation_text_hash": "2586e5333ec972d6c0af3b88547d8176885d81f7ecca0d15dde93274c915bacc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그 자손을 하늘의 별 같이 많게 하시고 전에 그 열조에게 명하사 들어가서 차지하라고 하신 땅으로 인도하여 이르게 하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "2586e5333ec972d6c0af3b88547d8176885d81f7ecca0d15dde93274c915bacc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:24",
+      "sequence": 12536,
+      "chapter_label": "NEH 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "“So the children went in and possessed the land; and you subdued before them the inhabitants of the land, the Canaanites, and gave them into their hands, with their kings and the peoples of the land, that they might do with them as they pleased.",
+      "ko": "그 자손이 들어가서 땅을 차지하되 주께서 그 땅 가나안 거민으로 저희 앞에 복종케 하실 때에 가나안 사람과 그 왕들과 본토 여러 족속을 저희 손에 붙여 임의로 행하게 하시매",
+      "source_text_hash": "6afb3ed24a5bbbc51811d5a29e539dc0acb4e240bda687cd930bc6659609d9b2",
+      "translation_text_hash": "b64be5badf873149a3b065489e627712703573608f49c5b5226975755c5b60b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손이 들어가서 땅을 차지하되 주께서 그 땅 가나안 거민으로 저희 앞에 복종케 하실 때에 가나안 사람과 그 왕들과 본토 여러 족속을 저희 손에 붙여 임의로 행하게 하시매"
+      ],
+      "raw_text_hashes": [
+        "b64be5badf873149a3b065489e627712703573608f49c5b5226975755c5b60b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:25",
+      "sequence": 12537,
+      "chapter_label": "NEH 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "They took fortified cities and a rich land, and possessed houses full of all good things, cisterns dug out, vineyards, olive groves, and fruit trees in abundance. So they ate, were filled, became fat, and delighted themselves in your great goodness.",
+      "ko": "저희가 견고한 성들과 기름진 땅을 취하고 모든 아름다운 물건을 채운 집과 파서 만든 우물과 포도원과 감람원과 허다한 과목을 차지하여 배불리 먹어 살찌고 주의 큰 복을 즐겼사오나",
+      "source_text_hash": "b5d007fb2738a8bbf3b080b0ba0c7def021b6c81ff6b2efbcb4f86b0fcc80fce",
+      "translation_text_hash": "9195fc5eeb79f80368d24038a00e6ef973fb33cbe9c4d4b1936d859d210675d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 견고한 성들과 기름진 땅을 취하고 모든 아름다운 물건을 채운 집과 파서 만든 우물과 포도원과 감람원과 허다한 과목을 차지하여 배불리 먹어 살찌고 주의 큰 복을 즐겼사오나"
+      ],
+      "raw_text_hashes": [
+        "9195fc5eeb79f80368d24038a00e6ef973fb33cbe9c4d4b1936d859d210675d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:26",
+      "sequence": 12538,
+      "chapter_label": "NEH 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "“Nevertheless they were disobedient and rebelled against you, cast your law behind their back, killed your prophets that testified against them to turn them again to you, and they committed awful blasphemies.",
+      "ko": "저희가 오히려 순종치 아니하고 주를 거역하며 주의 율법을 등뒤에 두고 주께로 돌아오기를 권면하는 선지자들을 죽여 크게 설만하게 행하였나이다",
+      "source_text_hash": "24284dc0b675f5561d5c52a385d1a1ffe3da48739ce1c9183bf7622f44b3a32c",
+      "translation_text_hash": "e9c025296b5cd67babfa6b73f26fa1f564b4934720c73cd48b0f52fe666efafa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 오히려 순종치 아니하고 주를 거역하며 주의 율법을 등뒤에 두고 주께로 돌아오기를 권면하는 선지자들을 죽여 크게 설만하게 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "e9c025296b5cd67babfa6b73f26fa1f564b4934720c73cd48b0f52fe666efafa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:27",
+      "sequence": 12539,
+      "chapter_label": "NEH 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore you delivered them into the hand of their adversaries, who distressed them. In the time of their trouble, when they cried to you, you heard from heaven; and according to your manifold mercies you gave them saviors who saved them out of the hands of their adversaries.",
+      "ko": "그러므로 주께서 그 대적의 손에 붙이사 곤고를 당하게 하시매 저희가 환난을 당하여 주께 부르짖을 때에 주께서 하늘에서 들으시고 크게 긍휼을 발하사 구원자들을 주어 대적의 손에서 구원하셨거늘",
+      "source_text_hash": "8916788e5ce2df9cbe7d463ccd4d9b38fb326437ad74a3ae5492d3b04c5c0cc3",
+      "translation_text_hash": "0520817660746307e5fc95838c0e832892a21cb396a42c290b37b0e31a032568",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주께서 그 대적의 손에 붙이사 곤고를 당하게 하시매 저희가 환난을 당하여 주께 부르짖을 때에 주께서 하늘에서 들으시고 크게 긍휼을 발하사 구원자들을 주어 대적의 손에서 구원하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "0520817660746307e5fc95838c0e832892a21cb396a42c290b37b0e31a032568"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:28",
+      "sequence": 12540,
+      "chapter_label": "NEH 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "But after they had rest, they did evil again before you; therefore you left them in the hands of their enemies, so that they had the dominion over them; yet when they returned and cried to you, you heard from heaven; and many times you delivered them according to your mercies,",
+      "ko": "저희가 평강을 얻은 후에 다시 주 앞에서 악을 행하므로 주께서 그 대적의 손에 버려 두사 대적에게 제어를 받게 하시다가 저희가 돌이켜서 주께 부르짖으매 주께서 하늘에서 들으시고 여러번 긍휼을 발하사 건져내시고",
+      "source_text_hash": "3541a2ec35002e26dd562b549cae9ef2376d55e2345e5c0c83d443752630c888",
+      "translation_text_hash": "c8b436dff944c66c43c08a3b8b21361059228330b3db6838f438d090752e9e13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 평강을 얻은 후에 다시 주 앞에서 악을 행하므로 주께서 그 대적의 손에 버려 두사 대적에게 제어를 받게 하시다가 저희가 돌이켜서 주께 부르짖으매 주께서 하늘에서 들으시고 여러번 긍휼을 발하사 건져내시고"
+      ],
+      "raw_text_hashes": [
+        "c8b436dff944c66c43c08a3b8b21361059228330b3db6838f438d090752e9e13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:29",
+      "sequence": 12541,
+      "chapter_label": "NEH 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "and testified against them, that you might bring them again to your law. Yet they were arrogant, and didn’t listen to your commandments, but sinned against your ordinances (which if a man does, he shall live in them), turned their backs, stiffened their neck, and would not hear.",
+      "ko": "다시 주의 율법을 복종하게 하시려고 경계하셨으나 저희가 교만히 행하여 사람이 준행하면 그 가운데서 삶을 얻는 주의 계명을 듣지 아니하며 주의 규례를 범하여 고집하는 어깨를 내어밀며 목을 굳게 하여 듣지 아니하였나이다",
+      "source_text_hash": "1edcb28261c733718d15d4bdddae022c4402236ca3536ef766959dd0e216eeb1",
+      "translation_text_hash": "bba27e3e0f94e8c2ed70fb87963fe2334b94e6e1da0f42c181bd9ca8bfc5fc13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 주의 율법을 복종하게 하시려고 경계하셨으나 저희가 교만히 행하여 사람이 준행하면 그 가운데서 삶을 얻는 주의 계명을 듣지 아니하며 주의 규례를 범하여 고집하는 어깨를 내어밀며 목을 굳게 하여 듣지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "bba27e3e0f94e8c2ed70fb87963fe2334b94e6e1da0f42c181bd9ca8bfc5fc13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:30",
+      "sequence": 12542,
+      "chapter_label": "NEH 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "Yet many years you put up with them, and testified against them by your Spirit through your prophets. Yet they would not listen. Therefore you gave them into the hand of the peoples of the lands.",
+      "ko": "그러나 주께서 여러 해 동안 용서하시고 또 선지자로 말미암아 주의 신으로 저희를 경계하시되 저희가 듣지 아니하므로 열방 사람의 손에 붙이시고도",
+      "source_text_hash": "b718f2d6617b779bc2a1b0c71a7a1e695bb947928b0d722ebfb9eee25439707b",
+      "translation_text_hash": "b9612025d27b88fae38937bbe97cab71e254cda5d6347383e8030eb870ea7e3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 주께서 여러 해 동안 용서하시고 또 선지자로 말미암아 주의 신으로 저희를 경계하시되 저희가 듣지 아니하므로 열방 사람의 손에 붙이시고도"
+      ],
+      "raw_text_hashes": [
+        "b9612025d27b88fae38937bbe97cab71e254cda5d6347383e8030eb870ea7e3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:31",
+      "sequence": 12543,
+      "chapter_label": "NEH 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "“Nevertheless in your manifold mercies you didn’t make a full end of them, nor forsake them; for you are a gracious and merciful God.",
+      "ko": "주의 긍휼이 크시므로 저희를 아주 멸하지 아니하시며 버리지도 아니하셨사오니 주는 은혜로우시고 긍휼히 여기시는 하나님이심이니이다",
+      "source_text_hash": "e89d7bc4c224ce667b047e37de60e8a3d0cf5801b105f6291c9a150d4a5451d6",
+      "translation_text_hash": "bcdeb36a36c122f27e59052421335656e0be654f2ba88690d1a1259c1c396e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 긍휼이 크시므로 저희를 아주 멸하지 아니하시며 버리지도 아니하셨사오니 주는 은혜로우시고 긍휼히 여기시는 하나님이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "bcdeb36a36c122f27e59052421335656e0be654f2ba88690d1a1259c1c396e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:32",
+      "sequence": 12544,
+      "chapter_label": "NEH 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Now therefore, our God, the great, the mighty, and the awesome God, who keeps covenant and loving kindness, don’t let all the travail seem little before you that has come on us, on our kings, on our princes, on our priests, on our prophets, on our fathers, and on all your people, since the time of the kings of Assyria to this day.",
+      "ko": "우리 하나님이여 광대하시고 능하시고 두려우시며 언약과 인자를 지키시는 하나님이여 우리와 우리 열왕과 방백들과 제사장들과 선지자들과 열조와 주의 모든 백성이 앗수르 열왕의 때로부터 오늘날까지 당한바 환난을 이제 작게 여기시지 마옵소서",
+      "source_text_hash": "715f33744322bd179cc8c0965e1b71b4a7668e3f4c68fd3fa644a4de07bf7d5c",
+      "translation_text_hash": "f10ee2d33f2831b7773ffee4662b73ab8180ad28028d2c623e24c3ae4c464cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이여 광대하시고 능하시고 두려우시며 언약과 인자를 지키시는 하나님이여 우리와 우리 열왕과 방백들과 제사장들과 선지자들과 열조와 주의 모든 백성이 앗수르 열왕의 때로부터 오늘날까지 당한바 환난을 이제 작게 여기시지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "f10ee2d33f2831b7773ffee4662b73ab8180ad28028d2c623e24c3ae4c464cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:33",
+      "sequence": 12545,
+      "chapter_label": "NEH 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "However you are just in all that has come on us; for you have dealt truly, but we have done wickedly.",
+      "ko": "그러나 우리의 당한 모든 일에 주는 공의로우시니 우리는 악을 행하였사오나 주는 진실히 행하셨음이니이다",
+      "source_text_hash": "c260c86c4265e5e1e8acaabdc2702f402d125c32923e22620fb120815b9b34f2",
+      "translation_text_hash": "5b844beb39c2973f4bc567b6707a7b54d7061bbd508c4263bfd3512eca2a14bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리의 당한 모든 일에 주는 공의로우시니 우리는 악을 행하였사오나 주는 진실히 행하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "5b844beb39c2973f4bc567b6707a7b54d7061bbd508c4263bfd3512eca2a14bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:34",
+      "sequence": 12546,
+      "chapter_label": "NEH 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "Also our kings, our princes, our priests, and our fathers have not kept your law, nor listened to your commandments and your testimonies with which you testified against them.",
+      "ko": "우리 열왕과 방백들과 제사장들과 열조가 주의 율법을 지키지 아니하며 주의 명령과 주의 경계하신 말씀을 순종치 아니하고",
+      "source_text_hash": "36d6889b9078a3036bddefd91b87d4e0a3b7688ae665547ca771cccad422442b",
+      "translation_text_hash": "f4e58e66f70d6347c36cb101f8b65214699a4adaa042b0a11b3da2b231d76359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열왕과 방백들과 제사장들과 열조가 주의 율법을 지키지 아니하며 주의 명령과 주의 경계하신 말씀을 순종치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "f4e58e66f70d6347c36cb101f8b65214699a4adaa042b0a11b3da2b231d76359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:35",
+      "sequence": 12547,
+      "chapter_label": "NEH 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "For they have not served you in their kingdom, and in your great goodness that you gave them, and in the large and rich land which you gave before them. They didn’t turn from their wicked works.",
+      "ko": "저희가 그 나라와 주의 베푸신 큰 복과 자기 앞에 주신 넓고 기름진 땅을 누리면서도 주를 섬기지 아니하며 악행을 그치지 아니한고로",
+      "source_text_hash": "61e2fdbe5300ffdfb5e17513d93f6bc7e169c36ef7e456bfbc2f76163f526d76",
+      "translation_text_hash": "21b36ca25c98cfe7f5a97174758c505a0c2e28dfbe87500b5d7792b749630f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 나라와 주의 베푸신 큰 복과 자기 앞에 주신 넓고 기름진 땅을 누리면서도 주를 섬기지 아니하며 악행을 그치지 아니한고로"
+      ],
+      "raw_text_hashes": [
+        "21b36ca25c98cfe7f5a97174758c505a0c2e28dfbe87500b5d7792b749630f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:36",
+      "sequence": 12548,
+      "chapter_label": "NEH 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "“Behold, we are servants today, and as for the land that you gave to our fathers to eat its fruit and its good, behold, we are servants in it.",
+      "ko": "우리가 오늘날 종이 되었삽는데 곧 주께서 우리 열조에게 주사 그 실과를 먹고 그 아름다운 소산을 누리게 하신 땅에서 종이 되었나이다",
+      "source_text_hash": "6bde00f595bd146819ba1f9a40fd6918b3ec9e64945a9167dadc1ba1fbf1b25f",
+      "translation_text_hash": "84c50ea26aea100fde3db32636b4cd29cce48de60c12786a027031fe955f7f8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 오늘날 종이 되었삽는데 곧 주께서 우리 열조에게 주사 그 실과를 먹고 그 아름다운 소산을 누리게 하신 땅에서 종이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "84c50ea26aea100fde3db32636b4cd29cce48de60c12786a027031fe955f7f8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:37",
+      "sequence": 12549,
+      "chapter_label": "NEH 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "It yields much increase to the kings whom you have set over us because of our sins. Also they have power over our bodies and over our livestock, at their pleasure, and we are in great distress.",
+      "ko": "우리의 죄로 인하여 주께서 우리 위에 세우신 이방 열왕이 이 땅의 많은 소산을 얻고 저희가 우리의 몸과 육축을 임의로 관할하오니 우리의 곤란이 심하오며",
+      "source_text_hash": "113300bd875f310f348a5a13169042edeacc5de03eed3a71c37558a8215aa376",
+      "translation_text_hash": "3bebd3d67142aded3f802307a09bde12053ba5c3ef7e5bde70f52278464cbeee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 죄로 인하여 주께서 우리 위에 세우신 이방 열왕이 이 땅의 많은 소산을 얻고 저희가 우리의 몸과 육축을 임의로 관할하오니 우리의 곤란이 심하오며"
+      ],
+      "raw_text_hashes": [
+        "3bebd3d67142aded3f802307a09bde12053ba5c3ef7e5bde70f52278464cbeee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:9:38",
+      "sequence": 12550,
+      "chapter_label": "NEH 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "NEH",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "Yet for all this, we make a sure covenant, and write it; and our princes, our Levites, and our priests, seal it.”",
+      "ko": "우리가 이 모든 일을 인하여 이제 견고한 언약을 세워 기록하고 우리의 방백들과 레위 사람들과 제사장들이 다 인을 치나이다 하였느니라",
+      "source_text_hash": "8031a4b21c2f7a1d2bc159d0e70ddfeaf10bfe89c83ae9cdee875de981db6362",
+      "translation_text_hash": "d1b65c9a6e6804c39ee5d6f84eaee9ccf91b47ca9abfd8a01dfe82fddb18686a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 모든 일을 인하여 이제 견고한 언약을 세워 기록하고 우리의 방백들과 레위 사람들과 제사장들이 다 인을 치나이다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d1b65c9a6e6804c39ee5d6f84eaee9ccf91b47ca9abfd8a01dfe82fddb18686a"
+      ]
+    }
+  ]
+}

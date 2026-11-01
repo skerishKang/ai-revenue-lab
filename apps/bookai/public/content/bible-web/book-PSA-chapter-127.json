@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:127",
+  "unit_ordinal": 605,
+  "unit_label": "PSA 127",
+  "book_code": "PSA",
+  "chapter_number": 127,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:127:1",
+      "sequence": 16123,
+      "chapter_label": "PSA 127",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 127,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 127,
+          "verse": 1
+        }
+      ],
+      "en": "Unless the LORD builds the house, they who build it labor in vain. Unless the LORD watches over the city, the watchman guards it in vain.",
+      "ko": "여호와께서 집을 세우지 아니하시면 세우는 자의 수고가 헛되며 여호와께서 성을 지키지 아니하시면 파숫군의 경성함이 허사로다",
+      "source_text_hash": "289845b236b26c9d67ceb719c48d80c3564bd0c015b8872159bafea95bcf1b63",
+      "translation_text_hash": "8ebf9e7929c800b0009b82933a665e00e33bc044d501e65ed2dae2699741ef72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 집을 세우지 아니하시면 세우는 자의 수고가 헛되며 여호와께서 성을 지키지 아니하시면 파숫군의 경성함이 허사로다"
+      ],
+      "raw_text_hashes": [
+        "8ebf9e7929c800b0009b82933a665e00e33bc044d501e65ed2dae2699741ef72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:127:2",
+      "sequence": 16124,
+      "chapter_label": "PSA 127",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 127,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 127,
+          "verse": 2
+        }
+      ],
+      "en": "It is vain for you to rise up early, to stay up late, eating the bread of toil, for he gives sleep to his loved ones.",
+      "ko": "너희가 일찌기 일어나고 늦게 누우며 수고의 떡을 먹음이 헛되도다 그러므로 여호와께서 그 사랑하시는 자에게는 잠을 주시는도다",
+      "source_text_hash": "721aed6e8c0ede74032b89ad41ee66393cfb69474306dab51c993fb00342a5fc",
+      "translation_text_hash": "001da578cb4d78e80a98e5248f26f8e7b8022fe25e09d710a383d684f27b5498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 일찌기 일어나고 늦게 누우며 수고의 떡을 먹음이 헛되도다 그러므로 여호와께서 그 사랑하시는 자에게는 잠을 주시는도다"
+      ],
+      "raw_text_hashes": [
+        "001da578cb4d78e80a98e5248f26f8e7b8022fe25e09d710a383d684f27b5498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:127:3",
+      "sequence": 16125,
+      "chapter_label": "PSA 127",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 127,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 127,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, children are a heritage of the LORD. The fruit of the womb is his reward.",
+      "ko": "자식은 여호와의 주신 기업이요 태의 열매는 그의 상급이로다",
+      "source_text_hash": "0c8d29c681a5284d788121d53a6069f76bdaece97eebf2bca1ce6bf35141ab94",
+      "translation_text_hash": "03b80feec8dae96fa2863db66e8d8511f2fc92ac17d50ad3bea50c9e173c0a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자식은 여호와의 주신 기업이요 태의 열매는 그의 상급이로다"
+      ],
+      "raw_text_hashes": [
+        "03b80feec8dae96fa2863db66e8d8511f2fc92ac17d50ad3bea50c9e173c0a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:127:4",
+      "sequence": 16126,
+      "chapter_label": "PSA 127",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 127,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 127,
+          "verse": 4
+        }
+      ],
+      "en": "As arrows in the hand of a mighty man, so are the children of youth.",
+      "ko": "젊은 자의 자식은 장사의 수중의 화살 같으니",
+      "source_text_hash": "2f6388ee430a473967ed37a2883cd28cc25f55c7876a4023412c4ae37ed8a686",
+      "translation_text_hash": "1829b5ecc1b72872accb35a57f17b3522d0f038cceb0cd60bc67243f8f2d9b92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 자의 자식은 장사의 수중의 화살 같으니"
+      ],
+      "raw_text_hashes": [
+        "1829b5ecc1b72872accb35a57f17b3522d0f038cceb0cd60bc67243f8f2d9b92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:127:5",
+      "sequence": 16127,
+      "chapter_label": "PSA 127",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 127,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 127,
+          "verse": 5
+        }
+      ],
+      "en": "Happy is the man who has his quiver full of them. They won’t be disappointed when they speak with their enemies in the gate.",
+      "ko": "이것이 그 전통에 가득한 자는 복되도다 저희가 성문에서 그 원수와 말할 때에 수치를 당치 아니하리로다",
+      "source_text_hash": "9b9d77fc51e930fc9b38f85c2473879d8689c82ea2e1e1ce8f50b924388bce0f",
+      "translation_text_hash": "76c5cfc84b8ad124983e1a46896b91fa537d4c432a35432dbc722692266960a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 그 전통에 가득한 자는 복되도다 저희가 성문에서 그 원수와 말할 때에 수치를 당치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "76c5cfc84b8ad124983e1a46896b91fa537d4c432a35432dbc722692266960a3"
+      ]
+    }
+  ]
+}

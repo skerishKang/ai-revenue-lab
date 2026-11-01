@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:041",
+  "unit_ordinal": 786,
+  "unit_label": "JER 41",
+  "book_code": "JER",
+  "chapter_number": 41,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:41:1",
+      "sequence": 19959,
+      "chapter_label": "JER 41",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the seventh month, Ishmael the son of Nethaniah, the son of Elishama, of the royal offspring and one of the chief officers of the king, and ten men with him, came to Gedaliah the son of Ahikam to Mizpah; and there they ate bread together in Mizpah.",
+      "ko": "칠월에 왕의 종친 엘리사마의 손자 느다냐의 아들 왕의 장관 이스마엘이 열 사람과 함께 미스바로 가서 아히감의 아들 그다랴에게 이르러 미스바에서 함께 떡을 먹다가",
+      "source_text_hash": "186c15f6c62cc6e0d848c3f487cda9be1a1736db0552488155d93f9a2ba5afc2",
+      "translation_text_hash": "c1a40d3d5ad1e52e2893259abc04d71ce6b9c86867bb9b48c2a0293abf4d9507",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월에 왕의 종친 엘리사마의 손자 느다냐의 아들 왕의 장관 이스마엘이 열 사람과 함께 미스바로 가서 아히감의 아들 그다랴에게 이르러 미스바에서 함께 떡을 먹다가"
+      ],
+      "raw_text_hashes": [
+        "c1a40d3d5ad1e52e2893259abc04d71ce6b9c86867bb9b48c2a0293abf4d9507"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:2",
+      "sequence": 19960,
+      "chapter_label": "JER 41",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 2
+        }
+      ],
+      "en": "Then Ishmael the son of Nethaniah arose, and the ten men who were with him, and struck Gedaliah the son of Ahikam the son of Shaphan with the sword and killed him, whom the king of Babylon had made governor over the land.",
+      "ko": "느다냐의 아들 이스마엘과 그와 함께한 열 사람이 일어나서 바벨론 왕의 그 땅 총독으로 세운바 사반의 손자 아히감의 아들 그다랴를 칼로 쳐죽였고",
+      "source_text_hash": "7bd2b8b3298af49ab96163f6e3ae5627386430636cd11822d07c25fa077351d0",
+      "translation_text_hash": "35605d8dddd5060124fb9f10a68fb41af45af40167b53e808fefe6760b2b3453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느다냐의 아들 이스마엘과 그와 함께한 열 사람이 일어나서 바벨론 왕의 그 땅 총독으로 세운바 사반의 손자 아히감의 아들 그다랴를 칼로 쳐죽였고"
+      ],
+      "raw_text_hashes": [
+        "35605d8dddd5060124fb9f10a68fb41af45af40167b53e808fefe6760b2b3453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:3",
+      "sequence": 19961,
+      "chapter_label": "JER 41",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 3
+        }
+      ],
+      "en": "Ishmael also killed all the Jews who were with Gedaliah at Mizpah, and the Chaldean men of war who were found there.",
+      "ko": "이스마엘이 또 미스바에서 그다랴와 함께한 모든 유다인과 거기 있는 갈대아 군사를 죽였더라",
+      "source_text_hash": "98c1abf3d2b03062620ba9dfda54bf7241868a725d29b89d14ed0202bc5485b5",
+      "translation_text_hash": "68b0e0a0afbe7428a89250160f77d74b5d04ce523a3f626f070d0b764371d40a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘이 또 미스바에서 그다랴와 함께한 모든 유다인과 거기 있는 갈대아 군사를 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "68b0e0a0afbe7428a89250160f77d74b5d04ce523a3f626f070d0b764371d40a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:4",
+      "sequence": 19962,
+      "chapter_label": "JER 41",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 4
+        }
+      ],
+      "en": "The second day after he had killed Gedaliah, and no man knew it,",
+      "ko": "그가 그다랴를 죽인지 이틀이 되었어도 이를 아는 사람이 없었더라",
+      "source_text_hash": "dda6133cdd26267cc2299c2975292db7b23cb4d2362479086a504805fcfc6902",
+      "translation_text_hash": "89e97e8864a49857491dd912cebe5f464c596b6e9db10f771e7a78b2808a92da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그다랴를 죽인지 이틀이 되었어도 이를 아는 사람이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "89e97e8864a49857491dd912cebe5f464c596b6e9db10f771e7a78b2808a92da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:5",
+      "sequence": 19963,
+      "chapter_label": "JER 41",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 5
+        }
+      ],
+      "en": "men came from Shechem, from Shiloh, and from Samaria, even eighty men, having their beards shaved and their clothes torn, and having cut themselves, with meal offerings and frankincense in their hand, to bring them to the LORD’s house.",
+      "ko": "때에 사람 팔십명이 그 수염을 깎고 옷을 찢고 몸을 상하고 손에 소제물과 유향을 가지고 세겜과 실로와 사마리아에서부터 와서 여호와의 집으로 나아가려 한지라",
+      "source_text_hash": "af74b2644210ea15fd506a158aedf44ca9b980fab8ae341daa487a44575ab1c6",
+      "translation_text_hash": "2a0d7837338d71547890c89f7b06bbe04c82c9f0e5644ed9891b24995dfe1c2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 사람 팔십명이 그 수염을 깎고 옷을 찢고 몸을 상하고 손에 소제물과 유향을 가지고 세겜과 실로와 사마리아에서부터 와서 여호와의 집으로 나아가려 한지라"
+      ],
+      "raw_text_hashes": [
+        "2a0d7837338d71547890c89f7b06bbe04c82c9f0e5644ed9891b24995dfe1c2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:6",
+      "sequence": 19964,
+      "chapter_label": "JER 41",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 6
+        }
+      ],
+      "en": "Ishmael the son of Nethaniah went out from Mizpah to meet them, weeping all along as he went, and as he met them, he said to them, “Come to Gedaliah the son of Ahikam.”",
+      "ko": "느다냐의 아들 이스마엘이 그들을 영접하러 미스바에서 나와서 울며 행하다가 그들을 만나 아히감의 아들 그다랴에게로 가자 하여",
+      "source_text_hash": "ab1dfc81bc67cbf5359fe320da00957683c521bf987ca5eec30afc8f617a3f9d",
+      "translation_text_hash": "478fde89148369f58008309be4033630768aaa32bae1c153d72cb0e213144fcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느다냐의 아들 이스마엘이 그들을 영접하러 미스바에서 나와서 울며 행하다가 그들을 만나 아히감의 아들 그다랴에게로 가자 하여"
+      ],
+      "raw_text_hashes": [
+        "478fde89148369f58008309be4033630768aaa32bae1c153d72cb0e213144fcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:7",
+      "sequence": 19965,
+      "chapter_label": "JER 41",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 7
+        }
+      ],
+      "en": "It was so, when they came into the middle of the city, that Ishmael the son of Nethaniah killed them, and cast them into the middle of the pit, he, and the men who were with him.",
+      "ko": "그들이 성 중앙에 이를 때에 느다냐의 아들 이스마엘이 자기와 함께한 사람들로 더불어 그들을 죽여 구덩이에 던지니라",
+      "source_text_hash": "c8ee48dc9edd5828f1be237f57dab93af88466b5e49ff4b2df8c59b3020402a0",
+      "translation_text_hash": "7bb8f9d5f42d1bf65cf1e7fc9c778b7654b04643f3fc8bceb9c6576d26224f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 성 중앙에 이를 때에 느다냐의 아들 이스마엘이 자기와 함께한 사람들로 더불어 그들을 죽여 구덩이에 던지니라"
+      ],
+      "raw_text_hashes": [
+        "7bb8f9d5f42d1bf65cf1e7fc9c778b7654b04643f3fc8bceb9c6576d26224f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:8",
+      "sequence": 19966,
+      "chapter_label": "JER 41",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 8
+        }
+      ],
+      "en": "But ten men were found among those who said to Ishmael, “Don’t kill us; for we have stores hidden in the field, of wheat, and of barley, and of oil, and of honey.” So he stopped, and didn’t kill them among their brothers.",
+      "ko": "그 중에 열 사람은 이스마엘에게 이르기를 우리가 밀과 보리와 기름과 꿀을 밭에 감추었으니 우리를 죽이지 말라 하였으므로 그가 그치고 그들을 그 형제와 함께 죽이지 아니하였더라",
+      "source_text_hash": "df286a677d7d8350710edc3f5638027632573906c8fa4da1e6112dd69dc1ce71",
+      "translation_text_hash": "492ed5414cf5a429e10f6e19a44c937aca8b4f6d3d3da85e63a2202c3195dbf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 열 사람은 이스마엘에게 이르기를 우리가 밀과 보리와 기름과 꿀을 밭에 감추었으니 우리를 죽이지 말라 하였으므로 그가 그치고 그들을 그 형제와 함께 죽이지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "492ed5414cf5a429e10f6e19a44c937aca8b4f6d3d3da85e63a2202c3195dbf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:9",
+      "sequence": 19967,
+      "chapter_label": "JER 41",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 9
+        }
+      ],
+      "en": "Now the pit in which Ishmael cast all the dead bodies of the men whom he had killed, by the side of Gedaliah (this was that which Asa the king had made for fear of Baasha king of Israel), Ishmael the son of Nethaniah filled it with those who were killed.",
+      "ko": "이스마엘이 그다랴에게 속한 사람들을 죽이고 그 시체를 던진 구덩이는 아사왕이 이스라엘 왕 바아사를 두려워하여 팠던 것이라 느다냐의 아들 이스마엘이 그 죽인 시체로 거기 채우고",
+      "source_text_hash": "c16751cfc359a6bf95f9b88c99074baa020efe19af5556704114c5fb919a35d1",
+      "translation_text_hash": "ed68114eb54fb6c98b064f7e74f040c0cbbddd6a3036d9c037e70a5943456919",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘이 그다랴에게 속한 사람들을 죽이고 그 시체를 던진 구덩이는 아사왕이 이스라엘 왕 바아사를 두려워하여 팠던 것이라 느다냐의 아들 이스마엘이 그 죽인 시체로 거기 채우고"
+      ],
+      "raw_text_hashes": [
+        "ed68114eb54fb6c98b064f7e74f040c0cbbddd6a3036d9c037e70a5943456919"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:10",
+      "sequence": 19968,
+      "chapter_label": "JER 41",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 10
+        }
+      ],
+      "en": "Then Ishmael carried away captive all of the people who were left in Mizpah, even the king’s daughters, and all the people who remained in Mizpah, whom Nebuzaradan the captain of the guard had committed to Gedaliah the son of Ahikam. Ishmael the son of Nethaniah carried them away captive, and departed to go over to the children of Ammon.",
+      "ko": "미스바에 남아 있는 왕의 딸들과 모든 백성 곧 시위대장 느부사라단이 아히감의 아들 그다랴에게 위임하였던바 미스바에 남아 있는 모든 백성을 사로잡되 곧 느다냐의 아들 이스마엘이 그들을 사로잡고 암몬 자손에게로 가려 하여 떠나니라",
+      "source_text_hash": "9c3646fe1768ee9bc3473adc899522d7dfedf200011cddb2bbfac2c1a43831fb",
+      "translation_text_hash": "85cb6c3b3d7ab9b970f559389c47b314c6fb7df9e97313c38746395785abb590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미스바에 남아 있는 왕의 딸들과 모든 백성 곧 시위대장 느부사라단이 아히감의 아들 그다랴에게 위임하였던바 미스바에 남아 있는 모든 백성을 사로잡되 곧 느다냐의 아들 이스마엘이 그들을 사로잡고 암몬 자손에게로 가려 하여 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "85cb6c3b3d7ab9b970f559389c47b314c6fb7df9e97313c38746395785abb590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:11",
+      "sequence": 19969,
+      "chapter_label": "JER 41",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 11
+        }
+      ],
+      "en": "But when Johanan the son of Kareah, and all the captains of the forces who were with him, heard of all the evil that Ishmael the son of Nethaniah had done,",
+      "ko": "가레아의 아들 요하난과 그와 함께 있는 모든 군대장관이 느다냐의 아들 이스마엘의 행한 모든 악을 듣고",
+      "source_text_hash": "f16300e4f121ec4a7e7b34a1ccf40401830db75444b5230aab4c1bd37b31d10e",
+      "translation_text_hash": "c45bd056e90593957e54cdbc8447484df871f77969ccb7e9fe15b35b7f3cca2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가레아의 아들 요하난과 그와 함께 있는 모든 군대장관이 느다냐의 아들 이스마엘의 행한 모든 악을 듣고"
+      ],
+      "raw_text_hashes": [
+        "c45bd056e90593957e54cdbc8447484df871f77969ccb7e9fe15b35b7f3cca2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:12",
+      "sequence": 19970,
+      "chapter_label": "JER 41",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 12
+        }
+      ],
+      "en": "then they took all the men, and went to fight with Ishmael the son of Nethaniah, and found him by the great waters that are in Gibeon.",
+      "ko": "모든 사람을 데리고 느다냐의 아들 이스마엘과 싸우러 가다가 기브온 큰 물가에서 그를 만나매",
+      "source_text_hash": "fdc298f6fda8ad5dd4504e0b2525bfa90c6f2cdc0976d58abe85d1ea56ff4413",
+      "translation_text_hash": "4ee92e411890dcd4d0af68efbd60116b105323fe569e4c670eb082dfc5a424af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람을 데리고 느다냐의 아들 이스마엘과 싸우러 가다가 기브온 큰 물가에서 그를 만나매"
+      ],
+      "raw_text_hashes": [
+        "4ee92e411890dcd4d0af68efbd60116b105323fe569e4c670eb082dfc5a424af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:13",
+      "sequence": 19971,
+      "chapter_label": "JER 41",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 13
+        }
+      ],
+      "en": "Now when all the people who were with Ishmael saw Johanan the son of Kareah, and all the captains of the forces who were with him, then they were glad.",
+      "ko": "이스마엘과 함께 있던 모든 백성이 가레아의 아들 요하난과 그와 함께한 모든 군대장관을 보고 기뻐한지라",
+      "source_text_hash": "90a18e20c4cc2cf2c4484fdb9f09f27a4bb5afdb7bb90a483b34d4b9441a29fb",
+      "translation_text_hash": "26fb830362a7cf4b51ec7ec1522478c55e6e7ff05a1f84ea3e7c0254484b2216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘과 함께 있던 모든 백성이 가레아의 아들 요하난과 그와 함께한 모든 군대장관을 보고 기뻐한지라"
+      ],
+      "raw_text_hashes": [
+        "26fb830362a7cf4b51ec7ec1522478c55e6e7ff05a1f84ea3e7c0254484b2216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:14",
+      "sequence": 19972,
+      "chapter_label": "JER 41",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 14
+        }
+      ],
+      "en": "So all the people who Ishmael had carried away captive from Mizpah turned about and came back, and went to Johanan the son of Kareah.",
+      "ko": "이에 미스바에서 이스마엘에게 포로되었던 그 모든 백성이 돌이켜 가레아의 아들 요하난에게로 돌아가니",
+      "source_text_hash": "0d303c1534288a600a327ed3af9d1c1dba437defe1e301f7b94c0bd7b030b6fc",
+      "translation_text_hash": "423354f85403366976dc44ba2ca28682c1bb5c05f8db5c0bd88183822487e188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 미스바에서 이스마엘에게 포로되었던 그 모든 백성이 돌이켜 가레아의 아들 요하난에게로 돌아가니"
+      ],
+      "raw_text_hashes": [
+        "423354f85403366976dc44ba2ca28682c1bb5c05f8db5c0bd88183822487e188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:15",
+      "sequence": 19973,
+      "chapter_label": "JER 41",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 15
+        }
+      ],
+      "en": "But Ishmael the son of Nethaniah escaped from Johanan with eight men, and went to the children of Ammon.",
+      "ko": "느다냐의 아들 이스마엘이 여덟 사람과 함께 요하난을 피하여 암몬 자손에게로 가니라",
+      "source_text_hash": "aa806f5aa1262f9ed51b33cd52b7c3fe51b0202645a6752c9b7625ba1383fd48",
+      "translation_text_hash": "24b8f748e354813cd4eb91effef8e07f37a4f503f66eea2e3678d7d2cfaaafa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느다냐의 아들 이스마엘이 여덟 사람과 함께 요하난을 피하여 암몬 자손에게로 가니라"
+      ],
+      "raw_text_hashes": [
+        "24b8f748e354813cd4eb91effef8e07f37a4f503f66eea2e3678d7d2cfaaafa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:16",
+      "sequence": 19974,
+      "chapter_label": "JER 41",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 16
+        }
+      ],
+      "en": "Then Johanan the son of Kareah and all the captains of the forces who were with him took all the remnant of the people whom he had recovered from Ishmael the son of Nethaniah, from Mizpah, after he had killed Gedaliah the son of Ahikam—the men of war, with the women, the children, and the eunuchs, whom he had brought back from Gibeon.",
+      "ko": "가레아의 아들 요하난과 그와 함께하는 모든 군대장관이 느다냐의 아들 이스마엘이 아히감의 아들 그다랴를 죽이고 미스바에서 잡아간 모든 남은 백성 곧 군사와 여인과 유아와 환관을 기브온에서 빼앗아 가지고 돌아와서",
+      "source_text_hash": "5a7f13e07b4d2fe4251e44a06832da3859317faa39b368332981a977369a0d63",
+      "translation_text_hash": "2e2113dff611984f130652d413021620e93cb85acb8b5da475ce0747b1b70457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가레아의 아들 요하난과 그와 함께하는 모든 군대장관이 느다냐의 아들 이스마엘이 아히감의 아들 그다랴를 죽이고 미스바에서 잡아간 모든 남은 백성 곧 군사와 여인과 유아와 환관을 기브온에서 빼앗아 가지고 돌아와서"
+      ],
+      "raw_text_hashes": [
+        "2e2113dff611984f130652d413021620e93cb85acb8b5da475ce0747b1b70457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:17",
+      "sequence": 19975,
+      "chapter_label": "JER 41",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 17
+        }
+      ],
+      "en": "They departed and lived in Geruth Chimham, which is by Bethlehem, to go to enter into Egypt",
+      "ko": "애굽으로 가려 하여 떠나 베들레헴 근처에 있는 게롯김함에 머무렀으니",
+      "source_text_hash": "296d42e7b4d21e3c272761cf882dce6b22cc5b59c2732147ba92a3eed97b0215",
+      "translation_text_hash": "0962ce2b94352a4f96e8f747ed203696328280bd8cb9fc32714504168d7b2f46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽으로 가려 하여 떠나 베들레헴 근처에 있는 게롯김함에 머무렀으니"
+      ],
+      "raw_text_hashes": [
+        "0962ce2b94352a4f96e8f747ed203696328280bd8cb9fc32714504168d7b2f46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:41:18",
+      "sequence": 19976,
+      "chapter_label": "JER 41",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 41,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 41,
+          "verse": 18
+        }
+      ],
+      "en": "because of the Chaldeans; for they were afraid of them, because Ishmael the son of Nethaniah had killed Gedaliah the son of Ahikam, whom the king of Babylon made governor over the land.",
+      "ko": "이는 느다냐의 아들 이스마엘이 바벨론 왕의 그 땅 총독으로 세운 아히감의 아들 그다랴를 죽였으므로 그들이 갈대아인을 두려워함이었더라",
+      "source_text_hash": "07e4fc1bde719fa20af35c43b1f22d61fc6d5dfa395be31c6d353d55c5a4e55b",
+      "translation_text_hash": "5c46637d0a169adbc390fafd1384710a0bd68a27970ede07ee23db283a5bf975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 느다냐의 아들 이스마엘이 바벨론 왕의 그 땅 총독으로 세운 아히감의 아들 그다랴를 죽였으므로 그들이 갈대아인을 두려워함이었더라"
+      ],
+      "raw_text_hashes": [
+        "5c46637d0a169adbc390fafd1384710a0bd68a27970ede07ee23db283a5bf975"
+      ]
+    }
+  ]
+}

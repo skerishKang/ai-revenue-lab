@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:017",
+  "unit_ordinal": 819,
+  "unit_label": "EZK 17",
+  "book_code": "EZK",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:17:1",
+      "sequence": 20827,
+      "chapter_label": "EZK 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:2",
+      "sequence": 20828,
+      "chapter_label": "EZK 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, tell a riddle, and speak a parable to the house of Israel;",
+      "ko": "인자야 너는 수수께끼와 비유를 이스라엘 족속에게 베풀어",
+      "source_text_hash": "2215ebae129d2b831362eedb2999198868ef173c3d90ce310d5e45782f8e22ad",
+      "translation_text_hash": "195a5d8675ad93ef612fd62cc1ad13ad406a3a1ac0e80eaa43209177f5913da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 수수께끼와 비유를 이스라엘 족속에게 베풀어"
+      ],
+      "raw_text_hashes": [
+        "195a5d8675ad93ef612fd62cc1ad13ad406a3a1ac0e80eaa43209177f5913da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:3",
+      "sequence": 20829,
+      "chapter_label": "EZK 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "and say, ‘The Lord GOD says: “A great eagle with great wings and long feathers, full of feathers which had various colors, came to Lebanon and took the top of the cedar.",
+      "ko": "이르기를 주 여호와의 말씀에 채색이 구비하고 날개가 크고 깃이 길고 털이 숱한 큰 독수리가 레바논에 이르러 백향목 높은 가지를 취하되",
+      "source_text_hash": "5e3b1e209c33fbb2d1b2e02c5243c22b547c987ca3d598e6002fecb5f9158350",
+      "translation_text_hash": "d5e49aa0357aeb5e57389751664bf3880db1e6d1cca318466e8704d476de1882",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 주 여호와의 말씀에 채색이 구비하고 날개가 크고 깃이 길고 털이 숱한 큰 독수리가 레바논에 이르러 백향목 높은 가지를 취하되"
+      ],
+      "raw_text_hashes": [
+        "d5e49aa0357aeb5e57389751664bf3880db1e6d1cca318466e8704d476de1882"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:4",
+      "sequence": 20830,
+      "chapter_label": "EZK 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "He cropped off the topmost of its young twigs, and carried it to a land of traffic. He planted it in a city of merchants.",
+      "ko": "그 연한 가지 끝을 꺾어 가지고 장사하는 땅에 이르러 상고의 성읍에 두고",
+      "source_text_hash": "ce09684c1ce58d2405d068ad3ec359fc0dadf1b85cfe7404a8c3fb971524005f",
+      "translation_text_hash": "e82241ea4e2ba44e7bd0e7aa6a3fcaefbd386da4deba23e0bc63378ded67c9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 연한 가지 끝을 꺾어 가지고 장사하는 땅에 이르러 상고의 성읍에 두고"
+      ],
+      "raw_text_hashes": [
+        "e82241ea4e2ba44e7bd0e7aa6a3fcaefbd386da4deba23e0bc63378ded67c9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:5",
+      "sequence": 20831,
+      "chapter_label": "EZK 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "“‘“He also took some of the seed of the land and planted it in fruitful soil. He placed it beside many waters. He set it as a willow tree.",
+      "ko": "또 그 땅의 종자를 취하여 옥토에 심되 수양버들 가지 처럼 큰 물 가에 심더니",
+      "source_text_hash": "1713553c4e2f84992e9d2f41314af3e10ae799f134a56b62126b8e35af7274cc",
+      "translation_text_hash": "eeb35ed4e38599bde71e1ab95507142138b0137923856c50d1f3ee673e37a2d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 땅의 종자를 취하여 옥토에 심되 수양버들 가지 처럼 큰 물 가에 심더니"
+      ],
+      "raw_text_hashes": [
+        "eeb35ed4e38599bde71e1ab95507142138b0137923856c50d1f3ee673e37a2d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:6",
+      "sequence": 20832,
+      "chapter_label": "EZK 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "It grew and became a spreading vine of low stature, whose branches turned toward him, and its roots were under him. So it became a vine, produced branches, and shot out sprigs.",
+      "ko": "그것이 자라며 퍼져서 높지 아니한 포도나무 곧 굵은 가지와 가는 가지가 난 포도나무가 되어 그 가지는 독수리를 향하였고 그 뿌리는 독수리의 아래 있었더라",
+      "source_text_hash": "950e874e233b097cd27d0aa1ab3d5a5bb0aa5412cb7a706771d397c492107b0a",
+      "translation_text_hash": "58ab68e65b9d24849fbf4f40d4c032193701170b91870e39a752b1d5dbb42652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 자라며 퍼져서 높지 아니한 포도나무 곧 굵은 가지와 가는 가지가 난 포도나무가 되어 그 가지는 독수리를 향하였고 그 뿌리는 독수리의 아래 있었더라"
+      ],
+      "raw_text_hashes": [
+        "58ab68e65b9d24849fbf4f40d4c032193701170b91870e39a752b1d5dbb42652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:7",
+      "sequence": 20833,
+      "chapter_label": "EZK 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“There was also another great eagle with great wings and many feathers. Behold, this vine bent its roots toward him, and shot out its branches toward him, from the ground where it was planted, that he might water it.",
+      "ko": "또 날개가 크고 털이 많은 큰 독수리 하나가 있었는데 그 포도나무가 이 독수리에게 물을 받으려고 그 심긴 두둑에서 그를 향하여 뿌리가 발하고 가지가 퍼졌도다",
+      "source_text_hash": "1b0f232055321202b25d5c573098aa19b4471f53e4d17f6ac6b3b2607da98ff4",
+      "translation_text_hash": "f2f7e187531a7f88dba022310f5dc054a0505c768f9803f62d0d46558ac060b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 날개가 크고 털이 많은 큰 독수리 하나가 있었는데 그 포도나무가 이 독수리에게 물을 받으려고 그 심긴 두둑에서 그를 향하여 뿌리가 발하고 가지가 퍼졌도다"
+      ],
+      "raw_text_hashes": [
+        "f2f7e187531a7f88dba022310f5dc054a0505c768f9803f62d0d46558ac060b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:8",
+      "sequence": 20834,
+      "chapter_label": "EZK 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "It was planted in a good soil by many waters, that it might produce branches and that it might bear fruit, that it might be a good vine.”’",
+      "ko": "그 포도나무를 큰 물 가 옥토에 심은 것은 가지를 내고 열매를 맺어서 아름다운 포도나무를 이루게 하려 하였음이니라",
+      "source_text_hash": "7a5a39fc054fdae9bc5a5d057cea0df92055a41423fc020074d17f475726ac31",
+      "translation_text_hash": "76721fae46631a40a61d8db380eb7f4f0abc4b89f0ee6249b3f5dfcccde26c2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 포도나무를 큰 물 가 옥토에 심은 것은 가지를 내고 열매를 맺어서 아름다운 포도나무를 이루게 하려 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "76721fae46631a40a61d8db380eb7f4f0abc4b89f0ee6249b3f5dfcccde26c2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:9",
+      "sequence": 20835,
+      "chapter_label": "EZK 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "“Say, ‘The Lord GOD says: “Will it prosper? Won’t he pull up its roots and cut off its fruit, that it may wither, that all its fresh springing leaves may wither? It can’t be raised from its roots by a strong arm or many people.",
+      "ko": "너는 이르기를 주 여호와의 말씀에 그 나무가 능히 번성하겠느냐 이 독수리가 어찌 그 뿌리를 빼고 실과를 따며 그 나무로 시들게 하지 아니하겠으며 그 연한 잎사귀로 마르게 하지 아니하겠느냐 많은 백성이나 강한 팔이 아니라도 그 뿌리를 뽑으리라",
+      "source_text_hash": "e2442aa4e1a3a5c578f0b0075c204b460095e4b09c3e04b190c0e807a6a19c98",
+      "translation_text_hash": "43dc7b22a077272c50206b849dad464325c6f51f0a1332a5903d9c874e6a0808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이르기를 주 여호와의 말씀에 그 나무가 능히 번성하겠느냐 이 독수리가 어찌 그 뿌리를 빼고 실과를 따며 그 나무로 시들게 하지 아니하겠으며 그 연한 잎사귀로 마르게 하지 아니하겠느냐 많은 백성이나 강한 팔이 아니라도 그 뿌리를 뽑으리라"
+      ],
+      "raw_text_hashes": [
+        "43dc7b22a077272c50206b849dad464325c6f51f0a1332a5903d9c874e6a0808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:10",
+      "sequence": 20836,
+      "chapter_label": "EZK 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "Yes, behold, being planted, will it prosper? Won’t it utterly wither when the east wind touches it? It will wither in the ground where it grew.”’”",
+      "ko": "볼찌어다 그것이 심겼으나 번성하겠느냐 동풍이 부딪힐 때에 아주 마르지 아니하겠느냐 그 자라던 두둑에서 마르리라 하셨다 하라",
+      "source_text_hash": "61ab799e218e39f2748f93160737c19c8c23b73727a576a2e87646331a0292d0",
+      "translation_text_hash": "793611dc488fd3002a1f339c91d749d4d8898d2cb31dacaac4452d5b69395ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 그것이 심겼으나 번성하겠느냐 동풍이 부딪힐 때에 아주 마르지 아니하겠느냐 그 자라던 두둑에서 마르리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "793611dc488fd3002a1f339c91d749d4d8898d2cb31dacaac4452d5b69395ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:11",
+      "sequence": 20837,
+      "chapter_label": "EZK 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:12",
+      "sequence": 20838,
+      "chapter_label": "EZK 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "“Say now to the rebellious house, ‘Don’t you know what these things mean?’ Tell them, ‘Behold, the king of Babylon came to Jerusalem, and took its king, and its princes, and brought them to him to Babylon.",
+      "ko": "너는 패역한 족속에게 묻기를 너희가 이 비유를 깨닫지 못하겠느냐 하고 그들에게 고하기를 바벨론 왕이 예루살렘에 이르러 왕과 방백을 사로잡아 바벨론 자기에게로 끌어가고",
+      "source_text_hash": "cf4e650b2f7509a44546bd616a42bf607e94dda8a61abeb7e37dabd4ebcbe492",
+      "translation_text_hash": "28d5ea9a804196c669f07e433202ad29a1b37839c9e7f5c83460be5d64658f43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 패역한 족속에게 묻기를 너희가 이 비유를 깨닫지 못하겠느냐 하고 그들에게 고하기를 바벨론 왕이 예루살렘에 이르러 왕과 방백을 사로잡아 바벨론 자기에게로 끌어가고"
+      ],
+      "raw_text_hashes": [
+        "28d5ea9a804196c669f07e433202ad29a1b37839c9e7f5c83460be5d64658f43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:13",
+      "sequence": 20839,
+      "chapter_label": "EZK 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "He took one of the royal offspring, and made a covenant with him. He also brought him under an oath, and took away the mighty of the land,",
+      "ko": "그 왕족 중에 하나를 택하여 언약을 세우고 그로 맹세케 하고 또 그 땅의 능한 자들을 옮겨 갔나니",
+      "source_text_hash": "8667a0ec5bd424daafb927ab31a3a78e53c7fa45e3cad1deda704f8c4118bba0",
+      "translation_text_hash": "e66526729eb984b8f2182e6790283bae6025e11437e7d386bbb566ca6b3fccba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 왕족 중에 하나를 택하여 언약을 세우고 그로 맹세케 하고 또 그 땅의 능한 자들을 옮겨 갔나니"
+      ],
+      "raw_text_hashes": [
+        "e66526729eb984b8f2182e6790283bae6025e11437e7d386bbb566ca6b3fccba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:14",
+      "sequence": 20840,
+      "chapter_label": "EZK 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "that the kingdom might be brought low, that it might not lift itself up, but that by keeping his covenant it might stand.",
+      "ko": "이는 나라를 낮추어 스스로 서지 못하고 그 언약을 지켜야 능히 서게 하려 하였음이어늘",
+      "source_text_hash": "b59a6b60d426415f518f9913f6037814a694c8eaa05ae703d63b50a90488b7a7",
+      "translation_text_hash": "06d209b78431736beb9727d0500f74312f78381ae96d108d553b1aa8f8ba050a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 나라를 낮추어 스스로 서지 못하고 그 언약을 지켜야 능히 서게 하려 하였음이어늘"
+      ],
+      "raw_text_hashes": [
+        "06d209b78431736beb9727d0500f74312f78381ae96d108d553b1aa8f8ba050a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:15",
+      "sequence": 20841,
+      "chapter_label": "EZK 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "But he rebelled against him in sending his ambassadors into Egypt, that they might give him horses and many people. Will he prosper? Will he who does such things escape? Will he break the covenant, and still escape?",
+      "ko": "그가 사자를 애굽에 보내어 말과 군대를 구함으로 바벨론 왕을 배반하였으니 형통하겠느냐 이런 일을 행한 자가 피하겠느냐 언약을 배반하고야 피하겠느냐",
+      "source_text_hash": "9ba213a2d11ea5ea3662b05aeb1af4649c7c8699c79ae4bc983204477db061dd",
+      "translation_text_hash": "58675a47b8fdac6ca4c3dcd526f6bd67be667f84534eb51002e3bd14790f6f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 사자를 애굽에 보내어 말과 군대를 구함으로 바벨론 왕을 배반하였으니 형통하겠느냐 이런 일을 행한 자가 피하겠느냐 언약을 배반하고야 피하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "58675a47b8fdac6ca4c3dcd526f6bd67be667f84534eb51002e3bd14790f6f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:16",
+      "sequence": 20842,
+      "chapter_label": "EZK 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "“‘As I live,’ says the Lord GOD, ‘surely in the place where the king dwells who made him king, whose oath he despised, and whose covenant he broke, even with him in the middle of Babylon he will die.",
+      "ko": "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 바벨론 왕이 그를 왕으로 세웠거늘 그가 맹세를 업신여겨 언약을 배반하였은즉 그 왕의 거하는 곳 바벨론 중에서 왕과 함께 있다가 죽을것이라",
+      "source_text_hash": "72f4fd52fc07e7a06da5cde5020fa51886dbd24b106aeb04c3c6cf0f51ec0282",
+      "translation_text_hash": "19a231d52d6b139e47381929af01617d93c0e9093309b8cfea7447beea1b5542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 바벨론 왕이 그를 왕으로 세웠거늘 그가 맹세를 업신여겨 언약을 배반하였은즉 그 왕의 거하는 곳 바벨론 중에서 왕과 함께 있다가 죽을것이라"
+      ],
+      "raw_text_hashes": [
+        "19a231d52d6b139e47381929af01617d93c0e9093309b8cfea7447beea1b5542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:17",
+      "sequence": 20843,
+      "chapter_label": "EZK 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Pharaoh with his mighty army and great company won’t help him in the war, when they cast up mounds and build forts to cut off many persons.",
+      "ko": "대적이 토성을 쌓으며 운제를 세우고 많은 사람을 멸절하려 할 때에 바로가 그 큰 군대와 많은 무리로도 그 전쟁에 그를 도와 주지 못하리라",
+      "source_text_hash": "ba3428ad0bb7fb9691de7e1bb88c09f6add9ca919c1c594dde2d65cb1df155b7",
+      "translation_text_hash": "25848640e98f4187e9a3ab5b154a508838009359767dc62136c1bf38184c6267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적이 토성을 쌓으며 운제를 세우고 많은 사람을 멸절하려 할 때에 바로가 그 큰 군대와 많은 무리로도 그 전쟁에 그를 도와 주지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "25848640e98f4187e9a3ab5b154a508838009359767dc62136c1bf38184c6267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:18",
+      "sequence": 20844,
+      "chapter_label": "EZK 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "For he has despised the oath by breaking the covenant; and behold, he had given his hand, and yet has done all these things. He won’t escape.",
+      "ko": "그가 이미 손을 내어 밀어 언약하였거늘 맹세를 업신여겨 언약을 배반하고 이 모든 일을 행하였으니 피하지 못하리라",
+      "source_text_hash": "8f96bb97ce415e132c5f9340c7d9e77a933d809c2260b1c31bfeeb076ec6268f",
+      "translation_text_hash": "c42bb33f08873d1de4e95af4abe3bdb4b561675744ee17f32347e0c42644c1da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이미 손을 내어 밀어 언약하였거늘 맹세를 업신여겨 언약을 배반하고 이 모든 일을 행하였으니 피하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "c42bb33f08873d1de4e95af4abe3bdb4b561675744ee17f32347e0c42644c1da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:19",
+      "sequence": 20845,
+      "chapter_label": "EZK 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘As I live, I will surely bring on his own head my oath that he has despised and my covenant that he has broken.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 그가 내 맹세를 업신여기고 내 언약을 배반하였은즉 내가 그 죄를 그 머리에 돌리되",
+      "source_text_hash": "db1ea3f6d6760532a17eb5c834d12c1d268f6eb05e91d587cd804dec181afe6b",
+      "translation_text_hash": "6f4f649b2f5644798e75a483137ec69b93a2fa7ae8953ec497ea7bac57722786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 그가 내 맹세를 업신여기고 내 언약을 배반하였은즉 내가 그 죄를 그 머리에 돌리되"
+      ],
+      "raw_text_hashes": [
+        "6f4f649b2f5644798e75a483137ec69b93a2fa7ae8953ec497ea7bac57722786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:20",
+      "sequence": 20846,
+      "chapter_label": "EZK 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "I will spread my net on him, and he will be taken in my snare. I will bring him to Babylon, and will enter into judgment with him there for his trespass that he has trespassed against me.",
+      "ko": "내 그물을 그 위에 베풀며 내 올무에 걸리게 하여 끌고 바벨론으로 가서 나를 반역한 그 반역을 거기서 국문할찌며",
+      "source_text_hash": "46cfff0b11f0882c9b63b76114844b68e4b49ec56eb7375766d19a1e00fda790",
+      "translation_text_hash": "2e064c56b7ee85b95db7f10ed0f77c14f821c3b64bc82500951a3eed90da449c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 그물을 그 위에 베풀며 내 올무에 걸리게 하여 끌고 바벨론으로 가서 나를 반역한 그 반역을 거기서 국문할찌며"
+      ],
+      "raw_text_hashes": [
+        "2e064c56b7ee85b95db7f10ed0f77c14f821c3b64bc82500951a3eed90da449c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:21",
+      "sequence": 20847,
+      "chapter_label": "EZK 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "All his fugitives in all his bands will fall by the sword, and those who remain will be scattered toward every wind. Then you will know that I, the LORD, have spoken it.’",
+      "ko": "그 모든 군대에서 도망한 자들은 다 칼에 엎드러질 것이요 그 남은 자는 사방으로 흩어지리니 나 여호와가 이것을 말한 줄을 너희가 알리라",
+      "source_text_hash": "fdbf116e1aebade776fe6d5ba6e05e1be6f23029c5eaedbf23f067e157d3df71",
+      "translation_text_hash": "9f95b3199f4b10ebbd2e0dcd88b955d9faac9d8cd9620625ce1b66221cc56c12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 군대에서 도망한 자들은 다 칼에 엎드러질 것이요 그 남은 자는 사방으로 흩어지리니 나 여호와가 이것을 말한 줄을 너희가 알리라"
+      ],
+      "raw_text_hashes": [
+        "9f95b3199f4b10ebbd2e0dcd88b955d9faac9d8cd9620625ce1b66221cc56c12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:22",
+      "sequence": 20848,
+      "chapter_label": "EZK 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "“The Lord GOD says: ‘I will also take some of the lofty top of the cedar, and will plant it. I will crop off from the topmost of its young twigs a tender one, and I will plant it on a high and lofty mountain.",
+      "ko": "나 주 여호와가 말하노라 내가 또 백향목 꼭대기에서 높은 가지를 취하여 심으리라 내가 그 높은 새 가지 끝에서 연한 가지를 꺾어 높고 빼어난 산에 심되",
+      "source_text_hash": "45f774c4c9edfc9fbae11861a7f7caf995e1f49cf1af4e62893acaffe28b9a1d",
+      "translation_text_hash": "d8220e36b5932acb867039dd350afc180a0a0f118334abc692da7bab42ec07d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 또 백향목 꼭대기에서 높은 가지를 취하여 심으리라 내가 그 높은 새 가지 끝에서 연한 가지를 꺾어 높고 빼어난 산에 심되"
+      ],
+      "raw_text_hashes": [
+        "d8220e36b5932acb867039dd350afc180a0a0f118334abc692da7bab42ec07d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:23",
+      "sequence": 20849,
+      "chapter_label": "EZK 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "I will plant it in the mountain of the height of Israel; and it will produce boughs, and bear fruit, and be a good cedar. Birds of every kind will dwell in the shade of its branches.",
+      "ko": "이스라엘 높은 산에 심으리니 그 가지가 무성하고 열매를 맺어서 아름다운 백향목을 이룰 것이요 각양 새가 그 아래 깃들이며 그 가지 그늘에 거할찌라",
+      "source_text_hash": "4e7cdc7a20895c8cc9b694fa5199fd4ad25816c91caf59ffa881c6d8942ed6b8",
+      "translation_text_hash": "4535b11acf795bdc457a7140aa2ef4b06e454b1d2f8e8e6a5fe22d87225fe1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 높은 산에 심으리니 그 가지가 무성하고 열매를 맺어서 아름다운 백향목을 이룰 것이요 각양 새가 그 아래 깃들이며 그 가지 그늘에 거할찌라"
+      ],
+      "raw_text_hashes": [
+        "4535b11acf795bdc457a7140aa2ef4b06e454b1d2f8e8e6a5fe22d87225fe1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:17:24",
+      "sequence": 20850,
+      "chapter_label": "EZK 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "All the trees of the field will know that I, the LORD, have brought down the high tree, have exalted the low tree, have dried up the green tree, and have made the dry tree flourish. “‘I, the LORD, have spoken and have done it.’”",
+      "ko": "들의 모든 나무가 나 여호와는 높은 나무를 낮추고 낮은 나무를 높이며 푸른 나무를 말리우고 마른 나무를 무성케 하는줄 알리라 나 여호와는 말하고 이루느니라 하라",
+      "source_text_hash": "fe08694e2b9c98822f8fe8a83ad21c4c841c70cd25bd44c57b8d592c9f80f473",
+      "translation_text_hash": "b5c4e0bda7df8dae1a10c3fbf6e88a2a6c2e42d1d91f8e37f043f4e15e3d3412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들의 모든 나무가 나 여호와는 높은 나무를 낮추고 낮은 나무를 높이며 푸른 나무를 말리우고 마른 나무를 무성케 하는줄 알리라 나 여호와는 말하고 이루느니라 하라"
+      ],
+      "raw_text_hashes": [
+        "b5c4e0bda7df8dae1a10c3fbf6e88a2a6c2e42d1d91f8e37f043f4e15e3d3412"
+      ]
+    }
+  ]
+}

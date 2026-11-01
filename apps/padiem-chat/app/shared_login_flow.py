@@ -175,8 +175,10 @@ class SharedLoginFlow(ComparisonFlow):
 async def revoke_with_httpx(data):
     from . import httpx_compat as httpx
     async with httpx.AsyncClient(follow_redirects=False) as client:
-        async with client.stream('POST', AUTH + '/logout', data=data) as response:
+        from .shared_auth_compare_flow import SERVER_HEADERS
+        async with client.stream('POST', AUTH + '/logout', data=data, headers=SERVER_HEADERS) as response:
             if response.status_code != 200:
+                print(f"[shared_login] revoke status={response.status_code}", flush=True)
                 raise ValueError('revoke_failed')
 
 

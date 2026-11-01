@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:032",
+  "unit_ordinal": 777,
+  "unit_label": "JER 32",
+  "book_code": "JER",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:32:1",
+      "sequence": 19733,
+      "chapter_label": "JER 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "This is the word that came to Jeremiah from the LORD in the tenth year of Zedekiah king of Judah, which was the eighteenth year of Nebuchadnezzar.",
+      "ko": "유다 왕 시드기야의 제 십년 곧 느부갓네살의 제 십 팔년에 여호와의 말씀이 예레미야에게 임하니라",
+      "source_text_hash": "020af00a6230e81ace4323315500602be9abbac6cabd2ba799cfab69901c4289",
+      "translation_text_hash": "57af054dc613aa6d5fe9f637bccb2391f88e8bbcb5d956d506c0122dc674571b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 시드기야의 제 십년 곧 느부갓네살의 제 십 팔년에 여호와의 말씀이 예레미야에게 임하니라"
+      ],
+      "raw_text_hashes": [
+        "57af054dc613aa6d5fe9f637bccb2391f88e8bbcb5d956d506c0122dc674571b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:2",
+      "sequence": 19734,
+      "chapter_label": "JER 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "Now at that time the king of Babylon’s army was besieging Jerusalem. Jeremiah the prophet was shut up in the court of the guard, which was in the king of Judah’s house.",
+      "ko": "때에 바벨론 군대는 예루살렘을 에워싸고 선지자 예레미야는 유다 왕의 궁중에 있는 시위대 뜰에 갇혔으니",
+      "source_text_hash": "2618bb1ece67c61418b82981a72203fda15514a6e55538431d0c31723e139919",
+      "translation_text_hash": "ce9ac3fc35f1176c108c4875d33ce05b643510015f544985da36cb364235fd2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 바벨론 군대는 예루살렘을 에워싸고 선지자 예레미야는 유다 왕의 궁중에 있는 시위대 뜰에 갇혔으니"
+      ],
+      "raw_text_hashes": [
+        "ce9ac3fc35f1176c108c4875d33ce05b643510015f544985da36cb364235fd2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:3",
+      "sequence": 19735,
+      "chapter_label": "JER 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "For Zedekiah king of Judah had shut him up, saying, “Why do you prophesy, and say, ‘The LORD says, “Behold, I will give this city into the hand of the king of Babylon, and he will take it;",
+      "ko": "이는 그가 예언하기를 여호와의 말씀에 보라 내가 이 성을 바벨론 왕의 손에 붙이리니 그가 취할 것이며 유다 왕 시드기야는 갈대아인의 손에서 벗어나지 못하고 반드시 바벨론 왕의 손에 붙이운바 되리니 입이 입을 대하여 말하고 눈이 서로 볼 것이며 그가 시드기야를 바벨론으로 끌어가리니 시드기야가 나의 권고할 때까지 거기 있으리라 나 여호와가 말하노라 너희가 갈대아인과 싸울찌라도 승리치 못하리라 하셨다 하였더니 유다 왕 시드기야가 가로되 네가 어찌 이같이 예언하였느뇨 하고 그를 가두었음이었더라",
+      "source_text_hash": "07317ee4e29fc509b9aef21ac65d4e3c176269780e3cd928fe8b8f79afe2043b",
+      "translation_text_hash": "7d93d2ebe7983faebad235edd1c0d8b5ba7a0a1f3378263cd1c16f4f5f78a778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그가 예언하기를 여호와의 말씀에 보라 내가 이 성을 바벨론 왕의 손에 붙이리니 그가 취할 것이며 유다 왕 시드기야는 갈대아인의 손에서 벗어나지 못하고 반드시 바벨론 왕의 손에 붙이운바 되리니 입이 입을 대하여 말하고 눈이 서로 볼 것이며 그가 시드기야를 바벨론으로 끌어가리니 시드기야가 나의 권고할 때까지 거기 있으리라 나 여호와가 말하노라 너희가 갈대아인과 싸울찌라도 승리치 못하리라 하셨다 하였더니 유다 왕 시드기야가 가로되 네가 어찌 이같이 예언하였느뇨 하고 그를 가두었음이었더라"
+      ],
+      "raw_text_hashes": [
+        "7d93d2ebe7983faebad235edd1c0d8b5ba7a0a1f3378263cd1c16f4f5f78a778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:4",
+      "sequence": 19736,
+      "chapter_label": "JER 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "and Zedekiah king of Judah won’t escape out of the hand of the Chaldeans, but will surely be delivered into the hand of the king of Babylon, and will speak with him mouth to mouth, and his eyes will see his eyes;",
+      "ko": "(3절에 포함되어 있음)",
+      "source_text_hash": "c87e6df1b9d8a1d4843d4e480a8ac1573f390e8c9d4b804f86cafa6059c4039f",
+      "translation_text_hash": "6e2c03053d05f6f7bbe4239be1d062a7ea587d0a50e8845d7dee8c1ea6071165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(3절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "6e2c03053d05f6f7bbe4239be1d062a7ea587d0a50e8845d7dee8c1ea6071165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:5",
+      "sequence": 19737,
+      "chapter_label": "JER 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "and he will bring Zedekiah to Babylon, and he will be there until I visit him,” says the LORD, “though you fight with the Chaldeans, you will not prosper”’?”",
+      "ko": "(3절에 포함되어 있음)",
+      "source_text_hash": "e31acf869531993ee15d156662c8b751d9b7ae097e2b94a72ce7557c9334d769",
+      "translation_text_hash": "6e2c03053d05f6f7bbe4239be1d062a7ea587d0a50e8845d7dee8c1ea6071165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(3절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "6e2c03053d05f6f7bbe4239be1d062a7ea587d0a50e8845d7dee8c1ea6071165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:6",
+      "sequence": 19738,
+      "chapter_label": "JER 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "Jeremiah said, “The LORD’s word came to me, saying,",
+      "ko": "예레미야가 가로되 여호와의 말씀이 내게 임하였느니라 이르시기를",
+      "source_text_hash": "a34c3c60ea536ee597423a974884939a8fce40785115940a840be3d5a3587bac",
+      "translation_text_hash": "22d6323d2a879187befb153ff3d16d6f264ccee5427dcbfea07f4bbb08cbc3dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 가로되 여호와의 말씀이 내게 임하였느니라 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "22d6323d2a879187befb153ff3d16d6f264ccee5427dcbfea07f4bbb08cbc3dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:7",
+      "sequence": 19739,
+      "chapter_label": "JER 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "‘Behold, Hanamel the son of Shallum your uncle will come to you, saying, “Buy my field that is in Anathoth; for the right of redemption is yours to buy it.”’”",
+      "ko": "보라 네 숙부 살룸의 아들 하나멜이 네게 와서 말하기를 너는 아나돗에 있는 내밭을 사라 이 기업을 무를 권리가 네게 있느니라 하리라 하시더니",
+      "source_text_hash": "e2c181076b7abe01ffe127a322f92c6de25857a7d03292bc006985acfade7dac",
+      "translation_text_hash": "adafcd2f07d2461b906710d1d8e54c297fa94207eb72bb46190ee6c2d69dda73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네 숙부 살룸의 아들 하나멜이 네게 와서 말하기를 너는 아나돗에 있는 내밭을 사라 이 기업을 무를 권리가 네게 있느니라 하리라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "adafcd2f07d2461b906710d1d8e54c297fa94207eb72bb46190ee6c2d69dda73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:8",
+      "sequence": 19740,
+      "chapter_label": "JER 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "“So Hanamel my uncle’s son came to me in the court of the guard according to the LORD’s word, and said to me, ‘Please buy my field that is in Anathoth, which is in the land of Benjamin; for the right of inheritance is yours, and the redemption is yours. Buy it for yourself.’ “Then I knew that this was the LORD’s word.",
+      "ko": "여호와의 말씀 같이 나의 숙부의 아들 하나멜이 시위대 뜰안 내게로 와서 이르되 청하노니 너는 베냐민 땅 아나돗에 있는 나의 밭을 사라 기업의 상속권이 네게 있고 무를 권리가 네게 있으니 너를 위하여 사라 하는지라 내가 이것이 여호와의 말씀인줄 알았으므로",
+      "source_text_hash": "e1b1dc2070e5ff2a9d981615fbf360133e92b5ad6e51936afb6d18b26819adcb",
+      "translation_text_hash": "66261f02b9748fc8a543f145bff5c64af0bbb4c64427e8c0d9c02527d1589086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀 같이 나의 숙부의 아들 하나멜이 시위대 뜰안 내게로 와서 이르되 청하노니 너는 베냐민 땅 아나돗에 있는 나의 밭을 사라 기업의 상속권이 네게 있고 무를 권리가 네게 있으니 너를 위하여 사라 하는지라 내가 이것이 여호와의 말씀인줄 알았으므로"
+      ],
+      "raw_text_hashes": [
+        "66261f02b9748fc8a543f145bff5c64af0bbb4c64427e8c0d9c02527d1589086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:9",
+      "sequence": 19741,
+      "chapter_label": "JER 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "I bought the field that was in Anathoth of Hanamel my uncle’s son, and weighed him the money, even seventeen shekels of silver.",
+      "ko": "내 숙부의 아들 하나멜의 아나돗에 있는 밭을 사는데 은 십 칠세겔을 달아주되",
+      "source_text_hash": "ff58a7bd2a429e5c593695dd451207419e50877c88d1521633d5336870d48c42",
+      "translation_text_hash": "80e8ec3006a69e3a62c5aa36e91f25e0fec504a63727e942813123b154d3a2ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 숙부의 아들 하나멜의 아나돗에 있는 밭을 사는데 은 십 칠세겔을 달아주되"
+      ],
+      "raw_text_hashes": [
+        "80e8ec3006a69e3a62c5aa36e91f25e0fec504a63727e942813123b154d3a2ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:10",
+      "sequence": 19742,
+      "chapter_label": "JER 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "I signed the deed, sealed it, called witnesses, and weighed the money in the balances to him.",
+      "ko": "증서를 써서 인봉하고 증인을 세우고 은을 저울에 달아 주고",
+      "source_text_hash": "0d6ff1fc3d007616cee006caeb041ece321b3d88167ed180bb6108c7b59d6b5b",
+      "translation_text_hash": "ea5547cae49375b0261c9b7686d891d36b259d7d9fcda86f552816c86808ece0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증서를 써서 인봉하고 증인을 세우고 은을 저울에 달아 주고"
+      ],
+      "raw_text_hashes": [
+        "ea5547cae49375b0261c9b7686d891d36b259d7d9fcda86f552816c86808ece0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:11",
+      "sequence": 19743,
+      "chapter_label": "JER 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "So I took the deed of the purchase, both that which was sealed, containing the terms and conditions, and that which was open;",
+      "ko": "법과 규례대로 인봉하고 인봉치 아니한 매매증서를 내가 취하여",
+      "source_text_hash": "9a3b992bc8ea802bdaa144f38a2cc806d4f0fb27ddfd2f7497c25c017db274b6",
+      "translation_text_hash": "4c15450c3091e2dc60dc3d580905080f81fb36c8a05fe8f4f424551bb36ce2ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "법과 규례대로 인봉하고 인봉치 아니한 매매증서를 내가 취하여"
+      ],
+      "raw_text_hashes": [
+        "4c15450c3091e2dc60dc3d580905080f81fb36c8a05fe8f4f424551bb36ce2ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:12",
+      "sequence": 19744,
+      "chapter_label": "JER 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "and I delivered the deed of the purchase to Baruch the son of Neriah, the son of Mahseiah, in the presence of Hanamel my uncle’s son, and in the presence of the witnesses who signed the deed of the purchase, before all the Jews who sat in the court of the guard.",
+      "ko": "나의 숙부의 아들 하나멜과 매매증서에 인 친 증인의 앞과 시위대 뜰에 앉은 유다 모든 사람 앞에서 그 매매증서를 마세야의 손자 네리야의 아들 바룩에게 부치며",
+      "source_text_hash": "26a51195d2fe9c0743bd7666a8dc04652dbb3c0532561ce701e8c2f19aa181aa",
+      "translation_text_hash": "0ce8b4e8df415abbfec1c0959580304eab8509a6aadb13ceccc0dcad2a0f773b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 숙부의 아들 하나멜과 매매증서에 인 친 증인의 앞과 시위대 뜰에 앉은 유다 모든 사람 앞에서 그 매매증서를 마세야의 손자 네리야의 아들 바룩에게 부치며"
+      ],
+      "raw_text_hashes": [
+        "0ce8b4e8df415abbfec1c0959580304eab8509a6aadb13ceccc0dcad2a0f773b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:13",
+      "sequence": 19745,
+      "chapter_label": "JER 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "“I commanded Baruch before them, saying,",
+      "ko": "그들의 앞에서 바룩에게 명하여 이르되",
+      "source_text_hash": "1594ababa5879414153febef111b03a85a9f79550f8e20f58ef38c7c21c67340",
+      "translation_text_hash": "88c22bdf467ad9c3f39c45e263b11e5f02de990c3533248614e6b1d054e8b7d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 앞에서 바룩에게 명하여 이르되"
+      ],
+      "raw_text_hashes": [
+        "88c22bdf467ad9c3f39c45e263b11e5f02de990c3533248614e6b1d054e8b7d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:14",
+      "sequence": 19746,
+      "chapter_label": "JER 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "the LORD of Armies, the God of Israel, says: ‘Take these deeds, this deed of the purchase which is sealed, and this deed which is open, and put them in an earthen vessel, that they may last many days.’",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시기를 너는 이 증서 곧 인봉하고 인봉치 않은 매매증서를 취하여 토기에 담아 많은 날 동안 보존케 하라",
+      "source_text_hash": "9dffe92e830f1433158949314886401d19e527492bba16de14bbdc586467a5c0",
+      "translation_text_hash": "0b82f42a517d626092be633dbd205d83e8e45709f2b2bf9080052da2137e95e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시기를 너는 이 증서 곧 인봉하고 인봉치 않은 매매증서를 취하여 토기에 담아 많은 날 동안 보존케 하라"
+      ],
+      "raw_text_hashes": [
+        "0b82f42a517d626092be633dbd205d83e8e45709f2b2bf9080052da2137e95e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:15",
+      "sequence": 19747,
+      "chapter_label": "JER 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel says: ‘Houses and fields and vineyards will yet again be bought in this land.’",
+      "ko": "만군의 여호와 이스라엘의 하나님 내가 이같이 말하노라 사람이 이 땅에서 집과 밭과 포도원을 다시 사게 되리라 하셨다 하니라",
+      "source_text_hash": "de079fdc7c151d29367c1287e0726e553a2a26e11ebc2c0f1c56a65c759bbf0d",
+      "translation_text_hash": "fa30df2307c5a7e4f3bc2b7112bbc22babe8efd1b3de031f52fde4b236937ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님 내가 이같이 말하노라 사람이 이 땅에서 집과 밭과 포도원을 다시 사게 되리라 하셨다 하니라"
+      ],
+      "raw_text_hashes": [
+        "fa30df2307c5a7e4f3bc2b7112bbc22babe8efd1b3de031f52fde4b236937ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:16",
+      "sequence": 19748,
+      "chapter_label": "JER 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "Now after I had delivered the deed of the purchase to Baruch the son of Neriah, I prayed to the LORD, saying, i",
+      "ko": "내가 매매증서를 네리야의 아들 바룩에게 부친 후에 여호와께 기도하여 가로되",
+      "source_text_hash": "35fe4a93d93a0447b8cdbfeab5fbf5a619d99ced668c974126001538093903b6",
+      "translation_text_hash": "7c46fccd058377135419aae6b1d749588f463f80349c4ec5c95a334fbb39e180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 매매증서를 네리야의 아들 바룩에게 부친 후에 여호와께 기도하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "7c46fccd058377135419aae6b1d749588f463f80349c4ec5c95a334fbb39e180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:17",
+      "sequence": 19749,
+      "chapter_label": "JER 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "“Ah Lord GOD! Behold, you have made the heavens and the earth by your great power and by your outstretched arm. There is nothing too hard for you.",
+      "ko": "슬프도소이다 주 여호와여 주께서 큰 능과 드신 팔로 천지를 지으셨사오니 주에게는 능치 못한 일이 없으시니이다",
+      "source_text_hash": "244063a1e923afd7b060855c31fa0a1bb3ea448add7fef78ddad7b9154374e65",
+      "translation_text_hash": "c988e1c9ae21fc3ca5b2a07f4b8a796ed65c27d3586feb74dec5fa850c3b4306",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프도소이다 주 여호와여 주께서 큰 능과 드신 팔로 천지를 지으셨사오니 주에게는 능치 못한 일이 없으시니이다"
+      ],
+      "raw_text_hashes": [
+        "c988e1c9ae21fc3ca5b2a07f4b8a796ed65c27d3586feb74dec5fa850c3b4306"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:18",
+      "sequence": 19750,
+      "chapter_label": "JER 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "You show loving kindness to thousands, and repay the iniquity of the fathers into the bosom of their children after them. The great, the mighty God, the LORD of Armies is your name:",
+      "ko": "주는 은혜를 천만인에게 베푸시며 아비의 죄악을 그 후 자손의 품에 갚으시오니 크고 능하신 하나님이시요 이름은 만군의 여호와시니이다",
+      "source_text_hash": "125e9123fd446d98dc187d89ed9dc4f7e2fc3732ee78ad69f2b0c4667cd228ab",
+      "translation_text_hash": "6ebb2ea99ab860170eda8a31159e051048b257467a755cc68f6d3af61cc74b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 은혜를 천만인에게 베푸시며 아비의 죄악을 그 후 자손의 품에 갚으시오니 크고 능하신 하나님이시요 이름은 만군의 여호와시니이다"
+      ],
+      "raw_text_hashes": [
+        "6ebb2ea99ab860170eda8a31159e051048b257467a755cc68f6d3af61cc74b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:19",
+      "sequence": 19751,
+      "chapter_label": "JER 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "great in counsel, and mighty in work; whose eyes are open to all the ways of the children of men, to give everyone according to his ways, and according to the fruit of his doings;",
+      "ko": "주는 모략에 크시며 행사에 능하시며 인류의 모든 길에 주목하시며 그 길과 그 행위의 열매대로 보응하시나이다",
+      "source_text_hash": "75432944776ece81a76b34d695cc9b0a440e168716077af1d5663cb6017042b5",
+      "translation_text_hash": "806457fd008c9f8e0a951b153fa889f1a78031a16fe33c75c232b41d2432bb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 모략에 크시며 행사에 능하시며 인류의 모든 길에 주목하시며 그 길과 그 행위의 열매대로 보응하시나이다"
+      ],
+      "raw_text_hashes": [
+        "806457fd008c9f8e0a951b153fa889f1a78031a16fe33c75c232b41d2432bb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:20",
+      "sequence": 19752,
+      "chapter_label": "JER 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "who performed signs and wonders in the land of Egypt, even to this day, both in Israel and among other men; and made yourself a name, as it is today;",
+      "ko": "주께서 애굽 땅에서 징조와 기사로 행하셨고 오늘까지도 이스라엘과 외인 중에 그 같이 행하사 주의 이름을 오늘과 같이 되게 하셨나이다",
+      "source_text_hash": "93c4811cf0e549d9c28005bc0548edcfd3868ef3154da2ed49cfff24b7613057",
+      "translation_text_hash": "a53b957905f25b0094ef30a2dd465b198c71a477257794f81d0c4e2e36fc80e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 애굽 땅에서 징조와 기사로 행하셨고 오늘까지도 이스라엘과 외인 중에 그 같이 행하사 주의 이름을 오늘과 같이 되게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a53b957905f25b0094ef30a2dd465b198c71a477257794f81d0c4e2e36fc80e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:21",
+      "sequence": 19753,
+      "chapter_label": "JER 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "and brought your people Israel out of the land of Egypt with signs, with wonders, with a strong hand, with an outstretched arm, and with great terror;",
+      "ko": "주께서 징조와 기사와 강한 손과 드신 팔과 큰 두려움으로 주의 백성 이스라엘을 애굽 땅에서 인도하여 내시고",
+      "source_text_hash": "2dae928b02378b63e78aee8fac0970e09bd0c95a13f4d83a2ddcd8e7611009eb",
+      "translation_text_hash": "50cbecf5db77937e96e06c79170e0932cfe5a76d13f154464740756cf523abf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 징조와 기사와 강한 손과 드신 팔과 큰 두려움으로 주의 백성 이스라엘을 애굽 땅에서 인도하여 내시고"
+      ],
+      "raw_text_hashes": [
+        "50cbecf5db77937e96e06c79170e0932cfe5a76d13f154464740756cf523abf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:22",
+      "sequence": 19754,
+      "chapter_label": "JER 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "and gave them this land, which you swore to their fathers to give them, a land flowing with milk and honey.",
+      "ko": "그들에게 주시기로 그 열조에게 맹세하신바 젖과 꿀이 흐르는 이 땅을 그들에게 주셨으므로",
+      "source_text_hash": "97d390bc1ab95071dd16529e6802a6bc3a7700fcd91cf84aa2f70beae990ebf0",
+      "translation_text_hash": "1a9c52896c9d9463c45c84d82ca42a6345a0f3b1371f3fa495336edc15d1e357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 주시기로 그 열조에게 맹세하신바 젖과 꿀이 흐르는 이 땅을 그들에게 주셨으므로"
+      ],
+      "raw_text_hashes": [
+        "1a9c52896c9d9463c45c84d82ca42a6345a0f3b1371f3fa495336edc15d1e357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:23",
+      "sequence": 19755,
+      "chapter_label": "JER 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "They came in and possessed it, but they didn’t obey your voice and didn’t walk in your law. They have done nothing of all that you commanded them to do. Therefore you have caused all this evil to come upon them. i1",
+      "ko": "그들이 들어가서 이를 차지하였거늘 주의 목소리를 청종치 아니하며 주의 도에 행치 아니하며 무릇 주께서 행하라 명하신 일을 행치 아니하였으므로 주께서 이 모든 재앙을 그들에게 내리셨나이다",
+      "source_text_hash": "18f4ff332f41090f23b7b6d2dcbc6eee1d4b9d9320291ac784deeb08cd357219",
+      "translation_text_hash": "5362806ed481ab3439a7885e30176371099dc687a67842595ae39df3bf54c428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 들어가서 이를 차지하였거늘 주의 목소리를 청종치 아니하며 주의 도에 행치 아니하며 무릇 주께서 행하라 명하신 일을 행치 아니하였으므로 주께서 이 모든 재앙을 그들에게 내리셨나이다"
+      ],
+      "raw_text_hashes": [
+        "5362806ed481ab3439a7885e30176371099dc687a67842595ae39df3bf54c428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:24",
+      "sequence": 19756,
+      "chapter_label": "JER 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "“Behold, siege ramps have been built against the city to take it. The city is given into the hand of the Chaldeans who fight against it, because of the sword, of the famine, and of the pestilence. What you have spoken has happened. Behold, you see it.",
+      "ko": "보옵소서 이 성을 취하려 하는 자가 와서 흉벽을 쌓았고 칼과 기근과 염병으로 인하여 이 성이 이를 치는 갈대아인의 손에 붙인바 되었으니 주의 말씀대로 되었음을 주께서 보시나이다",
+      "source_text_hash": "9281254373e35cc1d9284a08a6cb9d8b95265913fb3149ef31adf903ac6cba53",
+      "translation_text_hash": "1c0731905f5c897f3a30552942112817030ec14ff5b559adbe00f0f53e7f984f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보옵소서 이 성을 취하려 하는 자가 와서 흉벽을 쌓았고 칼과 기근과 염병으로 인하여 이 성이 이를 치는 갈대아인의 손에 붙인바 되었으니 주의 말씀대로 되었음을 주께서 보시나이다"
+      ],
+      "raw_text_hashes": [
+        "1c0731905f5c897f3a30552942112817030ec14ff5b559adbe00f0f53e7f984f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:25",
+      "sequence": 19757,
+      "chapter_label": "JER 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "You have said to me, Lord GOD, ‘Buy the field for money, and call witnesses;’ whereas the city is given into the hand of the Chaldeans.”",
+      "ko": "주 여호와여 주께서 내게 은으로 밭을 사며 증인을 세우라 하셨으나 이 성은 갈대아인의 손에 붙인바 되었나이다",
+      "source_text_hash": "785d207b82db1f5acd0127a1312c3cd7585e68061bafe7fea94830fac0574c5e",
+      "translation_text_hash": "2394dee88a00e13a03adf3dedf732c5400b011d4e86079b296c197e9616a219a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주께서 내게 은으로 밭을 사며 증인을 세우라 하셨으나 이 성은 갈대아인의 손에 붙인바 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "2394dee88a00e13a03adf3dedf732c5400b011d4e86079b296c197e9616a219a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:26",
+      "sequence": 19758,
+      "chapter_label": "JER 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "Then the LORD’s word came to Jeremiah, saying,",
+      "ko": "때에 여호와의 말씀이 예레미야에게 임하여 이르시되",
+      "source_text_hash": "2f925a6d738e09d22d0a92efebcc4afd96cde0a511ad3fd66d6e2752a31cce88",
+      "translation_text_hash": "d8e59249f9c5164bb4fcb08378da1dd30cacaaf922478a41af9cbaf91d3282b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와의 말씀이 예레미야에게 임하여 이르시되"
+      ],
+      "raw_text_hashes": [
+        "d8e59249f9c5164bb4fcb08378da1dd30cacaaf922478a41af9cbaf91d3282b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:27",
+      "sequence": 19759,
+      "chapter_label": "JER 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "“Behold, I am the LORD, the God of all flesh. Is there anything too hard for me?",
+      "ko": "나는 여호와요 모든 육체의 하나님이라 내게 능치 못한 일이 있겠느냐",
+      "source_text_hash": "619bfd6e9c03dbd57dae99c554f6cf9cb8c0e12ce444a3c953b5f181ecb3299b",
+      "translation_text_hash": "5b1df57863f6fa53014f7fccc5d08224be28e0d55f44cf6e73120d5200c31ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와요 모든 육체의 하나님이라 내게 능치 못한 일이 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5b1df57863f6fa53014f7fccc5d08224be28e0d55f44cf6e73120d5200c31ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:28",
+      "sequence": 19760,
+      "chapter_label": "JER 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "Therefore the LORD says: Behold, I will give this city into the hand of the Chaldeans, and into the hand of Nebuchadnezzar king of Babylon, and he will take it.",
+      "ko": "그러므로 나 여호와가 이같이 말하노라 보라 내가 이 성을 갈대아인의 손과 바벨론 왕 느부갓네살의 손에 붙일 것인즉 그가 취할 것이라",
+      "source_text_hash": "ebba2e3f804982d4b2cac501fb5eebad6e605a37239d4ff8c548555852889992",
+      "translation_text_hash": "71f868d2073142d137015a8d1075b1f93f68da64a7b244f3c1c100ab82b34b68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 이같이 말하노라 보라 내가 이 성을 갈대아인의 손과 바벨론 왕 느부갓네살의 손에 붙일 것인즉 그가 취할 것이라"
+      ],
+      "raw_text_hashes": [
+        "71f868d2073142d137015a8d1075b1f93f68da64a7b244f3c1c100ab82b34b68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:29",
+      "sequence": 19761,
+      "chapter_label": "JER 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "The Chaldeans, who fight against this city, will come and set this city on fire, and burn it with the houses on whose roofs they have offered incense to Baal, and poured out drink offerings to other gods, to provoke me to anger.",
+      "ko": "이 성을 치는 갈대아인이 와서 이 성읍에 불을 놓아 성과 집 곧 그 지붕에서 바알에게 분향하며 다른 신들에게 전제를 드려 나를 격노케한 집들을 사르리니",
+      "source_text_hash": "07d0093fab8f3a1f5b05dcf5038adddcab870ee556aa2c64bfec0050a3b34405",
+      "translation_text_hash": "ab4233ca64a163127beb404bdaee1de97487cebd8f42ddddebe0adaa29ff9d5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성을 치는 갈대아인이 와서 이 성읍에 불을 놓아 성과 집 곧 그 지붕에서 바알에게 분향하며 다른 신들에게 전제를 드려 나를 격노케한 집들을 사르리니"
+      ],
+      "raw_text_hashes": [
+        "ab4233ca64a163127beb404bdaee1de97487cebd8f42ddddebe0adaa29ff9d5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:30",
+      "sequence": 19762,
+      "chapter_label": "JER 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "“For the children of Israel and the children of Judah have done only that which was evil in my sight from their youth; for the children of Israel have only provoked me to anger with the work of their hands, says the LORD.",
+      "ko": "이는 이스라엘자손과 유다 자손이 예로부터 내 목전에 악만 행하였음이라 이스라엘 자손은 그 손으로 만든 것을 가지고 나를 격노케 한것 뿐이니라 나 여호와가 말하노라",
+      "source_text_hash": "774f0714a93a7a9841a550310a3be2882a969b29f8c26695c85ccd3c27b3e316",
+      "translation_text_hash": "3d128c9df3abc37c3a9e139a3bfffe07c30119ba035aaf7d7820dcba8bd0f254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘자손과 유다 자손이 예로부터 내 목전에 악만 행하였음이라 이스라엘 자손은 그 손으로 만든 것을 가지고 나를 격노케 한것 뿐이니라 나 여호와가 말하노라"
+      ],
+      "raw_text_hashes": [
+        "3d128c9df3abc37c3a9e139a3bfffe07c30119ba035aaf7d7820dcba8bd0f254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:31",
+      "sequence": 19763,
+      "chapter_label": "JER 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "For this city has been to me a provocation of my anger and of my wrath from the day that they built it even to this day, so that I should remove it from before my face,",
+      "ko": "이 성이 건설된 날부터 오늘까지 나의 노와 분을 격발하므로 내가 내 앞에서 그것을 옮기려 하노니",
+      "source_text_hash": "e067f8b523abeecc9b265881aed17d6f99088b79d0d95308fecc4f380410c9bf",
+      "translation_text_hash": "0909a7c56c6db49bb2ee6e6cca6bb29a004e1743038daf7233432eac550d01e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성이 건설된 날부터 오늘까지 나의 노와 분을 격발하므로 내가 내 앞에서 그것을 옮기려 하노니"
+      ],
+      "raw_text_hashes": [
+        "0909a7c56c6db49bb2ee6e6cca6bb29a004e1743038daf7233432eac550d01e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:32",
+      "sequence": 19764,
+      "chapter_label": "JER 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "because of all the evil of the children of Israel and of the children of Judah, which they have done to provoke me to anger—they, their kings, their princes, their priests, their prophets, the men of Judah, and the inhabitants of Jerusalem.",
+      "ko": "이는 이스라엘 자손과 유다 자손이 모든 악을 행하여 내 노를 격동하였음이라 그들과 그들의 왕들과 그 방백들과 그 제사장들과 그 선지자들과 유다 사람들과 예루살렘 거민들이 다 그러하였느니라",
+      "source_text_hash": "7738348fbf1836819d5816d68e0c1360f501f623cd70482e6ae2fabe3464e8bd",
+      "translation_text_hash": "3255e4b18a8d8b401902a8b3336be6e8307610a84afff93aca98befa02e50a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘 자손과 유다 자손이 모든 악을 행하여 내 노를 격동하였음이라 그들과 그들의 왕들과 그 방백들과 그 제사장들과 그 선지자들과 유다 사람들과 예루살렘 거민들이 다 그러하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3255e4b18a8d8b401902a8b3336be6e8307610a84afff93aca98befa02e50a13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:33",
+      "sequence": 19765,
+      "chapter_label": "JER 32",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 33
+        }
+      ],
+      "en": "They have turned their backs to me, and not their faces. Although I taught them, rising up early and teaching them, yet they have not listened to receive instruction.",
+      "ko": "그들이 등을 내게로 향하고 얼굴을 내게로 향치 아니하며 내가 그들을 가르치되 부지런히 가르칠찌라도 그들이 교훈을 듣지 아니하며 받지 아니하고",
+      "source_text_hash": "e10715cf0383bddc3af793d41a0b5984ee98324033ff84ac20c18d315965b7a5",
+      "translation_text_hash": "51666ad2c1978814197d8bad7efd9d59ce61255f1f9d6ae08697a9fdf2cfe595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 등을 내게로 향하고 얼굴을 내게로 향치 아니하며 내가 그들을 가르치되 부지런히 가르칠찌라도 그들이 교훈을 듣지 아니하며 받지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "51666ad2c1978814197d8bad7efd9d59ce61255f1f9d6ae08697a9fdf2cfe595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:34",
+      "sequence": 19766,
+      "chapter_label": "JER 32",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 34
+        }
+      ],
+      "en": "But they set their abominations in the house which is called by my name, to defile it.",
+      "ko": "내 이름으로 일컬음을 받는 집에 자기들의 가증한 물건들을 세워서 그 집을 더럽게 하며",
+      "source_text_hash": "79eaafebfa7dd8989bee0140358adf1151d58a36e7e1d3c18874d03a811734cf",
+      "translation_text_hash": "c5a44857e636c6c5df353d8bce85e018ee8944b49e75efe785d1c7ebf0753549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름으로 일컬음을 받는 집에 자기들의 가증한 물건들을 세워서 그 집을 더럽게 하며"
+      ],
+      "raw_text_hashes": [
+        "c5a44857e636c6c5df353d8bce85e018ee8944b49e75efe785d1c7ebf0753549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:35",
+      "sequence": 19767,
+      "chapter_label": "JER 32",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 35
+        }
+      ],
+      "en": "They built the high places of Baal, which are in the valley of the son of Hinnom, to cause their sons and their daughters to pass through fire to Molech, which I didn’t command them. It didn’t even come into my mind, that they should do this abomination, to cause Judah to sin.”",
+      "ko": "힌놈의 아들의 골짜기에 바알의 산당을 건축하였으며 자기들의 자녀를 몰렉의 불에 지나가게 하였느니라 그들이 이런 가증한 일을 행하여 유다로 범죄케 한 것은 나의 명한 것도 아니요 내 마음에 둔 것도 아니니라",
+      "source_text_hash": "20693ffaac7f9e68e88e24f7d0f7ac646a7922794108f710c1022dc77c4427b2",
+      "translation_text_hash": "6af90e57f4dd769f35c33a4cb5dedce0cb4f39e275af201d22fb6fc9c4622b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힌놈의 아들의 골짜기에 바알의 산당을 건축하였으며 자기들의 자녀를 몰렉의 불에 지나가게 하였느니라 그들이 이런 가증한 일을 행하여 유다로 범죄케 한 것은 나의 명한 것도 아니요 내 마음에 둔 것도 아니니라"
+      ],
+      "raw_text_hashes": [
+        "6af90e57f4dd769f35c33a4cb5dedce0cb4f39e275af201d22fb6fc9c4622b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:36",
+      "sequence": 19768,
+      "chapter_label": "JER 32",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 36
+        }
+      ],
+      "en": "Now therefore the LORD, the God of Israel, says concerning this city, about which you say, “It is given into the hand of the king of Babylon by the sword, by the famine, and by the pestilence:”",
+      "ko": "그러나 이스라엘의 하나님 나 여호와가 너희의 말하는바 칼과 기근과 염병으로 인하여 바벨론 왕의 손에 붙인바 되었다 하는 이 성에 대하여 이같이 말하노라",
+      "source_text_hash": "5641eebf61643cb511fff09e6b71ac4c625ab119bdf105a5872cf708279df1ce",
+      "translation_text_hash": "afdaace55e4352efcf9fbaecaf5c3717dc0cca06b34ba008dda0861ec226e6f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘의 하나님 나 여호와가 너희의 말하는바 칼과 기근과 염병으로 인하여 바벨론 왕의 손에 붙인바 되었다 하는 이 성에 대하여 이같이 말하노라"
+      ],
+      "raw_text_hashes": [
+        "afdaace55e4352efcf9fbaecaf5c3717dc0cca06b34ba008dda0861ec226e6f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:37",
+      "sequence": 19769,
+      "chapter_label": "JER 32",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 37
+        }
+      ],
+      "en": "“Behold, I will gather them out of all the countries where I have driven them in my anger, and in my wrath, and in great indignation; and I will bring them again to this place. I will cause them to dwell safely.",
+      "ko": "보라 내가 노와 분과 큰 분노로 그들을 쫓아 보내었던 모든 지방에서 그들을 모아내어 이곳으로 다시 인도하여 안전히 거하게 할 것이라",
+      "source_text_hash": "12b8faaa86b6b70c101d1a99acc6657adb8c530dcb1d8a2ee61533eb8cffe8b8",
+      "translation_text_hash": "9bf7b5638e7257cd893fe3a606a3724da37c1c02896e7b3963611aae93e992fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 노와 분과 큰 분노로 그들을 쫓아 보내었던 모든 지방에서 그들을 모아내어 이곳으로 다시 인도하여 안전히 거하게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "9bf7b5638e7257cd893fe3a606a3724da37c1c02896e7b3963611aae93e992fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:38",
+      "sequence": 19770,
+      "chapter_label": "JER 32",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 38
+        }
+      ],
+      "en": "Then they will be my people, and I will be their God.",
+      "ko": "그들은 내 백성이 되겠고 나는 그들의 하나님이 될 것이며",
+      "source_text_hash": "5c577d714a89ade3f73b6da781bd58dfa02034c1995c04945d5d295d29dece50",
+      "translation_text_hash": "495f4b5b58af6d95467839917a9eb4bd2e94ab1e977bf722ecba2fd876910bcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 내 백성이 되겠고 나는 그들의 하나님이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "495f4b5b58af6d95467839917a9eb4bd2e94ab1e977bf722ecba2fd876910bcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:39",
+      "sequence": 19771,
+      "chapter_label": "JER 32",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 39
+        }
+      ],
+      "en": "I will give them one heart and one way, that they may fear me forever, for their good and the good of their children after them.",
+      "ko": "내가 그들에게 한 마음과 한 도를 주어 자기들과 자기 후손의 복을 위하여 항상 나를 경외하게 하고",
+      "source_text_hash": "f48a2c658d77e926a7fd9800f4a39ffe3a83fb7d7a47a294f6553dfac57a57f5",
+      "translation_text_hash": "15a6c75d1151a747fd49632631042f80b0f67b320f0c1a61a66036ae1ec0dc5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 한 마음과 한 도를 주어 자기들과 자기 후손의 복을 위하여 항상 나를 경외하게 하고"
+      ],
+      "raw_text_hashes": [
+        "15a6c75d1151a747fd49632631042f80b0f67b320f0c1a61a66036ae1ec0dc5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:40",
+      "sequence": 19772,
+      "chapter_label": "JER 32",
+      "verse_label": "40",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 40
+        }
+      ],
+      "en": "I will make an everlasting covenant with them, that I will not turn away from following them, to do them good. I will put my fear in their hearts, that they may not depart from me.",
+      "ko": "내가 그들에게 복을 주기 위하여 그들을 떠나지 아니하리라 하는 영영한 언약을 그들에게 세우고 나를 경외함을 그들의 마음에 두어 나를 떠나지 않게 하고",
+      "source_text_hash": "558efef8db5ee67c513fe85e7d310037615f53ea1eec441a6923dbeacec461ac",
+      "translation_text_hash": "8cd0a2c22820fcb4e9b2b80dc695b9834beb0c815d3c4d674b52047f04855e71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 복을 주기 위하여 그들을 떠나지 아니하리라 하는 영영한 언약을 그들에게 세우고 나를 경외함을 그들의 마음에 두어 나를 떠나지 않게 하고"
+      ],
+      "raw_text_hashes": [
+        "8cd0a2c22820fcb4e9b2b80dc695b9834beb0c815d3c4d674b52047f04855e71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:41",
+      "sequence": 19773,
+      "chapter_label": "JER 32",
+      "verse_label": "41",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 41
+        }
+      ],
+      "en": "Yes, I will rejoice over them to do them good, and I will plant them in this land assuredly with my whole heart and with my whole soul.”",
+      "ko": "내가 기쁨으로 그들에게 복을 주되 정녕히 나의 마음과 정신을 다하여 그들을 이 땅에 심으리라",
+      "source_text_hash": "b0ff725792c4b5464a553e0077a971775908f398a0d72b8cf01e194753683306",
+      "translation_text_hash": "af42ae40be4959da489a52ca57543ff820f09943121f18d78a5b854585c780d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 기쁨으로 그들에게 복을 주되 정녕히 나의 마음과 정신을 다하여 그들을 이 땅에 심으리라"
+      ],
+      "raw_text_hashes": [
+        "af42ae40be4959da489a52ca57543ff820f09943121f18d78a5b854585c780d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:42",
+      "sequence": 19774,
+      "chapter_label": "JER 32",
+      "verse_label": "42",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 42
+        }
+      ],
+      "en": "For the LORD says: “Just as I have brought all this great evil on this people, so I will bring on them all the good that I have promised them.",
+      "ko": "나 여호와가 이같이 말하노라 내가 이 백성에게 이 큰 재앙을 내린 것 같이 허락한 모든 복을 그들에게 내리리라",
+      "source_text_hash": "2fd382020f46e6f0278be3f52757167b4db340da0ca8063fc245050bb1bbd677",
+      "translation_text_hash": "4d4ec8c4a40eb1488827fcc6fbce0f7593d66f768e4c669d29d90611491e1b86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 내가 이 백성에게 이 큰 재앙을 내린 것 같이 허락한 모든 복을 그들에게 내리리라"
+      ],
+      "raw_text_hashes": [
+        "4d4ec8c4a40eb1488827fcc6fbce0f7593d66f768e4c669d29d90611491e1b86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:43",
+      "sequence": 19775,
+      "chapter_label": "JER 32",
+      "verse_label": "43",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 43
+        }
+      ],
+      "en": "Fields will be bought in this land, about which you say, ‘It is desolate, without man or animal. It is given into the hand of the Chaldeans.’",
+      "ko": "너희가 말하기를 황폐하여 사람이나 짐승이 없으며 갈대아인의 손에 붙인바 되었다 하는 이 땅에서 사람들이 밭을 사되",
+      "source_text_hash": "e20027b4748f2828338df5bfded2ff961e53a7fd61f734bd3ec7d4db54bf0257",
+      "translation_text_hash": "7235ef73370f1ff2873b1c236280413a184c2c4413a425e6bfe15a34b032d77b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 말하기를 황폐하여 사람이나 짐승이 없으며 갈대아인의 손에 붙인바 되었다 하는 이 땅에서 사람들이 밭을 사되"
+      ],
+      "raw_text_hashes": [
+        "7235ef73370f1ff2873b1c236280413a184c2c4413a425e6bfe15a34b032d77b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:32:44",
+      "sequence": 19776,
+      "chapter_label": "JER 32",
+      "verse_label": "44",
+      "locator": {
+        "book": "JER",
+        "chapter": 32,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 32,
+          "verse": 44
+        }
+      ],
+      "en": "Men will buy fields for money, sign the deeds, seal them, and call witnesses, in the land of Benjamin, and in the places around Jerusalem, in the cities of Judah, in the cities of the hill country, in the cities of the lowland, and in the cities of the South; for I will cause their captivity to be reversed,” says the LORD.",
+      "ko": "베냐민 땅과 예루살렘 사방과 유다 성읍들과 산지의 성읍들과 평지의 성읍들과 남방의 성읍들에 있는 밭을 은으로 사고 증서를 기록하여 인봉하고 증인을 세우리니 이는 내가 그들의 포로로 돌아오게 함이니라 여호와의 말이니라",
+      "source_text_hash": "9f5281e82e8814f6c38ab0d65a0d026e80965facc37e1c6497d2350332d148e4",
+      "translation_text_hash": "2fe87db0daf0d5434fc47568ba808c937b1223dfac95be1a1e366751261c33ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 땅과 예루살렘 사방과 유다 성읍들과 산지의 성읍들과 평지의 성읍들과 남방의 성읍들에 있는 밭을 은으로 사고 증서를 기록하여 인봉하고 증인을 세우리니 이는 내가 그들의 포로로 돌아오게 함이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2fe87db0daf0d5434fc47568ba808c937b1223dfac95be1a1e366751261c33ac"
+      ]
+    }
+  ]
+}

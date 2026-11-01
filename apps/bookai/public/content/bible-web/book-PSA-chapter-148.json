@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:148",
+  "unit_ordinal": 626,
+  "unit_label": "PSA 148",
+  "book_code": "PSA",
+  "chapter_number": 148,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:148:1",
+      "sequence": 16373,
+      "chapter_label": "PSA 148",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Praise the LORD from the heavens! Praise him in the heights!",
+      "ko": "할렐루야 하늘에서 여호와를 찬양하며 높은데서 찬양할찌어다",
+      "source_text_hash": "981bcb9f110d11c8649885a30c1a1af8dded9bc5707bd359d566895836fbb274",
+      "translation_text_hash": "290798ebf3504a98ced459455527ed3a2eabc8056cc59e9f8b22fdc1e04b8651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 하늘에서 여호와를 찬양하며 높은데서 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "290798ebf3504a98ced459455527ed3a2eabc8056cc59e9f8b22fdc1e04b8651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:2",
+      "sequence": 16374,
+      "chapter_label": "PSA 148",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 2
+        }
+      ],
+      "en": "Praise him, all his angels! Praise him, all his army!",
+      "ko": "그의 모든 사자여 찬양하며 모든 군대여 찬양할찌어다",
+      "source_text_hash": "9c71a6d45b60a553fb9591d167ea7c8b99b3797e28a336ec6929f861bd8b234d",
+      "translation_text_hash": "0664b812ccdd595d1ff70b918893c5c1f133df68ab70e5d821b140cb708f5542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 모든 사자여 찬양하며 모든 군대여 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "0664b812ccdd595d1ff70b918893c5c1f133df68ab70e5d821b140cb708f5542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:3",
+      "sequence": 16375,
+      "chapter_label": "PSA 148",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 3
+        }
+      ],
+      "en": "Praise him, sun and moon! Praise him, all you shining stars!",
+      "ko": "해와 달아 찬양하며 광명한 별들아 찬양할찌어다",
+      "source_text_hash": "6fd393a85709352b7895c07a45f223c1aacd4f5e59e947aab1378ecdc090e82d",
+      "translation_text_hash": "85669801bfb7ba2b0e52e840c8365c72d7d10ff8012dcfc9f9c76711f39ed6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해와 달아 찬양하며 광명한 별들아 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "85669801bfb7ba2b0e52e840c8365c72d7d10ff8012dcfc9f9c76711f39ed6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:4",
+      "sequence": 16376,
+      "chapter_label": "PSA 148",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 4
+        }
+      ],
+      "en": "Praise him, you heavens of heavens, you waters that are above the heavens.",
+      "ko": "하늘의 하늘도 찬양하며 하늘 위에 있는 물들도 찬양할찌어다",
+      "source_text_hash": "287a445db6196538c8e33f9cb976e0678a5479315e5587d3bc7f47920730ae48",
+      "translation_text_hash": "1e83c6dd9a0473b813840bfb8e67febb192710a3bd058f176d673ac497ec17de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 하늘도 찬양하며 하늘 위에 있는 물들도 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "1e83c6dd9a0473b813840bfb8e67febb192710a3bd058f176d673ac497ec17de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:5",
+      "sequence": 16377,
+      "chapter_label": "PSA 148",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 5
+        }
+      ],
+      "en": "Let them praise the LORD’s name, for he commanded, and they were created.",
+      "ko": "그것들이 여호와의 이름을 찬양할 것은 저가 명하시매 지음을 받았음이로다",
+      "source_text_hash": "0839a9b16241f295701280709af5bd7ad710cb3214e6dcb4e03ef2ff2f12cc5f",
+      "translation_text_hash": "92b91376c840f53420650ad01e609f2b50cb07f37e413460ece26bbd47f6070a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들이 여호와의 이름을 찬양할 것은 저가 명하시매 지음을 받았음이로다"
+      ],
+      "raw_text_hashes": [
+        "92b91376c840f53420650ad01e609f2b50cb07f37e413460ece26bbd47f6070a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:6",
+      "sequence": 16378,
+      "chapter_label": "PSA 148",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 6
+        }
+      ],
+      "en": "He has also established them forever and ever. He has made a decree which will not pass away.",
+      "ko": "저가 또 그것들을 영영히 세우시고 폐치 못할 명을 정하셨도다",
+      "source_text_hash": "b08d1dc41e82f9f016c7e562da933a5f05d7ed534b77e55afa36b67ec02f7a5f",
+      "translation_text_hash": "14d2dfeece2ef1ff573ccf3b5e60adb9a10b43e5abf93e8f0219eabab488d4f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 그것들을 영영히 세우시고 폐치 못할 명을 정하셨도다"
+      ],
+      "raw_text_hashes": [
+        "14d2dfeece2ef1ff573ccf3b5e60adb9a10b43e5abf93e8f0219eabab488d4f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:7",
+      "sequence": 16379,
+      "chapter_label": "PSA 148",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 7
+        }
+      ],
+      "en": "Praise the LORD from the earth, you great sea creatures, and all depths,",
+      "ko": "너희 용들과 바다여 땅에서 여호와를 찬양하라",
+      "source_text_hash": "21f99efc29f342478d6254aba09b7ad570981c24c393d940dfff261da219994e",
+      "translation_text_hash": "5376b4251c52b984fbfe2f0cc224e0f5908e7c21878810a12ccdbc61449c54fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 용들과 바다여 땅에서 여호와를 찬양하라"
+      ],
+      "raw_text_hashes": [
+        "5376b4251c52b984fbfe2f0cc224e0f5908e7c21878810a12ccdbc61449c54fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:8",
+      "sequence": 16380,
+      "chapter_label": "PSA 148",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 8
+        }
+      ],
+      "en": "lightning and hail, snow and clouds, stormy wind, fulfilling his word,",
+      "ko": "불과 우박과 눈과 안개와 그 말씀을 좇는 광풍이며",
+      "source_text_hash": "182dd5c18130f32ae65586b55c8bb8955fe68c66a168448c019312caa533f180",
+      "translation_text_hash": "d75f57a079ef9fe8193a52312367ba492826904fc91fbf9ca078b31453c6e259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불과 우박과 눈과 안개와 그 말씀을 좇는 광풍이며"
+      ],
+      "raw_text_hashes": [
+        "d75f57a079ef9fe8193a52312367ba492826904fc91fbf9ca078b31453c6e259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:9",
+      "sequence": 16381,
+      "chapter_label": "PSA 148",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 9
+        }
+      ],
+      "en": "mountains and all hills, fruit trees and all cedars,",
+      "ko": "산들과 모든 작은 산과 과목과 모든 백향목이며",
+      "source_text_hash": "3b189296ab592aa45f04c8f090eedcac5dd2df036dc2d66abfb9a0b923b6a43a",
+      "translation_text_hash": "2ece51aba5ca4d7220b9b2973329417d9c49acb369c294a18440d8680548772a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들과 모든 작은 산과 과목과 모든 백향목이며"
+      ],
+      "raw_text_hashes": [
+        "2ece51aba5ca4d7220b9b2973329417d9c49acb369c294a18440d8680548772a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:10",
+      "sequence": 16382,
+      "chapter_label": "PSA 148",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 10
+        }
+      ],
+      "en": "wild animals and all livestock, small creatures and flying birds,",
+      "ko": "짐승과 모든 가축과 기는 것과 나는 새며",
+      "source_text_hash": "3b5d06724e3a1dcc19da5064c7a4719ffb15984ef7bf54ac8a4f23bafc396d36",
+      "translation_text_hash": "86ff80a7f4ff15c1bfabbe866bb4393b5f907509764ff67683bb9f0bccd6920e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승과 모든 가축과 기는 것과 나는 새며"
+      ],
+      "raw_text_hashes": [
+        "86ff80a7f4ff15c1bfabbe866bb4393b5f907509764ff67683bb9f0bccd6920e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:11",
+      "sequence": 16383,
+      "chapter_label": "PSA 148",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 11
+        }
+      ],
+      "en": "kings of the earth and all peoples, princes and all judges of the earth,",
+      "ko": "세상의 왕들과 모든 백성과 방백과 땅의 모든 사사며",
+      "source_text_hash": "1e6a08c109d407684d3c952ef3fb50991abeecfbdd0e900a084310148287e574",
+      "translation_text_hash": "6659b74b8808a7afd4d54f88771e75db2540592b08958c6f82dc0c68991f8b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 왕들과 모든 백성과 방백과 땅의 모든 사사며"
+      ],
+      "raw_text_hashes": [
+        "6659b74b8808a7afd4d54f88771e75db2540592b08958c6f82dc0c68991f8b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:12",
+      "sequence": 16384,
+      "chapter_label": "PSA 148",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 12
+        }
+      ],
+      "en": "both young men and maidens, old men and children.",
+      "ko": "청년 남자와 처녀와 노인과 아이들아",
+      "source_text_hash": "3f9f511751a3ed1969cb66915c72af380108f3e81e0755c2ae24009303a07952",
+      "translation_text_hash": "ad20173029d7459cf17d5ce3c0da1e5872e447872ec96fc1e6fd224ad561e24e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청년 남자와 처녀와 노인과 아이들아"
+      ],
+      "raw_text_hashes": [
+        "ad20173029d7459cf17d5ce3c0da1e5872e447872ec96fc1e6fd224ad561e24e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:13",
+      "sequence": 16385,
+      "chapter_label": "PSA 148",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 13
+        }
+      ],
+      "en": "Let them praise the LORD’s name, for his name alone is exalted. His glory is above the earth and the heavens.",
+      "ko": "다 여호와의 이름을 찬양할찌어다 그 이름이 홀로 높으시며 그 영광이 천지에 뛰어나심이로다",
+      "source_text_hash": "0c9ba7aa2da98148092ad6bb2aa8ff3b77c90725f038584840e0981a1922fc01",
+      "translation_text_hash": "585d9855d573e84750103bb42c8429bda9487a49504563780a10115e06a3bc1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 여호와의 이름을 찬양할찌어다 그 이름이 홀로 높으시며 그 영광이 천지에 뛰어나심이로다"
+      ],
+      "raw_text_hashes": [
+        "585d9855d573e84750103bb42c8429bda9487a49504563780a10115e06a3bc1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:148:14",
+      "sequence": 16386,
+      "chapter_label": "PSA 148",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 148,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 148,
+          "verse": 14
+        }
+      ],
+      "en": "He has lifted up the horn of his people, the praise of all his saints, even of the children of Israel, a people near to him. Praise the LORD!",
+      "ko": "저가 그 백성의 뿔을 높이셨으니 저는 모든 성도 곧 저를 친근히 하는 이스라엘 자손의 찬양거리로다 할렐루야",
+      "source_text_hash": "2e223f39ba4ba78e1284ce94267cb807e157dc2671d198f2c836959bd78f7a05",
+      "translation_text_hash": "d1ce09e42afc3e5f6008abda33315003f7fb4682c844993242b879f4148b8dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 백성의 뿔을 높이셨으니 저는 모든 성도 곧 저를 친근히 하는 이스라엘 자손의 찬양거리로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "d1ce09e42afc3e5f6008abda33315003f7fb4682c844993242b879f4148b8dff"
+      ]
+    }
+  ]
+}

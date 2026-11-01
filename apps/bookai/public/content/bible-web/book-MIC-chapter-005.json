@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:005",
+  "unit_ordinal": 898,
+  "unit_label": "MIC 5",
+  "book_code": "MIC",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:5:1",
+      "sequence": 22635,
+      "chapter_label": "MIC 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Now you shall gather yourself in troops, daughter of troops. He has laid siege against us. They will strike the judge of Israel with a rod on the cheek.",
+      "ko": "딸 군대여 너는 떼를 모을찌어다 그들이 우리를 에워쌌으니 막대기로 이스라엘 재판자의 뺨을 치리로다",
+      "source_text_hash": "ea3c3e79fed63002a0fd1b88ca322ad2c287f523041eb93d39485db521ce89be",
+      "translation_text_hash": "435b11e3123220b7e1239fdc8a472173e9d6272c11bf465a9e7dc76645aef701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 군대여 너는 떼를 모을찌어다 그들이 우리를 에워쌌으니 막대기로 이스라엘 재판자의 뺨을 치리로다"
+      ],
+      "raw_text_hashes": [
+        "435b11e3123220b7e1239fdc8a472173e9d6272c11bf465a9e7dc76645aef701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:2",
+      "sequence": 22636,
+      "chapter_label": "MIC 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "But you, Bethlehem Ephrathah, being small among the clans of Judah, out of you one will come out to me who is to be ruler in Israel; whose goings out are from of old, from ancient times.",
+      "ko": "베들레헴 에브라다야 너는 유다 족속 중에 작을찌라도 이스라엘을 다스릴 자가 네게서 내게로 나올 것이라 그의 근본은 상고에, 태초에니라",
+      "source_text_hash": "fe30bc7dda3f573d09fc765b8e65dc710ea32ffa3dcf15cf30cb91e1bf6ed52f",
+      "translation_text_hash": "25e84256c260af2623b365eefa2edc333e69bb443f8b717148a34dee37bd0867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베들레헴 에브라다야 너는 유다 족속 중에 작을찌라도 이스라엘을 다스릴 자가 네게서 내게로 나올 것이라 그의 근본은 상고에, 태초에니라"
+      ],
+      "raw_text_hashes": [
+        "25e84256c260af2623b365eefa2edc333e69bb443f8b717148a34dee37bd0867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:3",
+      "sequence": 22637,
+      "chapter_label": "MIC 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore he will abandon them until the time that she who is in labor gives birth. Then the rest of his brothers will return to the children of Israel.",
+      "ko": "그러므로 임산한 여인이 해산하기까지 그들을 붙여 두시겠고 그 후에는 그 형제 남은 자가 이스라엘 자손에게로 돌아오리니",
+      "source_text_hash": "ad23620371ad3b8f5521d0b8516d7c425646ce7ccc4c3b1bad992102abc467eb",
+      "translation_text_hash": "48b17e5c2bfe06ec8189a81ad4091226daf5845728ed17d3307c3e743a26c3cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 임산한 여인이 해산하기까지 그들을 붙여 두시겠고 그 후에는 그 형제 남은 자가 이스라엘 자손에게로 돌아오리니"
+      ],
+      "raw_text_hashes": [
+        "48b17e5c2bfe06ec8189a81ad4091226daf5845728ed17d3307c3e743a26c3cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:4",
+      "sequence": 22638,
+      "chapter_label": "MIC 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "He shall stand, and shall shepherd in the strength of the LORD, in the majesty of the name of the LORD his God. They will live, for then he will be great to the ends of the earth.",
+      "ko": "그가 여호와의 능력과 그 하나님 여호와의 이름의 위엄을 의지하고 서서 그 떼에게 먹여서 그들로 안연히 거하게 할 것이라 이제 그가 창대하여 땅 끝까지 미치리라",
+      "source_text_hash": "e4f095d42af6540d8221b00f5ef01394133169d43f5aa3904248a4cfcfd54d14",
+      "translation_text_hash": "827ba93dd463bdeb7b3476c316e68aed9f920c3554bec32118cfc6b90d68ff66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와의 능력과 그 하나님 여호와의 이름의 위엄을 의지하고 서서 그 떼에게 먹여서 그들로 안연히 거하게 할 것이라 이제 그가 창대하여 땅 끝까지 미치리라"
+      ],
+      "raw_text_hashes": [
+        "827ba93dd463bdeb7b3476c316e68aed9f920c3554bec32118cfc6b90d68ff66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:5",
+      "sequence": 22639,
+      "chapter_label": "MIC 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "He will be our peace when Assyria invades our land and when he marches through our fortresses, then we will raise against him seven shepherds, and eight leaders of men.",
+      "ko": "이 사람은 우리의 평강이 될 것이라 앗수르 사람이 우리 땅에 들어와서 우리 궁들을 밟을 때에는 우리가 일곱 목자와 여덟 군왕을 일으켜 그를 치리니",
+      "source_text_hash": "39b039bbf554b5dd9460e00a92862e8833041d39cfcd257b6f7ea939bbc56e20",
+      "translation_text_hash": "13c37cdc294395cd80ebd26b40898ff9086f34c95276127d287ca619083b831d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람은 우리의 평강이 될 것이라 앗수르 사람이 우리 땅에 들어와서 우리 궁들을 밟을 때에는 우리가 일곱 목자와 여덟 군왕을 일으켜 그를 치리니"
+      ],
+      "raw_text_hashes": [
+        "13c37cdc294395cd80ebd26b40898ff9086f34c95276127d287ca619083b831d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:6",
+      "sequence": 22640,
+      "chapter_label": "MIC 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "They will rule the land of Assyria with the sword, and the land of Nimrod in its gates. He will deliver us from the Assyrian, when he invades our land, and when he marches within our border.",
+      "ko": "그들이 칼로 앗수르 땅을 황무케 하며 니므롯 땅의 어귀를 황무케 하리라 앗수르 사람이 우리 땅에 들어와서 우리 지경을 밟을 때에는 그가 우리를 그에게서 건져 내리라",
+      "source_text_hash": "2fb2e210f9a6940e03b207623fa32870b93d83597826bce0868ba86b1f704f57",
+      "translation_text_hash": "b322b3cc08da0283be48ba9eed7fbe7b5ce9e0600c308644cf43504da0910f63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 칼로 앗수르 땅을 황무케 하며 니므롯 땅의 어귀를 황무케 하리라 앗수르 사람이 우리 땅에 들어와서 우리 지경을 밟을 때에는 그가 우리를 그에게서 건져 내리라"
+      ],
+      "raw_text_hashes": [
+        "b322b3cc08da0283be48ba9eed7fbe7b5ce9e0600c308644cf43504da0910f63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:7",
+      "sequence": 22641,
+      "chapter_label": "MIC 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "The remnant of Jacob will be among many peoples like dew from the LORD, like showers on the grass, that don’t wait for man nor wait for the sons of men.",
+      "ko": "야곱의 남은 자는 많은 백성 중에 있으리니 그들은 여호와에게로서 내리는 이슬 같고 풀위에 내리는 단비 같아서 사람을 기다리지 아니하며 인생을 기다리지 아니할 것이며",
+      "source_text_hash": "d432b2f528075d31626d37beb4ca7a6df27ab8b932526b6d0ce11643de3c24c3",
+      "translation_text_hash": "6cb2a66efce52f18983d081c4c74a5fa49a039689a7959c8a2852e2635fca399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 남은 자는 많은 백성 중에 있으리니 그들은 여호와에게로서 내리는 이슬 같고 풀위에 내리는 단비 같아서 사람을 기다리지 아니하며 인생을 기다리지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "6cb2a66efce52f18983d081c4c74a5fa49a039689a7959c8a2852e2635fca399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:8",
+      "sequence": 22642,
+      "chapter_label": "MIC 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "The remnant of Jacob will be among the nations, among many peoples, like a lion among the animals of the forest, like a young lion among the flocks of sheep; who, if he goes through, treads down and tears in pieces, and there is no one to deliver.",
+      "ko": "야곱의 남은 자는 열국 중과 여러 백성 중에 있으리니 그들은 수풀의 짐승 중의 사자 같고 양떼 중의 젊은 사자 같아서 만일 지나간즉 밟고 찢으리니 능히 구원할 자가 없을 것이라",
+      "source_text_hash": "792b44587ff6b0186efd94e29a60b0366ddd8cf7101bb5a61e5d012b61f62fa0",
+      "translation_text_hash": "9f0fc2ce10e00bfb03d925ac264b3ad4f1d5796b3f64819cc7c7c6ab2352aea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 남은 자는 열국 중과 여러 백성 중에 있으리니 그들은 수풀의 짐승 중의 사자 같고 양떼 중의 젊은 사자 같아서 만일 지나간즉 밟고 찢으리니 능히 구원할 자가 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "9f0fc2ce10e00bfb03d925ac264b3ad4f1d5796b3f64819cc7c7c6ab2352aea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:9",
+      "sequence": 22643,
+      "chapter_label": "MIC 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Let your hand be lifted up above your adversaries, and let all of your enemies be cut off.",
+      "ko": "네 손이 네 대적 위에 들려서 네 모든 원수를 진멸하기를 바라노라",
+      "source_text_hash": "130f8caadf026ebb5a8cc90197b4a3931c47c0db25fc069fc9b08a76adae999f",
+      "translation_text_hash": "c2608aa725eb0af2b57bed1972e432944e8cbbe3c6364c52cac1224d3eb83e33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 손이 네 대적 위에 들려서 네 모든 원수를 진멸하기를 바라노라"
+      ],
+      "raw_text_hashes": [
+        "c2608aa725eb0af2b57bed1972e432944e8cbbe3c6364c52cac1224d3eb83e33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:10",
+      "sequence": 22644,
+      "chapter_label": "MIC 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "“It will happen in that day”, says the LORD, “that I will cut off your horses from among you and will destroy your chariots.",
+      "ko": "여호와께서 가라사대 그 날에 이르러는 내가 너의 말을 너의 중에서 멸절하며 너의 병거를 훼파하며",
+      "source_text_hash": "d1aaebcbc469cc1693e2fd9fa50d3c1116ffe79bb6ff94c37b9bc1c72935061d",
+      "translation_text_hash": "c074230304a93be255edfd5d53efdd1d3c5c0819a25829403c8a0a94888b0b3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 그 날에 이르러는 내가 너의 말을 너의 중에서 멸절하며 너의 병거를 훼파하며"
+      ],
+      "raw_text_hashes": [
+        "c074230304a93be255edfd5d53efdd1d3c5c0819a25829403c8a0a94888b0b3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:11",
+      "sequence": 22645,
+      "chapter_label": "MIC 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "I will cut off the cities of your land and will tear down all your strongholds.",
+      "ko": "너의 땅의 성읍들을 멸하며 너의 모든 견고한 성을 무너뜨릴 것이며",
+      "source_text_hash": "7451da1f1c6dcd85fe15890331cea21228a42334355c0aac5bfd6f0097507589",
+      "translation_text_hash": "bb65ff4e3a476c7a8ac927b53f818f8f89131f2a5567cfa987da24837343e842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 땅의 성읍들을 멸하며 너의 모든 견고한 성을 무너뜨릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "bb65ff4e3a476c7a8ac927b53f818f8f89131f2a5567cfa987da24837343e842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:12",
+      "sequence": 22646,
+      "chapter_label": "MIC 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "I will destroy witchcraft from your hand. You shall have no soothsayers.",
+      "ko": "내가 또 복술을 너의 손에서 끊으리니 네게 다시는 점장이가 없게 될 것이며",
+      "source_text_hash": "54a3adf2b14693e7ecd75a3e60c9c95314bf31e746fb887c2878815a9bd0544c",
+      "translation_text_hash": "78eb3c3dd3e37a0cc1a3aa51ba1237873fcf84323d1d8ecdbf0cc5afcacc67d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 복술을 너의 손에서 끊으리니 네게 다시는 점장이가 없게 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "78eb3c3dd3e37a0cc1a3aa51ba1237873fcf84323d1d8ecdbf0cc5afcacc67d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:13",
+      "sequence": 22647,
+      "chapter_label": "MIC 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "I will cut off your engraved images and your pillars from among you; and you shall no more worship the work of your hands.",
+      "ko": "내가 너의 새긴 우상과 주상을 너의 중에서 멸절하리니 네가 네 손으로 만든 것을 다시는 섬기지 아니하리라",
+      "source_text_hash": "510e4fba8b74ae299339b4cd903865eca2f7323a79eaba9032d3cca1379c360b",
+      "translation_text_hash": "c460b61e793924ec2c3cb4c9470d7ff265d8cc043566411b1ccfb081d568dbef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너의 새긴 우상과 주상을 너의 중에서 멸절하리니 네가 네 손으로 만든 것을 다시는 섬기지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "c460b61e793924ec2c3cb4c9470d7ff265d8cc043566411b1ccfb081d568dbef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:14",
+      "sequence": 22648,
+      "chapter_label": "MIC 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "I will uproot your Asherah poles from among you; and I will destroy your cities.",
+      "ko": "내가 또 너의 아세라 목상을 너의 중에서 빼어 버리고 너의 성읍들을 멸할 것이며",
+      "source_text_hash": "ec2bc95c159f98efb8bccfe225c5a7fbcf5d158152559cbdc550cc5213197a93",
+      "translation_text_hash": "a9eb9baaa9f3c195759a8c2d5ad5ea74f54b7e71d669dcff01fe0d806c750aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너의 아세라 목상을 너의 중에서 빼어 버리고 너의 성읍들을 멸할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a9eb9baaa9f3c195759a8c2d5ad5ea74f54b7e71d669dcff01fe0d806c750aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:5:15",
+      "sequence": 22649,
+      "chapter_label": "MIC 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "MIC",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "I will execute vengeance in anger and wrath on the nations that didn’t listen.”",
+      "ko": "내가 또 진노와 분한으로 청종치 아니한 나라에 갚으리라 하셨느니라",
+      "source_text_hash": "d03a359d595287d04b38ccca5345d6da44ae07e063d99cfb8e8cfe02acf02000",
+      "translation_text_hash": "21d230f8b52649112366ca0650c6a135f73b674cea72d6772085898509e2e9df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 진노와 분한으로 청종치 아니한 나라에 갚으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "21d230f8b52649112366ca0650c6a135f73b674cea72d6772085898509e2e9df"
+      ]
+    }
+  ]
+}

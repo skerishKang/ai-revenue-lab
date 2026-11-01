@@ -1,0 +1,1805 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:023",
+  "unit_ordinal": 996,
+  "unit_label": "LUK 23",
+  "book_code": "LUK",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:23:1",
+      "sequence": 25936,
+      "chapter_label": "LUK 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "The whole company of them rose up and brought him before Pilate.",
+      "ko": "무리가 다 일어나 예수를 빌라도에게 끌고 가서",
+      "source_text_hash": "574510d490c8094ef4dca0fbcc64c8d11b731a7ceabf7aa23a2bcbee24939d75",
+      "translation_text_hash": "61755fd797e13a08da1a902b0ce6bbf959afe80279f68efd860da3e906897e32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 다 일어나 예수를 빌라도에게 끌고 가서"
+      ],
+      "raw_text_hashes": [
+        "61755fd797e13a08da1a902b0ce6bbf959afe80279f68efd860da3e906897e32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:2",
+      "sequence": 25937,
+      "chapter_label": "LUK 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "They began to accuse him, saying, “We found this man perverting the nation, forbidding paying taxes to Caesar, and saying that he himself is Christ, a king.”",
+      "ko": "고소하여 가로되 우리가 이 사람을 보매 우리 백성을 미혹하고 가이사에게 세 바치는 것을 금하며 자칭 왕 그리스도라 하더이다 하니",
+      "source_text_hash": "51f6e4cb7a153c9c8aae59989912546cfdebf6d344aee2fb379c030fc70f873e",
+      "translation_text_hash": "20eee3294c820503f4e0ee2062b5c1adc404ee3cb45343d6c200883cf7019c91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고소하여 가로되 우리가 이 사람을 보매 우리 백성을 미혹하고 가이사에게 세 바치는 것을 금하며 자칭 왕 그리스도라 하더이다 하니"
+      ],
+      "raw_text_hashes": [
+        "20eee3294c820503f4e0ee2062b5c1adc404ee3cb45343d6c200883cf7019c91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:3",
+      "sequence": 25938,
+      "chapter_label": "LUK 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Pilate asked him, “Are you the King of the Jews?” He answered him, “So you say.”",
+      "ko": "빌라도가 예수께 물어 가로되 네가 유대인의 왕이냐 대답하여 가라사대 네 말이 옳도다",
+      "source_text_hash": "dce34e367cc080314f324c83ad273dbcb8ad6ba87f81ec63b06a20977a875fc7",
+      "translation_text_hash": "c7775ab67131f4611e4c75655dfa877c801e2a25789c3ca35441249422ab9fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 예수께 물어 가로되 네가 유대인의 왕이냐 대답하여 가라사대 네 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "c7775ab67131f4611e4c75655dfa877c801e2a25789c3ca35441249422ab9fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:4",
+      "sequence": 25939,
+      "chapter_label": "LUK 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Pilate said to the chief priests and the multitudes, “I find no basis for a charge against this man.”",
+      "ko": "빌라도가 대제사장들과 무리에게 이르되 내가 보니 이 사람에게 죄가 없도다 하니",
+      "source_text_hash": "b46b70c268174fb426f81de34cde662aaf50abb87e46a72fa4d1f57afee1293f",
+      "translation_text_hash": "586b6e177ee0a94a1d081e05c53bae977e14d7613a386ba9ba054eb313d22de0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 대제사장들과 무리에게 이르되 내가 보니 이 사람에게 죄가 없도다 하니"
+      ],
+      "raw_text_hashes": [
+        "586b6e177ee0a94a1d081e05c53bae977e14d7613a386ba9ba054eb313d22de0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:5",
+      "sequence": 25940,
+      "chapter_label": "LUK 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "But they insisted, saying, “He stirs up the people, teaching throughout all Judea, beginning from Galilee even to this place.”",
+      "ko": "무리가 더욱 굳세게 말하되 저가 온 유대에서 가르치고 갈릴리에서부터 시작하여 여기까지 와서 백성을 소동케 하나이다",
+      "source_text_hash": "4ab8c41265550d1c4053d17acefa0c1eadf5b0713e959b13ef847963ca400214",
+      "translation_text_hash": "f17fd43e976bbc043de8284fbd46f87ebd354bf1d1ee1b9d5d5bdbd5426628d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 더욱 굳세게 말하되 저가 온 유대에서 가르치고 갈릴리에서부터 시작하여 여기까지 와서 백성을 소동케 하나이다"
+      ],
+      "raw_text_hashes": [
+        "f17fd43e976bbc043de8284fbd46f87ebd354bf1d1ee1b9d5d5bdbd5426628d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:6",
+      "sequence": 25941,
+      "chapter_label": "LUK 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "But when Pilate heard Galilee mentioned, he asked if the man was a Galilean.",
+      "ko": "빌라도가 듣고 묻되 저가 갈릴리 사람이냐 하여",
+      "source_text_hash": "d5cfc7a8ae7021290979529e60ab8064957efb2bf228c519b3e4fadfebe5cb01",
+      "translation_text_hash": "c7f8f47a733649025a40fe80d890a5642acaafe334446ab8e56d5d4d2408b5fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 듣고 묻되 저가 갈릴리 사람이냐 하여"
+      ],
+      "raw_text_hashes": [
+        "c7f8f47a733649025a40fe80d890a5642acaafe334446ab8e56d5d4d2408b5fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:7",
+      "sequence": 25942,
+      "chapter_label": "LUK 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "When he found out that he was in Herod’s jurisdiction, he sent him to Herod, who was also in Jerusalem during those days.",
+      "ko": "헤롯의 관할에 속한 줄을 알고 헤롯에게 보내니 때에 헤롯이 예루살렘에 있더라",
+      "source_text_hash": "bb7cf6310d1dd582d98fab2449d0c4e8df2d933ed20adcc9f1b9da5db02ee5b1",
+      "translation_text_hash": "a6e779028f5de53426a03894605c2ac39fe6ed53c3f911b009a4d6dad9b09d81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯의 관할에 속한 줄을 알고 헤롯에게 보내니 때에 헤롯이 예루살렘에 있더라"
+      ],
+      "raw_text_hashes": [
+        "a6e779028f5de53426a03894605c2ac39fe6ed53c3f911b009a4d6dad9b09d81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:8",
+      "sequence": 25943,
+      "chapter_label": "LUK 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "Now when Herod saw Jesus, he was exceedingly glad, for he had wanted to see him for a long time, because he had heard many things about him. He hoped to see some miracle done by him.",
+      "ko": "헤롯이 예수를 보고 심히 기뻐하니 이는 그의 소문을 들었으므로 보고자 한지 오래였고 또한 무엇이나 이적 행하심을 볼까 바랐던 연고러라",
+      "source_text_hash": "ab2e69e70d47ebc16078d53877eabaa1c85f058f7abc670bde7b619e2303a70f",
+      "translation_text_hash": "6e32524c9b784e9016f02ed677cb0c1af8abb088453fc17ccbb06fd543df2f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 예수를 보고 심히 기뻐하니 이는 그의 소문을 들었으므로 보고자 한지 오래였고 또한 무엇이나 이적 행하심을 볼까 바랐던 연고러라"
+      ],
+      "raw_text_hashes": [
+        "6e32524c9b784e9016f02ed677cb0c1af8abb088453fc17ccbb06fd543df2f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:9",
+      "sequence": 25944,
+      "chapter_label": "LUK 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "He questioned him with many words, but he gave no answers.",
+      "ko": "여러 말로 물으나 아무 말도 대답지 아니하시니",
+      "source_text_hash": "8ba7ce7faa91b148183bf709b1ce36b35517b6f89a80ed74f9a8d19257da28a8",
+      "translation_text_hash": "773b474e4c305b1bc661a419f08bd8b582c30bfe0b839a49f1ea5aba1a14177c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 말로 물으나 아무 말도 대답지 아니하시니"
+      ],
+      "raw_text_hashes": [
+        "773b474e4c305b1bc661a419f08bd8b582c30bfe0b839a49f1ea5aba1a14177c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:10",
+      "sequence": 25945,
+      "chapter_label": "LUK 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "The chief priests and the scribes stood, vehemently accusing him.",
+      "ko": "대제사장들과 서기관들이 서서 힘써 고소하더라",
+      "source_text_hash": "8f4365f8e46ac53967f10bbc2d69192d5e1874e163b54e61ee6b047a5c0dc9aa",
+      "translation_text_hash": "9efb75bc85addfdac0324e63c5a2a512b11fdfa5211c6c0c2c8ee16429417620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 서기관들이 서서 힘써 고소하더라"
+      ],
+      "raw_text_hashes": [
+        "9efb75bc85addfdac0324e63c5a2a512b11fdfa5211c6c0c2c8ee16429417620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:11",
+      "sequence": 25946,
+      "chapter_label": "LUK 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "Herod with his soldiers humiliated him and mocked him. Dressing him in luxurious clothing, they sent him back to Pilate.",
+      "ko": "헤롯이 그 군병들과 함께 예수를 업신여기며 희롱하고 빛난 옷을 입혀 빌라도에게 도로 보내니",
+      "source_text_hash": "7ca113634bfd6d41611a4a647a1937d267cfce888201744020f8a2aa7abe14a3",
+      "translation_text_hash": "fc73a1e6918945308a12ecc8776c54422fddcbdff945530b736011626048e465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 그 군병들과 함께 예수를 업신여기며 희롱하고 빛난 옷을 입혀 빌라도에게 도로 보내니"
+      ],
+      "raw_text_hashes": [
+        "fc73a1e6918945308a12ecc8776c54422fddcbdff945530b736011626048e465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:12",
+      "sequence": 25947,
+      "chapter_label": "LUK 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Herod and Pilate became friends with each other that very day, for before that they were enemies with each other.",
+      "ko": "헤롯과 빌라도가 전에는 원수이었으나 당일에 서로 친구가 되니라",
+      "source_text_hash": "f0a70a877aebcca09f4853aa39e48beb2d4796e4e7b9dd17692e340e918aa0c6",
+      "translation_text_hash": "fb71ed82c44a7eb5f9891ae42b090499f4f1d62ac888854dcd8571fcee2c1ddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯과 빌라도가 전에는 원수이었으나 당일에 서로 친구가 되니라"
+      ],
+      "raw_text_hashes": [
+        "fb71ed82c44a7eb5f9891ae42b090499f4f1d62ac888854dcd8571fcee2c1ddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:13",
+      "sequence": 25948,
+      "chapter_label": "LUK 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "Pilate called together the chief priests, the rulers, and the people,",
+      "ko": "빌라도가 대제사장들과 관원들과 백성을 불러 모으고",
+      "source_text_hash": "7dffff44e0ff1077be25c4286586e71979e750e7bbc17903d5413af7a9e4ad08",
+      "translation_text_hash": "23d8dc0a3f7a17a44b64735472117e11ed905b2bd890ae5002d3cd1fbc18e9fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 대제사장들과 관원들과 백성을 불러 모으고"
+      ],
+      "raw_text_hashes": [
+        "23d8dc0a3f7a17a44b64735472117e11ed905b2bd890ae5002d3cd1fbc18e9fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:14",
+      "sequence": 25949,
+      "chapter_label": "LUK 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "and said to them, “You brought this man to me as one that perverts the people, and behold, having examined him before you, I found no basis for a charge against this man concerning those things of which you accuse him.",
+      "ko": "이르되 너희가 이 사람을 백성을 미혹하는 자라 하여 내게 끌어 왔도다 보라 내가 너희 앞에서 사실하였으되 너희의 고소하는 일에 대하여 이 사람에게서 죄를 찾지 못하였고",
+      "source_text_hash": "31b61dde4f6145fc0926d96badca4c50e28ddaf12993b873c4ea883824e64940",
+      "translation_text_hash": "d151d808eb63b5f98a924dda281690491aa47b95e34ccc036293a66be8421c72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 너희가 이 사람을 백성을 미혹하는 자라 하여 내게 끌어 왔도다 보라 내가 너희 앞에서 사실하였으되 너희의 고소하는 일에 대하여 이 사람에게서 죄를 찾지 못하였고"
+      ],
+      "raw_text_hashes": [
+        "d151d808eb63b5f98a924dda281690491aa47b95e34ccc036293a66be8421c72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:15",
+      "sequence": 25950,
+      "chapter_label": "LUK 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Neither has Herod, for I sent you to him, and see, nothing worthy of death has been done by him.",
+      "ko": "헤롯이 또한 그렇게 하여 저를 우리에게 도로 보내었도다 보라 저의 행한 것은 죽일 일이 없느니라",
+      "source_text_hash": "f5be9947d5e213c6ddd78a7985adbe6d594b4e9be1d231647e6f047bcda15c4a",
+      "translation_text_hash": "3911b6089a192bff39410fca05842e7fd0d8ce7b8bce283eaa27a2f9019ccc48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 또한 그렇게 하여 저를 우리에게 도로 보내었도다 보라 저의 행한 것은 죽일 일이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "3911b6089a192bff39410fca05842e7fd0d8ce7b8bce283eaa27a2f9019ccc48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:16",
+      "sequence": 25951,
+      "chapter_label": "LUK 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "I will therefore chastise him and release him.”",
+      "ko": "그러므로 때려서 놓겠노라",
+      "source_text_hash": "9da3c30f2eb8c1e97fbc1d7246dcf99a7a89a43c23a8d61d23aeac973e22a242",
+      "translation_text_hash": "5bb28abbabc9b81f2f13c37ca9bead169780d85cc3ec3ec34a1e40ae6542e27b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 때려서 놓겠노라"
+      ],
+      "raw_text_hashes": [
+        "5bb28abbabc9b81f2f13c37ca9bead169780d85cc3ec3ec34a1e40ae6542e27b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:17",
+      "sequence": 25952,
+      "chapter_label": "LUK 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Now he had to release one prisoner to them at the feast.",
+      "ko": "(없음)",
+      "source_text_hash": "9b16bbd480b1bf8f38769da7be2cc533a639908f96e9742c97b1c9f365ee020d",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:18",
+      "sequence": 25953,
+      "chapter_label": "LUK 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "But they all cried out together, saying, “Away with this man! Release to us Barabbas!”—",
+      "ko": "무리가 일제히 소리질러 가로되 이 사람을 없이하고 바라바를 우리에게 놓아 주소서 하니",
+      "source_text_hash": "ad81aac1edfc648780fd35760700273ffd9378cd1e4efede04c1e5c0b4cacd36",
+      "translation_text_hash": "a942d7b5fa634836c558042a10e9828db73ab49889d74c7b733f8dfac24b3ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 일제히 소리질러 가로되 이 사람을 없이하고 바라바를 우리에게 놓아 주소서 하니"
+      ],
+      "raw_text_hashes": [
+        "a942d7b5fa634836c558042a10e9828db73ab49889d74c7b733f8dfac24b3ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:19",
+      "sequence": 25954,
+      "chapter_label": "LUK 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "one who was thrown into prison for a certain revolt in the city, and for murder.",
+      "ko": "이 바라바는 성중에서 일어난 민란과 살인을 인하여 옥에 갇힌 자러라",
+      "source_text_hash": "0aef2c74ea3aa8243e965c9f9dc79b354ca173b879e6345f96095778c892caa5",
+      "translation_text_hash": "6f48f2304be5d71a9af89f225e44e8bfc8587dc5c64ce2de1e0ce77ff4f58e34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 바라바는 성중에서 일어난 민란과 살인을 인하여 옥에 갇힌 자러라"
+      ],
+      "raw_text_hashes": [
+        "6f48f2304be5d71a9af89f225e44e8bfc8587dc5c64ce2de1e0ce77ff4f58e34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:20",
+      "sequence": 25955,
+      "chapter_label": "LUK 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "Then Pilate spoke to them again, wanting to release Jesus,",
+      "ko": "빌라도는 예수를 놓고자 하여 다시 저희에게 말하되",
+      "source_text_hash": "93695d365ff20883993102bef28b2466ba620a3534eb590cd235c3219c393839",
+      "translation_text_hash": "bac49dc33216ee6a737b15a13b33d212e8779cecbb82b2b95ac4de970be82734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도는 예수를 놓고자 하여 다시 저희에게 말하되"
+      ],
+      "raw_text_hashes": [
+        "bac49dc33216ee6a737b15a13b33d212e8779cecbb82b2b95ac4de970be82734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:21",
+      "sequence": 25956,
+      "chapter_label": "LUK 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "but they shouted, saying, “Crucify! Crucify him!”",
+      "ko": "저희는 소리질러 가로되 저를 십자가에 못 박게 하소서 십자가에 못 박게 하소서 하는지라",
+      "source_text_hash": "4a2735cd6e7ebedbe90ceabfd27d828b7a28a5a8c7752c28f916deb5d8b97f80",
+      "translation_text_hash": "271790f1878b684dba12f10f00e8690511ccabae1a944cfbf391a444e4c8596b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 소리질러 가로되 저를 십자가에 못 박게 하소서 십자가에 못 박게 하소서 하는지라"
+      ],
+      "raw_text_hashes": [
+        "271790f1878b684dba12f10f00e8690511ccabae1a944cfbf391a444e4c8596b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:22",
+      "sequence": 25957,
+      "chapter_label": "LUK 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "He said to them the third time, “Why? What evil has this man done? I have found no capital crime in him. I will therefore chastise him and release him.”",
+      "ko": "빌라도가 세 번째 말하되 이 사람이 무슨 악한 일을 하였느냐 나는 그 죽일 죄를 찾지 못하였나니 때려서 놓으리라 한대",
+      "source_text_hash": "6c15a263608aef72f2b7ad05c6dc6e58f0959ea3246df198a895318b8f421cbd",
+      "translation_text_hash": "a5eb37f98e405055e975ea68d745ad1541eb65ecb252a2a7c3686e82073a47c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 세 번째 말하되 이 사람이 무슨 악한 일을 하였느냐 나는 그 죽일 죄를 찾지 못하였나니 때려서 놓으리라 한대"
+      ],
+      "raw_text_hashes": [
+        "a5eb37f98e405055e975ea68d745ad1541eb65ecb252a2a7c3686e82073a47c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:23",
+      "sequence": 25958,
+      "chapter_label": "LUK 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "But they were urgent with loud voices, asking that he might be crucified. Their voices and the voices of the chief priests prevailed.",
+      "ko": "저희가 큰 소리로 재촉하여 십자가에 못 박기를 구하니 저희의 소리가 이긴지라",
+      "source_text_hash": "9ef03729eadc37704715e758cc41c5e02c7d14816ede448e3ec9fd3b6c6d5575",
+      "translation_text_hash": "4a00bb687ba7ab270acf68b8aef0e0659efdb99bbe493a126f00daacb2dc1586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 큰 소리로 재촉하여 십자가에 못 박기를 구하니 저희의 소리가 이긴지라"
+      ],
+      "raw_text_hashes": [
+        "4a00bb687ba7ab270acf68b8aef0e0659efdb99bbe493a126f00daacb2dc1586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:24",
+      "sequence": 25959,
+      "chapter_label": "LUK 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "Pilate decreed that what they asked for should be done.",
+      "ko": "이에 빌라도가 저희의 구하는대로 하기를 언도하고",
+      "source_text_hash": "5449181c611ecd9294939b8bf8deeddc1e205e5a2d6771b280682344e765a31d",
+      "translation_text_hash": "f3b74c14e3e14007dd1cb7f97e663f10e5471c199b5553f55bb70b1952775ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 빌라도가 저희의 구하는대로 하기를 언도하고"
+      ],
+      "raw_text_hashes": [
+        "f3b74c14e3e14007dd1cb7f97e663f10e5471c199b5553f55bb70b1952775ab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:25",
+      "sequence": 25960,
+      "chapter_label": "LUK 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "He released him who had been thrown into prison for insurrection and murder, for whom they asked, but he delivered Jesus up to their will.",
+      "ko": "저희의 구하는 자 곧 민란과 살인을 인하여 옥에 갇힌 자를 놓고 예수를 넘겨주어 저희 뜻대로 하게 하니라",
+      "source_text_hash": "b3ae0ba3ec0f65a12c1597fdbb5277f3492d6f941452b9817d0cbb4fb3cc09c3",
+      "translation_text_hash": "9c3e5b0f92e076e20954f4b55b8f5d07888d5a7d4e8d3181a7ce836c8ee1dd04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 구하는 자 곧 민란과 살인을 인하여 옥에 갇힌 자를 놓고 예수를 넘겨주어 저희 뜻대로 하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "9c3e5b0f92e076e20954f4b55b8f5d07888d5a7d4e8d3181a7ce836c8ee1dd04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:26",
+      "sequence": 25961,
+      "chapter_label": "LUK 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "When they led him away, they grabbed one Simon of Cyrene, coming from the country, and laid the cross on him to carry it after Jesus.",
+      "ko": "저희가 예수를 끌고 갈 때에 시몬이라는 구레네 사람이 시골로서 오는 것을 잡아 그에게 십자가를 지워 예수를 좇게 하더라",
+      "source_text_hash": "fd495976847c03320d56f74fba2e19512d34a673566ddae5e7b993e927e6ef7a",
+      "translation_text_hash": "2d13598e17e711f5d426e47b13569c3d50dbe382ff9136593663562f7b0983e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 끌고 갈 때에 시몬이라는 구레네 사람이 시골로서 오는 것을 잡아 그에게 십자가를 지워 예수를 좇게 하더라"
+      ],
+      "raw_text_hashes": [
+        "2d13598e17e711f5d426e47b13569c3d50dbe382ff9136593663562f7b0983e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:27",
+      "sequence": 25962,
+      "chapter_label": "LUK 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "A great multitude of the people followed him, including women who also mourned and lamented him.",
+      "ko": "또 백성과 및 그를 위하여 가슴을 치며 슬피 우는 여자의 큰 무리가 따라 오는지라",
+      "source_text_hash": "c76fcbd41b6ad68a703b6144a1c29d8969d1a85c08f56f86a91bc316e34ba10d",
+      "translation_text_hash": "a512a4f18b429152323795d199d592718c5361cade84458cf8a1d7b4aff7069d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성과 및 그를 위하여 가슴을 치며 슬피 우는 여자의 큰 무리가 따라 오는지라"
+      ],
+      "raw_text_hashes": [
+        "a512a4f18b429152323795d199d592718c5361cade84458cf8a1d7b4aff7069d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:28",
+      "sequence": 25963,
+      "chapter_label": "LUK 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "But Jesus, turning to them, said, “Daughters of Jerusalem, don’t weep for me, but weep for yourselves and for your children.",
+      "ko": "예수께서 돌이켜 그들을 향하여 가라사대 예루살렘의 딸들아 나를 위하여 울지 말고 너희와 너희 자녀를 위하여 울라",
+      "source_text_hash": "429e4a22424edf6aa67c2cd13f4a7831150e51928a689f68614015af44a2c9f6",
+      "translation_text_hash": "f0c6a83e83d072b36a8467a1a5e15cbd0b5be87c55972fd0c084d807f22f4934",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌이켜 그들을 향하여 가라사대 예루살렘의 딸들아 나를 위하여 울지 말고 너희와 너희 자녀를 위하여 울라"
+      ],
+      "raw_text_hashes": [
+        "f0c6a83e83d072b36a8467a1a5e15cbd0b5be87c55972fd0c084d807f22f4934"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:29",
+      "sequence": 25964,
+      "chapter_label": "LUK 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "For behold, the days are coming in which they will say, ‘Blessed are the barren, the wombs that never bore, and the breasts that never nursed.’",
+      "ko": "보라 날이 이르면 사람이 말하기를 수태 못하는 이와 해산하지 못한 배와 먹이지 못한 젖이 복이 있다 하리라",
+      "source_text_hash": "686e7186f3664b3764c17d15902feaa5df741ace71066aed9654721e03dfb515",
+      "translation_text_hash": "55a76e9a9fd89779b2f1bee19f18244429a4968ca7a3d0193244dbb3f7f55cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 날이 이르면 사람이 말하기를 수태 못하는 이와 해산하지 못한 배와 먹이지 못한 젖이 복이 있다 하리라"
+      ],
+      "raw_text_hashes": [
+        "55a76e9a9fd89779b2f1bee19f18244429a4968ca7a3d0193244dbb3f7f55cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:30",
+      "sequence": 25965,
+      "chapter_label": "LUK 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Then they will begin to tell the mountains, ‘Fall on us!’ and tell the hills, ‘Cover us.’",
+      "ko": "그때에 사람이 산들을 대하여 우리 위에 무너지라 하며 작은 산들을 대하여 우리를 덮으라 하리라",
+      "source_text_hash": "a548b937481afcc5727cb118ff14d34c920b7c937cd5bdacc15272ae5363c4ce",
+      "translation_text_hash": "00231100e9f3ead8cd70538f49b9d9b7b1a950802e502f982201c24aa1c4f482",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 사람이 산들을 대하여 우리 위에 무너지라 하며 작은 산들을 대하여 우리를 덮으라 하리라"
+      ],
+      "raw_text_hashes": [
+        "00231100e9f3ead8cd70538f49b9d9b7b1a950802e502f982201c24aa1c4f482"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:31",
+      "sequence": 25966,
+      "chapter_label": "LUK 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "For if they do these things in the green tree, what will be done in the dry?”",
+      "ko": "푸른 나무에도 이같이 하거든 마른 나무에는 어떻게 되리요 하시니라",
+      "source_text_hash": "606bf64cfa0d1b7fdd43591e1792d8bcb9f049baec05cb34e76e7689e14104ed",
+      "translation_text_hash": "fc0f8442be45ac7c68054c21ed6e5695d2a8f16eef6ccde2b746bdac2284706f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "푸른 나무에도 이같이 하거든 마른 나무에는 어떻게 되리요 하시니라"
+      ],
+      "raw_text_hashes": [
+        "fc0f8442be45ac7c68054c21ed6e5695d2a8f16eef6ccde2b746bdac2284706f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:32",
+      "sequence": 25967,
+      "chapter_label": "LUK 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "There were also others, two criminals, led with him to be put to death.",
+      "ko": "또 다른 두 행악자도 사형을 받게 되어 예수와 함께 끌려 가니라",
+      "source_text_hash": "020381ffba0a7c0d972e0b72965c2abfa41c0d59ccb8d57c5649b66bbce7f25d",
+      "translation_text_hash": "f27d0aa2fb3be24cd0e9661ef82b1db7c573e793331cf744719776cd0d528daa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 두 행악자도 사형을 받게 되어 예수와 함께 끌려 가니라"
+      ],
+      "raw_text_hashes": [
+        "f27d0aa2fb3be24cd0e9661ef82b1db7c573e793331cf744719776cd0d528daa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:33",
+      "sequence": 25968,
+      "chapter_label": "LUK 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "When they came to the place that is called “The Skull”, they crucified him there with the criminals, one on the right and the other on the left.",
+      "ko": "해골이라 하는 곳에 이르러 거기서 예수를 십자가에 못 박고 두 행악자도 그렇게 하니 하나는 우편에, 하나는 좌편에 있더라",
+      "source_text_hash": "6d0d803b72721de96cbf74f5f4f2c7d92447e141f00a488322ac7ff8d3167bb8",
+      "translation_text_hash": "b375fa3af75592f104510cfe6a2071dd39586079e332c34bf18a89aac0570ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해골이라 하는 곳에 이르러 거기서 예수를 십자가에 못 박고 두 행악자도 그렇게 하니 하나는 우편에, 하나는 좌편에 있더라"
+      ],
+      "raw_text_hashes": [
+        "b375fa3af75592f104510cfe6a2071dd39586079e332c34bf18a89aac0570ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:34",
+      "sequence": 25969,
+      "chapter_label": "LUK 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus said, “Father, forgive them, for they don’t know what they are doing.”Dividing his garments among them, they cast lots.",
+      "ko": "이에 예수께서 가라사대 아버지여 저희를 사하여 주옵소서 자기의 하는 것을 알지 못함이니이다 하시더라 저희가 그의 옷을 나눠 제비 뽑을쌔",
+      "source_text_hash": "1ea06b00fe9dcf041ef18c7858957f521e15cbeab56273d76b08320fc14795a8",
+      "translation_text_hash": "10f31786d4b24e9bf8c7e67080aec4d72f0614e8b0be730eb93fe17e764ad417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 가라사대 아버지여 저희를 사하여 주옵소서 자기의 하는 것을 알지 못함이니이다 하시더라 저희가 그의 옷을 나눠 제비 뽑을쌔"
+      ],
+      "raw_text_hashes": [
+        "10f31786d4b24e9bf8c7e67080aec4d72f0614e8b0be730eb93fe17e764ad417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:35",
+      "sequence": 25970,
+      "chapter_label": "LUK 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "The people stood watching. The rulers with them also scoffed at him, saying, “He saved others. Let him save himself, if this is the Christ of God, his chosen one!”",
+      "ko": "백성은 서서 구경하며 관원들도 비웃어 가로되 저가 남을 구원하였으니 만일 하나님의 택하신 자 그리스도여든 자기도 구원할찌어다 하고",
+      "source_text_hash": "913da1da46348be1a046b763239a296068949ae71bc7707fa1ca831a54094337",
+      "translation_text_hash": "3f5e17fc5c7ab5d317bd4b9a488081f195648725b9c3e50bfc26c4d87171ff17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성은 서서 구경하며 관원들도 비웃어 가로되 저가 남을 구원하였으니 만일 하나님의 택하신 자 그리스도여든 자기도 구원할찌어다 하고"
+      ],
+      "raw_text_hashes": [
+        "3f5e17fc5c7ab5d317bd4b9a488081f195648725b9c3e50bfc26c4d87171ff17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:36",
+      "sequence": 25971,
+      "chapter_label": "LUK 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "The soldiers also mocked him, coming to him and offering him vinegar,",
+      "ko": "군병들도 희롱하면서 나아와 신 포도주를 주며",
+      "source_text_hash": "1efdb0ea0b0531646391bdf2a3f37e345445eab15ca1bcbdeee6e9a799ce9e47",
+      "translation_text_hash": "b14b5a3bb7acad4b08cd0237abd4b3af36441ece632b7090fab372bca804f1a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들도 희롱하면서 나아와 신 포도주를 주며"
+      ],
+      "raw_text_hashes": [
+        "b14b5a3bb7acad4b08cd0237abd4b3af36441ece632b7090fab372bca804f1a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:37",
+      "sequence": 25972,
+      "chapter_label": "LUK 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "and saying, “If you are the King of the Jews, save yourself!”",
+      "ko": "가로되 네가 만일 유대인의 왕이어든 네가 너를 구원하라 하더라",
+      "source_text_hash": "b89d0b4708ae5c9ee55ed677422b2b2554ea4b1498b03bc520919f425b14213f",
+      "translation_text_hash": "5a5fb2ce4d481db887a75bbbde53ee201176ae8f464e2a2bdb2c5f4b9e8db214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 만일 유대인의 왕이어든 네가 너를 구원하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "5a5fb2ce4d481db887a75bbbde53ee201176ae8f464e2a2bdb2c5f4b9e8db214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:38",
+      "sequence": 25973,
+      "chapter_label": "LUK 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "An inscription was also written over him in letters of Greek, Latin, and Hebrew: “THIS IS THE KING OF THE JEWS.”",
+      "ko": "그의 위에 이는 유대인의 왕이라 쓴 패가 있더라",
+      "source_text_hash": "9ec4cb2c13ce99f718863ae5e5666128cb539d1676faaebaa78e852be8abb274",
+      "translation_text_hash": "de94c7a3d276cfadc5bd54c0f7a635c1fc60e33766585af78f2e57e466cd891c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 위에 이는 유대인의 왕이라 쓴 패가 있더라"
+      ],
+      "raw_text_hashes": [
+        "de94c7a3d276cfadc5bd54c0f7a635c1fc60e33766585af78f2e57e466cd891c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:39",
+      "sequence": 25974,
+      "chapter_label": "LUK 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "One of the criminals who was hanged insulted him, saying, “If you are the Christ, save yourself and us!”",
+      "ko": "달린 행악자 중 하나는 비방하여 가로되 네가 그리스도가 아니냐 너와 우리를 구원하라 하되",
+      "source_text_hash": "7c6268723f46f3076161c5b8bd3527cffed548e9d38b0ed4aa652fafec8fafe8",
+      "translation_text_hash": "24d44edec64f8472fd6f775b578fa6506c20b0311630a4d865b871eda6636f03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "달린 행악자 중 하나는 비방하여 가로되 네가 그리스도가 아니냐 너와 우리를 구원하라 하되"
+      ],
+      "raw_text_hashes": [
+        "24d44edec64f8472fd6f775b578fa6506c20b0311630a4d865b871eda6636f03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:40",
+      "sequence": 25975,
+      "chapter_label": "LUK 23",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 40
+        }
+      ],
+      "en": "But the other answered, and rebuking him said, “Don’t you even fear God, seeing you are under the same condemnation?",
+      "ko": "하나는 그 사람을 꾸짖어 가로되 네가 동일한 정죄를 받고서도 하나님을 두려워 아니하느냐",
+      "source_text_hash": "f72337e9ec55d71fde7f97cb692354369c02e9c62f3320978f882140a6715613",
+      "translation_text_hash": "1d448291915d624027b34b15578cca4874d41ae04373c9b64ddffc7597b4b5a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 그 사람을 꾸짖어 가로되 네가 동일한 정죄를 받고서도 하나님을 두려워 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "1d448291915d624027b34b15578cca4874d41ae04373c9b64ddffc7597b4b5a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:41",
+      "sequence": 25976,
+      "chapter_label": "LUK 23",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 41
+        }
+      ],
+      "en": "And we indeed justly, for we receive the due reward for our deeds, but this man has done nothing wrong.”",
+      "ko": "우리는 우리의 행한 일에 상당한 보응을 받는 것이니 이에 당연하거니와 이 사람의 행한 것은 옳지 않은 것이 없느니라 하고",
+      "source_text_hash": "5a28d9e2a52a563e46c5cde8d3e05e18f6fcb0069da2449b1caad4c9ff86b721",
+      "translation_text_hash": "6d2a4d70abe0f81245106b116dfccd41f1c56c6fd3888195dfca015fd401c9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 우리의 행한 일에 상당한 보응을 받는 것이니 이에 당연하거니와 이 사람의 행한 것은 옳지 않은 것이 없느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "6d2a4d70abe0f81245106b116dfccd41f1c56c6fd3888195dfca015fd401c9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:42",
+      "sequence": 25977,
+      "chapter_label": "LUK 23",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 42
+        }
+      ],
+      "en": "He said to Jesus, “Lord, remember me when you come into your Kingdom.”",
+      "ko": "가로되 예수여 당신의 나라에 임하실 때에 나를 생각하소서 하니",
+      "source_text_hash": "1fbb7cb6acc1eae28ad3968c9c570f9a41bf2e5df1cf924e8358f600bd6feeb9",
+      "translation_text_hash": "20afc8ddfcb672caade32dcd58e453762046c77e24aa95202df2fa02f5a5627f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 예수여 당신의 나라에 임하실 때에 나를 생각하소서 하니"
+      ],
+      "raw_text_hashes": [
+        "20afc8ddfcb672caade32dcd58e453762046c77e24aa95202df2fa02f5a5627f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:43",
+      "sequence": 25978,
+      "chapter_label": "LUK 23",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 43
+        }
+      ],
+      "en": "Jesus said to him, “Assuredly I tell you, today you will be with me in Paradise.”",
+      "ko": "예수께서 이르시되 내가 진실로 네게 이르노니 오늘 네가 나와 함께 낙원에 있으리라 하시니라",
+      "source_text_hash": "9f2342b32a841521eae34cd9f3da84b79b42e6ec40759f85c369f5583888a8fd",
+      "translation_text_hash": "79604276c712b616f5e8f8369959456c810cac2098082acb84dc10951d733b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 진실로 네게 이르노니 오늘 네가 나와 함께 낙원에 있으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "79604276c712b616f5e8f8369959456c810cac2098082acb84dc10951d733b52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:44",
+      "sequence": 25979,
+      "chapter_label": "LUK 23",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 44
+        }
+      ],
+      "en": "It was now about the sixth hour, and darkness came over the whole land until the ninth hour.",
+      "ko": "때가 제 육시쯤 되어 해가 빛을 잃고 온 땅에 어두움이 임하여 제 구시까지 계속하며",
+      "source_text_hash": "5249f574b694696f013ddee0ffc22625b98287a75cb5176d5c2ed277aeda5470",
+      "translation_text_hash": "f970d27ac5e88fb2776f92678dbfaf552f3d45903f43f644dd6227219a531685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 제 육시쯤 되어 해가 빛을 잃고 온 땅에 어두움이 임하여 제 구시까지 계속하며"
+      ],
+      "raw_text_hashes": [
+        "f970d27ac5e88fb2776f92678dbfaf552f3d45903f43f644dd6227219a531685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:45",
+      "sequence": 25980,
+      "chapter_label": "LUK 23",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 45
+        }
+      ],
+      "en": "The sun was darkened, and the veil of the temple was torn in two.",
+      "ko": "성소의 휘장이 한가운데가 찢어지더라",
+      "source_text_hash": "69668f866aa7bbf2a93aafc0d3dbe24e36cb3d399087fb559142a3f85c56d379",
+      "translation_text_hash": "b70b4fb818457e5000f1f0cb65f9bd948f75d2efd75408888cde9d6a3aea9ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소의 휘장이 한가운데가 찢어지더라"
+      ],
+      "raw_text_hashes": [
+        "b70b4fb818457e5000f1f0cb65f9bd948f75d2efd75408888cde9d6a3aea9ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:46",
+      "sequence": 25981,
+      "chapter_label": "LUK 23",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 46
+        }
+      ],
+      "en": "Jesus, crying with a loud voice, said, “Father, into your hands I commit my spirit!”Having said this, he breathed his last.",
+      "ko": "예수께서 큰 소리로 불러 가라사대 아버지여 내 영혼을 아버지 손에 부탁하나이다 하고 이 말씀을 하신 후 운명하시다",
+      "source_text_hash": "322524d7fcffb1a0a6220d524c24384948783bbe60a4f5f1943a607d4e348015",
+      "translation_text_hash": "77cd6b031101f5d0b1479ff70d590bbc2927b69f2a5a104db789a010c23f3c90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 큰 소리로 불러 가라사대 아버지여 내 영혼을 아버지 손에 부탁하나이다 하고 이 말씀을 하신 후 운명하시다"
+      ],
+      "raw_text_hashes": [
+        "77cd6b031101f5d0b1479ff70d590bbc2927b69f2a5a104db789a010c23f3c90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:47",
+      "sequence": 25982,
+      "chapter_label": "LUK 23",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 47
+        }
+      ],
+      "en": "When the centurion saw what was done, he glorified God, saying, “Certainly this was a righteous man.”",
+      "ko": "백부장이 그 된 일을 보고 하나님께 영광을 돌려 가로되 이 사람은 정녕 의인이었도다 하고",
+      "source_text_hash": "b3b28ad28ded9fe9d6afaea6139ce942ecac91c3d6505041b081285f81b71323",
+      "translation_text_hash": "c86f9fa57223f57f2bea717756f10384b08964c517c33ef77bceee75cd92c473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장이 그 된 일을 보고 하나님께 영광을 돌려 가로되 이 사람은 정녕 의인이었도다 하고"
+      ],
+      "raw_text_hashes": [
+        "c86f9fa57223f57f2bea717756f10384b08964c517c33ef77bceee75cd92c473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:48",
+      "sequence": 25983,
+      "chapter_label": "LUK 23",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 48
+        }
+      ],
+      "en": "All the multitudes that came together to see this, when they saw the things that were done, returned home beating their chests.",
+      "ko": "이를 구경하러 모인 무리도 그 된 일을 보고 다 가슴을 두드리며 돌아가고",
+      "source_text_hash": "309c9f9feb3129d9e1a4e9fdc5845ca08835c25955e07861953b19e87b783a05",
+      "translation_text_hash": "5c0f366b7908e12595584703cc572f394fd7901a8de57617c7819e5ad7f0d344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 구경하러 모인 무리도 그 된 일을 보고 다 가슴을 두드리며 돌아가고"
+      ],
+      "raw_text_hashes": [
+        "5c0f366b7908e12595584703cc572f394fd7901a8de57617c7819e5ad7f0d344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:49",
+      "sequence": 25984,
+      "chapter_label": "LUK 23",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 49
+        }
+      ],
+      "en": "All his acquaintances and the women who followed with him from Galilee stood at a distance, watching these things.",
+      "ko": "예수의 아는 자들과 및 갈릴리로부터 따라온 여자들도 다 멀리 서서 이 일을 보니라",
+      "source_text_hash": "9b4c47ebb5afa7b65b46c53a8906a55c031808ff7a041675137e75b3604535ff",
+      "translation_text_hash": "1e31f1b61b0cd899f3d4ce4ae027f48709df744f8cd0c73d8e80018dda8fe45c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 아는 자들과 및 갈릴리로부터 따라온 여자들도 다 멀리 서서 이 일을 보니라"
+      ],
+      "raw_text_hashes": [
+        "1e31f1b61b0cd899f3d4ce4ae027f48709df744f8cd0c73d8e80018dda8fe45c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:50",
+      "sequence": 25985,
+      "chapter_label": "LUK 23",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 50
+        }
+      ],
+      "en": "Behold, there was a man named Joseph, who was a member of the council, a good and righteous man",
+      "ko": "공회 의원으로 선하고 의로운 요셉이라 하는 사람이 있으니",
+      "source_text_hash": "79a0432534dee4dbbc385eb6576e3dc76ae6b4dd596db5abe210540c9cb7cd13",
+      "translation_text_hash": "26933b9c000373c9d26e3844d45dac1caf3946a7d07ef60c94de346ba3ef4144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공회 의원으로 선하고 의로운 요셉이라 하는 사람이 있으니"
+      ],
+      "raw_text_hashes": [
+        "26933b9c000373c9d26e3844d45dac1caf3946a7d07ef60c94de346ba3ef4144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:51",
+      "sequence": 25986,
+      "chapter_label": "LUK 23",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 51
+        }
+      ],
+      "en": "(he had not consented to their counsel and deed), from Arimathaea, a city of the Jews, who was also waiting for God’s Kingdom.",
+      "ko": "(저희의 결의와 행사에 가타 하지 아니한 자라) 그는 유대인의 동네 아리마대 사람이요 하나님의 나라를 기다리는 자러니",
+      "source_text_hash": "d6e57721a5aeab8c0591d21300d8f1c85cffa6cdcee9e7e4b2d54acf8981c83c",
+      "translation_text_hash": "8e2857cb875ee33232b3c778e02a4992fff703b15648f5cad2f0ee5cd7945833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(저희의 결의와 행사에 가타 하지 아니한 자라) 그는 유대인의 동네 아리마대 사람이요 하나님의 나라를 기다리는 자러니"
+      ],
+      "raw_text_hashes": [
+        "8e2857cb875ee33232b3c778e02a4992fff703b15648f5cad2f0ee5cd7945833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:52",
+      "sequence": 25987,
+      "chapter_label": "LUK 23",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 52
+        }
+      ],
+      "en": "This man went to Pilate, and asked for Jesus’ body.",
+      "ko": "빌라도에게 가서 예수의 시체를 달라 하여",
+      "source_text_hash": "315757b97e8201dfb92a4245e236167bdc6c380492d8c3d322d591af1dabd39f",
+      "translation_text_hash": "f7f489fc1428f77145babf692ebdb65f2d68e177b943891ea54c390a4c9559fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도에게 가서 예수의 시체를 달라 하여"
+      ],
+      "raw_text_hashes": [
+        "f7f489fc1428f77145babf692ebdb65f2d68e177b943891ea54c390a4c9559fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:53",
+      "sequence": 25988,
+      "chapter_label": "LUK 23",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 53
+        }
+      ],
+      "en": "He took it down and wrapped it in a linen cloth, and laid him in a tomb that was cut in stone, where no one had ever been laid.",
+      "ko": "이를 내려 세마포로 싸고 아직 사람을 장사한 일이 없는 바위에 판 무덤에 넣어 두니",
+      "source_text_hash": "eb5a8bdb7e94608402cb884f194b6fd0de1a8b8a30d5e6838b52d5401911ee1b",
+      "translation_text_hash": "3c6028cfdb5f33b19f4872da7252c53009ed8d759c2de3f964490f13e4dfa703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 내려 세마포로 싸고 아직 사람을 장사한 일이 없는 바위에 판 무덤에 넣어 두니"
+      ],
+      "raw_text_hashes": [
+        "3c6028cfdb5f33b19f4872da7252c53009ed8d759c2de3f964490f13e4dfa703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:54",
+      "sequence": 25989,
+      "chapter_label": "LUK 23",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 54
+        }
+      ],
+      "en": "It was the day of the Preparation, and the Sabbath was drawing near.",
+      "ko": "이 날은 예비일이요 안식일이 거의 되었더라",
+      "source_text_hash": "4c879e4fac78b10223029e691cb77754b814fa175094f448c1fdfb963193e8fd",
+      "translation_text_hash": "4d3f154fda71c83699c478a9d29d30c91d459fd04836d35bf52f7ac04410e48c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 예비일이요 안식일이 거의 되었더라"
+      ],
+      "raw_text_hashes": [
+        "4d3f154fda71c83699c478a9d29d30c91d459fd04836d35bf52f7ac04410e48c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:55",
+      "sequence": 25990,
+      "chapter_label": "LUK 23",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 55
+        }
+      ],
+      "en": "The women who had come with him out of Galilee followed after, and saw the tomb and how his body was laid.",
+      "ko": "갈릴리에서 예수와 함께 온 여자들이 뒤를 좇아 그 무덤과 그의 시체를 어떻게 둔 것을 보고",
+      "source_text_hash": "fc09d6a45b973ba54cf99ee791dec58f9d4db2d49cb1991dc00dd31b96689110",
+      "translation_text_hash": "1f638e79017a2b76d94403f6c0c6f71491e8b2ba8a53703a37907521273593eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리에서 예수와 함께 온 여자들이 뒤를 좇아 그 무덤과 그의 시체를 어떻게 둔 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "1f638e79017a2b76d94403f6c0c6f71491e8b2ba8a53703a37907521273593eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:23:56",
+      "sequence": 25991,
+      "chapter_label": "LUK 23",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 23,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 23,
+          "verse": 56
+        }
+      ],
+      "en": "They returned and prepared spices and ointments. On the Sabbath they rested according to the commandment.",
+      "ko": "돌아가 향품과 향유를 예비하더라 계명을 좇아 안식일에 쉬더라",
+      "source_text_hash": "a22e31d8b9829ecc68b52270ce6c2c296a53a8f22ae412526992f446623bab9a",
+      "translation_text_hash": "996f8baabe378a630beb66b91dd6519f5a513517d3f43cda6a1c291ac54efa2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아가 향품과 향유를 예비하더라 계명을 좇아 안식일에 쉬더라"
+      ],
+      "raw_text_hashes": [
+        "996f8baabe378a630beb66b91dd6519f5a513517d3f43cda6a1c291ac54efa2a"
+      ]
+    }
+  ]
+}

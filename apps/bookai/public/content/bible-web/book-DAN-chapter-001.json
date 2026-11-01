@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:001",
+  "unit_ordinal": 851,
+  "unit_label": "DAN 1",
+  "book_code": "DAN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:1:1",
+      "sequence": 21739,
+      "chapter_label": "DAN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "In the third year of the reign of Jehoiakim king of Judah, Nebuchadnezzar king of Babylon came to Jerusalem and besieged it.",
+      "ko": "유다 왕 여호야김이 위에 있은지 삼년에 바벨론 왕 느부갓네살이 예루살렘에 이르러 그것을 에워쌌더니",
+      "source_text_hash": "0ccb2a7e9512c8faddc48a4940893ef0f816960c65f566271fa8d9ed0c4669c1",
+      "translation_text_hash": "fde9f2cc72691d03fc9b5299de0c42637b5021135ea9d36d43961400cc091029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호야김이 위에 있은지 삼년에 바벨론 왕 느부갓네살이 예루살렘에 이르러 그것을 에워쌌더니"
+      ],
+      "raw_text_hashes": [
+        "fde9f2cc72691d03fc9b5299de0c42637b5021135ea9d36d43961400cc091029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:2",
+      "sequence": 21740,
+      "chapter_label": "DAN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The Lord gave Jehoiakim king of Judah into his hand, with some of the vessels of the house of God; and he carried them into the land of Shinar to the house of his god. He brought the vessels into the treasure house of his god.",
+      "ko": "주께서 유다 왕 여호야김과 하나님의 전 기구 얼마를 그의 손에 붙이시매 그가 그것을 가지고 시날 땅 자기 신의 묘에 이르러 그 신의 보고에 두었더라",
+      "source_text_hash": "e34c112bba4dd33db67e11ad7dae6c05d2eeeb9fe9c609aa2b48977386f93aff",
+      "translation_text_hash": "6ece4068c72a7b25abc139abd7e4b1e144694027124a8f585f6da54ca7aa7743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 유다 왕 여호야김과 하나님의 전 기구 얼마를 그의 손에 붙이시매 그가 그것을 가지고 시날 땅 자기 신의 묘에 이르러 그 신의 보고에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "6ece4068c72a7b25abc139abd7e4b1e144694027124a8f585f6da54ca7aa7743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:3",
+      "sequence": 21741,
+      "chapter_label": "DAN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "The king spoke to Ashpenaz, the master of his eunuchs, that he should bring in some of the children of Israel, even of the royal offspring and of the nobles:",
+      "ko": "왕이 환관장 아스부나스에게 명하여 이스라엘 자손 중에서 왕족과 귀족의 몇 사람",
+      "source_text_hash": "d363d615d3310e12e393d87a05399f589a53f6616e2b2d62ca94b149364be23c",
+      "translation_text_hash": "8c8681976c1b6ade0aa88b67c301398ee541fbff0987d0163703dd42130a8c9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 환관장 아스부나스에게 명하여 이스라엘 자손 중에서 왕족과 귀족의 몇 사람"
+      ],
+      "raw_text_hashes": [
+        "8c8681976c1b6ade0aa88b67c301398ee541fbff0987d0163703dd42130a8c9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:4",
+      "sequence": 21742,
+      "chapter_label": "DAN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "youths in whom was no defect, but well-favored, skillful in all wisdom, endowed with knowledge, understanding science, and who had the ability to stand in the king’s palace; and that he should teach them the learning and the language of the Chaldeans.",
+      "ko": "곧 흠이 없고 아름다우며 모든 재주를 통달하며 지식이 구비하며 학문에 익숙하여 왕궁에 모실만한 소년을 데려오게 하였고 그들에게 갈대아 사람의 학문과 방언을 가르치게 하였고",
+      "source_text_hash": "3f55329f4c1d0440486a719fabfdeb289de2069d58ec5d18e10052174def5409",
+      "translation_text_hash": "656895cdc0960cf48660668d3ad3695b0c36406774184dfb7fe55e690fa1df49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 흠이 없고 아름다우며 모든 재주를 통달하며 지식이 구비하며 학문에 익숙하여 왕궁에 모실만한 소년을 데려오게 하였고 그들에게 갈대아 사람의 학문과 방언을 가르치게 하였고"
+      ],
+      "raw_text_hashes": [
+        "656895cdc0960cf48660668d3ad3695b0c36406774184dfb7fe55e690fa1df49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:5",
+      "sequence": 21743,
+      "chapter_label": "DAN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "The king appointed for them a daily portion of the king’s delicacies and of the wine which he drank, and that they should be nourished three years, that at its end they should stand before the king.",
+      "ko": "또 왕이 지정하여 자기의 진미와 자기의 마시는 포도주에서 그들의 날마다 쓸 것을 주어 삼년을 기르게 하였으니 이는 그 후에 그들로 왕의 앞에 모셔 서게 하려함이었더라",
+      "source_text_hash": "67f4f4cdd11a1fdcbceb761f61b415c0e32132c0e54c2214a3b0e65e0c7058e0",
+      "translation_text_hash": "eab0341228bdede59d2700040303d07f1610c7c511054a3310f25445094fe085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왕이 지정하여 자기의 진미와 자기의 마시는 포도주에서 그들의 날마다 쓸 것을 주어 삼년을 기르게 하였으니 이는 그 후에 그들로 왕의 앞에 모셔 서게 하려함이었더라"
+      ],
+      "raw_text_hashes": [
+        "eab0341228bdede59d2700040303d07f1610c7c511054a3310f25445094fe085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:6",
+      "sequence": 21744,
+      "chapter_label": "DAN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Now among these of the children of Judah were Daniel, Hananiah, Mishael, and Azariah.",
+      "ko": "그들 중에 유다 자손 곧 다니엘과 하나냐와 미사엘과 아사랴가 있었더니",
+      "source_text_hash": "791357ffa5925f0b9905d9855a8190bf1ead8155467ef1d625361f5c9b67afd6",
+      "translation_text_hash": "e4a0b9f2be3b0f3d3d5b17feb0d8988459e19a502a18e7b8eaab9486ca572586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들 중에 유다 자손 곧 다니엘과 하나냐와 미사엘과 아사랴가 있었더니"
+      ],
+      "raw_text_hashes": [
+        "e4a0b9f2be3b0f3d3d5b17feb0d8988459e19a502a18e7b8eaab9486ca572586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:7",
+      "sequence": 21745,
+      "chapter_label": "DAN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "The prince of the eunuchs gave names to them: to Daniel he gave the name Belteshazzar; to Hananiah, Shadrach; to Mishael, Meshach; and to Azariah, Abednego.",
+      "ko": "환관장이 그들의 이름을 고쳐 다니엘은 벨드사살이라 하고 하나냐는 사드락이라 하고 미사엘은 메삭이라 하고 아사랴는 아벳느고라 하였더라",
+      "source_text_hash": "d60a3340ce2248300751ecbfcbc86bbf191b2886eacaf16b3269ddd1bc2a5460",
+      "translation_text_hash": "f2597c6c8c3efc5fd189e088f16e7163f21177df9a6ac3c4dd4d8572026537b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환관장이 그들의 이름을 고쳐 다니엘은 벨드사살이라 하고 하나냐는 사드락이라 하고 미사엘은 메삭이라 하고 아사랴는 아벳느고라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f2597c6c8c3efc5fd189e088f16e7163f21177df9a6ac3c4dd4d8572026537b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:8",
+      "sequence": 21746,
+      "chapter_label": "DAN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "But Daniel purposed in his heart that he would not defile himself with the king’s delicacies, nor with the wine which he drank. Therefore he requested of the prince of the eunuchs that he might not defile himself.",
+      "ko": "다니엘은 뜻을 정하여 왕의 진미와 그의 마시는 포도주로 자기를 더럽히지 아니하리라 하고 자기를 더럽히지 않게 하기를 환관장에게 구하니",
+      "source_text_hash": "d4c667c4da5bea1da0fc9e09a2ca89c801e5a512efe677cbe4751d459d52c4ac",
+      "translation_text_hash": "45f075693435f5d8ca2b4b6606eb84a24b3bf8013dce682d13074c85e9633059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘은 뜻을 정하여 왕의 진미와 그의 마시는 포도주로 자기를 더럽히지 아니하리라 하고 자기를 더럽히지 않게 하기를 환관장에게 구하니"
+      ],
+      "raw_text_hashes": [
+        "45f075693435f5d8ca2b4b6606eb84a24b3bf8013dce682d13074c85e9633059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:9",
+      "sequence": 21747,
+      "chapter_label": "DAN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Now God made Daniel find kindness and compassion in the sight of the prince of the eunuchs.",
+      "ko": "하나님이 다니엘로 환관장에게 은혜와 긍휼을 얻게 하신지라",
+      "source_text_hash": "bca49dc8158a608dc8b58ce1aa6cde58699c54d07f152e48b83fc094a3d1d365",
+      "translation_text_hash": "972f27d4955213edb241d26baf0a269c72831baa772410a7201a91e1a3d966f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 다니엘로 환관장에게 은혜와 긍휼을 얻게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "972f27d4955213edb241d26baf0a269c72831baa772410a7201a91e1a3d966f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:10",
+      "sequence": 21748,
+      "chapter_label": "DAN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "The prince of the eunuchs said to Daniel, “I fear my lord the king, who has appointed your food and your drink. For why should he see your faces worse looking than the youths who are of your own age? Then you would endanger my head with the king.”",
+      "ko": "환관장이 다니엘에게 이르되 내가 내 주 왕을 두려워하노라 그가 너희 먹을 것과 너희 마실 것을 지정하셨거늘 너희의 얼굴이 초췌하여 동무 소년들만 못한 것을 그로 보시게 할 것이 무엇이냐 그렇게 되면 너희 까닭에 내 머리가 왕 앞에서 위태하게 되리라 하니라",
+      "source_text_hash": "13e2bd78259413a1ddb525c05a6ecee694f1d062c3a0573e60c1c37da29f0cfa",
+      "translation_text_hash": "58b76211779ff0e8208dde47509bdc739bbd474ddf191fce76356bfe1a34efd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환관장이 다니엘에게 이르되 내가 내 주 왕을 두려워하노라 그가 너희 먹을 것과 너희 마실 것을 지정하셨거늘 너희의 얼굴이 초췌하여 동무 소년들만 못한 것을 그로 보시게 할 것이 무엇이냐 그렇게 되면 너희 까닭에 내 머리가 왕 앞에서 위태하게 되리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "58b76211779ff0e8208dde47509bdc739bbd474ddf191fce76356bfe1a34efd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:11",
+      "sequence": 21749,
+      "chapter_label": "DAN 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Then Daniel said to the steward whom the prince of the eunuchs had appointed over Daniel, Hananiah, Mishael, and Azariah:",
+      "ko": "환관장이 세워 다니엘과 하나냐와 미사엘과 아사랴를 감독하게 한 자에게 다니엘이 말하되",
+      "source_text_hash": "ee4ae691fb16b51f2ebe70b4b495d3eefd343b165345a4b9e46009b8d32cfb92",
+      "translation_text_hash": "8fe6a1dcc3012f4267f438590968388ff65a657cc7880155fdc30d260ad55ea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환관장이 세워 다니엘과 하나냐와 미사엘과 아사랴를 감독하게 한 자에게 다니엘이 말하되"
+      ],
+      "raw_text_hashes": [
+        "8fe6a1dcc3012f4267f438590968388ff65a657cc7880155fdc30d260ad55ea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:12",
+      "sequence": 21750,
+      "chapter_label": "DAN 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "“Test your servants, I beg you, ten days; and let them give us vegetables to eat and water to drink.",
+      "ko": "청하오니 당신의 종들을 열흘 동안 시험하여 채식을 주어 먹게 하고 물을 주어 마시게 한 후에",
+      "source_text_hash": "45bd97b59d0369dcd3ef76c628c84039acb70e2f7224c3a14e91fe1e8c59b40e",
+      "translation_text_hash": "93369d9b22e178ff90102c7d4d5d0ff7c019c4d8628c27455128ac64aafc2897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청하오니 당신의 종들을 열흘 동안 시험하여 채식을 주어 먹게 하고 물을 주어 마시게 한 후에"
+      ],
+      "raw_text_hashes": [
+        "93369d9b22e178ff90102c7d4d5d0ff7c019c4d8628c27455128ac64aafc2897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:13",
+      "sequence": 21751,
+      "chapter_label": "DAN 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Then let our faces be examined before you, and the face of the youths who eat of the king’s delicacies; and as you see, deal with your servants.”",
+      "ko": "당신 앞에서 우리의 얼굴과 왕의 진미를 먹는 소년들의 얼굴을 비교하여 보아서 보이는대로 종들에게 처분하소서 하매",
+      "source_text_hash": "0433f9905e9e13b032890605836c4c35d4721af0d39ea670ab6703b13ae41f74",
+      "translation_text_hash": "fb1a303e9de68ede284f1a93ffaf6099fa1676f1c0dfebfc1844b89862e6f3da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신 앞에서 우리의 얼굴과 왕의 진미를 먹는 소년들의 얼굴을 비교하여 보아서 보이는대로 종들에게 처분하소서 하매"
+      ],
+      "raw_text_hashes": [
+        "fb1a303e9de68ede284f1a93ffaf6099fa1676f1c0dfebfc1844b89862e6f3da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:14",
+      "sequence": 21752,
+      "chapter_label": "DAN 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "So he listened to them in this matter, and tested them for ten days.",
+      "ko": "그가 그들의 말을 좇아 열흘을 시험하더니",
+      "source_text_hash": "881e70d4804265026110b8a9a95f9fd66160d8a8bd945158c557b084f1b5d61e",
+      "translation_text_hash": "2a1e27811cf814e0fbc7a3c7879fd288d0b0fd7232034b1fc4c9755e1613f99e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그들의 말을 좇아 열흘을 시험하더니"
+      ],
+      "raw_text_hashes": [
+        "2a1e27811cf814e0fbc7a3c7879fd288d0b0fd7232034b1fc4c9755e1613f99e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:15",
+      "sequence": 21753,
+      "chapter_label": "DAN 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "At the end of ten days, their faces appeared fairer and they were fatter in flesh than all the youths who ate of the king’s delicacies.",
+      "ko": "열흘 후에 그들의 얼굴이 더욱 아름답고 살이 더욱 윤택하여 왕의 진미를 먹는 모든 소년보다 나아 보인지라",
+      "source_text_hash": "0996557fd5f69ce65915f0f6ba901c5602b802420990e882878cf063172340c3",
+      "translation_text_hash": "9a21a970caedc7df01be3c7da65104cdd5b0a94fbdcf3737e9608d336e72aa2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열흘 후에 그들의 얼굴이 더욱 아름답고 살이 더욱 윤택하여 왕의 진미를 먹는 모든 소년보다 나아 보인지라"
+      ],
+      "raw_text_hashes": [
+        "9a21a970caedc7df01be3c7da65104cdd5b0a94fbdcf3737e9608d336e72aa2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:16",
+      "sequence": 21754,
+      "chapter_label": "DAN 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "So the steward took away their delicacies and the wine that they were given to drink, and gave them vegetables.",
+      "ko": "이러므로 감독하는 자가 그들에게 분정된 진미와 마실 포도주를 제하고 채식을 주니라",
+      "source_text_hash": "a268887db59410fb43ecb851131b04c7f703481786c89832e3ab611011cddc25",
+      "translation_text_hash": "f48f43f5e39075bbc5ca218382898d49ef787bb61dcd0874c87eeb88c364771e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 감독하는 자가 그들에게 분정된 진미와 마실 포도주를 제하고 채식을 주니라"
+      ],
+      "raw_text_hashes": [
+        "f48f43f5e39075bbc5ca218382898d49ef787bb61dcd0874c87eeb88c364771e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:17",
+      "sequence": 21755,
+      "chapter_label": "DAN 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Now as for these four youths, God gave them knowledge and skill in all learning and wisdom; and Daniel had understanding in all visions and dreams.",
+      "ko": "하나님이 이 네 소년에게 지식을 얻게 하시며 모든 학문과 재주에 명철하게 하신 외에 다니엘은 또 모든 이상과 몽조를 깨달아 알더라",
+      "source_text_hash": "164141528bc452c13f5780b5b7082dde4d8219067651c7ddaa7abef9de5aa395",
+      "translation_text_hash": "db7978f72d7859398f3e2974002536df563af2072045da8dabb8955697653704",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이 네 소년에게 지식을 얻게 하시며 모든 학문과 재주에 명철하게 하신 외에 다니엘은 또 모든 이상과 몽조를 깨달아 알더라"
+      ],
+      "raw_text_hashes": [
+        "db7978f72d7859398f3e2974002536df563af2072045da8dabb8955697653704"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:18",
+      "sequence": 21756,
+      "chapter_label": "DAN 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "At the end of the days which the king had appointed for bringing them in, the prince of the eunuchs brought them in before Nebuchadnezzar.",
+      "ko": "왕의 명한바 그들을 불러 들일 기한이 찼으므로 환관장이 그들을 데리고 느부갓네살 앞으로 들어갔더니",
+      "source_text_hash": "b824883acdf5b9e02ea81b620f0a1d87c796beac5a19e2374b1c6234abc19bc0",
+      "translation_text_hash": "1231e5800c420ac35fff99b1ef08a77fc2624431e948ef94dc24cb85f34eb0c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명한바 그들을 불러 들일 기한이 찼으므로 환관장이 그들을 데리고 느부갓네살 앞으로 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "1231e5800c420ac35fff99b1ef08a77fc2624431e948ef94dc24cb85f34eb0c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:19",
+      "sequence": 21757,
+      "chapter_label": "DAN 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "The king talked with them; and among them all was found no one like Daniel, Hananiah, Mishael, and Azariah. Therefore they stood before the king.",
+      "ko": "왕이 그들과 말하여 보매 무리 중에 다니엘과 하나냐와 미사엘과 아사랴와 같은 자 없으므로 그들로 왕 앞에 모시게 하고",
+      "source_text_hash": "7e22fc762ff2a86c10502c79edee8715b7a34e1bbea0a68ea7137155c870e944",
+      "translation_text_hash": "a9af5a54a9b1915c49dfad8a5e376ac0ac30f293c53291de0dcffddaf6aeb04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그들과 말하여 보매 무리 중에 다니엘과 하나냐와 미사엘과 아사랴와 같은 자 없으므로 그들로 왕 앞에 모시게 하고"
+      ],
+      "raw_text_hashes": [
+        "a9af5a54a9b1915c49dfad8a5e376ac0ac30f293c53291de0dcffddaf6aeb04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:20",
+      "sequence": 21758,
+      "chapter_label": "DAN 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "In every matter of wisdom and understanding concerning which the king inquired of them, he found them ten times better than all the magicians and enchanters who were in all his realm.",
+      "ko": "왕이 그들에게 모든 일을 묻는 중에 그 지혜와 총명이 온 나라 박수와 술객보다 십배나 나은줄을 아니라",
+      "source_text_hash": "8dcd3e7ddf55a49c4df6377db7f78edb92733abc12dcd4598604b5e660c26a0d",
+      "translation_text_hash": "ce82647d26e2921990d4819182e15d3a54eb7a7fbab8a07be1cede682262538b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그들에게 모든 일을 묻는 중에 그 지혜와 총명이 온 나라 박수와 술객보다 십배나 나은줄을 아니라"
+      ],
+      "raw_text_hashes": [
+        "ce82647d26e2921990d4819182e15d3a54eb7a7fbab8a07be1cede682262538b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:1:21",
+      "sequence": 21759,
+      "chapter_label": "DAN 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Daniel continued even to the first year of King Cyrus.",
+      "ko": "다니엘은 고레스왕 원년까지 있으니라",
+      "source_text_hash": "de74dd1cdba0ed631d3b9ee868f19ad2110c8e3902c45fc45403be4f6ba0376e",
+      "translation_text_hash": "c7347dd92a4a4b8ff849a833e38d068bdcd57c6cbe82a8b1d1047dab559f991c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘은 고레스왕 원년까지 있으니라"
+      ],
+      "raw_text_hashes": [
+        "c7347dd92a4a4b8ff849a833e38d068bdcd57c6cbe82a8b1d1047dab559f991c"
+      ]
+    }
+  ]
+}

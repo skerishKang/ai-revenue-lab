@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:063",
+  "unit_ordinal": 742,
+  "unit_label": "ISA 63",
+  "book_code": "ISA",
+  "chapter_number": 63,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:63:1",
+      "sequence": 18868,
+      "chapter_label": "ISA 63",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 1
+        }
+      ],
+      "en": "Who is this who comes from Edom, with dyed garments from Bozrah? Who is this who is glorious in his clothing, marching in the greatness of his strength? “It is I who speak in righteousness, mighty to save.”",
+      "ko": "에돔에서 오며 홍의를 입고 보스라에서 오는 자가 누구뇨 그 화려한 의복 큰 능력으로 걷는 자가 누구뇨 그는 내니 의를 말하는 자요 구원하기에 능한 자니라",
+      "source_text_hash": "a88c274b10b956dafd2c532b4ef9c63af412d565f4ff9b7c7d4158ce1a3a6b78",
+      "translation_text_hash": "f87204d9c4962b09c5f1a67fd4579902361766b4043ee7e7c072a3e35a7a94b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔에서 오며 홍의를 입고 보스라에서 오는 자가 누구뇨 그 화려한 의복 큰 능력으로 걷는 자가 누구뇨 그는 내니 의를 말하는 자요 구원하기에 능한 자니라"
+      ],
+      "raw_text_hashes": [
+        "f87204d9c4962b09c5f1a67fd4579902361766b4043ee7e7c072a3e35a7a94b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:2",
+      "sequence": 18869,
+      "chapter_label": "ISA 63",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 2
+        }
+      ],
+      "en": "Why is your clothing red, and your garments like him who treads in the wine vat?",
+      "ko": "어찌하여 네 의복이 붉으며 네 옷이 포도즙 틀을 밟는 자 같으뇨",
+      "source_text_hash": "24b722fb3e63503e7f1263f7da0cf0521981b4d9a76dc499f11db10e3d1e084a",
+      "translation_text_hash": "09bcabb0be75b627c30bee25b7f7fce0229e8af345ff2f91a2085e3da936ddd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 네 의복이 붉으며 네 옷이 포도즙 틀을 밟는 자 같으뇨"
+      ],
+      "raw_text_hashes": [
+        "09bcabb0be75b627c30bee25b7f7fce0229e8af345ff2f91a2085e3da936ddd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:3",
+      "sequence": 18870,
+      "chapter_label": "ISA 63",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 3
+        }
+      ],
+      "en": "“I have trodden the wine press alone. Of the peoples, no one was with me. Yes, I trod them in my anger and trampled them in my wrath. Their lifeblood is sprinkled on my garments, and I have stained all my clothing.",
+      "ko": "만민 중에 나와 함께한 자가 없이 내가 홀로 포도즙틀을 밟았는데 내가 노함을 인하여 무리를 밟았고 분함을 인하여 짓밟았으므로 그들의 선혈이 내 옷에 뛰어 내 의복을 다 더럽혔음이니",
+      "source_text_hash": "f4838b47728fcfd5563b13cf9cee56426dbf7ce2eb6cf7e1adc9919f9afc44f4",
+      "translation_text_hash": "d8284719a6858db00831b37bcf6733f20ca37e5061db352dab8c022c265c8b97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민 중에 나와 함께한 자가 없이 내가 홀로 포도즙틀을 밟았는데 내가 노함을 인하여 무리를 밟았고 분함을 인하여 짓밟았으므로 그들의 선혈이 내 옷에 뛰어 내 의복을 다 더럽혔음이니"
+      ],
+      "raw_text_hashes": [
+        "d8284719a6858db00831b37bcf6733f20ca37e5061db352dab8c022c265c8b97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:4",
+      "sequence": 18871,
+      "chapter_label": "ISA 63",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 4
+        }
+      ],
+      "en": "For the day of vengeance was in my heart, and the year of my redeemed has come.",
+      "ko": "이는 내 원수 갚는 날이 내 마음에 있고 내 구속할 해가 왔으나",
+      "source_text_hash": "00f4d1957b3276e93785b9ad02413d623d7247167aac37d7b70b25227146268d",
+      "translation_text_hash": "c5be9489b92c5d2f3b738501199ccbaa37c2e99ecc6221e780e8bdddfe9e9ee2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 원수 갚는 날이 내 마음에 있고 내 구속할 해가 왔으나"
+      ],
+      "raw_text_hashes": [
+        "c5be9489b92c5d2f3b738501199ccbaa37c2e99ecc6221e780e8bdddfe9e9ee2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:5",
+      "sequence": 18872,
+      "chapter_label": "ISA 63",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 5
+        }
+      ],
+      "en": "I looked, and there was no one to help; and I wondered that there was no one to uphold. Therefore my own arm brought salvation to me. My own wrath upheld me.",
+      "ko": "내가 본즉 도와주는 자도 없고 붙들어 주는 자도 없으므로 이상히 여겨 내 팔이 나를 구원하며 내 분이 나를 붙들었음이라",
+      "source_text_hash": "32cd53d386b96347434d392cda5ad3f192a434fa4fa85db88218b624cd1075b9",
+      "translation_text_hash": "b54a634297163697c458090103bc0fd74568f215185db02dc903cfbc2bd35904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 도와주는 자도 없고 붙들어 주는 자도 없으므로 이상히 여겨 내 팔이 나를 구원하며 내 분이 나를 붙들었음이라"
+      ],
+      "raw_text_hashes": [
+        "b54a634297163697c458090103bc0fd74568f215185db02dc903cfbc2bd35904"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:6",
+      "sequence": 18873,
+      "chapter_label": "ISA 63",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 6
+        }
+      ],
+      "en": "I trod down the peoples in my anger and made them drunk in my wrath. I poured their lifeblood out on the earth.”",
+      "ko": "내가 노함을 인하여 만민을 밟았으며 내가 분함을 인하여 그들을 취케 하고 그들의 선혈로 땅에 쏟아지게 하였느니라",
+      "source_text_hash": "350071193f617ed5ac304c20d60a98896f7a9873716a83d75e457565bacfd762",
+      "translation_text_hash": "1d80873befb5a255d4f35a68e56be6fbecd268aa794d0cb00e81c56319a9866f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 노함을 인하여 만민을 밟았으며 내가 분함을 인하여 그들을 취케 하고 그들의 선혈로 땅에 쏟아지게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1d80873befb5a255d4f35a68e56be6fbecd268aa794d0cb00e81c56319a9866f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:7",
+      "sequence": 18874,
+      "chapter_label": "ISA 63",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 7
+        }
+      ],
+      "en": "I will tell of the loving kindnesses of the LORD and the praises of the LORD, according to all that the LORD has given to us, and the great goodness toward the house of Israel, which he has given to them according to his mercies, and according to the multitude of his loving kindnesses.",
+      "ko": "내가 여호와께서 우리에게 베푸신 모든 자비와 그 찬송을 말하며 그 긍휼을 따라, 그 많은 자비를 따라 이스라엘 집에 베푸신 큰 은총을 말하리라",
+      "source_text_hash": "aef37a0cd3c540222c4acc0301da9b8d4ae77c1e489626897770dc69e6a2c79f",
+      "translation_text_hash": "fec4ef53c7809aafd82e1e611b5f82b3d7ba432771617688c8c54af103996802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께서 우리에게 베푸신 모든 자비와 그 찬송을 말하며 그 긍휼을 따라, 그 많은 자비를 따라 이스라엘 집에 베푸신 큰 은총을 말하리라"
+      ],
+      "raw_text_hashes": [
+        "fec4ef53c7809aafd82e1e611b5f82b3d7ba432771617688c8c54af103996802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:8",
+      "sequence": 18875,
+      "chapter_label": "ISA 63",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 8
+        }
+      ],
+      "en": "For he said, “Surely, they are my people, children who will not deal falsely;” so he became their Savior.",
+      "ko": "여호와께서 말씀하시되 그들은 실로 나의 백성이요 거짓을 행치 아니하는 자녀라 하시고 그들의 구원자가 되사",
+      "source_text_hash": "cdd088947cb46abad22448fbb7bf9687820d605c6c950ea07e497c872322b039",
+      "translation_text_hash": "0dc88c4a7961ee1d6629a5a222c3880771db30caa73b9e9cd4723cafbc416636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 그들은 실로 나의 백성이요 거짓을 행치 아니하는 자녀라 하시고 그들의 구원자가 되사"
+      ],
+      "raw_text_hashes": [
+        "0dc88c4a7961ee1d6629a5a222c3880771db30caa73b9e9cd4723cafbc416636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:9",
+      "sequence": 18876,
+      "chapter_label": "ISA 63",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 9
+        }
+      ],
+      "en": "In all their affliction he was afflicted, and the angel of his presence saved them. In his love and in his pity he redeemed them. He bore them, and carried them all the days of old.",
+      "ko": "그들의 모든 환난에 동참하사 자기 앞의 사자로 그들을 구원하시며 그 사랑과 그 긍휼로 그들을 구속하시고 옛적 모든 날에 그들을 드시며 안으셨으나",
+      "source_text_hash": "4db8bf79ab03bcb3676c536521c04e00c60a67d27237bfe3b9cfb8ca221ca1ce",
+      "translation_text_hash": "d58cb2bc8b5aec94cd0c36575bf903a60d34211cd5c3cfdbb75cd86d7f7a5a28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 모든 환난에 동참하사 자기 앞의 사자로 그들을 구원하시며 그 사랑과 그 긍휼로 그들을 구속하시고 옛적 모든 날에 그들을 드시며 안으셨으나"
+      ],
+      "raw_text_hashes": [
+        "d58cb2bc8b5aec94cd0c36575bf903a60d34211cd5c3cfdbb75cd86d7f7a5a28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:10",
+      "sequence": 18877,
+      "chapter_label": "ISA 63",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 10
+        }
+      ],
+      "en": "But they rebelled and grieved his Holy Spirit. Therefore he turned and became their enemy, and he himself fought against them.",
+      "ko": "그들이 반역하여 주의 성신을 근심케 하였으므로 그가 돌이켜 그들의 대적이 되사 친히 그들을 치셨더니",
+      "source_text_hash": "9934611d014a2434a263f5fa6e5643b2f3389b2625363a9605d7197d5be1134b",
+      "translation_text_hash": "ffba353d6b424fc68164efa90a5a6db3ceb393a36e47582aaed445fe9c3fdf86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 반역하여 주의 성신을 근심케 하였으므로 그가 돌이켜 그들의 대적이 되사 친히 그들을 치셨더니"
+      ],
+      "raw_text_hashes": [
+        "ffba353d6b424fc68164efa90a5a6db3ceb393a36e47582aaed445fe9c3fdf86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:11",
+      "sequence": 18878,
+      "chapter_label": "ISA 63",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 11
+        }
+      ],
+      "en": "Then he remembered the days of old, Moses and his people, saying, “Where is he who brought them up out of the sea with the shepherds of his flock? Where is he who put his Holy Spirit among them?”",
+      "ko": "백성이 옛적 모세의 날을 추억하여 가로되 백성과 양무리의 목자를 바다에서 올라오게 하신 자가 이제 어디 계시뇨 그들 중에 성신을 두신 자가 이제 어디 계시뇨",
+      "source_text_hash": "4cec24b40b3fa9a3faca98f5c82a2531726046e5c58eea8b4fcf645ffe06d837",
+      "translation_text_hash": "7878e96ebc668813eeb503b1f8c6e91185d2282344dcde71ac744fb1c025f302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 옛적 모세의 날을 추억하여 가로되 백성과 양무리의 목자를 바다에서 올라오게 하신 자가 이제 어디 계시뇨 그들 중에 성신을 두신 자가 이제 어디 계시뇨"
+      ],
+      "raw_text_hashes": [
+        "7878e96ebc668813eeb503b1f8c6e91185d2282344dcde71ac744fb1c025f302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:12",
+      "sequence": 18879,
+      "chapter_label": "ISA 63",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 12
+        }
+      ],
+      "en": "Who caused his glorious arm to be at Moses’ right hand? Who divided the waters before them, to make himself an everlasting name?",
+      "ko": "그 영광의 팔을 모세의 오른손과 함께하시며 그 이름을 영영케 하려 하사 그들 앞에서 물로 갈라지게 하시고",
+      "source_text_hash": "602f16ffa0966c2bbe64dc32b1e53cd6a04dbcf214f31c6d55d1046212bd4fd9",
+      "translation_text_hash": "0991a9c3e533668923d1c79b201f85db897071fd1fa53809ffddde15760928cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영광의 팔을 모세의 오른손과 함께하시며 그 이름을 영영케 하려 하사 그들 앞에서 물로 갈라지게 하시고"
+      ],
+      "raw_text_hashes": [
+        "0991a9c3e533668923d1c79b201f85db897071fd1fa53809ffddde15760928cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:13",
+      "sequence": 18880,
+      "chapter_label": "ISA 63",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 13
+        }
+      ],
+      "en": "Who led them through the depths, like a horse in the wilderness, so that they didn’t stumble?",
+      "ko": "그들을 깊음으로 인도하시되 말이 광야에 행함과 같이 넘어지지 않게 하신 자가 이제 어디 계시뇨",
+      "source_text_hash": "565077d083f8d8477f642da8b96ce06e5a69b7902b8701eafe5e7470f93e656c",
+      "translation_text_hash": "741acfd943586da2123d23a7934b8a2ce652f2b8a9a3d2ac433c523cc3388398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 깊음으로 인도하시되 말이 광야에 행함과 같이 넘어지지 않게 하신 자가 이제 어디 계시뇨"
+      ],
+      "raw_text_hashes": [
+        "741acfd943586da2123d23a7934b8a2ce652f2b8a9a3d2ac433c523cc3388398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:14",
+      "sequence": 18881,
+      "chapter_label": "ISA 63",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 14
+        }
+      ],
+      "en": "As the livestock that go down into the valley, the LORD’s Spirit caused them to rest. So you led your people to make yourself a glorious name.",
+      "ko": "여호와의 신이 그들로 골짜기로 내려가는 가축 같이 편히 쉬게 하셨도다 주께서 이같이 주의 백성을 인도하사 이름을 영화롭게 하셨나이다 하였느니라",
+      "source_text_hash": "b780b03d7ffeda297ea6fe65984fded694cc054c72d90e70eb1b97b78040ed91",
+      "translation_text_hash": "dc0e6bb713a2aefd81c1ba8f90c1fc601497301845a9331c06febb9e5f523d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 그들로 골짜기로 내려가는 가축 같이 편히 쉬게 하셨도다 주께서 이같이 주의 백성을 인도하사 이름을 영화롭게 하셨나이다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "dc0e6bb713a2aefd81c1ba8f90c1fc601497301845a9331c06febb9e5f523d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:15",
+      "sequence": 18882,
+      "chapter_label": "ISA 63",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 15
+        }
+      ],
+      "en": "Look down from heaven, and see from the habitation of your holiness and of your glory. Where are your zeal and your mighty acts? The yearning of your heart and your compassion is restrained toward me.",
+      "ko": "주여 하늘에서 굽어 살피시며 주의 거룩하고 영화로운 처소에서 보옵소서 주의 열성과 주의 능하신 행동이 이제 어디 있나이까 주의 베푸시던 간곡한 자비와 긍휼이 내게 그쳤나이다",
+      "source_text_hash": "5ac015686c46695cf9fd9d4e57c263e360d322669fde9bf26353566a2105b10d",
+      "translation_text_hash": "97471875a9f5585e17e3af283248e66d48bdb54d7f57892466f003934160a79d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 하늘에서 굽어 살피시며 주의 거룩하고 영화로운 처소에서 보옵소서 주의 열성과 주의 능하신 행동이 이제 어디 있나이까 주의 베푸시던 간곡한 자비와 긍휼이 내게 그쳤나이다"
+      ],
+      "raw_text_hashes": [
+        "97471875a9f5585e17e3af283248e66d48bdb54d7f57892466f003934160a79d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:16",
+      "sequence": 18883,
+      "chapter_label": "ISA 63",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 16
+        }
+      ],
+      "en": "For you are our Father, though Abraham doesn’t know us, and Israel does not acknowledge us. You, LORD, are our Father. Our Redeemer from everlasting is your name.",
+      "ko": "주는 우리 아버지시라 아브라함은 우리를 모르고 이스라엘은 우리를 인정치 아니할찌라도 여호와여 주는 우리의 아버지시라 상고부터 주의 이름을 우리의 구속자라 하셨거늘",
+      "source_text_hash": "09a8e5a4c4bb146685a63714902f649b2a655ea3ff5aeb2039e955d7742ef23d",
+      "translation_text_hash": "3d4c840eb2b99bb44f9d88a3d233d60a57ed01b4d180be8cab8ceec7c7e4e936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 우리 아버지시라 아브라함은 우리를 모르고 이스라엘은 우리를 인정치 아니할찌라도 여호와여 주는 우리의 아버지시라 상고부터 주의 이름을 우리의 구속자라 하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "3d4c840eb2b99bb44f9d88a3d233d60a57ed01b4d180be8cab8ceec7c7e4e936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:17",
+      "sequence": 18884,
+      "chapter_label": "ISA 63",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 17
+        }
+      ],
+      "en": "O LORD, why do you make us wander from your ways, and harden our heart from your fear? Return for your servants’ sake, the tribes of your inheritance.",
+      "ko": "여호와여 어찌하여 우리로 주의 길에서 떠나게 하시며 우리의 마음을 강퍅케 하사 주를 경외하지 않게 하시나이까 원컨대 주의 종들 곧 주의 산업인 지파들을 위하사 돌아오시옵소서",
+      "source_text_hash": "ff6b41f9cd502a50157aeb9547f32995efc932c298d69d18a9bd72cef2f42e80",
+      "translation_text_hash": "3f244356ae8de54e4fff1386d82d349771faab79679eb788a882aa8b10e12ad9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 어찌하여 우리로 주의 길에서 떠나게 하시며 우리의 마음을 강퍅케 하사 주를 경외하지 않게 하시나이까 원컨대 주의 종들 곧 주의 산업인 지파들을 위하사 돌아오시옵소서"
+      ],
+      "raw_text_hashes": [
+        "3f244356ae8de54e4fff1386d82d349771faab79679eb788a882aa8b10e12ad9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:18",
+      "sequence": 18885,
+      "chapter_label": "ISA 63",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 18
+        }
+      ],
+      "en": "Your holy people possessed it but a little while. Our adversaries have trodden down your sanctuary.",
+      "ko": "주의 거룩한 백성이 땅을 차지한지 오래지 아니하여서 우리의 대적이 주의 성소를 유린하였사오니",
+      "source_text_hash": "ad06f25d0c984909d0275a5f06900ad3527bee3fa5b38458b6c0c94f2eed9539",
+      "translation_text_hash": "b0a27288f0bf7f8a725ceea96e41e9a0ecdabac65c6871ebc5a6d4de26da97f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 거룩한 백성이 땅을 차지한지 오래지 아니하여서 우리의 대적이 주의 성소를 유린하였사오니"
+      ],
+      "raw_text_hashes": [
+        "b0a27288f0bf7f8a725ceea96e41e9a0ecdabac65c6871ebc5a6d4de26da97f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:63:19",
+      "sequence": 18886,
+      "chapter_label": "ISA 63",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 63,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 63,
+          "verse": 19
+        }
+      ],
+      "en": "We have become like those over whom you never ruled, like those who were not called by your name.",
+      "ko": "우리는 주의 다스림을 받지 못하는 자 같으며 주의 이름으로 칭함을 받지 못하는 자 같이 되었나이다",
+      "source_text_hash": "6cd1bcfb03ad8006c37a0fed1056bd093b29cdf519bcc694576b75190dc35fc1",
+      "translation_text_hash": "c48f68cf7a883ac41088f97978f8d1f9c6d66b742bf3a0a3d31a4ecb878f37e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 주의 다스림을 받지 못하는 자 같으며 주의 이름으로 칭함을 받지 못하는 자 같이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "c48f68cf7a883ac41088f97978f8d1f9c6d66b742bf3a0a3d31a4ecb878f37e1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:030",
+  "unit_ordinal": 508,
+  "unit_label": "PSA 30",
+  "book_code": "PSA",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:30:1",
+      "sequence": 14321,
+      "chapter_label": "PSA 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "I will extol you, LORD, for you have raised me up, and have not made my foes to rejoice over me.",
+      "ko": "여호와여 내가 주를 높일 것은 주께서 나를 끌어 내사 내 대적으로 나를 인하여 기뻐하지 못하게 하심이니이다",
+      "source_text_hash": "0a4c8300686dee5ce576c3aff12a0c570134f633fc3180b982fd965febcc686f",
+      "translation_text_hash": "c37aa84daed5db5d2baa628c24c88da256d1af3f5b2760df12722ea978a0abf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주를 높일 것은 주께서 나를 끌어 내사 내 대적으로 나를 인하여 기뻐하지 못하게 하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "c37aa84daed5db5d2baa628c24c88da256d1af3f5b2760df12722ea978a0abf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:2",
+      "sequence": 14322,
+      "chapter_label": "PSA 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "LORD my God, I cried to you, and you have healed me.",
+      "ko": "여호와 내 하나님이여 내가 주께 부르짖으매 나를 고치셨나이다",
+      "source_text_hash": "2049b600ce7726eb2a46e8d0172c0d02953a8a1f5e3c44ceac215f67314ea6ff",
+      "translation_text_hash": "a28e84839ec62e44f1a7c98f5aebc708f93c25729f5f50cd0e60c7d3599fb1b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 내 하나님이여 내가 주께 부르짖으매 나를 고치셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a28e84839ec62e44f1a7c98f5aebc708f93c25729f5f50cd0e60c7d3599fb1b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:3",
+      "sequence": 14323,
+      "chapter_label": "PSA 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "LORD, you have brought up my soul from Sheol. You have kept me alive, that I should not go down to the pit.",
+      "ko": "여호와여 주께서 내 영혼을 음부에서 끌어내어 나를 살리사 무덤으로 내려가지 않게 하셨나이다",
+      "source_text_hash": "14b4d8d37e73a54d74eb570432cab01db3740c9ce856b8e304a81bdabea3f265",
+      "translation_text_hash": "7867905769a49974f44865e7b5b143acdb1ec8addd136e3478194f424bd004ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 내 영혼을 음부에서 끌어내어 나를 살리사 무덤으로 내려가지 않게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "7867905769a49974f44865e7b5b143acdb1ec8addd136e3478194f424bd004ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:4",
+      "sequence": 14324,
+      "chapter_label": "PSA 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "Sing praise to the LORD, you saints of his. Give thanks to his holy name.",
+      "ko": "주의 성도들아 여호와를 찬송하며 그 거룩한 이름에 감사할찌어다",
+      "source_text_hash": "923831bb2b6fd11b40690ca36ab575165b4855211559d7dee5cb4290c8d78bef",
+      "translation_text_hash": "30c2ff2b1d347410f9ea5179ce31826094d74ff486f13cfd638f429948bc1b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 성도들아 여호와를 찬송하며 그 거룩한 이름에 감사할찌어다"
+      ],
+      "raw_text_hashes": [
+        "30c2ff2b1d347410f9ea5179ce31826094d74ff486f13cfd638f429948bc1b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:5",
+      "sequence": 14325,
+      "chapter_label": "PSA 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "For his anger is but for a moment. His favor is for a lifetime. Weeping may stay for the night, but joy comes in the morning.",
+      "ko": "그 노염은 잠간이요 그 은총은 평생이로다 저녁에는 울음이 기숙할찌라도 아침에는 기쁨이 오리로다",
+      "source_text_hash": "25491dd69e5d80465f89ffca68ac110bd4c405eb72d628306625ca574378b833",
+      "translation_text_hash": "7073114d096a0a1abc188e1c62f59bcb75e6183c5977cb30cec3f35f67640d2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 노염은 잠간이요 그 은총은 평생이로다 저녁에는 울음이 기숙할찌라도 아침에는 기쁨이 오리로다"
+      ],
+      "raw_text_hashes": [
+        "7073114d096a0a1abc188e1c62f59bcb75e6183c5977cb30cec3f35f67640d2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:6",
+      "sequence": 14326,
+      "chapter_label": "PSA 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "As for me, I said in my prosperity, “I shall never be moved.”",
+      "ko": "내가 형통할 때에 말하기를 영영히 요동치 아니하리라 하였도다",
+      "source_text_hash": "8e5aa6cec1960266edb09e75e1aa3493ad78e504292ebcd2e976f005bff17ba7",
+      "translation_text_hash": "c5529f7c44116325e34fd62aba30835593a8a8e17c237ff3621b54953f287836",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 형통할 때에 말하기를 영영히 요동치 아니하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "c5529f7c44116325e34fd62aba30835593a8a8e17c237ff3621b54953f287836"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:7",
+      "sequence": 14327,
+      "chapter_label": "PSA 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "You, LORD, when you favored me, made my mountain stand strong; but when you hid your face, I was troubled.",
+      "ko": "여호와께서 주의 은혜로 내 산을 굳게 세우셨더니 주의 얼굴을 가리우시매 내가 근심하였나이다",
+      "source_text_hash": "58316b13d1989e730d7abdf29e50304953b3729b183280f0b1c79019922ffeab",
+      "translation_text_hash": "ed1e6ffb9e7519b8bdf61a8b10a331b61fc922f6987a867102231aafb8aae63c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 주의 은혜로 내 산을 굳게 세우셨더니 주의 얼굴을 가리우시매 내가 근심하였나이다"
+      ],
+      "raw_text_hashes": [
+        "ed1e6ffb9e7519b8bdf61a8b10a331b61fc922f6987a867102231aafb8aae63c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:8",
+      "sequence": 14328,
+      "chapter_label": "PSA 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "I cried to you, LORD. I made supplication to the Lord:",
+      "ko": "여호와여 내가 주께 부르짖고 여호와께 간구하기를",
+      "source_text_hash": "801e0aaa2e2b2a59c4693ba5f564d0f45d42405db5bec317af36e35baddd7291",
+      "translation_text_hash": "596b0d4edd1b19da4b7e979c245fefcfcf4cefe9026fffcab87e9d9a17deebcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 부르짖고 여호와께 간구하기를"
+      ],
+      "raw_text_hashes": [
+        "596b0d4edd1b19da4b7e979c245fefcfcf4cefe9026fffcab87e9d9a17deebcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:9",
+      "sequence": 14329,
+      "chapter_label": "PSA 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "“What profit is there in my destruction, if I go down to the pit? Shall the dust praise you? Shall it declare your truth?",
+      "ko": "내가 무덤에 내려갈 때에 나의 피가 무슨 유익이 있으리요 어찌 진토가 주를 찬송하며 주의 진리를 선포하리이까",
+      "source_text_hash": "c3898efdfa47dbd450f2a44f4e4480f8475cbb3e14a2fd9600d8c40769445a90",
+      "translation_text_hash": "4b175534e08c97f5696a86cbeac7daf1611bd299c3861e112f5ef9db1f8b9d5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무덤에 내려갈 때에 나의 피가 무슨 유익이 있으리요 어찌 진토가 주를 찬송하며 주의 진리를 선포하리이까"
+      ],
+      "raw_text_hashes": [
+        "4b175534e08c97f5696a86cbeac7daf1611bd299c3861e112f5ef9db1f8b9d5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:10",
+      "sequence": 14330,
+      "chapter_label": "PSA 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "Hear, LORD, and have mercy on me. LORD, be my helper.”",
+      "ko": "여호와여 들으시고 나를 긍휼히 여기소서 여호와여 나의 돕는 자가 되소서 하였나이다",
+      "source_text_hash": "527ef04b02084b79694e1db2752df8223bef2c1adb2284381563c6f6cdb46741",
+      "translation_text_hash": "1b3e954369802ae031867b21b319c2275929b2dd64454223cdc391980e49d829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 들으시고 나를 긍휼히 여기소서 여호와여 나의 돕는 자가 되소서 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1b3e954369802ae031867b21b319c2275929b2dd64454223cdc391980e49d829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:11",
+      "sequence": 14331,
+      "chapter_label": "PSA 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "You have turned my mourning into dancing for me. You have removed my sackcloth, and clothed me with gladness,",
+      "ko": "주께서 나의 슬픔을 변하여 춤이 되게 하시며 나의 베옷을 벗기고 기쁨으로 띠 띠우셨나이다",
+      "source_text_hash": "fc8e79a1553946367b73470d8e48bb61c7e480c486d9b40a6770522821b1d50e",
+      "translation_text_hash": "1572f715aeca025280fc6c00571292d694e089570b74e0b204d2c6117686494e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 슬픔을 변하여 춤이 되게 하시며 나의 베옷을 벗기고 기쁨으로 띠 띠우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "1572f715aeca025280fc6c00571292d694e089570b74e0b204d2c6117686494e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:30:12",
+      "sequence": 14332,
+      "chapter_label": "PSA 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "to the end that my heart may sing praise to you, and not be silent. LORD my God, I will give thanks to you forever!",
+      "ko": "이는 잠잠치 아니하고 내 영광으로 주를 찬송케 하심이니 여호와 나의 하나님이여 내가 주께 영영히 감사하리이다",
+      "source_text_hash": "9bc35ea60cb4265db735f08edb85859417e8eb4263d8999ef75df8e596b92832",
+      "translation_text_hash": "c85ccb6daeba9abd74d5ac44acd65a33be5a603c6490ac85e36abf9f68a712a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 잠잠치 아니하고 내 영광으로 주를 찬송케 하심이니 여호와 나의 하나님이여 내가 주께 영영히 감사하리이다"
+      ],
+      "raw_text_hashes": [
+        "c85ccb6daeba9abd74d5ac44acd65a33be5a603c6490ac85e36abf9f68a712a5"
+      ]
+    }
+  ]
+}

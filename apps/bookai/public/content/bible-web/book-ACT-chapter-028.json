@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:028",
+  "unit_ordinal": 1046,
+  "unit_label": "ACT 28",
+  "book_code": "ACT",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:28:1",
+      "sequence": 27897,
+      "chapter_label": "ACT 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "When we had escaped, then they learned that the island was called Malta.",
+      "ko": "우리가 구원을 얻은 후에 안즉 그 섬은 멜리데라 하더라",
+      "source_text_hash": "30f5368b7b6252c350edbfb3f8983844a633c37cd6d0f92125e25a76db0b3c8e",
+      "translation_text_hash": "62cabcad34e0a0f31f655e80b87757935d8b433eefb8ad8d9f821a624bf3a765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 구원을 얻은 후에 안즉 그 섬은 멜리데라 하더라"
+      ],
+      "raw_text_hashes": [
+        "62cabcad34e0a0f31f655e80b87757935d8b433eefb8ad8d9f821a624bf3a765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:2",
+      "sequence": 27898,
+      "chapter_label": "ACT 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "The natives showed us uncommon kindness; for they kindled a fire and received us all, because of the present rain and because of the cold.",
+      "ko": "토인들이 우리에게 특별한 동정을 하여 비가 오고 날이 차매 불을 피워 우리를 다 영접하더라",
+      "source_text_hash": "e203527fb548e68774c9bd7403174561ef1b5c1c8f2ab5f009f1d8352c02be63",
+      "translation_text_hash": "94b1045dbdf923cfec996893e087b239b793c6f6fcfa35e7c4423f981ca069b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토인들이 우리에게 특별한 동정을 하여 비가 오고 날이 차매 불을 피워 우리를 다 영접하더라"
+      ],
+      "raw_text_hashes": [
+        "94b1045dbdf923cfec996893e087b239b793c6f6fcfa35e7c4423f981ca069b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:3",
+      "sequence": 27899,
+      "chapter_label": "ACT 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "But when Paul had gathered a bundle of sticks and laid them on the fire, a viper came out because of the heat and fastened on his hand.",
+      "ko": "바울이 한뭇 나무를 거두어 불에 넣으니 뜨거움을 인하여 독사가 나와 그 손을 물고 있는지라",
+      "source_text_hash": "914316cd52acf51f3d9b4d139c8e97b35de3e774655085eaa7b596376fd7d45f",
+      "translation_text_hash": "199006db6fa5ac36087749efd866839b617f478fe6fe129b89cc641fb301a307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 한뭇 나무를 거두어 불에 넣으니 뜨거움을 인하여 독사가 나와 그 손을 물고 있는지라"
+      ],
+      "raw_text_hashes": [
+        "199006db6fa5ac36087749efd866839b617f478fe6fe129b89cc641fb301a307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:4",
+      "sequence": 27900,
+      "chapter_label": "ACT 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "When the natives saw the creature hanging from his hand, they said to one another, “No doubt this man is a murderer, whom, though he has escaped from the sea, yet Justice has not allowed to live.”",
+      "ko": "토인들이 이 짐승이 그 손에 달림을 보고 서로 말하되 진실로 이 사람은 살인한 자로다 바다에서는 구원을 얻었으나 공의가 살지 못하게 하심이로다 하더니",
+      "source_text_hash": "b5ef74522039753a67b62992a0a835ac6c69e795c66762044c8e12260a2d3188",
+      "translation_text_hash": "00ed52556170371aae70926b67648edbd50803037d95c61b8137cc472f4d8f3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토인들이 이 짐승이 그 손에 달림을 보고 서로 말하되 진실로 이 사람은 살인한 자로다 바다에서는 구원을 얻었으나 공의가 살지 못하게 하심이로다 하더니"
+      ],
+      "raw_text_hashes": [
+        "00ed52556170371aae70926b67648edbd50803037d95c61b8137cc472f4d8f3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:5",
+      "sequence": 27901,
+      "chapter_label": "ACT 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "However he shook off the creature into the fire, and wasn’t harmed.",
+      "ko": "바울이 그 짐승을 불에 떨어버리매 조금도 상함이 없더라",
+      "source_text_hash": "7bf53b592f889b8eae15c32811fc55a213c9a969fe3c8f79a23d6751323c92fa",
+      "translation_text_hash": "629a3d34e903bb7dcdd5e231f5e2be47e5f67968ac4a8ea8a6eaf3f12eafb822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 그 짐승을 불에 떨어버리매 조금도 상함이 없더라"
+      ],
+      "raw_text_hashes": [
+        "629a3d34e903bb7dcdd5e231f5e2be47e5f67968ac4a8ea8a6eaf3f12eafb822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:6",
+      "sequence": 27902,
+      "chapter_label": "ACT 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "But they expected that he would have swollen or fallen down dead suddenly, but when they watched for a long time and saw nothing bad happen to him, they changed their minds and said that he was a god.",
+      "ko": "그가 붓든지 혹 갑자기 엎드러져 죽을 줄로 저희가 기다렸더니 오래 기다려도 그에게 아무 이상이 없음을 보고 돌려 생각하여 말하되 신이라 하더라",
+      "source_text_hash": "897ac2c0d955a3bdd0b81819881bdc75fe9cc3a06ea33df0d253badbb3ed77f0",
+      "translation_text_hash": "80217b2fd93d458dfff6c1ff708176462bc397557442cd730d5171309e173b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 붓든지 혹 갑자기 엎드러져 죽을 줄로 저희가 기다렸더니 오래 기다려도 그에게 아무 이상이 없음을 보고 돌려 생각하여 말하되 신이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "80217b2fd93d458dfff6c1ff708176462bc397557442cd730d5171309e173b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:7",
+      "sequence": 27903,
+      "chapter_label": "ACT 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Now in the neighborhood of that place were lands belonging to the chief man of the island, named Publius, who received us and courteously entertained us for three days.",
+      "ko": "이 섬에 제일 높은 사람 보블리오라 하는 이가 그 근처에 토지가 있는지라 그가 우리를 영접하여 사흘이나 친절히 유숙하게 하더니",
+      "source_text_hash": "6432d6d49dad27e4d977abe831a27e0e7aaf6a3ac7bbb8a3a74159f3de73e20a",
+      "translation_text_hash": "36b98cf460c5563517a8b556210e9fbad956e457910061a9e1a2fa6f806fc72b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 섬에 제일 높은 사람 보블리오라 하는 이가 그 근처에 토지가 있는지라 그가 우리를 영접하여 사흘이나 친절히 유숙하게 하더니"
+      ],
+      "raw_text_hashes": [
+        "36b98cf460c5563517a8b556210e9fbad956e457910061a9e1a2fa6f806fc72b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:8",
+      "sequence": 27904,
+      "chapter_label": "ACT 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The father of Publius lay sick of fever and dysentery. Paul entered in to him, prayed, and laying his hands on him, healed him.",
+      "ko": "보블리오의 부친이 열병과 이질에 걸려 누웠거늘 바울이 들어가서 기도하고 그에게 안수하여 낫게 하매",
+      "source_text_hash": "f9a2ef260414e49b73fb594f24413167e78b6038f418ea704e91eff987b0d870",
+      "translation_text_hash": "55c5ca5fda41b736847417175bee15008738749cb8a797aae11eb18b880505fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보블리오의 부친이 열병과 이질에 걸려 누웠거늘 바울이 들어가서 기도하고 그에게 안수하여 낫게 하매"
+      ],
+      "raw_text_hashes": [
+        "55c5ca5fda41b736847417175bee15008738749cb8a797aae11eb18b880505fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:9",
+      "sequence": 27905,
+      "chapter_label": "ACT 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "Then when this was done, the rest also who had diseases in the island came and were cured.",
+      "ko": "이러므로 섬 가운데 다른 병든 사람들이 와서 고침을 받고",
+      "source_text_hash": "d3b7329706860b8185d06a6fae8a657864c8abcec1952eb07cdc52a63784cb3c",
+      "translation_text_hash": "53393ba9bbc306fec7ed0429990aaf8831e72152355fc301e0a4c0941dff873a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 섬 가운데 다른 병든 사람들이 와서 고침을 받고"
+      ],
+      "raw_text_hashes": [
+        "53393ba9bbc306fec7ed0429990aaf8831e72152355fc301e0a4c0941dff873a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:10",
+      "sequence": 27906,
+      "chapter_label": "ACT 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "They also honored us with many honors; and when we sailed, they put on board the things that we needed.",
+      "ko": "후한 예로 우리를 대접하고 떠날 때에 우리 쓸 것을 배에 올리더라",
+      "source_text_hash": "43b98334c54acf0ee0a5e4d3093305a345eec4fc6fc8bd45bd2872678a41b80f",
+      "translation_text_hash": "8f4cd9ac8f9729b5d0720785bfd5d63a3d0dced3c7cae88fe04dce22872fc0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후한 예로 우리를 대접하고 떠날 때에 우리 쓸 것을 배에 올리더라"
+      ],
+      "raw_text_hashes": [
+        "8f4cd9ac8f9729b5d0720785bfd5d63a3d0dced3c7cae88fe04dce22872fc0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:11",
+      "sequence": 27907,
+      "chapter_label": "ACT 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "After three months, we set sail in a ship of Alexandria which had wintered in the island, whose figurehead was “The Twin Brothers.”",
+      "ko": "석달 후에 그 섬에서 과동한 알렉산드리아 배를 우리가 타고 떠나니 그 배 기호는 디오스구로라",
+      "source_text_hash": "bf3c5124beea880bd7cfb0e35aff15cc7eb805afce6643b4f40ceb3fa5d3857c",
+      "translation_text_hash": "cba4fe6ab2df34d35ac064bdb58851b8a8e2c7a8695ca009b8b782538df8e773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "석달 후에 그 섬에서 과동한 알렉산드리아 배를 우리가 타고 떠나니 그 배 기호는 디오스구로라"
+      ],
+      "raw_text_hashes": [
+        "cba4fe6ab2df34d35ac064bdb58851b8a8e2c7a8695ca009b8b782538df8e773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:12",
+      "sequence": 27908,
+      "chapter_label": "ACT 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "Touching at Syracuse, we stayed there three days.",
+      "ko": "수라구사에 대고 사흘을 있다가",
+      "source_text_hash": "15fbafaabb71376bfbcdb9aae6fdcae0ecd3f5ffd312ff51df7008395ea63b3b",
+      "translation_text_hash": "c0d80302fe6fbf9a5997e7ae48588aaab93dd4db9ad933a884f6d07470e237af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수라구사에 대고 사흘을 있다가"
+      ],
+      "raw_text_hashes": [
+        "c0d80302fe6fbf9a5997e7ae48588aaab93dd4db9ad933a884f6d07470e237af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:13",
+      "sequence": 27909,
+      "chapter_label": "ACT 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "From there we circled around and arrived at Rhegium. After one day, a south wind sprang up, and on the second day we came to Puteoli,",
+      "ko": "거기서 둘러가서 레기온에 이르러 하루를 지난 후 남풍이 일어나므로 이튿날 보디올에 이르러",
+      "source_text_hash": "d9eb52c82446051b7f0873167d1a556e7002377fd82ab75762f2787271d35d8e",
+      "translation_text_hash": "91f3da837102fea6a0ed72e54816fa2190796c60a16c5ddb2a8cce80326b1c8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 둘러가서 레기온에 이르러 하루를 지난 후 남풍이 일어나므로 이튿날 보디올에 이르러"
+      ],
+      "raw_text_hashes": [
+        "91f3da837102fea6a0ed72e54816fa2190796c60a16c5ddb2a8cce80326b1c8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:14",
+      "sequence": 27910,
+      "chapter_label": "ACT 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "where we found brothers, and were entreated to stay with them for seven days. So we came to Rome.",
+      "ko": "거기서 형제를 만나 저희의 청함을 받아 이레를 함께 유하다가 로마로 가니라",
+      "source_text_hash": "cc07fdc0f3d7cf2838cdffd45e6d3666fdf45a3d990cb1313d057a6f72c0e6a2",
+      "translation_text_hash": "946691a3f7c15e0ca4bcef42ac12b9faf559fbd4b6ff125d7eac55e35858b877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 형제를 만나 저희의 청함을 받아 이레를 함께 유하다가 로마로 가니라"
+      ],
+      "raw_text_hashes": [
+        "946691a3f7c15e0ca4bcef42ac12b9faf559fbd4b6ff125d7eac55e35858b877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:15",
+      "sequence": 27911,
+      "chapter_label": "ACT 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "From there the brothers, when they heard of us, came to meet us as far as The Market of Appius and The Three Taverns. When Paul saw them, he thanked God and took courage.",
+      "ko": "거기 형제들이 우리 소식을 듣고 압비오 저자와 삼관까지 맞으러 오니 바울이 저희를 보고 하나님께 사례하고 담대한 마음을 얻으니라",
+      "source_text_hash": "cdd622df5914cb8074bc9044a16b6f3c1fbd3bf1c3ce69832dbb5167196a1d64",
+      "translation_text_hash": "34c25ce4d58881af447820a36a2a86046a1d2ec974fffec758028a13dd6acf81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 형제들이 우리 소식을 듣고 압비오 저자와 삼관까지 맞으러 오니 바울이 저희를 보고 하나님께 사례하고 담대한 마음을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "34c25ce4d58881af447820a36a2a86046a1d2ec974fffec758028a13dd6acf81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:16",
+      "sequence": 27912,
+      "chapter_label": "ACT 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "When we entered into Rome, the centurion delivered the prisoners to the captain of the guard, but Paul was allowed to stay by himself with the soldier who guarded him.",
+      "ko": "우리가 로마에 들어가니 바울은 자기를 지키는 한 군사와 함께 따로 있게 허락하더라",
+      "source_text_hash": "a6f41d987914ce23b3c3deb440bc2f6800a66dda8e15d446df5ca3644e66c2c8",
+      "translation_text_hash": "b3fd43fa57e1a59641dfbae927532943cef642f8be61fcd2664a75cd56b7a372",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 로마에 들어가니 바울은 자기를 지키는 한 군사와 함께 따로 있게 허락하더라"
+      ],
+      "raw_text_hashes": [
+        "b3fd43fa57e1a59641dfbae927532943cef642f8be61fcd2664a75cd56b7a372"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:17",
+      "sequence": 27913,
+      "chapter_label": "ACT 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "After three days Paul called together those who were the leaders of the Jews. When they had come together, he said to them, “I, brothers, though I had done nothing against the people or the customs of our fathers, still was delivered prisoner from Jerusalem into the hands of the Romans,",
+      "ko": "사흘 후에 바울이 유대인 중 높은 사람들을 청하여 모인 후에 이르되 여러분 형제들아 내가 이스라엘 백성이나 우리 조상의 규모를 배척한 일이 없는데 예루살렘에서 로마인의 손에 죄수로 내어준바 되었으니",
+      "source_text_hash": "3069ddd6858102f7d0a9ce878d01991d20d284b85192e169b6fdcfee605d1580",
+      "translation_text_hash": "69fcc96cc8752147fd26014ed01d73e6fface782db297fde5d83e84d2b188d39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사흘 후에 바울이 유대인 중 높은 사람들을 청하여 모인 후에 이르되 여러분 형제들아 내가 이스라엘 백성이나 우리 조상의 규모를 배척한 일이 없는데 예루살렘에서 로마인의 손에 죄수로 내어준바 되었으니"
+      ],
+      "raw_text_hashes": [
+        "69fcc96cc8752147fd26014ed01d73e6fface782db297fde5d83e84d2b188d39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:18",
+      "sequence": 27914,
+      "chapter_label": "ACT 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "who, when they had examined me, desired to set me free, because there was no cause of death in me.",
+      "ko": "로마인은 나를 심문하여 죽일 죄목이 없으므로 놓으려 하였으나",
+      "source_text_hash": "d01a467ed1578c813b535dee38f43d62b785607a2959d8a0bd5618581f1e3aef",
+      "translation_text_hash": "5064e90f01c641b7caeb5025b83e337786d285da3bc97acab74b8f2dbab58aec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로마인은 나를 심문하여 죽일 죄목이 없으므로 놓으려 하였으나"
+      ],
+      "raw_text_hashes": [
+        "5064e90f01c641b7caeb5025b83e337786d285da3bc97acab74b8f2dbab58aec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:19",
+      "sequence": 27915,
+      "chapter_label": "ACT 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "But when the Jews spoke against it, I was constrained to appeal to Caesar, not that I had anything about which to accuse my nation.",
+      "ko": "유대인들이 반대하기로 내가 마지못하여 가이사에게 호소함이요 내 민족을 송사하려는 것이 아니로라",
+      "source_text_hash": "57d40aa8117cc45713e6cbd341d882818ba5d17e2ad7ed1d5adf0215f0554b25",
+      "translation_text_hash": "78e5a8416cac09b9af1b7ef83a7d25c5fb07e5a703ab119e354b61de8c89a63f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 반대하기로 내가 마지못하여 가이사에게 호소함이요 내 민족을 송사하려는 것이 아니로라"
+      ],
+      "raw_text_hashes": [
+        "78e5a8416cac09b9af1b7ef83a7d25c5fb07e5a703ab119e354b61de8c89a63f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:20",
+      "sequence": 27916,
+      "chapter_label": "ACT 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "For this cause therefore I asked to see you and to speak with you. For because of the hope of Israel I am bound with this chain.”",
+      "ko": "이러하므로 너희를 보고 함께 이야기하려고 청하였노니 이스라엘의 소망을 인하여 내가 이 쇠사슬에 매인바 되었노라",
+      "source_text_hash": "cb65baa093cc1f384ecc90656a446a4324d8ae65645f66b894b1080f2d2c3405",
+      "translation_text_hash": "98d4bcd7958db55158e93a2a10db7ff69047e0a573e1bd3552432ac730949058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 너희를 보고 함께 이야기하려고 청하였노니 이스라엘의 소망을 인하여 내가 이 쇠사슬에 매인바 되었노라"
+      ],
+      "raw_text_hashes": [
+        "98d4bcd7958db55158e93a2a10db7ff69047e0a573e1bd3552432ac730949058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:21",
+      "sequence": 27917,
+      "chapter_label": "ACT 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "They said to him, “We neither received letters from Judea concerning you, nor did any of the brothers come here and report or speak any evil of you.",
+      "ko": "저희가 가로되 우리가 유대에서 네게 대한 편지도 받은 일이 없고 또 형제 중 누가 와서 네게 대하여 좋지 못한 것을 고하든지 이야기한 일도 없느니라",
+      "source_text_hash": "cad111a0bc9a8bf01c2a1101dd09d250f2f0d2d0b8d1a69ec55dcc9e9f8dfbe5",
+      "translation_text_hash": "9353189002d6726422507d94fa6be1b40640aa823c6b972f383ddf9f1313f322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 우리가 유대에서 네게 대한 편지도 받은 일이 없고 또 형제 중 누가 와서 네게 대하여 좋지 못한 것을 고하든지 이야기한 일도 없느니라"
+      ],
+      "raw_text_hashes": [
+        "9353189002d6726422507d94fa6be1b40640aa823c6b972f383ddf9f1313f322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:22",
+      "sequence": 27918,
+      "chapter_label": "ACT 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "But we desire to hear from you what you think. For, as concerning this sect, it is known to us that everywhere it is spoken against.”",
+      "ko": "이에 우리가 너의 사상이 어떠한가 듣고자 하노니 이 파에 대하여는 어디서든지 반대를 받는줄 우리가 앎이라 하더라",
+      "source_text_hash": "79bf75d76ca27a2fe234f59cb8a1c085f95b471bc30f41ca3871531d11843bfc",
+      "translation_text_hash": "9692c0bf0d2c623ec55ed9eaefeed797e1bb6645763b1bc51cb97832d4c9f4f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 우리가 너의 사상이 어떠한가 듣고자 하노니 이 파에 대하여는 어디서든지 반대를 받는줄 우리가 앎이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "9692c0bf0d2c623ec55ed9eaefeed797e1bb6645763b1bc51cb97832d4c9f4f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:23",
+      "sequence": 27919,
+      "chapter_label": "ACT 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "When they had appointed him a day, many people came to him at his lodging. He explained to them, testifying about God’s Kingdom, and persuading them concerning Jesus, both from the law of Moses and from the prophets, from morning until evening.",
+      "ko": "저희가 일자를 정하고 그의 우거하는 집에 많이 오니 바울이 아침부터 저녁까지 강론하여 하나님 나라를 증거하고 모세의 율법과 선지자의 말을 가지고 예수의 일로 권하더라",
+      "source_text_hash": "6c93e7e8b36fdcc116dc36432f7daa9c1f02e7a219924961d14a30b012690600",
+      "translation_text_hash": "9b418b6cbe6985f726947ae949788c87285b6cd84747ba3d1f654df4697b8a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 일자를 정하고 그의 우거하는 집에 많이 오니 바울이 아침부터 저녁까지 강론하여 하나님 나라를 증거하고 모세의 율법과 선지자의 말을 가지고 예수의 일로 권하더라"
+      ],
+      "raw_text_hashes": [
+        "9b418b6cbe6985f726947ae949788c87285b6cd84747ba3d1f654df4697b8a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:24",
+      "sequence": 27920,
+      "chapter_label": "ACT 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "Some believed the things which were spoken, and some disbelieved.",
+      "ko": "그 말을 믿는 사람도 있고 믿지 아니하는 사람도 있어",
+      "source_text_hash": "c62efcaf1902139c037e283f37a1407307b1d08d442721c7ef0e88fc03ea1994",
+      "translation_text_hash": "4b83e2bb18fb1cac2e031509dd05a385d898a9a1c45cac97e905f0ecd4e73652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말을 믿는 사람도 있고 믿지 아니하는 사람도 있어"
+      ],
+      "raw_text_hashes": [
+        "4b83e2bb18fb1cac2e031509dd05a385d898a9a1c45cac97e905f0ecd4e73652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:25",
+      "sequence": 27921,
+      "chapter_label": "ACT 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "When they didn’t agree among themselves, they departed after Paul had spoken one message: “The Holy Spirit spoke rightly through Isaiah the prophet to our fathers,",
+      "ko": "서로 맞지 아니하여 흩어질 때에 바울이 한 말로 일러 가로되 성령이 선지자 이사야로 너희 조상들에게 말씀하신 것이 옳도다",
+      "source_text_hash": "8c654db2d5fcf6656feff3b84715ac7878532547ff47db2561215c21705cd245",
+      "translation_text_hash": "c24313390aecd0c0dd0c8a11621cd311c773a1e7b90f0df3400f107c1d3f3ad3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 맞지 아니하여 흩어질 때에 바울이 한 말로 일러 가로되 성령이 선지자 이사야로 너희 조상들에게 말씀하신 것이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "c24313390aecd0c0dd0c8a11621cd311c773a1e7b90f0df3400f107c1d3f3ad3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:26",
+      "sequence": 27922,
+      "chapter_label": "ACT 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "saying, ‘Go to this people and say, in hearing, you will hear, but will in no way understand. In seeing, you will see, but will in no way perceive.",
+      "ko": "일렀으되 이 백성에게 가서 말하기를 너희가 듣기는 들어도 도무지 깨닫지 못하며 보기는 보아도 도무지 알지 못하는도다",
+      "source_text_hash": "850e59d69ab6fd534d3d73c9fdf34714cf955e343526b73b61f41b6ee048975f",
+      "translation_text_hash": "a03f1520b12e136c896fdb1413e1da644997bb3924564e78c83f22e8379cdd5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일렀으되 이 백성에게 가서 말하기를 너희가 듣기는 들어도 도무지 깨닫지 못하며 보기는 보아도 도무지 알지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "a03f1520b12e136c896fdb1413e1da644997bb3924564e78c83f22e8379cdd5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:27",
+      "sequence": 27923,
+      "chapter_label": "ACT 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "For this people’s heart has grown callous. Their ears are dull of hearing. Their eyes they have closed. Lest they should see with their eyes, hear with their ears, understand with their heart, and would turn again, then I would heal them.’",
+      "ko": "이 백성들의 마음이 완악하여져서 그 귀로는 둔하게 듣고 그 눈을 감았으니 이는 눈으로 보고 귀로 듣고 마음으로 깨달아 돌아와 나의 고침을 받을까 함이라 하였으니",
+      "source_text_hash": "06346523b299928d2ac4b5fe9c6009e156359b27e10748d1bb789f214bacbbb3",
+      "translation_text_hash": "42a25a4d0628e01c08984956dea50a17921bccc2f0934c1cac0b19f95c9a3928",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성들의 마음이 완악하여져서 그 귀로는 둔하게 듣고 그 눈을 감았으니 이는 눈으로 보고 귀로 듣고 마음으로 깨달아 돌아와 나의 고침을 받을까 함이라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "42a25a4d0628e01c08984956dea50a17921bccc2f0934c1cac0b19f95c9a3928"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:28",
+      "sequence": 27924,
+      "chapter_label": "ACT 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "“Be it known therefore to you that the salvation of God is sent to the nations, and they will listen.”",
+      "ko": "그런즉 하나님의 이 구원을 이방인에게로 보내신줄 알라 저희는 또한 들으리라 하더라",
+      "source_text_hash": "bc31e3b36ae1b96849d0109e3ced377ca32208ffd7ec370621588c7e59f17c3c",
+      "translation_text_hash": "7128815585d34b4e5bfc1fdfb1829828da066bb326cf9b3512b117a64b860a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 하나님의 이 구원을 이방인에게로 보내신줄 알라 저희는 또한 들으리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "7128815585d34b4e5bfc1fdfb1829828da066bb326cf9b3512b117a64b860a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:29",
+      "sequence": 27925,
+      "chapter_label": "ACT 28",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 29
+        }
+      ],
+      "en": "When he had said these words, the Jews departed, having a great dispute among themselves.",
+      "ko": "(없음)",
+      "source_text_hash": "d83b6f68898f38c8a4f028ec2db12b86bccf271c501a0eafd75a64081856e156",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:30",
+      "sequence": 27926,
+      "chapter_label": "ACT 28",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 30
+        }
+      ],
+      "en": "Paul stayed two whole years in his own rented house and received all who were coming to him,",
+      "ko": "바울이 온 이태를 자기 셋집에 유하며 자기에게 오는 사람을 다 영접하고",
+      "source_text_hash": "b5afa87ceb0f42047ae1d354f2d57f4ce4c1dfc7409fca8ca2e853768ecad95a",
+      "translation_text_hash": "9b3cae7042386d5be034ea735a5c45f6dd5609e538fced470ac09d58c87b56df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 온 이태를 자기 셋집에 유하며 자기에게 오는 사람을 다 영접하고"
+      ],
+      "raw_text_hashes": [
+        "9b3cae7042386d5be034ea735a5c45f6dd5609e538fced470ac09d58c87b56df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:28:31",
+      "sequence": 27927,
+      "chapter_label": "ACT 28",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 28,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 28,
+          "verse": 31
+        }
+      ],
+      "en": "preaching God’s Kingdom and teaching the things concerning the Lord Jesus Christ with all boldness, without hindrance.",
+      "ko": "담대히 하나님 나라를 전파하며 주 예수 그리스도께 관한 것을 가르치되 금하는 사람이 없었더라",
+      "source_text_hash": "a7297ad3e04aad1891f98052af0bf07893421a3f3a89a4b89f1ee19d5f637f99",
+      "translation_text_hash": "320bf051acbc3b061de09939b3dec1430926b64401761662643105d40ab9e85d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "담대히 하나님 나라를 전파하며 주 예수 그리스도께 관한 것을 가르치되 금하는 사람이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "320bf051acbc3b061de09939b3dec1430926b64401761662643105d40ab9e85d"
+      ]
+    }
+  ]
+}

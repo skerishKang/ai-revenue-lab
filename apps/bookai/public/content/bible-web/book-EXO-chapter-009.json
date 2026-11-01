@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:009",
+  "unit_ordinal": 59,
+  "unit_label": "EXO 9",
+  "book_code": "EXO",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:9:1",
+      "sequence": 1744,
+      "chapter_label": "EXO 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Then the LORD said to Moses, “Go in to Pharaoh, and tell him, ‘This is what the LORD, the God of the Hebrews, says: “Let my people go, that they may serve me.",
+      "ko": "여호와께서 모세에게 이르시되 바로에게 들어가서 그에게 이르라 히브리 사람의 하나님 여호와께서 말씀하시기를 내 백성을 보내라 그들이 나를 섬길 것이니라",
+      "source_text_hash": "892daa2c88b89b42f289fa7c6587ac9c12b35d3cd7cb6ab5f90a1c2ba416301a",
+      "translation_text_hash": "be99ac8031d1c06f0f2b91dc7a250bc247d98710d0dee83ec54a7e377737d683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 바로에게 들어가서 그에게 이르라 히브리 사람의 하나님 여호와께서 말씀하시기를 내 백성을 보내라 그들이 나를 섬길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "be99ac8031d1c06f0f2b91dc7a250bc247d98710d0dee83ec54a7e377737d683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:2",
+      "sequence": 1745,
+      "chapter_label": "EXO 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "For if you refuse to let them go, and hold them still,",
+      "ko": "네가 만일 그들 보내기를 거절하고 억지로 잡아 두면",
+      "source_text_hash": "c89c934a388c69eee1fd4c0201f76d0ac37d32be38ef3ab87c4638a0848eb46b",
+      "translation_text_hash": "9a9375353ee170c0a1d8f07695c2a999f7ffb01156cae3f793ac07c8c94ce9ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 그들 보내기를 거절하고 억지로 잡아 두면"
+      ],
+      "raw_text_hashes": [
+        "9a9375353ee170c0a1d8f07695c2a999f7ffb01156cae3f793ac07c8c94ce9ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:3",
+      "sequence": 1746,
+      "chapter_label": "EXO 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "behold, the LORD’s hand is on your livestock which are in the field, on the horses, on the donkeys, on the camels, on the herds, and on the flocks with a very grievous pestilence.",
+      "ko": "여호와의 손이 들에 있는 네 생축 곧 말과 나귀와 약대와 우양에게 더하리니 심한 악질이 있을 것이며",
+      "source_text_hash": "7039d67c97d9f02464f26e3a5a086f8730d9cd0d40ef8e9dd4732207d9e28bca",
+      "translation_text_hash": "2a85906e32420b7c7a4b363ef369e8e12143f6e00c9d4263f8424a25aa251a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손이 들에 있는 네 생축 곧 말과 나귀와 약대와 우양에게 더하리니 심한 악질이 있을 것이며"
+      ],
+      "raw_text_hashes": [
+        "2a85906e32420b7c7a4b363ef369e8e12143f6e00c9d4263f8424a25aa251a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:4",
+      "sequence": 1747,
+      "chapter_label": "EXO 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD will make a distinction between the livestock of Israel and the livestock of Egypt; and nothing shall die of all that belongs to the children of Israel.”’”",
+      "ko": "여호와가 이스라엘의 생축과 애굽의 생축을 구별하리니 이스라엘 자손에 속한 것은 하나도 죽지 아니하리라 하셨다 하라 하시고",
+      "source_text_hash": "d1dd53b284ccdff201682087b2d45ffa9f70e77e0d67f5b1ef7f661a6817cd90",
+      "translation_text_hash": "d5b1e1b3b557188cef8a892b2398a5b33d8fabaa6a1657c1e4e6d07fbc153ebf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 이스라엘의 생축과 애굽의 생축을 구별하리니 이스라엘 자손에 속한 것은 하나도 죽지 아니하리라 하셨다 하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "d5b1e1b3b557188cef8a892b2398a5b33d8fabaa6a1657c1e4e6d07fbc153ebf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:5",
+      "sequence": 1748,
+      "chapter_label": "EXO 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD appointed a set time, saying, “Tomorrow the LORD shall do this thing in the land.”",
+      "ko": "여호와께서 기한을 정하여 가라사대 여호와가 내일 이 땅에서 이 일을 행하리라 하시더니",
+      "source_text_hash": "faa0cd7a88bcd74cdd4bd34d0730f65e581edb7a84aa5ab428d2134213e70416",
+      "translation_text_hash": "07c8292ec39aa2be680e2b2640a49b74f7a3ca3c79d3e3aa2955877893d9cbb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 기한을 정하여 가라사대 여호와가 내일 이 땅에서 이 일을 행하리라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "07c8292ec39aa2be680e2b2640a49b74f7a3ca3c79d3e3aa2955877893d9cbb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:6",
+      "sequence": 1749,
+      "chapter_label": "EXO 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD did that thing on the next day; and all the livestock of Egypt died, but of the livestock of the children of Israel, not one died.",
+      "ko": "이튿날에 여호와께서 이 일을 행하시니 애굽의 모든 생축은 죽었으나 이스라엘 자손의 생축은 하나도 죽지 아니한지라",
+      "source_text_hash": "24816d97764a2c400438fb2584505bf9032843dce2dba79e9aa3760ac85bd10c",
+      "translation_text_hash": "082b9c488c2d52d757eb08f93820f40bf667a2e9bb03011596e5dd82c18e09ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 여호와께서 이 일을 행하시니 애굽의 모든 생축은 죽었으나 이스라엘 자손의 생축은 하나도 죽지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "082b9c488c2d52d757eb08f93820f40bf667a2e9bb03011596e5dd82c18e09ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:7",
+      "sequence": 1750,
+      "chapter_label": "EXO 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Pharaoh sent, and, behold, there was not so much as one of the livestock of the Israelites dead. But the heart of Pharaoh was stubborn, and he didn’t let the people go.",
+      "ko": "바로가 보내어 본즉 이스라엘의 생축은 하나도 죽지 아니하였더라 그러나 바로의 마음이 완강하여 백성을 보내지 아니하니라",
+      "source_text_hash": "96179b6695fc38eb1199a66987213e4de9b9b72513b3a1db59b17718ab941b02",
+      "translation_text_hash": "a636030d2e939e961a2dc18196c098ea526f3a898551c02953cc14e3b3b88a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 보내어 본즉 이스라엘의 생축은 하나도 죽지 아니하였더라 그러나 바로의 마음이 완강하여 백성을 보내지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "a636030d2e939e961a2dc18196c098ea526f3a898551c02953cc14e3b3b88a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:8",
+      "sequence": 1751,
+      "chapter_label": "EXO 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD said to Moses and to Aaron, “Take handfuls of ashes of the furnace, and let Moses sprinkle it toward the sky in the sight of Pharaoh.",
+      "ko": "여호와께서 모세와 아론에게 이르시되 너희는 풀무의 재 두 움큼을 가지고 모세가 바로의 목전에서 하늘을 향하여 날리라",
+      "source_text_hash": "a0decda9c6008337e6358372813d70b7ed80bef483c4b05acac56a729deb56fa",
+      "translation_text_hash": "b1de224a84a6a5ac9d360944c0cf8acb9d6afe230c1bf899472bfcc6049ed985",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 이르시되 너희는 풀무의 재 두 움큼을 가지고 모세가 바로의 목전에서 하늘을 향하여 날리라"
+      ],
+      "raw_text_hashes": [
+        "b1de224a84a6a5ac9d360944c0cf8acb9d6afe230c1bf899472bfcc6049ed985"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:9",
+      "sequence": 1752,
+      "chapter_label": "EXO 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "It shall become small dust over all the land of Egypt, and shall be boils and blisters breaking out on man and on animal, throughout all the land of Egypt.”",
+      "ko": "그 재가 애굽 온 땅의 티끌이 되어 애굽 온 땅의 사람과 짐승에게 붙어서 독종이 발하리라",
+      "source_text_hash": "9f2004fff03eb8332e584e73e56312eac0e498c8852794736e54c189e0797ada",
+      "translation_text_hash": "bb687b60099902ec68367c10b2882da3cbebf9f4ad6a59875058100e5f7c2a2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 재가 애굽 온 땅의 티끌이 되어 애굽 온 땅의 사람과 짐승에게 붙어서 독종이 발하리라"
+      ],
+      "raw_text_hashes": [
+        "bb687b60099902ec68367c10b2882da3cbebf9f4ad6a59875058100e5f7c2a2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:10",
+      "sequence": 1753,
+      "chapter_label": "EXO 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "They took ashes of the furnace, and stood before Pharaoh; and Moses sprinkled it up toward the sky; and it became boils and blisters breaking out on man and on animal.",
+      "ko": "그들이 풀무의 재를 가지고 바로 앞에 서서 모세가 하늘을 향하여 날리니 사람과 짐승에게 붙어 독종이 발하고",
+      "source_text_hash": "ce1ee14838b1258d2fdfaeb8801f98a6e8fe137212e5a39a211f2d129ec51229",
+      "translation_text_hash": "b9cab421dbb5cfddc3efa8e3b9e29d78dcc39330aa95d2356f5e9b7708c8a26e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 풀무의 재를 가지고 바로 앞에 서서 모세가 하늘을 향하여 날리니 사람과 짐승에게 붙어 독종이 발하고"
+      ],
+      "raw_text_hashes": [
+        "b9cab421dbb5cfddc3efa8e3b9e29d78dcc39330aa95d2356f5e9b7708c8a26e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:11",
+      "sequence": 1754,
+      "chapter_label": "EXO 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "The magicians couldn’t stand before Moses because of the boils; for the boils were on the magicians and on all the Egyptians.",
+      "ko": "술객도 독종으로 인하여 모세 앞에 서지 못하니 독종이 술객들로부터 애굽 모든 사람에게 발하였음이라",
+      "source_text_hash": "da6b3cc1f41d7fb325249de47b0531bedee5c69d12826957b69398ea90ea1fe2",
+      "translation_text_hash": "bc78ed78ac4ae1ac88a6ba64ba0518973904a393f9500080ea60adc25eb92f4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술객도 독종으로 인하여 모세 앞에 서지 못하니 독종이 술객들로부터 애굽 모든 사람에게 발하였음이라"
+      ],
+      "raw_text_hashes": [
+        "bc78ed78ac4ae1ac88a6ba64ba0518973904a393f9500080ea60adc25eb92f4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:12",
+      "sequence": 1755,
+      "chapter_label": "EXO 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD hardened the heart of Pharaoh, and he didn’t listen to them, as the LORD had spoken to Moses.",
+      "ko": "그러나 여호와께서 바로의 마음을 강퍅케 하셨으므로 그들을 듣지 아니하였으니 여호와께서 모세에게 말씀하심과 같더라",
+      "source_text_hash": "702b882b8a307e0ed8a6edb6770fb5894f478fb5a3bb929416ee538025e6f43e",
+      "translation_text_hash": "ce174a06815ef4ac86669d323aa9678763a16779da51176fb4d8f940f77f5084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 바로의 마음을 강퍅케 하셨으므로 그들을 듣지 아니하였으니 여호와께서 모세에게 말씀하심과 같더라"
+      ],
+      "raw_text_hashes": [
+        "ce174a06815ef4ac86669d323aa9678763a16779da51176fb4d8f940f77f5084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:13",
+      "sequence": 1756,
+      "chapter_label": "EXO 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD said to Moses, “Rise up early in the morning, and stand before Pharaoh, and tell him, ‘This is what the LORD, the God of the Hebrews, says: “Let my people go, that they may serve me.",
+      "ko": "여호와께서 모세에게 이르시되 아침에 일찌기 일어나 바로 앞에 서서 그에게 이르기를 히브리 사람의 하나님 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라",
+      "source_text_hash": "6d9db7d0d036442a13f7458738a0877a2c2d9d98f063c0556456c1591fb00126",
+      "translation_text_hash": "e2a51e48a0e6020cdd2836d26033c8c385846071ba7acaf72f0ee859cd452740",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 아침에 일찌기 일어나 바로 앞에 서서 그에게 이르기를 히브리 사람의 하나님 여호와의 말씀에 내 백성을 보내라 그들이 나를 섬길 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e2a51e48a0e6020cdd2836d26033c8c385846071ba7acaf72f0ee859cd452740"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:14",
+      "sequence": 1757,
+      "chapter_label": "EXO 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "For this time I will send all my plagues against your heart, against your officials, and against your people; that you may know that there is no one like me in all the earth.",
+      "ko": "내가 이번에는 모든 재앙을 네 마음과 네 신하와 네 백성에게 내려 너로 온 천하에 나와 같은 자가 없음을 알게 하리라",
+      "source_text_hash": "7f1f7321cebf204e751f10bdfbf2b47cf099da7af1a9b4f8dfe3e0c6f744ab93",
+      "translation_text_hash": "4c9dfe8dccc72a26160141d70964a3a81d74cad599d2ebec131a41070c5ec506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이번에는 모든 재앙을 네 마음과 네 신하와 네 백성에게 내려 너로 온 천하에 나와 같은 자가 없음을 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "4c9dfe8dccc72a26160141d70964a3a81d74cad599d2ebec131a41070c5ec506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:15",
+      "sequence": 1758,
+      "chapter_label": "EXO 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "For now I would have stretched out my hand, and struck you and your people with pestilence, and you would have been cut off from the earth;",
+      "ko": "내가 손을 펴서 온역으로 너와 네 백성을 쳤더면 네가 세상에서 끊어졌을 것이나",
+      "source_text_hash": "26eca3bda5bc36d69189ead0ea6cb4c8900d560f118076ed2c112e9192a3ab11",
+      "translation_text_hash": "715e6a14c7f06a27c32c95ded5c797cb83bcd609e099285e28ba5a7544e58df9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 손을 펴서 온역으로 너와 네 백성을 쳤더면 네가 세상에서 끊어졌을 것이나"
+      ],
+      "raw_text_hashes": [
+        "715e6a14c7f06a27c32c95ded5c797cb83bcd609e099285e28ba5a7544e58df9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:16",
+      "sequence": 1759,
+      "chapter_label": "EXO 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "but indeed for this cause I have made you stand: to show you my power, and that my name may be declared throughout all the earth,",
+      "ko": "내가 너를 세웠음은 나의 능력을 네게 보이고 내 이름이 온 천하에 전파되게 하려 하였음이니라",
+      "source_text_hash": "d8dec9a5990a0772227cd9e40ffd04e40122381f67fc6f81785a29f396600b57",
+      "translation_text_hash": "c40fe5cbf5281793d86aeb88a1cf9bfa2fc6e5e139aa3dc143a2b140e238adbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 세웠음은 나의 능력을 네게 보이고 내 이름이 온 천하에 전파되게 하려 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "c40fe5cbf5281793d86aeb88a1cf9bfa2fc6e5e139aa3dc143a2b140e238adbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:17",
+      "sequence": 1760,
+      "chapter_label": "EXO 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "because you still exalt yourself against my people, that you won’t let them go.",
+      "ko": "네가 여전히 내 백성 앞에 자고하고 그들을 보내지 아니하느냐",
+      "source_text_hash": "9413028192e6777f5dc7131074ff61d8ab0d83f0b80a33b0d76942213e6aa28a",
+      "translation_text_hash": "5d55db5d7d158994017c31da09ea72a4f8300b2e172b238c7f13724eb969e5d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여전히 내 백성 앞에 자고하고 그들을 보내지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "5d55db5d7d158994017c31da09ea72a4f8300b2e172b238c7f13724eb969e5d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:18",
+      "sequence": 1761,
+      "chapter_label": "EXO 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, tomorrow about this time I will cause it to rain a very grievous hail, such as has not been in Egypt since the day it was founded even until now.",
+      "ko": "내일 이맘때면 내가 중한 우박을 내리리니 애굽 개국 이래로 그같은 것이 있지 않던 것이리라",
+      "source_text_hash": "302ef52be0df7dd692adb5cc3091a9d1b80e68e421a7d5d8930c9ade685fd5e6",
+      "translation_text_hash": "b5a7d26912b1a3c2387e282536c6c362fe60d87e5d7f4a080d8f2dbce0f7d74f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 이맘때면 내가 중한 우박을 내리리니 애굽 개국 이래로 그같은 것이 있지 않던 것이리라"
+      ],
+      "raw_text_hashes": [
+        "b5a7d26912b1a3c2387e282536c6c362fe60d87e5d7f4a080d8f2dbce0f7d74f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:19",
+      "sequence": 1762,
+      "chapter_label": "EXO 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore command that all of your livestock and all that you have in the field be brought into shelter. The hail will come down on every man and animal that is found in the field, and isn’t brought home, and they will die.”’”",
+      "ko": "이제 보내어 네 생축과 네 들에 있는 것을 다 모으라 사람이나 짐승이나 무릇 들에 있어서 집에 돌아오지 않은 자에게는 우박이 그 위에 내리리니 그것들이 죽으리라 하셨다 하라 하시니라",
+      "source_text_hash": "504ed28f07a6814fd58044acb28681885ceebe9150871a6a292a5b70720b75cc",
+      "translation_text_hash": "334792ceb9a53728a2b1a9b9e93a07719fda3aeada4f2429f7225c72a3f0be85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 보내어 네 생축과 네 들에 있는 것을 다 모으라 사람이나 짐승이나 무릇 들에 있어서 집에 돌아오지 않은 자에게는 우박이 그 위에 내리리니 그것들이 죽으리라 하셨다 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "334792ceb9a53728a2b1a9b9e93a07719fda3aeada4f2429f7225c72a3f0be85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:20",
+      "sequence": 1763,
+      "chapter_label": "EXO 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Those who feared the LORD’s word among the servants of Pharaoh made their servants and their livestock flee into the houses.",
+      "ko": "바로의 신하 중에 여호와의 말씀을 두려워하는 자들은 그 종들과 생축을 집으로 피하여 들였으나",
+      "source_text_hash": "bbf34e233c72d7b2e4cb715e79017abd9a78ebc59d7200fb1777e8d2525a6cef",
+      "translation_text_hash": "a735fea09f5f40ce635e6673d1b1301ed72e1a02321215d79c1dd4685ec1e86f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 신하 중에 여호와의 말씀을 두려워하는 자들은 그 종들과 생축을 집으로 피하여 들였으나"
+      ],
+      "raw_text_hashes": [
+        "a735fea09f5f40ce635e6673d1b1301ed72e1a02321215d79c1dd4685ec1e86f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:21",
+      "sequence": 1764,
+      "chapter_label": "EXO 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Whoever didn’t respect the LORD’s word left his servants and his livestock in the field.",
+      "ko": "여호와의 말씀을 마음에 두지 아니하는 자는 그 종들과 생축을 들에 그대로 두었더라",
+      "source_text_hash": "2acf98ccad710f4f80452eb58d693c8f62c6feb0ca2e13341bf9ec22ed52000d",
+      "translation_text_hash": "5549eae814f49b9144733e301c48e065a5a083c9de17f1879e5a72f8115079b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀을 마음에 두지 아니하는 자는 그 종들과 생축을 들에 그대로 두었더라"
+      ],
+      "raw_text_hashes": [
+        "5549eae814f49b9144733e301c48e065a5a083c9de17f1879e5a72f8115079b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:22",
+      "sequence": 1765,
+      "chapter_label": "EXO 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD said to Moses, “Stretch out your hand toward the sky, that there may be hail in all the land of Egypt, on man, and on animal, and on every herb of the field, throughout the land of Egypt.”",
+      "ko": "여호와께서 모세에게 이르시되 너는 하늘을 향하여 손을 들어 애굽 전국에 우박이 애굽 땅의 사람과 짐승과 밭의 모든 채소에 내리게 하라",
+      "source_text_hash": "b0c894b602fbfa359e23b258dead4cc5e0abd953a8bb000f89b5ec0d997a8fbd",
+      "translation_text_hash": "749bb0b6235fb1d6d3a51442fe930d480c468caa6903baa8b3623c9baf74cbcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 하늘을 향하여 손을 들어 애굽 전국에 우박이 애굽 땅의 사람과 짐승과 밭의 모든 채소에 내리게 하라"
+      ],
+      "raw_text_hashes": [
+        "749bb0b6235fb1d6d3a51442fe930d480c468caa6903baa8b3623c9baf74cbcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:23",
+      "sequence": 1766,
+      "chapter_label": "EXO 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Moses stretched out his rod toward the heavens, and the LORD sent thunder and hail; and lightning flashed down to the earth. The LORD rained hail on the land of Egypt.",
+      "ko": "모세가 하늘을 향하여 지팡이를 들매 여호와께서 뇌성과 우박을 보내시고 불을 내려 땅에 달리게 하시니라 여호와께서 우박을 애굽 땅에 내리시매",
+      "source_text_hash": "91048ef3872af0806e7995be0b6ddc7937328ab8f20760f6e6f7cb990a42b3f7",
+      "translation_text_hash": "38ce0fd58e890243d6220a0b48121ed91a5fe5adefe63e7ee7c3340c2209ae16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하늘을 향하여 지팡이를 들매 여호와께서 뇌성과 우박을 보내시고 불을 내려 땅에 달리게 하시니라 여호와께서 우박을 애굽 땅에 내리시매"
+      ],
+      "raw_text_hashes": [
+        "38ce0fd58e890243d6220a0b48121ed91a5fe5adefe63e7ee7c3340c2209ae16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:24",
+      "sequence": 1767,
+      "chapter_label": "EXO 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "So there was very severe hail, and lightning mixed with the hail, such as had not been in all the land of Egypt since it became a nation.",
+      "ko": "우박의 내림과 불덩이가 우박에 섞여 내림이 심히 맹렬하니 애굽 전국에 그 개국 이래로 그같은 것이 없던 것이라",
+      "source_text_hash": "f32beb0dbe3cc0d970e020c9fbed4bf925d7237a8309058ff2ae473bfce97b94",
+      "translation_text_hash": "004af52176f68751c906fb65a12c6353f0b840b648d610677e83db6e0d2883b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우박의 내림과 불덩이가 우박에 섞여 내림이 심히 맹렬하니 애굽 전국에 그 개국 이래로 그같은 것이 없던 것이라"
+      ],
+      "raw_text_hashes": [
+        "004af52176f68751c906fb65a12c6353f0b840b648d610677e83db6e0d2883b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:25",
+      "sequence": 1768,
+      "chapter_label": "EXO 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "The hail struck throughout all the land of Egypt all that was in the field, both man and animal; and the hail struck every herb of the field, and broke every tree of the field.",
+      "ko": "우박이 애굽 온 땅에서 사람과 짐승을 무론하고 무릇 밭에 있는 것을 쳤으며 우박이 또 밭의 모든 채소를 치고 들의 모든 나무를 꺾었으되",
+      "source_text_hash": "0096954347306ed2cfe02bf833cc5acb12b9214ba7d7224db89215b493519d4d",
+      "translation_text_hash": "d15a84becd078f162d01c4a078aedd26cf9c571917e6737ca7aaae4559fc9b50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우박이 애굽 온 땅에서 사람과 짐승을 무론하고 무릇 밭에 있는 것을 쳤으며 우박이 또 밭의 모든 채소를 치고 들의 모든 나무를 꺾었으되"
+      ],
+      "raw_text_hashes": [
+        "d15a84becd078f162d01c4a078aedd26cf9c571917e6737ca7aaae4559fc9b50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:26",
+      "sequence": 1769,
+      "chapter_label": "EXO 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "Only in the land of Goshen, where the children of Israel were, there was no hail.",
+      "ko": "이스라엘 자손의 거한 고센 땅에는 우박이 없었더라",
+      "source_text_hash": "82f74ef4208202182c6b0ffd1616083a63ba508a8a835090cc150408879b2137",
+      "translation_text_hash": "287f10f4abd7bfff0c57c4d550bb7db31e1d6c1a74bf5876c2ae62206c050494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 거한 고센 땅에는 우박이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "287f10f4abd7bfff0c57c4d550bb7db31e1d6c1a74bf5876c2ae62206c050494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:27",
+      "sequence": 1770,
+      "chapter_label": "EXO 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Pharaoh sent and called for Moses and Aaron, and said to them, “I have sinned this time. The LORD is righteous, and I and my people are wicked.",
+      "ko": "바로가 사람을 보내어 모세와 아론을 불러 그들에게 이르되 이번은 내가 범죄하였노라 여호와는 의로우시고 나와 나의 백성은 악하도다",
+      "source_text_hash": "af9236d859fdd8cc9d09e7a08fed883bea7a0f209f6b0e485af432703a12487e",
+      "translation_text_hash": "5970941cd9bd34a9093c052c42d254db9494945c69e7ce1244b15ed1b53322db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 사람을 보내어 모세와 아론을 불러 그들에게 이르되 이번은 내가 범죄하였노라 여호와는 의로우시고 나와 나의 백성은 악하도다"
+      ],
+      "raw_text_hashes": [
+        "5970941cd9bd34a9093c052c42d254db9494945c69e7ce1244b15ed1b53322db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:28",
+      "sequence": 1771,
+      "chapter_label": "EXO 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "Pray to the LORD; for there has been enough of mighty thunderings and hail. I will let you go, and you shall stay no longer.”",
+      "ko": "여호와께 구하여 이 뇌성과 우박을 그만 그치게 하라 내가 너희를 보내리니 너희가 다시는 머물지 아니하리라",
+      "source_text_hash": "deb5824397bb9e3e83f778a18266458df41f37a83c329d7b03dd380838506d66",
+      "translation_text_hash": "9ccd97795ceeefbf1bf8ad8217cc4b5201ae664f8899484c480a9b6ab6373acd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 구하여 이 뇌성과 우박을 그만 그치게 하라 내가 너희를 보내리니 너희가 다시는 머물지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "9ccd97795ceeefbf1bf8ad8217cc4b5201ae664f8899484c480a9b6ab6373acd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:29",
+      "sequence": 1772,
+      "chapter_label": "EXO 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said to him, “As soon as I have gone out of the city, I will spread out my hands to the LORD. The thunders shall cease, and there will not be any more hail; that you may know that the earth is the LORD’s.",
+      "ko": "모세가 그에게 이르되 내가 성에서 나가자 곧 내 손을 여호와를 향하여 펴리니 그리하면 뇌성이 그치고 우박이 다시 있지 않을찌라 세상이 여호와께 속한 줄을 왕이 알리이다",
+      "source_text_hash": "f1d5f30113a54227aaa0b022da1873be43f7f7ae525c6e7fd4ea53e5ac935cbd",
+      "translation_text_hash": "8a915677a373fec5548617b4a801766a284dce49859ad2c3d38cfa80c4ea7bea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그에게 이르되 내가 성에서 나가자 곧 내 손을 여호와를 향하여 펴리니 그리하면 뇌성이 그치고 우박이 다시 있지 않을찌라 세상이 여호와께 속한 줄을 왕이 알리이다"
+      ],
+      "raw_text_hashes": [
+        "8a915677a373fec5548617b4a801766a284dce49859ad2c3d38cfa80c4ea7bea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:30",
+      "sequence": 1773,
+      "chapter_label": "EXO 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "But as for you and your servants, I know that you don’t yet fear the LORD God.”",
+      "ko": "그러나 왕과 왕의 신하들이 여호와 하나님을 아직도 두려워 아니할 줄을 내가 아나이다",
+      "source_text_hash": "9927b522dc6e4bd8e4e97cc6db387ac22ab09a061b77598c86cf8701675d1efb",
+      "translation_text_hash": "5cdfb423af0b24a6802e0892ada5669141e9973b9573065ae6b8f4066e3329d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 왕과 왕의 신하들이 여호와 하나님을 아직도 두려워 아니할 줄을 내가 아나이다"
+      ],
+      "raw_text_hashes": [
+        "5cdfb423af0b24a6802e0892ada5669141e9973b9573065ae6b8f4066e3329d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:31",
+      "sequence": 1774,
+      "chapter_label": "EXO 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "The flax and the barley were struck, for the barley had ripened and the flax was blooming.",
+      "ko": "때에 보리는 이삭이 나왔고 삼은 꽃이 피었으므로 삼과 보리가 상하였으나",
+      "source_text_hash": "f39bc1a1b7d877ed6bd0bd2999a979336918b014438bca095221ea770920db8a",
+      "translation_text_hash": "c75ae13e00bcb5e6b080a85c00d68f8f7a14329b827ccbe928d1b7134f228d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 보리는 이삭이 나왔고 삼은 꽃이 피었으므로 삼과 보리가 상하였으나"
+      ],
+      "raw_text_hashes": [
+        "c75ae13e00bcb5e6b080a85c00d68f8f7a14329b827ccbe928d1b7134f228d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:32",
+      "sequence": 1775,
+      "chapter_label": "EXO 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "But the wheat and the spelt were not struck, for they had not grown up.",
+      "ko": "그러나 밀과 나맥은 자라지 아니한고로 상하지 아니하였더라",
+      "source_text_hash": "3c25423ff4ba7178df612936bd3ba9599617851b9b1441617a3218780ce284ec",
+      "translation_text_hash": "f9cb2e7c9ee8bfbf4fd158ce525fc7f8227e9e4f666bfc6661f196221eb20ffc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 밀과 나맥은 자라지 아니한고로 상하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "f9cb2e7c9ee8bfbf4fd158ce525fc7f8227e9e4f666bfc6661f196221eb20ffc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:33",
+      "sequence": 1776,
+      "chapter_label": "EXO 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "Moses went out of the city from Pharaoh, and spread out his hands to the LORD; and the thunders and hail ceased, and the rain was not poured on the earth.",
+      "ko": "모세가 바로를 떠나 성에서 나가서 여호와를 향하여 손을 펴매 뇌성과 우박이 그치고 비가 땅에 내리지 아니하니라",
+      "source_text_hash": "eee7e9f04daf3abf7ec718cf4eecfe16aa9c92810666846a38f7d5772bba7a8d",
+      "translation_text_hash": "ab6e46bf2ebb1bff790f64e9c1d56245a09a9ee07da5c276efea99baa4962778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 바로를 떠나 성에서 나가서 여호와를 향하여 손을 펴매 뇌성과 우박이 그치고 비가 땅에 내리지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "ab6e46bf2ebb1bff790f64e9c1d56245a09a9ee07da5c276efea99baa4962778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:34",
+      "sequence": 1777,
+      "chapter_label": "EXO 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "When Pharaoh saw that the rain and the hail and the thunders had ceased, he sinned yet more, and hardened his heart, he and his servants.",
+      "ko": "바로가 비와 우박과 뇌성의 그친 것을 볼 때에 다시 범죄하여 마음을 완강케 하니 그와 그 신하가 일반이라",
+      "source_text_hash": "2c4ba610d7dcc8594129739f79746aedaf58a2c6623303e18f4994061296a5d8",
+      "translation_text_hash": "17487d98e52fa1bbccd501e221056bdd9072d15dc01e89d237fdcf67b7713e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 비와 우박과 뇌성의 그친 것을 볼 때에 다시 범죄하여 마음을 완강케 하니 그와 그 신하가 일반이라"
+      ],
+      "raw_text_hashes": [
+        "17487d98e52fa1bbccd501e221056bdd9072d15dc01e89d237fdcf67b7713e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:9:35",
+      "sequence": 1778,
+      "chapter_label": "EXO 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "The heart of Pharaoh was hardened, and he didn’t let the children of Israel go, just as the LORD had spoken through Moses.",
+      "ko": "바로의 마음이 강퍅하여 이스라엘 자손을 보내지 아니하였으니 여호와께서 모세에게 말씀하심과 같더라",
+      "source_text_hash": "05bbcdc3c22243da9ced14f029593bcdbc0dec5e93315097841b0421b8595046",
+      "translation_text_hash": "72b0d421fe7549a5231ba5766aa9c9871b22c76565725aa868c1db4ddba2abee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 마음이 강퍅하여 이스라엘 자손을 보내지 아니하였으니 여호와께서 모세에게 말씀하심과 같더라"
+      ],
+      "raw_text_hashes": [
+        "72b0d421fe7549a5231ba5766aa9c9871b22c76565725aa868c1db4ddba2abee"
+      ]
+    }
+  ]
+}

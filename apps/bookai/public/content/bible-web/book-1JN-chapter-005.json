@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1JN:chapter:005",
+  "unit_ordinal": 1164,
+  "unit_label": "1JN 5",
+  "book_code": "1JN",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1JN:5:1",
+      "sequence": 30622,
+      "chapter_label": "1JN 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Whoever believes that Jesus is the Christ has been born of God. Whoever loves the Father also loves the child who is born of him.",
+      "ko": "예수께서 그리스도이심을 믿는 자마다 하나님께로서 난 자니 또한 내신 이를 사랑하는 자마다 그에게서 난 자를 사랑하느니라",
+      "source_text_hash": "d9eb171fa66491da83cd2c008f7d445b0a57704fbf78e4a862b3f8eeb152b21d",
+      "translation_text_hash": "9a5a0c76bf65424b00b66f472688aeed09156c8fbbae9169a35b4509bd26d165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그리스도이심을 믿는 자마다 하나님께로서 난 자니 또한 내신 이를 사랑하는 자마다 그에게서 난 자를 사랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "9a5a0c76bf65424b00b66f472688aeed09156c8fbbae9169a35b4509bd26d165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:2",
+      "sequence": 30623,
+      "chapter_label": "1JN 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "By this we know that we love the children of God, when we love God and keep his commandments.",
+      "ko": "우리가 하나님을 사랑하고 그의 계명들을 지킬 때에 이로써 우리가 하나님의 자녀 사랑하는 줄을 아느니라",
+      "source_text_hash": "7d9261cbe339cdd608d3c321c5e8138856c64d250a1cae362db8d18c00bdb217",
+      "translation_text_hash": "c774438e7ca2d7d5caa69df1140ab83b94eb6c12bed6cd1bdb310c435ad925f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하나님을 사랑하고 그의 계명들을 지킬 때에 이로써 우리가 하나님의 자녀 사랑하는 줄을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "c774438e7ca2d7d5caa69df1140ab83b94eb6c12bed6cd1bdb310c435ad925f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:3",
+      "sequence": 30624,
+      "chapter_label": "1JN 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "For this is loving God, that we keep his commandments. His commandments are not grievous.",
+      "ko": "하나님을 사랑하는 것은 이것이니 우리가 그의 계명들을 지키는 것이라 그의 계명들은 무거운 것이 아니로다",
+      "source_text_hash": "c8b0f6ba8a438c2aed0a5c948031e6d565e2b5d10540f1e606e8809afd3b90b2",
+      "translation_text_hash": "19b171d6d94206fd900debae90b1ac44b6aea6996a235559d509ab1ccc4827c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 사랑하는 것은 이것이니 우리가 그의 계명들을 지키는 것이라 그의 계명들은 무거운 것이 아니로다"
+      ],
+      "raw_text_hashes": [
+        "19b171d6d94206fd900debae90b1ac44b6aea6996a235559d509ab1ccc4827c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:4",
+      "sequence": 30625,
+      "chapter_label": "1JN 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "For whatever is born of God overcomes the world. This is the victory that has overcome the world: your faith.",
+      "ko": "대저 하나님께로서 난 자마다 세상을 이기느니라 세상을 이긴 이김은 이것이니 우리의 믿음이니라",
+      "source_text_hash": "72355d26a89c3da86e670e199cbdbc720fb114f45192fee9d35d721e8fcbb2b3",
+      "translation_text_hash": "b40b1163a0ae6a7546684bb6478ce2a98b51a9a83a81a25f222534c81f84f917",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 하나님께로서 난 자마다 세상을 이기느니라 세상을 이긴 이김은 이것이니 우리의 믿음이니라"
+      ],
+      "raw_text_hashes": [
+        "b40b1163a0ae6a7546684bb6478ce2a98b51a9a83a81a25f222534c81f84f917"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:5",
+      "sequence": 30626,
+      "chapter_label": "1JN 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Who is he who overcomes the world, but he who believes that Jesus is the Son of God?",
+      "ko": "예수께서 하나님의 아들이심을 믿는 자가 아니면 세상을 이기는 자가 누구뇨",
+      "source_text_hash": "3223aa9830e0a4f88d6817263bd5134a2e62551349fa290548ee4d484f1783c9",
+      "translation_text_hash": "02ef4d862d82fc5cffae77c7b9798e4c2013ca9d239dfabb24be5a144ab508c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 하나님의 아들이심을 믿는 자가 아니면 세상을 이기는 자가 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "02ef4d862d82fc5cffae77c7b9798e4c2013ca9d239dfabb24be5a144ab508c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:6",
+      "sequence": 30627,
+      "chapter_label": "1JN 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "This is he who came by water and blood, Jesus Christ; not with the water only, but with the water and the blood. It is the Spirit who testifies, because the Spirit is the truth.",
+      "ko": "이는 물과 피로 임하신 자니 곧 예수 그리스도시라 물로만 아니요 물과 피로 임하셨고",
+      "source_text_hash": "39d7fe045f337969c6edb1951cb490e86d0ca8e9aca72556bbecc2d0dd69ad4e",
+      "translation_text_hash": "4a7f82aa776561124e589003abbfaa0b6731d0e1e1965d638ef8c481196d97e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 물과 피로 임하신 자니 곧 예수 그리스도시라 물로만 아니요 물과 피로 임하셨고"
+      ],
+      "raw_text_hashes": [
+        "4a7f82aa776561124e589003abbfaa0b6731d0e1e1965d638ef8c481196d97e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:7",
+      "sequence": 30628,
+      "chapter_label": "1JN 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "For there are three who testify:",
+      "ko": "증거하는 이는 성령이시니 성령은 진리니라",
+      "source_text_hash": "fa4fa75532dd25c65cf9fd4eb11c830eecf4c1c2f9d699633ca18244b978fe9b",
+      "translation_text_hash": "4184339c2ea47ce9b5385545aca23c0461e20baed8ea38c3ddf098da47c45587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증거하는 이는 성령이시니 성령은 진리니라"
+      ],
+      "raw_text_hashes": [
+        "4184339c2ea47ce9b5385545aca23c0461e20baed8ea38c3ddf098da47c45587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:8",
+      "sequence": 30629,
+      "chapter_label": "1JN 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "the Spirit, the water, and the blood; and the three agree as one.",
+      "ko": "증거하는 이가 셋이니 성령과 물과 피라 또한 이 셋이 합하여 하나이니라",
+      "source_text_hash": "6483706915f7b9860716e8dfb2bf95fdf98a34224758f617b28ea3908b6ff698",
+      "translation_text_hash": "bc78658881999c8b1b123222e0be5593aea5c0ee05015272bf1c2d4b2ef5d78d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증거하는 이가 셋이니 성령과 물과 피라 또한 이 셋이 합하여 하나이니라"
+      ],
+      "raw_text_hashes": [
+        "bc78658881999c8b1b123222e0be5593aea5c0ee05015272bf1c2d4b2ef5d78d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:9",
+      "sequence": 30630,
+      "chapter_label": "1JN 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "If we receive the witness of men, the witness of God is greater; for this is God’s testimony which he has testified concerning his Son.",
+      "ko": "만일 우리가 사람들의 증거를 받을찐대 하나님의 증거는 더욱 크도다 하나님의 증거는 이것이니 그 아들에 관하여 증거하신 것이니라",
+      "source_text_hash": "5a90c8c27f52754649f939e67d6d75e2caf75ec7532a69087a22c561f1891f2c",
+      "translation_text_hash": "c7a5d5eb5c64d4b86f2a37bc143af7f67c2a1a59b953eeacba974e80f32fc527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 사람들의 증거를 받을찐대 하나님의 증거는 더욱 크도다 하나님의 증거는 이것이니 그 아들에 관하여 증거하신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c7a5d5eb5c64d4b86f2a37bc143af7f67c2a1a59b953eeacba974e80f32fc527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:10",
+      "sequence": 30631,
+      "chapter_label": "1JN 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "He who believes in the Son of God has the testimony in himself. He who doesn’t believe God has made him a liar, because he has not believed in the testimony that God has given concerning his Son.",
+      "ko": "하나님의 아들을 믿는 자는 자기 안에 증거가 있고 하나님을 믿지 아니하는 자는 하나님을 거짓말 하는 자로 만드나니 이는 하나님께서 그 아들에 관하여 증거하신 증거를 믿지 아니하였음이라",
+      "source_text_hash": "9a90f7fd2e91d0adf506e02819cf544312bfb0341548a79515203b05b4175b04",
+      "translation_text_hash": "5b17433b96291093174debd1e495334427523463c7a3ab6c49d9aee189e1323c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 아들을 믿는 자는 자기 안에 증거가 있고 하나님을 믿지 아니하는 자는 하나님을 거짓말 하는 자로 만드나니 이는 하나님께서 그 아들에 관하여 증거하신 증거를 믿지 아니하였음이라"
+      ],
+      "raw_text_hashes": [
+        "5b17433b96291093174debd1e495334427523463c7a3ab6c49d9aee189e1323c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:11",
+      "sequence": 30632,
+      "chapter_label": "1JN 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "The testimony is this: that God gave to us eternal life, and this life is in his Son.",
+      "ko": "또 증거는 이것이니 하나님이 우리에게 영생을 주신 것과 이 생명이 그의 아들 안에 있는 그것이니라",
+      "source_text_hash": "d9f4924b40bf737c4c1181fa6575dd6229913833116f5223354ea329f30dedf0",
+      "translation_text_hash": "a96a147cf572b5f8609a394cbbffd833795f5d358fb27c5052639af411f97813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 증거는 이것이니 하나님이 우리에게 영생을 주신 것과 이 생명이 그의 아들 안에 있는 그것이니라"
+      ],
+      "raw_text_hashes": [
+        "a96a147cf572b5f8609a394cbbffd833795f5d358fb27c5052639af411f97813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:12",
+      "sequence": 30633,
+      "chapter_label": "1JN 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "He who has the Son has the life. He who doesn’t have God’s Son doesn’t have the life.",
+      "ko": "아들이 있는 자에게는 생명이 있고 하나님의 아들이 없는 자에게는 생명이 없느니라",
+      "source_text_hash": "9a44679b6272f609c12a263101610c1bf43741bdc55cbfce7ec9572744a88cfe",
+      "translation_text_hash": "9ef21960b6a0b080092245e4913971fe901838d8a110fb5e267f0f59a6562bda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들이 있는 자에게는 생명이 있고 하나님의 아들이 없는 자에게는 생명이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "9ef21960b6a0b080092245e4913971fe901838d8a110fb5e267f0f59a6562bda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:13",
+      "sequence": 30634,
+      "chapter_label": "1JN 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "These things I have written to you who believe in the name of the Son of God, that you may know that you have eternal life, and that you may continue to believe in the name of the Son of God.",
+      "ko": "내가 하나님의 아들의 이름을 믿는 너희에게 이것을 쓴 것은 너희로 하여금 너희에게 영생이 있음을 알게 하려 함이라",
+      "source_text_hash": "1b079be4f4043aae21cbc9da855fc20411106fdc38caae7a998c28309b67edc6",
+      "translation_text_hash": "863b4a2c140b15bb9cb4e70a666b74eedcb37de5e255d0f8c2e1b9dd5252fe16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님의 아들의 이름을 믿는 너희에게 이것을 쓴 것은 너희로 하여금 너희에게 영생이 있음을 알게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "863b4a2c140b15bb9cb4e70a666b74eedcb37de5e255d0f8c2e1b9dd5252fe16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:14",
+      "sequence": 30635,
+      "chapter_label": "1JN 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "This is the boldness which we have toward him, that if we ask anything according to his will, he listens to us.",
+      "ko": "그를 향하여 우리의 가진바 담대한 것이 이것이니 그의 뜻대로 무엇을 구하면 들으심이라",
+      "source_text_hash": "bbeaa9ade144dd908c64762fa4ec7ffaf43a42fa8d8e03de861012c8a8931634",
+      "translation_text_hash": "9b98c5637cf261a2400e4e8b267ee6403d8c1b7e0bd7b57da23896401ea16e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 향하여 우리의 가진바 담대한 것이 이것이니 그의 뜻대로 무엇을 구하면 들으심이라"
+      ],
+      "raw_text_hashes": [
+        "9b98c5637cf261a2400e4e8b267ee6403d8c1b7e0bd7b57da23896401ea16e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:15",
+      "sequence": 30636,
+      "chapter_label": "1JN 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "And if we know that he listens to us, whatever we ask, we know that we have the petitions which we have asked of him.",
+      "ko": "우리가 무엇이든지 구하는 바를 들으시는 줄을 안즉 우리가 그에게 구한 그것을 얻은 줄을 또한 아느니라",
+      "source_text_hash": "1d11b94bef2445e5a6dc1627f2d8ccf36d4015e915daa8fb87264b4dcf6356c6",
+      "translation_text_hash": "bff4b1aa43e0ff2eebcd9c692ecb31c6919197610c64fd1fcc2e626bc0b5237d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 무엇이든지 구하는 바를 들으시는 줄을 안즉 우리가 그에게 구한 그것을 얻은 줄을 또한 아느니라"
+      ],
+      "raw_text_hashes": [
+        "bff4b1aa43e0ff2eebcd9c692ecb31c6919197610c64fd1fcc2e626bc0b5237d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:16",
+      "sequence": 30637,
+      "chapter_label": "1JN 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "If anyone sees his brother sinning a sin not leading to death, he shall ask, and God will give him life for those who sin not leading to death. There is sin leading to death. I don’t say that he should make a request concerning this.",
+      "ko": "누구든지 형제가 사망에 이르지 아니한 죄 범하는 것을 보거든 구하라 그러면 사망에 이르지 아니하는 범죄자들을 위하여 저에게 생명을 주시리라 사망에 이르는 죄가 있으니 이에 대하여 나는 구하라 하지 않노라",
+      "source_text_hash": "6a4a52e317449b229dfa9749b25dc5c2220d84906d5c0b09e6b2b7fc2d18df83",
+      "translation_text_hash": "fed05d228ae966c8612b87b23952fb4bb64beb555f0b3f3df79bf504e64ee79e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 형제가 사망에 이르지 아니한 죄 범하는 것을 보거든 구하라 그러면 사망에 이르지 아니하는 범죄자들을 위하여 저에게 생명을 주시리라 사망에 이르는 죄가 있으니 이에 대하여 나는 구하라 하지 않노라"
+      ],
+      "raw_text_hashes": [
+        "fed05d228ae966c8612b87b23952fb4bb64beb555f0b3f3df79bf504e64ee79e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:17",
+      "sequence": 30638,
+      "chapter_label": "1JN 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "All unrighteousness is sin, and there is sin not leading to death.",
+      "ko": "모든 불의가 죄로되 사망에 이르지 아니하는 죄도 있도다",
+      "source_text_hash": "e0b21b1b4c07ebc999701b9797e875482361e0a6dc355e50b756a002de1163f7",
+      "translation_text_hash": "0b1e9561315584e5dc2571741ce47194132128c193ef721b807d1f5b71daf4c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 불의가 죄로되 사망에 이르지 아니하는 죄도 있도다"
+      ],
+      "raw_text_hashes": [
+        "0b1e9561315584e5dc2571741ce47194132128c193ef721b807d1f5b71daf4c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:18",
+      "sequence": 30639,
+      "chapter_label": "1JN 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "We know that whoever is born of God doesn’t sin, but he who was born of God keeps himself, and the evil one doesn’t touch him.",
+      "ko": "하나님께로서 난 자마다 범죄치 아니하는 줄을 우리가 아노라 하나님께로서 나신 자가 저를 지키시매 악한 자가 저를 만지지도 못하느니라",
+      "source_text_hash": "d548380e965f5b21937aed742ce6658e4446f9240064b25b137d55cb06af9cc3",
+      "translation_text_hash": "3373bbda16eaf5974668956536bb77c13673a73f7e42dedd6818bf3da645a9bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께로서 난 자마다 범죄치 아니하는 줄을 우리가 아노라 하나님께로서 나신 자가 저를 지키시매 악한 자가 저를 만지지도 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "3373bbda16eaf5974668956536bb77c13673a73f7e42dedd6818bf3da645a9bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:19",
+      "sequence": 30640,
+      "chapter_label": "1JN 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "We know that we are of God, and the whole world lies in the power of the evil one.",
+      "ko": "또 아는 것은 우리는 하나님께 속하고 온 세상은 악한 자 안에 처한 것이며",
+      "source_text_hash": "0fbcde069cc06bed3925abf3c88f130f0cf7c46211b4b9e8c6ca27d19eb99047",
+      "translation_text_hash": "2cb6c40cae947126c41d3ef4b5dd2d0fc344deb5958f5abe42d05e8fcc9ff191",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아는 것은 우리는 하나님께 속하고 온 세상은 악한 자 안에 처한 것이며"
+      ],
+      "raw_text_hashes": [
+        "2cb6c40cae947126c41d3ef4b5dd2d0fc344deb5958f5abe42d05e8fcc9ff191"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:20",
+      "sequence": 30641,
+      "chapter_label": "1JN 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "We know that the Son of God has come and has given us an understanding, that we know him who is true; and we are in him who is true, in his Son Jesus Christ. This is the true God and eternal life.",
+      "ko": "또 아는 것은 하나님의 아들이 이르러 우리에게 지각을 주사 우리로 참된 자를 알게 하신 것과 또한 우리가 참된 자 곧 그의 아들 예수 그리스도 안에 있는 것이니 그는 참 하나님이시요 영생이시라",
+      "source_text_hash": "8c6aba2b388b0243b1d39b242b40c8aee19078edf6e860e6e21155878b39cf62",
+      "translation_text_hash": "a5d79a88a9b93a10af16bdfcecdfafdf10ed04d5912ce60622d1bb59604c15b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아는 것은 하나님의 아들이 이르러 우리에게 지각을 주사 우리로 참된 자를 알게 하신 것과 또한 우리가 참된 자 곧 그의 아들 예수 그리스도 안에 있는 것이니 그는 참 하나님이시요 영생이시라"
+      ],
+      "raw_text_hashes": [
+        "a5d79a88a9b93a10af16bdfcecdfafdf10ed04d5912ce60622d1bb59604c15b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:5:21",
+      "sequence": 30642,
+      "chapter_label": "1JN 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "1JN",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "Little children, keep yourselves from idols.",
+      "ko": "자녀들아 너희 자신을 지켜 우상에서 멀리하라",
+      "source_text_hash": "8bf8d8d8919f51d370f7e30ba760fa93271d8754fdd9c853067310067fbf2121",
+      "translation_text_hash": "de943326e86810d964ff795ef39ba15d942645ef71a9e016c058720176b64d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 너희 자신을 지켜 우상에서 멀리하라"
+      ],
+      "raw_text_hashes": [
+        "de943326e86810d964ff795ef39ba15d942645ef71a9e016c058720176b64d73"
+      ]
+    }
+  ]
+}

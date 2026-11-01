@@ -809,6 +809,36 @@ const SCENARIOS = {
     snap("switch_to_sns");
     return { steps, endpoints: endpointSet(), pageErrors };
   },
+  async period_book() {
+    stored("1월 회의.txt", "회의 일시: 2026-01-05T10:00\n안건 확인과 일정 논의");
+    stored("3월 회의.txt", "회의 일시: 2026-03-12T10:00\n예산 추가 발언");
+    stored("6월 회의.txt", "회의 일시: 2026-06-30T10:00\n성과 보고");
+    stored("7월 회의.txt", "회의 일시: 2026-07-01T10:00\n범위 밖");
+    stored("날짜 없는 회의.txt", "토론에서 2026-02-01 일정을 검토");
+    const session = spawnSession();
+    await session.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    find(session, "councilBookStart").value = "2026-01-01";
+    find(session, "councilBookEnd").value = "2026-06-30";
+    await find(session, "councilBookSelectPeriod").dispatch("click");
+    const status = find(session, "councilBookPeriodStatus").textContent;
+    const checks = find(session, "councilMeetingArchive").querySelectorAll(".council-book-check");
+    const selected = checks.filter((c) => c.checked).map((c) => c.value);
+    await find(session, "councilBookGenerate").dispatch("click");
+    const payload = chatPayloads[chatPayloads.length - 1];
+    const generated = find(session, "councilBookOutput").value;
+    find(session, "councilBookOutput").value = "의정활동집 편집본\n" + generated;
+    await find(session, "councilBookSave").dispatch("click");
+    await sleep(30);
+    const reopened = spawnSession();
+    await reopened.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const open = find(reopened, "councilMeetingArchive").querySelectorAll(".council-book-open")[0];
+    await open.dispatch("click");
+    return { status, selected, payload, generated,
+      reopened: find(reopened, "councilBookOutput").value,
+      endpoints: endpointSet(), alerts, pageErrors };
+  },
   async book() {
     // #5942: the book is a product, so it must survive a page refresh. One
     // session generates and edits it, presses save twice, and a second session

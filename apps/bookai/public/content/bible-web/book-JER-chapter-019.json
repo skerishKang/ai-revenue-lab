@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:019",
+  "unit_ordinal": 764,
+  "unit_label": "JER 19",
+  "book_code": "JER",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:19:1",
+      "sequence": 19409,
+      "chapter_label": "JER 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Thus said the LORD, “Go, and buy a potter’s earthen container, and take some of the elders of the people and of the elders of the priests;",
+      "ko": "여호와께서 이같이 말씀하시되 가서 토기장이의 오지병을 사고 백성의 어른들과 제사장의 어른 몇 사람을 데리고",
+      "source_text_hash": "30b00731285e8d5d91d03f62d6091103dc988342ec9635a512d2648ae97f47f7",
+      "translation_text_hash": "7ab07d5582050da7a733ab0cf471accfc6a21d3ed8b634e962a7124a192a5f86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 가서 토기장이의 오지병을 사고 백성의 어른들과 제사장의 어른 몇 사람을 데리고"
+      ],
+      "raw_text_hashes": [
+        "7ab07d5582050da7a733ab0cf471accfc6a21d3ed8b634e962a7124a192a5f86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:2",
+      "sequence": 19410,
+      "chapter_label": "JER 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "and go out to the valley of the son of Hinnom, which is by the entry of the gate Harsith, and proclaim there the words that I will tell you.",
+      "ko": "하시드문 어귀 곁에 있는 힌놈의 아들의 골짜기로 가서 거기서 내가 네게 이른 말을 선포하여",
+      "source_text_hash": "c41acce470166d4e61375ab0550053eda4d6640f9b9874d4cd9b9620f733d311",
+      "translation_text_hash": "acdb482a57eed557f08ddfc1bddce13910f763c0debcc6c457251dbe6686bc4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하시드문 어귀 곁에 있는 힌놈의 아들의 골짜기로 가서 거기서 내가 네게 이른 말을 선포하여"
+      ],
+      "raw_text_hashes": [
+        "acdb482a57eed557f08ddfc1bddce13910f763c0debcc6c457251dbe6686bc4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:3",
+      "sequence": 19411,
+      "chapter_label": "JER 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Say, ‘Hear the LORD’s word, kings of Judah and inhabitants of Jerusalem: The LORD of Armies, the God of Israel says, “Behold, I will bring evil on this place, which whoever hears, his ears will tingle.",
+      "ko": "이르기를 너희 유다 왕들과 예루살렘 거민아 여호와의 말씀을 들으라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 보라 내가 이곳에 재앙을 내릴 것이라 무릇 그것을 듣는 자의 귀가 진동하리니",
+      "source_text_hash": "17a829278cffd948e4aa22a37dbe34a01b12256e6bd63f08cc065b07bcdce8ac",
+      "translation_text_hash": "d794647f8b88b13fee5ca99df4c7da3662f36992f1c9123e566aab99bebd6864",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 너희 유다 왕들과 예루살렘 거민아 여호와의 말씀을 들으라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 보라 내가 이곳에 재앙을 내릴 것이라 무릇 그것을 듣는 자의 귀가 진동하리니"
+      ],
+      "raw_text_hashes": [
+        "d794647f8b88b13fee5ca99df4c7da3662f36992f1c9123e566aab99bebd6864"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:4",
+      "sequence": 19412,
+      "chapter_label": "JER 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Because they have forsaken me, and have defiled this place, and have burned incense in it to other gods that they didn’t know—they, their fathers, and the kings of Judah—and have filled this place with the blood of innocents,",
+      "ko": "이는 그들이 나를 버리고 이곳을 불결케 하며 이곳에서 자기와 자기 열조와 유다 왕들의 알지 못하던 다른 신들에게 분향하며 무죄한 자의 피로 이곳에 채웠음이며",
+      "source_text_hash": "afb91173316d45cca868727bc5b4b5d61a92d17a7964bf2e76205b25d35b6092",
+      "translation_text_hash": "28edf6abed37f0c15dc4d3178b6e6056973432568f2cb0a9eb3862c9e9565f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 나를 버리고 이곳을 불결케 하며 이곳에서 자기와 자기 열조와 유다 왕들의 알지 못하던 다른 신들에게 분향하며 무죄한 자의 피로 이곳에 채웠음이며"
+      ],
+      "raw_text_hashes": [
+        "28edf6abed37f0c15dc4d3178b6e6056973432568f2cb0a9eb3862c9e9565f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:5",
+      "sequence": 19413,
+      "chapter_label": "JER 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "and have built the high places of Baal to burn their children in the fire for burnt offerings to Baal, which I didn’t command, nor speak, which didn’t even enter into my mind.",
+      "ko": "또 그들이 바알을 위하여 산당을 건축하고 자기 아들들을 바알에게 번제로 불살라 드렸나니 이는 내가 명하거나 말하거나 뜻한 바가 아니니라",
+      "source_text_hash": "4e7742dd51883d9bafcdc9290561dafa8d9d78815027c241916da4e85d84d791",
+      "translation_text_hash": "c9241b146b6db97458b92d14112207bd334d3df060b66d2ccbbdb9f2e115a4e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들이 바알을 위하여 산당을 건축하고 자기 아들들을 바알에게 번제로 불살라 드렸나니 이는 내가 명하거나 말하거나 뜻한 바가 아니니라"
+      ],
+      "raw_text_hashes": [
+        "c9241b146b6db97458b92d14112207bd334d3df060b66d2ccbbdb9f2e115a4e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:6",
+      "sequence": 19414,
+      "chapter_label": "JER 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore, behold, the days come,” says the LORD, “that this place will no more be called ‘Topheth’, nor ‘The Valley of the son of Hinnom’, but ‘The valley of Slaughter’.",
+      "ko": "그러므로 나 여호와가 말하노라 보라 다시는 이곳을 도벳이나 힌놈의 아들의 골짜기라 칭하지 아니하고 살륙의 골짜기라 칭하는 날이 이를 것이라",
+      "source_text_hash": "0242993d4e5eb2cd0803a91032c03a3edfc48971da94f22587e2f76b29b07f37",
+      "translation_text_hash": "3ce181a68cec9c7487a8d16171f17a230d40e07d8d5f2d8609da97622a879ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 보라 다시는 이곳을 도벳이나 힌놈의 아들의 골짜기라 칭하지 아니하고 살륙의 골짜기라 칭하는 날이 이를 것이라"
+      ],
+      "raw_text_hashes": [
+        "3ce181a68cec9c7487a8d16171f17a230d40e07d8d5f2d8609da97622a879ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:7",
+      "sequence": 19415,
+      "chapter_label": "JER 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“I will make the counsel of Judah and Jerusalem void in this place. I will cause them to fall by the sword before their enemies, and by the hand of those who seek their life. I will give their dead bodies to be food for the birds of the sky and for the animals of the earth.",
+      "ko": "내가 이곳에서 유다와 예루살렘의 모계를 무효케 하여 그들로 그 대적 앞과 생명을 찾는 자의 손의 칼에 엎드러지게 하고 그 시체를 공중의 새와 땅 짐승의 밥이 되게 하며",
+      "source_text_hash": "8ad533a384f83a9f5e8bebe282489a050c18f411a99560e1767241fae3d9d075",
+      "translation_text_hash": "00d55639b7844884ba559aebd2059e24abbc5aa5bc2b6c36ac3d179f1e338017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이곳에서 유다와 예루살렘의 모계를 무효케 하여 그들로 그 대적 앞과 생명을 찾는 자의 손의 칼에 엎드러지게 하고 그 시체를 공중의 새와 땅 짐승의 밥이 되게 하며"
+      ],
+      "raw_text_hashes": [
+        "00d55639b7844884ba559aebd2059e24abbc5aa5bc2b6c36ac3d179f1e338017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:8",
+      "sequence": 19416,
+      "chapter_label": "JER 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "I will make this city an astonishment and a hissing. Everyone who passes by it will be astonished and hiss because of all its plagues.",
+      "ko": "이 성으로 놀람과 모욕거리가 되게 하리니 그 모든 재앙을 인하여 지나는 자마다 놀라며 모욕할 것이며",
+      "source_text_hash": "57dc10dbf454a05bc72adcee287cb3464f8cfb76cffa30f045510123e6e0f06e",
+      "translation_text_hash": "d51bf0f3d9ad65f0c427a222273b958f1dfa6800ca0a103f55c752a6cd2901eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성으로 놀람과 모욕거리가 되게 하리니 그 모든 재앙을 인하여 지나는 자마다 놀라며 모욕할 것이며"
+      ],
+      "raw_text_hashes": [
+        "d51bf0f3d9ad65f0c427a222273b958f1dfa6800ca0a103f55c752a6cd2901eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:9",
+      "sequence": 19417,
+      "chapter_label": "JER 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "I will cause them to eat the flesh of their sons and the flesh of their daughters. They will each eat the flesh of his friend in the siege and in the distress with which their enemies, and those who seek their life, will distress them.”’",
+      "ko": "그들이 그 대적과 그들의 생명을 찾는 자에게 둘러싸여 곤핍을 당할 때에 내가 그들로 그 아들의 고기, 딸의 고기를 먹게 하고 또 각기 친구의 고기를 먹게 하리라 하셨다 하고",
+      "source_text_hash": "8e488e2cc45f92489bc43dd046514b3b040db748855932f75b288da1e53a5deb",
+      "translation_text_hash": "34947c9234d21f454d81d1521f08b31e14823435bf6d17b84962e3c8796eefd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 대적과 그들의 생명을 찾는 자에게 둘러싸여 곤핍을 당할 때에 내가 그들로 그 아들의 고기, 딸의 고기를 먹게 하고 또 각기 친구의 고기를 먹게 하리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "34947c9234d21f454d81d1521f08b31e14823435bf6d17b84962e3c8796eefd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:10",
+      "sequence": 19418,
+      "chapter_label": "JER 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "“Then you shall break the container in the sight of the men who go with you,",
+      "ko": "너는 함께 가는 자의 목전에서 그 오지병을 깨뜨리고",
+      "source_text_hash": "25a26d2f1ce2ede882da5f01b632ff4c9280e459eb84c090a55db548f3a01206",
+      "translation_text_hash": "1b2498bacb4c5ec440bdba4d0c1a48a0eccf13761ff030b51f96c294cd76e274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 함께 가는 자의 목전에서 그 오지병을 깨뜨리고"
+      ],
+      "raw_text_hashes": [
+        "1b2498bacb4c5ec440bdba4d0c1a48a0eccf13761ff030b51f96c294cd76e274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:11",
+      "sequence": 19419,
+      "chapter_label": "JER 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "and shall tell them, ‘The LORD of Armies says: “Even so I will break this people and this city as one breaks a potter’s vessel, that can’t be made whole again. They will bury in Topheth until there is no place to bury.",
+      "ko": "그들에게 이르기를 만군의 여호와께서 이같이 말씀하시되 사람이 토기장이의 그릇을 한번 깨뜨리면 다시 완전하게 할 수 없나니 이와 같이 내가 이 백성과 이 성을 파하리니 그들을 매장할 자리가 없도록 도벳에 장사하리라",
+      "source_text_hash": "81c2f67a878c05a1869b9963c8968e3412454f172b6aa26de5c5c1cb84d03fb7",
+      "translation_text_hash": "9a8a557740169dce49be875a947bca06900b629a333465cb002bda55d3e1103d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 만군의 여호와께서 이같이 말씀하시되 사람이 토기장이의 그릇을 한번 깨뜨리면 다시 완전하게 할 수 없나니 이와 같이 내가 이 백성과 이 성을 파하리니 그들을 매장할 자리가 없도록 도벳에 장사하리라"
+      ],
+      "raw_text_hashes": [
+        "9a8a557740169dce49be875a947bca06900b629a333465cb002bda55d3e1103d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:12",
+      "sequence": 19420,
+      "chapter_label": "JER 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "This is what I will do to this place,” says the LORD, “and to its inhabitants, even making this city as Topheth.",
+      "ko": "나 여호와가 말하노라 내가 이곳과 그 중 거민에게 이같이 행하여 이 성으로 도벳 같게 할 것이라",
+      "source_text_hash": "6f34bca12e73c8ec09a8f5b065255ad353278ffe3af78a6cf50f7842b4963115",
+      "translation_text_hash": "9c9a6b56ad0b691d03538a751f6254e1bda8e7b014c06d26432023811c575e7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 이곳과 그 중 거민에게 이같이 행하여 이 성으로 도벳 같게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "9c9a6b56ad0b691d03538a751f6254e1bda8e7b014c06d26432023811c575e7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:13",
+      "sequence": 19421,
+      "chapter_label": "JER 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "The houses of Jerusalem and the houses of the kings of Judah, which are defiled, will be as the place of Topheth, even all the houses on whose roofs they have burned incense to all the army of the sky and have poured out drink offerings to other gods.”’”",
+      "ko": "예루살렘 집들과 유다 왕들의 집들 곧 그 집들이 그 집 위에서 하늘의 만상에 분향하고 다른 신들에게 전제를 부음으로 더러워졌은즉 도벳 땅처럼 되리라 하셨다 하라",
+      "source_text_hash": "711a55582c495e7f332ce3f9d402ac0d5bb948e792623dfd6eba54898b730411",
+      "translation_text_hash": "13103b56cb1cf5618e0890a5263ddd38ad74b8beb7b17cbef134a9e43ffe2823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 집들과 유다 왕들의 집들 곧 그 집들이 그 집 위에서 하늘의 만상에 분향하고 다른 신들에게 전제를 부음으로 더러워졌은즉 도벳 땅처럼 되리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "13103b56cb1cf5618e0890a5263ddd38ad74b8beb7b17cbef134a9e43ffe2823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:14",
+      "sequence": 19422,
+      "chapter_label": "JER 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Then Jeremiah came from Topheth, where the LORD had sent him to prophesy, and he stood in the court of the LORD’s house, and said to all the people:",
+      "ko": "예레미야가 여호와께서 자기를 보내사 예언하게 하신 도벳에서 돌아와 여호와의 집 뜰에 서서 모든 백성에게 말하되",
+      "source_text_hash": "1456ff0e9a02082741fa9ea9b330782565cd5a0762be3f615440580976fdf92f",
+      "translation_text_hash": "784e9224ac759ce8b86dce9a38901a29df2b50c47b6f20d5505426c38deccd0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 여호와께서 자기를 보내사 예언하게 하신 도벳에서 돌아와 여호와의 집 뜰에 서서 모든 백성에게 말하되"
+      ],
+      "raw_text_hashes": [
+        "784e9224ac759ce8b86dce9a38901a29df2b50c47b6f20d5505426c38deccd0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:19:15",
+      "sequence": 19423,
+      "chapter_label": "JER 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "“The LORD of Armies, the God of Israel says, ‘Behold, I will bring on this city and on all its towns all the evil that I have pronounced against it, because they have made their neck stiff, that they may not hear my words.’”",
+      "ko": "만군의 여호와 이스라엘의 하나님이 말씀하시되 보라 내가 이 성에 대하여 선언한 모든 재앙을 이 성과 그 모든 촌락에 내리리니 이는 그 목을 곧게 하여 내 말을 듣지 아니함이니라 하셨다 하라",
+      "source_text_hash": "9cbf6b1a843ccc17018c1dc0d54f1c58133cee9f6b3d9fb4ec36a8555dda3648",
+      "translation_text_hash": "e57d913588bf3898c02d0642bebb881223716d8ca5e141b0e57ffa4e939de1f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 말씀하시되 보라 내가 이 성에 대하여 선언한 모든 재앙을 이 성과 그 모든 촌락에 내리리니 이는 그 목을 곧게 하여 내 말을 듣지 아니함이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "e57d913588bf3898c02d0642bebb881223716d8ca5e141b0e57ffa4e939de1f7"
+      ]
+    }
+  ]
+}

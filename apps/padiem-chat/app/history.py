@@ -80,11 +80,16 @@ ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
 ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
 
 
-def _oracle_mesh_original_max_bytes(row: dict[str, Any]) -> int:
+def _oracle_mesh_original_max_bytes(
+    row: dict[str, Any], command_max_bytes: int | None = ORACLE_MESH_ORIGINAL_MAX_BYTES,
+) -> int | None:
     # The persisted server dispatch owns this distinction, never a store-call
-    # argument or model value. Commands and other reads retain the 6MB guard.
+    # argument or model value. Other reads retain the 6MB guard; only command
+    # results can use the host-configured limit.
     if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
         return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+    if row.get("kind") == "command":
+        return command_max_bytes
     return ORACLE_MESH_ORIGINAL_MAX_BYTES
 
 
@@ -767,10 +772,18 @@ class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
     def __init__(self, db: Any, *, full_context_bucket: Any = None,
-                 run_ownership: Any = None):
+                 run_ownership: Any = None,
+                 mesh_command_output_max_bytes: int | None = ORACLE_MESH_ORIGINAL_MAX_BYTES):
         if db is None:
             raise ValueError("D1 binding is required")
+        if mesh_command_output_max_bytes is not None and (
+            isinstance(mesh_command_output_max_bytes, bool)
+            or not isinstance(mesh_command_output_max_bytes, int)
+            or mesh_command_output_max_bytes < 1
+        ):
+            raise ValueError("mesh_command_output_max_bytes must be positive or None")
         self.db = db
+        self.mesh_command_output_max_bytes = mesh_command_output_max_bytes
         # Existing private workspace R2 binding, never an incoming browser key.
         self.full_context_bucket = full_context_bucket
         # Where "does this run belong to this user" is answered. Absent, it is answered
@@ -913,11 +926,11 @@ class D1HistoryStore:
             raise HistoryError("invalid canonical history object identity")
         return f"claw-model-context/v1/{conversation_id}/{message_id}.utf8"
 
-    async def _put_full_message(self, conversation_id: str, message_id: str, raw: str, *, max_bytes: int = MAX_MODEL_CONTEXT_BYTES) -> str | None:
+    async def _put_full_message(self, conversation_id: str, message_id: str, raw: str, *, max_bytes: int | None = MAX_MODEL_CONTEXT_BYTES) -> str | None:
         if len(raw) <= MAX_HISTORY_MESSAGE_CHARS:
             return None
         data = raw.encode("utf-8")
-        if len(data) > max_bytes:
+        if max_bytes is not None and len(data) > max_bytes:
             raise HistoryError("full text exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):
@@ -3438,7 +3451,7 @@ class D1HistoryStore:
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
         key = await self._put_full_message(
-            conversation_id, message_id, raw, max_bytes=_oracle_mesh_original_max_bytes(row),
+            conversation_id, message_id, raw, max_bytes=_oracle_mesh_original_max_bytes(row, self.mesh_command_output_max_bytes),
         )
         if key is None:
             # _put_full_message only skips short texts; an over-budget output
@@ -3475,7 +3488,8 @@ class D1HistoryStore:
         data = raw.encode("utf-8")
         if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
             raise HistoryError("mesh original bytes do not match the pinned result")
-        if len(data) > _oracle_mesh_original_max_bytes(row):
+        limit = _oracle_mesh_original_max_bytes(row, self.mesh_command_output_max_bytes)
+        if limit is not None and len(data) > limit:
             raise HistoryError("mesh original exceeds the bounded storage envelope")
         bucket = self.full_context_bucket
         if bucket is None or not callable(getattr(bucket, "put", None)):

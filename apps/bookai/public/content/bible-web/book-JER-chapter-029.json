@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:029",
+  "unit_ordinal": 774,
+  "unit_label": "JER 29",
+  "book_code": "JER",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:29:1",
+      "sequence": 19637,
+      "chapter_label": "JER 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the words of the letter that Jeremiah the prophet sent from Jerusalem to the residue of the elders of the captivity, and to the priests, to the prophets, and to all the people whom Nebuchadnezzar had carried away captive from Jerusalem to Babylon,",
+      "ko": "선지자 예레미야가 예루살렘에서 이같은 편지를 느부갓네살이 예루살렘에서 바벨론으로 옮겨간 포로 중 남아 있는 장로들과 제사장들과 선지자들과 모든 백성에게 보내었는데",
+      "source_text_hash": "ab2b1ce31b6a4f0d2b3957b316b154129a6ef6ba3dbddbfd9f0f37e984384791",
+      "translation_text_hash": "aabd59eeb4503d447d89845b1e826fcd8b03d457e3aebc18b899e29ab738ece0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 예루살렘에서 이같은 편지를 느부갓네살이 예루살렘에서 바벨론으로 옮겨간 포로 중 남아 있는 장로들과 제사장들과 선지자들과 모든 백성에게 보내었는데"
+      ],
+      "raw_text_hashes": [
+        "aabd59eeb4503d447d89845b1e826fcd8b03d457e3aebc18b899e29ab738ece0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:2",
+      "sequence": 19638,
+      "chapter_label": "JER 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "(after Jeconiah the king, the queen mother, the eunuchs, the princes of Judah and Jerusalem, the craftsmen, and the smiths had departed from Jerusalem),",
+      "ko": "때는 여고니야왕과 국모와 환관들과 및 유다와 예루살렘 방백들과 목공들과 철공들이 예루살렘에서 떠난 후라",
+      "source_text_hash": "9aaa05fb0c6f99f7146721cf763bbe1f3058253ac38d02cc6ef63b3b6a744575",
+      "translation_text_hash": "0b3ea6979a8e24a355308b78ee55cc42f05acd1c92f53a9d0cb2852dabb3e8ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때는 여고니야왕과 국모와 환관들과 및 유다와 예루살렘 방백들과 목공들과 철공들이 예루살렘에서 떠난 후라"
+      ],
+      "raw_text_hashes": [
+        "0b3ea6979a8e24a355308b78ee55cc42f05acd1c92f53a9d0cb2852dabb3e8ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:3",
+      "sequence": 19639,
+      "chapter_label": "JER 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "by the hand of Elasah the son of Shaphan and Gemariah the son of Hilkiah, (whom Zedekiah king of Judah sent to Babylon to Nebuchadnezzar king of Babylon). It said: i1",
+      "ko": "유다 왕 시드기야가 바벨론으로 보내어 바벨론 왕 느부갓네살에게로 가게 한 사반의 아들 엘라사와 힐기야의 아들 그마랴의 손에 위탁하였더라 일렀으되",
+      "source_text_hash": "be46d9f548404cfdcacc3d7833fa975e3fd61312711eca5665ebfe0c63890c3a",
+      "translation_text_hash": "a5b3f4e926870671fcf53716c2aa877452918afd5fa88760dd4825514024c41e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 시드기야가 바벨론으로 보내어 바벨론 왕 느부갓네살에게로 가게 한 사반의 아들 엘라사와 힐기야의 아들 그마랴의 손에 위탁하였더라 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "a5b3f4e926870671fcf53716c2aa877452918afd5fa88760dd4825514024c41e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:4",
+      "sequence": 19640,
+      "chapter_label": "JER 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel, says to all the captives whom I have caused to be carried away captive from Jerusalem to Babylon:",
+      "ko": "만군의 여호와 이스라엘의 하나님 내가 예루살렘에서 바벨론으로 사로잡혀 가게 한 모든 포로에게 이같이 이르노라",
+      "source_text_hash": "5140b36c93e739abed42e3954c377ef5bce6fef407d01407c6366a423df83d57",
+      "translation_text_hash": "543ab644a089e8caeff6d0d955378428d259a20e2129e4b38035f9f7bbdb5cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님 내가 예루살렘에서 바벨론으로 사로잡혀 가게 한 모든 포로에게 이같이 이르노라"
+      ],
+      "raw_text_hashes": [
+        "543ab644a089e8caeff6d0d955378428d259a20e2129e4b38035f9f7bbdb5cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:5",
+      "sequence": 19641,
+      "chapter_label": "JER 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "“Build houses and dwell in them. Plant gardens and eat their fruit.",
+      "ko": "너희는 집을 짓고 거기 거하며 전원을 만들고 그 열매를 먹으라",
+      "source_text_hash": "6e4e1b270ac6f95a0e57e54ce6888f585a172bd8426359b9d29a7929dfd34901",
+      "translation_text_hash": "8c8b5cfd1609f0c839ca4e07163df8463d212faca3b4227ff2965c21f3af24a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 집을 짓고 거기 거하며 전원을 만들고 그 열매를 먹으라"
+      ],
+      "raw_text_hashes": [
+        "8c8b5cfd1609f0c839ca4e07163df8463d212faca3b4227ff2965c21f3af24a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:6",
+      "sequence": 19642,
+      "chapter_label": "JER 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "Take wives and father sons and daughters. Take wives for your sons, and give your daughters to husbands, that they may bear sons and daughters. Multiply there, and don’t be diminished.",
+      "ko": "아내를 취하여 자녀를 생산하며 너희 아들로 아내를 취하며 너희 딸로 남편을 맞아 그들로 자녀를 생산케 하여 너희로 거기서 번성하고 쇠잔하지 않게 하라",
+      "source_text_hash": "e232d3b914d917ff6a86ced296806080107bbe068f42dba22c134770b1bad784",
+      "translation_text_hash": "07a172b75a605cb791a5320745c3dccc95c91dfffbac76c44d41f7647b698a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내를 취하여 자녀를 생산하며 너희 아들로 아내를 취하며 너희 딸로 남편을 맞아 그들로 자녀를 생산케 하여 너희로 거기서 번성하고 쇠잔하지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "07a172b75a605cb791a5320745c3dccc95c91dfffbac76c44d41f7647b698a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:7",
+      "sequence": 19643,
+      "chapter_label": "JER 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "Seek the peace of the city where I have caused you to be carried away captive, and pray to the LORD for it; for in its peace you will have peace.”",
+      "ko": "너희는 내가 사로잡혀 가게 한 그 성읍의 평안하기를 힘쓰고 위하여 여호와께 기도하라 이는 그 성이 평안함으로 너희도 평안할 것임이니라",
+      "source_text_hash": "0e2e055205c81ec2b6e06e65fc700b2234e8d5b6805b033c452c907f3dfe9b3b",
+      "translation_text_hash": "1bbeaec29f14d617538d740093b7c62c019043d07f66661eef4a1721d4993304",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내가 사로잡혀 가게 한 그 성읍의 평안하기를 힘쓰고 위하여 여호와께 기도하라 이는 그 성이 평안함으로 너희도 평안할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "1bbeaec29f14d617538d740093b7c62c019043d07f66661eef4a1721d4993304"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:8",
+      "sequence": 19644,
+      "chapter_label": "JER 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel says: “Don’t let your prophets who are among you and your diviners deceive you. Don’t listen to your dreams which you cause to be dreamed.",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 너희 중 선지자들에게와 복술에게 혹하지 말며 너희가 꾼바 꿈도 신청하지 말라",
+      "source_text_hash": "c98daf206cb2e32f297ff22a65addca1d089ed64b773460ddb066d74565b9c0a",
+      "translation_text_hash": "4751e00b5ba770ff74bf89abeb00605b970585b2ac2c89c6318b1b6a669a1dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 너희 중 선지자들에게와 복술에게 혹하지 말며 너희가 꾼바 꿈도 신청하지 말라"
+      ],
+      "raw_text_hashes": [
+        "4751e00b5ba770ff74bf89abeb00605b970585b2ac2c89c6318b1b6a669a1dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:9",
+      "sequence": 19645,
+      "chapter_label": "JER 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "For they prophesy falsely to you in my name. I have not sent them,” says the LORD.",
+      "ko": "내가 그들을 보내지 아니하였어도 그들이 내 이름으로 거짓을 예언함이니라 여호와의 말이니라",
+      "source_text_hash": "9e4dfde1c02f8a753ab3d5a7e862e8581f62944c8ff81ba9e89679b8dc6e5938",
+      "translation_text_hash": "066eb7a4c0ebde54a231b671fd997fe8b8700e17db89365326f3eabf2bf8ae1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 보내지 아니하였어도 그들이 내 이름으로 거짓을 예언함이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "066eb7a4c0ebde54a231b671fd997fe8b8700e17db89365326f3eabf2bf8ae1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:10",
+      "sequence": 19646,
+      "chapter_label": "JER 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "For the LORD says, “After seventy years are accomplished for Babylon, I will visit you and perform my good word toward you, in causing you to return to this place.",
+      "ko": "나 여호와가 이같이 말하노라 바벨론에서 칠십년이 차면 내가 너희를 권고하고 나의 선한 말을 너희에게 실행하여 너희를 이곳으로 돌아오게 하리라",
+      "source_text_hash": "dcd252680e2bd3b817b0852ef460aedeb4af04064dfc6080aa3f878ac261189b",
+      "translation_text_hash": "ebe61acc27720229cdae6631ee8b16f3ee2a6f49a339c42913f75655cfa6ab1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 바벨론에서 칠십년이 차면 내가 너희를 권고하고 나의 선한 말을 너희에게 실행하여 너희를 이곳으로 돌아오게 하리라"
+      ],
+      "raw_text_hashes": [
+        "ebe61acc27720229cdae6631ee8b16f3ee2a6f49a339c42913f75655cfa6ab1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:11",
+      "sequence": 19647,
+      "chapter_label": "JER 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "For I know the thoughts that I think toward you,” says the LORD, “thoughts of peace, and not of evil, to give you hope and a future.",
+      "ko": "나 여호와가 말하노라 너희를 향한 나의 생각은 내가 아나니 재앙이 아니라 곧 평안이요 너희 장래에 소망을 주려하는 생각이라",
+      "source_text_hash": "353cdb007c1d5a178c5e96553dc30fb69b1e371e998134d4a362479f43cee275",
+      "translation_text_hash": "f4b0433c1b2c4af2456b5fb3ad6cb72312c349ef2dcd6644565e81d410a07a34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희를 향한 나의 생각은 내가 아나니 재앙이 아니라 곧 평안이요 너희 장래에 소망을 주려하는 생각이라"
+      ],
+      "raw_text_hashes": [
+        "f4b0433c1b2c4af2456b5fb3ad6cb72312c349ef2dcd6644565e81d410a07a34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:12",
+      "sequence": 19648,
+      "chapter_label": "JER 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "You shall call on me, and you shall go and pray to me, and I will listen to you.",
+      "ko": "너희는 내게 부르짖으며 와서 내게 기도하면 내가 너희를 들을 것이요",
+      "source_text_hash": "e98f8e04eb2445bfe7733fa3f58bbd6e38bd85a36717f8685d0fea47b2eea1c5",
+      "translation_text_hash": "5ae883ca3256e0184b9283f307212f141b76a1a218a868e28d711336a9e4476a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내게 부르짖으며 와서 내게 기도하면 내가 너희를 들을 것이요"
+      ],
+      "raw_text_hashes": [
+        "5ae883ca3256e0184b9283f307212f141b76a1a218a868e28d711336a9e4476a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:13",
+      "sequence": 19649,
+      "chapter_label": "JER 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "You shall seek me and find me, when you search for me with all your heart.",
+      "ko": "너희가 전심으로 나를 찾고 찾으면 나를 만나리라",
+      "source_text_hash": "9ebd7f3c2008195f6a40b702f20c08da53b3c8e889ff376df01546e46ba6222f",
+      "translation_text_hash": "c552fc5e47cacc4aa3d12e7e7964a5124b1df349a72ec33066639ecd935c1eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 전심으로 나를 찾고 찾으면 나를 만나리라"
+      ],
+      "raw_text_hashes": [
+        "c552fc5e47cacc4aa3d12e7e7964a5124b1df349a72ec33066639ecd935c1eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:14",
+      "sequence": 19650,
+      "chapter_label": "JER 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "I will be found by you,” says the LORD, “and I will turn again your captivity, and I will gather you from all the nations, and from all the places where I have driven you,” says the LORD. “I will bring you again to the place from where I caused you to be carried away captive.” i1",
+      "ko": "나 여호와가 말하노라 내가 너희에게 만나지겠고 너희를 포로된 중에서 다시 돌아오게 하되 내가 쫓아 보내었던 열방과 모든 곳에서 모아 사로잡혀 떠나게 하던 본 곳으로 돌아오게 하리라 여호와의 말이니라 하셨느니라",
+      "source_text_hash": "3db06d1c139bbe87993e1580529f525df6d7f31f4f87820e8f5cac5f7e458b8c",
+      "translation_text_hash": "67cb17565157179b1f7b4141c86e3032ffe7d29388f570311d55183139cb2c9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 너희에게 만나지겠고 너희를 포로된 중에서 다시 돌아오게 하되 내가 쫓아 보내었던 열방과 모든 곳에서 모아 사로잡혀 떠나게 하던 본 곳으로 돌아오게 하리라 여호와의 말이니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "67cb17565157179b1f7b4141c86e3032ffe7d29388f570311d55183139cb2c9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:15",
+      "sequence": 19651,
+      "chapter_label": "JER 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "Because you have said, “The LORD has raised us up prophets in Babylon,”",
+      "ko": "너희가 말하기를 여호와께서 바벨론에서 우리를 위하여 선지자들을 일으키셨다 하므로",
+      "source_text_hash": "79a757528944a0d262232cf40c39204fd1bf596f87790b8367c70d028cf423f8",
+      "translation_text_hash": "a7df81310c50326082a7002604288bbd1b5def011365fb49c718a54851d24efb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 말하기를 여호와께서 바벨론에서 우리를 위하여 선지자들을 일으키셨다 하므로"
+      ],
+      "raw_text_hashes": [
+        "a7df81310c50326082a7002604288bbd1b5def011365fb49c718a54851d24efb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:16",
+      "sequence": 19652,
+      "chapter_label": "JER 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "the LORD says concerning the king who sits on David’s throne, and concerning all the people who dwell in this city, your brothers who haven’t gone with you into captivity,",
+      "ko": "여호와께서 다윗의 위에 앉은 왕과 이 성에 거하는 모든 백성 곧 너희와 함께 포로되어 가지 아니한 너희 형제에게 대하여 이같이 말씀하시느니라",
+      "source_text_hash": "b171679d48a71f9ed58da237d8c07db6b97502d24e4a0567e505d6e2fc55c934",
+      "translation_text_hash": "73cc9f684f56383c0c13539aef0ec5f574f94868b595af864b5d81c4f4856c31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗의 위에 앉은 왕과 이 성에 거하는 모든 백성 곧 너희와 함께 포로되어 가지 아니한 너희 형제에게 대하여 이같이 말씀하시느니라"
+      ],
+      "raw_text_hashes": [
+        "73cc9f684f56383c0c13539aef0ec5f574f94868b595af864b5d81c4f4856c31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:17",
+      "sequence": 19653,
+      "chapter_label": "JER 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "the LORD of Armies says: “Behold, I will send on them the sword, the famine, and the pestilence, and will make them like rotten figs that can’t be eaten, they are so bad.",
+      "ko": "만군의 여호와께서 이같이 말씀하시되 보라 내가 칼과 기근과 염병을 그들에게 보내어 그들로 악하여 먹을 수 없는 악한 무화과 같게 하겠고",
+      "source_text_hash": "6c4a3ceabcb1d9fee6e104f551782b10b0fa706748ff1fbd1744e68f1ac2ba8b",
+      "translation_text_hash": "961a1a196e6637838ae9527b20d448b7eaf43962ada76e57e788fae05aee8a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시되 보라 내가 칼과 기근과 염병을 그들에게 보내어 그들로 악하여 먹을 수 없는 악한 무화과 같게 하겠고"
+      ],
+      "raw_text_hashes": [
+        "961a1a196e6637838ae9527b20d448b7eaf43962ada76e57e788fae05aee8a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:18",
+      "sequence": 19654,
+      "chapter_label": "JER 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "I will pursue after them with the sword, with the famine, and with the pestilence, and will deliver them to be tossed back and forth among all the kingdoms of the earth, to be an object of horror, an astonishment, a hissing, and a reproach among all the nations where I have driven them,",
+      "ko": "내가 칼과 기근과 염병으로 그들을 따르게 하며 그들을 세계 열방 중에 흩어 학대를 당하게 할 것이며 내가 그들을 쫓아 보낸 열방 중에서 저줏거리와 놀램과 치소와 모욕거리가 되게 하리니",
+      "source_text_hash": "988d7e623f99dce2023df9396f89fc7b14ed6d763981224283c04143c206bd99",
+      "translation_text_hash": "4f2024e266e166eecd72d71e06f16116f8f6418ddeab5393055dba1c189b6b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 칼과 기근과 염병으로 그들을 따르게 하며 그들을 세계 열방 중에 흩어 학대를 당하게 할 것이며 내가 그들을 쫓아 보낸 열방 중에서 저줏거리와 놀램과 치소와 모욕거리가 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "4f2024e266e166eecd72d71e06f16116f8f6418ddeab5393055dba1c189b6b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:19",
+      "sequence": 19655,
+      "chapter_label": "JER 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "because they have not listened to my words,” says the LORD, “with which I sent to them my servants the prophets, rising up early and sending them; but you would not hear,” says the LORD. i1",
+      "ko": "이는 내가 내 종 선지자들을 그들에게 보내되 부지런히 보내었으나 그들이 나 여호와의 말을 듣지 아니하며 듣지 아니 함이니라 여호와의 말이니라",
+      "source_text_hash": "28ade085931bdc8f3072c5165176edd277d1885b706185b40d427e28623eb521",
+      "translation_text_hash": "96edb0be13c3d4cdd793ac02fc00445b2c8bc8965b4d691b2f2dfc0fc40292a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 내 종 선지자들을 그들에게 보내되 부지런히 보내었으나 그들이 나 여호와의 말을 듣지 아니하며 듣지 아니 함이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "96edb0be13c3d4cdd793ac02fc00445b2c8bc8965b4d691b2f2dfc0fc40292a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:20",
+      "sequence": 19656,
+      "chapter_label": "JER 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "Hear therefore the LORD’s word, all you captives whom I have sent away from Jerusalem to Babylon.",
+      "ko": "그런즉 내가 예루살렘에서 바벨론으로 보낸 너희 모든 포로여 나 여호와의 말을 들을찌니라",
+      "source_text_hash": "89d555aef5e20e92d65f5ea4f94d41d0c8bdd907fbaf50d01c9bbac823f431c9",
+      "translation_text_hash": "ee32ececab28c6b2bd89afc35ecddf5a3e91b1b7b20f238e24b24560d1c067d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 예루살렘에서 바벨론으로 보낸 너희 모든 포로여 나 여호와의 말을 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "ee32ececab28c6b2bd89afc35ecddf5a3e91b1b7b20f238e24b24560d1c067d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:21",
+      "sequence": 19657,
+      "chapter_label": "JER 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel, says concerning Ahab the son of Kolaiah, and concerning Zedekiah the son of Maaseiah, who prophesy a lie to you in my name: “Behold, I will deliver them into the hand of Nebuchadnezzar king of Babylon; and he will kill them before your eyes.",
+      "ko": "만군의 여호와 이스라엘의 하나님 내가 골라야의 아들 아합과 마아세야의 아들 시드기야에 대하여 말하노라 그들은 내 이름으로 너희에게 거짓을 예언한 자라 보라 내가 그들을 바벨론 왕 느부갓네살의 손에 붙이리니 그가 너희 목전에서 그들을 죽일 것이라",
+      "source_text_hash": "4e62719d1c00f0f8efea2cebc158aa2b64422e6586a68e5506cb057eb08381f6",
+      "translation_text_hash": "7c5ac1bcb5f3282ee0a645f690d5311805fd8a57d55bea7c3ec1cb629f9dc55c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님 내가 골라야의 아들 아합과 마아세야의 아들 시드기야에 대하여 말하노라 그들은 내 이름으로 너희에게 거짓을 예언한 자라 보라 내가 그들을 바벨론 왕 느부갓네살의 손에 붙이리니 그가 너희 목전에서 그들을 죽일 것이라"
+      ],
+      "raw_text_hashes": [
+        "7c5ac1bcb5f3282ee0a645f690d5311805fd8a57d55bea7c3ec1cb629f9dc55c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:22",
+      "sequence": 19658,
+      "chapter_label": "JER 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "A curse will be taken up about them by all the captives of Judah who are in Babylon, saying, ‘The LORD make you like Zedekiah and like Ahab, whom the king of Babylon roasted in the fire;’",
+      "ko": "너희 바벨론에 있는 유다 모든 포로가 그들로 저줏거리를 삼아서 이르기를 여호와께서 너로 바벨론 왕이 불살라 죽인 시드기야와 아합 같게 하시기를 원하노라 하리니",
+      "source_text_hash": "628e360f062a818fa615ae11a874ce409b67f79605ab9557b1e47a5a98206292",
+      "translation_text_hash": "1e048ca57a7d741cb2fa50b36215a20c6d1f73e892aabbe73b0018ff16061e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 바벨론에 있는 유다 모든 포로가 그들로 저줏거리를 삼아서 이르기를 여호와께서 너로 바벨론 왕이 불살라 죽인 시드기야와 아합 같게 하시기를 원하노라 하리니"
+      ],
+      "raw_text_hashes": [
+        "1e048ca57a7d741cb2fa50b36215a20c6d1f73e892aabbe73b0018ff16061e8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:23",
+      "sequence": 19659,
+      "chapter_label": "JER 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "because they have done foolish things in Israel, and have committed adultery with their neighbors’ wives, and have spoken words in my name falsely, which I didn’t command them. I am he who knows, and am witness,” says the LORD.",
+      "ko": "이는 그들이 이스라엘 중에서 망령되이 행하여 그 이웃의 아내와 행음하며 내가 그들에게 명하지 아니한 거짓을 내 이름으로 말함이니라 나는 아는 자요 증거인이니라 여호와의 말이니라 하셨다 하였더라",
+      "source_text_hash": "2f4eeac1503fd30e58742495608e03ef674ce3a2f45fe09289f636cb992c07e2",
+      "translation_text_hash": "2be5139ce37dadcb1b7108490bc6bc11816ce80b17b05077c2612fc4014d3a40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 이스라엘 중에서 망령되이 행하여 그 이웃의 아내와 행음하며 내가 그들에게 명하지 아니한 거짓을 내 이름으로 말함이니라 나는 아는 자요 증거인이니라 여호와의 말이니라 하셨다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2be5139ce37dadcb1b7108490bc6bc11816ce80b17b05077c2612fc4014d3a40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:24",
+      "sequence": 19660,
+      "chapter_label": "JER 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "Concerning Shemaiah the Nehelamite you shall speak, saying,",
+      "ko": "너는 느헬람 사람 스마야에게 이같이 말하여 이르라",
+      "source_text_hash": "225ed4a71099e01561c06a32b7a3fbfc0cc6d6b8351915b553505624043a4167",
+      "translation_text_hash": "b2b4c9bb7c1937e49bb592397b83f403ee2618ecf616f9bcd0ee2ef4cbafbd94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 느헬람 사람 스마야에게 이같이 말하여 이르라"
+      ],
+      "raw_text_hashes": [
+        "b2b4c9bb7c1937e49bb592397b83f403ee2618ecf616f9bcd0ee2ef4cbafbd94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:25",
+      "sequence": 19661,
+      "chapter_label": "JER 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "“The LORD of Armies, the God of Israel, says, ‘Because you have sent letters in your own name to all the people who are at Jerusalem, and to Zephaniah the son of Maaseiah, the priest, and to all the priests, saying,",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하여 가라사대 네가 네 이름으로 예루살렘에 있는 모든 백성과 제사장 마아세야의 아들 스바냐와 모든 제사장에게 글을 보내어 이르기를",
+      "source_text_hash": "d8b464bda9c1e55b61ab5603704d39b6a4756ef24e1dde2698b888c9c29070a8",
+      "translation_text_hash": "f25dfa2da88198fa51db3a38cb8f2a75adcb99a22c1297a0d84d3e1094c8ad04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하여 가라사대 네가 네 이름으로 예루살렘에 있는 모든 백성과 제사장 마아세야의 아들 스바냐와 모든 제사장에게 글을 보내어 이르기를"
+      ],
+      "raw_text_hashes": [
+        "f25dfa2da88198fa51db3a38cb8f2a75adcb99a22c1297a0d84d3e1094c8ad04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:26",
+      "sequence": 19662,
+      "chapter_label": "JER 29",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 26
+        }
+      ],
+      "en": "“The LORD has made you priest in the place of Jehoiada the priest, that there may be officers in the LORD’s house, for every man who is crazy and makes himself a prophet, that you should put him in the stocks and in shackles.",
+      "ko": "여호와께서 너로 제사장 여호야다를 대신하여 제사장을 삼아 여호와의 집 유사로 세우심은 무릇 미친 자와 자칭 선지자를 착고에 채우며 칼을 메우게 하심이어늘",
+      "source_text_hash": "4d4f6bb79f8f8c9978248d06d100c07c913befbb5104eead3102a11e3dbcb0ea",
+      "translation_text_hash": "a36227cf3f4467e2d132c8e5fdcd2b4438d72b4210a7d641e10b56446fc3866c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너로 제사장 여호야다를 대신하여 제사장을 삼아 여호와의 집 유사로 세우심은 무릇 미친 자와 자칭 선지자를 착고에 채우며 칼을 메우게 하심이어늘"
+      ],
+      "raw_text_hashes": [
+        "a36227cf3f4467e2d132c8e5fdcd2b4438d72b4210a7d641e10b56446fc3866c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:27",
+      "sequence": 19663,
+      "chapter_label": "JER 29",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 27
+        }
+      ],
+      "en": "Now therefore, why have you not rebuked Jeremiah of Anathoth, who makes himself a prophet to you,",
+      "ko": "이제 네가 어찌하여 너희 중에 자칭 선지자라 하는 아나돗 사람 예레미야를 책망하지 아니하느냐",
+      "source_text_hash": "9a6904bcd455b9e0fad8d65b6fdf3d4e86028f5224b49da161d9d0bef02dd112",
+      "translation_text_hash": "0d0cedada08ab257eb4d5474a55939e6859fe26d0f3453c659bd4e404422cef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 네가 어찌하여 너희 중에 자칭 선지자라 하는 아나돗 사람 예레미야를 책망하지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "0d0cedada08ab257eb4d5474a55939e6859fe26d0f3453c659bd4e404422cef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:28",
+      "sequence": 19664,
+      "chapter_label": "JER 29",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 28
+        }
+      ],
+      "en": "because he has sent to us in Babylon, saying, The captivity is long. Build houses, and dwell in them. Plant gardens, and eat their fruit?”’”",
+      "ko": "대저 그가 바벨론에 있는 우리에게 편지하기를 때가 오래리니 너희는 집을 짓고 거기 거하며 전원을 만들고 그 열매를 먹으라 하였다 하였느니라",
+      "source_text_hash": "c7829159b8104dfc08dc5f01675646d90f130afb527b38481252bd709e4ffbc8",
+      "translation_text_hash": "156794a77828d0b788e5369c2a93eb6ddc578b58979ee741e9b2fe49e717baa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 그가 바벨론에 있는 우리에게 편지하기를 때가 오래리니 너희는 집을 짓고 거기 거하며 전원을 만들고 그 열매를 먹으라 하였다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "156794a77828d0b788e5369c2a93eb6ddc578b58979ee741e9b2fe49e717baa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:29",
+      "sequence": 19665,
+      "chapter_label": "JER 29",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 29
+        }
+      ],
+      "en": "Zephaniah the priest read this letter in the hearing of Jeremiah the prophet.",
+      "ko": "제사장 스바냐가 스마야의 글을 선지자 예레미야에게 읽어 들릴 때에",
+      "source_text_hash": "98ef74b6810bcdb28b6f9c60a3d7868367e3aa7a9f7e2a1b18b643651bfc9783",
+      "translation_text_hash": "b51ee9e81057cb89f353a0a761babdc96308689064ce4bf19fd135d674e51a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 스바냐가 스마야의 글을 선지자 예레미야에게 읽어 들릴 때에"
+      ],
+      "raw_text_hashes": [
+        "b51ee9e81057cb89f353a0a761babdc96308689064ce4bf19fd135d674e51a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:30",
+      "sequence": 19666,
+      "chapter_label": "JER 29",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 30
+        }
+      ],
+      "en": "Then the LORD’s word came to Jeremiah, saying,",
+      "ko": "여호와의 말씀이 예레미야에게 임하여 가라사대",
+      "source_text_hash": "2f925a6d738e09d22d0a92efebcc4afd96cde0a511ad3fd66d6e2752a31cce88",
+      "translation_text_hash": "e4e8c6a50c220975fa4d52d1a201f7196c6475458fcc66d72601e404c1c6b21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 예레미야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "e4e8c6a50c220975fa4d52d1a201f7196c6475458fcc66d72601e404c1c6b21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:31",
+      "sequence": 19667,
+      "chapter_label": "JER 29",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 31
+        }
+      ],
+      "en": "“Send to all of the captives, saying, ‘The LORD says concerning Shemaiah the Nehelamite: “Because Shemaiah has prophesied to you, and I didn’t send him, and he has caused you to trust in a lie,”",
+      "ko": "너는 모든 포로에게 글을 보내어 이르기를 여호와께서 느헬람 사람 스마야에 대하여 이같이 말씀하시되 내가 스마야를 보내지 아니하였거늘 그가 너희에게 예언하고 너희로 거짓을 믿게 하였도다",
+      "source_text_hash": "2a957a07f0e979dc1897d1761ed938c4e86911f4e03439ba733fdfeaea8eee8b",
+      "translation_text_hash": "c63b84ba27c959f4fbe701f48c06f203cbe40f55da4428d6a9cc93ac0b721a42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 모든 포로에게 글을 보내어 이르기를 여호와께서 느헬람 사람 스마야에 대하여 이같이 말씀하시되 내가 스마야를 보내지 아니하였거늘 그가 너희에게 예언하고 너희로 거짓을 믿게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "c63b84ba27c959f4fbe701f48c06f203cbe40f55da4428d6a9cc93ac0b721a42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:29:32",
+      "sequence": 19668,
+      "chapter_label": "JER 29",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 29,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 29,
+          "verse": 32
+        }
+      ],
+      "en": "therefore the LORD says, “Behold, I will punish Shemaiah the Nehelamite and his offspring. He will not have a man to dwell among this people. He won’t see the good that I will do to my people,” says the LORD, “because he has spoken rebellion against the LORD.”’”",
+      "ko": "그러므로 나 여호와가 이같이 말하노라 보라 내가 느헬람 사람 스마야와 그 자손을 벌하리니 그가 나 여호와께 패역한 말을 하였음을 인하여 이 백성 중에 거할 그의 사람이 하나도 없을 것이라 내가 내 백성에게 행하려 하는 선한 일을 그가 보지 못하리라 하셨다 하라 여호와의 말이니라",
+      "source_text_hash": "0cfe6cfec87fc7ee058fd01bb5f91ae3dbca62a164a9699a77389c76c5af36d7",
+      "translation_text_hash": "110a596fc142c3c1e476e2c407a9c49a468a981c351531873d9e86c00b7b51b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 이같이 말하노라 보라 내가 느헬람 사람 스마야와 그 자손을 벌하리니 그가 나 여호와께 패역한 말을 하였음을 인하여 이 백성 중에 거할 그의 사람이 하나도 없을 것이라 내가 내 백성에게 행하려 하는 선한 일을 그가 보지 못하리라 하셨다 하라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "110a596fc142c3c1e476e2c407a9c49a468a981c351531873d9e86c00b7b51b2"
+      ]
+    }
+  ]
+}

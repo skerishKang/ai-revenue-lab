@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:003",
+  "unit_ordinal": 1100,
+  "unit_label": "EPH 3",
+  "book_code": "EPH",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:3:1",
+      "sequence": 29249,
+      "chapter_label": "EPH 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "For this cause I, Paul, am the prisoner of Christ Jesus on behalf of you Gentiles,",
+      "ko": "이러하므로 그리스도 예수의 일로 너희 이방을 위하여 갇힌 자 된 나 바울은......",
+      "source_text_hash": "c7df9df648c065f38eca1179e7ea58a13b7ac43fda32284fbc624ba075da91d8",
+      "translation_text_hash": "4c15616b1e333969958aa8c3eb24c834438a6b680a3d967477064d2a251a1c65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 그리스도 예수의 일로 너희 이방을 위하여 갇힌 자 된 나 바울은......"
+      ],
+      "raw_text_hashes": [
+        "4c15616b1e333969958aa8c3eb24c834438a6b680a3d967477064d2a251a1c65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:2",
+      "sequence": 29250,
+      "chapter_label": "EPH 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "if it is so that you have heard of the administration of that grace of God which was given me toward you,",
+      "ko": "너희를 위하여 내게 주신 하나님의 그 은혜의 경륜을 너희가 들었을 터이라",
+      "source_text_hash": "cdfa7870439be0676dac845766874b6804fab9fffb0edbae4b031597763c492f",
+      "translation_text_hash": "8f942b9de9fdbd778c5633b31c09e249b177cc1e24fc7f91d2ad70e441672455",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 위하여 내게 주신 하나님의 그 은혜의 경륜을 너희가 들었을 터이라"
+      ],
+      "raw_text_hashes": [
+        "8f942b9de9fdbd778c5633b31c09e249b177cc1e24fc7f91d2ad70e441672455"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:3",
+      "sequence": 29251,
+      "chapter_label": "EPH 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "how that by revelation the mystery was made known to me, as I wrote before in few words,",
+      "ko": "곧 계시로 내게 비밀을 알게 하신 것은 내가 이미 대강 기록함과 같으니",
+      "source_text_hash": "4dd6f3baccd5bd4534c69b0ddc23e7035f6974803cf9c9d2ee53e4fb04d7f953",
+      "translation_text_hash": "87937ab859f229ed5dec5f9602d9a6b25d2bd7af1bf6480b0c4a481d79018e5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 계시로 내게 비밀을 알게 하신 것은 내가 이미 대강 기록함과 같으니"
+      ],
+      "raw_text_hashes": [
+        "87937ab859f229ed5dec5f9602d9a6b25d2bd7af1bf6480b0c4a481d79018e5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:4",
+      "sequence": 29252,
+      "chapter_label": "EPH 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "by which, when you read, you can perceive my understanding in the mystery of Christ,",
+      "ko": "이것을 읽으면 그리스도의 비밀을 내가 깨달은 것을 너희가 알 수 있으리라",
+      "source_text_hash": "68e493c59511d7401fbc003af93a6a76e0a6ab14138c5f696096d85fdba82533",
+      "translation_text_hash": "805d1d1b4d0c63fe3a272f0042a35be095c777f6079fd2a9ec11c2aacdad9054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 읽으면 그리스도의 비밀을 내가 깨달은 것을 너희가 알 수 있으리라"
+      ],
+      "raw_text_hashes": [
+        "805d1d1b4d0c63fe3a272f0042a35be095c777f6079fd2a9ec11c2aacdad9054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:5",
+      "sequence": 29253,
+      "chapter_label": "EPH 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "which in other generations was not made known to the children of men, as it has now been revealed to his holy apostles and prophets in the Spirit,",
+      "ko": "이제 그의 거룩한 사도들과 선지자들에게 성령으로 나타내신것 같이 다른 세대에서는 사람의 아들들에게 알게 하지 아니하셨으니",
+      "source_text_hash": "2bbe3ab0fb92425354cd6d0d844c1795d9553f5af86c2b9e5805fd4e6cc01777",
+      "translation_text_hash": "22638d1706e880b9a8274d1b9ae2abea6f7628d58909b7b46e0bbd9faf1ffd3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 그의 거룩한 사도들과 선지자들에게 성령으로 나타내신것 같이 다른 세대에서는 사람의 아들들에게 알게 하지 아니하셨으니"
+      ],
+      "raw_text_hashes": [
+        "22638d1706e880b9a8274d1b9ae2abea6f7628d58909b7b46e0bbd9faf1ffd3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:6",
+      "sequence": 29254,
+      "chapter_label": "EPH 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "that the Gentiles are fellow heirs and fellow members of the body, and fellow partakers of his promise in Christ Jesus through the Good News,",
+      "ko": "이는 이방인들이 복음으로 말미암아 그리스도 예수 안에서 함께 후사가 되고 함께 지체가 되고 함께 약속에 참예하는 자가 됨이라",
+      "source_text_hash": "68d086d4434ab32dba289f2148a9472922b1982ea2dc1b25b03fd5dee1d6525e",
+      "translation_text_hash": "b318254b8062c8df4d4012d23abb0731fb97899c01f2c0b625ea38467ae9ab65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이방인들이 복음으로 말미암아 그리스도 예수 안에서 함께 후사가 되고 함께 지체가 되고 함께 약속에 참예하는 자가 됨이라"
+      ],
+      "raw_text_hashes": [
+        "b318254b8062c8df4d4012d23abb0731fb97899c01f2c0b625ea38467ae9ab65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:7",
+      "sequence": 29255,
+      "chapter_label": "EPH 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "of which I was made a servant according to the gift of that grace of God which was given me according to the working of his power.",
+      "ko": "이 복음을 위하여 그의 능력이 역사하시는대로 내게 주신 하나님의 은혜의 선물을 따라 내가 일군이 되었노라",
+      "source_text_hash": "f2b4b9d0ebc17ccfe8556f480d547c6fcc6320499b821f7a3f5791c9952f7dc3",
+      "translation_text_hash": "69057100fd710e6bd3680a6795ceaccb8ec47f5d61ff6e93121228356793d6d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 복음을 위하여 그의 능력이 역사하시는대로 내게 주신 하나님의 은혜의 선물을 따라 내가 일군이 되었노라"
+      ],
+      "raw_text_hashes": [
+        "69057100fd710e6bd3680a6795ceaccb8ec47f5d61ff6e93121228356793d6d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:8",
+      "sequence": 29256,
+      "chapter_label": "EPH 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "To me, the very least of all saints, was this grace given, to preach to the Gentiles the unsearchable riches of Christ,",
+      "ko": "모든 성도 중에 지극히 작은 자보다 더 작은 나에게 이 은혜를 주신 것은 측량할 수 없는 그리스도의 풍성을 이방인에게 전하게 하시고",
+      "source_text_hash": "d01a54ecbd76474046cd9954c6a043f1b5f5bdc00f49380f7399c5d9b6433db2",
+      "translation_text_hash": "21cc852f3d14b9bbca36cb2f05dc108f4d2a21ccf68967acc1c698c2ced8667f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 성도 중에 지극히 작은 자보다 더 작은 나에게 이 은혜를 주신 것은 측량할 수 없는 그리스도의 풍성을 이방인에게 전하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "21cc852f3d14b9bbca36cb2f05dc108f4d2a21ccf68967acc1c698c2ced8667f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:9",
+      "sequence": 29257,
+      "chapter_label": "EPH 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "and to make all men see what is the administration of the mystery which for ages has been hidden in God, who created all things through Jesus Christ,",
+      "ko": "영원부터 만물을 창조하신 하나님 속에 감취었던 비밀의 경륜이 어떠한 것을 드러내게 하려 하심이라",
+      "source_text_hash": "96074a291d53f2732f5141343af37b9c0695c532803a4b13588b2e4dca5bcde1",
+      "translation_text_hash": "29736e544a3ac2bd6ca574f24be48565ba6382ec47f31ec14c855f4cc1ea19da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영원부터 만물을 창조하신 하나님 속에 감취었던 비밀의 경륜이 어떠한 것을 드러내게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "29736e544a3ac2bd6ca574f24be48565ba6382ec47f31ec14c855f4cc1ea19da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:10",
+      "sequence": 29258,
+      "chapter_label": "EPH 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "to the intent that now through the assembly the manifold wisdom of God might be made known to the principalities and the powers in the heavenly places,",
+      "ko": "이는 이제 교회로 말미암아 하늘에서 정사와 권세들에게 하나님의 각종 지혜를 알게 하려 하심이니",
+      "source_text_hash": "b70ff8dd1a7f44b5fd35e0c380be10d36f08c797f2b2a43ef9a40429925490ce",
+      "translation_text_hash": "80766abd70d83a7d0fca76cf6eeacfaf42a40be4b77fe6931e397f62ba1481d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이제 교회로 말미암아 하늘에서 정사와 권세들에게 하나님의 각종 지혜를 알게 하려 하심이니"
+      ],
+      "raw_text_hashes": [
+        "80766abd70d83a7d0fca76cf6eeacfaf42a40be4b77fe6931e397f62ba1481d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:11",
+      "sequence": 29259,
+      "chapter_label": "EPH 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "according to the eternal purpose which he accomplished in Christ Jesus our Lord.",
+      "ko": "곧 영원부터 우리 주 그리스도 예수 안에서 예정하신 뜻대로 하신 것이라",
+      "source_text_hash": "9cc2d85383c6f17f6c3a62b95ca9c6f7f10eeef66d53db58879a30b866ccdf60",
+      "translation_text_hash": "36921a8cc688e9472d28617bbedc2c33e0188b6934ec1f890f82bc29e7741fa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 영원부터 우리 주 그리스도 예수 안에서 예정하신 뜻대로 하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "36921a8cc688e9472d28617bbedc2c33e0188b6934ec1f890f82bc29e7741fa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:12",
+      "sequence": 29260,
+      "chapter_label": "EPH 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "In him we have boldness and access in confidence through our faith in him.",
+      "ko": "우리가 그 안에서 그를 믿음으로 말미암아 담대함과 하나님께 당당히 나아감을 얻느니라",
+      "source_text_hash": "8dc55e5aa55a8a5f9317f33e226ea50f99347cd69c03a500e52d8b88a166e986",
+      "translation_text_hash": "fe819f08c740d3c81ac115400ccd60abd793135f6ce9c20c6550750f618e6f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그 안에서 그를 믿음으로 말미암아 담대함과 하나님께 당당히 나아감을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "fe819f08c740d3c81ac115400ccd60abd793135f6ce9c20c6550750f618e6f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:13",
+      "sequence": 29261,
+      "chapter_label": "EPH 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I ask that you may not lose heart at my troubles for you, which are your glory.",
+      "ko": "그러므로 너희에게 구하노니 너희를 위한 나의 여러 환난에 대하여 낙심치 말라 이는 너희의 영광이니라",
+      "source_text_hash": "0cfa7668ca71a360614c031632e83813c938120b7c77fda37d3d0c76b369892a",
+      "translation_text_hash": "08d54c4053ae350c2d0b2a0daeb8d848adec266d787ecb82585bf2e8acfa09eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희에게 구하노니 너희를 위한 나의 여러 환난에 대하여 낙심치 말라 이는 너희의 영광이니라"
+      ],
+      "raw_text_hashes": [
+        "08d54c4053ae350c2d0b2a0daeb8d848adec266d787ecb82585bf2e8acfa09eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:14",
+      "sequence": 29262,
+      "chapter_label": "EPH 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "For this cause, I bow my knees to the Father of our Lord Jesus Christ,",
+      "ko": "이러하므로 내가 하늘과 땅에 있는 각 족속에게",
+      "source_text_hash": "bb6537b92d0994f9733eceb73c832f8f84d63a7d0105f48528e8292fe0a17dd0",
+      "translation_text_hash": "6ed76d3c8472e03f675f8bbd89e31bdcc9475e9c1d26329bfe1c2b177f5befc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 내가 하늘과 땅에 있는 각 족속에게"
+      ],
+      "raw_text_hashes": [
+        "6ed76d3c8472e03f675f8bbd89e31bdcc9475e9c1d26329bfe1c2b177f5befc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:15",
+      "sequence": 29263,
+      "chapter_label": "EPH 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "from whom every family in heaven and on earth is named,",
+      "ko": "이름을 주신 아버지 앞에 무릎을 꿇고 비노니",
+      "source_text_hash": "1ce423cf5a31c287f25d1d1e6bf8513ca9aa841ae559717ee896b3db81a92dcd",
+      "translation_text_hash": "f8b05ccaed9582788ff76d48129d5e2696e4b3a8a2c44f2d367b8a7fcfd01028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이름을 주신 아버지 앞에 무릎을 꿇고 비노니"
+      ],
+      "raw_text_hashes": [
+        "f8b05ccaed9582788ff76d48129d5e2696e4b3a8a2c44f2d367b8a7fcfd01028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:16",
+      "sequence": 29264,
+      "chapter_label": "EPH 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "that he would grant you, according to the riches of his glory, that you may be strengthened with power through his Spirit in the inner person,",
+      "ko": "그 영광의 풍성을 따라 그의 성령으로 말미암아 너희 속 사람을 능력으로 강건하게 하옵시며",
+      "source_text_hash": "a68632f018129b7781457ef4ef2c6dcb4868af73869ab593f8613ade585aba7f",
+      "translation_text_hash": "2b81e7969c4157a5f090a899c2e12f1b546d1e5d524597561127768fc057d8e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영광의 풍성을 따라 그의 성령으로 말미암아 너희 속 사람을 능력으로 강건하게 하옵시며"
+      ],
+      "raw_text_hashes": [
+        "2b81e7969c4157a5f090a899c2e12f1b546d1e5d524597561127768fc057d8e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:17",
+      "sequence": 29265,
+      "chapter_label": "EPH 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "that Christ may dwell in your hearts through faith, to the end that you, being rooted and grounded in love,",
+      "ko": "믿음으로 말미암아 그리스도께서 너희 마음에 계시게 하옵시고 너희가 사랑 가운데서 뿌리가 박히고 터가 굳어져서",
+      "source_text_hash": "730811d8b736e5645a41ccb7edd996246a3b75d90720329e742640bdc7cb3d22",
+      "translation_text_hash": "9e97f6fc5feba8ce34ecdfc1054b9cc9abe96fc3790b10742ba433c2e1e67c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 말미암아 그리스도께서 너희 마음에 계시게 하옵시고 너희가 사랑 가운데서 뿌리가 박히고 터가 굳어져서"
+      ],
+      "raw_text_hashes": [
+        "9e97f6fc5feba8ce34ecdfc1054b9cc9abe96fc3790b10742ba433c2e1e67c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:18",
+      "sequence": 29266,
+      "chapter_label": "EPH 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "may be strengthened to comprehend with all the saints what is the width and length and height and depth,",
+      "ko": "능히 모든 성도와 함께 지식에 넘치는 그리스도의 사랑을 알아",
+      "source_text_hash": "a0db0c12da39f1f54afbafc17647787dca6d566f1124c3653f1446f0125aeb0f",
+      "translation_text_hash": "acb5df6c1044808c2159e4dd6ab932666a8bb1ab445918bad8aaee5c9ca57509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능히 모든 성도와 함께 지식에 넘치는 그리스도의 사랑을 알아"
+      ],
+      "raw_text_hashes": [
+        "acb5df6c1044808c2159e4dd6ab932666a8bb1ab445918bad8aaee5c9ca57509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:19",
+      "sequence": 29267,
+      "chapter_label": "EPH 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "and to know Christ’s love which surpasses knowledge, that you may be filled with all the fullness of God.",
+      "ko": "그 넓이와 길이와 높이와 깊이가 어떠함을 깨달아 하나님의 모든 충만하신 것으로 너희에게 충만하게 하시기를 구하노라",
+      "source_text_hash": "c9d1a96c2f3c818973b4e1f404885afc0284d7710ba6d8651fceb6229d588446",
+      "translation_text_hash": "9d4fce5b970827bc45758dbe02b836668bf6eb50c7932ff47290da7eeab6908b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 넓이와 길이와 높이와 깊이가 어떠함을 깨달아 하나님의 모든 충만하신 것으로 너희에게 충만하게 하시기를 구하노라"
+      ],
+      "raw_text_hashes": [
+        "9d4fce5b970827bc45758dbe02b836668bf6eb50c7932ff47290da7eeab6908b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:20",
+      "sequence": 29268,
+      "chapter_label": "EPH 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Now to him who is able to do exceedingly abundantly above all that we ask or think, according to the power that works in us,",
+      "ko": "우리 가운데서 역사하시는 능력대로 우리의 온갖 구하는 것이나 생각하는 것에 더 넘치도록 능히 하실 이에게",
+      "source_text_hash": "f8cd50b2e158ab53788f6d0d3844355909f5d5fccf90b6b72fdaec5491c6ba4c",
+      "translation_text_hash": "99e88b28e723e3e11b66c2fa9a224d41168c634a7d30a229ea0999e03d187a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 가운데서 역사하시는 능력대로 우리의 온갖 구하는 것이나 생각하는 것에 더 넘치도록 능히 하실 이에게"
+      ],
+      "raw_text_hashes": [
+        "99e88b28e723e3e11b66c2fa9a224d41168c634a7d30a229ea0999e03d187a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:3:21",
+      "sequence": 29269,
+      "chapter_label": "EPH 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "to him be the glory in the assembly and in Christ Jesus to all generations, forever and ever. Amen.",
+      "ko": "교회 안에서와 그리스도 예수 안에서 영광이 대대로 영원 무궁하기를 원하노라 아멘",
+      "source_text_hash": "8173ce8df4f127e9a0b79aca259615004a3563b8ab16f32614f09899b13e420b",
+      "translation_text_hash": "6f42d9c080fae8056a557df23fd8ef056916f58a91353e8e3669cab7ca1fdc91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교회 안에서와 그리스도 예수 안에서 영광이 대대로 영원 무궁하기를 원하노라 아멘"
+      ],
+      "raw_text_hashes": [
+        "6f42d9c080fae8056a557df23fd8ef056916f58a91353e8e3669cab7ca1fdc91"
+      ]
+    }
+  ]
+}

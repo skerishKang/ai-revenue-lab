@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:030",
+  "unit_ordinal": 709,
+  "unit_label": "ISA 30",
+  "book_code": "ISA",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:30:1",
+      "sequence": 18219,
+      "chapter_label": "ISA 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "“Woe to the rebellious children”, says the LORD, “who take counsel, but not from me; and who make an alliance, but not with my Spirit, that they may add sin to sin;",
+      "ko": "여호와께서 가라사대 화 있을찐저 패역한 자식들이여 그들이 계교를 베푸나 나로 말미암아 하지 아니하며 맹약을 맺으나 나의 신으로 말미암아 하지 아니하였음이로다 그들이 바로의 세력 안에서 스스로 강하려 하며 애굽의 그늘에 피하려 하여 애굽으로 내려갔으되 나의 입에 묻지 아니하였으니 죄에 죄를 더하도다",
+      "source_text_hash": "7b676dda811d6bfcf7f8867d896a9116455c4d964af362d8ce982f58864977de",
+      "translation_text_hash": "46ea659346e67175d4ef188f728db23f220b1351bae7f74f579f3fb68f2978f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 화 있을찐저 패역한 자식들이여 그들이 계교를 베푸나 나로 말미암아 하지 아니하며 맹약을 맺으나 나의 신으로 말미암아 하지 아니하였음이로다 그들이 바로의 세력 안에서 스스로 강하려 하며 애굽의 그늘에 피하려 하여 애굽으로 내려갔으되 나의 입에 묻지 아니하였으니 죄에 죄를 더하도다"
+      ],
+      "raw_text_hashes": [
+        "46ea659346e67175d4ef188f728db23f220b1351bae7f74f579f3fb68f2978f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:2",
+      "sequence": 18220,
+      "chapter_label": "ISA 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "who set out to go down into Egypt without asking for my advice, to strengthen themselves in the strength of Pharaoh, and to take refuge in the shadow of Egypt!",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "a1b51ebf0dca886c3a4b873ddb052eee9698a65e68a82c69f8a526523c4e890a",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:3",
+      "sequence": 18221,
+      "chapter_label": "ISA 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore the strength of Pharaoh will be your shame, and the refuge in the shadow of Egypt your confusion.",
+      "ko": "그러므로 바로의 세력이 너희의 수치가 되며 애굽의 그늘에 피함이 너희의 수욕이 될 것이라",
+      "source_text_hash": "2ec41aeeec5c2b8380981b5d722becb78c74664d0bd216d7a95c8c584815a690",
+      "translation_text_hash": "5f71baab62c681448dd1937220be3ba64efa55f79ca7901d239e65b500ddcf9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 바로의 세력이 너희의 수치가 되며 애굽의 그늘에 피함이 너희의 수욕이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "5f71baab62c681448dd1937220be3ba64efa55f79ca7901d239e65b500ddcf9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:4",
+      "sequence": 18222,
+      "chapter_label": "ISA 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "For their princes are at Zoan, and their ambassadors have come to Hanes.",
+      "ko": "그 방백들이 소안에 있고 그 사신들이 하네스에 이르렀으나",
+      "source_text_hash": "a28716588bbddc5db0db164c1c8554e9a10b9ecac21835afd5d3be785819a228",
+      "translation_text_hash": "45aa1d1756c0a355e10f8e747f46242aaadf4219b3166cbfcbbf479f33a7b55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 방백들이 소안에 있고 그 사신들이 하네스에 이르렀으나"
+      ],
+      "raw_text_hashes": [
+        "45aa1d1756c0a355e10f8e747f46242aaadf4219b3166cbfcbbf479f33a7b55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:5",
+      "sequence": 18223,
+      "chapter_label": "ISA 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "They shall all be ashamed because of a people that can’t profit them, that are not a help nor profit, but a shame, and also a reproach.”",
+      "ko": "그들이 다 자기를 유익하게 못하는 민족을 인하여 수치를 당하리니 그 민족이 돕지도 못하며 유익하게도 못하고 수치가 되게 하며 수욕이 되게 할 뿐임이니라",
+      "source_text_hash": "8bb81127a46d1845933c5f50fa4c68157365625e5feaafbb4379c42c577d8809",
+      "translation_text_hash": "07dad25c56fa3de27c0d87d207c7d3e20b7cc1fc992fbc26c80b052dbfc7dbf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다 자기를 유익하게 못하는 민족을 인하여 수치를 당하리니 그 민족이 돕지도 못하며 유익하게도 못하고 수치가 되게 하며 수욕이 되게 할 뿐임이니라"
+      ],
+      "raw_text_hashes": [
+        "07dad25c56fa3de27c0d87d207c7d3e20b7cc1fc992fbc26c80b052dbfc7dbf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:6",
+      "sequence": 18224,
+      "chapter_label": "ISA 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "The burden of the animals of the South. Through the land of trouble and anguish, of the lioness and the lion, the viper and fiery flying serpent, they carry their riches on the shoulders of young donkeys, and their treasures on the humps of camels, to an unprofitable people.",
+      "ko": "남방 짐승에 관한 경고라 사신들이 그 재물을 어린 나귀 등에 싣고 그 보물을 약대 제물 안장에 얹고 암사자와 수사자와 독사와 및 날아다니는 불뱀이 나오는 위험하고 곤고한 땅을 지나 자기에게 무익한 민족에게로 갔으나",
+      "source_text_hash": "d3cbbf44848ef1af177b78280fb0d7d9cbacb0341a69fe371935e23f9392b5ec",
+      "translation_text_hash": "1bc278126744a6d46c4b64a7dbcf670eb8c34342df78beb611e60e7c27eda431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방 짐승에 관한 경고라 사신들이 그 재물을 어린 나귀 등에 싣고 그 보물을 약대 제물 안장에 얹고 암사자와 수사자와 독사와 및 날아다니는 불뱀이 나오는 위험하고 곤고한 땅을 지나 자기에게 무익한 민족에게로 갔으나"
+      ],
+      "raw_text_hashes": [
+        "1bc278126744a6d46c4b64a7dbcf670eb8c34342df78beb611e60e7c27eda431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:7",
+      "sequence": 18225,
+      "chapter_label": "ISA 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "For Egypt helps in vain, and to no purpose; therefore I have called her Rahab who sits still.",
+      "ko": "애굽의 도움이 헛되고 무익하니라 그러므로 내가 애굽을 가만히 앉은 라합이라 일컬었느니라",
+      "source_text_hash": "31a1eda9f32de071201daddfaefe39edecd5c7c2a74a3928bc865075c50c91bd",
+      "translation_text_hash": "aa43884c06ccfbdcab0672f038f4720d428ad0aa197d383ddc7c2f75540a9075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 도움이 헛되고 무익하니라 그러므로 내가 애굽을 가만히 앉은 라합이라 일컬었느니라"
+      ],
+      "raw_text_hashes": [
+        "aa43884c06ccfbdcab0672f038f4720d428ad0aa197d383ddc7c2f75540a9075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:8",
+      "sequence": 18226,
+      "chapter_label": "ISA 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "Now go, write it before them on a tablet, and inscribe it in a book, that it may be for the time to come forever and ever.",
+      "ko": "이제 가서 백성 앞에서 서판에 기록하며 책에 써서 후세에 영영히 있게 하라",
+      "source_text_hash": "56fc8b71c4e974c8d6ffb40d5ecd2b014a0583446df2a5048b31eefe7c8e2d29",
+      "translation_text_hash": "44c55224ae4f649b211bf5f08619d5319623e8ea59bcc713b27dd802fa10a776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 가서 백성 앞에서 서판에 기록하며 책에 써서 후세에 영영히 있게 하라"
+      ],
+      "raw_text_hashes": [
+        "44c55224ae4f649b211bf5f08619d5319623e8ea59bcc713b27dd802fa10a776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:9",
+      "sequence": 18227,
+      "chapter_label": "ISA 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "For it is a rebellious people, lying children, children who will not hear the LORD’s law;",
+      "ko": "대저 이는 패역한 백성이요 거짓말 하는 자식이요 여호와의 법을 듣기 싫어하는 자식이라",
+      "source_text_hash": "57b9445363193c855f3ba8566ff811beb8c5893eaada28e52511dc9ffd8ae7ad",
+      "translation_text_hash": "de2d9fc1ba59ed03e693c1ed512d39ce99ff3165e604b33e946f3b18c2a6eb65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 이는 패역한 백성이요 거짓말 하는 자식이요 여호와의 법을 듣기 싫어하는 자식이라"
+      ],
+      "raw_text_hashes": [
+        "de2d9fc1ba59ed03e693c1ed512d39ce99ff3165e604b33e946f3b18c2a6eb65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:10",
+      "sequence": 18228,
+      "chapter_label": "ISA 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "who tell the seers, “Don’t see!” and the prophets, “Don’t prophesy to us right things. Tell us pleasant things. Prophesy deceits.",
+      "ko": "그들이 선견자에게 이르기를 선견하지 말라 선지자에게 이르기를 우리에게 정직한 것을 보이지 말라 부드러운 말을 하라 거짓된 것을 보이라",
+      "source_text_hash": "94fd90eb68ab115b713c3ba165a2e715b6675d7eaea3c54cdda20e09f2f83a56",
+      "translation_text_hash": "b495095ff11661a03f133d97af93910cd1bc05f0bc96b82e136fc050edaf3118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 선견자에게 이르기를 선견하지 말라 선지자에게 이르기를 우리에게 정직한 것을 보이지 말라 부드러운 말을 하라 거짓된 것을 보이라"
+      ],
+      "raw_text_hashes": [
+        "b495095ff11661a03f133d97af93910cd1bc05f0bc96b82e136fc050edaf3118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:11",
+      "sequence": 18229,
+      "chapter_label": "ISA 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "Get out of the way. Turn away from the path. Cause the Holy One of Israel to cease from before us.”",
+      "ko": "너희는 정로를 버리며 첩경에서 돌이키라 이스라엘의 거룩하신 자로 우리 앞에서 떠나시게 하라 하는도다",
+      "source_text_hash": "bd290e994b8dde7f4be7bc967b9d0b45b0aac8a1e53653068196a0f14bb38b48",
+      "translation_text_hash": "c0684dbefd5fa8fc0917ad0217bb70cd218a28c62204afdcd0fff11cacc30604",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 정로를 버리며 첩경에서 돌이키라 이스라엘의 거룩하신 자로 우리 앞에서 떠나시게 하라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "c0684dbefd5fa8fc0917ad0217bb70cd218a28c62204afdcd0fff11cacc30604"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:12",
+      "sequence": 18230,
+      "chapter_label": "ISA 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore the Holy One of Israel says, “Because you despise this word, and trust in oppression and perverseness, and rely on it,",
+      "ko": "이러므로 이스라엘의 거룩하신 자가 말씀하시되 너희가 이 말을 업신여기고 압박과 허망을 믿어 그것에 의뢰하니",
+      "source_text_hash": "edbdddd4bb8696ddf8f2f10ffa6343bc28fe79d6955ebca1d52f59a1207dd2ac",
+      "translation_text_hash": "064752494be8885d0420f7eccd8f0522f84bf8eb9b505b1631b2b9d6ba8d6e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 이스라엘의 거룩하신 자가 말씀하시되 너희가 이 말을 업신여기고 압박과 허망을 믿어 그것에 의뢰하니"
+      ],
+      "raw_text_hashes": [
+        "064752494be8885d0420f7eccd8f0522f84bf8eb9b505b1631b2b9d6ba8d6e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:13",
+      "sequence": 18231,
+      "chapter_label": "ISA 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "therefore this iniquity shall be to you like a breach ready to fall, swelling out in a high wall, whose breaking comes suddenly in an instant.",
+      "ko": "이 죄악이 너희로 마치 무너지게 된 높은 담이 불쑥 나와 경각간에 홀연히 무너짐 같게 하리라 하셨은즉",
+      "source_text_hash": "8d622006caf6e3e800ce9711add01a0a640affee315f65860d701808134eb81b",
+      "translation_text_hash": "050ed3fb1bf1f06afda3b8d499deb48b414c2f654907e7127a2a2f978b323e18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 죄악이 너희로 마치 무너지게 된 높은 담이 불쑥 나와 경각간에 홀연히 무너짐 같게 하리라 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "050ed3fb1bf1f06afda3b8d499deb48b414c2f654907e7127a2a2f978b323e18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:14",
+      "sequence": 18232,
+      "chapter_label": "ISA 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "He will break it as a potter’s vessel is broken, breaking it in pieces without sparing, so that there won’t be found among the broken pieces a piece good enough to take fire from the hearth, or to dip up water out of the cistern.”",
+      "ko": "그가 이 나라를 훼파하시되 토기장이가 그릇을 훼파함 같이 아낌이 없이 파쇄하시리니 그 조각 중에서, 아궁이에서 불을 취하거나 물웅덩이에서 물을 뜰 것도 얻지 못하리라",
+      "source_text_hash": "8ea9f061faabcea41cf1c57cf2b47c984862a08a9793cfb538433f7ee1e2b85c",
+      "translation_text_hash": "93e9cba3e2f7decedb1ed66e95d69093e699c9b1178e7f8e39d1fa54faa8503d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이 나라를 훼파하시되 토기장이가 그릇을 훼파함 같이 아낌이 없이 파쇄하시리니 그 조각 중에서, 아궁이에서 불을 취하거나 물웅덩이에서 물을 뜰 것도 얻지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "93e9cba3e2f7decedb1ed66e95d69093e699c9b1178e7f8e39d1fa54faa8503d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:15",
+      "sequence": 18233,
+      "chapter_label": "ISA 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "For thus said the Lord GOD, the Holy One of Israel, “You will be saved in returning and rest. Your strength will be in quietness and in confidence.” You refused,",
+      "ko": "주 여호와 이스라엘의 거룩하신 자가 말씀하시되 너희가 돌이켜 안연히 처하여야 구원을 얻을 것이요 잠잠하고 신뢰하여야 힘을 얻을 것이어늘 너희가 원치 아니하고",
+      "source_text_hash": "a7517fb7c3230c89b2621cce80f7115ecc436b83bae38c6d43b495c59bbc9f7f",
+      "translation_text_hash": "0dc9bd0b6661a4e4a7b5ee22e341686338c6642278000509d70780f9cf7e44a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와 이스라엘의 거룩하신 자가 말씀하시되 너희가 돌이켜 안연히 처하여야 구원을 얻을 것이요 잠잠하고 신뢰하여야 힘을 얻을 것이어늘 너희가 원치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "0dc9bd0b6661a4e4a7b5ee22e341686338c6642278000509d70780f9cf7e44a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:16",
+      "sequence": 18234,
+      "chapter_label": "ISA 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "but you said, “No, for we will flee on horses;” therefore you will flee; and, “We will ride on the swift;” therefore those who pursue you will be swift.",
+      "ko": "이르기를 아니라 우리가 말 타고 도망하리라 한고로 너희가 도망할 것이요 또 이르기를 우리가 빠른 짐승을 타리라 한고로 너희를 쫓는 자가 빠르리니",
+      "source_text_hash": "dbc8c7726abb44fd1b412a4972bae56cd3a5f487b4915ff179575c8a88205011",
+      "translation_text_hash": "6783a7d5668b0b4ca59aa99d3ac7377815fd8fd576c9e4ca2d62eba49dbb1c64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 아니라 우리가 말 타고 도망하리라 한고로 너희가 도망할 것이요 또 이르기를 우리가 빠른 짐승을 타리라 한고로 너희를 쫓는 자가 빠르리니"
+      ],
+      "raw_text_hashes": [
+        "6783a7d5668b0b4ca59aa99d3ac7377815fd8fd576c9e4ca2d62eba49dbb1c64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:17",
+      "sequence": 18235,
+      "chapter_label": "ISA 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "One thousand will flee at the threat of one. At the threat of five, you will flee until you are left like a beacon on the top of a mountain, and like a banner on a hill.",
+      "ko": "한 사람이 꾸짖은즉 천 사람이 도망하겠고 다섯이 꾸짖은즉 너희가 다 도망하고 너희 남은 자는 겨우 산꼭대기의 깃대 같겠고 영 위의 기호 같으리라 하셨느니라",
+      "source_text_hash": "f29d047ede07074480aa27a7df042635813134ca9d3a320e789bf63e55810eec",
+      "translation_text_hash": "59902cf56f6c669ddad993bce49615ebed1b3459548b44ce0a78014df6f7ee4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 꾸짖은즉 천 사람이 도망하겠고 다섯이 꾸짖은즉 너희가 다 도망하고 너희 남은 자는 겨우 산꼭대기의 깃대 같겠고 영 위의 기호 같으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "59902cf56f6c669ddad993bce49615ebed1b3459548b44ce0a78014df6f7ee4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:18",
+      "sequence": 18236,
+      "chapter_label": "ISA 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore the LORD will wait, that he may be gracious to you; and therefore he will be exalted, that he may have mercy on you, for the LORD is a God of justice. Blessed are all those who wait for him.",
+      "ko": "그러나 여호와께서 기다리시나니 이는 너희에게 은혜를 베풀려 하심이요 일어나시리니 이는 너희를 긍휼히 여기려 하심이라 대저 여호와는 공의의 하나님이심이라 무릇 그를 기다리는 자는 복이 있도다",
+      "source_text_hash": "8bcea636b546ff92d42e52d8393cfddb44ad06d3e0e890767bcd13bb23a700e6",
+      "translation_text_hash": "853b93971aa83e3ce8b92ceb33391a5546e6a9937bb60245c3424ca471b76f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 기다리시나니 이는 너희에게 은혜를 베풀려 하심이요 일어나시리니 이는 너희를 긍휼히 여기려 하심이라 대저 여호와는 공의의 하나님이심이라 무릇 그를 기다리는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "853b93971aa83e3ce8b92ceb33391a5546e6a9937bb60245c3424ca471b76f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:19",
+      "sequence": 18237,
+      "chapter_label": "ISA 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "For the people will dwell in Zion at Jerusalem. You will weep no more. He will surely be gracious to you at the voice of your cry. When he hears you, he will answer you.",
+      "ko": "시온에 거하며 예루살렘에 거하는 백성아 너는 다시 통곡하지 않을 것이라 그가 너의 부르짖는 소리를 인하여 네게 은혜를 베푸시되 들으실 때에 네게 응답하시리라",
+      "source_text_hash": "e91ce485193d9bd71cc38d44bb05c0bebeadd62d33bf38ecf4c47c603a93fe70",
+      "translation_text_hash": "e151ee3759a174b9da3b926ccbef6dc1b1639ed0adb799075ec2be78d915f9b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온에 거하며 예루살렘에 거하는 백성아 너는 다시 통곡하지 않을 것이라 그가 너의 부르짖는 소리를 인하여 네게 은혜를 베푸시되 들으실 때에 네게 응답하시리라"
+      ],
+      "raw_text_hashes": [
+        "e151ee3759a174b9da3b926ccbef6dc1b1639ed0adb799075ec2be78d915f9b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:20",
+      "sequence": 18238,
+      "chapter_label": "ISA 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "Though the Lord may give you the bread of adversity and the water of affliction, yet your teachers won’t be hidden any more, but your eyes will see your teachers;",
+      "ko": "주께서 너희에게 환난의 떡과 고생의 물을 주시나 네 스승은 다시 숨기지 아니하시리니 네 눈이 네 스승을 볼 것이며",
+      "source_text_hash": "826700e9bb01783b8a49c07a67adb5e9dc45a9016c6559b88e94ff1e8c5c0ba0",
+      "translation_text_hash": "a9a1ff7f6ac781ce8ae93969630482e044ee0c5b33adb4b63557d62eae36f595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 너희에게 환난의 떡과 고생의 물을 주시나 네 스승은 다시 숨기지 아니하시리니 네 눈이 네 스승을 볼 것이며"
+      ],
+      "raw_text_hashes": [
+        "a9a1ff7f6ac781ce8ae93969630482e044ee0c5b33adb4b63557d62eae36f595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:21",
+      "sequence": 18239,
+      "chapter_label": "ISA 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "and when you turn to the right hand, and when you turn to the left, your ears will hear a voice behind you, saying, “This is the way. Walk in it.”",
+      "ko": "너희가 우편으로 치우치든지 좌편으로 치우치든지 네 뒤에서 말 소리가 네 귀에 들려 이르기를 이것이 정로니 너희는 이리로 행하라 할 것이며",
+      "source_text_hash": "dd1d5f93d85db8f1591d5ece2e9ddde22025143c1e1433f08397e14c377913e4",
+      "translation_text_hash": "722215b51819b240701bd356bb1a7821e076557c4817e112942bf9490925efd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 우편으로 치우치든지 좌편으로 치우치든지 네 뒤에서 말 소리가 네 귀에 들려 이르기를 이것이 정로니 너희는 이리로 행하라 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "722215b51819b240701bd356bb1a7821e076557c4817e112942bf9490925efd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:22",
+      "sequence": 18240,
+      "chapter_label": "ISA 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "You shall defile the overlaying of your engraved images of silver, and the plating of your molten images of gold. You shall cast them away as an unclean thing. You shall tell it, “Go away!”",
+      "ko": "또 너희가 너희 조각한 우상에 입힌 은과 부어만든 우상에 올린 금을 더럽게 하여 불결한 물건을 던짐 같이 던지며 이르기를 나가라 하리라",
+      "source_text_hash": "3f0d488870f07ea664dca6d5fe0d9a2b07afe0ab04e858f58c2808d718042ce8",
+      "translation_text_hash": "7e03258e9ea34a93da3a7489301ecf46ed0e46a3a0bdbd48a5fff252f443d382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 너희 조각한 우상에 입힌 은과 부어만든 우상에 올린 금을 더럽게 하여 불결한 물건을 던짐 같이 던지며 이르기를 나가라 하리라"
+      ],
+      "raw_text_hashes": [
+        "7e03258e9ea34a93da3a7489301ecf46ed0e46a3a0bdbd48a5fff252f443d382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:23",
+      "sequence": 18241,
+      "chapter_label": "ISA 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "He will give the rain for your seed, with which you will sow the ground; and bread of the increase of the ground will be rich and plentiful. In that day, your livestock will feed in large pastures.",
+      "ko": "네가 땅에 뿌린 종자에 주께서 비를 주사 땅 소산의 곡식으로 살찌고 풍성케 하실 것이며 그 날에 너의 가축이 광활한 목장에서 먹을 것이요",
+      "source_text_hash": "eee537260e68920fd29b2c04dfac0971ef7220b4ef11eb4d35026c5c61e03fae",
+      "translation_text_hash": "e343d9cffc694059c2e8b978a8fc4e50df1efcec3790736ff65aa28b1e0b8eec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 땅에 뿌린 종자에 주께서 비를 주사 땅 소산의 곡식으로 살찌고 풍성케 하실 것이며 그 날에 너의 가축이 광활한 목장에서 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "e343d9cffc694059c2e8b978a8fc4e50df1efcec3790736ff65aa28b1e0b8eec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:24",
+      "sequence": 18242,
+      "chapter_label": "ISA 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "The oxen likewise and the young donkeys that till the ground will eat savory feed, which has been winnowed with the shovel and with the fork.",
+      "ko": "밭 가는 소와 어린 나귀도 키와 육지창으로 까부르고 맛있게 한 먹이를 먹을 것이며",
+      "source_text_hash": "2436fb69f0722a4adce59012a4e5077f876da865e2c2a3a11364171c3ec8ee80",
+      "translation_text_hash": "d94a68e1673bcca2dbcd8d596274cbf0c717f256c3204d41512de5c33856db3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭 가는 소와 어린 나귀도 키와 육지창으로 까부르고 맛있게 한 먹이를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "d94a68e1673bcca2dbcd8d596274cbf0c717f256c3204d41512de5c33856db3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:25",
+      "sequence": 18243,
+      "chapter_label": "ISA 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "There will be brooks and streams of water on every lofty mountain and on every high hill in the day of the great slaughter, when the towers fall.",
+      "ko": "크게 살륙하는 날 망대가 무너질 때에 각 고산, 각 준령에 개울과 시냇물이 흐를 것이며",
+      "source_text_hash": "d6abdf24a4aa41286f02e06387916ab420ee2ef970ac207e17025ebaf7759b8b",
+      "translation_text_hash": "65cda09ca80103d49599d8cb67c834b37695496012fccbb78d0675fae02f602e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크게 살륙하는 날 망대가 무너질 때에 각 고산, 각 준령에 개울과 시냇물이 흐를 것이며"
+      ],
+      "raw_text_hashes": [
+        "65cda09ca80103d49599d8cb67c834b37695496012fccbb78d0675fae02f602e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:26",
+      "sequence": 18244,
+      "chapter_label": "ISA 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "Moreover the light of the moon will be like the light of the sun, and the light of the sun will be seven times brighter, like the light of seven days, in the day that the LORD binds up the fracture of his people, and heals the wound they were struck with.",
+      "ko": "여호와께서 그 백성의 상처를 싸매시며 그들의 맞은 자리를 고치시는 날에는 달빛은 햇빛 같겠고 햇빛은 칠배가 되어 일곱날의 빛과 같으리라",
+      "source_text_hash": "add1b4fa1711f00b252f4b9b4b4741697b85dc4e20efa417b1398668fd48f29f",
+      "translation_text_hash": "01cc554c54428d2e2517d306fd13c73308822e4512b87de5fa51cef600eddc4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 백성의 상처를 싸매시며 그들의 맞은 자리를 고치시는 날에는 달빛은 햇빛 같겠고 햇빛은 칠배가 되어 일곱날의 빛과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "01cc554c54428d2e2517d306fd13c73308822e4512b87de5fa51cef600eddc4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:27",
+      "sequence": 18245,
+      "chapter_label": "ISA 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "Behold, the LORD’s name comes from far away, burning with his anger, and in thick rising smoke. His lips are full of indignation. His tongue is as a devouring fire.",
+      "ko": "보라 여호와의 이름이 원방에서부터 오되 그의 진노가 불붙듯하며 빽빽한 연기가 일어 나듯하며 그 입술에는 분노가 찼으며 그 혀는 맹렬한 불 같으며",
+      "source_text_hash": "955cc37b4dad8637a237c8eb288a272bc33d6ba089c5923cba3fc2f0228fa18d",
+      "translation_text_hash": "a01966a8ec45ea4772b94e0b7c243cce11748c84af384a48d2fcafb57bd5995b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여호와의 이름이 원방에서부터 오되 그의 진노가 불붙듯하며 빽빽한 연기가 일어 나듯하며 그 입술에는 분노가 찼으며 그 혀는 맹렬한 불 같으며"
+      ],
+      "raw_text_hashes": [
+        "a01966a8ec45ea4772b94e0b7c243cce11748c84af384a48d2fcafb57bd5995b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:28",
+      "sequence": 18246,
+      "chapter_label": "ISA 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "His breath is as an overflowing stream that reaches even to the neck, to sift the nations with the sieve of destruction. A bridle that leads to ruin will be in the jaws of the peoples.",
+      "ko": "그 호흡은 마치 창일하여 목에까지 미치는 하수 같은즉 그가 멸하는 키로 열방을 까부르며 미혹되게 하는 자갈을 여러 민족의 입에 먹이시리니",
+      "source_text_hash": "11ee62922bf2da3c59d356ca4326cc4c58a74208e33b262bea449d225f062102",
+      "translation_text_hash": "9d6d7566db9bd4e995228c4d9c6fe855e612b556fe7507c467c108ce2d599a05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 호흡은 마치 창일하여 목에까지 미치는 하수 같은즉 그가 멸하는 키로 열방을 까부르며 미혹되게 하는 자갈을 여러 민족의 입에 먹이시리니"
+      ],
+      "raw_text_hashes": [
+        "9d6d7566db9bd4e995228c4d9c6fe855e612b556fe7507c467c108ce2d599a05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:29",
+      "sequence": 18247,
+      "chapter_label": "ISA 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "You will have a song, as in the night when a holy feast is kept, and gladness of heart, as when one goes with a flute to come to the LORD’s mountain, to Israel’s Rock.",
+      "ko": "너희가 거룩한 절기를 지키는 밤에와 같이 노래할 것이며 저를 불며 여호와의 산으로 가서 이스라엘의 반석에게로 나아가는 자 같이 마음에 즐거워할 것이라",
+      "source_text_hash": "a8b5d77f3d2c4508ea5b5de02378d33d37c0f27bd833732d2d0fb4815f4cc741",
+      "translation_text_hash": "8049d00a3a652c0fb32e03d7e21eb711bfe25426a53c6c9b835797ede7ea048c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 거룩한 절기를 지키는 밤에와 같이 노래할 것이며 저를 불며 여호와의 산으로 가서 이스라엘의 반석에게로 나아가는 자 같이 마음에 즐거워할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8049d00a3a652c0fb32e03d7e21eb711bfe25426a53c6c9b835797ede7ea048c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:30",
+      "sequence": 18248,
+      "chapter_label": "ISA 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD will cause his glorious voice to be heard, and will show the descent of his arm, with the indignation of his anger and the flame of a devouring fire, with a blast, storm, and hailstones.",
+      "ko": "여호와께서 그 장엄한 목소리를 듣게 하시며 혁혁한 진노로 그 팔의 치심을 보이시되 맹렬한 화염과 폭풍과 폭우와 우박으로 하시리니",
+      "source_text_hash": "f827746da4fc6da93894bde2271b1b2165914f442e5d8b016b4e29a548ecaf1c",
+      "translation_text_hash": "3ce48cc64e3da00ac5a985be4c8aaeac0a232d68083da50c9abd677c56edbd0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 장엄한 목소리를 듣게 하시며 혁혁한 진노로 그 팔의 치심을 보이시되 맹렬한 화염과 폭풍과 폭우와 우박으로 하시리니"
+      ],
+      "raw_text_hashes": [
+        "3ce48cc64e3da00ac5a985be4c8aaeac0a232d68083da50c9abd677c56edbd0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:31",
+      "sequence": 18249,
+      "chapter_label": "ISA 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 31
+        }
+      ],
+      "en": "For through the LORD’s voice the Assyrian will be dismayed. He will strike him with his rod.",
+      "ko": "여호와의 목소리에 앗수르가 낙담할 것이며 주께서는 막대기로 치실 것인데",
+      "source_text_hash": "f0a7e06d3889546599daeb28362d36efa0a58107d25532ef37efb5ca1decfee4",
+      "translation_text_hash": "0d593f38e9f7794941408b93140410b938d79ca460b4ff67419c8ea8e7816a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 목소리에 앗수르가 낙담할 것이며 주께서는 막대기로 치실 것인데"
+      ],
+      "raw_text_hashes": [
+        "0d593f38e9f7794941408b93140410b938d79ca460b4ff67419c8ea8e7816a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:32",
+      "sequence": 18250,
+      "chapter_label": "ISA 30",
+      "verse_label": "32",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 32
+        }
+      ],
+      "en": "Every stroke of the rod of punishment, which the LORD will lay on him, will be with the sound of tambourines and harps. He will fight with them in battles, brandishing weapons.",
+      "ko": "여호와께서 예정하신 몽둥이를 앗수르 위에 더하실 때마다 소고를 치며 수금을 탈 것이며 그는 전쟁 때에 팔을 들어 그들을 치시리라",
+      "source_text_hash": "dd704589872bf99b7762ab83311735c93d7a0b9e31375648f92ec7d623527218",
+      "translation_text_hash": "4ad9a491d6cc848ccfee788e53963e0b4a341cb4e023758c96750585f75e0965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 예정하신 몽둥이를 앗수르 위에 더하실 때마다 소고를 치며 수금을 탈 것이며 그는 전쟁 때에 팔을 들어 그들을 치시리라"
+      ],
+      "raw_text_hashes": [
+        "4ad9a491d6cc848ccfee788e53963e0b4a341cb4e023758c96750585f75e0965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:30:33",
+      "sequence": 18251,
+      "chapter_label": "ISA 30",
+      "verse_label": "33",
+      "locator": {
+        "book": "ISA",
+        "chapter": 30,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 30,
+          "verse": 33
+        }
+      ],
+      "en": "For his burning place has long been ready. Yes, it is prepared for the king. He has made its pyre deep and large with fire and much wood. The LORD’s breath, like a stream of sulfur, kindles it.",
+      "ko": "대저 도벳은 이미 설립되었고 또 왕을 위하여 예비된 것이라 깊고 넓게 하였고 거기 불과 많은 나무가 있은즉 여호와의 호흡이 유황 개천 같아서 이를 사르시리라",
+      "source_text_hash": "90ec19886fbb415c162a337cd19b1feeb3fffb897342e63a716050555ce77b84",
+      "translation_text_hash": "a95e5cb41d48bcb26129178afe48e018610b00718130efb63576beaad2494251",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 도벳은 이미 설립되었고 또 왕을 위하여 예비된 것이라 깊고 넓게 하였고 거기 불과 많은 나무가 있은즉 여호와의 호흡이 유황 개천 같아서 이를 사르시리라"
+      ],
+      "raw_text_hashes": [
+        "a95e5cb41d48bcb26129178afe48e018610b00718130efb63576beaad2494251"
+      ]
+    }
+  ]
+}

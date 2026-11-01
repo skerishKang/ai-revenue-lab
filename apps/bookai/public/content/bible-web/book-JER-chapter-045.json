@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:045",
+  "unit_ordinal": 790,
+  "unit_label": "JER 45",
+  "book_code": "JER",
+  "chapter_number": 45,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:45:1",
+      "sequence": 20042,
+      "chapter_label": "JER 45",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 45,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 45,
+          "verse": 1
+        }
+      ],
+      "en": "The message that Jeremiah the prophet spoke to Baruch the son of Neriah, when he wrote these words in a book at the mouth of Jeremiah, in the fourth year of Jehoiakim the son of Josiah, king of Judah, saying,",
+      "ko": "유다 왕 요시야의 아들 여호야김 제 사년에 네리야의 아들 바룩이 예레미야의 구전대로 이 모든 말을 책에 기록하니라 때에 선지자 예레미야가 그에게 말하여 가로되",
+      "source_text_hash": "d663e5b36dfec61808e1309ca4c751a7e039708d8fdcfa98a346e0813229ff5c",
+      "translation_text_hash": "e6d116e8db54a3d7e2217b66336aa8c5a0b1e934f359fec80a022b61169ad3d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요시야의 아들 여호야김 제 사년에 네리야의 아들 바룩이 예레미야의 구전대로 이 모든 말을 책에 기록하니라 때에 선지자 예레미야가 그에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "e6d116e8db54a3d7e2217b66336aa8c5a0b1e934f359fec80a022b61169ad3d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:45:2",
+      "sequence": 20043,
+      "chapter_label": "JER 45",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 45,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 45,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD, the God of Israel, says to you, Baruch:",
+      "ko": "바룩아 이스라엘의 하나님 여호와께서 네게 이같이 말씀하시되",
+      "source_text_hash": "f959bed3c3f9c0427f0107b5b2b0d6ac36acfab7122c37f120dd5b4a5cd3b5a1",
+      "translation_text_hash": "a8acb00563677b3e8a828e12376e7f6b535ff944d1037dcdaf37fb9b0185996a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바룩아 이스라엘의 하나님 여호와께서 네게 이같이 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "a8acb00563677b3e8a828e12376e7f6b535ff944d1037dcdaf37fb9b0185996a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:45:3",
+      "sequence": 20044,
+      "chapter_label": "JER 45",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 45,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 45,
+          "verse": 3
+        }
+      ],
+      "en": "‘You said, “Woe is me now! For the LORD has added sorrow to my pain! I am weary with my groaning, and I find no rest.”’",
+      "ko": "네가 일찍 말하기를 슬프다 여호와께서 나의 고통에 슬픔을 더하셨으니 나는 나의 탄식으로 피곤하여 평안치 못하다 하도다 하셨고",
+      "source_text_hash": "dc91dc3337e908a8f1e2f992a76a4969305907e1c7b73d5e25611347a4089c7c",
+      "translation_text_hash": "d0c6672333933a1cb3969e832018ee05e41e9ca74635f8f61a8dc44f0d14c10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 일찍 말하기를 슬프다 여호와께서 나의 고통에 슬픔을 더하셨으니 나는 나의 탄식으로 피곤하여 평안치 못하다 하도다 하셨고"
+      ],
+      "raw_text_hashes": [
+        "d0c6672333933a1cb3969e832018ee05e41e9ca74635f8f61a8dc44f0d14c10d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:45:4",
+      "sequence": 20045,
+      "chapter_label": "JER 45",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 45,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 45,
+          "verse": 4
+        }
+      ],
+      "en": "“You shall tell him, the LORD says: ‘Behold, that which I have built, I will break down, and that which I have planted I will pluck up; and this in the whole land.",
+      "ko": "또 내게 이르시기를 너는 그에게 이르라 여호와께서 이같이 말씀하시기를 보라 나는 나의 세운 것을 헐기도 하며 나의 심은 것을 뽑기도 하나니 온 땅에 이러하거늘",
+      "source_text_hash": "c100d406c2d89519c154e3e4ad5f8e8d4b479fae148310d8b4cbf4a39d661f64",
+      "translation_text_hash": "6805de7faf3e322071cdcfefa0f44fec59a723c2516f161ac658c15c46458b6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시기를 너는 그에게 이르라 여호와께서 이같이 말씀하시기를 보라 나는 나의 세운 것을 헐기도 하며 나의 심은 것을 뽑기도 하나니 온 땅에 이러하거늘"
+      ],
+      "raw_text_hashes": [
+        "6805de7faf3e322071cdcfefa0f44fec59a723c2516f161ac658c15c46458b6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:45:5",
+      "sequence": 20046,
+      "chapter_label": "JER 45",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 45,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 45,
+          "verse": 5
+        }
+      ],
+      "en": "Do you seek great things for yourself? Don’t seek them; for, behold, I will bring evil on all flesh,’ says the LORD, ‘but I will let you escape with your life wherever you go.’”",
+      "ko": "네가 너를 위하여 대사를 경영하느냐 그것을 경영하지 말라 보라 내가 모든 육체에게 재앙을 내리리라 그러나 너의 가는 모든 곳에서는 내가 너로 생명 얻기를 노략물을 얻는것 같게 하리라 여호와의 말이니라 하셨느니라",
+      "source_text_hash": "033f90c3aab93e67570600a01beccaac65b452a0e435b65c209b4468f225b15b",
+      "translation_text_hash": "ef891d12dd482612b721a112102a820ef9c3a7f4679154f58ebf3a0593894963",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 너를 위하여 대사를 경영하느냐 그것을 경영하지 말라 보라 내가 모든 육체에게 재앙을 내리리라 그러나 너의 가는 모든 곳에서는 내가 너로 생명 얻기를 노략물을 얻는것 같게 하리라 여호와의 말이니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "ef891d12dd482612b721a112102a820ef9c3a7f4679154f58ebf3a0593894963"
+      ]
+    }
+  ]
+}

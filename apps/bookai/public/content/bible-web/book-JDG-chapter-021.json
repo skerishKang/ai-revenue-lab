@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:021",
+  "unit_ordinal": 232,
+  "unit_label": "JDG 21",
+  "book_code": "JDG",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:21:1",
+      "sequence": 7104,
+      "chapter_label": "JDG 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Now the men of Israel had sworn in Mizpah, saying, “None of us will give his daughter to Benjamin as a wife.”",
+      "ko": "이스라엘 사람들이 미스바에서 맹세하여 이르기를 우리 중에 누구든지 딸을 베냐민 사람에게 아내로 주지 아니하리라 하였더라",
+      "source_text_hash": "29d60241bdb4630923d831f6bd1d36b3d07de94d8bde46ae3770835a9573c654",
+      "translation_text_hash": "4ca0e94a2ca75ff3aad56d139ea9bdd152847ec1e4046dbeece0519158b0eb10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 미스바에서 맹세하여 이르기를 우리 중에 누구든지 딸을 베냐민 사람에게 아내로 주지 아니하리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "4ca0e94a2ca75ff3aad56d139ea9bdd152847ec1e4046dbeece0519158b0eb10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:2",
+      "sequence": 7105,
+      "chapter_label": "JDG 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "The people came to Bethel and sat there until evening before God, and lifted up their voices, and wept severely.",
+      "ko": "백성이 벧엘에 이르러 거기서 저녁까지 하나님 앞에 앉아서 대성통곡하여",
+      "source_text_hash": "748cce10bd7fe1f41f95251065793e6858bbe075e269bcf71544fd8579f26da0",
+      "translation_text_hash": "698a446058121381ed0321b374d1c6cdf16dd7af5f724c1c8ab0fef671e9f62b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 벧엘에 이르러 거기서 저녁까지 하나님 앞에 앉아서 대성통곡하여"
+      ],
+      "raw_text_hashes": [
+        "698a446058121381ed0321b374d1c6cdf16dd7af5f724c1c8ab0fef671e9f62b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:3",
+      "sequence": 7106,
+      "chapter_label": "JDG 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "They said, “The LORD, the God of Israel, why has this happened in Israel, that there should be one tribe lacking in Israel today?”",
+      "ko": "가로되 이스라엘의 하나님 여호와여 오늘날 이스라엘 중에 어찌하여 한 지파가 이즈러졌나이까 하더니",
+      "source_text_hash": "ce2def3dfae3640616c187b5e29ccd09a5cc76a1ecfe6365790001a7a09fe1e9",
+      "translation_text_hash": "9320ca2acef0786e894916b5f28d30eaee6537bd6593e8205efe88ae646e6d30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이스라엘의 하나님 여호와여 오늘날 이스라엘 중에 어찌하여 한 지파가 이즈러졌나이까 하더니"
+      ],
+      "raw_text_hashes": [
+        "9320ca2acef0786e894916b5f28d30eaee6537bd6593e8205efe88ae646e6d30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:4",
+      "sequence": 7107,
+      "chapter_label": "JDG 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "On the next day, the people rose early and built an altar there, and offered burnt offerings and peace offerings.",
+      "ko": "이튿날에 백성이 일찌기 일어나서 거기 한 단을 쌓고 번제와 화목제를 드렸더라",
+      "source_text_hash": "ac9f84a59fabaee0109afac1f118f4945e40b015b33462b23955d59df8935764",
+      "translation_text_hash": "4e93c7bb278bec01d8ea069bd2012e1d8b637c9a275b5cc2a223a2401df16d97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 백성이 일찌기 일어나서 거기 한 단을 쌓고 번제와 화목제를 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "4e93c7bb278bec01d8ea069bd2012e1d8b637c9a275b5cc2a223a2401df16d97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:5",
+      "sequence": 7108,
+      "chapter_label": "JDG 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Israel said, “Who is there among all the tribes of Israel who didn’t come up in the assembly to the LORD?” For they had made a great oath concerning him who didn’t come up to the LORD to Mizpah, saying, “He shall surely be put to death.”",
+      "ko": "이스라엘 자손이 가로되 이스라엘 온 지파 중에 총회와 함께하여 여호와 앞에 올라오지 아니한 자가 누구뇨 하니 이는 그들이 크게 맹세하기를 미스바에 와서 여호와 앞에 이르지 아니하는 자는 반드시 죽일 것이라 하였음이라",
+      "source_text_hash": "3c3400fbd276467c3f03e37f870acf57586a248523eca11d5b4c01394592f924",
+      "translation_text_hash": "42c3e8518319033371a420eb261a6cffa4e2911d0b2f8410780a141575c1ad68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 가로되 이스라엘 온 지파 중에 총회와 함께하여 여호와 앞에 올라오지 아니한 자가 누구뇨 하니 이는 그들이 크게 맹세하기를 미스바에 와서 여호와 앞에 이르지 아니하는 자는 반드시 죽일 것이라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "42c3e8518319033371a420eb261a6cffa4e2911d0b2f8410780a141575c1ad68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:6",
+      "sequence": 7109,
+      "chapter_label": "JDG 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Israel grieved for Benjamin their brother, and said, “There is one tribe cut off from Israel today.",
+      "ko": "이스라엘 자손이 그 형제 베냐민을 위하여 뉘우쳐 가로되 오늘날 이스라엘 중에 한 지파가 끊쳤도다",
+      "source_text_hash": "8ddb939cd41fd5df4ab696739337fb9b197ebba35b6fc45255612e12008dad92",
+      "translation_text_hash": "0b0c5734a62c81733d3880981451d349570e4fb3c9c89764459de98075cf1fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그 형제 베냐민을 위하여 뉘우쳐 가로되 오늘날 이스라엘 중에 한 지파가 끊쳤도다"
+      ],
+      "raw_text_hashes": [
+        "0b0c5734a62c81733d3880981451d349570e4fb3c9c89764459de98075cf1fd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:7",
+      "sequence": 7110,
+      "chapter_label": "JDG 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "How shall we provide wives for those who remain, since we have sworn by the LORD that we will not give them of our daughters to wives?”",
+      "ko": "그 남은 자들에게 우리가 어떻게 하면 아내를 얻게 하리요 우리가 전에 여호와로 맹세하여 우리 딸을 그들의 아내로 주지 아니하리라 하였도다",
+      "source_text_hash": "350bdaaf918bc5cdfdb165c8971119be7b24e73701acf093c960c8c02d268de2",
+      "translation_text_hash": "b902aecf617a87d9f296fed434a7b1073e94f32611379f46f2103e3083e181b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 자들에게 우리가 어떻게 하면 아내를 얻게 하리요 우리가 전에 여호와로 맹세하여 우리 딸을 그들의 아내로 주지 아니하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "b902aecf617a87d9f296fed434a7b1073e94f32611379f46f2103e3083e181b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:8",
+      "sequence": 7111,
+      "chapter_label": "JDG 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "They said, “What one is there of the tribes of Israel who didn’t come up to the LORD to Mizpah?” Behold, no one came from Jabesh Gilead to the camp to the assembly.",
+      "ko": "또 가로되 이스라엘 지파 중 미스바에 올라와서 여호와께 이르지 아니한 자가 누구뇨 하고 본즉 야베스 길르앗에서는 한 사람도 진에 이르러 총회에 참예치 아니하였으니",
+      "source_text_hash": "dae6745668329d8ed50793c2f2ff97da3ccbd27d6bf6d8537925382ece79192f",
+      "translation_text_hash": "63f3bd08ea0c058d9befa1d99566556e6e464b91fab38d118807fe4f1ce32b42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 이스라엘 지파 중 미스바에 올라와서 여호와께 이르지 아니한 자가 누구뇨 하고 본즉 야베스 길르앗에서는 한 사람도 진에 이르러 총회에 참예치 아니하였으니"
+      ],
+      "raw_text_hashes": [
+        "63f3bd08ea0c058d9befa1d99566556e6e464b91fab38d118807fe4f1ce32b42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:9",
+      "sequence": 7112,
+      "chapter_label": "JDG 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "For when the people were counted, behold, there were none of the inhabitants of Jabesh Gilead there.",
+      "ko": "백성을 계수할 때에 야베스 길르앗 거민이 하나도 거기 없음을 보았음이라",
+      "source_text_hash": "3de117b9904ba0c1b5dbe0786ddc8e1f3162e2cc0cdce9d7016f682020671321",
+      "translation_text_hash": "70948c9911a3f5a4ae0131d51adbc21205396c1745aeb5439dbc0c3659a24523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성을 계수할 때에 야베스 길르앗 거민이 하나도 거기 없음을 보았음이라"
+      ],
+      "raw_text_hashes": [
+        "70948c9911a3f5a4ae0131d51adbc21205396c1745aeb5439dbc0c3659a24523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:10",
+      "sequence": 7113,
+      "chapter_label": "JDG 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "The congregation sent twelve thousand of the most valiant men there, and commanded them, saying, “Go and strike the inhabitants of Jabesh Gilead with the edge of the sword, with the women and the little ones.",
+      "ko": "회중이 큰 용사 일만 이천을 그리로 보내며 그들에게 명하여 가로되 가서 야베스 길르앗 거민과 및 부녀와 어린 아이를 칼날로 치라",
+      "source_text_hash": "dcfb1bf7e8a1d9b61a77ffad8678be0a33714913745dddf026c0c4cd98827a22",
+      "translation_text_hash": "343b1ce88a414fdafbaef81b0c965ce8efc935bf011c1a295bb10a95a7e32462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중이 큰 용사 일만 이천을 그리로 보내며 그들에게 명하여 가로되 가서 야베스 길르앗 거민과 및 부녀와 어린 아이를 칼날로 치라"
+      ],
+      "raw_text_hashes": [
+        "343b1ce88a414fdafbaef81b0c965ce8efc935bf011c1a295bb10a95a7e32462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:11",
+      "sequence": 7114,
+      "chapter_label": "JDG 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "This is the thing that you shall do: you shall utterly destroy every male, and every woman who has lain with a man.”",
+      "ko": "너희의 행할 일은 모든 남자와 남자와 잔 여자를 진멸할 것이니라 하였더니",
+      "source_text_hash": "67b46bafacfb3c15794bcf549bafc81fa334f9c037f6cc911995fde5bb7f0a54",
+      "translation_text_hash": "bf7e596a1a9a74b8feac5acded1bc2c2cdbd1b4b2c378d002858901e5a36500b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 행할 일은 모든 남자와 남자와 잔 여자를 진멸할 것이니라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "bf7e596a1a9a74b8feac5acded1bc2c2cdbd1b4b2c378d002858901e5a36500b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:12",
+      "sequence": 7115,
+      "chapter_label": "JDG 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "They found among the inhabitants of Jabesh Gilead four hundred young virgins who had not known man by lying with him; and they brought them to the camp to Shiloh, which is in the land of Canaan.",
+      "ko": "그들이 야베스 길르앗 거민 중에서 젊은 처녀 사백인을 얻었으니 이는 아직 남자와 자지 아니하여서 남자를 알지 못하는 자라 그들이 실로 진으로 끌어 오니라 이는 가나안 땅이더라",
+      "source_text_hash": "e5d0108d83862807120101061f5ae8b024438e212e8254c8dd31692be470913e",
+      "translation_text_hash": "8b53977467332a52ae112944ec5692afd662c95e8f1447fee074a91dc69ec1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 야베스 길르앗 거민 중에서 젊은 처녀 사백인을 얻었으니 이는 아직 남자와 자지 아니하여서 남자를 알지 못하는 자라 그들이 실로 진으로 끌어 오니라 이는 가나안 땅이더라"
+      ],
+      "raw_text_hashes": [
+        "8b53977467332a52ae112944ec5692afd662c95e8f1447fee074a91dc69ec1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:13",
+      "sequence": 7116,
+      "chapter_label": "JDG 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "The whole congregation sent and spoke to the children of Benjamin who were in the rock of Rimmon, and proclaimed peace to them.",
+      "ko": "온 회중이 림몬 바위에 있는 베냐민 자손에게 보내어 평화를 공포하게 하였더니",
+      "source_text_hash": "99379055edf928a2f5b3ad3d11b299f6b8ef7e0d8fd3f9b97873207860463e0a",
+      "translation_text_hash": "46fad59a044ec9bf9be793debdb8186f8c7ebfea2d2511c3f31d30baaf0884b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중이 림몬 바위에 있는 베냐민 자손에게 보내어 평화를 공포하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "46fad59a044ec9bf9be793debdb8186f8c7ebfea2d2511c3f31d30baaf0884b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:14",
+      "sequence": 7117,
+      "chapter_label": "JDG 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Benjamin returned at that time; and they gave them the women whom they had saved alive of the women of Jabesh Gilead. There still weren’t enough for them.",
+      "ko": "그 때에 베냐민이 돌아온지라 이에 이스라엘 사람이 야베스 길르앗 여인 중에서 살려둔 여자를 그들에게 주었으나 오히려 부족하므로",
+      "source_text_hash": "480faf5a572fc15373936df697a1d1e481ff4ff857af9a9d1ba477681ef81e1f",
+      "translation_text_hash": "fae7010f4962400f077b44e1eec17bbdf7a2a1ee1424910186e9101393984133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 베냐민이 돌아온지라 이에 이스라엘 사람이 야베스 길르앗 여인 중에서 살려둔 여자를 그들에게 주었으나 오히려 부족하므로"
+      ],
+      "raw_text_hashes": [
+        "fae7010f4962400f077b44e1eec17bbdf7a2a1ee1424910186e9101393984133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:15",
+      "sequence": 7118,
+      "chapter_label": "JDG 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "The people grieved for Benjamin, because the LORD had made a breach in the tribes of Israel.",
+      "ko": "백성들이 베냐민을 위하여 뉘우쳤으니 이는 여호와께서 이스라엘 지파들 중에 한 지파가 궐이 나게 하셨음이더라",
+      "source_text_hash": "7074c21463e422b382679e8b4eda057a8b6bb0a4f0a4b07b6dce8c4cc9fe915d",
+      "translation_text_hash": "ba4045bf3bbdb53a92fe24fb02c0c601a5e72999823ed67ba967f55c8964757e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들이 베냐민을 위하여 뉘우쳤으니 이는 여호와께서 이스라엘 지파들 중에 한 지파가 궐이 나게 하셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "ba4045bf3bbdb53a92fe24fb02c0c601a5e72999823ed67ba967f55c8964757e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:16",
+      "sequence": 7119,
+      "chapter_label": "JDG 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "Then the elders of the congregation said, “How shall we provide wives for those who remain, since the women are destroyed out of Benjamin?”",
+      "ko": "회중 장로들이 가로되 베냐민의 여인이 다 멸절되었으니 이제 그 남은 자들에게 어떻게 하여야 아내를 얻게 할꼬",
+      "source_text_hash": "29f53aa0ab3a6f510a61f5f28286b57725fc504d8912f73224455e7794070eb2",
+      "translation_text_hash": "39d69cdc3363279793035ff0852cecabf9a17d513951b941677c00825cb8ffac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중 장로들이 가로되 베냐민의 여인이 다 멸절되었으니 이제 그 남은 자들에게 어떻게 하여야 아내를 얻게 할꼬"
+      ],
+      "raw_text_hashes": [
+        "39d69cdc3363279793035ff0852cecabf9a17d513951b941677c00825cb8ffac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:17",
+      "sequence": 7120,
+      "chapter_label": "JDG 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "They said, “There must be an inheritance for those who are escaped of Benjamin, that a tribe not be blotted out from Israel.",
+      "ko": "또 가로되 베냐민의 도망하여 면한 자에게 마땅히 기업이 있어야 하리니 그리하면 이스라엘 중에 한 지파가 사라짐이 없으리라",
+      "source_text_hash": "bac2b88a50194f7c19722d90166392e4013fb17ff06c01c496b240e8b74c3eb3",
+      "translation_text_hash": "4e0ae002d17b319b4a8dc20e2eb59ffbd74577e926f33bb006ea5b89b2d1e794",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 베냐민의 도망하여 면한 자에게 마땅히 기업이 있어야 하리니 그리하면 이스라엘 중에 한 지파가 사라짐이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "4e0ae002d17b319b4a8dc20e2eb59ffbd74577e926f33bb006ea5b89b2d1e794"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:18",
+      "sequence": 7121,
+      "chapter_label": "JDG 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "However, we may not give them wives of our daughters, for the children of Israel had sworn, saying, ‘Cursed is he who gives a wife to Benjamin.’”",
+      "ko": "그러나 우리가 우리의 딸을 그들의 아내로 주지 못하리니 이는 이스라엘 자손이 맹세하여 이르기를 딸을 베냐민에게 아내로 주는 자는 저주를 받으리라 하였음이로다",
+      "source_text_hash": "e64f235ff6dea9dde7aecd16d1ee249a2050427f0e437a9a98b089ff913cd0dc",
+      "translation_text_hash": "97e7419fdce3feb9fa8d7ffc26890374d1672d798663ed53110a67dc5ac9e35a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리가 우리의 딸을 그들의 아내로 주지 못하리니 이는 이스라엘 자손이 맹세하여 이르기를 딸을 베냐민에게 아내로 주는 자는 저주를 받으리라 하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "97e7419fdce3feb9fa8d7ffc26890374d1672d798663ed53110a67dc5ac9e35a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:19",
+      "sequence": 7122,
+      "chapter_label": "JDG 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "They said, “Behold, there is a feast of the LORD from year to year in Shiloh, which is on the north of Bethel, on the east side of the highway that goes up from Bethel to Shechem, and on the south of Lebonah.”",
+      "ko": "또 가로되 보라 벧엘 북편, 르보나 남편 벧엘에서 세겜으로 올라가는 큰길 동편 실로에 매년 여호와의 절기가 있도다 하고",
+      "source_text_hash": "d5bf488c2127ed09a1d2da1bcc11b0b3949249c1826f312d8060f6a458e08243",
+      "translation_text_hash": "62dc7ef02cf941cb991a76d28f652a11cd8e8c842231da8b01c6c6e2fddcb401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 보라 벧엘 북편, 르보나 남편 벧엘에서 세겜으로 올라가는 큰길 동편 실로에 매년 여호와의 절기가 있도다 하고"
+      ],
+      "raw_text_hashes": [
+        "62dc7ef02cf941cb991a76d28f652a11cd8e8c842231da8b01c6c6e2fddcb401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:20",
+      "sequence": 7123,
+      "chapter_label": "JDG 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "They commanded the children of Benjamin, saying, “Go and lie in wait in the vineyards,",
+      "ko": "베냐민 자손에게 명하여 가로되 가서 포도원에 숨어",
+      "source_text_hash": "30963d4182b63a847e58616a7f9302901781c0ccffb99e1ea5656e5c217aaab7",
+      "translation_text_hash": "8fab749e62953caa3d4d50118c3b7bd8794c726c7a6e8e3d32c9121899feb10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손에게 명하여 가로되 가서 포도원에 숨어"
+      ],
+      "raw_text_hashes": [
+        "8fab749e62953caa3d4d50118c3b7bd8794c726c7a6e8e3d32c9121899feb10d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:21",
+      "sequence": 7124,
+      "chapter_label": "JDG 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "and see, and behold, if the daughters of Shiloh come out to dance in the dances, then come out of the vineyards, and each man catch his wife of the daughters of Shiloh, and go to the land of Benjamin.",
+      "ko": "보다가 실로의 여자들이 무도하러 나오거든 너희는 포도원에서 나와서 실로의 딸 중에서 각각 그 아내로 붙들어 가지고 베냐민 땅으로 돌아가라",
+      "source_text_hash": "4bb22ad1d4aa2a5d1e08a87b95c4bfde05c2d6a6ade5c2e0b1fa69f9a399283e",
+      "translation_text_hash": "85ac69d0219a9582890c52715339c0edc0842af66bd5760709942621f88d574a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보다가 실로의 여자들이 무도하러 나오거든 너희는 포도원에서 나와서 실로의 딸 중에서 각각 그 아내로 붙들어 가지고 베냐민 땅으로 돌아가라"
+      ],
+      "raw_text_hashes": [
+        "85ac69d0219a9582890c52715339c0edc0842af66bd5760709942621f88d574a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:22",
+      "sequence": 7125,
+      "chapter_label": "JDG 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "It shall be, when their fathers or their brothers come to complain to us, that we will say to them, ‘Grant them graciously to us, because we didn’t take for each man his wife in battle, neither did you give them to them; otherwise you would now be guilty.’”",
+      "ko": "만일 그 아비나 형제가 와서 우리에게 쟁론하면 우리가 그에게 말하기를 청컨대 너희는 우리에게 은혜를 베풀어 그들을 우리에게 줄찌니라 이는 우리가 전쟁할 때에 각 사람을 위하여 그 아내를 얻어 주지 못하였고 너희가 자의로 그들에게 준것이 아니니 너희에게 죄가 없을 것임이니라 하겠노라 하매",
+      "source_text_hash": "90aee867295eda54e7fa58c529b93f0183fc5c91d4bf8f21a1ba4cb370c028e7",
+      "translation_text_hash": "bb2974c729c73513fbc04527543ad3b138153abc9480f769665e8c0d33ad0521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 아비나 형제가 와서 우리에게 쟁론하면 우리가 그에게 말하기를 청컨대 너희는 우리에게 은혜를 베풀어 그들을 우리에게 줄찌니라 이는 우리가 전쟁할 때에 각 사람을 위하여 그 아내를 얻어 주지 못하였고 너희가 자의로 그들에게 준것이 아니니 너희에게 죄가 없을 것임이니라 하겠노라 하매"
+      ],
+      "raw_text_hashes": [
+        "bb2974c729c73513fbc04527543ad3b138153abc9480f769665e8c0d33ad0521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:23",
+      "sequence": 7126,
+      "chapter_label": "JDG 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "The children of Benjamin did so, and took wives for themselves according to their number, of those who danced, whom they carried off. They went and returned to their inheritance, built the cities, and lived in them.",
+      "ko": "베냐민 자손이 그같이 행하여 춤추는 여자 중에서 자기들의 수효대로 아내로 붙들어 가지고 자기 기업에 돌아가서 성읍들을 중건하고 거기 거하니라",
+      "source_text_hash": "29043ab273214e07ee215c45ad8497fcca60e74512f53c511ee794231e647d76",
+      "translation_text_hash": "c76aa33e65186230389464b433dde468881fd764dd5187c8bb816afb91f9c7b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손이 그같이 행하여 춤추는 여자 중에서 자기들의 수효대로 아내로 붙들어 가지고 자기 기업에 돌아가서 성읍들을 중건하고 거기 거하니라"
+      ],
+      "raw_text_hashes": [
+        "c76aa33e65186230389464b433dde468881fd764dd5187c8bb816afb91f9c7b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:24",
+      "sequence": 7127,
+      "chapter_label": "JDG 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "The children of Israel departed from there at that time, every man to his tribe and to his family, and they each went out from there to his own inheritance.",
+      "ko": "그 때에 이스라엘 자손이 그곳을 떠나 각각 그 지파, 그 가족에게로 돌아가되 곧 각각 그곳에서 나와서 자기 기업으로 돌아갔더라",
+      "source_text_hash": "3b20ebe9f952bd0241a18aa61eedb5be393db6a550a4ca2b00858abea11d66f9",
+      "translation_text_hash": "bc7aec0c198951007be97930032940529d3ec2f7296113206c007c61e4290a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘 자손이 그곳을 떠나 각각 그 지파, 그 가족에게로 돌아가되 곧 각각 그곳에서 나와서 자기 기업으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "bc7aec0c198951007be97930032940529d3ec2f7296113206c007c61e4290a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:21:25",
+      "sequence": 7128,
+      "chapter_label": "JDG 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "In those days there was no king in Israel. Everyone did that which was right in his own eyes.",
+      "ko": "그 때에 이스라엘에 왕이 없으므로 사람이 각각 그 소견에 옳은대로 행하였더라",
+      "source_text_hash": "8b8cf3679f78bc6ba2461ab0a4d43eacd54ee3be9a8f295d4ff6a7b3fff41c2f",
+      "translation_text_hash": "8433ca5413dcd5b04aa73a9c3264a10300c6a5bc72f4fbdebf6c30c9f3c9906c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘에 왕이 없으므로 사람이 각각 그 소견에 옳은대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "8433ca5413dcd5b04aa73a9c3264a10300c6a5bc72f4fbdebf6c30c9f3c9906c"
+      ]
+    }
+  ]
+}

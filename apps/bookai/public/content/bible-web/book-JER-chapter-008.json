@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:008",
+  "unit_ordinal": 753,
+  "unit_label": "JER 8",
+  "book_code": "JER",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:8:1",
+      "sequence": 19155,
+      "chapter_label": "JER 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "“At that time,” says the LORD, “they will bring the bones of the kings of Judah, the bones of his princes, the bones of the priests, the bones of the prophets, and the bones of the inhabitants of Jerusalem, out of their graves.",
+      "ko": "나 여호와가 말하노라 그 때에 사람들이 유다 왕들의 뼈와 그 방백들의 뼈와 제사장들의 뼈와 선지자들의 뼈와 예루살렘 거민의 뼈를 그 묘실에서 끌어내어",
+      "source_text_hash": "e2d9ef8e8b67c2b26a228fbcaf62022a971a2eea65aa1461fb4bd3b041fd1f1a",
+      "translation_text_hash": "f316cd51e06c91b65b9f49f1e115c82e68b0a402e3fa54e6875c2552661c4f89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그 때에 사람들이 유다 왕들의 뼈와 그 방백들의 뼈와 제사장들의 뼈와 선지자들의 뼈와 예루살렘 거민의 뼈를 그 묘실에서 끌어내어"
+      ],
+      "raw_text_hashes": [
+        "f316cd51e06c91b65b9f49f1e115c82e68b0a402e3fa54e6875c2552661c4f89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:2",
+      "sequence": 19156,
+      "chapter_label": "JER 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "They will spread them before the sun, the moon, and all the army of the sky, which they have loved, which they have served, after which they have walked, which they have sought, and which they have worshiped. They will not be gathered or be buried. They will be like dung on the surface of the earth.",
+      "ko": "그들의 사랑하며 섬기며 순복하며 구하며 경배하던 해와 달과 하늘의 뭇 별 아래 쬐리니 그 뼈가 거두이거나 묻히지 못하여 지면에서 분토 같을 것이며",
+      "source_text_hash": "1e03c39d0d97f87082515d520730f45584b6a24cef303c9844acaf5af78688d7",
+      "translation_text_hash": "7f0599183ccaea218dee9ba196fec1440f9853d0b40aeca4ff9ac22d884df8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 사랑하며 섬기며 순복하며 구하며 경배하던 해와 달과 하늘의 뭇 별 아래 쬐리니 그 뼈가 거두이거나 묻히지 못하여 지면에서 분토 같을 것이며"
+      ],
+      "raw_text_hashes": [
+        "7f0599183ccaea218dee9ba196fec1440f9853d0b40aeca4ff9ac22d884df8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:3",
+      "sequence": 19157,
+      "chapter_label": "JER 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Death will be chosen rather than life by all the residue that remain of this evil family, that remain in all the places where I have driven them,” says the LORD of Armies.",
+      "ko": "이 악한 족속의 남아 있는 자, 무릇 내게 쫓겨나서 각처에 남아 있는 자가 사는 것보다 죽는 것을 원하리라 만군의 여호와의 말이니라",
+      "source_text_hash": "50c2550da9b8967d1651be85726b1563a39502a1677d1ae69715976025889b87",
+      "translation_text_hash": "12712e3e946b874da931217c9daabdf53ae0c7278c49880c13eb87dc017ab86f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 악한 족속의 남아 있는 자, 무릇 내게 쫓겨나서 각처에 남아 있는 자가 사는 것보다 죽는 것을 원하리라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "12712e3e946b874da931217c9daabdf53ae0c7278c49880c13eb87dc017ab86f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:4",
+      "sequence": 19158,
+      "chapter_label": "JER 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "“Moreover you shall tell them, ‘The LORD says: “‘Do men fall, and not rise up again? Does one turn away, and not return?",
+      "ko": "너는 또 그들에게 말하기를 여호와의 말씀에 사람이 엎드러지면 어찌 일어나지 아니하겠으며 사람이 떠나갔으면 어찌 돌아오지 아니하겠느냐",
+      "source_text_hash": "284f58d3257ad0575b05e6eeb8fa248395ad05ed4f0eaf9bf65e3962dba9cb62",
+      "translation_text_hash": "048a6e30b2fe7290822ffbce8565233f84af435f5a04b6579d6a51f200a56984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 그들에게 말하기를 여호와의 말씀에 사람이 엎드러지면 어찌 일어나지 아니하겠으며 사람이 떠나갔으면 어찌 돌아오지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "048a6e30b2fe7290822ffbce8565233f84af435f5a04b6579d6a51f200a56984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:5",
+      "sequence": 19159,
+      "chapter_label": "JER 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Why then have the people of Jerusalem fallen back by a perpetual backsliding? They cling to deceit. They refuse to return.",
+      "ko": "이 예루살렘 백성이 항상 나를 떠나 물러감은 어찜이뇨 그들이 거짓을 고집하고 돌아오기를 거절하도다",
+      "source_text_hash": "d779688e8433129da9013b179cd90728f3b96118c373e3c9c7dea72969493e80",
+      "translation_text_hash": "6cadc9932ed4f1f2b93587bb8c7d34149a58a2f142a07d09af40d36c5e5ca155",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 예루살렘 백성이 항상 나를 떠나 물러감은 어찜이뇨 그들이 거짓을 고집하고 돌아오기를 거절하도다"
+      ],
+      "raw_text_hashes": [
+        "6cadc9932ed4f1f2b93587bb8c7d34149a58a2f142a07d09af40d36c5e5ca155"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:6",
+      "sequence": 19160,
+      "chapter_label": "JER 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "I listened and heard, but they didn’t say what is right. No one repents of his wickedness, saying, “What have I done?” Everyone turns to his course, as a horse that rushes headlong in the battle.",
+      "ko": "내가 귀를 기울여 들은즉 그들이 정직을 말하지 아니하며 그 악을 뉘우쳐서 나의 행한 것이 무엇인고 말하는 자가 없고 전장을 향하여 달리는 말 같이 각각 그 길로 행하도다",
+      "source_text_hash": "44d778cd7de4373f0ec167a8d0206e277e33a8e9b554dc056a4b7909928f5a03",
+      "translation_text_hash": "9608286f01d6112aadc9cf23dd3531d392baeb3151b875bf8f6750a7feb7fe91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 귀를 기울여 들은즉 그들이 정직을 말하지 아니하며 그 악을 뉘우쳐서 나의 행한 것이 무엇인고 말하는 자가 없고 전장을 향하여 달리는 말 같이 각각 그 길로 행하도다"
+      ],
+      "raw_text_hashes": [
+        "9608286f01d6112aadc9cf23dd3531d392baeb3151b875bf8f6750a7feb7fe91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:7",
+      "sequence": 19161,
+      "chapter_label": "JER 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Yes, the stork in the sky knows her appointed times. The turtledove, the swallow, and the crane observe the time of their coming; but my people don’t know the LORD’s law.",
+      "ko": "공중의 학은 그 정한 시기를 알고 반구와 제비와 두루미는 그 올 때를 지키거늘 내 백성은 여호와의 규례를 알지 못하도다 하셨다 하라",
+      "source_text_hash": "630042553665aa2eb2a8d2e9b0fca2ab0a1b9a569e23c6e41de2fa6be56ec2ad",
+      "translation_text_hash": "fc8806392a3e39f66ac0ac1b757d01c1d38e9856df98cf9c007a3bea790d39ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 학은 그 정한 시기를 알고 반구와 제비와 두루미는 그 올 때를 지키거늘 내 백성은 여호와의 규례를 알지 못하도다 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "fc8806392a3e39f66ac0ac1b757d01c1d38e9856df98cf9c007a3bea790d39ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:8",
+      "sequence": 19162,
+      "chapter_label": "JER 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "“‘How do you say, “We are wise, and the LORD’s law is with us”? But, behold, the false pen of the scribes has made that a lie.",
+      "ko": "너희가 어찌 우리는 지혜가 있고 우리에게는 여호와의 율법이 있다 말하겠느뇨 참으로 서기관의 거짓 붓이 거짓되게 하였나니",
+      "source_text_hash": "d8f35821cfa430c6b06ceb8089dcc7a64605a3e648dda1d0e564a663bd98a341",
+      "translation_text_hash": "460fac50e2193a24745141178a0cddc4c00b5efcfb6e8ffb81e9cd71ea50b117",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌 우리는 지혜가 있고 우리에게는 여호와의 율법이 있다 말하겠느뇨 참으로 서기관의 거짓 붓이 거짓되게 하였나니"
+      ],
+      "raw_text_hashes": [
+        "460fac50e2193a24745141178a0cddc4c00b5efcfb6e8ffb81e9cd71ea50b117"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:9",
+      "sequence": 19163,
+      "chapter_label": "JER 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "The wise men are disappointed. They are dismayed and trapped. Behold, they have rejected the LORD’s word. What kind of wisdom is in them?",
+      "ko": "지혜롭다 하는 자들은 수욕을 받으며 경황 중에 잡히리라 보라 그들이 나 여호와의 말을 버렸으니 그들에게 무슨 지혜가 있으랴",
+      "source_text_hash": "806472975b120b928e363fa55a4caebc58f2564a3fa5a4e2d64e0e6b983ba72a",
+      "translation_text_hash": "b7696213d7fbba832e2c688d3fb057fb3378a47dd21c3701983da3fd5b834600",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜롭다 하는 자들은 수욕을 받으며 경황 중에 잡히리라 보라 그들이 나 여호와의 말을 버렸으니 그들에게 무슨 지혜가 있으랴"
+      ],
+      "raw_text_hashes": [
+        "b7696213d7fbba832e2c688d3fb057fb3378a47dd21c3701983da3fd5b834600"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:10",
+      "sequence": 19164,
+      "chapter_label": "JER 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore I will give their wives to others and their fields to those who will possess them. For everyone from the least even to the greatest is given to covetousness; from the prophet even to the priest everyone deals falsely.",
+      "ko": "그러므로 내가 그들의 아내를 타인에게 주겠고 그들의 전지를 그 차지할 자들에게 주리니 그들은 가장 작은 자로부터 큰 자까지 다 탐남하며 선지자로부터 제사장까지 다 거짓을 행함이라",
+      "source_text_hash": "7e79af7e3e7d5f48c03356acd39ae576206273a82afecd63f85823a226841e68",
+      "translation_text_hash": "2d8feb62b9988f93d6bdc6b339cc26b298ce831c41109e214fcca1ad9bfaafd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그들의 아내를 타인에게 주겠고 그들의 전지를 그 차지할 자들에게 주리니 그들은 가장 작은 자로부터 큰 자까지 다 탐남하며 선지자로부터 제사장까지 다 거짓을 행함이라"
+      ],
+      "raw_text_hashes": [
+        "2d8feb62b9988f93d6bdc6b339cc26b298ce831c41109e214fcca1ad9bfaafd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:11",
+      "sequence": 19165,
+      "chapter_label": "JER 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "They have healed the hurt of the daughter of my people slightly, saying, “Peace, peace,” when there is no peace.",
+      "ko": "그들이 딸 내 백성의 상처를 심상히 고쳐주며 말하기를 평강하다, 평강하다 하나 평강이 없도다",
+      "source_text_hash": "6f0da157eaaba9031c23a8af46e6a0b2fcb11dbde8ec8eb65ed447270628e799",
+      "translation_text_hash": "74d2b931d3ca759b7f9b807dae62acd9601a0df3381c70a794555d569aed98b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 딸 내 백성의 상처를 심상히 고쳐주며 말하기를 평강하다, 평강하다 하나 평강이 없도다"
+      ],
+      "raw_text_hashes": [
+        "74d2b931d3ca759b7f9b807dae62acd9601a0df3381c70a794555d569aed98b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:12",
+      "sequence": 19166,
+      "chapter_label": "JER 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Were they ashamed when they had committed abomination? No, they were not at all ashamed. They couldn’t blush. Therefore they will fall among those who fall. In the time of their visitation they will be cast down, says the LORD.",
+      "ko": "그들이 가증한 일을 행할 때에 부끄러워하였느냐 아니라 조금도 부끄러워 아니할뿐 아니라 얼굴도 붉어지지 아니하였느니라 그러므로 그들이 엎드러질 자와 함께 엎드러질 것이라 내가 그들을 벌할 때에 그들이 거꾸러지리라 여호와의 말이니라",
+      "source_text_hash": "4c799fe647028957ef1a2c5ec22fca017442e8a7020fcc0edc8eaafc8991412d",
+      "translation_text_hash": "defde28eccfb1d4670609ae6cb5e379caa25c4ea8807f8a648d4b248258c2bdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가증한 일을 행할 때에 부끄러워하였느냐 아니라 조금도 부끄러워 아니할뿐 아니라 얼굴도 붉어지지 아니하였느니라 그러므로 그들이 엎드러질 자와 함께 엎드러질 것이라 내가 그들을 벌할 때에 그들이 거꾸러지리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "defde28eccfb1d4670609ae6cb5e379caa25c4ea8807f8a648d4b248258c2bdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:13",
+      "sequence": 19167,
+      "chapter_label": "JER 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "“‘I will utterly consume them, says the LORD. No grapes will be on the vine, no figs on the fig tree, and the leaf will fade. The things that I have given them will pass away from them.’”",
+      "ko": "여호와께서 말씀하시되 내가 그들을 진멸하리니 포도나무에 포도가 없을 것이며 무화과나무에 무화과가 없을 것이며 그 잎사귀가 마를 것이라 내가 그들에게 준 것이 없어지리라 하셨나니",
+      "source_text_hash": "67fbcbfefc142484ed07f3edf564dea5c320e6098f907d845f08082429c144dc",
+      "translation_text_hash": "f52d919311a23b5cd75c610a404004837d60d5728635124e1eb3364bd8728d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 내가 그들을 진멸하리니 포도나무에 포도가 없을 것이며 무화과나무에 무화과가 없을 것이며 그 잎사귀가 마를 것이라 내가 그들에게 준 것이 없어지리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "f52d919311a23b5cd75c610a404004837d60d5728635124e1eb3364bd8728d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:14",
+      "sequence": 19168,
+      "chapter_label": "JER 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "“Why do we sit still? Assemble yourselves! Let’s enter into the fortified cities, and let’s be silent there; for the LORD our God has put us to silence, and given us poisoned water to drink, because we have sinned against the LORD.",
+      "ko": "우리가 어찌 가만히 앉았으랴 모일찌어다 우리가 견고한 성읍들로나 들어가서 거기서 멸망하자 우리가 여호와께 범죄하였으므로 우리 하나님 여호와께서 우리를 멸하시며 우리에게 독한 물을 마시우심이니라",
+      "source_text_hash": "ddf149530581f57920013b182e876f731222cf46787e72b60b0b98f9031b0f0a",
+      "translation_text_hash": "86882070b2df5cb57e8a0d8e4ea54a425de5b7c5e3136f0efacb70eb941cea45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 어찌 가만히 앉았으랴 모일찌어다 우리가 견고한 성읍들로나 들어가서 거기서 멸망하자 우리가 여호와께 범죄하였으므로 우리 하나님 여호와께서 우리를 멸하시며 우리에게 독한 물을 마시우심이니라"
+      ],
+      "raw_text_hashes": [
+        "86882070b2df5cb57e8a0d8e4ea54a425de5b7c5e3136f0efacb70eb941cea45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:15",
+      "sequence": 19169,
+      "chapter_label": "JER 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "We looked for peace, but no good came; and for a time of healing, and behold, dismay!",
+      "ko": "우리가 평강을 바라나 좋은 것이 없으며 고치심을 입을 때를 바라나 놀라움 뿐이로다",
+      "source_text_hash": "57866c8751dd459146d458713bcd9f7efe74492e286bf9f68bd2e9ca73a1373b",
+      "translation_text_hash": "1b2cfa059a7991354ec883fb3a448ac50f2d0361f36b77bc1dffbc8c040e9ef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 평강을 바라나 좋은 것이 없으며 고치심을 입을 때를 바라나 놀라움 뿐이로다"
+      ],
+      "raw_text_hashes": [
+        "1b2cfa059a7991354ec883fb3a448ac50f2d0361f36b77bc1dffbc8c040e9ef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:16",
+      "sequence": 19170,
+      "chapter_label": "JER 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "The snorting of his horses is heard from Dan. The whole land trembles at the sound of the neighing of his strong ones; for they have come, and have devoured the land and all that is in it, the city and those who dwell therein.”",
+      "ko": "그 말의 부르짖음이 단에서부터 들리고 그 준마들의 우는 소리에 온 땅이 진동하며 그들이 이르러 이 땅과 그 소유와 성읍과 그 중의 거민을 삼켰도다",
+      "source_text_hash": "4e490ed5d3a694782f29929b3acd29efc02300dfb512fb8173d29ef9e61750a0",
+      "translation_text_hash": "8a3ea71577bc6f3350c2eeeeb313c17e4d2c8a7bece1257410dd8736315955b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말의 부르짖음이 단에서부터 들리고 그 준마들의 우는 소리에 온 땅이 진동하며 그들이 이르러 이 땅과 그 소유와 성읍과 그 중의 거민을 삼켰도다"
+      ],
+      "raw_text_hashes": [
+        "8a3ea71577bc6f3350c2eeeeb313c17e4d2c8a7bece1257410dd8736315955b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:17",
+      "sequence": 19171,
+      "chapter_label": "JER 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "“For, behold, I will send serpents, adders among you, which will not be charmed; and they will bite you,” says the LORD.",
+      "ko": "여호와께서 말씀하시되 내가 술법으로도 제어할 수 없는 뱀과 독사를 너희 중에 보내리니 그것들이 너희를 물리라 하시도다",
+      "source_text_hash": "c32ce8fd78b778f8676ad996307ca4d2219e1081baa1dc933854842580bc86c4",
+      "translation_text_hash": "073379ddbd4db067918b556dda419cfcbef14064cdf0b20ca887c29781e196f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 내가 술법으로도 제어할 수 없는 뱀과 독사를 너희 중에 보내리니 그것들이 너희를 물리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "073379ddbd4db067918b556dda419cfcbef14064cdf0b20ca887c29781e196f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:18",
+      "sequence": 19172,
+      "chapter_label": "JER 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Oh that I could comfort myself against sorrow! My heart is faint within me.",
+      "ko": "슬프다 나의 근심이여 어떻게 위로를 얻을 수 있을까 나의 중심이 번뇌하도다",
+      "source_text_hash": "7e9590c4d706ccadd3c90c4bd03b31081bdf9e497f08d9886752c0fd39f1bef4",
+      "translation_text_hash": "45eec5c9cdf6f7eac6007f7c8b4c2f9a1d6779e466fc5da9522f6c2bc1cc7393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 나의 근심이여 어떻게 위로를 얻을 수 있을까 나의 중심이 번뇌하도다"
+      ],
+      "raw_text_hashes": [
+        "45eec5c9cdf6f7eac6007f7c8b4c2f9a1d6779e466fc5da9522f6c2bc1cc7393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:19",
+      "sequence": 19173,
+      "chapter_label": "JER 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, the voice of the cry of the daughter of my people from a land that is very far off: “Isn’t the LORD in Zion? Isn’t her King in her?” “Why have they provoked me to anger with their engraved images, and with foreign idols?”",
+      "ko": "딸 내 백성의 심히 먼 땅에서 부르짖는 소리로다 이르기를 여호와께서 시온에 계시지 아니한가, 그 왕이 그 중에 계시지 아니한가 그러나 여호와께서는 이르시기를 그들이 어찌하여 그 조각한 신상과 이방의 헛된 것들로 나를 격노케 하였는고 하시니",
+      "source_text_hash": "5a2e285462537175830ec272d4c914624b9ad522c223127fd9d5ddfd0b3b0bae",
+      "translation_text_hash": "6e5ad4f91e1de39bc3303c2d92a8ad91d4d420b7ed092f0b395a2f6b0030054c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 내 백성의 심히 먼 땅에서 부르짖는 소리로다 이르기를 여호와께서 시온에 계시지 아니한가, 그 왕이 그 중에 계시지 아니한가 그러나 여호와께서는 이르시기를 그들이 어찌하여 그 조각한 신상과 이방의 헛된 것들로 나를 격노케 하였는고 하시니"
+      ],
+      "raw_text_hashes": [
+        "6e5ad4f91e1de39bc3303c2d92a8ad91d4d420b7ed092f0b395a2f6b0030054c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:20",
+      "sequence": 19174,
+      "chapter_label": "JER 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "“The harvest is past. The summer has ended, and we are not saved.”",
+      "ko": "추수할 때가 지나고 여름이 다하였으나 우리는 구원을 얻지 못한다 하는도다",
+      "source_text_hash": "d44226a8e7c43b8c7c1619337917990b42950f9afb48b1e4b9168d9d5c76fb9b",
+      "translation_text_hash": "6e166e4cbe00c4e0386c11cd01f38b46a18c5e25a480742916cd0a128dbb3d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "추수할 때가 지나고 여름이 다하였으나 우리는 구원을 얻지 못한다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "6e166e4cbe00c4e0386c11cd01f38b46a18c5e25a480742916cd0a128dbb3d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:21",
+      "sequence": 19175,
+      "chapter_label": "JER 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "For the hurt of the daughter of my people, I am hurt. I mourn. Dismay has taken hold of me.",
+      "ko": "딸 내 백성이 상하였으므로 나도 상하여 슬퍼하며 놀라움에 잡혔도다",
+      "source_text_hash": "337c33da07bb7984cb7fa4df4889d5e5ea25e5111b087ea6fd500ceaf81d1cea",
+      "translation_text_hash": "1eeb48b260dfca038f849eb4443a7fd382bd238d7466a2659402ef4038675745",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 내 백성이 상하였으므로 나도 상하여 슬퍼하며 놀라움에 잡혔도다"
+      ],
+      "raw_text_hashes": [
+        "1eeb48b260dfca038f849eb4443a7fd382bd238d7466a2659402ef4038675745"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:8:22",
+      "sequence": 19176,
+      "chapter_label": "JER 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Is there no balm in Gilead? Is there no physician there? Why then isn’t the health of the daughter of my people recovered?",
+      "ko": "길르앗에는 유향이 있지 아니한가 그곳에는 의사가 있지 아니한가 딸 내 백성이 치료를 받지 못함은 어찜인고",
+      "source_text_hash": "6258a5f2e27fe0ef41547043cf104114d44e0fec8e234be1e5af45bfec99419d",
+      "translation_text_hash": "fb72df76fd9a3fc7bf375bc7ce89b0fbaee5b2e5b21929443796451cb23956dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗에는 유향이 있지 아니한가 그곳에는 의사가 있지 아니한가 딸 내 백성이 치료를 받지 못함은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "fb72df76fd9a3fc7bf375bc7ce89b0fbaee5b2e5b21929443796451cb23956dc"
+      ]
+    }
+  ]
+}

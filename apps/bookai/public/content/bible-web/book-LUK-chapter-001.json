@@ -1,0 +1,2573 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:001",
+  "unit_ordinal": 974,
+  "unit_label": "LUK 1",
+  "book_code": "LUK",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:1:1",
+      "sequence": 24895,
+      "chapter_label": "LUK 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Since many have undertaken to set in order a narrative concerning those matters which have been fulfilled among us,",
+      "ko": "우리 중에 이루어진 사실에 대하여",
+      "source_text_hash": "b2bebac3fbd897e82780d80125c116eb38b06ec4de325afaffd6aa64a89f176f",
+      "translation_text_hash": "25eb205fc7bd2edbcd35909d72e99c724533a3dc21007dc5a91449854faa56f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 중에 이루어진 사실에 대하여"
+      ],
+      "raw_text_hashes": [
+        "25eb205fc7bd2edbcd35909d72e99c724533a3dc21007dc5a91449854faa56f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:2",
+      "sequence": 24896,
+      "chapter_label": "LUK 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "even as those who from the beginning were eyewitnesses and servants of the word delivered them to us,",
+      "ko": "처음부터 말씀의 목격자 되고 일군 된 자들의 전하여 준 그대로 내력을 저술하려고 붓을 든 사람이 많은지라",
+      "source_text_hash": "735fcc401938844dcad4a403e7b7476281e0b24b2a2ac1e449e83c813deefa57",
+      "translation_text_hash": "576be6d41f80a394e933517f4faa4752d10a56a1f6fdb2847cd826c88cb0f76b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음부터 말씀의 목격자 되고 일군 된 자들의 전하여 준 그대로 내력을 저술하려고 붓을 든 사람이 많은지라"
+      ],
+      "raw_text_hashes": [
+        "576be6d41f80a394e933517f4faa4752d10a56a1f6fdb2847cd826c88cb0f76b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:3",
+      "sequence": 24897,
+      "chapter_label": "LUK 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "it seemed good to me also, having traced the course of all things accurately from the first, to write to you in order, most excellent Theophilus;",
+      "ko": "그 모든 일을 근원부터 자세히 미루어 살핀 나도 데오빌로 각하에게 차례대로 써 보내는 것이 좋은줄 알았노니",
+      "source_text_hash": "da74732cd2a15fec880015e9c9a057261c03db49eccb39b4c4dde46d2f2ee240",
+      "translation_text_hash": "f623423bf0ff5dfc816b51759f6627b022d9ba2acb3204ccc5bf104910a1ca27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 일을 근원부터 자세히 미루어 살핀 나도 데오빌로 각하에게 차례대로 써 보내는 것이 좋은줄 알았노니"
+      ],
+      "raw_text_hashes": [
+        "f623423bf0ff5dfc816b51759f6627b022d9ba2acb3204ccc5bf104910a1ca27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:4",
+      "sequence": 24898,
+      "chapter_label": "LUK 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "that you might know the certainty concerning the things in which you were instructed.",
+      "ko": "이는 각하로 그 배운 바의 확실함을 알게 하려 함이로라",
+      "source_text_hash": "4bbc66f121bf2ffa3734c2aa77e8430da1acc205b8e4ace67d403fd11d465e63",
+      "translation_text_hash": "841d603645d33b5b4a7a9095028a28e48a6b4c4443b092235ce5d84d4770f0a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 각하로 그 배운 바의 확실함을 알게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "841d603645d33b5b4a7a9095028a28e48a6b4c4443b092235ce5d84d4770f0a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:5",
+      "sequence": 24899,
+      "chapter_label": "LUK 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "There was in the days of Herod, the king of Judea, a certain priest named Zacharias, of the priestly division of Abijah. He had a wife of the daughters of Aaron, and her name was Elizabeth.",
+      "ko": "유대 왕 헤롯 때에 아비야 반열에 제사장 하나가 있으니 이름은 사가랴요 그 아내는 아론의 자손이니 이름은 엘리사벳이라",
+      "source_text_hash": "391195f19f04a49dfda18ef59acbc2cbd098f79311e660220a275eee8ad79186",
+      "translation_text_hash": "9fd6beca8fee640593c42b11dcd17dd76e771c30b9ad167b7e0c46251ba7a0ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대 왕 헤롯 때에 아비야 반열에 제사장 하나가 있으니 이름은 사가랴요 그 아내는 아론의 자손이니 이름은 엘리사벳이라"
+      ],
+      "raw_text_hashes": [
+        "9fd6beca8fee640593c42b11dcd17dd76e771c30b9ad167b7e0c46251ba7a0ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:6",
+      "sequence": 24900,
+      "chapter_label": "LUK 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "They were both righteous before God, walking blamelessly in all the commandments and ordinances of the Lord.",
+      "ko": "이 두 사람이 하나님 앞에 의인이니 주의 모든 계명과 규례대로 흠이 없이 행하더라",
+      "source_text_hash": "79972db048a3d1fc7f1c82a6ae534bf2761c2bd94baa712d2abcdc1b92bb387a",
+      "translation_text_hash": "dc947ebf1786a4f02f735b9462ece15784a93a6c85ae811f1aba6f88d794d6f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 사람이 하나님 앞에 의인이니 주의 모든 계명과 규례대로 흠이 없이 행하더라"
+      ],
+      "raw_text_hashes": [
+        "dc947ebf1786a4f02f735b9462ece15784a93a6c85ae811f1aba6f88d794d6f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:7",
+      "sequence": 24901,
+      "chapter_label": "LUK 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "But they had no child, because Elizabeth was barren, and they both were well advanced in years.",
+      "ko": "엘리사벳이 수태를 못하므로 저희가 무자하고 두 사람의 나이 많더라",
+      "source_text_hash": "0e7262e691e25c56f8e2d33d2bb13127589dd6e87fffb37dcffeb139408098c4",
+      "translation_text_hash": "62e2e05dd86ed917b5558859657f619ffa8e089bf0e1d65e544d67392dcd9bcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사벳이 수태를 못하므로 저희가 무자하고 두 사람의 나이 많더라"
+      ],
+      "raw_text_hashes": [
+        "62e2e05dd86ed917b5558859657f619ffa8e089bf0e1d65e544d67392dcd9bcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:8",
+      "sequence": 24902,
+      "chapter_label": "LUK 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Now while he executed the priest’s office before God in the order of his division",
+      "ko": "마침 사가랴가 그 반열의 차례대로 제사장의 직무를 하나님 앞에 행할쌔",
+      "source_text_hash": "1de5e146ce719b9fe9a5e863cdd47429c93912833839556bdbd718c1ab3f5125",
+      "translation_text_hash": "de5dd97a72d977c5bcaa1b0577ef1d9016b23432147255ff07dbdad2bdedfe05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 사가랴가 그 반열의 차례대로 제사장의 직무를 하나님 앞에 행할쌔"
+      ],
+      "raw_text_hashes": [
+        "de5dd97a72d977c5bcaa1b0577ef1d9016b23432147255ff07dbdad2bdedfe05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:9",
+      "sequence": 24903,
+      "chapter_label": "LUK 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "according to the custom of the priest’s office, his lot was to enter into the temple of the Lord and burn incense.",
+      "ko": "제사장의 전례를 따라 제비를 뽑아 주의 성소에 들어가 분향하고",
+      "source_text_hash": "a011ed45ddaa2bb027f67eae962687dfde6e41a70b1449bda3be8ce4937fec1d",
+      "translation_text_hash": "b64349475078edcfdc363a6ab9890971a6c79ea5468817c3a64a0da5b91b540b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 전례를 따라 제비를 뽑아 주의 성소에 들어가 분향하고"
+      ],
+      "raw_text_hashes": [
+        "b64349475078edcfdc363a6ab9890971a6c79ea5468817c3a64a0da5b91b540b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:10",
+      "sequence": 24904,
+      "chapter_label": "LUK 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "The whole multitude of the people were praying outside at the hour of incense.",
+      "ko": "모든 백성은 그 분향하는 시간에 밖에서 기도하더니",
+      "source_text_hash": "23c201046f8f979e5733cd9f9e433a6b2badd5af7a213fc469ca60bea7c7798d",
+      "translation_text_hash": "7a5104e2bcb4a456792240b83a2ae570818ab1b2b2d20f3b2049fa95bf8f872b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성은 그 분향하는 시간에 밖에서 기도하더니"
+      ],
+      "raw_text_hashes": [
+        "7a5104e2bcb4a456792240b83a2ae570818ab1b2b2d20f3b2049fa95bf8f872b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:11",
+      "sequence": 24905,
+      "chapter_label": "LUK 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "An angel of the Lord appeared to him, standing on the right side of the altar of incense.",
+      "ko": "주의 사자가 저에게 나타나 향단 우편에 선지라",
+      "source_text_hash": "c4b56634acd5c03a462a1b125387e4553b27bf3f95df3aacd68dab2547a95e34",
+      "translation_text_hash": "14c9e596edbb58c21e0fc783e92da70a02d03ca46208cb959689b59857db6f0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사자가 저에게 나타나 향단 우편에 선지라"
+      ],
+      "raw_text_hashes": [
+        "14c9e596edbb58c21e0fc783e92da70a02d03ca46208cb959689b59857db6f0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:12",
+      "sequence": 24906,
+      "chapter_label": "LUK 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Zacharias was troubled when he saw him, and fear fell upon him.",
+      "ko": "사가랴가 보고 놀라며 무서워하니",
+      "source_text_hash": "96617ee02f939f0e912a78a4dc5ce3a476dc6624942c6d7317e34c4c63053578",
+      "translation_text_hash": "615f496833111a619f3fad56b68fb61d6cd0a5583307ac1a7dbbbe64c9ede27d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사가랴가 보고 놀라며 무서워하니"
+      ],
+      "raw_text_hashes": [
+        "615f496833111a619f3fad56b68fb61d6cd0a5583307ac1a7dbbbe64c9ede27d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:13",
+      "sequence": 24907,
+      "chapter_label": "LUK 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "But the angel said to him, “Don’t be afraid, Zacharias, because your request has been heard. Your wife, Elizabeth, will bear you a son, and you shall call his name John.",
+      "ko": "천사가 일러 가로되 사가랴여 무서워 말라 너의 간구함이 들린지라 네 아내 엘리사벳이 네게 아들을 낳아 주리니 그 이름을 요한이라 하라",
+      "source_text_hash": "30af6e76037802458518cd73cea0341e8b82b790f9ac16f867e4c9912d179491",
+      "translation_text_hash": "d9b1efb6d76010aa9fb765273285f76566eaff568c1cdad98323d4c85fff5b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 일러 가로되 사가랴여 무서워 말라 너의 간구함이 들린지라 네 아내 엘리사벳이 네게 아들을 낳아 주리니 그 이름을 요한이라 하라"
+      ],
+      "raw_text_hashes": [
+        "d9b1efb6d76010aa9fb765273285f76566eaff568c1cdad98323d4c85fff5b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:14",
+      "sequence": 24908,
+      "chapter_label": "LUK 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "You will have joy and gladness, and many will rejoice at his birth.",
+      "ko": "너도 기뻐하고 즐거워할 것이요 많은 사람도 그의 남을 기뻐하리니",
+      "source_text_hash": "ea2aee7889d39dfbb1e1ec9840498750fffeacc43c92d4249d77f82ec2b2a8ba",
+      "translation_text_hash": "b5002f7b992b2e3b2403b0b467b1335622d334597c253f5017026003ba3b3728",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너도 기뻐하고 즐거워할 것이요 많은 사람도 그의 남을 기뻐하리니"
+      ],
+      "raw_text_hashes": [
+        "b5002f7b992b2e3b2403b0b467b1335622d334597c253f5017026003ba3b3728"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:15",
+      "sequence": 24909,
+      "chapter_label": "LUK 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "For he will be great in the sight of the Lord, and he will drink no wine nor strong drink. He will be filled with the Holy Spirit, even from his mother’s womb.",
+      "ko": "이는 저가 주 앞에 큰 자가 되며 포도주나 소주를 마시지 아니하며 모태로부터 성령의 충만함을 입어",
+      "source_text_hash": "2d181a92d84bd516e36f311bd94c2fe46054fa822fd58d750226c83118c69af3",
+      "translation_text_hash": "15109f5855a23cb266f28e0d3ffdf3417631208045692116f1ac6c6bdac39a7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 주 앞에 큰 자가 되며 포도주나 소주를 마시지 아니하며 모태로부터 성령의 충만함을 입어"
+      ],
+      "raw_text_hashes": [
+        "15109f5855a23cb266f28e0d3ffdf3417631208045692116f1ac6c6bdac39a7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:16",
+      "sequence": 24910,
+      "chapter_label": "LUK 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "He will turn many of the children of Israel to the Lord their God.",
+      "ko": "이스라엘 자손을 주 곧 저희 하나님께로 많이 돌아오게 하겠음이니라",
+      "source_text_hash": "41d1e79850bbeb44336e9e90c7f78ae6df56b8a33ef3c900d0888f401cead243",
+      "translation_text_hash": "0109571da0ae85d11f6028af077c493fc8e4d22e393f633decd1641c7a580f36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손을 주 곧 저희 하나님께로 많이 돌아오게 하겠음이니라"
+      ],
+      "raw_text_hashes": [
+        "0109571da0ae85d11f6028af077c493fc8e4d22e393f633decd1641c7a580f36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:17",
+      "sequence": 24911,
+      "chapter_label": "LUK 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "He will go before him in the spirit and power of Elijah, ‘to turn the hearts of the fathers to the children,’ and the disobedient to the wisdom of the just; to prepare a people prepared for the Lord.”",
+      "ko": "저가 또 엘리야의 심령과 능력으로 주 앞에 앞서 가서 아비의 마음을 자식에게, 거스리는 자를 의인의 슬기에 돌아오게 하고 주를 위하여 세운 백성을 예비하리라",
+      "source_text_hash": "5c5a70fa3f576dcf7a38044c23e46e5b8ea1e0ba26c6909e7dcaf5304734f3f4",
+      "translation_text_hash": "8098e94b3434d4b5841f45a889e24c0e937edea584f4d3880868592d07a42fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 엘리야의 심령과 능력으로 주 앞에 앞서 가서 아비의 마음을 자식에게, 거스리는 자를 의인의 슬기에 돌아오게 하고 주를 위하여 세운 백성을 예비하리라"
+      ],
+      "raw_text_hashes": [
+        "8098e94b3434d4b5841f45a889e24c0e937edea584f4d3880868592d07a42fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:18",
+      "sequence": 24912,
+      "chapter_label": "LUK 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Zacharias said to the angel, “How can I be sure of this? For I am an old man, and my wife is well advanced in years.”",
+      "ko": "사가랴가 천사에게 이르되 내가 이것을 어떻게 알리요 내가 늙고 아내도 나이 많으니이다",
+      "source_text_hash": "ec16e2950ed10f74c10d7d72369d1b13ce02ec2a3567a244bcfce4ce5f37761c",
+      "translation_text_hash": "d60279add2b886a1f26b1ed72cc5b0c165f4a694de57922ef2c93e691b64a50f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사가랴가 천사에게 이르되 내가 이것을 어떻게 알리요 내가 늙고 아내도 나이 많으니이다"
+      ],
+      "raw_text_hashes": [
+        "d60279add2b886a1f26b1ed72cc5b0c165f4a694de57922ef2c93e691b64a50f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:19",
+      "sequence": 24913,
+      "chapter_label": "LUK 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "The angel answered him, “I am Gabriel, who stands in the presence of God. I was sent to speak to you and to bring you this good news.",
+      "ko": "천사가 대답하여 가로되 나는 하나님 앞에 섰는 가브리엘이라 이 좋은 소식을 전하여 네게 말하라고 보내심을 입었노라",
+      "source_text_hash": "44b8b01a78cd6c2df6e2ec9cb24ec87cb5a5d159dd0aea09402879159e23c42c",
+      "translation_text_hash": "07f232335c5b12f33836969c1ba0f9d7d12973f2d93a02cb9fa81d9b09dcb639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 대답하여 가로되 나는 하나님 앞에 섰는 가브리엘이라 이 좋은 소식을 전하여 네게 말하라고 보내심을 입었노라"
+      ],
+      "raw_text_hashes": [
+        "07f232335c5b12f33836969c1ba0f9d7d12973f2d93a02cb9fa81d9b09dcb639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:20",
+      "sequence": 24914,
+      "chapter_label": "LUK 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Behold, you will be silent and not able to speak until the day that these things will happen, because you didn’t believe my words, which will be fulfilled in their proper time.”",
+      "ko": "보라 이 일의 되는 날까지 네가 벙어리가 되어 능히 말을 못하리니 이는 내 말을 네가 믿지 아니함이어니와 때가 이르면 내 말이 이루리라 하더라",
+      "source_text_hash": "7f43d8c88bbb105312991467c03f93707e1ad77c931e3ca142bf39e97884f59f",
+      "translation_text_hash": "a3f2cc55f87e3d53704a84f71b0beb25c26724780b34a9feccb1cbc376cc9aee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이 일의 되는 날까지 네가 벙어리가 되어 능히 말을 못하리니 이는 내 말을 네가 믿지 아니함이어니와 때가 이르면 내 말이 이루리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "a3f2cc55f87e3d53704a84f71b0beb25c26724780b34a9feccb1cbc376cc9aee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:21",
+      "sequence": 24915,
+      "chapter_label": "LUK 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "The people were waiting for Zacharias, and they marveled that he delayed in the temple.",
+      "ko": "백성들이 사가랴를 기다리며 그의 성소 안에서 지체함을 기이히 여기더니",
+      "source_text_hash": "93df462edcb8dfcdd2bd462347ac15ee491cd5b69bf582cd3470b7cd7d3d71b0",
+      "translation_text_hash": "2b283eff21598d95ee10ea5cbd2d44b996a37c4f3c4544cbc1e5654eefadfdc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들이 사가랴를 기다리며 그의 성소 안에서 지체함을 기이히 여기더니"
+      ],
+      "raw_text_hashes": [
+        "2b283eff21598d95ee10ea5cbd2d44b996a37c4f3c4544cbc1e5654eefadfdc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:22",
+      "sequence": 24916,
+      "chapter_label": "LUK 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "When he came out, he could not speak to them. They perceived that he had seen a vision in the temple. He continued making signs to them, and remained mute.",
+      "ko": "그가 나와서 저희에게 말을 못하니 백성들이 그 성소 안에서 이상을 본줄 알았더라 그가 형용으로 뜻을 표시하며 그냥 벙어리대로 있더니",
+      "source_text_hash": "83c1419798e9d8eeaad0c3b1d4eab8c17bc30f5a1ed42bed5410fb66fd4f210b",
+      "translation_text_hash": "7210b2143863d99c41b9aa82d2796a1c145a64596bc8ffc78b3105827be0041d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나와서 저희에게 말을 못하니 백성들이 그 성소 안에서 이상을 본줄 알았더라 그가 형용으로 뜻을 표시하며 그냥 벙어리대로 있더니"
+      ],
+      "raw_text_hashes": [
+        "7210b2143863d99c41b9aa82d2796a1c145a64596bc8ffc78b3105827be0041d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:23",
+      "sequence": 24917,
+      "chapter_label": "LUK 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "When the days of his service were fulfilled, he departed to his house.",
+      "ko": "그 직무의 날이 다 되매 집으로 돌아가니라",
+      "source_text_hash": "15bc5f448e74e63727054c866b57f7e9ecb70ae391c231374a5e811c95eef8a0",
+      "translation_text_hash": "48ff42bf2d2445390f92eba57a0fb611c2bc1ee53b1c13cfeedaa1476ce04a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 직무의 날이 다 되매 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "48ff42bf2d2445390f92eba57a0fb611c2bc1ee53b1c13cfeedaa1476ce04a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:24",
+      "sequence": 24918,
+      "chapter_label": "LUK 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "After these days Elizabeth his wife conceived, and she hid herself five months, saying,",
+      "ko": "이 후에 그 아내 엘리사벳이 수태하고 다섯 달 동안 숨어 있으며 가로되",
+      "source_text_hash": "38d3b566cca43bcdcb5b59f365deb7f3c36778e45f57a2b3accd54e5b4ce6dfc",
+      "translation_text_hash": "1fb2d9133c2c1739b2b0d36b46eaa1304d43e17e6d592f04915a29913653e093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 그 아내 엘리사벳이 수태하고 다섯 달 동안 숨어 있으며 가로되"
+      ],
+      "raw_text_hashes": [
+        "1fb2d9133c2c1739b2b0d36b46eaa1304d43e17e6d592f04915a29913653e093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:25",
+      "sequence": 24919,
+      "chapter_label": "LUK 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "“Thus has the Lord done to me in the days in which he looked at me, to take away my reproach among men.”",
+      "ko": "주께서 나를 돌아 보시는 날에 인간에 내 부끄러움을 없게 하시려고 이렇게 행하심이라 하더라",
+      "source_text_hash": "1072789b5d76357cbf0dffabc49d7c501c8f29b833a62e683cab819cfe37dabf",
+      "translation_text_hash": "6a624797e72d80c202f2b52023b7c42c14ce3401d8ae7f70d6d2b7817a10f0ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 돌아 보시는 날에 인간에 내 부끄러움을 없게 하시려고 이렇게 행하심이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "6a624797e72d80c202f2b52023b7c42c14ce3401d8ae7f70d6d2b7817a10f0ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:26",
+      "sequence": 24920,
+      "chapter_label": "LUK 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "Now in the sixth month, the angel Gabriel was sent from God to a city of Galilee named Nazareth,",
+      "ko": "여섯째 달에 천사 가브리엘이 하나님의 보내심을 받들어 갈릴리 나사렛이란 동네에 가서",
+      "source_text_hash": "39502cdbb4a4ac1e135606cc8422d6c466b6bd92a82672ac9379338e383ae2b4",
+      "translation_text_hash": "f5403639c3a7c2f748e4439be7d2ea5a4899f4b397454762af6ad62f3fa51e47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째 달에 천사 가브리엘이 하나님의 보내심을 받들어 갈릴리 나사렛이란 동네에 가서"
+      ],
+      "raw_text_hashes": [
+        "f5403639c3a7c2f748e4439be7d2ea5a4899f4b397454762af6ad62f3fa51e47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:27",
+      "sequence": 24921,
+      "chapter_label": "LUK 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "to a virgin pledged to be married to a man whose name was Joseph, of David’s house. The virgin’s name was Mary.",
+      "ko": "다윗의 자손 요셉이라 하는 사람과 정혼한 처녀에게 이르니 그 처녀의 이름은 마리아라",
+      "source_text_hash": "ec02b7101e5de8879a3411dd086017fe287ab075183a7a7fff77a8552714480f",
+      "translation_text_hash": "0608d229579af660f6b630f40fab887cfc60c1b2b17c6de4e419353a99366779",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 자손 요셉이라 하는 사람과 정혼한 처녀에게 이르니 그 처녀의 이름은 마리아라"
+      ],
+      "raw_text_hashes": [
+        "0608d229579af660f6b630f40fab887cfc60c1b2b17c6de4e419353a99366779"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:28",
+      "sequence": 24922,
+      "chapter_label": "LUK 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "Having come in, the angel said to her, “Rejoice, you highly favored one! The Lord is with you. Blessed are you among women!”",
+      "ko": "그에게 들어가 가로되 은혜를 받은 자여 평안할찌어다 주께서 너와 함께하시도다 하니",
+      "source_text_hash": "91406f0c06d8c93da6d7f8a04b24a5a376866486278d2d4feafdaf9bd23a4451",
+      "translation_text_hash": "15d9647845be340b8322cdd9e7ba12f64eca15a36c6b43a0a3caf3748ece477a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 들어가 가로되 은혜를 받은 자여 평안할찌어다 주께서 너와 함께하시도다 하니"
+      ],
+      "raw_text_hashes": [
+        "15d9647845be340b8322cdd9e7ba12f64eca15a36c6b43a0a3caf3748ece477a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:29",
+      "sequence": 24923,
+      "chapter_label": "LUK 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "But when she saw him, she was greatly troubled at the saying, and considered what kind of salutation this might be.",
+      "ko": "처녀가 그 말을 듣고 놀라 이런 인사가 어찌함인고 생각하매",
+      "source_text_hash": "3d405ba0dd5efec5be8a2f9f991580b7e370a942882cdd89035624b5b31367d0",
+      "translation_text_hash": "4b3b74a2d93e1ab45e43d9119401ce7196aa6d18574af47e68fc2e8b78d334bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀가 그 말을 듣고 놀라 이런 인사가 어찌함인고 생각하매"
+      ],
+      "raw_text_hashes": [
+        "4b3b74a2d93e1ab45e43d9119401ce7196aa6d18574af47e68fc2e8b78d334bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:30",
+      "sequence": 24924,
+      "chapter_label": "LUK 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "The angel said to her, “Don’t be afraid, Mary, for you have found favor with God.",
+      "ko": "천사가 일러 가로되 마리아여 무서워 말라 네가 하나님께 은혜를 얻었느니라",
+      "source_text_hash": "70f5bfc54c2be05fc8c0b097787255eed16e48e7d7b7f2fe9106329e354dd993",
+      "translation_text_hash": "feb00a7e77ff09b885c52c8ed796e74b640a07e797680b59d4bd3b85ce1bddb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 일러 가로되 마리아여 무서워 말라 네가 하나님께 은혜를 얻었느니라"
+      ],
+      "raw_text_hashes": [
+        "feb00a7e77ff09b885c52c8ed796e74b640a07e797680b59d4bd3b85ce1bddb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:31",
+      "sequence": 24925,
+      "chapter_label": "LUK 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "Behold, you will conceive in your womb and give birth to a son, and shall name him ‘Jesus.’",
+      "ko": "보라 네가 수태하여 아들을 낳으리니 그 이름을 예수라 하라",
+      "source_text_hash": "74841f88788828e67914fc4e46f4c7a97f64252429706283931f0e5b8f388e25",
+      "translation_text_hash": "b20d9a5ae0b5e795425c653891c413479179c9679a75cfbaf933a00ea3cb2258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네가 수태하여 아들을 낳으리니 그 이름을 예수라 하라"
+      ],
+      "raw_text_hashes": [
+        "b20d9a5ae0b5e795425c653891c413479179c9679a75cfbaf933a00ea3cb2258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:32",
+      "sequence": 24926,
+      "chapter_label": "LUK 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "He will be great and will be called the Son of the Most High. The Lord God will give him the throne of his father David,",
+      "ko": "저가 큰 자가 되고 지극히 높으신 이의 아들이라 일컬을 것이요 주 하나님께서 그 조상 다윗의 위를 저에게 주시리니",
+      "source_text_hash": "aecdd02bff581679a961848bb081082633023f36f1f5e6f004d7b742caaa0e8a",
+      "translation_text_hash": "415c30183ad07528067243ee803eb5598727f9c9742f910c5ff9141f93d433dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 큰 자가 되고 지극히 높으신 이의 아들이라 일컬을 것이요 주 하나님께서 그 조상 다윗의 위를 저에게 주시리니"
+      ],
+      "raw_text_hashes": [
+        "415c30183ad07528067243ee803eb5598727f9c9742f910c5ff9141f93d433dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:33",
+      "sequence": 24927,
+      "chapter_label": "LUK 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "and he will reign over the house of Jacob forever. There will be no end to his Kingdom.”",
+      "ko": "영원히 야곱의 집에 왕노릇 하실 것이며 그 나라가 무궁하리라",
+      "source_text_hash": "23fd6050e848f5a53bf3f18824f21af15503d5e3890bb5c71097531d6b3756a9",
+      "translation_text_hash": "69ae267a2db1d5f5e5bc3a551f468940f6dac281cc0bfd6472cf9eac5f6ff853",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영원히 야곱의 집에 왕노릇 하실 것이며 그 나라가 무궁하리라"
+      ],
+      "raw_text_hashes": [
+        "69ae267a2db1d5f5e5bc3a551f468940f6dac281cc0bfd6472cf9eac5f6ff853"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:34",
+      "sequence": 24928,
+      "chapter_label": "LUK 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "Mary said to the angel, “How can this be, seeing I am a virgin?”",
+      "ko": "마리아가 천사에게 말하되 나는 사내를 알지 못하니 어찌 이 일이 있으리이까",
+      "source_text_hash": "254ebaf7c24d300ee1fd1592aaf14f87a7c496eb91cfc4d63c6206af403d6320",
+      "translation_text_hash": "b07819d5d2f85086fa9d89e1339c53d5145092b403e3dc1db000bf95c77cb56f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 천사에게 말하되 나는 사내를 알지 못하니 어찌 이 일이 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "b07819d5d2f85086fa9d89e1339c53d5145092b403e3dc1db000bf95c77cb56f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:35",
+      "sequence": 24929,
+      "chapter_label": "LUK 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "The angel answered her, “The Holy Spirit will come on you, and the power of the Most High will overshadow you. Therefore also the holy one who is born from you will be called the Son of God.",
+      "ko": "천사가 대답하여 가로되 성령이 네게 임하시고 지극히 높으신 이의 능력이 너를 덮으시리니 이러므로 나실바 거룩한 자는 하나님의 아들이라 일컬으리라",
+      "source_text_hash": "ed80d4a69c33b1409400e909da2bad0cf6076d3affdf5358ebe47ab9370fe2fc",
+      "translation_text_hash": "4ee645a72c00d1f73d1d3562e6e869a8d37a7f4b7b3d0f14f2bb9068e58b3dda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 대답하여 가로되 성령이 네게 임하시고 지극히 높으신 이의 능력이 너를 덮으시리니 이러므로 나실바 거룩한 자는 하나님의 아들이라 일컬으리라"
+      ],
+      "raw_text_hashes": [
+        "4ee645a72c00d1f73d1d3562e6e869a8d37a7f4b7b3d0f14f2bb9068e58b3dda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:36",
+      "sequence": 24930,
+      "chapter_label": "LUK 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "Behold, Elizabeth your relative also has conceived a son in her old age; and this is the sixth month with her who was called barren.",
+      "ko": "보라 네 친족 엘리사벳도 늙어서 아들을 배었느니라 본래 수태하지 못한다 하던 이가 이미 여섯 달이 되었나니",
+      "source_text_hash": "ed1f35efada361225e4751857b69dbd00aab2532f0c5f9fbbf57bd2a063c2cf2",
+      "translation_text_hash": "fd560b89827eb914d278b4f27bf1419858f9696e9186aeb34ebff59d8f0918ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네 친족 엘리사벳도 늙어서 아들을 배었느니라 본래 수태하지 못한다 하던 이가 이미 여섯 달이 되었나니"
+      ],
+      "raw_text_hashes": [
+        "fd560b89827eb914d278b4f27bf1419858f9696e9186aeb34ebff59d8f0918ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:37",
+      "sequence": 24931,
+      "chapter_label": "LUK 1",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 37
+        }
+      ],
+      "en": "For nothing spoken by God is impossible.”",
+      "ko": "대저 하나님의 모든 말씀은 능치 못하심이 없느니라",
+      "source_text_hash": "e9107fed387615289598982fd0509186eb7ca311ca632f255525dcae5eb40397",
+      "translation_text_hash": "5365ed1aa7a1a8c345de92d5c53ad5ef5ab6430f57173b9e4868c52a33e3bdf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 하나님의 모든 말씀은 능치 못하심이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "5365ed1aa7a1a8c345de92d5c53ad5ef5ab6430f57173b9e4868c52a33e3bdf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:38",
+      "sequence": 24932,
+      "chapter_label": "LUK 1",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 38
+        }
+      ],
+      "en": "Mary said, “Behold, the servant of the Lord; let it be done to me according to your word.” Then the angel departed from her.",
+      "ko": "마리아가 가로되 주의 계집 종이오니 말씀대로 내게 이루어지이다 하매 천사가 떠나가니라",
+      "source_text_hash": "ff96c99c20311c176fdb6c8d3f8d2ac0adf965a10c9644efe7c4950a45f70ad0",
+      "translation_text_hash": "a1eb8a3bf800e5ed6a4b5d3106ce3188d354f556a9fc80cdd6f3ff6592c4a752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 가로되 주의 계집 종이오니 말씀대로 내게 이루어지이다 하매 천사가 떠나가니라"
+      ],
+      "raw_text_hashes": [
+        "a1eb8a3bf800e5ed6a4b5d3106ce3188d354f556a9fc80cdd6f3ff6592c4a752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:39",
+      "sequence": 24933,
+      "chapter_label": "LUK 1",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 39
+        }
+      ],
+      "en": "Mary arose in those days and went into the hill country with haste, into a city of Judah,",
+      "ko": "이 때에 마리아가 일어나 빨리 산중에 가서 유대 한 동네에 이르러",
+      "source_text_hash": "368554f08a8b0b4aaa260ed573818391953b56673291a070330bc90cad0d99d8",
+      "translation_text_hash": "9d2368dfad27443bcf6ccd32cd506a9978100ff59387bb04e8e34e156b40ade8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 마리아가 일어나 빨리 산중에 가서 유대 한 동네에 이르러"
+      ],
+      "raw_text_hashes": [
+        "9d2368dfad27443bcf6ccd32cd506a9978100ff59387bb04e8e34e156b40ade8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:40",
+      "sequence": 24934,
+      "chapter_label": "LUK 1",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 40
+        }
+      ],
+      "en": "and entered into the house of Zacharias and greeted Elizabeth.",
+      "ko": "사가랴의 집에 들어가 엘리사벳에게 문안하니",
+      "source_text_hash": "24345ecb068b4c3998207bd552367e7ceb7a0747277716cdee7d8503781d7bf7",
+      "translation_text_hash": "cbca3ff15e704434e8c482942abb2ae3941775ab238c7788220ab20055d3fcc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사가랴의 집에 들어가 엘리사벳에게 문안하니"
+      ],
+      "raw_text_hashes": [
+        "cbca3ff15e704434e8c482942abb2ae3941775ab238c7788220ab20055d3fcc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:41",
+      "sequence": 24935,
+      "chapter_label": "LUK 1",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 41
+        }
+      ],
+      "en": "When Elizabeth heard Mary’s greeting, the baby leaped in her womb; and Elizabeth was filled with the Holy Spirit.",
+      "ko": "엘리사벳이 마리아의 문안함을 들으매 아이가 복중에서 뛰노는지라 엘리사벳이 성령의 충만함을 입어",
+      "source_text_hash": "8fcb33059f0cad19a178f94847737d7803a8c0a53531d3716f79e572e4a59ce2",
+      "translation_text_hash": "a87fe1f989112289790f9f5865db2c3c30d1d4f3e1057ca49961a2abe8a18bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사벳이 마리아의 문안함을 들으매 아이가 복중에서 뛰노는지라 엘리사벳이 성령의 충만함을 입어"
+      ],
+      "raw_text_hashes": [
+        "a87fe1f989112289790f9f5865db2c3c30d1d4f3e1057ca49961a2abe8a18bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:42",
+      "sequence": 24936,
+      "chapter_label": "LUK 1",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 42
+        }
+      ],
+      "en": "She called out with a loud voice and said, “Blessed are you among women, and blessed is the fruit of your womb!",
+      "ko": "큰 소리로 불러 가로되 여자 중에 네가 복이 있으며 네 태중의 아이도 복이 있도다",
+      "source_text_hash": "6c79e6d819e1b0b03f268d80cb12bfcf5da460b394183eae3c77941fc707b696",
+      "translation_text_hash": "3e110b69a4f588aa3b0c927d0114d0627bde81b9e31ab09d97444bd1c40e35e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리로 불러 가로되 여자 중에 네가 복이 있으며 네 태중의 아이도 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "3e110b69a4f588aa3b0c927d0114d0627bde81b9e31ab09d97444bd1c40e35e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:43",
+      "sequence": 24937,
+      "chapter_label": "LUK 1",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 43
+        }
+      ],
+      "en": "Why am I so favored, that the mother of my Lord should come to me?",
+      "ko": "내 주의 모친이 내게 나아오니 이 어찌 된 일인고",
+      "source_text_hash": "f05caefa1d4f60d00eb29fb94e335ce6062514b50f8931e5a77c96667e833509",
+      "translation_text_hash": "17872850e6d70620fcc61c1bd88740b02814b7b9dfa2ff3b1f8f4f8ee8bb5ea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주의 모친이 내게 나아오니 이 어찌 된 일인고"
+      ],
+      "raw_text_hashes": [
+        "17872850e6d70620fcc61c1bd88740b02814b7b9dfa2ff3b1f8f4f8ee8bb5ea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:44",
+      "sequence": 24938,
+      "chapter_label": "LUK 1",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 44
+        }
+      ],
+      "en": "For behold, when the voice of your greeting came into my ears, the baby leaped in my womb for joy!",
+      "ko": "보라 네 문안하는 소리가 내 귀에 들릴 때에 아이가 내 복중에서 기쁨으로 뛰놀았도다",
+      "source_text_hash": "ebf064ad64ee7923a3b1b32b3d2114c5eca6bc9e5cfb9437184de11804ff00df",
+      "translation_text_hash": "d31aaad294bd230f836d93655e66096baea9d427d01b8f541d5350401e737ece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네 문안하는 소리가 내 귀에 들릴 때에 아이가 내 복중에서 기쁨으로 뛰놀았도다"
+      ],
+      "raw_text_hashes": [
+        "d31aaad294bd230f836d93655e66096baea9d427d01b8f541d5350401e737ece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:45",
+      "sequence": 24939,
+      "chapter_label": "LUK 1",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 45
+        }
+      ],
+      "en": "Blessed is she who believed, for there will be a fulfillment of the things which have been spoken to her from the Lord!”",
+      "ko": "믿은 여자에게 복이 있도다 주께서 그에게 하신 말씀이 반드시 이루리라",
+      "source_text_hash": "956af00b1c373102ac5075dde6af88daeab8d0e5d3e1ce80cfbe28f4d3c772ac",
+      "translation_text_hash": "5bc2250f25fc3c1326e7bc40158f4671a809e1cbf12a9dceac0f2974ba0d9c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿은 여자에게 복이 있도다 주께서 그에게 하신 말씀이 반드시 이루리라"
+      ],
+      "raw_text_hashes": [
+        "5bc2250f25fc3c1326e7bc40158f4671a809e1cbf12a9dceac0f2974ba0d9c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:46",
+      "sequence": 24940,
+      "chapter_label": "LUK 1",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 46
+        }
+      ],
+      "en": "Mary said, “My soul magnifies the Lord.",
+      "ko": "마리아가 가로되 내 영혼이 주를 찬양하며",
+      "source_text_hash": "3deb6214e462eff04cef7219328a706dd56c2b50494a3d44e049c708be3d5f24",
+      "translation_text_hash": "8938c06173820d04e8ab0dddafaf390e740e9c5cd7b38670c36803ee001c5562",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 가로되 내 영혼이 주를 찬양하며"
+      ],
+      "raw_text_hashes": [
+        "8938c06173820d04e8ab0dddafaf390e740e9c5cd7b38670c36803ee001c5562"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:47",
+      "sequence": 24941,
+      "chapter_label": "LUK 1",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 47
+        }
+      ],
+      "en": "My spirit has rejoiced in God my Savior,",
+      "ko": "내 마음이 하나님 내 구주를 기뻐하였음은",
+      "source_text_hash": "a9664acb7c9f6c108f8c4994f0ad4a2ebe22a3735e9917e445c8d122b9594223",
+      "translation_text_hash": "d9182c6dca8a058149db64bf929a45317989ffc0564a1f14b47b5c825a66e514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 하나님 내 구주를 기뻐하였음은"
+      ],
+      "raw_text_hashes": [
+        "d9182c6dca8a058149db64bf929a45317989ffc0564a1f14b47b5c825a66e514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:48",
+      "sequence": 24942,
+      "chapter_label": "LUK 1",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 48
+        }
+      ],
+      "en": "for he has looked at the humble state of his servant. For behold, from now on, all generations will call me blessed.",
+      "ko": "그 계집종의 비천함을 돌아 보셨음이라 보라 이제 후로는 만세에 나를 복이 있다 일컬으리로다",
+      "source_text_hash": "273bcadd7e0ddf57ed08eed027cb6bfdb77b42bb005f800bdc99299149252e58",
+      "translation_text_hash": "70dbcdd5b8f6ad4c9784b773d145105361472d14b7ba19db464932fc3515262d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 계집종의 비천함을 돌아 보셨음이라 보라 이제 후로는 만세에 나를 복이 있다 일컬으리로다"
+      ],
+      "raw_text_hashes": [
+        "70dbcdd5b8f6ad4c9784b773d145105361472d14b7ba19db464932fc3515262d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:49",
+      "sequence": 24943,
+      "chapter_label": "LUK 1",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 49
+        }
+      ],
+      "en": "For he who is mighty has done great things for me. Holy is his name.",
+      "ko": "능하신 이가 큰 일을 내게 행하셨으니 그 이름이 거룩하시며",
+      "source_text_hash": "b09d9dcddd3d815ef388f8b4a2c5bdf83dd63e3e46e5d902a7346374908a94b9",
+      "translation_text_hash": "054fb4a4f392c9bbee1996eae2d03656b46d0dcd679354cedcc8206a55943ac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능하신 이가 큰 일을 내게 행하셨으니 그 이름이 거룩하시며"
+      ],
+      "raw_text_hashes": [
+        "054fb4a4f392c9bbee1996eae2d03656b46d0dcd679354cedcc8206a55943ac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:50",
+      "sequence": 24944,
+      "chapter_label": "LUK 1",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 50
+        }
+      ],
+      "en": "His mercy is for generations and generations on those who fear him.",
+      "ko": "긍휼하심이 두려워하는 자에게 대대로 이르는도다",
+      "source_text_hash": "a0f43bdcd025688b4997e9663a5d5034ca94bc32a6752da828c1ca44b6effba6",
+      "translation_text_hash": "fb54de63efcc658a5b6562ee2556589c734821326504f32e08de66ce7109b548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긍휼하심이 두려워하는 자에게 대대로 이르는도다"
+      ],
+      "raw_text_hashes": [
+        "fb54de63efcc658a5b6562ee2556589c734821326504f32e08de66ce7109b548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:51",
+      "sequence": 24945,
+      "chapter_label": "LUK 1",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 51
+        }
+      ],
+      "en": "He has shown strength with his arm. He has scattered the proud in the imagination of their hearts.",
+      "ko": "그의 팔로 힘을 보이사 마음의 생각이 교만한 자들을 흩으셨고",
+      "source_text_hash": "2121892828e08a560c6fae05344a8cddd2acf83721c460971828263b0697bb72",
+      "translation_text_hash": "d086614d817329420546e5add144f41d93d8fcd1ec99a1db3f1caabe10426463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 팔로 힘을 보이사 마음의 생각이 교만한 자들을 흩으셨고"
+      ],
+      "raw_text_hashes": [
+        "d086614d817329420546e5add144f41d93d8fcd1ec99a1db3f1caabe10426463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:52",
+      "sequence": 24946,
+      "chapter_label": "LUK 1",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 52
+        }
+      ],
+      "en": "He has put down princes from their thrones, and has exalted the lowly.",
+      "ko": "권세 있는 자를 그 위에서 내리치셨으며 비천한 자를 높이셨고",
+      "source_text_hash": "8f8d55c95946018034d8843528585e275ed59d97c8b91a7375be0b46cb713bb9",
+      "translation_text_hash": "d066149b09f632d438265b50996472a39df3a35a5d03b9be8812f4266c8a3aee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "권세 있는 자를 그 위에서 내리치셨으며 비천한 자를 높이셨고"
+      ],
+      "raw_text_hashes": [
+        "d066149b09f632d438265b50996472a39df3a35a5d03b9be8812f4266c8a3aee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:53",
+      "sequence": 24947,
+      "chapter_label": "LUK 1",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 53
+        }
+      ],
+      "en": "He has filled the hungry with good things. He has sent the rich away empty.",
+      "ko": "주리는 자를 좋은 것으로 배불리셨으며 부자를 공수로 보내셨도다",
+      "source_text_hash": "845fcd5b98d0cb7615a6bc9684f891ee858017ab3f24527604f13a9e6055ac39",
+      "translation_text_hash": "12b42faceab10368d2fe0aaf06ef171b8e08567e38b4665ce4af3c4a27f9286c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주리는 자를 좋은 것으로 배불리셨으며 부자를 공수로 보내셨도다"
+      ],
+      "raw_text_hashes": [
+        "12b42faceab10368d2fe0aaf06ef171b8e08567e38b4665ce4af3c4a27f9286c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:54",
+      "sequence": 24948,
+      "chapter_label": "LUK 1",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 54
+        }
+      ],
+      "en": "He has given help to Israel, his servant, that he might remember mercy,",
+      "ko": "그 종 이스라엘을 도우사 긍휼히 여기시고 기억하시되",
+      "source_text_hash": "bd6268898da78f7de59e1f4bbbf79e5d4e03465824ccd274da8f1979595412b1",
+      "translation_text_hash": "66bbc2d94cd25e0c45ba3786f20d1a2bf0c5e011f44744b25806cd1a326289c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종 이스라엘을 도우사 긍휼히 여기시고 기억하시되"
+      ],
+      "raw_text_hashes": [
+        "66bbc2d94cd25e0c45ba3786f20d1a2bf0c5e011f44744b25806cd1a326289c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:55",
+      "sequence": 24949,
+      "chapter_label": "LUK 1",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 55
+        }
+      ],
+      "en": "as he spoke to our fathers, to Abraham and his offspring forever.”",
+      "ko": "우리 조상에게 말씀하신 것과 같이 아브라함과 및 그 자손에게 영원히 하시리로다 하니라",
+      "source_text_hash": "9405ad9af11c90d2be4537344fdfd6bbffb3c6c71dd20e2ec634ae8a0888e668",
+      "translation_text_hash": "e005a69cc468f52ef2f31e232487fb686a1e6b44b641bfbee58ab6d815edbc93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 조상에게 말씀하신 것과 같이 아브라함과 및 그 자손에게 영원히 하시리로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "e005a69cc468f52ef2f31e232487fb686a1e6b44b641bfbee58ab6d815edbc93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:56",
+      "sequence": 24950,
+      "chapter_label": "LUK 1",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 56
+        }
+      ],
+      "en": "Mary stayed with her about three months, and then returned to her house.",
+      "ko": "마리아가 석 달쯤 함께 있다가 집으로 돌아가니라",
+      "source_text_hash": "888f1cae8e8b24f8c3ebc2ab974b6f80a69debd5753d26988e97b3d45d490d75",
+      "translation_text_hash": "017e1fe78219fcde242426be2783b68f3fa9969c430f883ec14e9f567316f27f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 석 달쯤 함께 있다가 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "017e1fe78219fcde242426be2783b68f3fa9969c430f883ec14e9f567316f27f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:57",
+      "sequence": 24951,
+      "chapter_label": "LUK 1",
+      "verse_label": "57",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 57
+        }
+      ],
+      "en": "Now the time that Elizabeth should give birth was fulfilled, and she gave birth to a son.",
+      "ko": "엘리사벳이 해산할 기한이 차서 아들을 낳으니",
+      "source_text_hash": "b97ecf62a3bd20b2c36fb7d1fa4b1658f0a5245f4f696695a322d19713457edc",
+      "translation_text_hash": "356cb04b8c9c2acf00a2c1764152f5581a9f409c090c92514a163a8520f15bb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사벳이 해산할 기한이 차서 아들을 낳으니"
+      ],
+      "raw_text_hashes": [
+        "356cb04b8c9c2acf00a2c1764152f5581a9f409c090c92514a163a8520f15bb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:58",
+      "sequence": 24952,
+      "chapter_label": "LUK 1",
+      "verse_label": "58",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 58
+        }
+      ],
+      "en": "Her neighbors and her relatives heard that the Lord had magnified his mercy toward her, and they rejoiced with her.",
+      "ko": "이웃과 친족이 주께서 저를 크게 긍휼히 여기심을 듣고 함께 즐거워하더라",
+      "source_text_hash": "b897b3cb68d141c66d12d607f09a601c4920b557bfce2182550f0f4f5bf72011",
+      "translation_text_hash": "96cc1528c0205f6118e726f8a6ea601e2781b2069b50685621214bc38c8b6de8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이웃과 친족이 주께서 저를 크게 긍휼히 여기심을 듣고 함께 즐거워하더라"
+      ],
+      "raw_text_hashes": [
+        "96cc1528c0205f6118e726f8a6ea601e2781b2069b50685621214bc38c8b6de8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:59",
+      "sequence": 24953,
+      "chapter_label": "LUK 1",
+      "verse_label": "59",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 59
+        }
+      ],
+      "en": "On the eighth day, they came to circumcise the child; and they would have called him Zacharias, after the name of his father.",
+      "ko": "팔일이 되매 아이를 할례하러 와서 그 부친의 이름을 따라 사가랴라 하고자 하더니",
+      "source_text_hash": "d95e9eec95743005834362263f171f7b81c69d8253953399cb87ab6410cef18b",
+      "translation_text_hash": "11d5b69b724f5151814c3acc3d5e1e2d6bc1a19acd5a6f34ce9501af0ba847a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "팔일이 되매 아이를 할례하러 와서 그 부친의 이름을 따라 사가랴라 하고자 하더니"
+      ],
+      "raw_text_hashes": [
+        "11d5b69b724f5151814c3acc3d5e1e2d6bc1a19acd5a6f34ce9501af0ba847a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:60",
+      "sequence": 24954,
+      "chapter_label": "LUK 1",
+      "verse_label": "60",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 60
+        }
+      ],
+      "en": "His mother answered, “Not so; but he will be called John.”",
+      "ko": "그 모친이 대답하여 가로되 아니라 요한이라 할 것이라 하매",
+      "source_text_hash": "54cbcf94e7035ca12981e95ac357d92f6b0d291409af6a2f813c0137cb188578",
+      "translation_text_hash": "0f65258a3f9c239ad8a965305c86791994bfd08ac955c692d4c03d23a2a1bf35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모친이 대답하여 가로되 아니라 요한이라 할 것이라 하매"
+      ],
+      "raw_text_hashes": [
+        "0f65258a3f9c239ad8a965305c86791994bfd08ac955c692d4c03d23a2a1bf35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:61",
+      "sequence": 24955,
+      "chapter_label": "LUK 1",
+      "verse_label": "61",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 61
+        }
+      ],
+      "en": "They said to her, “There is no one among your relatives who is called by this name.”",
+      "ko": "저희가 가로되 네 친족 중에 이 이름으로 이름한 이가 없다 하고",
+      "source_text_hash": "f9083460de66b2c545024793df01fb9b8ce5e5d8ff2ac4cb31d6da1f5e180ed0",
+      "translation_text_hash": "cde06bf2ddb26d2c14cb669c5b5711c8ebfaf7a493ee5567b657119cb73189ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 네 친족 중에 이 이름으로 이름한 이가 없다 하고"
+      ],
+      "raw_text_hashes": [
+        "cde06bf2ddb26d2c14cb669c5b5711c8ebfaf7a493ee5567b657119cb73189ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:62",
+      "sequence": 24956,
+      "chapter_label": "LUK 1",
+      "verse_label": "62",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 62
+        }
+      ],
+      "en": "They made signs to his father, what he would have him called.",
+      "ko": "그 부친께 형용하여 무엇으로 이름하려 하는가 물으니",
+      "source_text_hash": "40913c9fe79f430030777464df679e980952dccacc0fc3848e3e9ff6e7c48452",
+      "translation_text_hash": "90d74e4168339a3802b057ff7ffcc119bdd070f7050251eddbe23b11766775be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친께 형용하여 무엇으로 이름하려 하는가 물으니"
+      ],
+      "raw_text_hashes": [
+        "90d74e4168339a3802b057ff7ffcc119bdd070f7050251eddbe23b11766775be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:63",
+      "sequence": 24957,
+      "chapter_label": "LUK 1",
+      "verse_label": "63",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 63
+        }
+      ],
+      "en": "He asked for a writing tablet, and wrote, “His name is John.” They all marveled.",
+      "ko": "저가 서판을 달라 하여 그 이름은 요한이라 쓰매 다 기이히 여기더라",
+      "source_text_hash": "234e761b9c79a88f669b0601f90991e8f13a0e24017b5262614742b9df9d1229",
+      "translation_text_hash": "41f8982980000fa6e80de1836e6026670cbd4f72056e54e99bb798ab57678e5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 서판을 달라 하여 그 이름은 요한이라 쓰매 다 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "41f8982980000fa6e80de1836e6026670cbd4f72056e54e99bb798ab57678e5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:64",
+      "sequence": 24958,
+      "chapter_label": "LUK 1",
+      "verse_label": "64",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 64
+        }
+      ],
+      "en": "His mouth was opened immediately and his tongue freed, and he spoke, blessing God.",
+      "ko": "이에 그 입이 곧 열리고 혀가 풀리며 말을 하여 하나님을 찬송하니",
+      "source_text_hash": "57837437f7eb9e554433750ec0c6f537b7639ac5481311cbc28fdf7c4d37d612",
+      "translation_text_hash": "7b4d7bd7f2109cdb57e38ce4d77da2681df916bde549d09c96b2d98d85c72593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 입이 곧 열리고 혀가 풀리며 말을 하여 하나님을 찬송하니"
+      ],
+      "raw_text_hashes": [
+        "7b4d7bd7f2109cdb57e38ce4d77da2681df916bde549d09c96b2d98d85c72593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:65",
+      "sequence": 24959,
+      "chapter_label": "LUK 1",
+      "verse_label": "65",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 65
+        }
+      ],
+      "en": "Fear came on all who lived around them, and all these sayings were talked about throughout all the hill country of Judea.",
+      "ko": "그 근처에 사는 자가 다 두려워하고 이 모든 말이 온 유대 산중에 두루 퍼지매",
+      "source_text_hash": "854f2976428a9a898a0a735066667e1113e784270d1b2350ae94b6a2239281cb",
+      "translation_text_hash": "899243421055fa03e0db2726a52dcaf383c5a5a61d3742cd0920b430139358ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 근처에 사는 자가 다 두려워하고 이 모든 말이 온 유대 산중에 두루 퍼지매"
+      ],
+      "raw_text_hashes": [
+        "899243421055fa03e0db2726a52dcaf383c5a5a61d3742cd0920b430139358ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:66",
+      "sequence": 24960,
+      "chapter_label": "LUK 1",
+      "verse_label": "66",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 66
+        }
+      ],
+      "en": "All who heard them laid them up in their heart, saying, “What then will this child be?” The hand of the Lord was with him.",
+      "ko": "듣는 사람이 다 이 말을 마음에 두며 가로되 이 아이가 장차 어찌 될꼬 하니 이는 주의 손이 저와 함께하심이러라",
+      "source_text_hash": "d10c90417556cd57f5bd1a27f192a937635e2d71840da60c4dd2c033329feccc",
+      "translation_text_hash": "67c7bcf3f021428981540f0fce21292388a8f96461ffb5ca58a8316cf2b484a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 사람이 다 이 말을 마음에 두며 가로되 이 아이가 장차 어찌 될꼬 하니 이는 주의 손이 저와 함께하심이러라"
+      ],
+      "raw_text_hashes": [
+        "67c7bcf3f021428981540f0fce21292388a8f96461ffb5ca58a8316cf2b484a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:67",
+      "sequence": 24961,
+      "chapter_label": "LUK 1",
+      "verse_label": "67",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 67
+        }
+      ],
+      "en": "His father Zacharias was filled with the Holy Spirit, and prophesied, saying,",
+      "ko": "그 부친 사가랴가 성령의 충만함을 입어 예언하여 가로되",
+      "source_text_hash": "a2ece50d6b2e45e3456dde12476d52cffdcf35ddf18debf26b3d6fb1ad4f052b",
+      "translation_text_hash": "4382472cd658412f2ad9721538abc9d00f37e9e560faefe6367023509874794b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친 사가랴가 성령의 충만함을 입어 예언하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "4382472cd658412f2ad9721538abc9d00f37e9e560faefe6367023509874794b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:68",
+      "sequence": 24962,
+      "chapter_label": "LUK 1",
+      "verse_label": "68",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 68
+        }
+      ],
+      "en": "“Blessed be the Lord, the God of Israel, for he has visited and redeemed his people;",
+      "ko": "찬송하리로다 주 이스라엘의 하나님이여 그 백성을 돌아보사 속량하시며",
+      "source_text_hash": "424eb0981ef72ec550e36c1094ca659517bdb84e4d0b87542f9478faa60e37fe",
+      "translation_text_hash": "a37f81f4bbf703ed9818bcbd17b44663ad2da9e1ed42d5bfdcb9066fd5ae179c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송하리로다 주 이스라엘의 하나님이여 그 백성을 돌아보사 속량하시며"
+      ],
+      "raw_text_hashes": [
+        "a37f81f4bbf703ed9818bcbd17b44663ad2da9e1ed42d5bfdcb9066fd5ae179c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:69",
+      "sequence": 24963,
+      "chapter_label": "LUK 1",
+      "verse_label": "69",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 69
+        }
+      ],
+      "en": "and has raised up a horn of salvation for us in the house of his servant David",
+      "ko": "우리를 위하여 구원의 뿔을 그 종 다윗의 집에 일으키셨으니",
+      "source_text_hash": "6a58ddd571262b1bfe8764e1b6b645e507b334a32eaf197002f492518391de32",
+      "translation_text_hash": "bf1d6bfc77f72112659092560b9443a18bec8e195d10ad8039ebb07b3b4ab06d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 위하여 구원의 뿔을 그 종 다윗의 집에 일으키셨으니"
+      ],
+      "raw_text_hashes": [
+        "bf1d6bfc77f72112659092560b9443a18bec8e195d10ad8039ebb07b3b4ab06d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:70",
+      "sequence": 24964,
+      "chapter_label": "LUK 1",
+      "verse_label": "70",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 70
+        }
+      ],
+      "en": "(as he spoke by the mouth of his holy prophets who have been from of old),",
+      "ko": "이것은 주께서 예로부터 거룩한 선지자의 입으로 말씀하신 바와 같이",
+      "source_text_hash": "e338a78f9ec2905542e4ad84217a460e8bc100f6c092416185bb487c74bc6555",
+      "translation_text_hash": "2b83eddadb755bb87c3715d1364e7357354d19b4d5b2dd096795fbd4deb53782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 주께서 예로부터 거룩한 선지자의 입으로 말씀하신 바와 같이"
+      ],
+      "raw_text_hashes": [
+        "2b83eddadb755bb87c3715d1364e7357354d19b4d5b2dd096795fbd4deb53782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:71",
+      "sequence": 24965,
+      "chapter_label": "LUK 1",
+      "verse_label": "71",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 71
+        }
+      ],
+      "en": "salvation from our enemies and from the hand of all who hate us;",
+      "ko": "우리 원수에게서와 우리를 미워하는 모든 자의 손에서 구원하시는 구원이라",
+      "source_text_hash": "eed18cb6b3e6abbd07f6ffbeb0aa4bbae8aecf208635d65b41914932e5a89fd4",
+      "translation_text_hash": "a817344f20ca890804fda8e6d75e41ea2cdde82fdeced5f7aabb41e3c5022c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 원수에게서와 우리를 미워하는 모든 자의 손에서 구원하시는 구원이라"
+      ],
+      "raw_text_hashes": [
+        "a817344f20ca890804fda8e6d75e41ea2cdde82fdeced5f7aabb41e3c5022c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:72",
+      "sequence": 24966,
+      "chapter_label": "LUK 1",
+      "verse_label": "72",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 72
+        }
+      ],
+      "en": "to show mercy toward our fathers, to remember his holy covenant,",
+      "ko": "우리 조상을 긍휼히 여기시며 그 거룩한 언약을 기억하셨으니",
+      "source_text_hash": "d57511bb3ab2c4ffda881721d51b531495c55a6b66cd606a11a7b4a661574d46",
+      "translation_text_hash": "5a49b331fcc21218584652e5ecda647f8417ae29ca8a8b06a0ecdfceda2ae1e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 조상을 긍휼히 여기시며 그 거룩한 언약을 기억하셨으니"
+      ],
+      "raw_text_hashes": [
+        "5a49b331fcc21218584652e5ecda647f8417ae29ca8a8b06a0ecdfceda2ae1e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:73",
+      "sequence": 24967,
+      "chapter_label": "LUK 1",
+      "verse_label": "73",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 73
+        }
+      ],
+      "en": "the oath which he swore to Abraham our father,",
+      "ko": "곧 우리 조상 아브라함에게 맹세하신 맹세라",
+      "source_text_hash": "702d75a8d6db3a29496e77f93a8e1e671083e0990e2d123216ae3bd93678736e",
+      "translation_text_hash": "79583b69252abe39ecb51af836ce1eec724fff470552c89c7b8c60171cefe67b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 우리 조상 아브라함에게 맹세하신 맹세라"
+      ],
+      "raw_text_hashes": [
+        "79583b69252abe39ecb51af836ce1eec724fff470552c89c7b8c60171cefe67b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:74",
+      "sequence": 24968,
+      "chapter_label": "LUK 1",
+      "verse_label": "74",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 74
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 74
+        }
+      ],
+      "en": "to grant to us that we, being delivered out of the hand of our enemies, should serve him without fear,",
+      "ko": "우리로 원수의 손에서 건지심을 입고",
+      "source_text_hash": "a2b2d74dea6e47e90fb8f48647c895da66afb8db934247d0a7a5f5847288058c",
+      "translation_text_hash": "a2b24f83d9e968b23294028f9e0e7e5164affda3222404bb1a5cc4c76703b6a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리로 원수의 손에서 건지심을 입고"
+      ],
+      "raw_text_hashes": [
+        "a2b24f83d9e968b23294028f9e0e7e5164affda3222404bb1a5cc4c76703b6a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:75",
+      "sequence": 24969,
+      "chapter_label": "LUK 1",
+      "verse_label": "75",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 75
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 75
+        }
+      ],
+      "en": "in holiness and righteousness before him all the days of our life.",
+      "ko": "종신토록 주의 앞에서 성결과 의로 두려움이 없이 섬기게 하리라 하셨도다",
+      "source_text_hash": "f44f52ff66c0c7657182ea6f3e0e0f85da872bd7107d8369a36bbfa22ba33838",
+      "translation_text_hash": "2bb253c049ff54345bc1781d0d3cb14e7faaa096fc304621e8900c083d9aca7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종신토록 주의 앞에서 성결과 의로 두려움이 없이 섬기게 하리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "2bb253c049ff54345bc1781d0d3cb14e7faaa096fc304621e8900c083d9aca7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:76",
+      "sequence": 24970,
+      "chapter_label": "LUK 1",
+      "verse_label": "76",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 76
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 76
+        }
+      ],
+      "en": "And you, child, will be called a prophet of the Most High; for you will go before the face of the Lord to prepare his ways,",
+      "ko": "이 아이여 네가 지극히 높으신 이의 선지자라 일컬음을 받고 주 앞에 앞서 가서 그 길을 예비하여",
+      "source_text_hash": "745f8a51444199069b943ad9156017380dee6deefd9f704a71e73ca4743de58d",
+      "translation_text_hash": "76b815c28dc99b9e77d317de969ab2392b1034ceb11d51fcdd7059cd6b78fe25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 아이여 네가 지극히 높으신 이의 선지자라 일컬음을 받고 주 앞에 앞서 가서 그 길을 예비하여"
+      ],
+      "raw_text_hashes": [
+        "76b815c28dc99b9e77d317de969ab2392b1034ceb11d51fcdd7059cd6b78fe25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:77",
+      "sequence": 24971,
+      "chapter_label": "LUK 1",
+      "verse_label": "77",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 77
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 77
+        }
+      ],
+      "en": "to give knowledge of salvation to his people by the remission of their sins,",
+      "ko": "주의 백성에게 그 죄 사함으로 말미암는 구원을 알게 하리니",
+      "source_text_hash": "5dfa9f08c52f91bf43d78cafd79934c92def56fd190793ef31acfd23f456a678",
+      "translation_text_hash": "bba0ecf164bbfd3a12d2b9249b80d8d23879403ff51c1e861526788059e83e07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 백성에게 그 죄 사함으로 말미암는 구원을 알게 하리니"
+      ],
+      "raw_text_hashes": [
+        "bba0ecf164bbfd3a12d2b9249b80d8d23879403ff51c1e861526788059e83e07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:78",
+      "sequence": 24972,
+      "chapter_label": "LUK 1",
+      "verse_label": "78",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 78
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 78
+        }
+      ],
+      "en": "because of the tender mercy of our God, by which the dawn from on high will visit us,",
+      "ko": "이는 우리 하나님의 긍휼을 인함이라 이로써 돋는 해가 위로부터 우리에게 임하여",
+      "source_text_hash": "02456b6d506e8b5d62144a770cd2987118c3226d0878f0474e56ac053a0805ca",
+      "translation_text_hash": "e8cad8bf1cb7fbf44fbb9d8ad2329c16bb669d2f975f3e3b63f8e22a91555585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리 하나님의 긍휼을 인함이라 이로써 돋는 해가 위로부터 우리에게 임하여"
+      ],
+      "raw_text_hashes": [
+        "e8cad8bf1cb7fbf44fbb9d8ad2329c16bb669d2f975f3e3b63f8e22a91555585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:79",
+      "sequence": 24973,
+      "chapter_label": "LUK 1",
+      "verse_label": "79",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 79
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 79
+        }
+      ],
+      "en": "to shine on those who sit in darkness and the shadow of death; to guide our feet into the way of peace.”",
+      "ko": "어두움과 죽음의 그늘에 앉은 자에게 비취고 우리 발을 평강의 길로 인도하시리로다 하니라",
+      "source_text_hash": "8ddef9d49cc1de5167f40a21239fe6fec2a42281930ec36f6f2bf5f014fa9dc1",
+      "translation_text_hash": "f8b32464f3396658718f7797b62982b3436ecf697d8a345ad5152bfeef944dd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어두움과 죽음의 그늘에 앉은 자에게 비취고 우리 발을 평강의 길로 인도하시리로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "f8b32464f3396658718f7797b62982b3436ecf697d8a345ad5152bfeef944dd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:1:80",
+      "sequence": 24974,
+      "chapter_label": "LUK 1",
+      "verse_label": "80",
+      "locator": {
+        "book": "LUK",
+        "chapter": 1,
+        "verse": 80
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 1,
+          "verse": 80
+        }
+      ],
+      "en": "The child was growing and becoming strong in spirit, and was in the desert until the day of his public appearance to Israel.",
+      "ko": "아이가 자라며 심령이 강하여지며 이스라엘에게 나타나는 날까지 빈 들에 있으니라",
+      "source_text_hash": "11ee885cbc30b916e6db2e71be91823eebcd0d67b987a9ca9ec935db8dae2dbe",
+      "translation_text_hash": "88c98e6bd1eb5e4cd72d02ff710e7ab70f1e69ebd39c4334757d2dbd263c95c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이가 자라며 심령이 강하여지며 이스라엘에게 나타나는 날까지 빈 들에 있으니라"
+      ],
+      "raw_text_hashes": [
+        "88c98e6bd1eb5e4cd72d02ff710e7ab70f1e69ebd39c4334757d2dbd263c95c7"
+      ]
+    }
+  ]
+}

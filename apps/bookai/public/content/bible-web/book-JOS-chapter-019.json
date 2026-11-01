@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:019",
+  "unit_ordinal": 206,
+  "unit_label": "JOS 19",
+  "book_code": "JOS",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:19:1",
+      "sequence": 6323,
+      "chapter_label": "JOS 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The second lot came out for Simeon, even for the tribe of the children of Simeon according to their families. Their inheritance was in the middle of the inheritance of the children of Judah.",
+      "ko": "둘째로 시므온 곧 시므온 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니 그 기업은 유다 자손의 기업 중에서라",
+      "source_text_hash": "9f2b4baebb3517129d19ccff758c2ed06f056b6176ea780b55bc80e9660a7c3e",
+      "translation_text_hash": "363a35a1d634df408448e9cb67dcfd7f7c42131227b4406f6e12ebcfe188c287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째로 시므온 곧 시므온 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니 그 기업은 유다 자손의 기업 중에서라"
+      ],
+      "raw_text_hashes": [
+        "363a35a1d634df408448e9cb67dcfd7f7c42131227b4406f6e12ebcfe188c287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:2",
+      "sequence": 6324,
+      "chapter_label": "JOS 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "They had for their inheritance Beersheba (or Sheba), Moladah,",
+      "ko": "그 얻은 기업은 브엘세바 곧 세바와 몰라다와",
+      "source_text_hash": "8648acb4e8c7a2198f22ec296dc2ea734129001c9621ea913b63aa9cfbd93ef0",
+      "translation_text_hash": "e0eab4f9c22a6aec0f79d8d08c30c348f3246f38954b6b7b9668686d720b0647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 얻은 기업은 브엘세바 곧 세바와 몰라다와"
+      ],
+      "raw_text_hashes": [
+        "e0eab4f9c22a6aec0f79d8d08c30c348f3246f38954b6b7b9668686d720b0647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:3",
+      "sequence": 6325,
+      "chapter_label": "JOS 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Hazar Shual, Balah, Ezem,",
+      "ko": "하살 수알과 발라와 에셈과",
+      "source_text_hash": "32c08a06807130c12d64a464f7eecd7938ea4af79f5f6dd64e9b4f1c88ec98ac",
+      "translation_text_hash": "77e042789855bbe5319062d1b1c5c3a0ed9f8791abee72440752eef06926b5c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하살 수알과 발라와 에셈과"
+      ],
+      "raw_text_hashes": [
+        "77e042789855bbe5319062d1b1c5c3a0ed9f8791abee72440752eef06926b5c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:4",
+      "sequence": 6326,
+      "chapter_label": "JOS 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Eltolad, Bethul, Hormah,",
+      "ko": "엘돌랏과 브둘과 호르마와",
+      "source_text_hash": "2cbb727a9456050a9ed41e2d46296e9f8e5ccf31baf5667a9df80e7320f851bf",
+      "translation_text_hash": "00983ab36b34988d0af1508d265fd3109e50ae707130be36bb2dd73562b979a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘돌랏과 브둘과 호르마와"
+      ],
+      "raw_text_hashes": [
+        "00983ab36b34988d0af1508d265fd3109e50ae707130be36bb2dd73562b979a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:5",
+      "sequence": 6327,
+      "chapter_label": "JOS 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "Ziklag, Beth Marcaboth, Hazar Susah,",
+      "ko": "시글락과 벧 말가봇과 하살수사와",
+      "source_text_hash": "3507ea97f161a5c84d0e910a27fd422d5f73fe3e7fae6f595c6effad3182796e",
+      "translation_text_hash": "06c052edd4ea50ab62253139de416ae4de3d5cc7210b32eae1c0bcce69898449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시글락과 벧 말가봇과 하살수사와"
+      ],
+      "raw_text_hashes": [
+        "06c052edd4ea50ab62253139de416ae4de3d5cc7210b32eae1c0bcce69898449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:6",
+      "sequence": 6328,
+      "chapter_label": "JOS 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Beth Lebaoth, and Sharuhen; thirteen cities with their villages;",
+      "ko": "벧 르바옷과 사루헨이니 십 삼 성읍이요 또 그 촌락이며",
+      "source_text_hash": "80e7872b70450d31b4cb0d5ea3d05ac74d477b0c18ab7e9a8f0b8172a908b7b8",
+      "translation_text_hash": "0aaffd9f7556e7e7a0f0f176a3ddfc5f88249d79dc5a63ba51eea19d003d0e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧 르바옷과 사루헨이니 십 삼 성읍이요 또 그 촌락이며"
+      ],
+      "raw_text_hashes": [
+        "0aaffd9f7556e7e7a0f0f176a3ddfc5f88249d79dc5a63ba51eea19d003d0e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:7",
+      "sequence": 6329,
+      "chapter_label": "JOS 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Ain, Rimmon, Ether, and Ashan; four cities with their villages;",
+      "ko": "또 아인과 림몬과 에델과 아산이니 네 성읍이요 또 그 촌락이며",
+      "source_text_hash": "841ff2f0c494e764987ce3fb622fecb9c10ddb35777e2f40942117f7ecd5e5b3",
+      "translation_text_hash": "00e5e7d1db77c5e4a30f90e438ed5b702bfd7f55d3540932b8dbb47db07b0ecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아인과 림몬과 에델과 아산이니 네 성읍이요 또 그 촌락이며"
+      ],
+      "raw_text_hashes": [
+        "00e5e7d1db77c5e4a30f90e438ed5b702bfd7f55d3540932b8dbb47db07b0ecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:8",
+      "sequence": 6330,
+      "chapter_label": "JOS 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "and all the villages that were around these cities to Baalath Beer, Ramah of the South. This is the inheritance of the tribe of the children of Simeon according to their families.",
+      "ko": "또 남방 라마 곧 바알랏 브엘까지 이 성들을 둘러 있는 모든 촌락이니 이는 시므온 자손의 지파가 그 가족대로 얻은 기업이라",
+      "source_text_hash": "48c91184d45b6c1c314f8b3a4b5a7ec50730e2640f7dee67831f211868a6ce5e",
+      "translation_text_hash": "8808910237689e1b48ead7a9506537a0f0ea0d3449776fbe9bb4b05aada6d4fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 남방 라마 곧 바알랏 브엘까지 이 성들을 둘러 있는 모든 촌락이니 이는 시므온 자손의 지파가 그 가족대로 얻은 기업이라"
+      ],
+      "raw_text_hashes": [
+        "8808910237689e1b48ead7a9506537a0f0ea0d3449776fbe9bb4b05aada6d4fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:9",
+      "sequence": 6331,
+      "chapter_label": "JOS 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "Out of the part of the children of Judah was the inheritance of the children of Simeon; for the portion of the children of Judah was too much for them. Therefore the children of Simeon had inheritance in the middle of their inheritance.",
+      "ko": "시므온 자손의 이 기업은 유다 자손의 기업 중에서 취하였으니 이는 유다 자손의 분깃이 자기들에게 너무 많으므로 시므온 자손이 자기의 기업을 그들의 기업 중에서 얻음이었더라",
+      "source_text_hash": "8f0a006531c2744f5cee90a3cee9d8321a11384fc68fbd4fb8375105df2df118",
+      "translation_text_hash": "bd7aee7b6220b060ffb00bd105810e20dfb999265d6c7d979495899864015120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 자손의 이 기업은 유다 자손의 기업 중에서 취하였으니 이는 유다 자손의 분깃이 자기들에게 너무 많으므로 시므온 자손이 자기의 기업을 그들의 기업 중에서 얻음이었더라"
+      ],
+      "raw_text_hashes": [
+        "bd7aee7b6220b060ffb00bd105810e20dfb999265d6c7d979495899864015120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:10",
+      "sequence": 6332,
+      "chapter_label": "JOS 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "The third lot came up for the children of Zebulun according to their families. The border of their inheritance was to Sarid.",
+      "ko": "세째로 스불론 자손을 위하여 그 가족대로 제비를 뽑았으니 그 기업의 경계는 사릿에 미치고",
+      "source_text_hash": "3bb023a08c4413a6dc48a91a11da639865b1ff846a56255cb2a03a1a739f4cc8",
+      "translation_text_hash": "de05bf8f77fc46cb4449b469b81981bdf9b404c7eb7da75c9d8bb7899742602a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째로 스불론 자손을 위하여 그 가족대로 제비를 뽑았으니 그 기업의 경계는 사릿에 미치고"
+      ],
+      "raw_text_hashes": [
+        "de05bf8f77fc46cb4449b469b81981bdf9b404c7eb7da75c9d8bb7899742602a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:11",
+      "sequence": 6333,
+      "chapter_label": "JOS 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Their border went up westward, even to Maralah, and reached to Dabbesheth. It reached to the brook that is before Jokneam.",
+      "ko": "서편으로 올라가서 마랄라에 이르러 답베셋에 미치고 욕느암 앞 시내에 미치며",
+      "source_text_hash": "2555d029360f6c75c19defa542a54b1922136146a3d35434c4e0a75eaab6591d",
+      "translation_text_hash": "4d8dde91f9307eb104e9c3f97e4b90c8802617d6f355592774a7dee36d08311f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편으로 올라가서 마랄라에 이르러 답베셋에 미치고 욕느암 앞 시내에 미치며"
+      ],
+      "raw_text_hashes": [
+        "4d8dde91f9307eb104e9c3f97e4b90c8802617d6f355592774a7dee36d08311f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:12",
+      "sequence": 6334,
+      "chapter_label": "JOS 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "It turned from Sarid eastward toward the sunrise to the border of Chisloth Tabor. It went out to Daberath, and went up to Japhia.",
+      "ko": "사릿에서부터 동편으로 돌아 해 뜨는 편을 향하고 기슬롯 다볼의 경계에 이르고 다브랏으로 나가서 야비아로 올라가고",
+      "source_text_hash": "548c9512b74f603e1647e55bf2a99bcb01bd36f5b71f911d75daf252a7f91de7",
+      "translation_text_hash": "3212e7fe9c718064695640a65b0f2354eb25012fc5be572a3c86b31b4bdfa5b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사릿에서부터 동편으로 돌아 해 뜨는 편을 향하고 기슬롯 다볼의 경계에 이르고 다브랏으로 나가서 야비아로 올라가고"
+      ],
+      "raw_text_hashes": [
+        "3212e7fe9c718064695640a65b0f2354eb25012fc5be572a3c86b31b4bdfa5b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:13",
+      "sequence": 6335,
+      "chapter_label": "JOS 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "From there it passed along eastward to Gath Hepher, to Ethkazin; and it went out at Rimmon which stretches to Neah.",
+      "ko": "또 거기서부터 동편으로 가드 헤벨을 지나 엣 가신에 이르고 네아까지 연한 림몬으로 나아가서",
+      "source_text_hash": "99d89a133a872f87182158703d6f4fdc3d191f9b738cea215113d0702aecfa78",
+      "translation_text_hash": "088a9940babc1a3ae69946e4493a758cc1d7fb7fed449b6160e94a2ca009b583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거기서부터 동편으로 가드 헤벨을 지나 엣 가신에 이르고 네아까지 연한 림몬으로 나아가서"
+      ],
+      "raw_text_hashes": [
+        "088a9940babc1a3ae69946e4493a758cc1d7fb7fed449b6160e94a2ca009b583"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:14",
+      "sequence": 6336,
+      "chapter_label": "JOS 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "The border turned around it on the north to Hannathon; and it ended at the valley of Iphtah El;",
+      "ko": "북으로 돌아 한나돈에 이르고 입다엘 골짜기에 이르러 끝이 되며",
+      "source_text_hash": "8435fd230e63c9f2f64ecfc1bb4d226cb65bc9cf907a60b1c2d5511b355fbff9",
+      "translation_text_hash": "802ad2f6616150d10cc019943e46146159a4f0ca4e8fcd8e4e99c1ef927292e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북으로 돌아 한나돈에 이르고 입다엘 골짜기에 이르러 끝이 되며"
+      ],
+      "raw_text_hashes": [
+        "802ad2f6616150d10cc019943e46146159a4f0ca4e8fcd8e4e99c1ef927292e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:15",
+      "sequence": 6337,
+      "chapter_label": "JOS 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Kattath, Nahalal, Shimron, Idalah, and Bethlehem: twelve cities with their villages.",
+      "ko": "또 갓닷과 나할랄과 시므론과 이달라와 베들레헴이니 모두 십 이 성읍이요 또 그 촌락이라",
+      "source_text_hash": "323d5c7d34f09708f4dcb0fdeed5a90b48a545ca0ec5e5cf12e5fdca68350de7",
+      "translation_text_hash": "4984d80b8eb12ab4b4d916a3b6af11e38f308f08b2722b399b5bc26a3851f6b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 갓닷과 나할랄과 시므론과 이달라와 베들레헴이니 모두 십 이 성읍이요 또 그 촌락이라"
+      ],
+      "raw_text_hashes": [
+        "4984d80b8eb12ab4b4d916a3b6af11e38f308f08b2722b399b5bc26a3851f6b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:16",
+      "sequence": 6338,
+      "chapter_label": "JOS 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "This is the inheritance of the children of Zebulun according to their families, these cities with their villages.",
+      "ko": "스불론 자손이 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라",
+      "source_text_hash": "a29301fc7c80acd227ceb0ddda76315bca5c00de41bb66b69d3ff498376d3547",
+      "translation_text_hash": "4e7fab72cf4452943188e711bcc802129cd61a0f95f6ada40ac1175794f3ada4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 자손이 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "4e7fab72cf4452943188e711bcc802129cd61a0f95f6ada40ac1175794f3ada4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:17",
+      "sequence": 6339,
+      "chapter_label": "JOS 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "The fourth lot came out for Issachar, even for the children of Issachar according to their families.",
+      "ko": "네째로 잇사갈 곧 잇사갈 자손을 위하여 그 가족대로 제비를 뽑았으니",
+      "source_text_hash": "1c97b2938d0f09d67b3526a6e847ce01a18b5d7c1499ad2b1ed25c5558869954",
+      "translation_text_hash": "bb2b7314fcbf402f438a99dde62b25076cbf33791132556b6a43535c1f9c20d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째로 잇사갈 곧 잇사갈 자손을 위하여 그 가족대로 제비를 뽑았으니"
+      ],
+      "raw_text_hashes": [
+        "bb2b7314fcbf402f438a99dde62b25076cbf33791132556b6a43535c1f9c20d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:18",
+      "sequence": 6340,
+      "chapter_label": "JOS 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Their border was to Jezreel, Chesulloth, Shunem,",
+      "ko": "그 지경 안은 이스르엘과 그술롯과 수넴과",
+      "source_text_hash": "53016d65d7f84e3763029b8ecaa26f5d004514f6520c9bf22b8af049d5382c1d",
+      "translation_text_hash": "a68ac70b8923f73e09fac08b2ce7e7673a3d1849369d59e67507351f44304ccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경 안은 이스르엘과 그술롯과 수넴과"
+      ],
+      "raw_text_hashes": [
+        "a68ac70b8923f73e09fac08b2ce7e7673a3d1849369d59e67507351f44304ccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:19",
+      "sequence": 6341,
+      "chapter_label": "JOS 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Hapharaim, Shion, Anaharath,",
+      "ko": "하바라임과 시온과 아나하랏과",
+      "source_text_hash": "00e355ae9a346bf271e886502658b2681d1e03ad67cb8216e6cc06b4949eeaa4",
+      "translation_text_hash": "55fb144988c411e3fb955ae7a0cbaa6037ed397297db058c9857d00a556eec05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하바라임과 시온과 아나하랏과"
+      ],
+      "raw_text_hashes": [
+        "55fb144988c411e3fb955ae7a0cbaa6037ed397297db058c9857d00a556eec05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:20",
+      "sequence": 6342,
+      "chapter_label": "JOS 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Rabbith, Kishion, Ebez,",
+      "ko": "랍빗과 기시온과 에베스와",
+      "source_text_hash": "215a8583784bbd24346acdcbd9c63a451b6ec800d1546118bfb90702a9ec377c",
+      "translation_text_hash": "679a55274764aa0b5c9807fc6397e7b8289243c5ea227e342f9280171cfb5d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍빗과 기시온과 에베스와"
+      ],
+      "raw_text_hashes": [
+        "679a55274764aa0b5c9807fc6397e7b8289243c5ea227e342f9280171cfb5d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:21",
+      "sequence": 6343,
+      "chapter_label": "JOS 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "Remeth, Engannim, En Haddah, and Beth Pazzez.",
+      "ko": "레멧과 언간님과 엔핫다와 벧 바세스며",
+      "source_text_hash": "9f8d7f94b4c0d76b5b6755022976c9893cee6e72d0c158ebc5f82ffed2191970",
+      "translation_text_hash": "1ec03c9af2613b75e98f2016cf808bdcaf3cba83f4b6db05a7ec901e9f969800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레멧과 언간님과 엔핫다와 벧 바세스며"
+      ],
+      "raw_text_hashes": [
+        "1ec03c9af2613b75e98f2016cf808bdcaf3cba83f4b6db05a7ec901e9f969800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:22",
+      "sequence": 6344,
+      "chapter_label": "JOS 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "The border reached to Tabor, Shahazumah, and Beth Shemesh. Their border ended at the Jordan: sixteen cities with their villages.",
+      "ko": "그 경계는 다볼과 사하수마와 벧 세메스에 미치고 그 끝은 요단이니 모두 십 륙 성읍이요 또 그 촌락이라",
+      "source_text_hash": "a5cb16e49116a118522a0533f761943ea4fca4f6ba57b2ec43d4437a876cee95",
+      "translation_text_hash": "9246192179e36487d1219dd8f70445f183574637c8c6b94440b72642037afe80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 경계는 다볼과 사하수마와 벧 세메스에 미치고 그 끝은 요단이니 모두 십 륙 성읍이요 또 그 촌락이라"
+      ],
+      "raw_text_hashes": [
+        "9246192179e36487d1219dd8f70445f183574637c8c6b94440b72642037afe80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:23",
+      "sequence": 6345,
+      "chapter_label": "JOS 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "This is the inheritance of the tribe of the children of Issachar according to their families, the cities with their villages.",
+      "ko": "잇사갈 자손 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라",
+      "source_text_hash": "8d794e707dab8a9591edaa95ea27a3f6e9cb2b28c670739f54b83eb4320a8851",
+      "translation_text_hash": "f8d9c943d1fb6fe10bd4c0e85bb12df11d3f2a0d0133cbb9cf1f78e897106e18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 자손 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "f8d9c943d1fb6fe10bd4c0e85bb12df11d3f2a0d0133cbb9cf1f78e897106e18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:24",
+      "sequence": 6346,
+      "chapter_label": "JOS 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "The fifth lot came out for the tribe of the children of Asher according to their families.",
+      "ko": "다섯째로 아셀 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니",
+      "source_text_hash": "1a8b113e90861a9c3383038afea93f6a602e3209cc877d207bc63822da85bdd7",
+      "translation_text_hash": "8df74cda19c9a2a8975dc4fc4e4b4421600b29a4fed5feea1e9b96b3cf1a7386",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째로 아셀 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니"
+      ],
+      "raw_text_hashes": [
+        "8df74cda19c9a2a8975dc4fc4e4b4421600b29a4fed5feea1e9b96b3cf1a7386"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:25",
+      "sequence": 6347,
+      "chapter_label": "JOS 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "Their border was Helkath, Hali, Beten, Achshaph,",
+      "ko": "그 지경 안은 헬갓과 할리와 베덴과 악삽과",
+      "source_text_hash": "27766c6b568cc656f631447e4e5e83805c59e39b88378fa99a0c0b9935053c1d",
+      "translation_text_hash": "fd321768517f0bfbffe66f4de0b20433ac3646119b223ba549bad48cfb40cfde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경 안은 헬갓과 할리와 베덴과 악삽과"
+      ],
+      "raw_text_hashes": [
+        "fd321768517f0bfbffe66f4de0b20433ac3646119b223ba549bad48cfb40cfde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:26",
+      "sequence": 6348,
+      "chapter_label": "JOS 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "Allammelech, Amad, Mishal. It reached to Carmel westward, and to Shihorlibnath.",
+      "ko": "알람멜렉과 아맛과 미살이며 그 경계의 서편은 갈멜에 미치며 시홀 림낫에 미치고",
+      "source_text_hash": "2ef20cc3daa6a309bf1761291159a526e1c9774c04818f87f3eb7459e8c2161e",
+      "translation_text_hash": "652698395102f42d7cb0604fc28296f00cf7b204410c4912fd2289bf6022a337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알람멜렉과 아맛과 미살이며 그 경계의 서편은 갈멜에 미치며 시홀 림낫에 미치고"
+      ],
+      "raw_text_hashes": [
+        "652698395102f42d7cb0604fc28296f00cf7b204410c4912fd2289bf6022a337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:27",
+      "sequence": 6349,
+      "chapter_label": "JOS 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "It turned toward the sunrise to Beth Dagon, and reached to Zebulun, and to the valley of Iphtah El northward to Beth Emek and Neiel. It went out to Cabul on the left hand,",
+      "ko": "꺾여 해 돋는 편을 향하여 벧 다곤에 이르며 스불론에 달하고 북편으로 입다 엘 골짜기에 미쳐서 벧에멕과 느이엘에 이르고 가불 좌편으로 나가서",
+      "source_text_hash": "bba3b87fce06c3140a7f991423302aa622f2a87c69048f2dea35410c0e4c6af8",
+      "translation_text_hash": "e6f2b283e9d9613df8c68aed5cc562b1ee1fda13895db005d503608e0bf3e96b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꺾여 해 돋는 편을 향하여 벧 다곤에 이르며 스불론에 달하고 북편으로 입다 엘 골짜기에 미쳐서 벧에멕과 느이엘에 이르고 가불 좌편으로 나가서"
+      ],
+      "raw_text_hashes": [
+        "e6f2b283e9d9613df8c68aed5cc562b1ee1fda13895db005d503608e0bf3e96b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:28",
+      "sequence": 6350,
+      "chapter_label": "JOS 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "and Ebron, Rehob, Hammon, and Kanah, even to great Sidon.",
+      "ko": "에브론과 르홉과 함몬과 가나를 지나 큰 시돈까지 이르고",
+      "source_text_hash": "2aa5526c5db454ea9e7a6e35a938169f90ec4c3159c42884588a2b41f87f891f",
+      "translation_text_hash": "4258770ccd411f092da85e736d0aeba5062b9fb5b919d6b821127c709244c55c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브론과 르홉과 함몬과 가나를 지나 큰 시돈까지 이르고"
+      ],
+      "raw_text_hashes": [
+        "4258770ccd411f092da85e736d0aeba5062b9fb5b919d6b821127c709244c55c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:29",
+      "sequence": 6351,
+      "chapter_label": "JOS 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "The border turned to Ramah, to the fortified city of Tyre; and the border turned to Hosah. It ended at the sea by the region of Achzib;",
+      "ko": "돌아서 라마와 견고한 성읍 두로에 이르고 돌아서 호사에 이르고 악십 지방 곁 바다가 끝이 되며",
+      "source_text_hash": "1fc33e71060ca46a30c79b77ea9c3e4ee95f9ed61369c27618b22034604231e2",
+      "translation_text_hash": "f1c2d1acb0e434afb4b1e22060ff4eba958ac242c579008c5e7dbe3d1e10f79f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아서 라마와 견고한 성읍 두로에 이르고 돌아서 호사에 이르고 악십 지방 곁 바다가 끝이 되며"
+      ],
+      "raw_text_hashes": [
+        "f1c2d1acb0e434afb4b1e22060ff4eba958ac242c579008c5e7dbe3d1e10f79f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:30",
+      "sequence": 6352,
+      "chapter_label": "JOS 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "Ummah also, and Aphek, and Rehob: twenty-two cities with their villages.",
+      "ko": "또 움마와 아벡과 르홉이니 모두 이십 이 성읍과 그 촌락이라",
+      "source_text_hash": "c936905f70f5273b7b9cf9177f4eb53abb2d928505057c89998975ff09d68635",
+      "translation_text_hash": "0d22b982a0d951ac0bb4d522d58f8a024da106914d006931a8ec5f08d3725e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 움마와 아벡과 르홉이니 모두 이십 이 성읍과 그 촌락이라"
+      ],
+      "raw_text_hashes": [
+        "0d22b982a0d951ac0bb4d522d58f8a024da106914d006931a8ec5f08d3725e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:31",
+      "sequence": 6353,
+      "chapter_label": "JOS 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "This is the inheritance of the tribe of the children of Asher according to their families, these cities with their villages.",
+      "ko": "아셀 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라",
+      "source_text_hash": "e5e98d4f97026fecd8d65e74ba13487f01019e6bdf66d07f6591ab12b3942513",
+      "translation_text_hash": "6bd73f1714646f104723e7feab8116cebf825c25302369c7d0a6dc02ee34911a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "6bd73f1714646f104723e7feab8116cebf825c25302369c7d0a6dc02ee34911a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:32",
+      "sequence": 6354,
+      "chapter_label": "JOS 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "The sixth lot came out for the children of Naphtali, even for the children of Naphtali according to their families.",
+      "ko": "여섯째로 납달리 자손을 위하여 납달리 자손의 가족대로 제비를 뽑았으니",
+      "source_text_hash": "1db2c38f5ef9b10517bf8501c3f581f1df8a02b976509476ff5fc5900f6ef6e0",
+      "translation_text_hash": "f141145081da70580544e1b9ea14184282595e5ab0c1a0f74de4dea006ffa6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째로 납달리 자손을 위하여 납달리 자손의 가족대로 제비를 뽑았으니"
+      ],
+      "raw_text_hashes": [
+        "f141145081da70580544e1b9ea14184282595e5ab0c1a0f74de4dea006ffa6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:33",
+      "sequence": 6355,
+      "chapter_label": "JOS 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "Their border was from Heleph, from the oak in Zaanannim, Adami-nekeb, and Jabneel, to Lakkum. It ended at the Jordan.",
+      "ko": "그 경계는 헬렙과 사아난님의 상수리나무에서부터 아다미 네겝과 얍느엘을 지나 락굼까지요 그 끝은 요단이며",
+      "source_text_hash": "9dcaac67900b223204a44a43b01d4058432bb53cd48c4a48a810bc184a57e191",
+      "translation_text_hash": "3b8a9f26f47fdea2fb98bde226a07b22c641cb973f80170d4159026c58345700",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 경계는 헬렙과 사아난님의 상수리나무에서부터 아다미 네겝과 얍느엘을 지나 락굼까지요 그 끝은 요단이며"
+      ],
+      "raw_text_hashes": [
+        "3b8a9f26f47fdea2fb98bde226a07b22c641cb973f80170d4159026c58345700"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:34",
+      "sequence": 6356,
+      "chapter_label": "JOS 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "The border turned westward to Aznoth Tabor, and went out from there to Hukkok. It reached to Zebulun on the south, and reached to Asher on the west, and to Judah at the Jordan toward the sunrise.",
+      "ko": "서편으로 돌아 아스놋 다볼에 이르고 그곳에서부터 나가 훅곡에 이르러는 남은 스불론에 접하였고 서는 아셀에 접하였으며 해 돋는 편은 유다에 달한 요단이며",
+      "source_text_hash": "98ea76b09c984dea9b170e35b0e383ad0b6c02212963a77f3df52bb6ada2670d",
+      "translation_text_hash": "e3f115f153a5368656d8f34701128b3adc32baeee6bc52568ba0ff239cac4616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편으로 돌아 아스놋 다볼에 이르고 그곳에서부터 나가 훅곡에 이르러는 남은 스불론에 접하였고 서는 아셀에 접하였으며 해 돋는 편은 유다에 달한 요단이며"
+      ],
+      "raw_text_hashes": [
+        "e3f115f153a5368656d8f34701128b3adc32baeee6bc52568ba0ff239cac4616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:35",
+      "sequence": 6357,
+      "chapter_label": "JOS 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "The fortified cities were Ziddim, Zer, Hammath, Rakkath, Chinnereth,",
+      "ko": "그 견고한 성읍들은 싯딤과 세르와 함맛과 락갓과 긴네렛과",
+      "source_text_hash": "7fbbacc8f7b57e4a255c27f9a589b838faf35af7a4132abaece51b6c6d9b7a4a",
+      "translation_text_hash": "d5d11adb2f5c6ada29dbf5f7afe11d2792a56b12b2fad3864bcb09c87675825a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 견고한 성읍들은 싯딤과 세르와 함맛과 락갓과 긴네렛과"
+      ],
+      "raw_text_hashes": [
+        "d5d11adb2f5c6ada29dbf5f7afe11d2792a56b12b2fad3864bcb09c87675825a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:36",
+      "sequence": 6358,
+      "chapter_label": "JOS 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "Adamah, Ramah, Hazor,",
+      "ko": "아다마와 라마와 하솔과",
+      "source_text_hash": "df2dd499bbf1ebb9a7644393c34f6614f5a832518995e7569e97068273702454",
+      "translation_text_hash": "5c82634cfce8d6dfd26c9d9977bd32c7b5260f975e277303f64b76d23cc07982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다마와 라마와 하솔과"
+      ],
+      "raw_text_hashes": [
+        "5c82634cfce8d6dfd26c9d9977bd32c7b5260f975e277303f64b76d23cc07982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:37",
+      "sequence": 6359,
+      "chapter_label": "JOS 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "Kedesh, Edrei, En Hazor,",
+      "ko": "게데스와 에드레이와 엔 하솔과",
+      "source_text_hash": "3c809ec1830e316181cb3aa3c0977134c0a4e6b2eefaa39f860dbbcf33dd2624",
+      "translation_text_hash": "2fbee14bf2ba2718a5fc728ddcd19a528d3a86488fe22d862cc4cabfba53a50f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게데스와 에드레이와 엔 하솔과"
+      ],
+      "raw_text_hashes": [
+        "2fbee14bf2ba2718a5fc728ddcd19a528d3a86488fe22d862cc4cabfba53a50f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:38",
+      "sequence": 6360,
+      "chapter_label": "JOS 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "Iron, Migdal El, Horem, Beth Anath, and Beth Shemesh; nineteen cities with their villages.",
+      "ko": "이론과 믹다렐과 호렘과 벧 아낫과 벧 세메스니 모두 십 구 성읍이요 또 그 촌락이라",
+      "source_text_hash": "93539bc774b43804205e11428605c98d5af25ea4a4648f505cfae2e67770ec70",
+      "translation_text_hash": "03d7687838276535c2ceca6059b20e9b96e7d38ab73948fac1db2b20fd11cbeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이론과 믹다렐과 호렘과 벧 아낫과 벧 세메스니 모두 십 구 성읍이요 또 그 촌락이라"
+      ],
+      "raw_text_hashes": [
+        "03d7687838276535c2ceca6059b20e9b96e7d38ab73948fac1db2b20fd11cbeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:39",
+      "sequence": 6361,
+      "chapter_label": "JOS 19",
+      "verse_label": "39",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 39
+        }
+      ],
+      "en": "This is the inheritance of the tribe of the children of Naphtali according to their families, the cities with their villages.",
+      "ko": "납달리 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라",
+      "source_text_hash": "50498a518567050673f39e9b20a3376217cb5ca14fc0e45b28acbd90973c522e",
+      "translation_text_hash": "7f52c66990bcb4aba23ec104c1d981bfc0d9df2319f2b479301293f796d4a32f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "7f52c66990bcb4aba23ec104c1d981bfc0d9df2319f2b479301293f796d4a32f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:40",
+      "sequence": 6362,
+      "chapter_label": "JOS 19",
+      "verse_label": "40",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 40
+        }
+      ],
+      "en": "The seventh lot came out for the tribe of the children of Dan according to their families.",
+      "ko": "일곱째로 단 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니",
+      "source_text_hash": "1586d5bb9bf60808b7f1769f7c3d516c95d9225dc835f7975c8df07a3984a741",
+      "translation_text_hash": "557dcaf0a039df49803cc88e4cdf4458e05c8aa88c333d03dfaeacd1459b6cf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째로 단 자손의 지파를 위하여 그 가족대로 제비를 뽑았으니"
+      ],
+      "raw_text_hashes": [
+        "557dcaf0a039df49803cc88e4cdf4458e05c8aa88c333d03dfaeacd1459b6cf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:41",
+      "sequence": 6363,
+      "chapter_label": "JOS 19",
+      "verse_label": "41",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 41
+        }
+      ],
+      "en": "The border of their inheritance was Zorah, Eshtaol, Irshemesh,",
+      "ko": "그 기업의 지경은 소라와 에스다올과 이르세메스와",
+      "source_text_hash": "3142d14014c9fc3fcdfa5972e970b5e0678d367ad80b8aeed250a2f5a334a7df",
+      "translation_text_hash": "5b4ef4cf1ab8466bc489d20d78a131eeb5ad6d4ca1889ff788549f99822478c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기업의 지경은 소라와 에스다올과 이르세메스와"
+      ],
+      "raw_text_hashes": [
+        "5b4ef4cf1ab8466bc489d20d78a131eeb5ad6d4ca1889ff788549f99822478c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:42",
+      "sequence": 6364,
+      "chapter_label": "JOS 19",
+      "verse_label": "42",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 42
+        }
+      ],
+      "en": "Shaalabbin, Aijalon, Ithlah,",
+      "ko": "사알랍빈과 아얄론과 이들라와",
+      "source_text_hash": "0e02420893cd5c6df1e4921e346e22baa1af5e5792ab65b40cacbbc60b9b96be",
+      "translation_text_hash": "06b4a6f55cddc1c1d389d8adc8ba3a40f25aec3f019d248eb2d791f97951d629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사알랍빈과 아얄론과 이들라와"
+      ],
+      "raw_text_hashes": [
+        "06b4a6f55cddc1c1d389d8adc8ba3a40f25aec3f019d248eb2d791f97951d629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:43",
+      "sequence": 6365,
+      "chapter_label": "JOS 19",
+      "verse_label": "43",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 43
+        }
+      ],
+      "en": "Elon, Timnah, Ekron,",
+      "ko": "엘론과 딤나와 에그론과",
+      "source_text_hash": "9f1e251a6fddedda5f1714c90e0de01429c34cbb7c212335f68e22760f9bdca0",
+      "translation_text_hash": "daea8b78166e607a2a959f27ab12134d6b1596318ffd8a18c807cf256967128b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘론과 딤나와 에그론과"
+      ],
+      "raw_text_hashes": [
+        "daea8b78166e607a2a959f27ab12134d6b1596318ffd8a18c807cf256967128b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:44",
+      "sequence": 6366,
+      "chapter_label": "JOS 19",
+      "verse_label": "44",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 44
+        }
+      ],
+      "en": "Eltekeh, Gibbethon, Baalath,",
+      "ko": "엘드게와 깁브돈과 바알랏과",
+      "source_text_hash": "7650214557c2385f9fc30e8d78c08977ad6da89f969d73910d994fd94dd98d6a",
+      "translation_text_hash": "38b6bc4dd41c670bc1320f6ea6fee03d4c58c2c24731005a1993bdac90765076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘드게와 깁브돈과 바알랏과"
+      ],
+      "raw_text_hashes": [
+        "38b6bc4dd41c670bc1320f6ea6fee03d4c58c2c24731005a1993bdac90765076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:45",
+      "sequence": 6367,
+      "chapter_label": "JOS 19",
+      "verse_label": "45",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 45
+        }
+      ],
+      "en": "Jehud, Bene Berak, Gath Rimmon,",
+      "ko": "여훗과 브네브락과 가드 림몬과",
+      "source_text_hash": "64dddf9f92497a93e0e9a1b902922b488644040c3fe15acae38f0383ea906d1a",
+      "translation_text_hash": "f852ba6520d661b6aca735f5081b9e13ba70eafd8f539466048d9850ea241318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여훗과 브네브락과 가드 림몬과"
+      ],
+      "raw_text_hashes": [
+        "f852ba6520d661b6aca735f5081b9e13ba70eafd8f539466048d9850ea241318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:46",
+      "sequence": 6368,
+      "chapter_label": "JOS 19",
+      "verse_label": "46",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 46
+        }
+      ],
+      "en": "Me Jarkon, and Rakkon, with the border opposite Joppa.",
+      "ko": "메얄곤과 락곤과 욥바 맞은편 경계까지라",
+      "source_text_hash": "a8eb227cb2f00dfee0ee963a3b6b97bc97b8941bddcc8e39fd383fd3b5d796f6",
+      "translation_text_hash": "f5d47e349784792363fc6182f8118cda2cfde59dba6ef2a1f09b6e51f9e8a886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메얄곤과 락곤과 욥바 맞은편 경계까지라"
+      ],
+      "raw_text_hashes": [
+        "f5d47e349784792363fc6182f8118cda2cfde59dba6ef2a1f09b6e51f9e8a886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:47",
+      "sequence": 6369,
+      "chapter_label": "JOS 19",
+      "verse_label": "47",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 47
+        }
+      ],
+      "en": "The border of the children of Dan went out beyond them; for the children of Dan went up and fought against Leshem, and took it, and struck it with the edge of the sword, and possessed it, and lived therein, and called Leshem, Dan, after the name of Dan their forefather.",
+      "ko": "그런데 단 자손의 지경이 더욱 확장되었으니 이는 단 자손이 올라가서 레센을 쳐서 취하여 칼날로 치고 그것을 얻어 거기 거하였음이라 그 조상 단의 이름을 따라서 레센을 단이라 하였더라",
+      "source_text_hash": "bc4d89cecc02ad193b91ff6d705b6595e9ca5f17af70ef25186bbb85b475f9cb",
+      "translation_text_hash": "dc5a4f8ab05a171a985af222b4ad971684d4f0b37856ab75a7accbfe3f5987f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 단 자손의 지경이 더욱 확장되었으니 이는 단 자손이 올라가서 레센을 쳐서 취하여 칼날로 치고 그것을 얻어 거기 거하였음이라 그 조상 단의 이름을 따라서 레센을 단이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "dc5a4f8ab05a171a985af222b4ad971684d4f0b37856ab75a7accbfe3f5987f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:48",
+      "sequence": 6370,
+      "chapter_label": "JOS 19",
+      "verse_label": "48",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 48
+        }
+      ],
+      "en": "This is the inheritance of the tribe of the children of Dan according to their families, these cities with their villages.",
+      "ko": "단 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라",
+      "source_text_hash": "005a3e5c7f9bc78cacec402e64eda3d3fcc7da5f351f51c97b85d24675e67161",
+      "translation_text_hash": "feb16dd70f18ab01b9b91550aa01d7755bb3ecec0a3ade61b4ac1ce90ecafd70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손의 지파가 그 가족대로 얻은 기업은 이 성읍들과 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "feb16dd70f18ab01b9b91550aa01d7755bb3ecec0a3ade61b4ac1ce90ecafd70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:49",
+      "sequence": 6371,
+      "chapter_label": "JOS 19",
+      "verse_label": "49",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 49
+        }
+      ],
+      "en": "So they finished distributing the land for inheritance by its borders. The children of Israel gave an inheritance to Joshua the son of Nun among them.",
+      "ko": "이스라엘 자손이 그 경계를 따라서 기업의 땅 나누기를 마치고 자기들 중에서 눈의 아들 여호수아에게 기업을 주었으되",
+      "source_text_hash": "7e426fe9311118f9dfb95e3a563178057cf1c660c547926c316b3ff94460fa06",
+      "translation_text_hash": "e52f88bedfa8a83188e35e4f71dfea57b2369788d79a614994f2cd940bc04e47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그 경계를 따라서 기업의 땅 나누기를 마치고 자기들 중에서 눈의 아들 여호수아에게 기업을 주었으되"
+      ],
+      "raw_text_hashes": [
+        "e52f88bedfa8a83188e35e4f71dfea57b2369788d79a614994f2cd940bc04e47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:50",
+      "sequence": 6372,
+      "chapter_label": "JOS 19",
+      "verse_label": "50",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 50
+        }
+      ],
+      "en": "According to the LORD’s commandment, they gave him the city which he asked, even Timnathserah in the hill country of Ephraim; and he built the city, and lived there.",
+      "ko": "곧 여호와의 명령대로 여호수아의 구한 성읍 에브라임 산지 딤낫 세라를 주매 여호수아가 그 성읍을 중건하고 거기 거하였었더라",
+      "source_text_hash": "5ba756e28334862c076318db0faff2da69008d22bcdfbe8a402fd193955ed284",
+      "translation_text_hash": "25e90cc4f25f7e0eed087804694bdf57f70d05c6d0a9bbdc94e84aa86a3e2325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와의 명령대로 여호수아의 구한 성읍 에브라임 산지 딤낫 세라를 주매 여호수아가 그 성읍을 중건하고 거기 거하였었더라"
+      ],
+      "raw_text_hashes": [
+        "25e90cc4f25f7e0eed087804694bdf57f70d05c6d0a9bbdc94e84aa86a3e2325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:19:51",
+      "sequence": 6373,
+      "chapter_label": "JOS 19",
+      "verse_label": "51",
+      "locator": {
+        "book": "JOS",
+        "chapter": 19,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 19,
+          "verse": 51
+        }
+      ],
+      "en": "These are the inheritances, which Eleazar the priest, Joshua the son of Nun, and the heads of the fathers’ houses of the tribes of the children of Israel, distributed for inheritance by lot in Shiloh before the LORD, at the door of the Tent of Meeting. So they finished dividing the land.",
+      "ko": "제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 족장들이 실로에서 회막 문 여호와 앞에서 제비 뽑아 나눈 기업이 이러하니라 이에 땅 나누는 일이 마쳤더라",
+      "source_text_hash": "11a6415b485503e7b0b027d4aa741c4d37802e92f907a408c531d46259be187e",
+      "translation_text_hash": "54b75b56725ffd0e2fb0bf915ef38295988846d0bc51405ebbbe8382faa7256d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 족장들이 실로에서 회막 문 여호와 앞에서 제비 뽑아 나눈 기업이 이러하니라 이에 땅 나누는 일이 마쳤더라"
+      ],
+      "raw_text_hashes": [
+        "54b75b56725ffd0e2fb0bf915ef38295988846d0bc51405ebbbe8382faa7256d"
+      ]
+    }
+  ]
+}

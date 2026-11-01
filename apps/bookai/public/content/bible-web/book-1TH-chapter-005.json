@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TH:chapter:005",
+  "unit_ordinal": 1116,
+  "unit_label": "1TH 5",
+  "book_code": "1TH",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TH:5:1",
+      "sequence": 29619,
+      "chapter_label": "1TH 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "But concerning the times and the seasons, brothers, you have no need that anything be written to you.",
+      "ko": "형제들아 때와 시기에 관하여는 너희에게 쓸 것이 없음은",
+      "source_text_hash": "922b4088048028c62f7d82c78c16887927518c1f74efcc136cf72d77eee28d25",
+      "translation_text_hash": "bfdcfc11bc30136fd160cb61bba88d89762d356decf3975cd8c0ca7b1d05aae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 때와 시기에 관하여는 너희에게 쓸 것이 없음은"
+      ],
+      "raw_text_hashes": [
+        "bfdcfc11bc30136fd160cb61bba88d89762d356decf3975cd8c0ca7b1d05aae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:2",
+      "sequence": 29620,
+      "chapter_label": "1TH 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "For you yourselves know well that the day of the Lord comes like a thief in the night.",
+      "ko": "주의 날이 밤에 도적 같이 이를 줄을 너희 자신이 자세히 앎이라",
+      "source_text_hash": "2f71c0d9afcc7d4c6bdafb8e4194aa87193d723a8c38e3431b79470ed6496f80",
+      "translation_text_hash": "16a49ce0d9b3412fe8fb8dfe37666ae3e3b60a8c0b25f591077e5b99f4135b42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 날이 밤에 도적 같이 이를 줄을 너희 자신이 자세히 앎이라"
+      ],
+      "raw_text_hashes": [
+        "16a49ce0d9b3412fe8fb8dfe37666ae3e3b60a8c0b25f591077e5b99f4135b42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:3",
+      "sequence": 29621,
+      "chapter_label": "1TH 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "For when they are saying, “Peace and safety,” then sudden destruction will come on them, like birth pains on a pregnant woman. Then they will in no way escape.",
+      "ko": "저희가 평안하다, 안전하다 할 그 때에 잉태된 여자에게 해산 고통이 이름과 같이 멸망이 홀연히 저희에게 이르리니 결단코 피하지 못하리라",
+      "source_text_hash": "727e4933e95b804fd0cccdd1ec07ed10555895fc321566453d89ada0f6887edc",
+      "translation_text_hash": "8b33a9e64efa64ff3ae591370b4b95405c136e18ba593f8ad2fb50c46ae0afb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 평안하다, 안전하다 할 그 때에 잉태된 여자에게 해산 고통이 이름과 같이 멸망이 홀연히 저희에게 이르리니 결단코 피하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "8b33a9e64efa64ff3ae591370b4b95405c136e18ba593f8ad2fb50c46ae0afb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:4",
+      "sequence": 29622,
+      "chapter_label": "1TH 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "But you, brothers, aren’t in darkness, that the day should overtake you like a thief.",
+      "ko": "형제들아 너희는 어두움에 있지 아니하매 그 날이 도적 같이 너희에게 임하지 못하리니",
+      "source_text_hash": "593ce00de46a11566e5aaaa56090a94ee21a22c93dbcd4ff66ce6b101901ccf2",
+      "translation_text_hash": "883fb8fc6e0b5fe0af3f8d2472782b5f360235d49df182f668d3cab4cedc50fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희는 어두움에 있지 아니하매 그 날이 도적 같이 너희에게 임하지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "883fb8fc6e0b5fe0af3f8d2472782b5f360235d49df182f668d3cab4cedc50fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:5",
+      "sequence": 29623,
+      "chapter_label": "1TH 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "You are all children of light and children of the day. We don’t belong to the night, nor to darkness,",
+      "ko": "너희는 다 빛의 아들이요 낮의 아들이라 우리가 밤이나 어두움에 속하지 아니하나니",
+      "source_text_hash": "5cc9409095f5f05abc7d552a656ea34a006cd42e8b83fba1062ef7e0a2726378",
+      "translation_text_hash": "f5346e59392572b66521ee465f8afd8d4824ae0096553a0c501bae6bd85d5657",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다 빛의 아들이요 낮의 아들이라 우리가 밤이나 어두움에 속하지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "f5346e59392572b66521ee465f8afd8d4824ae0096553a0c501bae6bd85d5657"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:6",
+      "sequence": 29624,
+      "chapter_label": "1TH 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "so then let’s not sleep, as the rest do, but let’s watch and be sober.",
+      "ko": "그러므로 우리는 다른 이들과 같이 자지 말고 오직 깨어 근신할찌라",
+      "source_text_hash": "cc283b11d18cc7a8736f1437a78db3158879339dd946fbe7025c7512a9880b74",
+      "translation_text_hash": "94bca20e2371c059363c6db2ec3b0bf4b6df8d42568af495ed8171e65b04e8db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리는 다른 이들과 같이 자지 말고 오직 깨어 근신할찌라"
+      ],
+      "raw_text_hashes": [
+        "94bca20e2371c059363c6db2ec3b0bf4b6df8d42568af495ed8171e65b04e8db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:7",
+      "sequence": 29625,
+      "chapter_label": "1TH 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "For those who sleep, sleep in the night; and those who are drunk are drunk in the night.",
+      "ko": "자는 자들은 밤에 자고 취하는 자들은 밤에 취하되",
+      "source_text_hash": "d9e22e5da39d663fdb4105ef72574d6b37a2afb94c5b2be5c2ca7e49bb1c0a40",
+      "translation_text_hash": "87b2a14071284c70428ce3b9a1bf7024286e1ba96fda837f8c3b97afd1f824a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자는 자들은 밤에 자고 취하는 자들은 밤에 취하되"
+      ],
+      "raw_text_hashes": [
+        "87b2a14071284c70428ce3b9a1bf7024286e1ba96fda837f8c3b97afd1f824a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:8",
+      "sequence": 29626,
+      "chapter_label": "1TH 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "But since we belong to the day, let’s be sober, putting on the breastplate of faith and love, and for a helmet, the hope of salvation.",
+      "ko": "우리는 낮에 속하였으니 근신하여 믿음과 사랑의 흉배를 붙이고 구원의 소망의 투구를 쓰자",
+      "source_text_hash": "4e57b8504a5938ff403e79161150f84eb98f091c86b3a6398e9ef4415068ad8d",
+      "translation_text_hash": "e2711d6d949f2f26acafb784f9e3e7b3a5ca75e5e18e1d82ef7ead6b2eaefbb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 낮에 속하였으니 근신하여 믿음과 사랑의 흉배를 붙이고 구원의 소망의 투구를 쓰자"
+      ],
+      "raw_text_hashes": [
+        "e2711d6d949f2f26acafb784f9e3e7b3a5ca75e5e18e1d82ef7ead6b2eaefbb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:9",
+      "sequence": 29627,
+      "chapter_label": "1TH 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "For God didn’t appoint us to wrath, but to the obtaining of salvation through our Lord Jesus Christ,",
+      "ko": "하나님이 우리를 세우심은 노하심에 이르게 하심이 아니요 오직 우리 주 예수 그리스도로 말미암아 구원을 얻게 하신 것이라",
+      "source_text_hash": "ca16f3a5f72d6c72f18f048550aee32d0f06871705def0e9951f86d35654432a",
+      "translation_text_hash": "1c4763d8ee7c8f254f129931e32a02876b2ad080ce2031e5f495634673e9fa08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리를 세우심은 노하심에 이르게 하심이 아니요 오직 우리 주 예수 그리스도로 말미암아 구원을 얻게 하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "1c4763d8ee7c8f254f129931e32a02876b2ad080ce2031e5f495634673e9fa08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:10",
+      "sequence": 29628,
+      "chapter_label": "1TH 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "who died for us, that, whether we wake or sleep, we should live together with him.",
+      "ko": "예수께서 우리를 위하여 죽으사 우리로 하여금 깨든지 자든지 자기와 함께 살게 하려 하셨느니라",
+      "source_text_hash": "a2e7a9f4e39afa86bb90a0aba195aa153692c4536a664b6a01e52d2a94fa888b",
+      "translation_text_hash": "3ea7d612c7ff21d914097d42a0a56312b8087ed40de2931ef2a876f1b272f524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 우리를 위하여 죽으사 우리로 하여금 깨든지 자든지 자기와 함께 살게 하려 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3ea7d612c7ff21d914097d42a0a56312b8087ed40de2931ef2a876f1b272f524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:11",
+      "sequence": 29629,
+      "chapter_label": "1TH 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore exhort one another, and build each other up, even as you also do.",
+      "ko": "그러므로 피차 권면하고 피차 덕을 세우기를 너희가 하는것 같이 하라",
+      "source_text_hash": "e5e3b4828f18b1c72df636771ebfaacdf1bc3fb7649ff14f84b62f45d60044fa",
+      "translation_text_hash": "c4d4c3a1e290d8261f5b2ce9321dcbd4f423e09472eb32aceea5720f70edad8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 피차 권면하고 피차 덕을 세우기를 너희가 하는것 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "c4d4c3a1e290d8261f5b2ce9321dcbd4f423e09472eb32aceea5720f70edad8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:12",
+      "sequence": 29630,
+      "chapter_label": "1TH 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "But we beg you, brothers, to know those who labor among you, and are over you in the Lord and admonish you,",
+      "ko": "형제들아 우리가 너희에게 구하노니 너희 가운데서 수고하고 주 안에서 너희를 다스리며 권하는 자들을 너희가 알고",
+      "source_text_hash": "a4265018b0fcdc256e2c3007688ba88b0d4f8a2a725d4b9b01713b9e3a14e313",
+      "translation_text_hash": "465cae06062c7d9d956bb8d9fd8d9693ab1ac3ef5310d05582c30d994a28deaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 너희에게 구하노니 너희 가운데서 수고하고 주 안에서 너희를 다스리며 권하는 자들을 너희가 알고"
+      ],
+      "raw_text_hashes": [
+        "465cae06062c7d9d956bb8d9fd8d9693ab1ac3ef5310d05582c30d994a28deaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:13",
+      "sequence": 29631,
+      "chapter_label": "1TH 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "and to respect and honor them in love for their work’s sake. Be at peace among yourselves.",
+      "ko": "저의 역사로 말미암아 사랑 안에서 가장 귀히 여기며 너희끼리 화목하라",
+      "source_text_hash": "5592614058f1b7037304555b3eb962ac5d253817cfd8197a7d150ad4cc325bf1",
+      "translation_text_hash": "9065d8e37eb175f7c1b4c7b9370d4e5fb1e20cc69f602d6419b6a5ea29f4e96e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 역사로 말미암아 사랑 안에서 가장 귀히 여기며 너희끼리 화목하라"
+      ],
+      "raw_text_hashes": [
+        "9065d8e37eb175f7c1b4c7b9370d4e5fb1e20cc69f602d6419b6a5ea29f4e96e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:14",
+      "sequence": 29632,
+      "chapter_label": "1TH 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "We exhort you, brothers: Admonish the disorderly; encourage the faint-hearted; support the weak; be patient toward all.",
+      "ko": "또 형제들아 너희를 권면하노니 규모 없는 자들을 권계하며 마음이 약한 자들을 안위하고 힘이 없는 자들을 붙들어 주며 모든 사람을 대하여 오래 참으라",
+      "source_text_hash": "161683b8856643622f97dfa6e44e83f92de6fc81191d45c467579da4506e50fe",
+      "translation_text_hash": "7028101d8566f4918392a189119ae466f8bb621bbe741703750f571666d22906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 형제들아 너희를 권면하노니 규모 없는 자들을 권계하며 마음이 약한 자들을 안위하고 힘이 없는 자들을 붙들어 주며 모든 사람을 대하여 오래 참으라"
+      ],
+      "raw_text_hashes": [
+        "7028101d8566f4918392a189119ae466f8bb621bbe741703750f571666d22906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:15",
+      "sequence": 29633,
+      "chapter_label": "1TH 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "See that no one returns evil for evil to anyone, but always follow after that which is good for one another and for all.",
+      "ko": "삼가 누가 누구에게든지 악으로 악을 갚지 말게 하고 오직 피차 대하든지 모든 사람을 대하든지 항상 선을 좇으라",
+      "source_text_hash": "821ca1b9a41eedebfc6eab4f4ad88313672159d313b7ffde2b2976dd5bf4bcb9",
+      "translation_text_hash": "39cf80f4f361ae5bd8e01f34f94ba8a7c49bcbf06df967ad9b5c12eb9313cf0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼가 누가 누구에게든지 악으로 악을 갚지 말게 하고 오직 피차 대하든지 모든 사람을 대하든지 항상 선을 좇으라"
+      ],
+      "raw_text_hashes": [
+        "39cf80f4f361ae5bd8e01f34f94ba8a7c49bcbf06df967ad9b5c12eb9313cf0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:16",
+      "sequence": 29634,
+      "chapter_label": "1TH 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Always rejoice.",
+      "ko": "항상 기뻐하라",
+      "source_text_hash": "9bc161e84e89014cacb00b75a33099a812634c6769c6fd6bd739598b322fac7b",
+      "translation_text_hash": "d49bbafa127872109aa0fecfc7a3a4e0b981e2d7430159a5670191425ef8bd75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 기뻐하라"
+      ],
+      "raw_text_hashes": [
+        "d49bbafa127872109aa0fecfc7a3a4e0b981e2d7430159a5670191425ef8bd75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:17",
+      "sequence": 29635,
+      "chapter_label": "1TH 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Pray without ceasing.",
+      "ko": "쉬지 말고 기도하라",
+      "source_text_hash": "2915c78170adf0e109c581cb562e1cbf6703e3dae2f91d2642768b7251774e7e",
+      "translation_text_hash": "d9e91100c1a07722889e656be3b3542919ffa80b974ccdd056e8024214b8cc95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "쉬지 말고 기도하라"
+      ],
+      "raw_text_hashes": [
+        "d9e91100c1a07722889e656be3b3542919ffa80b974ccdd056e8024214b8cc95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:18",
+      "sequence": 29636,
+      "chapter_label": "1TH 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "In everything give thanks, for this is the will of God in Christ Jesus toward you.",
+      "ko": "범사에 감사하라 이는 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라",
+      "source_text_hash": "65be8065405d7829d40f8df92794ff74390ce1e83f7160ec6f3eb0489b0f3d01",
+      "translation_text_hash": "b4f37259561297e8bb47d8bac3128cd00513dab473e14669b5b4e1e929b894ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 감사하라 이는 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라"
+      ],
+      "raw_text_hashes": [
+        "b4f37259561297e8bb47d8bac3128cd00513dab473e14669b5b4e1e929b894ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:19",
+      "sequence": 29637,
+      "chapter_label": "1TH 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Don’t quench the Spirit.",
+      "ko": "성령을 소멸치 말며",
+      "source_text_hash": "60c8b3dcc201c99efd3fe0c1c73314840f16848c88d6ea3235398386005be776",
+      "translation_text_hash": "7ec1efa5d15cd6771c631a75a4d1b9a0ce069e62c98c761130023968c2434e8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령을 소멸치 말며"
+      ],
+      "raw_text_hashes": [
+        "7ec1efa5d15cd6771c631a75a4d1b9a0ce069e62c98c761130023968c2434e8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:20",
+      "sequence": 29638,
+      "chapter_label": "1TH 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t despise prophecies.",
+      "ko": "예언을 멸시치 말고",
+      "source_text_hash": "07bacdfa3c207351c1e60232e64d6568afbbbdcbe734d82f3b9ee2f649533bf2",
+      "translation_text_hash": "0c5745bfc68854af6552ece422d91209f12cfbb078c1b6e3b111d02a2334b013",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예언을 멸시치 말고"
+      ],
+      "raw_text_hashes": [
+        "0c5745bfc68854af6552ece422d91209f12cfbb078c1b6e3b111d02a2334b013"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:21",
+      "sequence": 29639,
+      "chapter_label": "1TH 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "Test all things, and hold firmly that which is good.",
+      "ko": "범사에 헤아려 좋은 것을 취하고",
+      "source_text_hash": "45979dc84735d852fa1cea938060a894c295c594c744b873ecc3f3a2cb71a70f",
+      "translation_text_hash": "a3ec4df599c085636f83a80152ea55b9f24ccf0964f8086dc7482d442a80dd4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 헤아려 좋은 것을 취하고"
+      ],
+      "raw_text_hashes": [
+        "a3ec4df599c085636f83a80152ea55b9f24ccf0964f8086dc7482d442a80dd4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:22",
+      "sequence": 29640,
+      "chapter_label": "1TH 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Abstain from every form of evil.",
+      "ko": "악은 모든 모양이라도 버리라",
+      "source_text_hash": "1b1724c42a9e5a384468e7635354f051e4bd2d96c50064d8e17708d96ec8a778",
+      "translation_text_hash": "2e0b2e8335184e8b5c32394b1a8c9b767c25751045427216ca2c6d6bb19e1f15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악은 모든 모양이라도 버리라"
+      ],
+      "raw_text_hashes": [
+        "2e0b2e8335184e8b5c32394b1a8c9b767c25751045427216ca2c6d6bb19e1f15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:23",
+      "sequence": 29641,
+      "chapter_label": "1TH 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "May the God of peace himself sanctify you completely. May your whole spirit, soul, and body be preserved blameless at the coming of our Lord Jesus Christ.",
+      "ko": "평강의 하나님이 친히 너희로 온전히 거룩하게 하시고 또 너희 온 영과 혼과 몸이 우리 주 예수 그리스도 강림하실 때에 흠없게 보전되기를 원하노라",
+      "source_text_hash": "f36d6e0d56a817621879be268c646674975800874a4d4d6b316140a141d5fc1e",
+      "translation_text_hash": "c111bd5600eec41eee53e76380d5f16a2198ef4483709e28c554b5a5281f222c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강의 하나님이 친히 너희로 온전히 거룩하게 하시고 또 너희 온 영과 혼과 몸이 우리 주 예수 그리스도 강림하실 때에 흠없게 보전되기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "c111bd5600eec41eee53e76380d5f16a2198ef4483709e28c554b5a5281f222c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:24",
+      "sequence": 29642,
+      "chapter_label": "1TH 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "He who calls you is faithful, who will also do it.",
+      "ko": "너희를 부르시는 이는 미쁘시니 그가 또한 이루시리라",
+      "source_text_hash": "6237c5357d39c7e2d9c1e9431f4b686970721ed2f2e4480be5dc1dbdf516d111",
+      "translation_text_hash": "b95d54d5ad801020dcffbf1a92d154e6f8cda248e749c96a645b53d7f77323aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 부르시는 이는 미쁘시니 그가 또한 이루시리라"
+      ],
+      "raw_text_hashes": [
+        "b95d54d5ad801020dcffbf1a92d154e6f8cda248e749c96a645b53d7f77323aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:25",
+      "sequence": 29643,
+      "chapter_label": "1TH 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Brothers, pray for us.",
+      "ko": "형제들아 우리를 위하여 기도하라",
+      "source_text_hash": "909cbae419ac9f310a96744c6d0ca9bcbdd311baabaa18aedd6ff34c045b504e",
+      "translation_text_hash": "d5e2fa4ac8301d98ccc1c4a851f8cd9c67461ec3dce5c651f101ebe4b9292562",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리를 위하여 기도하라"
+      ],
+      "raw_text_hashes": [
+        "d5e2fa4ac8301d98ccc1c4a851f8cd9c67461ec3dce5c651f101ebe4b9292562"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:26",
+      "sequence": 29644,
+      "chapter_label": "1TH 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "Greet all the brothers with a holy kiss.",
+      "ko": "거룩하게 입맞춤으로 모든 형제에게 문안하라",
+      "source_text_hash": "c7a7f9b8517ef9b024490a84393d9304faa4c43b49b08d8c036e92848c08fd0f",
+      "translation_text_hash": "53fed932eaaedcbcdee1b48c7484984b99166de54b7e2c1782030d28b1be3ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩하게 입맞춤으로 모든 형제에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "53fed932eaaedcbcdee1b48c7484984b99166de54b7e2c1782030d28b1be3ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:27",
+      "sequence": 29645,
+      "chapter_label": "1TH 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "I solemnly command you by the Lord that this letter be read to all the holy brothers.",
+      "ko": "내가 주를 힘입어 너희를 명하노니 모든 형제에게 이 편지를 읽어 들리라",
+      "source_text_hash": "df3f8393334dbb301618e74badab35922c34cdc94aa6c2d0e1e6d6a58050f8af",
+      "translation_text_hash": "95188e2b9982122ede760a4c3ab7a0cde1928f85bd12374bfa0fcabc8e51f18a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 힘입어 너희를 명하노니 모든 형제에게 이 편지를 읽어 들리라"
+      ],
+      "raw_text_hashes": [
+        "95188e2b9982122ede760a4c3ab7a0cde1928f85bd12374bfa0fcabc8e51f18a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:5:28",
+      "sequence": 29646,
+      "chapter_label": "1TH 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "1TH",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "The grace of our Lord Jesus Christ be with you. Amen.",
+      "ko": "우리 주 예수 그리스도의 은혜가 너희에게 있을찌어다",
+      "source_text_hash": "e93d88eae4c62db54dd61a5a128f0282416e9501b1c3be5ba029dd259df7dd35",
+      "translation_text_hash": "15ff7357c694a1309aee5b9688fca6ec0f07795b29ed2d61119a152814a3535c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 은혜가 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "15ff7357c694a1309aee5b9688fca6ec0f07795b29ed2d61119a152814a3535c"
+      ]
+    }
+  ]
+}

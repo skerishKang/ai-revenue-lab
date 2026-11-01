@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:006",
+  "unit_ordinal": 1068,
+  "unit_label": "1CO 6",
+  "book_code": "1CO",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:6:1",
+      "sequence": 28465,
+      "chapter_label": "1CO 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Dare any of you, having a matter against his neighbor, go to law before the unrighteous, and not before the saints?",
+      "ko": "너희 중에 누가 다른이로 더불어 일이 있는데 구태여 불의한 자들 앞에서 송사하고 성도 앞에서 하지 아니하느냐",
+      "source_text_hash": "763e9181b0373cf1eec1528d5faceecb6cdb55273cd66ee5907cfe899149dd61",
+      "translation_text_hash": "f5fb367a230057c56cb5155cacc9232d4cbb28a3266086134b92f642326f4907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 다른이로 더불어 일이 있는데 구태여 불의한 자들 앞에서 송사하고 성도 앞에서 하지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "f5fb367a230057c56cb5155cacc9232d4cbb28a3266086134b92f642326f4907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:2",
+      "sequence": 28466,
+      "chapter_label": "1CO 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Don’t you know that the saints will judge the world? And if the world is judged by you, are you unworthy to judge the smallest matters?",
+      "ko": "성도가 세상을 판단할 것을 너희가 알지 못하느냐 세상도 너희에게 판단을 받겠거든 지극히 작은 일 판단하기를 감당치 못하겠느냐",
+      "source_text_hash": "8972775be2e3f7a139431ebada3d35c16dd0fe3b2607940d41f838ce6e001cb5",
+      "translation_text_hash": "311529c78cbf199bf55236d700f8cba40ddfdf5fa5383f7eccd90c5f8ff1034b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도가 세상을 판단할 것을 너희가 알지 못하느냐 세상도 너희에게 판단을 받겠거든 지극히 작은 일 판단하기를 감당치 못하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "311529c78cbf199bf55236d700f8cba40ddfdf5fa5383f7eccd90c5f8ff1034b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:3",
+      "sequence": 28467,
+      "chapter_label": "1CO 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t you know that we will judge angels? How much more, things that pertain to this life?",
+      "ko": "우리가 천사를 판단할 것을 너희가 알지 못하느냐 그러하거든 하물며 세상 일이랴",
+      "source_text_hash": "1528e0bf1ca06f2ef9c2ef71df07a914acd04712023a59018553a5e05f1339e8",
+      "translation_text_hash": "1315601afcdeafc486a7553bac6ae42cfb77ccc863f4761b139af9a4e7e2b75f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 천사를 판단할 것을 너희가 알지 못하느냐 그러하거든 하물며 세상 일이랴"
+      ],
+      "raw_text_hashes": [
+        "1315601afcdeafc486a7553bac6ae42cfb77ccc863f4761b139af9a4e7e2b75f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:4",
+      "sequence": 28468,
+      "chapter_label": "1CO 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "If then you have to judge things pertaining to this life, do you set them to judge who are of no account in the assembly?",
+      "ko": "그런즉 너희가 세상 사건이 있을 때에 교회에서 경히 여김을 받는 자들을 세우느냐",
+      "source_text_hash": "359a207cd4a0deccc34d91aab785fd8518f1edb1b8e50ff7c8e2dc82cf55c4e7",
+      "translation_text_hash": "5f097fb56b544d79731b363dc26cc0d4aa23c0f83c8dd814e13d38ee726e8a71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 세상 사건이 있을 때에 교회에서 경히 여김을 받는 자들을 세우느냐"
+      ],
+      "raw_text_hashes": [
+        "5f097fb56b544d79731b363dc26cc0d4aa23c0f83c8dd814e13d38ee726e8a71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:5",
+      "sequence": 28469,
+      "chapter_label": "1CO 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "I say this to move you to shame. Isn’t there even one wise man among you who would be able to decide between his brothers?",
+      "ko": "내가 너희를 부끄럽게 하려 하여 이 말을 하노니 너희 가운데 그 형제간 일을 판단할만한 지혜 있는 자가 이같이 하나도 없느냐",
+      "source_text_hash": "28bf45f6b0dc2750124395576774979acaa91390733f9a50ce4caf99243f0d67",
+      "translation_text_hash": "db0869ad83dc8d852fa1b4bdd2f9ee91e7c5f828923dd1a35a569d788c8cad7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 부끄럽게 하려 하여 이 말을 하노니 너희 가운데 그 형제간 일을 판단할만한 지혜 있는 자가 이같이 하나도 없느냐"
+      ],
+      "raw_text_hashes": [
+        "db0869ad83dc8d852fa1b4bdd2f9ee91e7c5f828923dd1a35a569d788c8cad7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:6",
+      "sequence": 28470,
+      "chapter_label": "1CO 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "But brother goes to law with brother, and that before unbelievers!",
+      "ko": "형제가 형제로 더불어 송사할 뿐더러 믿지 아니하는 자들 앞에서 하느냐",
+      "source_text_hash": "db4c68cfa7a1a1ee73dd3a929666e3b49d32db5c877e91ac9eebb314117d1979",
+      "translation_text_hash": "7712b9b50e8af404336ba2c77359e67b18f16a107f62a36208d6ab28e0c852f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제가 형제로 더불어 송사할 뿐더러 믿지 아니하는 자들 앞에서 하느냐"
+      ],
+      "raw_text_hashes": [
+        "7712b9b50e8af404336ba2c77359e67b18f16a107f62a36208d6ab28e0c852f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:7",
+      "sequence": 28471,
+      "chapter_label": "1CO 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore it is already altogether a defect in you that you have lawsuits one with another. Why not rather be wronged? Why not rather be defrauded?",
+      "ko": "너희가 피차 송사함으로 너희 가운데 이미 완연한 허물이 있나니 차라리 불의를 당하는 것이 낫지 아니하며 차라리 속는 것이 낫지 아니하냐",
+      "source_text_hash": "88b20724b5acdb67c4f1c78d3927f1ae8ae0c934974efca197b6926bcf979942",
+      "translation_text_hash": "4fb2d70efb5b18fdb57e81e90c21bdcc3150ca0e0a9de65aa8e6be5067fa7c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 피차 송사함으로 너희 가운데 이미 완연한 허물이 있나니 차라리 불의를 당하는 것이 낫지 아니하며 차라리 속는 것이 낫지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "4fb2d70efb5b18fdb57e81e90c21bdcc3150ca0e0a9de65aa8e6be5067fa7c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:8",
+      "sequence": 28472,
+      "chapter_label": "1CO 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "No, but you yourselves do wrong and defraud, and that against your brothers.",
+      "ko": "너희는 불의를 행하고 속이는구나 저는 너희 형제로다",
+      "source_text_hash": "1cc5a10af83e3896f2c739b422a070cf6dd5d433a4ffa9582a6b65c9fdf9eb92",
+      "translation_text_hash": "06c66a31dabdf6198df29f967753e912890894a9d1d5c003860463d3335f7a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 불의를 행하고 속이는구나 저는 너희 형제로다"
+      ],
+      "raw_text_hashes": [
+        "06c66a31dabdf6198df29f967753e912890894a9d1d5c003860463d3335f7a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:9",
+      "sequence": 28473,
+      "chapter_label": "1CO 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Or don’t you know that the unrighteous will not inherit God’s Kingdom? Don’t be deceived. Neither the sexually immoral, nor idolaters, nor adulterers, nor male prostitutes, nor homosexuals,",
+      "ko": "불의한 자가 하나님의 나라를 유업으로 받지 못할 줄을 알지 못하느냐 미혹을 받지 말라 음란하는 자나 우상 숭배하는 자나 간음하는 자나 탐색하는 자나 남색하는 자나",
+      "source_text_hash": "d57da461d06b4ba80b503c320f6b7bc571274af850826b60b6c5182c8d78c57f",
+      "translation_text_hash": "55506db73496c5c019246b119b2a6ea330da9b16d9bb683ef2968cb514176920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의한 자가 하나님의 나라를 유업으로 받지 못할 줄을 알지 못하느냐 미혹을 받지 말라 음란하는 자나 우상 숭배하는 자나 간음하는 자나 탐색하는 자나 남색하는 자나"
+      ],
+      "raw_text_hashes": [
+        "55506db73496c5c019246b119b2a6ea330da9b16d9bb683ef2968cb514176920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:10",
+      "sequence": 28474,
+      "chapter_label": "1CO 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "nor thieves, nor covetous, nor drunkards, nor slanderers, nor extortionists, will inherit God’s Kingdom.",
+      "ko": "도적이나 탐람하는 자나 술 취하는 자나 후욕하는 자나 토색하는 자들은 하나님의 나라를 유업으로 받지 못하리라",
+      "source_text_hash": "7b1bc0e54110cef08caf3bd56ad393e57544560d3e4cffe96c34a41024735235",
+      "translation_text_hash": "cd9cc762d2b3df3b4740d704362c059f6774f6ef7c7f57512ddb8c8b830c4111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이나 탐람하는 자나 술 취하는 자나 후욕하는 자나 토색하는 자들은 하나님의 나라를 유업으로 받지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "cd9cc762d2b3df3b4740d704362c059f6774f6ef7c7f57512ddb8c8b830c4111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:11",
+      "sequence": 28475,
+      "chapter_label": "1CO 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Some of you were such, but you were washed. You were sanctified. You were justified in the name of the Lord Jesus, and in the Spirit of our God.",
+      "ko": "너희 중에 이와 같은 자들이 있더니 주 예수 그리스도의 이름과 우리 하나님의 성령 안에서 씻음과 거룩함과 의롭다 하심을 얻었느니라",
+      "source_text_hash": "7cc5e0fa2797051f6ad525f46072ca47c15e88e3d1bf33d4513c67e9dadf4e13",
+      "translation_text_hash": "7f959c72209a9e74c4c3a07a26dc0a424725dc9924a35a8caf84fb5bb734cfba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 이와 같은 자들이 있더니 주 예수 그리스도의 이름과 우리 하나님의 성령 안에서 씻음과 거룩함과 의롭다 하심을 얻었느니라"
+      ],
+      "raw_text_hashes": [
+        "7f959c72209a9e74c4c3a07a26dc0a424725dc9924a35a8caf84fb5bb734cfba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:12",
+      "sequence": 28476,
+      "chapter_label": "1CO 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "“All things are lawful for me,” but not all things are expedient. “All things are lawful for me,” but I will not be brought under the power of anything.",
+      "ko": "모든 것이 내게 가하나 다 유익한 것이 아니요 모든 것이 내게 가하나 내가 아무에게든지 제재를 받지 아니하리라",
+      "source_text_hash": "1f15dade2dc7d6a916dc5d1abac35d197845287ee71776b04a0d29b65b5fc72e",
+      "translation_text_hash": "5cbde8de7ebeab6f3310fd8a7e16c5c0199ef6048db840e7dc0adbaf6176df8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것이 내게 가하나 다 유익한 것이 아니요 모든 것이 내게 가하나 내가 아무에게든지 제재를 받지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "5cbde8de7ebeab6f3310fd8a7e16c5c0199ef6048db840e7dc0adbaf6176df8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:13",
+      "sequence": 28477,
+      "chapter_label": "1CO 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "“Foods for the belly, and the belly for foods,” but God will bring to nothing both it and them. But the body is not for sexual immorality, but for the Lord, and the Lord for the body.",
+      "ko": "식물은 배를 위하고 배는 식물을 위하나 하나님이 이것 저것 다 폐하시리라 몸은 음란을 위하지 않고 오직 주를 위하며 주는 몸을 위하시느니라",
+      "source_text_hash": "867fd2020176aaa1b3eb94f362342f6b2e4add6c1041074a9d6924620b7cadf8",
+      "translation_text_hash": "22c2681976fa6eeff34f9aecb903cc29673520c3ca69a6738116c6eec7f46faa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식물은 배를 위하고 배는 식물을 위하나 하나님이 이것 저것 다 폐하시리라 몸은 음란을 위하지 않고 오직 주를 위하며 주는 몸을 위하시느니라"
+      ],
+      "raw_text_hashes": [
+        "22c2681976fa6eeff34f9aecb903cc29673520c3ca69a6738116c6eec7f46faa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:14",
+      "sequence": 28478,
+      "chapter_label": "1CO 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Now God raised up the Lord, and will also raise us up by his power.",
+      "ko": "하나님이 주를 다시 살리셨고 또한 그의 권능으로 우리를 다시 살리시리라",
+      "source_text_hash": "f4676370ddfec9d20cefe6091a41ab54c76a478cb044f3a85e5ada7e4a492a5c",
+      "translation_text_hash": "0a9c9b30fbc8d3eecef0f3fde21f71ed8dc9ce58322fd41f7d839408991fba53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 주를 다시 살리셨고 또한 그의 권능으로 우리를 다시 살리시리라"
+      ],
+      "raw_text_hashes": [
+        "0a9c9b30fbc8d3eecef0f3fde21f71ed8dc9ce58322fd41f7d839408991fba53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:15",
+      "sequence": 28479,
+      "chapter_label": "1CO 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Don’t you know that your bodies are members of Christ? Shall I then take the members of Christ and make them members of a prostitute? May it never be!",
+      "ko": "너희 몸이 그리스도의 지체인 줄을 알지 못하느냐 내가 그리스도의 지체를 가지고 창기의 지체를 만들겠느냐 결코 그럴 수 없느니라",
+      "source_text_hash": "4b69d73806255dbc4660122266682bcdc6a51561c818ec4b6e184f7a27d2e228",
+      "translation_text_hash": "0befa3e8a8ffc0eafebc8dd7a281944453d782a8f439de510f160da3fbb53974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 몸이 그리스도의 지체인 줄을 알지 못하느냐 내가 그리스도의 지체를 가지고 창기의 지체를 만들겠느냐 결코 그럴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "0befa3e8a8ffc0eafebc8dd7a281944453d782a8f439de510f160da3fbb53974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:16",
+      "sequence": 28480,
+      "chapter_label": "1CO 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "Or don’t you know that he who is joined to a prostitute is one body? For, “The two”, he says, “will become one flesh.”",
+      "ko": "창기와 합하는 자는 저와 한 몸인 줄을 알지 못하느냐 일렀으되 둘이 한 육체가 된다 하셨나니",
+      "source_text_hash": "f77006c64509537760fd4d4c17ebf158cd13d5a35b2f6a5d001a877eacff3708",
+      "translation_text_hash": "f6c3732dee3ebecb035c8dbdb6b499e484bf8a1e64d3fbd010f359cbaacd2c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창기와 합하는 자는 저와 한 몸인 줄을 알지 못하느냐 일렀으되 둘이 한 육체가 된다 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "f6c3732dee3ebecb035c8dbdb6b499e484bf8a1e64d3fbd010f359cbaacd2c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:17",
+      "sequence": 28481,
+      "chapter_label": "1CO 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "But he who is joined to the Lord is one spirit.",
+      "ko": "주와 합하는 자는 한 영이니라",
+      "source_text_hash": "62f3c9ecc8ee8857bcb910a9f3533a032c58814bc9063107a055c855fe0a4e77",
+      "translation_text_hash": "97e84d42933ba48c7d62fe0c30dfe2f5a3c437b477eea26a119c88e7840e8230",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주와 합하는 자는 한 영이니라"
+      ],
+      "raw_text_hashes": [
+        "97e84d42933ba48c7d62fe0c30dfe2f5a3c437b477eea26a119c88e7840e8230"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:18",
+      "sequence": 28482,
+      "chapter_label": "1CO 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "Flee sexual immorality! “Every sin that a man does is outside the body,” but he who commits sexual immorality sins against his own body.",
+      "ko": "음행을 피하라 사람이 범하는 죄마다 몸 밖에 있거니와 음행하는 자는 자기 몸에게 죄를 범하느니라",
+      "source_text_hash": "87d633e3052110c298391037c634cab8a3e2826b1493304589198d6605025289",
+      "translation_text_hash": "8f0d067c00a0c31f30e2a6831b35f8ce82907c1296b95606a05ab0bfdfd3003e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행을 피하라 사람이 범하는 죄마다 몸 밖에 있거니와 음행하는 자는 자기 몸에게 죄를 범하느니라"
+      ],
+      "raw_text_hashes": [
+        "8f0d067c00a0c31f30e2a6831b35f8ce82907c1296b95606a05ab0bfdfd3003e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:19",
+      "sequence": 28483,
+      "chapter_label": "1CO 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Or don’t you know that your body is a temple of the Holy Spirit who is in you, whom you have from God? You are not your own,",
+      "ko": "너희 몸은 너희가 하나님께로부터 받은바 너희 가운데 계신 성령의 전인 줄을 알지 못하느냐 너희는 너희의 것이 아니라",
+      "source_text_hash": "097b98679c8bd228d1b264ce0116fea36eadc5672e3491a64083b42edbb1e455",
+      "translation_text_hash": "63c06e993a54c49074c57858bf53f85e566c424f531885277a220c77a6a6908c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 몸은 너희가 하나님께로부터 받은바 너희 가운데 계신 성령의 전인 줄을 알지 못하느냐 너희는 너희의 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "63c06e993a54c49074c57858bf53f85e566c424f531885277a220c77a6a6908c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:6:20",
+      "sequence": 28484,
+      "chapter_label": "1CO 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "for you were bought with a price. Therefore glorify God in your body and in your spirit, which are God’s.",
+      "ko": "값으로 산 것이 되었으니 그런즉 너희 몸으로 하나님께 영광을 돌리라",
+      "source_text_hash": "8a151432c6320389d7b3ee5052cd6c34e4956af6338a3f51703f420fe9b5ee1c",
+      "translation_text_hash": "d528c91745e2243110cbe00225dd65742bf69164993388ef09d82ed7e3dd0c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "값으로 산 것이 되었으니 그런즉 너희 몸으로 하나님께 영광을 돌리라"
+      ],
+      "raw_text_hashes": [
+        "d528c91745e2243110cbe00225dd65742bf69164993388ef09d82ed7e3dd0c4a"
+      ]
+    }
+  ]
+}

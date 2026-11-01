@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:011",
+  "unit_ordinal": 489,
+  "unit_label": "PSA 11",
+  "book_code": "PSA",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:11:1",
+      "sequence": 14061,
+      "chapter_label": "PSA 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "In the LORD, I take refuge. How can you say to my soul, “Flee as a bird to your mountain”?",
+      "ko": "내가 여호와께 피하였거늘 너희가 내 영혼더러 새 같이 네 산으로 도망하라 함은 어찜인고",
+      "source_text_hash": "d0d6848d8da35883cbda358f135dda45905acb525fc08f54f2152b4838fd8419",
+      "translation_text_hash": "6506f83ead786a9ab68b0de2d2c551efe2de439b78b753bb412025763acb91be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 피하였거늘 너희가 내 영혼더러 새 같이 네 산으로 도망하라 함은 어찜인고"
+      ],
+      "raw_text_hashes": [
+        "6506f83ead786a9ab68b0de2d2c551efe2de439b78b753bb412025763acb91be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:2",
+      "sequence": 14062,
+      "chapter_label": "PSA 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "For, behold, the wicked bend their bows. They set their arrows on the strings, that they may shoot in darkness at the upright in heart.",
+      "ko": "악인이 활을 당기고 살을 시위에 먹임이여 마음이 바른 자를 어두운데서 쏘려 하는도다",
+      "source_text_hash": "fdb2d2183461dda9b37119d22c9e4b7d8d56fa405434dc8c8800d3ced2bb8dcb",
+      "translation_text_hash": "b21236b43e501344417d75a997ed2477b94b238534d01fd25065dbc1f52c7931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 활을 당기고 살을 시위에 먹임이여 마음이 바른 자를 어두운데서 쏘려 하는도다"
+      ],
+      "raw_text_hashes": [
+        "b21236b43e501344417d75a997ed2477b94b238534d01fd25065dbc1f52c7931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:3",
+      "sequence": 14063,
+      "chapter_label": "PSA 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "If the foundations are destroyed, what can the righteous do?",
+      "ko": "터가 무너지면 의인이 무엇을 할꼬",
+      "source_text_hash": "9e43940651c834eb8074bbfba6fb4ddd14e3774a7d1b493f2d30df09bae0f9dd",
+      "translation_text_hash": "f8930f104369d4967af641eaa5cda8124d3201dc5789c5da6957ba933145415d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "터가 무너지면 의인이 무엇을 할꼬"
+      ],
+      "raw_text_hashes": [
+        "f8930f104369d4967af641eaa5cda8124d3201dc5789c5da6957ba933145415d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:4",
+      "sequence": 14064,
+      "chapter_label": "PSA 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD is in his holy temple. The LORD is on his throne in heaven. His eyes observe. His eyes examine the children of men.",
+      "ko": "여호와께서 그 성전에 계시니 여호와의 보좌는 하늘에 있음이여 그 눈이 인생을 통촉하시고 그 안목이 저희를 감찰하시도다",
+      "source_text_hash": "d0d53bcd6c460dec8ecf76d7a294916f640b2911e64b8395e3cf97d938bf5b4c",
+      "translation_text_hash": "51963c5d23c7cf1fec7fac0c116dfb8e181c4c298b2f2bef67a87af4af61b353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 성전에 계시니 여호와의 보좌는 하늘에 있음이여 그 눈이 인생을 통촉하시고 그 안목이 저희를 감찰하시도다"
+      ],
+      "raw_text_hashes": [
+        "51963c5d23c7cf1fec7fac0c116dfb8e181c4c298b2f2bef67a87af4af61b353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:5",
+      "sequence": 14065,
+      "chapter_label": "PSA 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD examines the righteous, but his soul hates the wicked and him who loves violence.",
+      "ko": "여호와는 의인을 감찰하시고 악인과 강포함을 좋아하는 자를 마음에 미워하시도다",
+      "source_text_hash": "2c4adfeee1269293591bbea66c5c9f632efac83fa245b87afbfc08fe9508e080",
+      "translation_text_hash": "4a39482ccaf873e59076ae6b3c002490a1e1e54c84aedb8d2e2bca5f18e3c1e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 의인을 감찰하시고 악인과 강포함을 좋아하는 자를 마음에 미워하시도다"
+      ],
+      "raw_text_hashes": [
+        "4a39482ccaf873e59076ae6b3c002490a1e1e54c84aedb8d2e2bca5f18e3c1e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:6",
+      "sequence": 14066,
+      "chapter_label": "PSA 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "On the wicked he will rain blazing coals; fire, sulfur, and scorching wind shall be the portion of their cup.",
+      "ko": "악인에게 그물을 내려 치시리니 불과 유황과 태우는 바람이 저희 잔의 소득이 되리로다",
+      "source_text_hash": "27bf40b7c0217a9856b1aa9708081a74af8e83717c65692c9112ffc24c784b8d",
+      "translation_text_hash": "45be98ca9a1b5164591214359cec552a93b288f8eb295d8c591b4da86a85a0e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게 그물을 내려 치시리니 불과 유황과 태우는 바람이 저희 잔의 소득이 되리로다"
+      ],
+      "raw_text_hashes": [
+        "45be98ca9a1b5164591214359cec552a93b288f8eb295d8c591b4da86a85a0e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:11:7",
+      "sequence": 14067,
+      "chapter_label": "PSA 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "For the LORD is righteous. He loves righteousness. The upright shall see his face.",
+      "ko": "여호와는 의로우사 의로운 일을 좋아하시나니 정직한 자는 그 얼굴을 뵈오리로다",
+      "source_text_hash": "52f869df4acdc8fa62ad258dff0f62b288f7c2ac47b7774b20d20e27c728ebc2",
+      "translation_text_hash": "cc3a5dc91ef163f9728f4521969a04d87d6b32cccbda5e530707c1ac0b0527a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 의로우사 의로운 일을 좋아하시나니 정직한 자는 그 얼굴을 뵈오리로다"
+      ],
+      "raw_text_hashes": [
+        "cc3a5dc91ef163f9728f4521969a04d87d6b32cccbda5e530707c1ac0b0527a2"
+      ]
+    }
+  ]
+}

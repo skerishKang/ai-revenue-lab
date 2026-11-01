@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:019",
+  "unit_ordinal": 647,
+  "unit_label": "PRO 19",
+  "book_code": "PRO",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:19:1",
+      "sequence": 16927,
+      "chapter_label": "PRO 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Better is the poor who walks in his integrity than he who is perverse in his lips and is a fool.",
+      "ko": "성실히 행하는 가난한 자는 입술이 패려하고 미련한 자보다 나으니라",
+      "source_text_hash": "dea3950a63ac7bd8e3c4d100320b745fd6c339e2eb2ecee0dcdbc83d33e1f50d",
+      "translation_text_hash": "47dbbdcc9a817033b528b4b7aea3abe8437b86543163b3284cd55030c67027d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성실히 행하는 가난한 자는 입술이 패려하고 미련한 자보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "47dbbdcc9a817033b528b4b7aea3abe8437b86543163b3284cd55030c67027d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:2",
+      "sequence": 16928,
+      "chapter_label": "PRO 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "It isn’t good to have zeal without knowledge, nor to be hasty with one’s feet and miss the way.",
+      "ko": "지식 없는 소원은 선치 못하고 발이 급한 사람은 그릇하느니라",
+      "source_text_hash": "6a6456c2691016931ff62015d8d6031f165592e56a077ef4e384a3545a239bda",
+      "translation_text_hash": "55bb00523ee2117d95b53154d73067cda401c94cd9c486385a2e2e70b3a90391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지식 없는 소원은 선치 못하고 발이 급한 사람은 그릇하느니라"
+      ],
+      "raw_text_hashes": [
+        "55bb00523ee2117d95b53154d73067cda401c94cd9c486385a2e2e70b3a90391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:3",
+      "sequence": 16929,
+      "chapter_label": "PRO 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "The foolishness of man subverts his way; his heart rages against the LORD.",
+      "ko": "사람이 미련하므로 자기 길을 굽게 하고 마음으로 여호와를 원망하느니라",
+      "source_text_hash": "6247aff8e8f78bff4d343b4ba84b37b4ab28558c52f4bab0ede81ccfc2317847",
+      "translation_text_hash": "80c1f2c1ef3e8f03f6ed2494b26a0629881209270c7940a3944f43c9b05616ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 미련하므로 자기 길을 굽게 하고 마음으로 여호와를 원망하느니라"
+      ],
+      "raw_text_hashes": [
+        "80c1f2c1ef3e8f03f6ed2494b26a0629881209270c7940a3944f43c9b05616ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:4",
+      "sequence": 16930,
+      "chapter_label": "PRO 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Wealth adds many friends, but the poor is separated from his friend.",
+      "ko": "재물은 많은 친구를 더하게 하나 가난한즉 친구가 끊어지느니라",
+      "source_text_hash": "5d772c9cc02f548c76721b26474d9158d8795062183d8a32dcd0aab2db79bebf",
+      "translation_text_hash": "b7e284b0aae8b00aaf83645d604646e4a300a525c31a72db6d4007bbfd2d52cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재물은 많은 친구를 더하게 하나 가난한즉 친구가 끊어지느니라"
+      ],
+      "raw_text_hashes": [
+        "b7e284b0aae8b00aaf83645d604646e4a300a525c31a72db6d4007bbfd2d52cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:5",
+      "sequence": 16931,
+      "chapter_label": "PRO 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "A false witness shall not be unpunished. He who pours out lies shall not go free.",
+      "ko": "거짓 증인은 벌을 면치 못할 것이요 거짓말을 내는 자도 피치 못하리라",
+      "source_text_hash": "8e8b8af4f462ec49deeb1ca79e858c0a0595dfc05b25f8a4a98d81cb67b4d1b1",
+      "translation_text_hash": "60e700c248b9fdaaff8fdb3e0bdd88308e787cd42eb85146d488e18105a49033",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 증인은 벌을 면치 못할 것이요 거짓말을 내는 자도 피치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "60e700c248b9fdaaff8fdb3e0bdd88308e787cd42eb85146d488e18105a49033"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:6",
+      "sequence": 16932,
+      "chapter_label": "PRO 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Many will entreat the favor of a ruler, and everyone is a friend to a man who gives gifts.",
+      "ko": "너그러운 사람에게는 은혜를 구하는 자가 많고 선물을 주기를 좋아하는 자에게는 사람마다 친구가 되느니라",
+      "source_text_hash": "57fbfa8a8f67ab73abcbe8a8604e51e9d1898212b5fb4ad935397bfdc20ed564",
+      "translation_text_hash": "4cbe557a6456c5b7a9da514187935b9aa20c97a9bd8f1959891f030c2b4b9285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너그러운 사람에게는 은혜를 구하는 자가 많고 선물을 주기를 좋아하는 자에게는 사람마다 친구가 되느니라"
+      ],
+      "raw_text_hashes": [
+        "4cbe557a6456c5b7a9da514187935b9aa20c97a9bd8f1959891f030c2b4b9285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:7",
+      "sequence": 16933,
+      "chapter_label": "PRO 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "All the relatives of the poor shun him; how much more do his friends avoid him! He pursues them with pleas, but they are gone.",
+      "ko": "가난한 자는 그 형제들에게도 미움을 받거든 하물며 친구야 그를 멀리 아니하겠느냐 따라가며 말하려 할찌라도 그들이 없어졌으리라",
+      "source_text_hash": "f3f248fd0a2eec8a9472bef261596f1e3f574f3e6edd473a7fc603cfe32ba908",
+      "translation_text_hash": "8e104d8ef34c21b8b0cbd2259b84a35c5a0093e6915bc2b8f3eaf7c8c27b3353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자는 그 형제들에게도 미움을 받거든 하물며 친구야 그를 멀리 아니하겠느냐 따라가며 말하려 할찌라도 그들이 없어졌으리라"
+      ],
+      "raw_text_hashes": [
+        "8e104d8ef34c21b8b0cbd2259b84a35c5a0093e6915bc2b8f3eaf7c8c27b3353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:8",
+      "sequence": 16934,
+      "chapter_label": "PRO 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He who gets wisdom loves his own soul. He who keeps understanding shall find good.",
+      "ko": "지혜를 얻는 자는 자기 영혼을 사랑하고 명철을 지키는 자는 복을 얻느니라",
+      "source_text_hash": "6a54ae354e42fb2534ec7d3bb886c9f484b13fddb8e3ae371165ba80d1fdc47d",
+      "translation_text_hash": "203aa0176cad2773c3da7b24eb240e9b559264ae422509d2b28b3dd4ea4a5290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜를 얻는 자는 자기 영혼을 사랑하고 명철을 지키는 자는 복을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "203aa0176cad2773c3da7b24eb240e9b559264ae422509d2b28b3dd4ea4a5290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:9",
+      "sequence": 16935,
+      "chapter_label": "PRO 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "A false witness shall not be unpunished. He who utters lies shall perish.",
+      "ko": "거짓 증인은 벌을 면치 못할 것이요 거짓말을 내는 자는 망할 것이니라",
+      "source_text_hash": "1730c4b10e7fb8c966f0b41e7d11631d12524bf4f746829b49a277f10d175cbf",
+      "translation_text_hash": "2603acd5a3088ad160514576b7babc21bbe80f9920548036e7266b5c1c481268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 증인은 벌을 면치 못할 것이요 거짓말을 내는 자는 망할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "2603acd5a3088ad160514576b7babc21bbe80f9920548036e7266b5c1c481268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:10",
+      "sequence": 16936,
+      "chapter_label": "PRO 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "Delicate living is not appropriate for a fool, much less for a servant to have rule over princes.",
+      "ko": "미련한 자가 사치하는 것이 적당치 못하거든 하물며 종이 방백을 다스림이랴",
+      "source_text_hash": "324c3d3cf29cad0609afc153da34441c0593c29cc0f1daaa07a3dd9273b58c33",
+      "translation_text_hash": "d3cf334031958096c207ee350f6409a7f752d41de2bd8e7205cc58e7d5870400",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자가 사치하는 것이 적당치 못하거든 하물며 종이 방백을 다스림이랴"
+      ],
+      "raw_text_hashes": [
+        "d3cf334031958096c207ee350f6409a7f752d41de2bd8e7205cc58e7d5870400"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:11",
+      "sequence": 16937,
+      "chapter_label": "PRO 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "The discretion of a man makes him slow to anger. It is his glory to overlook an offense.",
+      "ko": "노하기를 더디하는 것이 사람의 슬기요 허물을 용서하는 것이 자기의 영광이니라",
+      "source_text_hash": "6cfe437cabe7dce159332ee3dc15f94244058001dc05f58a9ef655832506b874",
+      "translation_text_hash": "16085e562f7c1f8431b0bb4762cae56bd4d8067ec2f2e282c04b304e40ce7db6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노하기를 더디하는 것이 사람의 슬기요 허물을 용서하는 것이 자기의 영광이니라"
+      ],
+      "raw_text_hashes": [
+        "16085e562f7c1f8431b0bb4762cae56bd4d8067ec2f2e282c04b304e40ce7db6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:12",
+      "sequence": 16938,
+      "chapter_label": "PRO 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "The king’s wrath is like the roaring of a lion, but his favor is like dew on the grass.",
+      "ko": "왕의 노함은 사자의 부르짖음 같고 그의 은택은 풀 위에 이슬 같으니라",
+      "source_text_hash": "1ce7386944d992a571bb01f3ddaec4caab7d8e421a30edfc555121d104d9040d",
+      "translation_text_hash": "044e967a0e6b3b4a39022a65698f844803691ea1aa50ef6eb48aad790ea79318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 노함은 사자의 부르짖음 같고 그의 은택은 풀 위에 이슬 같으니라"
+      ],
+      "raw_text_hashes": [
+        "044e967a0e6b3b4a39022a65698f844803691ea1aa50ef6eb48aad790ea79318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:13",
+      "sequence": 16939,
+      "chapter_label": "PRO 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "A foolish son is the calamity of his father. A wife’s quarrels are a continual dripping.",
+      "ko": "미련한 아들은 그 아비의 재앙이요 다투는 아내는 이어 떨어지는 물방울이니라",
+      "source_text_hash": "a57451552adc0121f9da171e3b31ea50454340480b8bc558394c8f2b3c1f48a0",
+      "translation_text_hash": "efe513537d21483f127e0f1405310590833183935eebad375562a618ab71c603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 아들은 그 아비의 재앙이요 다투는 아내는 이어 떨어지는 물방울이니라"
+      ],
+      "raw_text_hashes": [
+        "efe513537d21483f127e0f1405310590833183935eebad375562a618ab71c603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:14",
+      "sequence": 16940,
+      "chapter_label": "PRO 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "House and riches are an inheritance from fathers, but a prudent wife is from the LORD.",
+      "ko": "집과 재물은 조상에게서 상속하거니와 슬기로운 아내는 여호와께로서 말미암느니라",
+      "source_text_hash": "8d6bebbb2857f55262a95f2c44dff53989307d8cb4ca936e559d463dd2dd46ad",
+      "translation_text_hash": "37c3e68b3d9ee5b8a13d2c3aa0930d369cc4857809169a9f1c8076d4a53a8f3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집과 재물은 조상에게서 상속하거니와 슬기로운 아내는 여호와께로서 말미암느니라"
+      ],
+      "raw_text_hashes": [
+        "37c3e68b3d9ee5b8a13d2c3aa0930d369cc4857809169a9f1c8076d4a53a8f3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:15",
+      "sequence": 16941,
+      "chapter_label": "PRO 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Slothfulness casts into a deep sleep. The idle soul shall suffer hunger.",
+      "ko": "게으름이 사람으로 깊이 잠들게 하나니 해태한 사람은 주릴 것이니라",
+      "source_text_hash": "32550e1bcd677a9c937f25add23f6425a104701c41936f0e8483b57d4d5a5967",
+      "translation_text_hash": "5437a752774ef2a6d12993a6f0bdf62f519d6790a9982542f752c866f5d71d9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으름이 사람으로 깊이 잠들게 하나니 해태한 사람은 주릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "5437a752774ef2a6d12993a6f0bdf62f519d6790a9982542f752c866f5d71d9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:16",
+      "sequence": 16942,
+      "chapter_label": "PRO 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "He who keeps the commandment keeps his soul, but he who is contemptuous in his ways shall die.",
+      "ko": "계명을 지키는 자는 자기의 영혼을 지키거니와 그 행실을 삼가지 아니하는 자는 죽으리라",
+      "source_text_hash": "931faa2ace5d63a7a8798f1d7a8e7a0ced91d61d2174cc5ff6e46569a0d6353b",
+      "translation_text_hash": "37a3e97c2fce6370f26d64087bb9967a1e5742b543c6f8b86a0c628e54b87503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계명을 지키는 자는 자기의 영혼을 지키거니와 그 행실을 삼가지 아니하는 자는 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "37a3e97c2fce6370f26d64087bb9967a1e5742b543c6f8b86a0c628e54b87503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:17",
+      "sequence": 16943,
+      "chapter_label": "PRO 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "He who has pity on the poor lends to the LORD; he will reward him.",
+      "ko": "가난한 자를 불쌍히 여기는 것은 여호와께 꾸이는 것이니 그 선행을 갚아 주시리라",
+      "source_text_hash": "5b26a431a02ab701b19f5ad5d2f1ad73ba16ee76670d7ad149f77b268e3d236e",
+      "translation_text_hash": "a56331ff245520cce57b2c77a96902fa3109e6ced0eb3112322c110df4240dc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자를 불쌍히 여기는 것은 여호와께 꾸이는 것이니 그 선행을 갚아 주시리라"
+      ],
+      "raw_text_hashes": [
+        "a56331ff245520cce57b2c77a96902fa3109e6ced0eb3112322c110df4240dc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:18",
+      "sequence": 16944,
+      "chapter_label": "PRO 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Discipline your son, for there is hope; don’t be a willing party to his death.",
+      "ko": "네가 네 아들에게 소망이 있은즉 그를 징계하고 죽일 마음은 두지 말찌니라",
+      "source_text_hash": "ee91fa546644a562d477021b2bee116ea4fe8d368180afb031b94609240d0f11",
+      "translation_text_hash": "b6e60fe1d16d29bf4ea461b4f67d483dd779b0ddb6148b76cabf5c800b0f03cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 아들에게 소망이 있은즉 그를 징계하고 죽일 마음은 두지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "b6e60fe1d16d29bf4ea461b4f67d483dd779b0ddb6148b76cabf5c800b0f03cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:19",
+      "sequence": 16945,
+      "chapter_label": "PRO 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "A hot-tempered man must pay the penalty, for if you rescue him, you must do it again.",
+      "ko": "노하기를 맹렬히 하는 자는 벌을 받을 것이라 네가 그를 건져 주면 다시 건져 주게 되리라",
+      "source_text_hash": "baf8d565ef95844741eb233e40378d7ebae1e200c645bb7a1b6eef355aa15c16",
+      "translation_text_hash": "b0a5e67927e72c15c7d7e1f5ba466da4e4ca48fa81e0d4a13fd9dfdf0ccb5705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노하기를 맹렬히 하는 자는 벌을 받을 것이라 네가 그를 건져 주면 다시 건져 주게 되리라"
+      ],
+      "raw_text_hashes": [
+        "b0a5e67927e72c15c7d7e1f5ba466da4e4ca48fa81e0d4a13fd9dfdf0ccb5705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:20",
+      "sequence": 16946,
+      "chapter_label": "PRO 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Listen to counsel and receive instruction, that you may be wise in your latter end.",
+      "ko": "너는 권고를 들으며 훈계를 받으라 그리하면 네가 필경은 지혜롭게 되리라",
+      "source_text_hash": "04103674994e2132dd77f44d86142db2887dcb8ba59dc72d5897b110c3f5d1fb",
+      "translation_text_hash": "8ffaca754f9be4658f4b3bd428227462d8b4d7ffa3778c073809f2f93a3349d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 권고를 들으며 훈계를 받으라 그리하면 네가 필경은 지혜롭게 되리라"
+      ],
+      "raw_text_hashes": [
+        "8ffaca754f9be4658f4b3bd428227462d8b4d7ffa3778c073809f2f93a3349d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:21",
+      "sequence": 16947,
+      "chapter_label": "PRO 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "There are many plans in a man’s heart, but the LORD’s counsel will prevail.",
+      "ko": "사람의 마음에는 많은 계획이 있어도 오직 여호와의 뜻이 완전히 서리라",
+      "source_text_hash": "cb8c474e7db9f18e730e02cb1a5c9c822c0b603d22f252bba9652aef5e7d6c04",
+      "translation_text_hash": "ab2e32fa56694728050d7d7aac20600c1bc2c92db93e2ec7b393fb46652940c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 마음에는 많은 계획이 있어도 오직 여호와의 뜻이 완전히 서리라"
+      ],
+      "raw_text_hashes": [
+        "ab2e32fa56694728050d7d7aac20600c1bc2c92db93e2ec7b393fb46652940c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:22",
+      "sequence": 16948,
+      "chapter_label": "PRO 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "That which makes a man to be desired is his kindness. A poor man is better than a liar.",
+      "ko": "사람은 그 인자함으로 남에게 사모함을 받느니라 가난한 자는 거짓말 하는 자보다 나으니라",
+      "source_text_hash": "894e1e122dff7ba4055af8a38a60b75210caf7bfc0f027a0e7d67f35e15ed112",
+      "translation_text_hash": "3268bb385df7711ef8fca55b684493ef613f0e521026e20ff2b169ccfb77f7bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 그 인자함으로 남에게 사모함을 받느니라 가난한 자는 거짓말 하는 자보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "3268bb385df7711ef8fca55b684493ef613f0e521026e20ff2b169ccfb77f7bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:23",
+      "sequence": 16949,
+      "chapter_label": "PRO 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "The fear of the LORD leads to life, then contentment; he rests and will not be touched by trouble.",
+      "ko": "여호와를 경외하는 것은 사람으로 생명에 이르게 하는것이라 경외하는 자는 족하게 지내고 재앙을 만나지 아니하느니라",
+      "source_text_hash": "3650c404da502f6fa13834d3320d13e9051d23b797c6c443920d34e4c87c3a77",
+      "translation_text_hash": "7e3bae14cc13aec317c6c0fb24a4b5f4fe7b993f7eaa1d1b996caa8eeb23da54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 것은 사람으로 생명에 이르게 하는것이라 경외하는 자는 족하게 지내고 재앙을 만나지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "7e3bae14cc13aec317c6c0fb24a4b5f4fe7b993f7eaa1d1b996caa8eeb23da54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:24",
+      "sequence": 16950,
+      "chapter_label": "PRO 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "The sluggard buries his hand in the dish; he will not so much as bring it to his mouth again.",
+      "ko": "게으른 자는 그 손을 그릇에 넣고도 입으로 올리기를 괴로와하느니라",
+      "source_text_hash": "4c8db07841427c24e8247a8495fe9b6c8052eb3b1dea9e8dff5c44f4b9a17fa1",
+      "translation_text_hash": "36802ceee04b62bda2f6ec4fed7e0ec000687e5ee0a8971529d3e03ab326f43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 그 손을 그릇에 넣고도 입으로 올리기를 괴로와하느니라"
+      ],
+      "raw_text_hashes": [
+        "36802ceee04b62bda2f6ec4fed7e0ec000687e5ee0a8971529d3e03ab326f43c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:25",
+      "sequence": 16951,
+      "chapter_label": "PRO 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "Flog a scoffer, and the simple will learn prudence; rebuke one who has understanding, and he will gain knowledge.",
+      "ko": "거만한 자를 때리라 그리하면 어리석은 자도 경성하리라 명철한 자를 견책하라 그리하면 그가 지식을 얻으리라",
+      "source_text_hash": "d18ad655ff39ae64c191f080e0875fd1188dbf3c3ce5b5eee759b64f61da1fa3",
+      "translation_text_hash": "ba7f362bd6a57aa462848952c3cbf43cb372dd8b52a679d8f75ce5618e02df09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거만한 자를 때리라 그리하면 어리석은 자도 경성하리라 명철한 자를 견책하라 그리하면 그가 지식을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "ba7f362bd6a57aa462848952c3cbf43cb372dd8b52a679d8f75ce5618e02df09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:26",
+      "sequence": 16952,
+      "chapter_label": "PRO 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "He who robs his father and drives away his mother is a son who causes shame and brings reproach.",
+      "ko": "아비를 구박하고 어미를 쫓아 내는 자는 부끄러움을 끼치며 능욕을 부르는 자식이니라",
+      "source_text_hash": "b7ad69001619c421f5d18eb514dcb6a36affff421d1b6c35ccd9dea1eb6f948d",
+      "translation_text_hash": "87842157674d66e97865ccf045e94ef00a2f0ea572ad9a85eec7036b0b9c1fe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비를 구박하고 어미를 쫓아 내는 자는 부끄러움을 끼치며 능욕을 부르는 자식이니라"
+      ],
+      "raw_text_hashes": [
+        "87842157674d66e97865ccf045e94ef00a2f0ea572ad9a85eec7036b0b9c1fe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:27",
+      "sequence": 16953,
+      "chapter_label": "PRO 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "If you stop listening to instruction, my son, you will stray from the words of knowledge.",
+      "ko": "내 아들아 지식의 말씀에서 떠나게 하는 교훈을 듣지 말찌니라",
+      "source_text_hash": "1a8ee73072d892b4a0b097446ad735c65c523116058f39829b1622f0c4eb370a",
+      "translation_text_hash": "a8585a10f515bd75d9f8578d64bf0b78f75f4d08d47b52418cc84e60765d687e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 지식의 말씀에서 떠나게 하는 교훈을 듣지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "a8585a10f515bd75d9f8578d64bf0b78f75f4d08d47b52418cc84e60765d687e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:28",
+      "sequence": 16954,
+      "chapter_label": "PRO 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "A corrupt witness mocks justice, and the mouth of the wicked gulps down iniquity.",
+      "ko": "망령된 증인은 공의를 업신 여기고 악인의 입은 죄악을 삼키느니라",
+      "source_text_hash": "06df822abcc8a7c50313cdd3e4f899e07955833ba281e47813a690406d0dfc40",
+      "translation_text_hash": "bf3ec662fc841caa2e17f2455df8508be0ca0b3a1fa1b71684253ea6e7b8cb8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "망령된 증인은 공의를 업신 여기고 악인의 입은 죄악을 삼키느니라"
+      ],
+      "raw_text_hashes": [
+        "bf3ec662fc841caa2e17f2455df8508be0ca0b3a1fa1b71684253ea6e7b8cb8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:19:29",
+      "sequence": 16955,
+      "chapter_label": "PRO 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "Penalties are prepared for scoffers, and beatings for the backs of fools.",
+      "ko": "심판은 거만한 자를 위하여 예비된 것이요 채찍은 어리석은 자의 등을 위하여 예비된 것이니라",
+      "source_text_hash": "47dc34aee54887c3a0587f1c53d432eee8b53e45cb95e3c311f03a59aae38d0c",
+      "translation_text_hash": "33d9e9f555edc1aa4a004e87c8ff656e573cd1a4aeb79662bf90dbdc4f0fa60c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판은 거만한 자를 위하여 예비된 것이요 채찍은 어리석은 자의 등을 위하여 예비된 것이니라"
+      ],
+      "raw_text_hashes": [
+        "33d9e9f555edc1aa4a004e87c8ff656e573cd1a4aeb79662bf90dbdc4f0fa60c"
+      ]
+    }
+  ]
+}

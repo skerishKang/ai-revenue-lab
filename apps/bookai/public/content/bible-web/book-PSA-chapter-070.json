@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:070",
+  "unit_ordinal": 548,
+  "unit_label": "PSA 70",
+  "book_code": "PSA",
+  "chapter_number": 70,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:70:1",
+      "sequence": 14973,
+      "chapter_label": "PSA 70",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 70,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 70,
+          "verse": 1
+        }
+      ],
+      "en": "Hurry, God, to deliver me. Come quickly to help me, LORD.",
+      "ko": "하나님이여 속히 나를 건지소서 여호와여 속히 나를 도우소서",
+      "source_text_hash": "c8dfc4ec6b59e815b4778b5832b271cbea2cf546062abc1c22e41f5e028debc0",
+      "translation_text_hash": "689712413208f93e73681a35fda3bbed9c9343ed3b40eedfcabf462dd817e680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 속히 나를 건지소서 여호와여 속히 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "689712413208f93e73681a35fda3bbed9c9343ed3b40eedfcabf462dd817e680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:70:2",
+      "sequence": 14974,
+      "chapter_label": "PSA 70",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 70,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 70,
+          "verse": 2
+        }
+      ],
+      "en": "Let them be disappointed and confounded who seek my soul. Let those who desire my ruin be turned back in disgrace.",
+      "ko": "내 영혼을 찾는 자로 수치와 무안을 당케 하시며 나의 상함을 기뻐하는 자로 물러가 욕을 받게 하소서",
+      "source_text_hash": "ef64b0af3b2842cecb2312d65676379036e7d48306cee2d07c994c06520e7e7f",
+      "translation_text_hash": "fc7b3b6f338ffcd5a63ebf558858b76fd13ae5dddd6acc28530f2ad2991d527b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 찾는 자로 수치와 무안을 당케 하시며 나의 상함을 기뻐하는 자로 물러가 욕을 받게 하소서"
+      ],
+      "raw_text_hashes": [
+        "fc7b3b6f338ffcd5a63ebf558858b76fd13ae5dddd6acc28530f2ad2991d527b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:70:3",
+      "sequence": 14975,
+      "chapter_label": "PSA 70",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 70,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 70,
+          "verse": 3
+        }
+      ],
+      "en": "Let them be turned because of their shame who say, “Aha! Aha!”",
+      "ko": "아하, 아하 하는 자로 자기 수치를 인하여 물러가게 하소서",
+      "source_text_hash": "60c04c5f80d7a6823bf860985b2193cad284cd3d68961c8ada59608f99921c4e",
+      "translation_text_hash": "91d35f603ae494921b6138d7ffb5aceffe4286a55bedfa9fcf33c790d3e30ea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하, 아하 하는 자로 자기 수치를 인하여 물러가게 하소서"
+      ],
+      "raw_text_hashes": [
+        "91d35f603ae494921b6138d7ffb5aceffe4286a55bedfa9fcf33c790d3e30ea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:70:4",
+      "sequence": 14976,
+      "chapter_label": "PSA 70",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 70,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 70,
+          "verse": 4
+        }
+      ],
+      "en": "Let all those who seek you rejoice and be glad in you. Let those who love your salvation continually say, “Let God be exalted!”",
+      "ko": "주를 찾는 모든 자로 주를 인하여 기뻐하고 즐거워하게 하시며 주의 구원을 사모하는 자로 항상 말하기를 하나님은 광대하시다 하게 하소서",
+      "source_text_hash": "8dc497f4b3df9f9528a71f756173261059bdc29118408c240b6e6ec8c13d4560",
+      "translation_text_hash": "336b39ea27fde1613ba2b30915232ded44b124fd822cfe78a2766e0abf3072c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 찾는 모든 자로 주를 인하여 기뻐하고 즐거워하게 하시며 주의 구원을 사모하는 자로 항상 말하기를 하나님은 광대하시다 하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "336b39ea27fde1613ba2b30915232ded44b124fd822cfe78a2766e0abf3072c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:70:5",
+      "sequence": 14977,
+      "chapter_label": "PSA 70",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 70,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 70,
+          "verse": 5
+        }
+      ],
+      "en": "But I am poor and needy. Come to me quickly, God. You are my help and my deliverer. LORD, don’t delay.",
+      "ko": "나는 가난하고 궁핍하오니 하나님이여 속히 내게 임하소서 주는 나의 도움이시요 나를 건지시는 자시오니 여호와여 지체치 마소서",
+      "source_text_hash": "5a8626e6a0e629e48dceff1a437a66cacb518e9dc8a9543b3b400f2416e462df",
+      "translation_text_hash": "7dc41919e723ed106ce79e8ac719312a5e0bd00f1d69ae26e35d55ea3e22ddbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 가난하고 궁핍하오니 하나님이여 속히 내게 임하소서 주는 나의 도움이시요 나를 건지시는 자시오니 여호와여 지체치 마소서"
+      ],
+      "raw_text_hashes": [
+        "7dc41919e723ed106ce79e8ac719312a5e0bd00f1d69ae26e35d55ea3e22ddbc"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:005",
+  "unit_ordinal": 296,
+  "unit_label": "1KI 5",
+  "book_code": "1KI",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:5:1",
+      "sequence": 8880,
+      "chapter_label": "1KI 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Hiram king of Tyre sent his servants to Solomon, for he had heard that they had anointed him king in the place of his father, and Hiram had always loved David.",
+      "ko": "솔로몬이 기름 부음을 받고 그 부친을 이어 왕이 되었다 함을 두로 왕 히람이 듣고 그 신복을 솔로몬에게 보내었으니 이는 히람이 평일에 다윗을 사랑하였음이라",
+      "source_text_hash": "7e4f78a82efa4f779299eb6d825c22d08cbda42812550f7c9e366c90093a8e5a",
+      "translation_text_hash": "7863f1f33ca60b527dd2696b81799a132ebc37ec7a6362e110d0c2afedf83f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 기름 부음을 받고 그 부친을 이어 왕이 되었다 함을 두로 왕 히람이 듣고 그 신복을 솔로몬에게 보내었으니 이는 히람이 평일에 다윗을 사랑하였음이라"
+      ],
+      "raw_text_hashes": [
+        "7863f1f33ca60b527dd2696b81799a132ebc37ec7a6362e110d0c2afedf83f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:2",
+      "sequence": 8881,
+      "chapter_label": "1KI 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Solomon sent to Hiram, saying,",
+      "ko": "이에 솔로몬이 히람에게 기별하여 가로되",
+      "source_text_hash": "a2391bd5aa6d068452a036950667ffaf9c321a9a6d0e1041f5ec0982ee3bc8cf",
+      "translation_text_hash": "8293676bb2783261d86ba0487a30c5a714ee099d88d74eeb551d9f68d82c0901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 솔로몬이 히람에게 기별하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "8293676bb2783261d86ba0487a30c5a714ee099d88d74eeb551d9f68d82c0901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:3",
+      "sequence": 8882,
+      "chapter_label": "1KI 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "“You know that David my father could not build a house for the name of the LORD his God because of the wars which were around him on every side, until the LORD put his enemies under the soles of his feet.",
+      "ko": "당신도 알거니와 내 부친 다윗이 사방의 전쟁으로 인하여 그 하나님 여호와의 이름을 위하여 전을 건축하지 못하고 여호와께서 그 원수들을 그 발바닥 밑에 두시기를 기다렸나이다",
+      "source_text_hash": "f63fc24d54b9c0d90d75ed3b098462e6119686569b2ff123c5c024dc575fa1e9",
+      "translation_text_hash": "167d86a1a200a1f83a5e4584fa69494581abb0d7ad2d64b4ddd4ae86be8930da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신도 알거니와 내 부친 다윗이 사방의 전쟁으로 인하여 그 하나님 여호와의 이름을 위하여 전을 건축하지 못하고 여호와께서 그 원수들을 그 발바닥 밑에 두시기를 기다렸나이다"
+      ],
+      "raw_text_hashes": [
+        "167d86a1a200a1f83a5e4584fa69494581abb0d7ad2d64b4ddd4ae86be8930da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:4",
+      "sequence": 8883,
+      "chapter_label": "1KI 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "But now the LORD my God has given me rest on every side. There is no enemy and no evil occurrence.",
+      "ko": "이제 내 하나님 여호와께서 내게 사방의 태평을 주시매 대적도 없고 재앙도 없도다",
+      "source_text_hash": "4654e555387d8bbc70f25fbc7f30e58088bbeddaa10306e8ba7a93df350cf24b",
+      "translation_text_hash": "555ea21929dea513cff537c14e557453503fae3232b6bbd27987d72d340e1d9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내 하나님 여호와께서 내게 사방의 태평을 주시매 대적도 없고 재앙도 없도다"
+      ],
+      "raw_text_hashes": [
+        "555ea21929dea513cff537c14e557453503fae3232b6bbd27987d72d340e1d9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:5",
+      "sequence": 8884,
+      "chapter_label": "1KI 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, I intend to build a house for the name of the LORD my God, as the LORD spoke to David my father, saying, ‘Your son, whom I will set on your throne in your place shall build the house for my name.’",
+      "ko": "여호와께서 내 부친 다윗에게 하신 말씀에 내가 너를 이어 네 위에 오르게 할 네 아들 그가 내 이름을 위하여 전을 건축하리라 하신대로 내가 내 하나님 여호와의 이름을 위하여 전을 건축하려 하오니",
+      "source_text_hash": "aee88d83b97ab5e430628c553e361b7369b447eab45b32de3bb1cd647d3ddd48",
+      "translation_text_hash": "58b5f28cd53e73a1e4786cc734eadebb951214fc8fb30b78deaa932e35c832d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 부친 다윗에게 하신 말씀에 내가 너를 이어 네 위에 오르게 할 네 아들 그가 내 이름을 위하여 전을 건축하리라 하신대로 내가 내 하나님 여호와의 이름을 위하여 전을 건축하려 하오니"
+      ],
+      "raw_text_hashes": [
+        "58b5f28cd53e73a1e4786cc734eadebb951214fc8fb30b78deaa932e35c832d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:6",
+      "sequence": 8885,
+      "chapter_label": "1KI 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Now therefore command that cedar trees be cut for me out of Lebanon. My servants will be with your servants; and I will give you wages for your servants according to all that you say. For you know that there is nobody among us who knows how to cut timber like the Sidonians.”",
+      "ko": "당신은 영을 내려 나를 위하여 레바논에서 백향목을 베어내게 하소서 나의 종과 당신의 종이 함께할 것이요 또 내가 당신의 모든 말씀대로 당신의 종의 삯을 당신에게 붙이리이다 당신도 알거니와 우리 중에는 시돈 사람처럼 벌목을 잘하는 자가 없나이다",
+      "source_text_hash": "c5c4d3f24e0fafa12fac83bbe25d05235130380d1a0b99c9f06b3d2e8c91840d",
+      "translation_text_hash": "c4ef7bb489168a46bc5621dbeafb15e8330cc57cb5fa3dfd9220bc8269ed9e18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신은 영을 내려 나를 위하여 레바논에서 백향목을 베어내게 하소서 나의 종과 당신의 종이 함께할 것이요 또 내가 당신의 모든 말씀대로 당신의 종의 삯을 당신에게 붙이리이다 당신도 알거니와 우리 중에는 시돈 사람처럼 벌목을 잘하는 자가 없나이다"
+      ],
+      "raw_text_hashes": [
+        "c4ef7bb489168a46bc5621dbeafb15e8330cc57cb5fa3dfd9220bc8269ed9e18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:7",
+      "sequence": 8886,
+      "chapter_label": "1KI 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "When Hiram heard the words of Solomon, he rejoiced greatly, and said, “Blessed is the LORD today, who has given to David a wise son to rule over this great people.”",
+      "ko": "히람이 솔로몬의 말을 듣고 크게 기뻐하여 가로되 오늘날 여호와를 찬양할찌로다 저가 다윗에게 지혜로운 아들을 주사 그 많은 백성을 다스리게 하셨도다 하고",
+      "source_text_hash": "5f0417c6dcb360c19cd8c4fde7152b18f5a8ad9762b85aa15259ac099b32b26d",
+      "translation_text_hash": "072fd71ea1f89e67a58ea28d7cf0d09ff6e359ec948aa845fc75855c5bc5d651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히람이 솔로몬의 말을 듣고 크게 기뻐하여 가로되 오늘날 여호와를 찬양할찌로다 저가 다윗에게 지혜로운 아들을 주사 그 많은 백성을 다스리게 하셨도다 하고"
+      ],
+      "raw_text_hashes": [
+        "072fd71ea1f89e67a58ea28d7cf0d09ff6e359ec948aa845fc75855c5bc5d651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:8",
+      "sequence": 8887,
+      "chapter_label": "1KI 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Hiram sent to Solomon, saying, “I have heard the message which you have sent to me. I will do all your desire concerning timber of cedar, and concerning cypress timber.",
+      "ko": "이에 솔로몬에게 기별하여 가로되 당신의 기별하신 말씀을 내가 듣고 내 백향목 재목과 잣나무 재목에 대하여는 당신의 바라시는대로 할찌라",
+      "source_text_hash": "fc0af4cee4dc436f88430bccc6912cc750be412b96f4f2f92694ea4d587df2c5",
+      "translation_text_hash": "6fac99ceceb2029bb5467a86fa33ba56a1627e0b8a2d2756dbe6608e2fa121b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 솔로몬에게 기별하여 가로되 당신의 기별하신 말씀을 내가 듣고 내 백향목 재목과 잣나무 재목에 대하여는 당신의 바라시는대로 할찌라"
+      ],
+      "raw_text_hashes": [
+        "6fac99ceceb2029bb5467a86fa33ba56a1627e0b8a2d2756dbe6608e2fa121b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:9",
+      "sequence": 8888,
+      "chapter_label": "1KI 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "My servants will bring them down from Lebanon to the sea. I will make them into rafts to go by sea to the place that you specify to me, and will cause them to be broken up there, and you will receive them. You will accomplish my desire, in giving food for my household.”",
+      "ko": "내 종이 레바논에서 바다로 수운하겠고 내가 그것을 바다에서 떼로 엮어 당신이 지정하는 곳으로 보내고 거기서 그것을 풀리니 당신은 받으시고 나의 원을 이루어서 나의 궁정을 위하여 식물을 주소서 하고",
+      "source_text_hash": "d07498307d8e69ad58d95cb1062eabb33b559ca68c680eaaf300e5dbe86a77de",
+      "translation_text_hash": "3395ee9e177b00b82549f04e14ea48e0b258d6b1a3b91ee92ea7e122d51f6a59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종이 레바논에서 바다로 수운하겠고 내가 그것을 바다에서 떼로 엮어 당신이 지정하는 곳으로 보내고 거기서 그것을 풀리니 당신은 받으시고 나의 원을 이루어서 나의 궁정을 위하여 식물을 주소서 하고"
+      ],
+      "raw_text_hashes": [
+        "3395ee9e177b00b82549f04e14ea48e0b258d6b1a3b91ee92ea7e122d51f6a59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:10",
+      "sequence": 8889,
+      "chapter_label": "1KI 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "So Hiram gave Solomon cedar timber and cypress timber according to all his desire.",
+      "ko": "솔로몬의 모든 원대로 백향목 재목과 잣나무 재목을 주매",
+      "source_text_hash": "15c28eb86a5f1a208da1d8d43f17db7fea94e31e79911a99dcd343227f3934d1",
+      "translation_text_hash": "d155b4746efe16bd332848e6e3b0e5e5f34f6ebcc37d2cfea780451d9eb6c669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 모든 원대로 백향목 재목과 잣나무 재목을 주매"
+      ],
+      "raw_text_hashes": [
+        "d155b4746efe16bd332848e6e3b0e5e5f34f6ebcc37d2cfea780451d9eb6c669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:11",
+      "sequence": 8890,
+      "chapter_label": "1KI 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Solomon gave Hiram twenty thousand cors of wheat for food to his household, and twenty cors of pure oil. Solomon gave this to Hiram year by year.",
+      "ko": "솔로몬이 히람에게 그 궁정의 식물로 밀 이만석과 맑은 기름 이십석을 주고 해마다 그와 같이 주었더라",
+      "source_text_hash": "2733b79ec35eeeda02f275f2b7dd6f43f1237835a971b455406f487ae420c8da",
+      "translation_text_hash": "fc88cf895810e0baf0bafb11cac21c3ec6e988d9b1309ad3c30a12e8fcf74f9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 히람에게 그 궁정의 식물로 밀 이만석과 맑은 기름 이십석을 주고 해마다 그와 같이 주었더라"
+      ],
+      "raw_text_hashes": [
+        "fc88cf895810e0baf0bafb11cac21c3ec6e988d9b1309ad3c30a12e8fcf74f9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:12",
+      "sequence": 8891,
+      "chapter_label": "1KI 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD gave Solomon wisdom, as he promised him. There was peace between Hiram and Solomon, and the two of them made a treaty together.",
+      "ko": "여호와께서 그 말씀대로 솔로몬에게 지혜를 주신고로 히람과 솔로몬이 친목하여 두 사람이 함께 약조를 맺었더라",
+      "source_text_hash": "3feac2f8ff513ea5997b0df2e34f41341a3d8894ccada35cdd7e1b2a905410b8",
+      "translation_text_hash": "4f40a6574f5a33ca8867600f963099969a3e01cbd0e4ec6aa9e604d7a3a31cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 말씀대로 솔로몬에게 지혜를 주신고로 히람과 솔로몬이 친목하여 두 사람이 함께 약조를 맺었더라"
+      ],
+      "raw_text_hashes": [
+        "4f40a6574f5a33ca8867600f963099969a3e01cbd0e4ec6aa9e604d7a3a31cb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:13",
+      "sequence": 8892,
+      "chapter_label": "1KI 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "King Solomon raised a levy out of all Israel; and the levy was thirty thousand men.",
+      "ko": "이에 솔로몬왕이 온 이스라엘에서 역군을 불러 일으키니 그 역군의 수가 삼만이라",
+      "source_text_hash": "302c764565592cbdd3e86ed810ac235573f408b6de307e24a3c5908f4cae73de",
+      "translation_text_hash": "feacd1c6fbde1bda2a41a77accce25caa2a8e016145785171984226a39690cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 솔로몬왕이 온 이스라엘에서 역군을 불러 일으키니 그 역군의 수가 삼만이라"
+      ],
+      "raw_text_hashes": [
+        "feacd1c6fbde1bda2a41a77accce25caa2a8e016145785171984226a39690cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:14",
+      "sequence": 8893,
+      "chapter_label": "1KI 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "He sent them to Lebanon, ten thousand a month by courses: for a month they were in Lebanon, and two months at home; and Adoniram was over the men subject to forced labor.",
+      "ko": "솔로몬이 저희들을 한 달에 일만인씩 번갈아 레바논으로 보내매 저희들이 한 달은 레바논에 있고 두 달은 집에 있으며 아도니람은 감독이 되었고",
+      "source_text_hash": "d9994359bd4c3db5edbf1ef401ec1b013f0488acb5a5e7ec52c15014956dd03c",
+      "translation_text_hash": "2329cc1abde4439c97cd8a95cc2b678c47690768c233e17181fe5c765c11b312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 저희들을 한 달에 일만인씩 번갈아 레바논으로 보내매 저희들이 한 달은 레바논에 있고 두 달은 집에 있으며 아도니람은 감독이 되었고"
+      ],
+      "raw_text_hashes": [
+        "2329cc1abde4439c97cd8a95cc2b678c47690768c233e17181fe5c765c11b312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:15",
+      "sequence": 8894,
+      "chapter_label": "1KI 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Solomon had seventy thousand who bore burdens, and eighty thousand who were stone cutters in the mountains,",
+      "ko": "솔로몬에게 또 담군이 칠만인이요 산에서 돌을 뜨는 자가 팔만인이며",
+      "source_text_hash": "b78f0c621ba66828a3964bb938f423372c53d6374fa38fb48b5aa08768ca7300",
+      "translation_text_hash": "08becd533b8a0dc248f36615aaec1250461a4454d55bc51ebba8feb41806e9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬에게 또 담군이 칠만인이요 산에서 돌을 뜨는 자가 팔만인이며"
+      ],
+      "raw_text_hashes": [
+        "08becd533b8a0dc248f36615aaec1250461a4454d55bc51ebba8feb41806e9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:16",
+      "sequence": 8895,
+      "chapter_label": "1KI 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "besides Solomon’s chief officers who were over the work: three thousand three hundred who ruled over the people who labored in the work.",
+      "ko": "이 외에 그 역사를 동독하는 관리가 삼천 삼백인이라 저희가 일하는 백성을 거느렸더라",
+      "source_text_hash": "16e0fd88d39274acb087b8176048d94fd01c926e20069d6f31e85ec8eadc37c5",
+      "translation_text_hash": "39061d5450de9cf074273f280767195a9d70722bec9c19571c27288f193d03e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 외에 그 역사를 동독하는 관리가 삼천 삼백인이라 저희가 일하는 백성을 거느렸더라"
+      ],
+      "raw_text_hashes": [
+        "39061d5450de9cf074273f280767195a9d70722bec9c19571c27288f193d03e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:17",
+      "sequence": 8896,
+      "chapter_label": "1KI 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "The king commanded, and they cut out large stones, costly stones, to lay the foundation of the house with worked stone.",
+      "ko": "이에 왕이 영을 내려 크고 귀한 돌을 떠다가 다듬어서 전의 기초석으로 놓게 하매",
+      "source_text_hash": "9dfc81bbf840bfbe1a2e14316a8f6323d45bc937f542e3390a9eb1e022e29606",
+      "translation_text_hash": "18c50e63cf32e3a4f05d8066c4ebb669a379f56c130e5064623f60c123e38ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕이 영을 내려 크고 귀한 돌을 떠다가 다듬어서 전의 기초석으로 놓게 하매"
+      ],
+      "raw_text_hashes": [
+        "18c50e63cf32e3a4f05d8066c4ebb669a379f56c130e5064623f60c123e38ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:5:18",
+      "sequence": 8897,
+      "chapter_label": "1KI 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Solomon’s builders and Hiram’s builders and the Gebalites cut them, and prepared the timber and the stones to build the house.",
+      "ko": "솔로몬의 건축자와 히람의 건축자와 그발 사람이 그 돌을 다듬고 전을 건축하기 위하여 재목과 돌들을 갖추니라",
+      "source_text_hash": "7e1229fabbd226ee1bc15ded03e430466d466f17f61b1f9962204a1e504e594a",
+      "translation_text_hash": "edbe62a13c07d1284075c11763b59dd1861c6ecdc3e0b29b1d52c950fea4dffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 건축자와 히람의 건축자와 그발 사람이 그 돌을 다듬고 전을 건축하기 위하여 재목과 돌들을 갖추니라"
+      ],
+      "raw_text_hashes": [
+        "edbe62a13c07d1284075c11763b59dd1861c6ecdc3e0b29b1d52c950fea4dffe"
+      ]
+    }
+  ]
+}

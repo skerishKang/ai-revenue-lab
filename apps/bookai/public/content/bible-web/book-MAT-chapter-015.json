@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:015",
+  "unit_ordinal": 944,
+  "unit_label": "MAT 15",
+  "book_code": "MAT",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:15:1",
+      "sequence": 23635,
+      "chapter_label": "MAT 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Then Pharisees and scribes came to Jesus from Jerusalem, saying,",
+      "ko": "그 때에 바리새인과 서기관들이 예루살렘으로부터 예수께 나아와 가로되",
+      "source_text_hash": "02d592575557955680bfd67d51f92a643cd81a4f20b8f225dadea052b2ed7d3b",
+      "translation_text_hash": "648b945aad894089ad15b070d87dc5b6c4969cdc08bfc0fee18326c387606890",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 바리새인과 서기관들이 예루살렘으로부터 예수께 나아와 가로되"
+      ],
+      "raw_text_hashes": [
+        "648b945aad894089ad15b070d87dc5b6c4969cdc08bfc0fee18326c387606890"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:2",
+      "sequence": 23636,
+      "chapter_label": "MAT 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "“Why do your disciples disobey the tradition of the elders? For they don’t wash their hands when they eat bread.”",
+      "ko": "당신의 제자들이 어찌하여 장로들의 유전을 범하나이까 떡 먹을 때에 손을 씻지 아니하나이다",
+      "source_text_hash": "3544b5e05e90e11f4045684221a581ed28d3f9c390350203054e5b393ef52d1c",
+      "translation_text_hash": "3bf7b62c0010d7395c62303bd743f318e04ce102a09b0ba7c83ffe7052ef8c42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 제자들이 어찌하여 장로들의 유전을 범하나이까 떡 먹을 때에 손을 씻지 아니하나이다"
+      ],
+      "raw_text_hashes": [
+        "3bf7b62c0010d7395c62303bd743f318e04ce102a09b0ba7c83ffe7052ef8c42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:3",
+      "sequence": 23637,
+      "chapter_label": "MAT 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "He answered them, “Why do you also disobey the commandment of God because of your tradition?",
+      "ko": "대답하여 가라사대 너희는 어찌하여 너희 유전으로 하나님의 계명을 범하느뇨",
+      "source_text_hash": "6021aae87cc7138745ed950905c801e573696fb64620409dd30788e5433fc74e",
+      "translation_text_hash": "fa9aea43d7294961b7bd5ba8082005f60767d357636bcd252d83cfb1438047b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 너희는 어찌하여 너희 유전으로 하나님의 계명을 범하느뇨"
+      ],
+      "raw_text_hashes": [
+        "fa9aea43d7294961b7bd5ba8082005f60767d357636bcd252d83cfb1438047b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:4",
+      "sequence": 23638,
+      "chapter_label": "MAT 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "For God commanded, ‘Honor your father and your mother,’and, ‘He who speaks evil of father or mother, let him be put to death.’",
+      "ko": "하나님이 이르셨으되 네 부모를 공경하라 하시고 또 아비나 어미를 훼방하는 자는 반드시 죽으리라 하셨거늘",
+      "source_text_hash": "cb46f5cc949296a725d7cf11c5ddcd3565bd29d63f64f38fa25f49fea097cc24",
+      "translation_text_hash": "091b70482a663dbbbfc82047b9fd234186bde92e8d9376c0b708a83fb47e0154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 이르셨으되 네 부모를 공경하라 하시고 또 아비나 어미를 훼방하는 자는 반드시 죽으리라 하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "091b70482a663dbbbfc82047b9fd234186bde92e8d9376c0b708a83fb47e0154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:5",
+      "sequence": 23639,
+      "chapter_label": "MAT 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "But you say, ‘Whoever may tell his father or his mother, “Whatever help you might otherwise have gotten from me is a gift devoted to God,”",
+      "ko": "너희는 가로되 누구든지 아비에게나 어미에게 말하기를 내가 드려 유익하게 할것이 하나님께 드림이 되었다고 하기만 하면",
+      "source_text_hash": "8e6c894a6d69673093859f720d7885c94959a26ae6830942a87c606e33781608",
+      "translation_text_hash": "6d31bde66017dc1eea9733c2441150ce9f2fcb19ae5c3ce7c9ea02786206de9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 가로되 누구든지 아비에게나 어미에게 말하기를 내가 드려 유익하게 할것이 하나님께 드림이 되었다고 하기만 하면"
+      ],
+      "raw_text_hashes": [
+        "6d31bde66017dc1eea9733c2441150ce9f2fcb19ae5c3ce7c9ea02786206de9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:6",
+      "sequence": 23640,
+      "chapter_label": "MAT 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "he shall not honor his father or mother.’ You have made the commandment of God void because of your tradition.",
+      "ko": "그 부모를 공경할 것이 없다 하여 너희 유전으로 하나님의 말씀을 폐하는도다",
+      "source_text_hash": "e1eccfdda5765339e786988f8aae72d6cfe1d8a3fab53c2b0acfdeebdac756e9",
+      "translation_text_hash": "99a5f5ec9625be7c2a9ce54d26466832f8c3296de7b33df523a2149d5aa7c78c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모를 공경할 것이 없다 하여 너희 유전으로 하나님의 말씀을 폐하는도다"
+      ],
+      "raw_text_hashes": [
+        "99a5f5ec9625be7c2a9ce54d26466832f8c3296de7b33df523a2149d5aa7c78c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:7",
+      "sequence": 23641,
+      "chapter_label": "MAT 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "You hypocrites! Well did Isaiah prophesy of you, saying,",
+      "ko": "외식하는 자들아 이사야가 너희에게 대하여 잘 예언하였도다 일렀으되",
+      "source_text_hash": "bc3e6d80aeb09a4355fe66fc2fd659128c120c403dd4400da2225fa95168a65f",
+      "translation_text_hash": "5311ce2791af84e2bec1f6a96a3c5c0b4cc07283b4182bbcf1feaff063e39dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외식하는 자들아 이사야가 너희에게 대하여 잘 예언하였도다 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "5311ce2791af84e2bec1f6a96a3c5c0b4cc07283b4182bbcf1feaff063e39dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:8",
+      "sequence": 23642,
+      "chapter_label": "MAT 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "‘These people draw near to me with their mouth,and honor me with their lips; but their heart is far from me.",
+      "ko": "이 백성이 입술로는 나를 존경하되 마음은 내게서 멀도다",
+      "source_text_hash": "7681fce9cc4e54981432dc71c5d1c956e0162c9660b0a24a7023b6ef08d9b2a5",
+      "translation_text_hash": "86e4959bc6e890d7a3b97289a0369da17fd3ccecc1222c0cfe58f99a8cf50199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 입술로는 나를 존경하되 마음은 내게서 멀도다"
+      ],
+      "raw_text_hashes": [
+        "86e4959bc6e890d7a3b97289a0369da17fd3ccecc1222c0cfe58f99a8cf50199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:9",
+      "sequence": 23643,
+      "chapter_label": "MAT 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "And they worship me in vain,teaching as doctrine rules made by men.’”",
+      "ko": "사람의 계명으로 교훈을 삼아 가르치니 나를 헛되이 경배하는도다 하였느니라 하시고",
+      "source_text_hash": "bb3a2a1c6672ac145285f23de1bc4c0002c84bd81af8c3a8ab29346cce2e6992",
+      "translation_text_hash": "32321888760fbd213ea0f4de33566f7e5fa34895b086c72f10b5331f938f7df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 계명으로 교훈을 삼아 가르치니 나를 헛되이 경배하는도다 하였느니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "32321888760fbd213ea0f4de33566f7e5fa34895b086c72f10b5331f938f7df8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:10",
+      "sequence": 23644,
+      "chapter_label": "MAT 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "He summoned the multitude, and said to them, “Hear, and understand.",
+      "ko": "무리를 불러 이르시되 듣고 깨달으라",
+      "source_text_hash": "741c16873aba992f35d44c474684c950247f20e2539de98a8429daf7aa46d388",
+      "translation_text_hash": "1434d727194573513295bde8a1fd274aa5065fd062a54477ea2b05bfdb0ed584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 불러 이르시되 듣고 깨달으라"
+      ],
+      "raw_text_hashes": [
+        "1434d727194573513295bde8a1fd274aa5065fd062a54477ea2b05bfdb0ed584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:11",
+      "sequence": 23645,
+      "chapter_label": "MAT 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "That which enters into the mouth doesn’t defile the man; but that which proceeds out of the mouth, this defiles the man.”",
+      "ko": "입에 들어가는 것이 사람을 더럽게 하는 것이 아니라 입에서 나오는 그것이 사람을 더럽게 하는 것이니라",
+      "source_text_hash": "c67c1d39ee30ad8d1334527da43bbce6b40d1ef0ec0b52913b0ea283532f8766",
+      "translation_text_hash": "ab1429912581f16c73ee7b8e985973ed3f86036d7b1c30ed6c6dfd94242bee96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입에 들어가는 것이 사람을 더럽게 하는 것이 아니라 입에서 나오는 그것이 사람을 더럽게 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ab1429912581f16c73ee7b8e985973ed3f86036d7b1c30ed6c6dfd94242bee96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:12",
+      "sequence": 23646,
+      "chapter_label": "MAT 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Then the disciples came and said to him, “Do you know that the Pharisees were offended when they heard this saying?”",
+      "ko": "이에 제자들이 나아와 가로되 바리새인들이 이 말씀을 듣고 걸림이 된줄 아시나이까",
+      "source_text_hash": "0266ff0327499c03ebe1e995b8b8f691d575b49d76938e495b7e56097aae8166",
+      "translation_text_hash": "67e09f97285e795277663efb3a3a9e67dbf4910c4ea1f79f22712de0af12c73f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제자들이 나아와 가로되 바리새인들이 이 말씀을 듣고 걸림이 된줄 아시나이까"
+      ],
+      "raw_text_hashes": [
+        "67e09f97285e795277663efb3a3a9e67dbf4910c4ea1f79f22712de0af12c73f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:13",
+      "sequence": 23647,
+      "chapter_label": "MAT 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "But he answered, “Every plant which my heavenly Father didn’t plant will be uprooted.",
+      "ko": "예수께서 대답하여 가라사대 심은 것마다 내 천부께서 심으시지 않은 것은 뽑힐 것이니",
+      "source_text_hash": "7cbf383979105dd7f5842317042313844647ef615977dbb4c88d9a34ae015f26",
+      "translation_text_hash": "607a2c342198ecbbab31c6848eb0756be9e23d6f5d2975aa65f3153e6a5a3ead",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 심은 것마다 내 천부께서 심으시지 않은 것은 뽑힐 것이니"
+      ],
+      "raw_text_hashes": [
+        "607a2c342198ecbbab31c6848eb0756be9e23d6f5d2975aa65f3153e6a5a3ead"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:14",
+      "sequence": 23648,
+      "chapter_label": "MAT 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Leave them alone. They are blind guides of the blind. If the blind guide the blind, both will fall into a pit.”",
+      "ko": "그냥 두어라 저희는 소경이 되어 소경을 인도하는 자로다 만일 소경이 소경을 인도하면 둘이 다 구덩이에 빠지리라 하신대",
+      "source_text_hash": "e0796d4a8d6a4d490d905cd3acd3c8c4dfbea924c9a29409364f40d0892b7ddb",
+      "translation_text_hash": "2e71cad913f60336e9d8f6daae1ce9e7c8b7b5deaebc63ccae168e5634d4f8da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그냥 두어라 저희는 소경이 되어 소경을 인도하는 자로다 만일 소경이 소경을 인도하면 둘이 다 구덩이에 빠지리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "2e71cad913f60336e9d8f6daae1ce9e7c8b7b5deaebc63ccae168e5634d4f8da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:15",
+      "sequence": 23649,
+      "chapter_label": "MAT 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Peter answered him, “Explain the parable to us.”",
+      "ko": "베드로가 대답하여 가로되 이 비유를 우리에게 설명하여 주옵소서",
+      "source_text_hash": "e6601c6ab90ccc33761daa8abdad9c3e651c2c34c511a81cc0b2f428e10aac43",
+      "translation_text_hash": "82fd0c88377176daad6f92bc457294ba06be758eefe6224ff59f52e034cc5ac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 대답하여 가로되 이 비유를 우리에게 설명하여 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "82fd0c88377176daad6f92bc457294ba06be758eefe6224ff59f52e034cc5ac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:16",
+      "sequence": 23650,
+      "chapter_label": "MAT 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "So Jesus said, “Do you also still not understand?",
+      "ko": "예수께서 가라사대 너희도 아직까지 깨달음이 없느냐",
+      "source_text_hash": "ce3352103adbdcf18d24f007308c6415fa593e5ed3a9a422b92f97c1a39bb5d3",
+      "translation_text_hash": "4b39d89749f344d0861e053671f6a33eb04cea136c9fb1fe3ecacbbc510ab67b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희도 아직까지 깨달음이 없느냐"
+      ],
+      "raw_text_hashes": [
+        "4b39d89749f344d0861e053671f6a33eb04cea136c9fb1fe3ecacbbc510ab67b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:17",
+      "sequence": 23651,
+      "chapter_label": "MAT 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t you understand that whatever goes into the mouth passes into the belly and then out of the body?",
+      "ko": "입으로 들어가는 모든 것은 배로 들어가서 뒤로 내어 버려지는 줄을 알지 못하느냐",
+      "source_text_hash": "da5f452854d66921e3a456d9f5f946d0446f0925581eba882932d3e43bf27cf4",
+      "translation_text_hash": "1ea97c1fe0cf51e514af3a29b591f6c8a3f613d1f6addab2ba68c316226c5ca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입으로 들어가는 모든 것은 배로 들어가서 뒤로 내어 버려지는 줄을 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "1ea97c1fe0cf51e514af3a29b591f6c8a3f613d1f6addab2ba68c316226c5ca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:18",
+      "sequence": 23652,
+      "chapter_label": "MAT 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "But the things which proceed out of the mouth come out of the heart, and they defile the man.",
+      "ko": "입에서 나오는 것들은 마음에서 나오나니 이것이야말로 사람을 더럽게 하느니라",
+      "source_text_hash": "4cb80d769835b0423fd3a34e77935019789e324bc0c22443bc91c3a2603408e8",
+      "translation_text_hash": "0624bc763ddf9a30cfa9aa2ae48f46a3c89fc9bc6c6a1f02d6de765ee27e452c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입에서 나오는 것들은 마음에서 나오나니 이것이야말로 사람을 더럽게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "0624bc763ddf9a30cfa9aa2ae48f46a3c89fc9bc6c6a1f02d6de765ee27e452c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:19",
+      "sequence": 23653,
+      "chapter_label": "MAT 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "For out of the heart come evil thoughts, murders, adulteries, sexual sins, thefts, false testimony, and blasphemies.",
+      "ko": "마음에서 나오는 것은 악한 생각과 살인과 간음과 음란과 도적질과 거짓 증거와 훼방이니",
+      "source_text_hash": "5dbb7b10ef643ce63256a12f25acc7fdf8bb0749eb5c776b9a87ce8972e7297f",
+      "translation_text_hash": "39adcb80df9b332f4db191bf0c00bab3f6600938e8c0f58fafed410cf8638b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음에서 나오는 것은 악한 생각과 살인과 간음과 음란과 도적질과 거짓 증거와 훼방이니"
+      ],
+      "raw_text_hashes": [
+        "39adcb80df9b332f4db191bf0c00bab3f6600938e8c0f58fafed410cf8638b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:20",
+      "sequence": 23654,
+      "chapter_label": "MAT 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "These are the things which defile the man; but to eat with unwashed hands doesn’t defile the man.”",
+      "ko": "이런 것들이 사람을 더럽게 하는 것이요 씻지 않은 손으로 먹는 것은 사람을 더럽게 하지 못하느니라",
+      "source_text_hash": "150659ee12ba178792542e52888328692d93448bfe0cb9ca728fae0b98f0396e",
+      "translation_text_hash": "aa4a7c84f56d13459adcbb85ad2b160ac4f3fbd189a42aa9a2e22aa95ee0492b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것들이 사람을 더럽게 하는 것이요 씻지 않은 손으로 먹는 것은 사람을 더럽게 하지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "aa4a7c84f56d13459adcbb85ad2b160ac4f3fbd189a42aa9a2e22aa95ee0492b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:21",
+      "sequence": 23655,
+      "chapter_label": "MAT 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus went out from there and withdrew into the region of Tyre and Sidon.",
+      "ko": "예수께서 거기서 나가사 두로와 시돈 지방으로 들어가시니",
+      "source_text_hash": "6d3c507022b619d72ee6be6bd9e12613a164e4b9a0d9c77123f580c6626b9711",
+      "translation_text_hash": "0ea2244be31e2e8b58e2e221d7ec063a8a68b633e0c8c6e39c70ffc6f32972e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기서 나가사 두로와 시돈 지방으로 들어가시니"
+      ],
+      "raw_text_hashes": [
+        "0ea2244be31e2e8b58e2e221d7ec063a8a68b633e0c8c6e39c70ffc6f32972e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:22",
+      "sequence": 23656,
+      "chapter_label": "MAT 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, a Canaanite woman came out from those borders and cried, saying, “Have mercy on me, Lord, you son of David! My daughter is severely possessed by a demon!”",
+      "ko": "가나안 여자 하나가 그 지경에서 나와서 소리질러 가로되 주 다윗의 자손이여 나를 불쌍히 여기소서 내 딸이 흉악히 귀신들렸나이다 하되",
+      "source_text_hash": "03fdd0e6ce5292702d7ebde27527029f5d62cbb3e78cabc559178028506050ab",
+      "translation_text_hash": "27862d7e80ebd23c16f5e487fb62f105a646d4d0e86ad8fc630616035ec08fbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 여자 하나가 그 지경에서 나와서 소리질러 가로되 주 다윗의 자손이여 나를 불쌍히 여기소서 내 딸이 흉악히 귀신들렸나이다 하되"
+      ],
+      "raw_text_hashes": [
+        "27862d7e80ebd23c16f5e487fb62f105a646d4d0e86ad8fc630616035ec08fbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:23",
+      "sequence": 23657,
+      "chapter_label": "MAT 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "But he answered her not a word. His disciples came and begged him, saying, “Send her away; for she cries after us.”",
+      "ko": "예수는 한 말씀도 대답지 아니하시니 제자들이 와서 청하여 말하되 그 여자가 우리 뒤에서 소리를 지르오니 보내소서",
+      "source_text_hash": "4b9731aa151fa8851bc40075a5a88b1b2b9ac5c378be6c21e4197005d78f83e0",
+      "translation_text_hash": "820787c810013e26b042eeef6ca50ff9a579900f26ae44da67ab623b1a418c7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 한 말씀도 대답지 아니하시니 제자들이 와서 청하여 말하되 그 여자가 우리 뒤에서 소리를 지르오니 보내소서"
+      ],
+      "raw_text_hashes": [
+        "820787c810013e26b042eeef6ca50ff9a579900f26ae44da67ab623b1a418c7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:24",
+      "sequence": 23658,
+      "chapter_label": "MAT 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "But he answered, “I wasn’t sent to anyone but the lost sheep of the house of Israel.”",
+      "ko": "예수께서 대답하여 가라사대 나는 이스라엘 집의 잃어 버린 양 외에는 다른데로 보내심을 받지 아니하였노라 하신대",
+      "source_text_hash": "ff1797b59012ce674771b23e25843af001ff747c1c6bd3cf7436ff305333539f",
+      "translation_text_hash": "fc079fb611a93ee9fd72da21ecea90524aedafa32b7c6bde80a898816500f741",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 나는 이스라엘 집의 잃어 버린 양 외에는 다른데로 보내심을 받지 아니하였노라 하신대"
+      ],
+      "raw_text_hashes": [
+        "fc079fb611a93ee9fd72da21ecea90524aedafa32b7c6bde80a898816500f741"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:25",
+      "sequence": 23659,
+      "chapter_label": "MAT 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "But she came and worshiped him, saying, “Lord, help me.”",
+      "ko": "여자가 와서 예수께 절하며 가로되 주여 저를 도우소서",
+      "source_text_hash": "8689e3e5077d42327e54d30d9945444993e8b4ce1ca05642a7cd65fa8d48b550",
+      "translation_text_hash": "ebd120dca74362e826dda1a36fac7e91b2f954c07933befe24de8242b9d406c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 와서 예수께 절하며 가로되 주여 저를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "ebd120dca74362e826dda1a36fac7e91b2f954c07933befe24de8242b9d406c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:26",
+      "sequence": 23660,
+      "chapter_label": "MAT 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "But he answered, “It is not appropriate to take the children’s bread and throw it to the dogs.”",
+      "ko": "대답하여 가라사대 자녀의 떡을 취하여 개들에게 던짐이 마땅치 아니하니라",
+      "source_text_hash": "db7fb6443da412f56a1891925bb60c65bf269814a728e7a367be14772dbad7a0",
+      "translation_text_hash": "e2722782ac2814470c7620c86931a8c14c14ac719abac505cbf8972d4522868c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 자녀의 떡을 취하여 개들에게 던짐이 마땅치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "e2722782ac2814470c7620c86931a8c14c14ac719abac505cbf8972d4522868c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:27",
+      "sequence": 23661,
+      "chapter_label": "MAT 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "But she said, “Yes, Lord, but even the dogs eat the crumbs which fall from their masters’ table.”",
+      "ko": "여자가 가로되 주여 옳소이다마는 개들도 제 주인의 상에서 떨어지는 부스러기를 먹나이다 하니",
+      "source_text_hash": "bb071f0f4fa69917881ef17890803af5e2eccec6b7ec4972817e867223840468",
+      "translation_text_hash": "b87eb8247c70f01830d9fa69b2def47fc3a3d6b13f32e7db259b4313d77600d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 가로되 주여 옳소이다마는 개들도 제 주인의 상에서 떨어지는 부스러기를 먹나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "b87eb8247c70f01830d9fa69b2def47fc3a3d6b13f32e7db259b4313d77600d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:28",
+      "sequence": 23662,
+      "chapter_label": "MAT 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Then Jesus answered her, “Woman, great is your faith! Be it done to you even as you desire.”And her daughter was healed from that hour.",
+      "ko": "이에 예수께서 대답하여 가라사대 여자야 네 믿음이 크도다 네 소원대로 되리라 하시니 그 시로부터 그의 딸이 나으니라",
+      "source_text_hash": "8b338e4c140edb58c8461e7962beaafc951c1107a61fcd94d9401edff7b6c0cf",
+      "translation_text_hash": "6b9caf583d2cc5d8a460155fde4832cd745221be2ac1202449e04b5d87ed9613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 대답하여 가라사대 여자야 네 믿음이 크도다 네 소원대로 되리라 하시니 그 시로부터 그의 딸이 나으니라"
+      ],
+      "raw_text_hashes": [
+        "6b9caf583d2cc5d8a460155fde4832cd745221be2ac1202449e04b5d87ed9613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:29",
+      "sequence": 23663,
+      "chapter_label": "MAT 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus departed from there and came near to the sea of Galilee; and he went up on the mountain and sat there.",
+      "ko": "예수께서 거기서 떠나사 갈릴리 호숫가에 이르러 산에 올라가 거기 앉으시니",
+      "source_text_hash": "9b8cc53b1682355c82de9eab6011e521f61162587c41e150ea7db946488201bd",
+      "translation_text_hash": "5cb4543f23454ce0762b35ca96377c063435c3db42401d3c2ef77f64818d8788",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기서 떠나사 갈릴리 호숫가에 이르러 산에 올라가 거기 앉으시니"
+      ],
+      "raw_text_hashes": [
+        "5cb4543f23454ce0762b35ca96377c063435c3db42401d3c2ef77f64818d8788"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:30",
+      "sequence": 23664,
+      "chapter_label": "MAT 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Great multitudes came to him, having with them the lame, blind, mute, maimed, and many others, and they put them down at his feet. He healed them,",
+      "ko": "큰 무리가 절뚝발이와 불구자와 소경과 벙어리와 기타 여럿을 데리고 와서 예수의 발앞에 두매 고쳐 주시니",
+      "source_text_hash": "f9dd5768ea1fadbc32a763560572fab7c4923065fc204c7da6aa17b22a194eae",
+      "translation_text_hash": "f26bc10662710c60224d1d480e2b0dcce52b5165a864d2b1ac560a8088c123fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 무리가 절뚝발이와 불구자와 소경과 벙어리와 기타 여럿을 데리고 와서 예수의 발앞에 두매 고쳐 주시니"
+      ],
+      "raw_text_hashes": [
+        "f26bc10662710c60224d1d480e2b0dcce52b5165a864d2b1ac560a8088c123fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:31",
+      "sequence": 23665,
+      "chapter_label": "MAT 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "so that the multitude wondered when they saw the mute speaking, the injured healed, the lame walking, and the blind seeing—and they glorified the God of Israel.",
+      "ko": "벙어리가 말하고 불구자가 건전하고 절뚝발이가 걸으며 소경이 보는 것을 무리가 보고 기이히 여겨 이스라엘의 하나님께 영광을 돌리니라",
+      "source_text_hash": "f057580610f3d02a337c7dc12a663eac5e58c156140f6873551d4efe2503d3f1",
+      "translation_text_hash": "db864156949f56a4f15d475a75b439431ec8898262b737961dccfd73dec56d30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벙어리가 말하고 불구자가 건전하고 절뚝발이가 걸으며 소경이 보는 것을 무리가 보고 기이히 여겨 이스라엘의 하나님께 영광을 돌리니라"
+      ],
+      "raw_text_hashes": [
+        "db864156949f56a4f15d475a75b439431ec8898262b737961dccfd73dec56d30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:32",
+      "sequence": 23666,
+      "chapter_label": "MAT 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "Jesus summoned his disciples and said, “I have compassion on the multitude, because they have continued with me now three days and have nothing to eat. I don’t want to send them away fasting, or they might faint on the way.”",
+      "ko": "예수께서 제자들을 불러 가라사대 내가 무리를 불쌍히 여기노라 저희가 나와 함께 있은지 이미 사흘이매 먹을 것이 없도다 길에서 기진할까 하여 굶겨 보내지 못하겠노라",
+      "source_text_hash": "039127661c0d624a889b13c4da62366ead5b7f539f557f20ff32c1f5f5f9e027",
+      "translation_text_hash": "43c7b898e92ecc6a0a017355b5c4b82be59ee21e540e53027b0058f07794811b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들을 불러 가라사대 내가 무리를 불쌍히 여기노라 저희가 나와 함께 있은지 이미 사흘이매 먹을 것이 없도다 길에서 기진할까 하여 굶겨 보내지 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "43c7b898e92ecc6a0a017355b5c4b82be59ee21e540e53027b0058f07794811b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:33",
+      "sequence": 23667,
+      "chapter_label": "MAT 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "The disciples said to him, “Where could we get so many loaves in a deserted place as to satisfy so great a multitude?”",
+      "ko": "제자들이 가로되 광야에 있어 우리가 어디서 이런 무리의 배부를만큼 떡을 얻으리이까",
+      "source_text_hash": "6c4fc134531c41ba74e6caf6a3c48eda61e6e0577954de7123f8ac7f412e722e",
+      "translation_text_hash": "939dd98338ae42f3450e96da99f38224a7bea4f44ed20bc42a84e82fcdaad488",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가로되 광야에 있어 우리가 어디서 이런 무리의 배부를만큼 떡을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "939dd98338ae42f3450e96da99f38224a7bea4f44ed20bc42a84e82fcdaad488"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:34",
+      "sequence": 23668,
+      "chapter_label": "MAT 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus said to them, “How many loaves do you have?”They said, “Seven, and a few small fish.”",
+      "ko": "예수께서 가라사대 너희에게 떡이 몇 개나 있느냐 가로되 일곱개와 작은 생선 두어 마리가 있나이다 하거늘",
+      "source_text_hash": "aa774b8376cf0aa6d78a038a9aba180c2b0ce19abc1eb24eda635b204c5e5816",
+      "translation_text_hash": "7ff06c56159aa9b570135f7db6ac3975046c7a944f3d8c59fb07a89a66d1462f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희에게 떡이 몇 개나 있느냐 가로되 일곱개와 작은 생선 두어 마리가 있나이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "7ff06c56159aa9b570135f7db6ac3975046c7a944f3d8c59fb07a89a66d1462f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:35",
+      "sequence": 23669,
+      "chapter_label": "MAT 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "He commanded the multitude to sit down on the ground;",
+      "ko": "예수께서 무리를 명하사 땅에 앉게 하시고",
+      "source_text_hash": "d3b382b264510d90cb4e84ef9fbadb6ce23bf323e1ed119ccbc39004f8af73bf",
+      "translation_text_hash": "709184672e4723523968030dfcf1d9b87f7ddaee267553aad3b6aafb72d93cb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리를 명하사 땅에 앉게 하시고"
+      ],
+      "raw_text_hashes": [
+        "709184672e4723523968030dfcf1d9b87f7ddaee267553aad3b6aafb72d93cb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:36",
+      "sequence": 23670,
+      "chapter_label": "MAT 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "and he took the seven loaves and the fish. He gave thanks and broke them, and gave to the disciples, and the disciples to the multitudes.",
+      "ko": "떡 일곱 개와 그 생선을 가지사 축사하시고 떼어 제자들에게 주시니 제자들이 무리에게 주매",
+      "source_text_hash": "95df12d6a2c71487151d9be563fad4191fa90df523d11fad41b1bc542d9a9594",
+      "translation_text_hash": "4f3cd9c8028ad10ba0193f3cf504b7ce5d2174071de1eceb6e9bdff5426a5a99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡 일곱 개와 그 생선을 가지사 축사하시고 떼어 제자들에게 주시니 제자들이 무리에게 주매"
+      ],
+      "raw_text_hashes": [
+        "4f3cd9c8028ad10ba0193f3cf504b7ce5d2174071de1eceb6e9bdff5426a5a99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:37",
+      "sequence": 23671,
+      "chapter_label": "MAT 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "They all ate and were filled. They took up seven baskets full of the broken pieces that were left over.",
+      "ko": "다 배불리 먹고 남은 조각을 일곱 광주리에 차게 거두었으며",
+      "source_text_hash": "4fdb71b840dbf0b933a3cc2ecc5437f6e2a9a6a9514f1e37ad22b6f04394e86d",
+      "translation_text_hash": "1e059b124ae736c47c7a53012c97e68b70964b4ac631a8ded911f84c632280a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 배불리 먹고 남은 조각을 일곱 광주리에 차게 거두었으며"
+      ],
+      "raw_text_hashes": [
+        "1e059b124ae736c47c7a53012c97e68b70964b4ac631a8ded911f84c632280a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:38",
+      "sequence": 23672,
+      "chapter_label": "MAT 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "Those who ate were four thousand men, in addition to women and children.",
+      "ko": "먹은 자는 여자와 아이 외에 사천 명이었더라",
+      "source_text_hash": "7e35c8a18c29d17f7077c76c8723c4daeba6842ded3ee937501cab5cf12342ca",
+      "translation_text_hash": "57577fa5260f5e68f93c4c7a25c320e29c90fc436a3d1a8ce4ec68bf920ffd04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹은 자는 여자와 아이 외에 사천 명이었더라"
+      ],
+      "raw_text_hashes": [
+        "57577fa5260f5e68f93c4c7a25c320e29c90fc436a3d1a8ce4ec68bf920ffd04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:15:39",
+      "sequence": 23673,
+      "chapter_label": "MAT 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "Then he sent away the multitudes, got into the boat, and came into the borders of Magdala.",
+      "ko": "예수께서 무리를 흩어 보내시고 배에 오르사 마가단 지경에 가시니라",
+      "source_text_hash": "875a33e4aeaa86d744e9ddbea246b01eecc40c43e6faa29309e3ea21018c8aed",
+      "translation_text_hash": "eb854b2e564c578a8e48c297a38de895c1227de156cc15e62424dfbc277941de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리를 흩어 보내시고 배에 오르사 마가단 지경에 가시니라"
+      ],
+      "raw_text_hashes": [
+        "eb854b2e564c578a8e48c297a38de895c1227de156cc15e62424dfbc277941de"
+      ]
+    }
+  ]
+}

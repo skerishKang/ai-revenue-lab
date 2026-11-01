@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:009",
+  "unit_ordinal": 347,
+  "unit_label": "1CH 9",
+  "book_code": "1CH",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:9:1",
+      "sequence": 10617,
+      "chapter_label": "1CH 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "So all Israel were listed by genealogies; and behold, they are written in the book of the kings of Israel. Judah was carried away captive to Babylon for their disobedience.",
+      "ko": "온 이스라엘이 그 보계대로 계수되고 이스라엘 열왕기에 기록되니라 유다가 범죄함을 인하여 바벨론으로 사로잡혀 갔더니",
+      "source_text_hash": "25a8d36bfe053dd513dde05be4c3b13cc3f8c5a61f84c7f64e551c60d9521c9d",
+      "translation_text_hash": "2c7d23dd4355b32a789760fb6fa4759bd5e33d3625f55295e1bafbf7d247317e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 그 보계대로 계수되고 이스라엘 열왕기에 기록되니라 유다가 범죄함을 인하여 바벨론으로 사로잡혀 갔더니"
+      ],
+      "raw_text_hashes": [
+        "2c7d23dd4355b32a789760fb6fa4759bd5e33d3625f55295e1bafbf7d247317e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:2",
+      "sequence": 10618,
+      "chapter_label": "1CH 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "Now the first inhabitants who lived in their possessions in their cities were Israel, the priests, the Levites, and the temple servants.",
+      "ko": "먼저 그 본성으로 돌아와서 그 기업에 거한 자는 이스라엘 제사장들과 레위 사람과 느디님 사람들이라",
+      "source_text_hash": "a2098693a86a5784d9d0808c336f7c4dfc858c2b8bfaaca9121dc5309323985e",
+      "translation_text_hash": "045e5fe6224303e90343263311424a3539f472e976ed9ee6ef5786f88750ff25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 그 본성으로 돌아와서 그 기업에 거한 자는 이스라엘 제사장들과 레위 사람과 느디님 사람들이라"
+      ],
+      "raw_text_hashes": [
+        "045e5fe6224303e90343263311424a3539f472e976ed9ee6ef5786f88750ff25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:3",
+      "sequence": 10619,
+      "chapter_label": "1CH 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "In Jerusalem, there lived of the children of Judah, of the children of Benjamin, and of the children of Ephraim and Manasseh:",
+      "ko": "유다 자손과 베냐민 자손과 에브라임과 므낫세 자손 중에서 예루살렘에 거한 자는",
+      "source_text_hash": "90f0db58fa6d9ba0590c673ab63068fe4d0dd13bdf0f899e4b4d4d54ed0fee3d",
+      "translation_text_hash": "8c957cf6bb9d7e93906b5228ed0c0a3fb03489ebe58df92dedb223ed7a76c04e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손과 베냐민 자손과 에브라임과 므낫세 자손 중에서 예루살렘에 거한 자는"
+      ],
+      "raw_text_hashes": [
+        "8c957cf6bb9d7e93906b5228ed0c0a3fb03489ebe58df92dedb223ed7a76c04e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:4",
+      "sequence": 10620,
+      "chapter_label": "1CH 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Uthai the son of Ammihud, the son of Omri, the son of Imri, the son of Bani, of the children of Perez the son of Judah.",
+      "ko": "유다의 아들 베레스 자손 중에 우대니 저는 암미훗의 아들이요 오므리의 손자요 이므리의 증손이요 바니의 현손이며",
+      "source_text_hash": "56e6df7de5d133484ebaef9babc453c4dd6c710b8442436d44e1d1f9c0c4d602",
+      "translation_text_hash": "8a784ef7ebd2be7adae85dea9a58117ff2dbf9fa51612c0f6267db80153f3ce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들 베레스 자손 중에 우대니 저는 암미훗의 아들이요 오므리의 손자요 이므리의 증손이요 바니의 현손이며"
+      ],
+      "raw_text_hashes": [
+        "8a784ef7ebd2be7adae85dea9a58117ff2dbf9fa51612c0f6267db80153f3ce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:5",
+      "sequence": 10621,
+      "chapter_label": "1CH 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Of the Shilonites: Asaiah the firstborn and his sons.",
+      "ko": "실로 사람 중에서는 장자 아사야와 그 아들들이요",
+      "source_text_hash": "f1f31c88aa2ff51ed6e399b29a3c8761996812421673237860b0ad8eab0bd353",
+      "translation_text_hash": "bf976c822741c40fcf0e1f0a6b7dcd0938eb2e091c8069074c583daccc26d60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실로 사람 중에서는 장자 아사야와 그 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "bf976c822741c40fcf0e1f0a6b7dcd0938eb2e091c8069074c583daccc26d60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:6",
+      "sequence": 10622,
+      "chapter_label": "1CH 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Of the sons of Zerah: Jeuel and their brothers, six hundred ninety.",
+      "ko": "세라 자손 중에서는 여우엘과 그 형제 육백 구십인이요",
+      "source_text_hash": "362c88be1d86cff2271e6352a87af231986d32779c5a1d6e1f5cf98e2bf5e7a7",
+      "translation_text_hash": "6ed61a93b573d118ebf667ad047606b83336edbe73f37912ff5545a730cf78c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세라 자손 중에서는 여우엘과 그 형제 육백 구십인이요"
+      ],
+      "raw_text_hashes": [
+        "6ed61a93b573d118ebf667ad047606b83336edbe73f37912ff5545a730cf78c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:7",
+      "sequence": 10623,
+      "chapter_label": "1CH 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Of the sons of Benjamin: Sallu the son of Meshullam, the son of Hodaviah, the son of Hassenuah;",
+      "ko": "베냐민 자손 중에서는 핫스누아의 증손 호다위아의 손자 므술람의 아들 살루요",
+      "source_text_hash": "6c6208969a26ed223204cb976b67d7d917356b83ce02077a39597ee863126c82",
+      "translation_text_hash": "cc8ee6e8714a0dc757d57556c3e1499ad1b9c53315a33681fbd678d6d2737061",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손 중에서는 핫스누아의 증손 호다위아의 손자 므술람의 아들 살루요"
+      ],
+      "raw_text_hashes": [
+        "cc8ee6e8714a0dc757d57556c3e1499ad1b9c53315a33681fbd678d6d2737061"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:8",
+      "sequence": 10624,
+      "chapter_label": "1CH 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "and Ibneiah the son of Jeroham, and Elah the son of Uzzi, the son of Michri; and Meshullam the son of Shephatiah, the son of Reuel, the son of Ibnijah;",
+      "ko": "여로함의 아들 이브느야와 미그리의 손자 웃시의 아들 엘라요 이브니야의 증손 르우엘의 손자 스바댜의 아들 무술람이요",
+      "source_text_hash": "3e8733a9e48af7923225f8f78b13ddcb40f86878f897d5b05447583f2e8456f0",
+      "translation_text_hash": "1cf5b632074703aa6f6f0c7e591b3747ca44be8d5506ed791a0239a3a14a1299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로함의 아들 이브느야와 미그리의 손자 웃시의 아들 엘라요 이브니야의 증손 르우엘의 손자 스바댜의 아들 무술람이요"
+      ],
+      "raw_text_hashes": [
+        "1cf5b632074703aa6f6f0c7e591b3747ca44be8d5506ed791a0239a3a14a1299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:9",
+      "sequence": 10625,
+      "chapter_label": "1CH 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "and their brothers, according to their generations, nine hundred fifty-six. All these men were heads of fathers’ households by their fathers’ houses.",
+      "ko": "또 저의 형제들이라 그 보계대로 계수하면 구백 오십 륙인이니 다 그 집의 족장된 자들이더라",
+      "source_text_hash": "cfbf1d2cbed2c7d879845949378d42d81ec375366b6d5fd490f109ffef9af871",
+      "translation_text_hash": "31caccfc92dfa4babf84d86d7cd002b0bf96f3388be61c3833c0306d1fdaa5ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저의 형제들이라 그 보계대로 계수하면 구백 오십 륙인이니 다 그 집의 족장된 자들이더라"
+      ],
+      "raw_text_hashes": [
+        "31caccfc92dfa4babf84d86d7cd002b0bf96f3388be61c3833c0306d1fdaa5ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:10",
+      "sequence": 10626,
+      "chapter_label": "1CH 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Of the priests: Jedaiah, Jehoiarib, Jachin,",
+      "ko": "제사장 중에서는 여다야와 여호야립과 야긴과",
+      "source_text_hash": "116a69433bd325579bc69de0cd238a772dbbe3595cea9950066669b8fc6c4fb8",
+      "translation_text_hash": "6a86455325207b4e49cd8dfa41e4c94e02543f14e4b310f90172c79b70e7d4b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 중에서는 여다야와 여호야립과 야긴과"
+      ],
+      "raw_text_hashes": [
+        "6a86455325207b4e49cd8dfa41e4c94e02543f14e4b310f90172c79b70e7d4b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:11",
+      "sequence": 10627,
+      "chapter_label": "1CH 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "and Azariah the son of Hilkiah, the son of Meshullam, the son of Zadok, the son of Meraioth, the son of Ahitub, the ruler of God’s house;",
+      "ko": "하나님의 전을 맡은 자 아사랴니 저는 힐기야의 아들이요 므술람의 손자요 사독의 증손이요 므라욧의 현손이요 아히둡의 오대손이며",
+      "source_text_hash": "b869a6b61dc14ff1a28d2235b973045fdcdb09d71b16c39c7a1aa8d078c0e292",
+      "translation_text_hash": "1637f7c425f4521a1ed3fe9ebef6137444049987d228a49917f779ffbe1dacc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 전을 맡은 자 아사랴니 저는 힐기야의 아들이요 므술람의 손자요 사독의 증손이요 므라욧의 현손이요 아히둡의 오대손이며"
+      ],
+      "raw_text_hashes": [
+        "1637f7c425f4521a1ed3fe9ebef6137444049987d228a49917f779ffbe1dacc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:12",
+      "sequence": 10628,
+      "chapter_label": "1CH 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "and Adaiah the son of Jeroham, the son of Pashhur, the son of Malchijah; and Maasai the son of Adiel, the son of Jahzerah, the son of Meshullam, the son of Meshillemith, the son of Immer;",
+      "ko": "또 아다야니 저는 여로함의 아들이요 바스훌의 손자요 말기야의 증손이며 또 마아새니 저는 아디엘의 아들이요 야세라의 손자요 므술람의 증손이요 므실레밋의 현손이요 임멜의 오대손이며",
+      "source_text_hash": "dbb09e11cb753230b7fefc4f4f6db465e186d12f546bdb7fed8924864647fbeb",
+      "translation_text_hash": "3d5302eeee514b6fa6720a32b396bfd2bddf4984517d7de5d1b52bfbd28cc55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아다야니 저는 여로함의 아들이요 바스훌의 손자요 말기야의 증손이며 또 마아새니 저는 아디엘의 아들이요 야세라의 손자요 므술람의 증손이요 므실레밋의 현손이요 임멜의 오대손이며"
+      ],
+      "raw_text_hashes": [
+        "3d5302eeee514b6fa6720a32b396bfd2bddf4984517d7de5d1b52bfbd28cc55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:13",
+      "sequence": 10629,
+      "chapter_label": "1CH 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "and their brothers, heads of their fathers’ houses, one thousand seven hundred sixty; they were very able men for the work of the service of God’s house.",
+      "ko": "또 그 형제들이니 그 집의 족장이라 하나님의 전의 일에 수종들 재능이 있는 자가 모두 일천 칠백 륙십인이더라",
+      "source_text_hash": "f747b2f1a6e28b6eb53f58338c07969f73c55b82dbba44807f9f49638b9d667a",
+      "translation_text_hash": "c53b284b1b2a125a1a21fa319adf83c4798d78eac54282821609a7cec0aa3299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 형제들이니 그 집의 족장이라 하나님의 전의 일에 수종들 재능이 있는 자가 모두 일천 칠백 륙십인이더라"
+      ],
+      "raw_text_hashes": [
+        "c53b284b1b2a125a1a21fa319adf83c4798d78eac54282821609a7cec0aa3299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:14",
+      "sequence": 10630,
+      "chapter_label": "1CH 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Of the Levites: Shemaiah the son of Hasshub, the son of Azrikam, the son of Hashabiah, of the sons of Merari;",
+      "ko": "레위 사람 중에서는 므라리 자손 스마야니 저는 핫숩의 아들이요 아스리감의 손자요 하사뱌의 증손이며",
+      "source_text_hash": "d66e8895e619d4bf8373d59bbe4105d6af1ed5cf7466086946e41af33a3d89c6",
+      "translation_text_hash": "1b57b41fcded5f1e8d7d83cf652e5f0009b19cbbf2698704b3790871704001f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 중에서는 므라리 자손 스마야니 저는 핫숩의 아들이요 아스리감의 손자요 하사뱌의 증손이며"
+      ],
+      "raw_text_hashes": [
+        "1b57b41fcded5f1e8d7d83cf652e5f0009b19cbbf2698704b3790871704001f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:15",
+      "sequence": 10631,
+      "chapter_label": "1CH 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "and Bakbakkar, Heresh, Galal, and Mattaniah the son of Mica, the son of Zichri, the son of Asaph,",
+      "ko": "또 박박갈과 헤레스와 갈랄과 맛다냐니 저는 미가의 아들이요 시그리의 손자요 아삽의 증손이며",
+      "source_text_hash": "be8aca17bb52314a05ce1a793b5996b654fd88b01b2489e7cbf9df79899cdc8a",
+      "translation_text_hash": "c03ec8a8197b21767303ee4a55c95ab3529bb7e34ca6fd5eec1e13a915514109",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 박박갈과 헤레스와 갈랄과 맛다냐니 저는 미가의 아들이요 시그리의 손자요 아삽의 증손이며"
+      ],
+      "raw_text_hashes": [
+        "c03ec8a8197b21767303ee4a55c95ab3529bb7e34ca6fd5eec1e13a915514109"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:16",
+      "sequence": 10632,
+      "chapter_label": "1CH 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "and Obadiah the son of Shemaiah, the son of Galal, the son of Jeduthun; and Berechiah the son of Asa, the son of Elkanah, who lived in the villages of the Netophathites.",
+      "ko": "또 오바댜니 저는 스마야의 아들이요 갈랄의 손자요 여두둔의 증손이며 또 베레갸니 저는 아사의 아들이요 엘가나의 손자라 느도바 사람의 향리에 거하였더라",
+      "source_text_hash": "4702ec32d294f78a8460317d342acd65c8f3e302c5075cdaa70bc9bb18c0e385",
+      "translation_text_hash": "622d52a1cc068f26ec8778958e419dcacef2dc5bc894f1e46c9d38e43e850212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 오바댜니 저는 스마야의 아들이요 갈랄의 손자요 여두둔의 증손이며 또 베레갸니 저는 아사의 아들이요 엘가나의 손자라 느도바 사람의 향리에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "622d52a1cc068f26ec8778958e419dcacef2dc5bc894f1e46c9d38e43e850212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:17",
+      "sequence": 10633,
+      "chapter_label": "1CH 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "The gatekeepers: Shallum, Akkub, Talmon, Ahiman, and their brothers (Shallum was the chief),",
+      "ko": "문지기는 살룸과 악굽과 달몬과 아히만과 그 형제들이니 살룸은 그 두목이라",
+      "source_text_hash": "294b2dca9f7678c86a3ec619fc5649e599883ab0ed3ae9bb59f32e6e770c67b7",
+      "translation_text_hash": "a8b151d23f8433614b6d33e6a829e49a19db1c43a1acc106bb2ed186efffe5dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문지기는 살룸과 악굽과 달몬과 아히만과 그 형제들이니 살룸은 그 두목이라"
+      ],
+      "raw_text_hashes": [
+        "a8b151d23f8433614b6d33e6a829e49a19db1c43a1acc106bb2ed186efffe5dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:18",
+      "sequence": 10634,
+      "chapter_label": "1CH 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "who previously served in the king’s gate eastward. They were the gatekeepers for the camp of the children of Levi.",
+      "ko": "이 사람들은 전에 왕의 문 동편 곧 레위 자손의 영의 문지기며",
+      "source_text_hash": "524bb9ce39368e0cc36809dc21ba398888ef408fd00bc59ef951e83abc062ff9",
+      "translation_text_hash": "a4cc6219967e4897682037a7bb0222e2d8fcc0a23080ca894a06f760df7a1b2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 전에 왕의 문 동편 곧 레위 자손의 영의 문지기며"
+      ],
+      "raw_text_hashes": [
+        "a4cc6219967e4897682037a7bb0222e2d8fcc0a23080ca894a06f760df7a1b2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:19",
+      "sequence": 10635,
+      "chapter_label": "1CH 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Shallum was the son of Kore, the son of Ebiasaph, the son of Korah, and his brothers, of his father’s house, the Korahites, were over the work of the service, keepers of the thresholds of the tent. Their fathers had been over the LORD’s camp, keepers of the entry.",
+      "ko": "고라의 증손 에비아삽의 손자 고레의 아들 살룸과 그 종족 형제 곧 고라의 자손이 수종드는 일을 맡아 성막 문들을 지켰으니 그 열조도 여호와의 영을 맡고 그 들어가는 곳을 지켰으며",
+      "source_text_hash": "9eeec7f79dee86bdc216a06dcc841e3ad8f0b16040bccb9d851321065fda009a",
+      "translation_text_hash": "9083a9f83573888ef739d48de40573d2f47e56d76afc785947e1062ca2b93d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라의 증손 에비아삽의 손자 고레의 아들 살룸과 그 종족 형제 곧 고라의 자손이 수종드는 일을 맡아 성막 문들을 지켰으니 그 열조도 여호와의 영을 맡고 그 들어가는 곳을 지켰으며"
+      ],
+      "raw_text_hashes": [
+        "9083a9f83573888ef739d48de40573d2f47e56d76afc785947e1062ca2b93d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:20",
+      "sequence": 10636,
+      "chapter_label": "1CH 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Phinehas the son of Eleazar was ruler over them in time past, and the LORD was with him.",
+      "ko": "여호와께서 함께하신 엘르아살의 아들 비느하스가 옛적에 그 무리를 거느렸고",
+      "source_text_hash": "16f8e2860dafd311e1470585a9e7c553232b832271da31238bdf8e176932a0b1",
+      "translation_text_hash": "13eab74c55f355f1fbbb87236164d8f61d7018278aac4358cd59f4af0e4d452a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 함께하신 엘르아살의 아들 비느하스가 옛적에 그 무리를 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "13eab74c55f355f1fbbb87236164d8f61d7018278aac4358cd59f4af0e4d452a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:21",
+      "sequence": 10637,
+      "chapter_label": "1CH 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Zechariah the son of Meshelemiah was gatekeeper of the door of the Tent of Meeting.",
+      "ko": "므셀레먀의 아들 스가랴는 회막 문지기가 되었더라",
+      "source_text_hash": "f44173443320f38f3b50cedf5d58cc134e36816fdfe6544083158a39304435ff",
+      "translation_text_hash": "09386057f74f1613c7a03f64298fc40671c03c62003589ce0c4301eafabd3ec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므셀레먀의 아들 스가랴는 회막 문지기가 되었더라"
+      ],
+      "raw_text_hashes": [
+        "09386057f74f1613c7a03f64298fc40671c03c62003589ce0c4301eafabd3ec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:22",
+      "sequence": 10638,
+      "chapter_label": "1CH 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "All these who were chosen to be gatekeepers in the thresholds were two hundred twelve. These were listed by genealogy in their villages, whom David and Samuel the seer ordained in their office of trust.",
+      "ko": "택함을 입어 문지기 된 자가 모두 이백 열 둘이니 이는 그 향리에서 그 보계대로 계수된 자요 다윗과 선견자 사무엘이 전에 세워서 이 직분을 맡긴 자라",
+      "source_text_hash": "8fe6f2ab67c881cf3ccb0988721476a20adeabccad858d14b89ec55610b40140",
+      "translation_text_hash": "c128dcc14f128bfcf934565f286df62d4d7eefd70042766a2dc3cbe4b2c18f06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "택함을 입어 문지기 된 자가 모두 이백 열 둘이니 이는 그 향리에서 그 보계대로 계수된 자요 다윗과 선견자 사무엘이 전에 세워서 이 직분을 맡긴 자라"
+      ],
+      "raw_text_hashes": [
+        "c128dcc14f128bfcf934565f286df62d4d7eefd70042766a2dc3cbe4b2c18f06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:23",
+      "sequence": 10639,
+      "chapter_label": "1CH 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "So they and their children had the oversight of the gates of the LORD’s house, even the house of the tent, as guards.",
+      "ko": "저희와 그 자손이 그 반열을 좇아 여호와의 전 곧 성막문을 지켰는데",
+      "source_text_hash": "fc2a1abc37d58d0f2e13c1db4cd2f8d485bd8f5391bd4e420879d83be0abb7d1",
+      "translation_text_hash": "07fc2e66ba1cb54f7f83ae8f5ce8b072ac50ac49edd87ab074578da660b50b97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희와 그 자손이 그 반열을 좇아 여호와의 전 곧 성막문을 지켰는데"
+      ],
+      "raw_text_hashes": [
+        "07fc2e66ba1cb54f7f83ae8f5ce8b072ac50ac49edd87ab074578da660b50b97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:24",
+      "sequence": 10640,
+      "chapter_label": "1CH 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "On the four sides were the gatekeepers, toward the east, west, north, and south.",
+      "ko": "이 문지기가 동, 서, 남, 북 사방에 섰고",
+      "source_text_hash": "4a7d145fa66f16fbfc138eabccbccf0c8442a118bc32543ff0e3a29bf0456a66",
+      "translation_text_hash": "50cb71fc5830b88a849f41e23e3510d5b6959f6ad8e1ab25453a60237e190c9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 문지기가 동, 서, 남, 북 사방에 섰고"
+      ],
+      "raw_text_hashes": [
+        "50cb71fc5830b88a849f41e23e3510d5b6959f6ad8e1ab25453a60237e190c9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:25",
+      "sequence": 10641,
+      "chapter_label": "1CH 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "Their brothers, in their villages, were to come in every seven days from time to time to be with them,",
+      "ko": "그 향리에 있는 형제들은 이레마다 와서 함께하니",
+      "source_text_hash": "1df89cfd07240ac900071539f71fa1ba468dd39b9b2c83820613161c00da21c6",
+      "translation_text_hash": "c0f3fb4a343d2cdd9c2b5d0d06fd8987ba4c932c8a37ea4484840d764237281b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 향리에 있는 형제들은 이레마다 와서 함께하니"
+      ],
+      "raw_text_hashes": [
+        "c0f3fb4a343d2cdd9c2b5d0d06fd8987ba4c932c8a37ea4484840d764237281b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:26",
+      "sequence": 10642,
+      "chapter_label": "1CH 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "for the four chief gatekeepers, who were Levites, were in an office of trust, and were over the rooms and over the treasuries in God’s house.",
+      "ko": "이는 문지기의 두목 된 레위 사람 넷이 긴요한 직분을 맡아 하나님의 전 모든 방과 곳간을 지켰음이라",
+      "source_text_hash": "f1fc77a88879109d6919a2b92c153851e888eedfa9cab7a547860bf739ed9df8",
+      "translation_text_hash": "f9b7ef9b3d6f2ed7ecb064e23c34d468520c0120c73754dcdc1a3c2efc51c2cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 문지기의 두목 된 레위 사람 넷이 긴요한 직분을 맡아 하나님의 전 모든 방과 곳간을 지켰음이라"
+      ],
+      "raw_text_hashes": [
+        "f9b7ef9b3d6f2ed7ecb064e23c34d468520c0120c73754dcdc1a3c2efc51c2cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:27",
+      "sequence": 10643,
+      "chapter_label": "1CH 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "They stayed around God’s house, because that was their duty; and it was their duty to open it morning by morning.",
+      "ko": "저희는 하나님의 전을 맡은 직분이 있으므로 전 사면에 유하며 아침마다 문을 여는 책임이 있었더라",
+      "source_text_hash": "f742401ca226a0d84df190973a533306f70e70acff6406181926a4a54d821f5d",
+      "translation_text_hash": "b4257ea11c9d71fe5f2e9fe40b8183c9415c78b1e1940934f6386df4f09455e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 하나님의 전을 맡은 직분이 있으므로 전 사면에 유하며 아침마다 문을 여는 책임이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "b4257ea11c9d71fe5f2e9fe40b8183c9415c78b1e1940934f6386df4f09455e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:28",
+      "sequence": 10644,
+      "chapter_label": "1CH 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "Certain of them were in charge of the vessels of service, for these were brought in by count, and these were taken out by count.",
+      "ko": "그 중에 어떤 자는 섬기는데 쓰는 기명을 맡아서 그 수효대로 들여가고 수효대로 내어오며",
+      "source_text_hash": "b93037bbed91c7eef900a4f447081d94371a8bf5bccb10c0c988af9c7db6e3a8",
+      "translation_text_hash": "6bec56f0dce4a3c501909a14e1e0df02c4ca7e3c4fe1ecb68d0cfd9a568f4d2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 어떤 자는 섬기는데 쓰는 기명을 맡아서 그 수효대로 들여가고 수효대로 내어오며"
+      ],
+      "raw_text_hashes": [
+        "6bec56f0dce4a3c501909a14e1e0df02c4ca7e3c4fe1ecb68d0cfd9a568f4d2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:29",
+      "sequence": 10645,
+      "chapter_label": "1CH 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "Some of them also were appointed over the furniture, and over all the vessels of the sanctuary, over the fine flour, the wine, the oil, the frankincense, and the spices.",
+      "ko": "또 어떤 자는 성소의 기구와 모든 기명과 고운 가루와 포도주와 기름과 유향과 향품을 맡았으며",
+      "source_text_hash": "60f8b3d4242ae473cd76ef1b617c2a665f566d74aa3d2b4d8405397d7febf56e",
+      "translation_text_hash": "9f48c068865a3b164516ed18238afaec1007ddae8b86c2e72ba0d5bb23b53fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤 자는 성소의 기구와 모든 기명과 고운 가루와 포도주와 기름과 유향과 향품을 맡았으며"
+      ],
+      "raw_text_hashes": [
+        "9f48c068865a3b164516ed18238afaec1007ddae8b86c2e72ba0d5bb23b53fc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:30",
+      "sequence": 10646,
+      "chapter_label": "1CH 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "Some of the sons of the priests prepared the mixing of the spices.",
+      "ko": "또 제사장의 아들 중에 어떤 자는 향품으로 향기름을 만들었으며",
+      "source_text_hash": "4bcd23f28e200e2007a7166be3c7ab175a35be431c80187fd84362aecc6e2d28",
+      "translation_text_hash": "859754f6f00461f19289f67bad35cddf391a3b03e62bdddcbd750183b76c6ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제사장의 아들 중에 어떤 자는 향품으로 향기름을 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "859754f6f00461f19289f67bad35cddf391a3b03e62bdddcbd750183b76c6ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:31",
+      "sequence": 10647,
+      "chapter_label": "1CH 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "Mattithiah, one of the Levites, who was the firstborn of Shallum the Korahite, had the office of trust over the things that were baked in pans.",
+      "ko": "고라 자손 살룸의 장자 맛디댜라 하는 레위 사람은 남비에 지지는 것을 맡았으며",
+      "source_text_hash": "b3fcadd35e34a4cabfb985bed60b7ffae7840c66ba7eec63b139610a64c183db",
+      "translation_text_hash": "e8d2a8b6fda39d80e8c44e9561584ca6d0feb71cd658c250cf74530771e4fa18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라 자손 살룸의 장자 맛디댜라 하는 레위 사람은 남비에 지지는 것을 맡았으며"
+      ],
+      "raw_text_hashes": [
+        "e8d2a8b6fda39d80e8c44e9561584ca6d0feb71cd658c250cf74530771e4fa18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:32",
+      "sequence": 10648,
+      "chapter_label": "1CH 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Some of their brothers, of the sons of the Kohathites, were over the show bread, to prepare it every Sabbath.",
+      "ko": "또 그 형제 그핫 자손 중에 어떤 자는 진설하는 떡을 맡아 안식일마다 준비하였더라",
+      "source_text_hash": "132f7479e037100c8055d5545a8071e61479ab50e0d3a4a86541e04ab390f675",
+      "translation_text_hash": "58042e7d90b8f343a962ebd83824cd15b983a8bf6f24e7ea7a63bc9ac965405b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 형제 그핫 자손 중에 어떤 자는 진설하는 떡을 맡아 안식일마다 준비하였더라"
+      ],
+      "raw_text_hashes": [
+        "58042e7d90b8f343a962ebd83824cd15b983a8bf6f24e7ea7a63bc9ac965405b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:33",
+      "sequence": 10649,
+      "chapter_label": "1CH 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "These are the singers, heads of fathers’ households of the Levites, who lived in the rooms and were free from other service, for they were employed in their work day and night.",
+      "ko": "또 찬송하는 자가 있으니 곧 레위 족장이라 저희가 골방에 거하여 주야로 자기 직분에 골몰하므로 다른 일은 하지 아니하였더라",
+      "source_text_hash": "8407d61bef53b74b988ed1e1874bbc64389460ee6af032046ac12e89285925e5",
+      "translation_text_hash": "0e1b6d7f30df9406ef437cc9ba1aef5f38e4466874842fc33f1c1b18519592ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 찬송하는 자가 있으니 곧 레위 족장이라 저희가 골방에 거하여 주야로 자기 직분에 골몰하므로 다른 일은 하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "0e1b6d7f30df9406ef437cc9ba1aef5f38e4466874842fc33f1c1b18519592ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:34",
+      "sequence": 10650,
+      "chapter_label": "1CH 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "These were heads of fathers’ households of the Levites, throughout their generations, chief men. They lived at Jerusalem.",
+      "ko": "이상은 대대로 레위의 족장이요 으뜸이라 예루살렘에 거하였더라",
+      "source_text_hash": "46679b804be0c45b76490140f218ab3a58a74a580a0c8d470aff310c38c41d17",
+      "translation_text_hash": "0c05a801c93805487c9b538c89d0f22ec8739aebae2935166bcbe2ce0c6234f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 대대로 레위의 족장이요 으뜸이라 예루살렘에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "0c05a801c93805487c9b538c89d0f22ec8739aebae2935166bcbe2ce0c6234f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:35",
+      "sequence": 10651,
+      "chapter_label": "1CH 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "Jeiel the father of Gibeon, whose wife’s name was Maacah, lived in Gibeon.",
+      "ko": "기브온의 조상 여이엘은 기브온에 거하였으니 그 아내의 이름은 마아가라",
+      "source_text_hash": "87bb0197ab195e7bd2d1574abe7e9391de7a8077babe1a99388bb536ba70af9c",
+      "translation_text_hash": "37aadff0e3af3586f45407948abb5f39b58c8e176fe1c7395a38cb77d0529201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온의 조상 여이엘은 기브온에 거하였으니 그 아내의 이름은 마아가라"
+      ],
+      "raw_text_hashes": [
+        "37aadff0e3af3586f45407948abb5f39b58c8e176fe1c7395a38cb77d0529201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:36",
+      "sequence": 10652,
+      "chapter_label": "1CH 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "His firstborn son was Abdon, then Zur, Kish, Baal, Ner, Nadab,",
+      "ko": "그 장자는 압돈이요 다음은 술과 기스와 바알과 넬과 나답과",
+      "source_text_hash": "89cc3440ca99bd2fcf95d0015fd8d530b4bcc5d9b348ea30a2613aa0c0e52750",
+      "translation_text_hash": "7ff58de4cfcd8795de382d7b2f0c2639aee8ed17eff10e08e6db0764d210bc31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장자는 압돈이요 다음은 술과 기스와 바알과 넬과 나답과"
+      ],
+      "raw_text_hashes": [
+        "7ff58de4cfcd8795de382d7b2f0c2639aee8ed17eff10e08e6db0764d210bc31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:37",
+      "sequence": 10653,
+      "chapter_label": "1CH 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "Gedor, Ahio, Zechariah, and Mikloth.",
+      "ko": "그돌과 아히오와 스가랴와 미글롯이며",
+      "source_text_hash": "2bfd9bae6f4c16402be0787bf277223f7c2b594f15ae4f8e480c0bdb2d89b694",
+      "translation_text_hash": "11e07bdb7e0975600056204cf7fc1f5cb2c29a4ea3af3149484dd3110a7c4294",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그돌과 아히오와 스가랴와 미글롯이며"
+      ],
+      "raw_text_hashes": [
+        "11e07bdb7e0975600056204cf7fc1f5cb2c29a4ea3af3149484dd3110a7c4294"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:38",
+      "sequence": 10654,
+      "chapter_label": "1CH 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "Mikloth became the father of Shimeam. They also lived with their relatives in Jerusalem, near their relatives.",
+      "ko": "미글롯은 시므암을 낳았으니 이 무리도 그 형제로 더불어 서로 대하여 예루살렘에 거하였더라",
+      "source_text_hash": "1db3c60610df1fda696b3df865bd920c3dcf695287c2c7fc53248beaf9d30aab",
+      "translation_text_hash": "63ab2b6f18eac66ed025720ffc3300919c03e054f4cdc8e8cd2bbd229f9d501e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미글롯은 시므암을 낳았으니 이 무리도 그 형제로 더불어 서로 대하여 예루살렘에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "63ab2b6f18eac66ed025720ffc3300919c03e054f4cdc8e8cd2bbd229f9d501e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:39",
+      "sequence": 10655,
+      "chapter_label": "1CH 9",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 39
+        }
+      ],
+      "en": "Ner became the father of Kish. Kish became the father of Saul. Saul became the father of Jonathan, Malchishua, Abinadab, and Eshbaal.",
+      "ko": "넬은 기스를 낳았고 기스는 사울을 낳았고 사울은 요나단과 말기수아와 아비나답과 에스바알을 낳았으며",
+      "source_text_hash": "15c7f0bd26511b42bff1e1d97e7cd285caa9f581017bd02c7380c7304dc43923",
+      "translation_text_hash": "f18b328ac9f69c9c2621bc8a2fb9bb28cd4335d1422073548d91c4463b02f4a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넬은 기스를 낳았고 기스는 사울을 낳았고 사울은 요나단과 말기수아와 아비나답과 에스바알을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "f18b328ac9f69c9c2621bc8a2fb9bb28cd4335d1422073548d91c4463b02f4a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:40",
+      "sequence": 10656,
+      "chapter_label": "1CH 9",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 40
+        }
+      ],
+      "en": "The son of Jonathan was Merib-baal. Merib-baal became the father of Micah.",
+      "ko": "요나단의 아들은 므립바알이라 므립바알이 미가를 낳았고",
+      "source_text_hash": "0638c59a2079a88968dc2448aa6625fa0df815b14dc334e10f9d190e6aad2498",
+      "translation_text_hash": "23adde26ec0145a189f4eacad51dc5325d4a1e4d1de02fc60a8bcfa225b2c2ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단의 아들은 므립바알이라 므립바알이 미가를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "23adde26ec0145a189f4eacad51dc5325d4a1e4d1de02fc60a8bcfa225b2c2ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:41",
+      "sequence": 10657,
+      "chapter_label": "1CH 9",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 41
+        }
+      ],
+      "en": "The sons of Micah: Pithon, Melech, Tahrea, and Ahaz.",
+      "ko": "미가의 아들들은 비돈과 멜렉과 다레아와 아하스며",
+      "source_text_hash": "ccf170935b47d200fbca88c7dcd0ae82835e116e8ae53f979d5d6f7b8ecdf294",
+      "translation_text_hash": "007617cf8a467b17f69f8e6121a9e1d198f23101d4f6bc18a8b2354f5056d4f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가의 아들들은 비돈과 멜렉과 다레아와 아하스며"
+      ],
+      "raw_text_hashes": [
+        "007617cf8a467b17f69f8e6121a9e1d198f23101d4f6bc18a8b2354f5056d4f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:42",
+      "sequence": 10658,
+      "chapter_label": "1CH 9",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 42
+        }
+      ],
+      "en": "Ahaz became the father of Jarah. Jarah became the father of Alemeth, Azmaveth, and Zimri. Zimri became the father of Moza.",
+      "ko": "아하스는 야라를 낳았고 야라는 알레멧과 아스마웻과 시므리를 낳았고 시므리는 모사를 낳았고",
+      "source_text_hash": "a7673f8454c504598ba6fa9d30c8ad508c2c2831585fa73e70797d6e42d8d4a9",
+      "translation_text_hash": "237717e13e8c5192a37b40740f1d344e6cdd8bbbd17d809d91a9f7d4be7715a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스는 야라를 낳았고 야라는 알레멧과 아스마웻과 시므리를 낳았고 시므리는 모사를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "237717e13e8c5192a37b40740f1d344e6cdd8bbbd17d809d91a9f7d4be7715a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:43",
+      "sequence": 10659,
+      "chapter_label": "1CH 9",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 43
+        }
+      ],
+      "en": "Moza became the father of Binea, Rephaiah his son, Eleasah his son, and Azel his son.",
+      "ko": "모사는 비느아를 낳았으며 비느아의 아들은 르바야요 그 아들은 엘르아사요 그 아들은 아셀이며",
+      "source_text_hash": "82885eed5a1f3aa30f193c59c4fb9b677a3847a7738461e9d2e4750aa4b4c371",
+      "translation_text_hash": "35642ea69b2d457bd6eac886c0c50537442e79a88b0babb8cd4fec9c1beca50e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모사는 비느아를 낳았으며 비느아의 아들은 르바야요 그 아들은 엘르아사요 그 아들은 아셀이며"
+      ],
+      "raw_text_hashes": [
+        "35642ea69b2d457bd6eac886c0c50537442e79a88b0babb8cd4fec9c1beca50e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:9:44",
+      "sequence": 10660,
+      "chapter_label": "1CH 9",
+      "verse_label": "44",
+      "locator": {
+        "book": "1CH",
+        "chapter": 9,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 9,
+          "verse": 44
+        }
+      ],
+      "en": "Azel had six sons, whose names are Azrikam, Bocheru, Ishmael, Sheariah, Obadiah, and Hanan. These were the sons of Azel.",
+      "ko": "아셀이 여섯 아들이 있으니 그 이름은 아스리감과 보그루와 이스마엘과 스아랴와 오바댜와 하난이라 아셀의 아들들이 이러하였더라",
+      "source_text_hash": "8eb2b04686bac05a0d57394cb03dc3e169f94578e4b9e33e603c67c48b2b1f95",
+      "translation_text_hash": "fb7d3200da35a3b1d821ad6397c7b4d9f4f8ac71fe252587b53f6129287a2469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀이 여섯 아들이 있으니 그 이름은 아스리감과 보그루와 이스마엘과 스아랴와 오바댜와 하난이라 아셀의 아들들이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "fb7d3200da35a3b1d821ad6397c7b4d9f4f8ac71fe252587b53f6129287a2469"
+      ]
+    }
+  ]
+}

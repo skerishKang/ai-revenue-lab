@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:008",
+  "unit_ordinal": 870,
+  "unit_label": "HOS 8",
+  "book_code": "HOS",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:8:1",
+      "sequence": 22196,
+      "chapter_label": "HOS 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "“Put the trumpet to your lips! Something like an eagle is over the LORD’s house, because they have broken my covenant and rebelled against my law.",
+      "ko": "나팔을 네 입에 댈찌어다 대적이 독수리처럼 여호와의 집에 덮치리니 이는 무리가 내 언약을 어기며 내 율법을 범함이로다",
+      "source_text_hash": "05f58f3faa066bd69611356c10ef1acf98d1b2c15807d6956152c9f50628f38d",
+      "translation_text_hash": "302df0ad365c3d3235b3b3a90c137e44a543477beaa4c2eab633593783cf5db3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔을 네 입에 댈찌어다 대적이 독수리처럼 여호와의 집에 덮치리니 이는 무리가 내 언약을 어기며 내 율법을 범함이로다"
+      ],
+      "raw_text_hashes": [
+        "302df0ad365c3d3235b3b3a90c137e44a543477beaa4c2eab633593783cf5db3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:2",
+      "sequence": 22197,
+      "chapter_label": "HOS 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "They cry to me, ‘My God, we, Israel, acknowledge you!’",
+      "ko": "저희가 장차 내게 부르짖기를 나의 하나님이여 우리 이스라엘이 주를 아나이다 하리라",
+      "source_text_hash": "6ed235707831c2dcac22213c5c5112fddcf7e65e36b7f142909f945796587cd9",
+      "translation_text_hash": "5ff81c567991f594829c87362227a075ad0b29842b2b804b697d71de8f8ea099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 장차 내게 부르짖기를 나의 하나님이여 우리 이스라엘이 주를 아나이다 하리라"
+      ],
+      "raw_text_hashes": [
+        "5ff81c567991f594829c87362227a075ad0b29842b2b804b697d71de8f8ea099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:3",
+      "sequence": 22198,
+      "chapter_label": "HOS 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Israel has cast off that which is good. The enemy will pursue him.",
+      "ko": "이스라엘이 이미 선을 싫어 버렸으니 대적이 저를 따를 것이라",
+      "source_text_hash": "1bc726d9f8569cb33f4ee50d09f8d56e12978d6fdd751ed698374229651479af",
+      "translation_text_hash": "905f877ddcc650dbd1fa9e34792ca671e5bf36746257a3202085b49caa86af2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 이미 선을 싫어 버렸으니 대적이 저를 따를 것이라"
+      ],
+      "raw_text_hashes": [
+        "905f877ddcc650dbd1fa9e34792ca671e5bf36746257a3202085b49caa86af2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:4",
+      "sequence": 22199,
+      "chapter_label": "HOS 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "They have set up kings, but not by me. They have made princes, and I didn’t approve. Of their silver and their gold they have made themselves idols, that they may be cut off.",
+      "ko": "저희가 왕들을 세웠으나 내게서 말미암지 아니하였고 저희가 방백들을 세웠으나 나의 모르는바며 저희가 또 그 은, 금으로 자기를 위하여 우상을 만들었나니 파멸을 이루리라",
+      "source_text_hash": "3dae3081e6082afa7dc57b3724c1a599ccff1412bf1de15d17ddc228662d3cf8",
+      "translation_text_hash": "12e2d524ba6d21e5e69059b378b1b08779129524c6a329c9bc138de04216d74c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 왕들을 세웠으나 내게서 말미암지 아니하였고 저희가 방백들을 세웠으나 나의 모르는바며 저희가 또 그 은, 금으로 자기를 위하여 우상을 만들었나니 파멸을 이루리라"
+      ],
+      "raw_text_hashes": [
+        "12e2d524ba6d21e5e69059b378b1b08779129524c6a329c9bc138de04216d74c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:5",
+      "sequence": 22200,
+      "chapter_label": "HOS 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Let Samaria throw out his calf idol! My anger burns against them! How long will it be until they are capable of purity?",
+      "ko": "사마리아여 네 송아지는 버리웠느니라 내 노가 무리를 향하여 타오르나니 저희가 어느 때에야 능히 무죄하겠느냐",
+      "source_text_hash": "d6696a62f2d7132a5f701a35034267f8d1a790807b43d7f05e3ff5f05d11c0fb",
+      "translation_text_hash": "7aa6d01f02acb62051f60b205e8f4735c6be5feea602caab410814ec7754166f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아여 네 송아지는 버리웠느니라 내 노가 무리를 향하여 타오르나니 저희가 어느 때에야 능히 무죄하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7aa6d01f02acb62051f60b205e8f4735c6be5feea602caab410814ec7754166f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:6",
+      "sequence": 22201,
+      "chapter_label": "HOS 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "For this is even from Israel! The workman made it, and it is no God; indeed, the calf of Samaria shall be broken in pieces.",
+      "ko": "이것은 이스라엘에서 나고 공장이 만든 것이라 참 신이 아니니 사마리아의 송아지가 부숴뜨리우리라",
+      "source_text_hash": "f1af2a8474f8fce71b351dd5f74d1fc0e87c9485227fa62189a8547ba43a4a1d",
+      "translation_text_hash": "b37d6007b59bacc8d312cbb9a6906193e7cd4d9670a771693d35760393506ebb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 이스라엘에서 나고 공장이 만든 것이라 참 신이 아니니 사마리아의 송아지가 부숴뜨리우리라"
+      ],
+      "raw_text_hashes": [
+        "b37d6007b59bacc8d312cbb9a6906193e7cd4d9670a771693d35760393506ebb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:7",
+      "sequence": 22202,
+      "chapter_label": "HOS 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For they sow the wind, and they will reap the whirlwind. He has no standing grain. The stalk will yield no head. If it does yield, strangers will swallow it up.",
+      "ko": "저희가 바람을 심고 광풍을 거둘 것이라 심은 것이 줄기가 없으며 이삭은 열매를 맺히지 못할 것이요 설혹 맺힐찌라도 이방 사람이 삼키리라",
+      "source_text_hash": "7e27d95c1e5a52f1afd9eab9a0627a8931916cdb2a155e28a5ea3a9a31b27f2c",
+      "translation_text_hash": "d2fe5bacff2356a5e8c150456b95221597b66ec477ed37184385d4fdcecfaf96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 바람을 심고 광풍을 거둘 것이라 심은 것이 줄기가 없으며 이삭은 열매를 맺히지 못할 것이요 설혹 맺힐찌라도 이방 사람이 삼키리라"
+      ],
+      "raw_text_hashes": [
+        "d2fe5bacff2356a5e8c150456b95221597b66ec477ed37184385d4fdcecfaf96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:8",
+      "sequence": 22203,
+      "chapter_label": "HOS 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Israel is swallowed up. Now they are among the nations like a worthless thing.",
+      "ko": "이스라엘은 이미 삼키웠은즉 이제 열국 가운데 있는 것이 기뻐하지 아니하는 그릇 같도다",
+      "source_text_hash": "bf687dd474aafd9b8ab10b36dcd6c2305b7176ffd815035f13c6021df1c3a302",
+      "translation_text_hash": "bb7a890913787a86d5731b6834dac1ab662853bcfb6f310f8d09253331f079ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 이미 삼키웠은즉 이제 열국 가운데 있는 것이 기뻐하지 아니하는 그릇 같도다"
+      ],
+      "raw_text_hashes": [
+        "bb7a890913787a86d5731b6834dac1ab662853bcfb6f310f8d09253331f079ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:9",
+      "sequence": 22204,
+      "chapter_label": "HOS 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "For they have gone up to Assyria, like a wild donkey wandering alone. Ephraim has hired lovers for himself.",
+      "ko": "저희가 홀로 처한 들 나귀처럼 앗수르로 갔고 에브라임이 값 주고 연애하는 자들을 얻었도다",
+      "source_text_hash": "765c639701e67b5813691fc72021c0fd63feb5b3a6732a7fe32f8f74d781dfe8",
+      "translation_text_hash": "6dd37f98d0235149aac2276f1434f9e93c4f69d3cb71bac6602c42254b11556f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 홀로 처한 들 나귀처럼 앗수르로 갔고 에브라임이 값 주고 연애하는 자들을 얻었도다"
+      ],
+      "raw_text_hashes": [
+        "6dd37f98d0235149aac2276f1434f9e93c4f69d3cb71bac6602c42254b11556f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:10",
+      "sequence": 22205,
+      "chapter_label": "HOS 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "But although they sold themselves among the nations, I will now gather them; and they begin to waste away because of the oppression of the king of mighty ones.",
+      "ko": "저희가 열방 사람에게 값을 주었을찌라도 이제 내가 저희를 모으리니 저희가 모든 방백의 임금의 지워준 짐을 인하여 쇠하기 시작하리라",
+      "source_text_hash": "ae8072bb0deb970c9e8b15ef20b7be079c1312d6f11cf4acba9e7530b2478c0a",
+      "translation_text_hash": "a07ba3eb5cfc37fb593e44d9db72ddbe50abc37ecc183caf157c854a0c55e0f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 열방 사람에게 값을 주었을찌라도 이제 내가 저희를 모으리니 저희가 모든 방백의 임금의 지워준 짐을 인하여 쇠하기 시작하리라"
+      ],
+      "raw_text_hashes": [
+        "a07ba3eb5cfc37fb593e44d9db72ddbe50abc37ecc183caf157c854a0c55e0f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:11",
+      "sequence": 22206,
+      "chapter_label": "HOS 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Because Ephraim has multiplied altars for sinning, they became for him altars for sinning.",
+      "ko": "에브라임이 죄를 위하여 제단을 많이 만들더니 그 제단이 저로 범죄케 하는 것이 되었도다",
+      "source_text_hash": "f30d036331ce012d6e7fa0ac4d4583ec1f8638cdb547e0bdc5e874b8c8435f1f",
+      "translation_text_hash": "3cfa5814398c5fc0be2874225e12e3909cd1d226e17b3d65337beea251a13e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 죄를 위하여 제단을 많이 만들더니 그 제단이 저로 범죄케 하는 것이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "3cfa5814398c5fc0be2874225e12e3909cd1d226e17b3d65337beea251a13e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:12",
+      "sequence": 22207,
+      "chapter_label": "HOS 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "I wrote for him the many things of my law, but they were regarded as a strange thing.",
+      "ko": "내가 저를 위하여 내 율법을 만가지로 기록하였으나 저희가 관계 없는 것으로 여기도다",
+      "source_text_hash": "7b1e43fe269b488e5bc8309572d98743d7362d8cb2a599ea556f31fe1592bccb",
+      "translation_text_hash": "99ca8978250d107303fa50933ae78cf47211a50ab6a4ce23961ece0d85f0950b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저를 위하여 내 율법을 만가지로 기록하였으나 저희가 관계 없는 것으로 여기도다"
+      ],
+      "raw_text_hashes": [
+        "99ca8978250d107303fa50933ae78cf47211a50ab6a4ce23961ece0d85f0950b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:13",
+      "sequence": 22208,
+      "chapter_label": "HOS 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "As for the sacrifices of my offerings, they sacrifice meat and eat it, but the LORD doesn’t accept them. Now he will remember their iniquity, and punish their sins. They will return to Egypt.",
+      "ko": "내게 드리는 제물로 말할찌라도 저희가 고기로 제사를 드리고 먹거니와 여호와는 그것을 기뻐하지 아니하고 이제 저희의 죄악을 기억하여 그 죄를 벌하리니 저희가 애굽으로 다시 가리라",
+      "source_text_hash": "a2fe54cc0c674156d4faf23ca37e3587ffda7c27769c55e906362b024abac61b",
+      "translation_text_hash": "3734e350bc3b0ffe370904d294e58cedd12b8ea53e303467017e1369faea407d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 드리는 제물로 말할찌라도 저희가 고기로 제사를 드리고 먹거니와 여호와는 그것을 기뻐하지 아니하고 이제 저희의 죄악을 기억하여 그 죄를 벌하리니 저희가 애굽으로 다시 가리라"
+      ],
+      "raw_text_hashes": [
+        "3734e350bc3b0ffe370904d294e58cedd12b8ea53e303467017e1369faea407d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:8:14",
+      "sequence": 22209,
+      "chapter_label": "HOS 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "For Israel has forgotten his Maker and built palaces; and Judah has multiplied fortified cities; but I will send a fire on his cities, and it will devour its fortresses.”",
+      "ko": "이스라엘은 자기를 지은 자를 잊어버리고 전각들을 세웠으며 유다는 견고한 성읍을 많이 쌓았으나 내가 그 고을들에 불을 보내어 그 성들을 삼키게 하리라",
+      "source_text_hash": "4d490265802022ab522ff22725fa5e77bf76e469fea22a719db989790215ee07",
+      "translation_text_hash": "9e210c3bce9a9e8b693c811352094813591bdfa4fcb4d840f427be9ec912f732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 자기를 지은 자를 잊어버리고 전각들을 세웠으며 유다는 견고한 성읍을 많이 쌓았으나 내가 그 고을들에 불을 보내어 그 성들을 삼키게 하리라"
+      ],
+      "raw_text_hashes": [
+        "9e210c3bce9a9e8b693c811352094813591bdfa4fcb4d840f427be9ec912f732"
+      ]
+    }
+  ]
+}

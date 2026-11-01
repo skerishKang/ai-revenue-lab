@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:016",
+  "unit_ordinal": 354,
+  "unit_label": "1CH 16",
+  "book_code": "1CH",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:16:1",
+      "sequence": 10822,
+      "chapter_label": "1CH 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "They brought in God’s ark, and set it in the middle of the tent that David had pitched for it; and they offered burnt offerings and peace offerings before God.",
+      "ko": "하나님의 궤를 메고 들어가서 다윗이 위하여 친 장막 가운데 두고 번제와 화목제를 하나님 앞에 드리니라",
+      "source_text_hash": "4049f9abdc1305f7794e106810c3a6717b99c35239968af1167c1957533ca8c7",
+      "translation_text_hash": "9ef4a90994226d8e04277c784ecad9799d89e11e94be46722312108e64ec3249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 궤를 메고 들어가서 다윗이 위하여 친 장막 가운데 두고 번제와 화목제를 하나님 앞에 드리니라"
+      ],
+      "raw_text_hashes": [
+        "9ef4a90994226d8e04277c784ecad9799d89e11e94be46722312108e64ec3249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:2",
+      "sequence": 10823,
+      "chapter_label": "1CH 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "When David had finished offering the burnt offering and the peace offerings, he blessed the people in the LORD’s name.",
+      "ko": "다윗이 번제와 화목제 드리기를 마치고 여호와의 이름으로 백성에게 축복하고",
+      "source_text_hash": "acba9d28415787fca4935a982065b9f33fb902f292de53263f5cc1a805783887",
+      "translation_text_hash": "51ac060c46c97d7eae539d2487e7d27077dff880f065ac3ea821e9336c261590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 번제와 화목제 드리기를 마치고 여호와의 이름으로 백성에게 축복하고"
+      ],
+      "raw_text_hashes": [
+        "51ac060c46c97d7eae539d2487e7d27077dff880f065ac3ea821e9336c261590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:3",
+      "sequence": 10824,
+      "chapter_label": "1CH 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "He gave to everyone of Israel, both man and woman, to everyone a loaf of bread, a portion of meat, and a cake of raisins.",
+      "ko": "또 이스라엘 무리의 무론 남녀하고 매 명에 떡 한 덩이와 고기 한 조각과 건포도병 하나씩 나누어 주었더라",
+      "source_text_hash": "fbddf39153295e19e202618ca94be718ab765a192a3e8f18925520e3fd1ca98f",
+      "translation_text_hash": "c630e20525b69a1f546d5788e7907dbe45489b80f51fbc36d381600a69c8f4fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이스라엘 무리의 무론 남녀하고 매 명에 떡 한 덩이와 고기 한 조각과 건포도병 하나씩 나누어 주었더라"
+      ],
+      "raw_text_hashes": [
+        "c630e20525b69a1f546d5788e7907dbe45489b80f51fbc36d381600a69c8f4fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:4",
+      "sequence": 10825,
+      "chapter_label": "1CH 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "He appointed some of the Levites to minister before the LORD’s ark, and to commemorate, to thank, and to praise the LORD, the God of Israel:",
+      "ko": "또 레위 사람을 세워 여호와의 궤 앞에서 섬기며 이스라엘 하나님 여호와를 칭송하며 감사하며 찬양하게 하였으니",
+      "source_text_hash": "9203cfbba3b3a72f645809c92e03f7234374f01c594671ff8b84f4f69f6377f2",
+      "translation_text_hash": "65b97216ad333f9b5d13e5b8d3f25b39e0a0225d78d26cedcd9f64e76a158d8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레위 사람을 세워 여호와의 궤 앞에서 섬기며 이스라엘 하나님 여호와를 칭송하며 감사하며 찬양하게 하였으니"
+      ],
+      "raw_text_hashes": [
+        "65b97216ad333f9b5d13e5b8d3f25b39e0a0225d78d26cedcd9f64e76a158d8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:5",
+      "sequence": 10826,
+      "chapter_label": "1CH 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Asaph the chief, and second to him Zechariah, then Jeiel, Shemiramoth, Jehiel, Mattithiah, Eliab, Benaiah, Obed-Edom, and Jeiel, with stringed instruments and with harps; and Asaph with cymbals, sounding aloud;",
+      "ko": "그 두목은 아삽이요 다음은 스가랴와 여이엘과 스미라못과 여히엘과 맛디디아와 엘리압과 브나야와 오벧에돔과 여이엘이라 비파와 수금을 타고 아삽은 제금을 힘있게 치고",
+      "source_text_hash": "a4d567313070afe0bd9fa92518cfa2f0ecd82da1c0f0baf2f83084a0e32556d0",
+      "translation_text_hash": "26ae15c729c137490e64f994f77e891f1d57974e4784668ce702a3c1ade363b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두목은 아삽이요 다음은 스가랴와 여이엘과 스미라못과 여히엘과 맛디디아와 엘리압과 브나야와 오벧에돔과 여이엘이라 비파와 수금을 타고 아삽은 제금을 힘있게 치고"
+      ],
+      "raw_text_hashes": [
+        "26ae15c729c137490e64f994f77e891f1d57974e4784668ce702a3c1ade363b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:6",
+      "sequence": 10827,
+      "chapter_label": "1CH 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "with Benaiah and Jahaziel the priests with trumpets continually, before the ark of the covenant of God.",
+      "ko": "제사장 브나야와 야하시엘은 항상 하나님의 언약궤 앞에서 나팔을 부니라",
+      "source_text_hash": "b297f5b774aebf90efb8f5de1c8b4fd18dddcb7870d1ca6d50f6ee74021cd2a6",
+      "translation_text_hash": "feade68f2852e75abd8614612b01bd7c417fd7f326a2ac235dbaf484ec4de8cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 브나야와 야하시엘은 항상 하나님의 언약궤 앞에서 나팔을 부니라"
+      ],
+      "raw_text_hashes": [
+        "feade68f2852e75abd8614612b01bd7c417fd7f326a2ac235dbaf484ec4de8cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:7",
+      "sequence": 10828,
+      "chapter_label": "1CH 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Then on that day David first ordained giving of thanks to the LORD by the hand of Asaph and his brothers.",
+      "ko": "그 날에 다윗이 아삽과 그 형제를 세워 위선 여호와께 감사하게 하여 이르기를",
+      "source_text_hash": "30e82dc1d116687a01b41ca0110b7fbaef38d897f51b9ae605ddab38abca0d95",
+      "translation_text_hash": "65d62a7fadf3164591d7229b4355491f4266451413b05365f0dceb1cc33f97dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 다윗이 아삽과 그 형제를 세워 위선 여호와께 감사하게 하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "65d62a7fadf3164591d7229b4355491f4266451413b05365f0dceb1cc33f97dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:8",
+      "sequence": 10829,
+      "chapter_label": "1CH 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Oh give thanks to the LORD. Call on his name. Make what he has done known among the peoples.",
+      "ko": "너희는 여호와께 감사하며 그 이름을 불러 아뢰며 그 행사를 만민 중에 알게 할찌어다",
+      "source_text_hash": "3ce3ce6fbbd94ef5cd0c7b3eeab6b8c6be94fa20ea638aab21eba0abdea6e400",
+      "translation_text_hash": "079f631f33dfb7bc4e2d4f9e97b0f6be17ad11322883ba8094eaa6e84f7401d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와께 감사하며 그 이름을 불러 아뢰며 그 행사를 만민 중에 알게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "079f631f33dfb7bc4e2d4f9e97b0f6be17ad11322883ba8094eaa6e84f7401d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:9",
+      "sequence": 10830,
+      "chapter_label": "1CH 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Sing to him. Sing praises to him. Tell of all his marvelous works.",
+      "ko": "그에게 노래하며 그를 찬양하며 그 모든 기사를 말할찌어다",
+      "source_text_hash": "7a011393a211089af622960ba1f2bd435e6328409bbbcd7fa9bfa92bfe4dcfc2",
+      "translation_text_hash": "9106f395380d8012b5716544ea46f9121390c91afed7ff9d86bc9620fd96f8fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 노래하며 그를 찬양하며 그 모든 기사를 말할찌어다"
+      ],
+      "raw_text_hashes": [
+        "9106f395380d8012b5716544ea46f9121390c91afed7ff9d86bc9620fd96f8fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:10",
+      "sequence": 10831,
+      "chapter_label": "1CH 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Glory in his holy name. Let the heart of those who seek the LORD rejoice.",
+      "ko": "그 성호를 자랑하라 무릇 여호와를 구하는 자는 마음이 즐거울찌로다",
+      "source_text_hash": "f13aad97a69a487a2beaaafe14588a4b332c40faf3d142911d2e604c143476cf",
+      "translation_text_hash": "5dfc11044d1a422a95e0f07f129867da9686d37884dbea884d54bf627ecfac8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성호를 자랑하라 무릇 여호와를 구하는 자는 마음이 즐거울찌로다"
+      ],
+      "raw_text_hashes": [
+        "5dfc11044d1a422a95e0f07f129867da9686d37884dbea884d54bf627ecfac8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:11",
+      "sequence": 10832,
+      "chapter_label": "1CH 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Seek the LORD and his strength. Seek his face forever more.",
+      "ko": "여호와와 그 능력을 구할찌어다 그 얼굴을 항상 구할찌어다",
+      "source_text_hash": "648f1f1dbadf9e70b614cccf87eae20e78e7c1add43520d3ac6047a874557447",
+      "translation_text_hash": "33d73d2326598592903e80e49f8d66483fbc79466fe08d8756b9bc15dbcbfc51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와와 그 능력을 구할찌어다 그 얼굴을 항상 구할찌어다"
+      ],
+      "raw_text_hashes": [
+        "33d73d2326598592903e80e49f8d66483fbc79466fe08d8756b9bc15dbcbfc51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:12",
+      "sequence": 10833,
+      "chapter_label": "1CH 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Remember his marvelous works that he has done, his wonders, and the judgments of his mouth,",
+      "ko": "그 종 이스라엘의 후손 곧 택하신 야곱의 자손 너희는 그 행하신 기사와 그 이적과 그 입의 판단을 기억할찌어다",
+      "source_text_hash": "8f5d591e772f96243abfffe242c6464d98f03ddeaed0039d9bee282120c95e76",
+      "translation_text_hash": "45a256530e6d4ee6d3c3fabc93b68e5431e4281c5e351347dfb235a6947a58b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종 이스라엘의 후손 곧 택하신 야곱의 자손 너희는 그 행하신 기사와 그 이적과 그 입의 판단을 기억할찌어다"
+      ],
+      "raw_text_hashes": [
+        "45a256530e6d4ee6d3c3fabc93b68e5431e4281c5e351347dfb235a6947a58b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:13",
+      "sequence": 10834,
+      "chapter_label": "1CH 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "you offspring of Israel his servant, you children of Jacob, his chosen ones.",
+      "ko": "(12절에 포함되어 있음)",
+      "source_text_hash": "68f3cb06b8b19614d82b08ff27109f5010b75c5101d541661b162b3c8472e110",
+      "translation_text_hash": "2f1ad38123a2c867a836e35d58ad058d35166f1007b507e17320559ba0e000c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(12절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "2f1ad38123a2c867a836e35d58ad058d35166f1007b507e17320559ba0e000c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:14",
+      "sequence": 10835,
+      "chapter_label": "1CH 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "He is the LORD our God. His judgments are in all the earth.",
+      "ko": "그는 여호와 우리 하나님이시라 그의 판단이 온 땅에 있도다",
+      "source_text_hash": "2033da7d311b2129ceec681603f27d755994fbd7a71f9711871b589f6ed81798",
+      "translation_text_hash": "fa96f4a3aeff3cf0b2863d8a897fbed48aed885bf3df51aeeac3e45268c5b1b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 여호와 우리 하나님이시라 그의 판단이 온 땅에 있도다"
+      ],
+      "raw_text_hashes": [
+        "fa96f4a3aeff3cf0b2863d8a897fbed48aed885bf3df51aeeac3e45268c5b1b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:15",
+      "sequence": 10836,
+      "chapter_label": "1CH 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "Remember his covenant forever, the word which he commanded to a thousand generations,",
+      "ko": "너희는 그 언약 곧 천대에 명하신 말씀을 영원히 기억할찌어다",
+      "source_text_hash": "9ce2bdad73c67050479fdc4d94daa83563fd00dae190f542db984cf6743e8382",
+      "translation_text_hash": "c5ca8a934d99f2f1da7ecdbb22e0df7ee74f54b82821b2276d80fd3aad4196ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그 언약 곧 천대에 명하신 말씀을 영원히 기억할찌어다"
+      ],
+      "raw_text_hashes": [
+        "c5ca8a934d99f2f1da7ecdbb22e0df7ee74f54b82821b2276d80fd3aad4196ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:16",
+      "sequence": 10837,
+      "chapter_label": "1CH 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "the covenant which he made with Abraham, his oath to Isaac.",
+      "ko": "이것은 아브라함에게 하신 언약이며 이삭에게 하신 맹세며",
+      "source_text_hash": "d9b6b21f4f1e25fac336c96559bfe5a6c187978297d95bd920d59425a8c6d054",
+      "translation_text_hash": "52a533c2fc72e452ae692603655d44e6685018a3e35c71b0382d7fbc5ddc1717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 아브라함에게 하신 언약이며 이삭에게 하신 맹세며"
+      ],
+      "raw_text_hashes": [
+        "52a533c2fc72e452ae692603655d44e6685018a3e35c71b0382d7fbc5ddc1717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:17",
+      "sequence": 10838,
+      "chapter_label": "1CH 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "He confirmed it to Jacob for a statute, and to Israel for an everlasting covenant,",
+      "ko": "이는 야곱에게 세우신 율례 곧 이스라엘에게 하신 영원한 언약이라",
+      "source_text_hash": "c697756de27c3ce21357860d4f3f7b6a593162499b61ae89b720b7d4ecd11576",
+      "translation_text_hash": "ddd841556cf7394027db1e8904ca5d268d80d19014d6c3091f9dc90adee28f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 야곱에게 세우신 율례 곧 이스라엘에게 하신 영원한 언약이라"
+      ],
+      "raw_text_hashes": [
+        "ddd841556cf7394027db1e8904ca5d268d80d19014d6c3091f9dc90adee28f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:18",
+      "sequence": 10839,
+      "chapter_label": "1CH 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "saying, “I will give you the land of Canaan, The lot of your inheritance,”",
+      "ko": "이르시기를 내가 가나안 땅을 네게 주어 너희 기업의 지경이 되게 하리라 하셨도다",
+      "source_text_hash": "a7367a37887efa4b63ad6cb974b60073be49e80a9d409467e7dd8e378494dda5",
+      "translation_text_hash": "cee24af55bf0228598bd1f82d7cf6326845d4d618bb636ec274768afa9b86d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 내가 가나안 땅을 네게 주어 너희 기업의 지경이 되게 하리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "cee24af55bf0228598bd1f82d7cf6326845d4d618bb636ec274768afa9b86d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:19",
+      "sequence": 10840,
+      "chapter_label": "1CH 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "when you were but a few men in number, yes, very few, and foreigners in it.",
+      "ko": "때에 너희 인수가 적어서 매우 영성하며 그 땅에 객이 되어",
+      "source_text_hash": "39b6a645450c0366a3fb1b3400fc49f50eb45d2191742ccabc562198f39d417b",
+      "translation_text_hash": "6b419dd23eae4a6c723807df2df58283fadf932799654b56fdb83fefbcb513f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 너희 인수가 적어서 매우 영성하며 그 땅에 객이 되어"
+      ],
+      "raw_text_hashes": [
+        "6b419dd23eae4a6c723807df2df58283fadf932799654b56fdb83fefbcb513f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:20",
+      "sequence": 10841,
+      "chapter_label": "1CH 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "They went about from nation to nation, from one kingdom to another people.",
+      "ko": "이 족속에게서 저 족속에게로, 이 나라에서 다른 민족에게로 유리하였도다",
+      "source_text_hash": "4e1aae883f842de5e076d721dc6860af3085f26569a776d7a8e68f9f679d5382",
+      "translation_text_hash": "f5134c9a350471db9900cec54f3253494a470b692b526612c171b83bf44f37b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 족속에게서 저 족속에게로, 이 나라에서 다른 민족에게로 유리하였도다"
+      ],
+      "raw_text_hashes": [
+        "f5134c9a350471db9900cec54f3253494a470b692b526612c171b83bf44f37b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:21",
+      "sequence": 10842,
+      "chapter_label": "1CH 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "He allowed no man to do them wrong. Yes, he reproved kings for their sakes,",
+      "ko": "사람이 그들을 해하기를 용납지 아니하시고 그들의 연고로 열왕을 꾸짖어",
+      "source_text_hash": "f15a2d0dc8d3526a5e912958284a6ea6a53e217053e8952edb98b5adbc846b49",
+      "translation_text_hash": "e735464c158fbc65bb6046944093f0e9eb03ceedb0b8fb9292dd9804074e7631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그들을 해하기를 용납지 아니하시고 그들의 연고로 열왕을 꾸짖어"
+      ],
+      "raw_text_hashes": [
+        "e735464c158fbc65bb6046944093f0e9eb03ceedb0b8fb9292dd9804074e7631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:22",
+      "sequence": 10843,
+      "chapter_label": "1CH 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "“Don’t touch my anointed ones! Do my prophets no harm!”",
+      "ko": "이르시기를 나의 기름 부은 자를 만지지 말며 나의 선지자를 상하지 말라 하셨도다",
+      "source_text_hash": "a282da254103b2c3d1657ed3da69b48535bc230c41c675d2efa300034f26727a",
+      "translation_text_hash": "79a847ffb257b8afdd60a49f0591e4fcdced6d92e98d44096f78b89d971deba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 나의 기름 부은 자를 만지지 말며 나의 선지자를 상하지 말라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "79a847ffb257b8afdd60a49f0591e4fcdced6d92e98d44096f78b89d971deba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:23",
+      "sequence": 10844,
+      "chapter_label": "1CH 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "Sing to the LORD, all the earth! Display his salvation from day to day.",
+      "ko": "온 땅이여 여호와께 노래하며 그 구원을 날마다 선포할찌어다",
+      "source_text_hash": "637fc4a79a2eda7d8c12416bca8ee6af224b475b9a183f5cd9a5987f27d6e769",
+      "translation_text_hash": "d0e72f0305e6725d441cbfb6a9972fa50ea7f1f4230337f0227574b6841df231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅이여 여호와께 노래하며 그 구원을 날마다 선포할찌어다"
+      ],
+      "raw_text_hashes": [
+        "d0e72f0305e6725d441cbfb6a9972fa50ea7f1f4230337f0227574b6841df231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:24",
+      "sequence": 10845,
+      "chapter_label": "1CH 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "Declare his glory among the nations, and his marvelous works among all the peoples.",
+      "ko": "그 영광을 열방 중에, 그 기이한 행적을 만민 중에 선포할찌어다",
+      "source_text_hash": "e7a4947779057ca8fec0f8a1a4c4d76ce87a7a4759b97864c244be99208f83cc",
+      "translation_text_hash": "b147d047bb31d0a3b22ac41ef5508fbbacc4d0863c2a14d8c777521be820b21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영광을 열방 중에, 그 기이한 행적을 만민 중에 선포할찌어다"
+      ],
+      "raw_text_hashes": [
+        "b147d047bb31d0a3b22ac41ef5508fbbacc4d0863c2a14d8c777521be820b21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:25",
+      "sequence": 10846,
+      "chapter_label": "1CH 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "For great is the LORD, and greatly to be praised. He also is to be feared above all gods.",
+      "ko": "여호와는 광대하시니 극진히 찬양할 것이요 모든 신보다 경외할 것임이여",
+      "source_text_hash": "2ed4d3ebb1edea2da6eced38a911d0d14e203e68b9dcd1bca0ab7c56bad81bf4",
+      "translation_text_hash": "ef673b17dfff573118574568ece4acbddbc839a7bf7880ca7ff241c054f6671f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 광대하시니 극진히 찬양할 것이요 모든 신보다 경외할 것임이여"
+      ],
+      "raw_text_hashes": [
+        "ef673b17dfff573118574568ece4acbddbc839a7bf7880ca7ff241c054f6671f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:26",
+      "sequence": 10847,
+      "chapter_label": "1CH 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "For all the gods of the peoples are idols, but the LORD made the heavens.",
+      "ko": "만방의 모든 신은 헛것이요 여호와께서는 하늘을 지으셨음이로다",
+      "source_text_hash": "34d02f39c407dca2a9eecb2e69a52998b5826b2f48b05d56c6f8470f9a8875ff",
+      "translation_text_hash": "efe373b7560a5401c5ddbc56ef8e6ab366894fa6378fef9f29e87cddbca17d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만방의 모든 신은 헛것이요 여호와께서는 하늘을 지으셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "efe373b7560a5401c5ddbc56ef8e6ab366894fa6378fef9f29e87cddbca17d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:27",
+      "sequence": 10848,
+      "chapter_label": "1CH 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "Honor and majesty are before him. Strength and gladness are in his place.",
+      "ko": "존귀와 위엄이 그 앞에 있으며 능력과 즐거움이 그 처소에 있도다",
+      "source_text_hash": "b177e3273d768ce931e75fdc83b74484ccdf4e8a9129abff1409acc3ea43e7f6",
+      "translation_text_hash": "d9f1f22fd96c5cd910d730a139819409bc7c0679989078a4d85da5085410dfdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "존귀와 위엄이 그 앞에 있으며 능력과 즐거움이 그 처소에 있도다"
+      ],
+      "raw_text_hashes": [
+        "d9f1f22fd96c5cd910d730a139819409bc7c0679989078a4d85da5085410dfdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:28",
+      "sequence": 10849,
+      "chapter_label": "1CH 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "Ascribe to the LORD, you families of the peoples, ascribe to the LORD glory and strength!",
+      "ko": "만방의 족속들아 영광과 권능을 여호와께 돌릴찌어다 여호와께 돌릴찌어다",
+      "source_text_hash": "c3fbfb6f55dc5913349f0c9d0df13f8587b7c026fe598c8ad712c323ab5d7e8e",
+      "translation_text_hash": "face574b3175eb5cac34c1d07e106c5f2286156d6ff4e0a140590267b53f22f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만방의 족속들아 영광과 권능을 여호와께 돌릴찌어다 여호와께 돌릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "face574b3175eb5cac34c1d07e106c5f2286156d6ff4e0a140590267b53f22f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:29",
+      "sequence": 10850,
+      "chapter_label": "1CH 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "Ascribe to the LORD the glory due to his name. Bring an offering, and come before him. Worship the LORD in holy array.",
+      "ko": "여호와의 이름에 합당한 영광을 그에게 돌릴찌어다 예물을 가지고 그 앞에 들어갈찌어다 아름답고 거룩한 것으로 여호와께 경배할찌어다",
+      "source_text_hash": "cfd62586b406b3e4ced5c74eb57513b61109bb331054f2c4bc619a375fb24323",
+      "translation_text_hash": "3359ffb5e64cd2e2f8fe8850693ec8491dfa7f0af58580ba4a6842bf8611aa2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름에 합당한 영광을 그에게 돌릴찌어다 예물을 가지고 그 앞에 들어갈찌어다 아름답고 거룩한 것으로 여호와께 경배할찌어다"
+      ],
+      "raw_text_hashes": [
+        "3359ffb5e64cd2e2f8fe8850693ec8491dfa7f0af58580ba4a6842bf8611aa2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:30",
+      "sequence": 10851,
+      "chapter_label": "1CH 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "Tremble before him, all the earth. The world also is established that it can’t be moved.",
+      "ko": "온 땅이여 그 앞에서 떨찌어다 세계가 굳게 서고 흔들리지 못하는도다",
+      "source_text_hash": "4864f4e1e08dc6897395a79ca24ad773054e22280f6656a793b940b72dfb56e7",
+      "translation_text_hash": "05a0c9485465d1e2b45e216bff2654c09a5870d0dde6e0691cbfe29d93775e31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅이여 그 앞에서 떨찌어다 세계가 굳게 서고 흔들리지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "05a0c9485465d1e2b45e216bff2654c09a5870d0dde6e0691cbfe29d93775e31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:31",
+      "sequence": 10852,
+      "chapter_label": "1CH 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "Let the heavens be glad, and let the earth rejoice! Let them say among the nations, “The LORD reigns!”",
+      "ko": "하늘은 기뻐하고 땅은 즐거워하며 열방 중에서는 이르기를 여호와께서 통치하신다 할찌로다",
+      "source_text_hash": "15ee4bfadc38c0385d8317086efcb9d8a24fe7a6aac020981cd596cf237a14a5",
+      "translation_text_hash": "c67ab1691fd3047b07ace6e18fb6edeb6004024a323545b0543c26966760f5b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘은 기뻐하고 땅은 즐거워하며 열방 중에서는 이르기를 여호와께서 통치하신다 할찌로다"
+      ],
+      "raw_text_hashes": [
+        "c67ab1691fd3047b07ace6e18fb6edeb6004024a323545b0543c26966760f5b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:32",
+      "sequence": 10853,
+      "chapter_label": "1CH 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "Let the sea roar, and its fullness! Let the field exult, and all that is in it!",
+      "ko": "바다와 거기 충만한 것이 외치며 밭과 그 가운데 모든 것은 즐거워할찌로다",
+      "source_text_hash": "618d03d609a08787f95a204e23e0bf01ca7fb0216ffc77eacd30e52a703e3e57",
+      "translation_text_hash": "189cbdf11cae46a791a240b2ffa2316139187d2bb04225affbfb9c4d3e1e9020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다와 거기 충만한 것이 외치며 밭과 그 가운데 모든 것은 즐거워할찌로다"
+      ],
+      "raw_text_hashes": [
+        "189cbdf11cae46a791a240b2ffa2316139187d2bb04225affbfb9c4d3e1e9020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:33",
+      "sequence": 10854,
+      "chapter_label": "1CH 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "Then the trees of the forest will sing for joy before the LORD, for he comes to judge the earth.",
+      "ko": "그리 할 때에 삼림의 나무들이 여호와 앞에서 즐거이 노래하리니 주께서 땅을 심판하려 오실 것임이로다",
+      "source_text_hash": "dc4b3d3a17cce9e9020aec3fc74ec0445365a320e983d337bc1c003064c2a721",
+      "translation_text_hash": "6147606f2dad3f53f66b023486839416ed98c404c457e38d2959d52897b868f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리 할 때에 삼림의 나무들이 여호와 앞에서 즐거이 노래하리니 주께서 땅을 심판하려 오실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "6147606f2dad3f53f66b023486839416ed98c404c457e38d2959d52897b868f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:34",
+      "sequence": 10855,
+      "chapter_label": "1CH 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "Oh give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "d714e2e330cdc35be8c78b8923c0e2b831e2711c47391fedb5e57f25bb63213a",
+      "translation_text_hash": "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:35",
+      "sequence": 10856,
+      "chapter_label": "1CH 16",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 35
+        }
+      ],
+      "en": "Say, “Save us, God of our salvation! Gather us together and deliver us from the nations, to give thanks to your holy name, to triumph in your praise.”",
+      "ko": "너희는 이르기를 우리의 구원의 하나님이여 우리를 구원하여 만국 가운데서 건져 내시고 모으시사 우리로 주의 성호를 감사하며 주의 영예를 찬양하게 하소서 할찌어다",
+      "source_text_hash": "f2a53b47e2ede0449f0f96ce5b8b4f25d7fa78278cde540ff19a9eb038430c37",
+      "translation_text_hash": "09016492c1bde21450cf9f27a27b872c69421e7184147995ab49d0c049fff6c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이르기를 우리의 구원의 하나님이여 우리를 구원하여 만국 가운데서 건져 내시고 모으시사 우리로 주의 성호를 감사하며 주의 영예를 찬양하게 하소서 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "09016492c1bde21450cf9f27a27b872c69421e7184147995ab49d0c049fff6c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:36",
+      "sequence": 10857,
+      "chapter_label": "1CH 16",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 36
+        }
+      ],
+      "en": "Blessed be the LORD, the God of Israel, from everlasting even to everlasting. All the people said, “Amen,” and praised the LORD.",
+      "ko": "여호와 이스라엘의 하나님을 영원부터 영원까지 송축할찌로다 하매 모든 백성이 아멘 하고 여호와를 찬양하였더라",
+      "source_text_hash": "b8eb23ff2f0aa547b710f470df8ffabec8cfbba88791da57e9f41175e9c3f111",
+      "translation_text_hash": "00d58d94def5ded3b324a83b762bccecd8fddd16b3e7c8cb88998f90d1d71742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 이스라엘의 하나님을 영원부터 영원까지 송축할찌로다 하매 모든 백성이 아멘 하고 여호와를 찬양하였더라"
+      ],
+      "raw_text_hashes": [
+        "00d58d94def5ded3b324a83b762bccecd8fddd16b3e7c8cb88998f90d1d71742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:37",
+      "sequence": 10858,
+      "chapter_label": "1CH 16",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 37
+        }
+      ],
+      "en": "So he left Asaph and his brothers there before the ark of the LORD’s covenant, to minister before the ark continually, as every day’s work required;",
+      "ko": "다윗이 아삽과 그 형제를 여호와의 언약궤 앞에 머물러 항상 그 궤 앞에서 섬기게 하되 날마다 그 일대로 하게 하였고",
+      "source_text_hash": "548f62802e0b0f1a594f16bbf53579982184ba447a1dbd3c4bfab825f47e3f69",
+      "translation_text_hash": "ddb89957ef00c4a4640973ced4d6818cb77e0dc83a045280a763c2f0979dd843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아삽과 그 형제를 여호와의 언약궤 앞에 머물러 항상 그 궤 앞에서 섬기게 하되 날마다 그 일대로 하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "ddb89957ef00c4a4640973ced4d6818cb77e0dc83a045280a763c2f0979dd843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:38",
+      "sequence": 10859,
+      "chapter_label": "1CH 16",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 38
+        }
+      ],
+      "en": "and Obed-Edom with their sixty-eight relatives; Obed-Edom also the son of Jeduthun and Hosah to be doorkeepers;",
+      "ko": "오벧에돔과 그 형제 육십 팔인과 여두둔의 아들 오벧에돔과 호사로 문지기를 삼았고",
+      "source_text_hash": "8a0ecb3ff7cce3e72ac870c0a30d485849a0bec1c2d3249d486530a5f50c2872",
+      "translation_text_hash": "c4000bd78589162281dc2c8688c3dabbc503d385c6a71b1c33b941e37136b112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오벧에돔과 그 형제 육십 팔인과 여두둔의 아들 오벧에돔과 호사로 문지기를 삼았고"
+      ],
+      "raw_text_hashes": [
+        "c4000bd78589162281dc2c8688c3dabbc503d385c6a71b1c33b941e37136b112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:39",
+      "sequence": 10860,
+      "chapter_label": "1CH 16",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 39
+        }
+      ],
+      "en": "and Zadok the priest and his brothers the priests, before the LORD’s tabernacle in the high place that was at Gibeon,",
+      "ko": "제사장 사독과 그 형제 제사장들로 기브온 산당에서 여호와의 성막 앞에 모시게 하여",
+      "source_text_hash": "cf57b8a6e05b5fbd14c1fc09e6f6aeeb403b46f220158f43d7e34c5b1d20c619",
+      "translation_text_hash": "bb6c6a8215b24758075dd26cae1e202bf782a6370c76aacf5ab96eb256800b7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 사독과 그 형제 제사장들로 기브온 산당에서 여호와의 성막 앞에 모시게 하여"
+      ],
+      "raw_text_hashes": [
+        "bb6c6a8215b24758075dd26cae1e202bf782a6370c76aacf5ab96eb256800b7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:40",
+      "sequence": 10861,
+      "chapter_label": "1CH 16",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 40
+        }
+      ],
+      "en": "to offer burnt offerings to the LORD on the altar of burnt offering continually morning and evening, even according to all that is written in the LORD’s law, which he commanded to Israel;",
+      "ko": "항상 조석으로 번제단 위에 여호와께 번제를 드리되 여호와의 율법에 기록하여 이스라엘에게 명하신대로 다 준행하게 하였고",
+      "source_text_hash": "a24eff9649378c80d8d7037155cbb2960fe915fdf71088920376776c85bbd08a",
+      "translation_text_hash": "cfc340bcc17c5be592e16feecaa30a82cba39c904fedb2432bfcdb38ad382587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 조석으로 번제단 위에 여호와께 번제를 드리되 여호와의 율법에 기록하여 이스라엘에게 명하신대로 다 준행하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "cfc340bcc17c5be592e16feecaa30a82cba39c904fedb2432bfcdb38ad382587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:41",
+      "sequence": 10862,
+      "chapter_label": "1CH 16",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 41
+        }
+      ],
+      "en": "and with them Heman and Jeduthun and the rest who were chosen, who were mentioned by name, to give thanks to the LORD, because his loving kindness endures forever;",
+      "ko": "또 저희와 함께 헤만과 여두둔과 그 남아 택함을 받고 녹명된 자를 세워 여호와의 자비하심이 영원함을 인하여 감사하게 하였고",
+      "source_text_hash": "4b0f9a47162e8642c47d15df6d561f95047619d5f2e26e0f7d1cacda691854ed",
+      "translation_text_hash": "717154d9681a367c50fb80b83129819bc9c01e42d957ce46d50b2f283a8bf4ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희와 함께 헤만과 여두둔과 그 남아 택함을 받고 녹명된 자를 세워 여호와의 자비하심이 영원함을 인하여 감사하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "717154d9681a367c50fb80b83129819bc9c01e42d957ce46d50b2f283a8bf4ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:42",
+      "sequence": 10863,
+      "chapter_label": "1CH 16",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 42
+        }
+      ],
+      "en": "and with them Heman and Jeduthun with trumpets and cymbals for those that should sound aloud, and with instruments for the songs of God, and the sons of Jeduthun to be at the gate.",
+      "ko": "또 저희와 함께 헤만과 여두둔을 세워 나팔과 제금들과 하나님을 찬송하는 악기로 소리를 크게 내게 하였고 또 여두둔의 아들로 문을 지키게 하였더라",
+      "source_text_hash": "fb573ce256562f4e72a0f0bc6421c33ff453defd976b2b44793bb8a85e5754f4",
+      "translation_text_hash": "acd52092ff87bf4e227ba760a57acc413cbfa74d9ce1011680bab496da4ab5de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희와 함께 헤만과 여두둔을 세워 나팔과 제금들과 하나님을 찬송하는 악기로 소리를 크게 내게 하였고 또 여두둔의 아들로 문을 지키게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "acd52092ff87bf4e227ba760a57acc413cbfa74d9ce1011680bab496da4ab5de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:16:43",
+      "sequence": 10864,
+      "chapter_label": "1CH 16",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CH",
+        "chapter": 16,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 16,
+          "verse": 43
+        }
+      ],
+      "en": "All the people departed, each man to his house; and David returned to bless his house.",
+      "ko": "이에 뭇 백성은 각각 그 집으로 돌아가고 다윗도 자기 집을 위하여 축복하려고 돌아갔더라",
+      "source_text_hash": "1b406cd41c1ab1cc1ab8f84bc10737245e88cd052094d5350a71f4df3e666be5",
+      "translation_text_hash": "817bb1380f99b5242b267f814bcd36b3b6ced903e21e923dc26482f3c7f37433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 뭇 백성은 각각 그 집으로 돌아가고 다윗도 자기 집을 위하여 축복하려고 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "817bb1380f99b5242b267f814bcd36b3b6ced903e21e923dc26482f3c7f37433"
+      ]
+    }
+  ]
+}

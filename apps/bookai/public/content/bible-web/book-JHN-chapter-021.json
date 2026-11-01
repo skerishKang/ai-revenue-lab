@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:021",
+  "unit_ordinal": 1018,
+  "unit_label": "JHN 21",
+  "book_code": "JHN",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:21:1",
+      "sequence": 26899,
+      "chapter_label": "JHN 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, Jesus revealed himself again to the disciples at the sea of Tiberias. He revealed himself this way.",
+      "ko": "그 후에 예수께서 디베랴 바다에서 또 제자들에게 자기를 나타내셨으니 나타내신 일이 이러하니라",
+      "source_text_hash": "2e03e5905c13b148c967c721106f83da394a4d5b5e9f30ec1861ef52ddc16763",
+      "translation_text_hash": "4afef352832ddebe22b541f432432d4dd96b14c730b1cde0e49718d76f878e55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 예수께서 디베랴 바다에서 또 제자들에게 자기를 나타내셨으니 나타내신 일이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "4afef352832ddebe22b541f432432d4dd96b14c730b1cde0e49718d76f878e55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:2",
+      "sequence": 26900,
+      "chapter_label": "JHN 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "Simon Peter, Thomas called Didymus, Nathanael of Cana in Galilee, and the sons of Zebedee, and two others of his disciples were together.",
+      "ko": "시몬 베드로와 디두모라 하는 도마와 갈릴리 가나 사람 나다나엘과 세베대의 아들들과 또 다른 제자 둘이 함께 있더니",
+      "source_text_hash": "55d357bed4d818b60466bdff462e728c1d97422056aaf3a4fe66956fb5d25f0b",
+      "translation_text_hash": "96e7ff682c211fea5466a8ff6aee904fb1c748c30a30cb251d047a8e06e15e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로와 디두모라 하는 도마와 갈릴리 가나 사람 나다나엘과 세베대의 아들들과 또 다른 제자 둘이 함께 있더니"
+      ],
+      "raw_text_hashes": [
+        "96e7ff682c211fea5466a8ff6aee904fb1c748c30a30cb251d047a8e06e15e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:3",
+      "sequence": 26901,
+      "chapter_label": "JHN 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Simon Peter said to them, “I’m going fishing.” They told him, “We are also coming with you.” They immediately went out and entered into the boat. That night, they caught nothing.",
+      "ko": "시몬 베드로가 나는 물고기 잡으러 가노라 하매 저희가 우리도 함께 가겠다 하고 나가서 배에 올랐으나 이 밤에 아무 것도 잡지 못하였더니",
+      "source_text_hash": "122e347da3115bf84565e28cfaa3ffabcda1c07aa53b7c5fe9caa9d062f6e270",
+      "translation_text_hash": "ad96292928db0874e54d1a871d33a4fd1ada5c55e1f4e135e3b2764712b976ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 나는 물고기 잡으러 가노라 하매 저희가 우리도 함께 가겠다 하고 나가서 배에 올랐으나 이 밤에 아무 것도 잡지 못하였더니"
+      ],
+      "raw_text_hashes": [
+        "ad96292928db0874e54d1a871d33a4fd1ada5c55e1f4e135e3b2764712b976ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:4",
+      "sequence": 26902,
+      "chapter_label": "JHN 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "But when day had already come, Jesus stood on the beach; yet the disciples didn’t know that it was Jesus.",
+      "ko": "날이 새어갈 때에 예수께서 바닷가에 서셨으나 제자들이 예수신줄 알지 못하는지라",
+      "source_text_hash": "88c17156f42a58235c92f2ce9a305be7faf1f705c7bd29d4a30365b34d412441",
+      "translation_text_hash": "5fbf1fe8f03cccfab6a5e3fc91680daee2a913a2a77427873a2c6eec495b38d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새어갈 때에 예수께서 바닷가에 서셨으나 제자들이 예수신줄 알지 못하는지라"
+      ],
+      "raw_text_hashes": [
+        "5fbf1fe8f03cccfab6a5e3fc91680daee2a913a2a77427873a2c6eec495b38d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:5",
+      "sequence": 26903,
+      "chapter_label": "JHN 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus therefore said to them, “Children, have you anything to eat?” They answered him, “No.”",
+      "ko": "예수께서 이르시되 얘들아 너희에게 고기가 있느냐 대답하되 없나이다",
+      "source_text_hash": "a52f3b1512593587c346844e3f8835e8a72352dfd0eedde6905417cd3f6cec2e",
+      "translation_text_hash": "2effb9cbc0ae05793605965b12731ce74efd9e36bf82f0610c9e57664a4678c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 얘들아 너희에게 고기가 있느냐 대답하되 없나이다"
+      ],
+      "raw_text_hashes": [
+        "2effb9cbc0ae05793605965b12731ce74efd9e36bf82f0610c9e57664a4678c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:6",
+      "sequence": 26904,
+      "chapter_label": "JHN 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "He said to them, “Cast the net on the right side of the boat, and you will find some.”They cast it therefore, and now they weren’t able to draw it in for the multitude of fish.",
+      "ko": "가라사대 그물을 배 오른편에 던지라 그리하면 얻으리라 하신대 이에 던졌더니 고기가 많아 그물을 들 수 없더라",
+      "source_text_hash": "e7b325c6c89c1db91441caa2dba6611ee198444cabbfe5f6867e25e531f281bf",
+      "translation_text_hash": "6a12ce87f8735122da198727c16119434c691d31bb3b71c1a62fded3cac384b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 그물을 배 오른편에 던지라 그리하면 얻으리라 하신대 이에 던졌더니 고기가 많아 그물을 들 수 없더라"
+      ],
+      "raw_text_hashes": [
+        "6a12ce87f8735122da198727c16119434c691d31bb3b71c1a62fded3cac384b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:7",
+      "sequence": 26905,
+      "chapter_label": "JHN 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "That disciple therefore whom Jesus loved said to Peter, “It’s the Lord!” So when Simon Peter heard that it was the Lord, he wrapped his coat around himself (for he was naked), and threw himself into the sea.",
+      "ko": "예수의 사랑하시는 그 제자가 베드로에게 이르되 주시라 하니 시몬 베드로가 벗고 있다가 주라 하는 말을 듣고 겉옷을 두른 후에 바다로 뛰어 내리더라",
+      "source_text_hash": "78e418fea43a765f3e90fa6530bebd25294adff70f02551cfc5521597dbe007a",
+      "translation_text_hash": "a050ed3bfb42a2a273c49e2d2034e4f6e181dafc6dcc285e4fe03b3e5c134b48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 사랑하시는 그 제자가 베드로에게 이르되 주시라 하니 시몬 베드로가 벗고 있다가 주라 하는 말을 듣고 겉옷을 두른 후에 바다로 뛰어 내리더라"
+      ],
+      "raw_text_hashes": [
+        "a050ed3bfb42a2a273c49e2d2034e4f6e181dafc6dcc285e4fe03b3e5c134b48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:8",
+      "sequence": 26906,
+      "chapter_label": "JHN 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "But the other disciples came in the little boat (for they were not far from the land, but about two hundred cubits away), dragging the net full of fish.",
+      "ko": "다른 제자들은 육지에서 상거가 불과 한 오십 간쯤 되므로 작은 배를 타고 고기든 그물을 끌고 와서",
+      "source_text_hash": "3b6d298c75ab6e4987e6c5e6c48d06d776af903adb4ffab0d6e2bc43809231f7",
+      "translation_text_hash": "ef045c8b779135774a40d5bb9a4172a3939c8d7e3acdd741551cb48c594d863b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 제자들은 육지에서 상거가 불과 한 오십 간쯤 되므로 작은 배를 타고 고기든 그물을 끌고 와서"
+      ],
+      "raw_text_hashes": [
+        "ef045c8b779135774a40d5bb9a4172a3939c8d7e3acdd741551cb48c594d863b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:9",
+      "sequence": 26907,
+      "chapter_label": "JHN 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "So when they got out on the land, they saw a fire of coals there, with fish and bread laid on it.",
+      "ko": "육지에 올라보니 숯불이 있는데 그 위에 생선이 놓였고 떡도 있더라",
+      "source_text_hash": "92353052ef1bf7e9a7484e948661ec88a36e98fce6f432c8aca9db8387eadb54",
+      "translation_text_hash": "02fa841e26508c072cce65ffe4bc00c133066b1a6c5d22e160b64d9f4abc117f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육지에 올라보니 숯불이 있는데 그 위에 생선이 놓였고 떡도 있더라"
+      ],
+      "raw_text_hashes": [
+        "02fa841e26508c072cce65ffe4bc00c133066b1a6c5d22e160b64d9f4abc117f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:10",
+      "sequence": 26908,
+      "chapter_label": "JHN 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus said to them, “Bring some of the fish which you have just caught.”",
+      "ko": "예수께서 가라사대 지금 잡은 생선을 좀 가져오라 하신대",
+      "source_text_hash": "6b2d72ddbb3e4187d6aac5870a5971716f04b81a4749b06d4c43a02653b4263b",
+      "translation_text_hash": "7064a4a42d583c635226e1056947a70ff3481453f5b7ed061221499529edf756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 지금 잡은 생선을 좀 가져오라 하신대"
+      ],
+      "raw_text_hashes": [
+        "7064a4a42d583c635226e1056947a70ff3481453f5b7ed061221499529edf756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:11",
+      "sequence": 26909,
+      "chapter_label": "JHN 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "Simon Peter went up, and drew the net to land, full of one hundred fifty-three great fish. Even though there were so many, the net wasn’t torn.",
+      "ko": "시몬 베드로가 올라가서 그물을 육지에 끌어 올리니 가득히 찬 큰 고기가 일백 쉰 세 마리라 이같이 많으나 그물이 찢어지지 아니하였더라",
+      "source_text_hash": "d4b84f577c7bfe9b707e83aa56c0279ebcf98d9e4c84e80a8f52c298c1ffcf3a",
+      "translation_text_hash": "42a8b7356f729ee3f2c72b15b92dd85626baf28b261307a0f012a51d8ca2c903",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 올라가서 그물을 육지에 끌어 올리니 가득히 찬 큰 고기가 일백 쉰 세 마리라 이같이 많으나 그물이 찢어지지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "42a8b7356f729ee3f2c72b15b92dd85626baf28b261307a0f012a51d8ca2c903"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:12",
+      "sequence": 26910,
+      "chapter_label": "JHN 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "Jesus said to them, “Come and eat breakfast!”None of the disciples dared inquire of him, “Who are you?” knowing that it was the Lord.",
+      "ko": "예수께서 가라사대 와서 조반을 먹으라 하시니 제자들이 주신줄 아는 고로 당신이 누구냐 감히 묻는 자가 없더라",
+      "source_text_hash": "3403387e682e3af74bd6d6262c51d5c0bdad32db0236020f8df7f45d4b64c804",
+      "translation_text_hash": "e7dfcbfd610a3440add6ea85406c0c5650ef85633011ff50515450804e058531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 와서 조반을 먹으라 하시니 제자들이 주신줄 아는 고로 당신이 누구냐 감히 묻는 자가 없더라"
+      ],
+      "raw_text_hashes": [
+        "e7dfcbfd610a3440add6ea85406c0c5650ef85633011ff50515450804e058531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:13",
+      "sequence": 26911,
+      "chapter_label": "JHN 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "Then Jesus came and took the bread, gave it to them, and the fish likewise.",
+      "ko": "예수께서 가셔서 떡을 가져다가 저희에게 주시고 생선도 그와 같이 하시니라",
+      "source_text_hash": "6a1457da7cdd9bd900f38e77c56565a085cc67426fc7a1c6ad122b7e675bdf26",
+      "translation_text_hash": "9aa382033ff8eea09530c030f84973dd95247bd33bca909fcd6753e272a13d01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가셔서 떡을 가져다가 저희에게 주시고 생선도 그와 같이 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9aa382033ff8eea09530c030f84973dd95247bd33bca909fcd6753e272a13d01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:14",
+      "sequence": 26912,
+      "chapter_label": "JHN 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "This is now the third time that Jesus was revealed to his disciples after he had risen from the dead.",
+      "ko": "이것은 예수께서 죽은자 가운데서 살아나신 후에 세 번째로 제자들에게 나타나신 것이라",
+      "source_text_hash": "5d819ffaf0ab3778cf3004b433e66eea44389c99a84c2c4078d4810ee37ec5f2",
+      "translation_text_hash": "16d1cc5a780b66cc5686647012dac4e7c032c6cc7894e7b871c7588d2081029b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 예수께서 죽은자 가운데서 살아나신 후에 세 번째로 제자들에게 나타나신 것이라"
+      ],
+      "raw_text_hashes": [
+        "16d1cc5a780b66cc5686647012dac4e7c032c6cc7894e7b871c7588d2081029b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:15",
+      "sequence": 26913,
+      "chapter_label": "JHN 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "So when they had eaten their breakfast, Jesus said to Simon Peter, “Simon, son of Jonah, do you love me more than these?”He said to him, “Yes, Lord; you know that I have affection for you.” He said to him, “Feed my lambs.”",
+      "ko": "저희가 조반 먹은 후에 예수께서 시몬 베드로에게 이르시되 요한의 아들 시몬아 네가 이 사람들보다 나를 더 사랑하느냐 하시니 가로되 주여 그러하외다 내가 주를 사랑하는줄 주께서 아시나이다 가라사대 내 어린 양을 먹이라 하시고",
+      "source_text_hash": "f9b25b05ea31d4af3592b79ed73dbfd7ded22e97004bca809b10fcac5a355fdd",
+      "translation_text_hash": "025ccef56558537a65bce4c987bca2bf990b3b65aeb1bd97b0c7b8922fc9aea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 조반 먹은 후에 예수께서 시몬 베드로에게 이르시되 요한의 아들 시몬아 네가 이 사람들보다 나를 더 사랑하느냐 하시니 가로되 주여 그러하외다 내가 주를 사랑하는줄 주께서 아시나이다 가라사대 내 어린 양을 먹이라 하시고"
+      ],
+      "raw_text_hashes": [
+        "025ccef56558537a65bce4c987bca2bf990b3b65aeb1bd97b0c7b8922fc9aea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:16",
+      "sequence": 26914,
+      "chapter_label": "JHN 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "He said to him again a second time, “Simon, son of Jonah, do you love me?”He said to him, “Yes, Lord; you know that I have affection for you.” He said to him, “Tend my sheep.”",
+      "ko": "또 두번째 가라사대 요한의 아들 시몬아 네가 나를 사랑하느냐 하시니 가로되 주여 그러하외다 내가 주를 사랑하는줄 주께서 아시나이다 가라사대 내 양을 치라 하시고",
+      "source_text_hash": "b22f6859209591af96cde67ee17089e555204c79164fb43f4179f39118ce2920",
+      "translation_text_hash": "d36802673cc447343ceaf04aa9ad9a92f016d6202877f4e69701be5cc48335d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 두번째 가라사대 요한의 아들 시몬아 네가 나를 사랑하느냐 하시니 가로되 주여 그러하외다 내가 주를 사랑하는줄 주께서 아시나이다 가라사대 내 양을 치라 하시고"
+      ],
+      "raw_text_hashes": [
+        "d36802673cc447343ceaf04aa9ad9a92f016d6202877f4e69701be5cc48335d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:17",
+      "sequence": 26915,
+      "chapter_label": "JHN 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "He said to him the third time, “Simon, son of Jonah, do you have affection for me?”Peter was grieved because he asked him the third time, “Do you have affection for me?”He said to him, “Lord, you know everything. You know that I have affection for you.” Jesus said to him, “Feed my sheep.",
+      "ko": "세번째 가라사대 요한의 아들 시몬아 네가 나를 사랑하느냐 하시니 주께서 세번째 네가 나를 사랑하느냐 하시므로 베드로가 근심하여 가로되 주여 모든 것을 아시오매 내가 주를 사랑하는 줄을 주께서 아시나이다 예수께서 가라사대 내 양을 먹이라",
+      "source_text_hash": "de8f270f62aaa372193801f94c21961552d75b8fff0428188fe98ab33cfa2b27",
+      "translation_text_hash": "0b99177e13411a26035d23d48fcb3c04ee2cc03bff5540caa60a46c890801554",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세번째 가라사대 요한의 아들 시몬아 네가 나를 사랑하느냐 하시니 주께서 세번째 네가 나를 사랑하느냐 하시므로 베드로가 근심하여 가로되 주여 모든 것을 아시오매 내가 주를 사랑하는 줄을 주께서 아시나이다 예수께서 가라사대 내 양을 먹이라"
+      ],
+      "raw_text_hashes": [
+        "0b99177e13411a26035d23d48fcb3c04ee2cc03bff5540caa60a46c890801554"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:18",
+      "sequence": 26916,
+      "chapter_label": "JHN 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Most certainly I tell you, when you were young, you dressed yourself and walked where you wanted to. But when you are old, you will stretch out your hands, and another will dress you and carry you where you don’t want to go.”",
+      "ko": "내가 진실로 진실로 네게 이르노니 젊어서는 네가 스스로 띠 띠고 원하는 곳으로 다녔거니와 늙어서는 네 팔을 벌리리니 남이 네게 띠 띠우고 원치 아니하는 곳으로 데려가리라",
+      "source_text_hash": "04b9f9c5f18fbda43b38d974efbe84f1dd2d5aaaf04f37f573536b500dea9f2c",
+      "translation_text_hash": "afdf3a2afb6e79db30a5dd4d8ad1a14bf61f42bc2cd882219ce54404c3638b75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 네게 이르노니 젊어서는 네가 스스로 띠 띠고 원하는 곳으로 다녔거니와 늙어서는 네 팔을 벌리리니 남이 네게 띠 띠우고 원치 아니하는 곳으로 데려가리라"
+      ],
+      "raw_text_hashes": [
+        "afdf3a2afb6e79db30a5dd4d8ad1a14bf61f42bc2cd882219ce54404c3638b75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:19",
+      "sequence": 26917,
+      "chapter_label": "JHN 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "Now he said this, signifying by what kind of death he would glorify God. When he had said this, he said to him, “Follow me.”",
+      "ko": "이 말씀을 하심은 베드로가 어떠한 죽음으로 하나님께 영광을 돌릴 것을 가리키심이러라 이 말씀을 하시고 베드로에게 이르시되 나를 따르라 하시니",
+      "source_text_hash": "fb391717ad1abe5692e0d7bc20c51a711b1b51c1074a6ee99786fecc8f61321c",
+      "translation_text_hash": "b1fff2b4215cb459291c06d168773c3519a49d690f130434151bf7e837182ba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하심은 베드로가 어떠한 죽음으로 하나님께 영광을 돌릴 것을 가리키심이러라 이 말씀을 하시고 베드로에게 이르시되 나를 따르라 하시니"
+      ],
+      "raw_text_hashes": [
+        "b1fff2b4215cb459291c06d168773c3519a49d690f130434151bf7e837182ba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:20",
+      "sequence": 26918,
+      "chapter_label": "JHN 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "Then Peter, turning around, saw a disciple following. This was the disciple whom Jesus loved, the one who had also leaned on Jesus’ chest at the supper and asked, “Lord, who is going to betray you?”",
+      "ko": "베드로가 돌이켜 예수의 사랑하시는 그 제자가 따르는 것을 보니 그는 만찬석에서 예수의 품에 의지하여 주여 주를 파는 자가 누구오니이까 묻던 자러라",
+      "source_text_hash": "a4859de58659db795fe9efff4a6573d962c8a0d63cc40544492079ddfba768f6",
+      "translation_text_hash": "4dd517741416769b5a1e410fab20fa30f1e712ef9b0f999f58925050d995960e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 돌이켜 예수의 사랑하시는 그 제자가 따르는 것을 보니 그는 만찬석에서 예수의 품에 의지하여 주여 주를 파는 자가 누구오니이까 묻던 자러라"
+      ],
+      "raw_text_hashes": [
+        "4dd517741416769b5a1e410fab20fa30f1e712ef9b0f999f58925050d995960e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:21",
+      "sequence": 26919,
+      "chapter_label": "JHN 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Peter, seeing him, said to Jesus, “Lord, what about this man?”",
+      "ko": "이에 베드로가 그를 보고 예수께 여짜오되 주여 이 사람은 어떻게 되겠삽나이까",
+      "source_text_hash": "db6aee2928f796ddcd6f511a2e3f00ed53941d0e92e1758902bc052581615a92",
+      "translation_text_hash": "6643259db8f56c07552f1b175c35a07eb9db557e1e9262f84bd8b748cf2a4632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 그를 보고 예수께 여짜오되 주여 이 사람은 어떻게 되겠삽나이까"
+      ],
+      "raw_text_hashes": [
+        "6643259db8f56c07552f1b175c35a07eb9db557e1e9262f84bd8b748cf2a4632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:22",
+      "sequence": 26920,
+      "chapter_label": "JHN 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "Jesus said to him, “If I desire that he stay until I come, what is that to you? You follow me.”",
+      "ko": "예수께서 가라사대 내가 올 때까지 그를 머물게 하고자 할찌라도 네게 무슨 상관이냐 너는 나를 따르라 하시더라",
+      "source_text_hash": "ef9c6985526742d7996573dd5e1c39343c2ca1a44aeffd0f162a5600dcfb5b25",
+      "translation_text_hash": "9b8c5a2d6415c330888dc78e0ec485f9105d7b060211b02ee422ea79bdb3ca1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 올 때까지 그를 머물게 하고자 할찌라도 네게 무슨 상관이냐 너는 나를 따르라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "9b8c5a2d6415c330888dc78e0ec485f9105d7b060211b02ee422ea79bdb3ca1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:23",
+      "sequence": 26921,
+      "chapter_label": "JHN 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "This saying therefore went out among the brothers that this disciple wouldn’t die. Yet Jesus didn’t say to him that he wouldn’t die, but, “If I desire that he stay until I come, what is that to you?”",
+      "ko": "이 말씀이 형제들에게 나가서 그 제자는 죽지 아니하겠다 하였으나 예수의 말씀은 그가 죽지 않겠다 하신 것이 아니라 내가 올 때까지 그를 머물게 하고자 할찌라도 네게 무슨 상관이냐 하신 것이러라",
+      "source_text_hash": "a83ec3b19897b50e9a37adb3da94026da839fc8c7dff2eb345ea35fcd2a775ba",
+      "translation_text_hash": "75a0761b5f75efc8d33cc827c3bb8edb68b63861fe139bc49614f0f6e558c7d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀이 형제들에게 나가서 그 제자는 죽지 아니하겠다 하였으나 예수의 말씀은 그가 죽지 않겠다 하신 것이 아니라 내가 올 때까지 그를 머물게 하고자 할찌라도 네게 무슨 상관이냐 하신 것이러라"
+      ],
+      "raw_text_hashes": [
+        "75a0761b5f75efc8d33cc827c3bb8edb68b63861fe139bc49614f0f6e558c7d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:24",
+      "sequence": 26922,
+      "chapter_label": "JHN 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "This is the disciple who testifies about these things, and wrote these things. We know that his witness is true.",
+      "ko": "이 일을 증거하고 이 일을 기록한 제자가 이 사람이라 우리는 그의 증거가 참인줄 아노라",
+      "source_text_hash": "f90972468c4c953e5ce0c9393d51a8f602a16277359c2f2c8c2b896fb6d6c572",
+      "translation_text_hash": "c10c9af51d29d41cbb25076e1661d6033cc2994ef82f041433e095366750689a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 증거하고 이 일을 기록한 제자가 이 사람이라 우리는 그의 증거가 참인줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "c10c9af51d29d41cbb25076e1661d6033cc2994ef82f041433e095366750689a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:21:25",
+      "sequence": 26923,
+      "chapter_label": "JHN 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "There are also many other things which Jesus did, which if they would all be written, I suppose that even the world itself wouldn’t have room for the books that would be written.",
+      "ko": "예수의 행하신 일이 이 외에도 많으니 만일 낱낱이 기록된다면 이 세상이라도 이 기록된 책을 두기에 부족할줄 아노라",
+      "source_text_hash": "699678736c15d36603046fc1bd4d36e6ba3d881422f52ebb52cf23ec1752eaa2",
+      "translation_text_hash": "45cad223c4c8600009ac2e4101805e37518e3c9299aeea5b298f220a4ddf78fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 행하신 일이 이 외에도 많으니 만일 낱낱이 기록된다면 이 세상이라도 이 기록된 책을 두기에 부족할줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "45cad223c4c8600009ac2e4101805e37518e3c9299aeea5b298f220a4ddf78fa"
+      ]
+    }
+  ]
+}

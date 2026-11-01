@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:004",
+  "unit_ordinal": 1022,
+  "unit_label": "ACT 4",
+  "book_code": "ACT",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:4:1",
+      "sequence": 27023,
+      "chapter_label": "ACT 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "As they spoke to the people, the priests and the captain of the temple and the Sadducees came to them,",
+      "ko": "사도들이 백성에게 말할 때에 제사장들과 성전 맡은 자와 사두개인들이 이르러",
+      "source_text_hash": "460da3a4003420b7ca402412908e10464f423acce0849ab9fd638792bd43d91b",
+      "translation_text_hash": "27db159a4f9249a62cfe7fef12962448afc541b1cdde799a7c6cb00ba8b04b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 백성에게 말할 때에 제사장들과 성전 맡은 자와 사두개인들이 이르러"
+      ],
+      "raw_text_hashes": [
+        "27db159a4f9249a62cfe7fef12962448afc541b1cdde799a7c6cb00ba8b04b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:2",
+      "sequence": 27024,
+      "chapter_label": "ACT 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "being upset because they taught the people and proclaimed in Jesus the resurrection from the dead.",
+      "ko": "백성을 가르침과 예수를 들어 죽은자 가운데서 부활하는 도 전함을 싫어하여",
+      "source_text_hash": "5cb0755f4bbfe5cf68583a46c18fbb5015bf50aae8a5cd7c704adc8269d3af3a",
+      "translation_text_hash": "175cfdf420f04fdcbcf91547890eeeaab1337be9d77c3f0ba86d857840939dda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성을 가르침과 예수를 들어 죽은자 가운데서 부활하는 도 전함을 싫어하여"
+      ],
+      "raw_text_hashes": [
+        "175cfdf420f04fdcbcf91547890eeeaab1337be9d77c3f0ba86d857840939dda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:3",
+      "sequence": 27025,
+      "chapter_label": "ACT 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "They laid hands on them, and put them in custody until the next day, for it was now evening.",
+      "ko": "저희를 잡으매 날이 이미 저문고로 이튿날까지 가두었으나",
+      "source_text_hash": "b0a6b3404422a6fdd1c477b471e50fdbdb4a33784bef2593372377ad3c26e261",
+      "translation_text_hash": "fc0210ffcaae0b102447962d35a49cd41852ef272a7b5b59941bf450da5bcbc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 잡으매 날이 이미 저문고로 이튿날까지 가두었으나"
+      ],
+      "raw_text_hashes": [
+        "fc0210ffcaae0b102447962d35a49cd41852ef272a7b5b59941bf450da5bcbc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:4",
+      "sequence": 27026,
+      "chapter_label": "ACT 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "But many of those who heard the word believed, and the number of the men came to be about five thousand.",
+      "ko": "말씀을 들은 사람 중에 믿는 자가 많으니 남자의 수가 약 오천이나 되었더라",
+      "source_text_hash": "26a1955c042c229828a52dcaf1f33561d64607f8985f63e125d1d0a74c114b55",
+      "translation_text_hash": "6ace57486a37037be430a63b3b819c17126ab813e9bfd53a94d6f5a7bc1c85f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀을 들은 사람 중에 믿는 자가 많으니 남자의 수가 약 오천이나 되었더라"
+      ],
+      "raw_text_hashes": [
+        "6ace57486a37037be430a63b3b819c17126ab813e9bfd53a94d6f5a7bc1c85f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:5",
+      "sequence": 27027,
+      "chapter_label": "ACT 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "In the morning, their rulers, elders, and scribes were gathered together in Jerusalem.",
+      "ko": "이튿날에 관원과 장로와 서기관들이 예루살렘에 모였는데",
+      "source_text_hash": "4e82b30959fe3931d85d2908d87d24ab0a32c01d2a73564b97890be3310e175d",
+      "translation_text_hash": "b082d759d461884928c34b95a84e1d29eb11c5673dc0c3a1d7d6732245721a6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 관원과 장로와 서기관들이 예루살렘에 모였는데"
+      ],
+      "raw_text_hashes": [
+        "b082d759d461884928c34b95a84e1d29eb11c5673dc0c3a1d7d6732245721a6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:6",
+      "sequence": 27028,
+      "chapter_label": "ACT 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Annas the high priest was there, with Caiaphas, John, Alexander, and as many as were relatives of the high priest.",
+      "ko": "대제사장 안나스와 가야바와 요한과 알렉산더와 및 대제사장의 문중이 다 참예하여",
+      "source_text_hash": "deb18a883d692c82e03e2afa54ce2c70c8e7d0141020bd4356a3173a22abe885",
+      "translation_text_hash": "0b50b82b9887f97ed6c786686c748af7de16b289f92ef235245f696a82563593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 안나스와 가야바와 요한과 알렉산더와 및 대제사장의 문중이 다 참예하여"
+      ],
+      "raw_text_hashes": [
+        "0b50b82b9887f97ed6c786686c748af7de16b289f92ef235245f696a82563593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:7",
+      "sequence": 27029,
+      "chapter_label": "ACT 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "When they had stood Peter and John in the middle of them, they inquired, “By what power, or in what name, have you done this?”",
+      "ko": "사도들을 가운데 세우고 묻되 너희가 무슨 권세와 뉘 이름으로 이 일을 행하였느냐",
+      "source_text_hash": "5a5cdc4216c9eb8b6d08eb19dd078e0a178bfd463d8368ad7811fe21c30cfdd0",
+      "translation_text_hash": "5f75d852250d90998426e19d7504baad7e3189f830c861054a3312bc64799ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들을 가운데 세우고 묻되 너희가 무슨 권세와 뉘 이름으로 이 일을 행하였느냐"
+      ],
+      "raw_text_hashes": [
+        "5f75d852250d90998426e19d7504baad7e3189f830c861054a3312bc64799ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:8",
+      "sequence": 27030,
+      "chapter_label": "ACT 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Then Peter, filled with the Holy Spirit, said to them, “You rulers of the people and elders of Israel,",
+      "ko": "이에 베드로가 성령이 충만하여 가로되 백성의 관원과 장로들아",
+      "source_text_hash": "64c185d26d02bd3cda893ae6d6832103d24e26d533ecbe0d9bba2657c99d4e48",
+      "translation_text_hash": "19bcb75fd822932111ea39bed4a8a30e08a7f06149e25753d56b5f67e4f743c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 성령이 충만하여 가로되 백성의 관원과 장로들아"
+      ],
+      "raw_text_hashes": [
+        "19bcb75fd822932111ea39bed4a8a30e08a7f06149e25753d56b5f67e4f743c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:9",
+      "sequence": 27031,
+      "chapter_label": "ACT 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "if we are examined today concerning a good deed done to a crippled man, by what means this man has been healed,",
+      "ko": "만일 병인에게 행한 착한 일에 대하여 이 사람이 어떻게 구원을 얻었느냐고 오늘 우리에게 질문하면",
+      "source_text_hash": "857df37941f511e66c15d36f733110de3f8ec37f1fbff5485a61a975e9305ca2",
+      "translation_text_hash": "721295cd1a6942b60048f1d05932b02b16443aea88b03859c27aadb82c068bc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 병인에게 행한 착한 일에 대하여 이 사람이 어떻게 구원을 얻었느냐고 오늘 우리에게 질문하면"
+      ],
+      "raw_text_hashes": [
+        "721295cd1a6942b60048f1d05932b02b16443aea88b03859c27aadb82c068bc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:10",
+      "sequence": 27032,
+      "chapter_label": "ACT 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "may it be known to you all, and to all the people of Israel, that in the name of Jesus Christ of Nazareth, whom you crucified, whom God raised from the dead, this man stands here before you whole in him.",
+      "ko": "너희와 모든 이스라엘 백성들은 알라 너희가 십자가에 못 박고 하나님이 죽은자 가운데서 살리신 나사렛 예수 그리스도의 이름으로 이 사람이 건강하게 되어 너희 앞에 섰느니라",
+      "source_text_hash": "e4aa19233588f761c197cbb0cf630dd7bc33f16a6e8cc944fff72c9391bbda05",
+      "translation_text_hash": "7992d275a2957e52740dd8a4a48c9b4644d4ab41107cc509859499e43258d0a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 모든 이스라엘 백성들은 알라 너희가 십자가에 못 박고 하나님이 죽은자 가운데서 살리신 나사렛 예수 그리스도의 이름으로 이 사람이 건강하게 되어 너희 앞에 섰느니라"
+      ],
+      "raw_text_hashes": [
+        "7992d275a2957e52740dd8a4a48c9b4644d4ab41107cc509859499e43258d0a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:11",
+      "sequence": 27033,
+      "chapter_label": "ACT 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "He is ‘the stone which was regarded as worthless by you, the builders, which has become the head of the corner.’",
+      "ko": "이 예수는 너희 건축자들의 버린 돌로서 집 모퉁이의 머릿돌이 되었느니라",
+      "source_text_hash": "fdbf4c06371fc81bda55a2e23bc9b0cbbe1ce94f52ae80ac342842589e98c8ea",
+      "translation_text_hash": "ca9df19b6c55c6e367ccfe20152b5027991226aa7cbca4564b4540a56c187b3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 예수는 너희 건축자들의 버린 돌로서 집 모퉁이의 머릿돌이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "ca9df19b6c55c6e367ccfe20152b5027991226aa7cbca4564b4540a56c187b3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:12",
+      "sequence": 27034,
+      "chapter_label": "ACT 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "There is salvation in no one else, for there is no other name under heaven that is given among men, by which we must be saved!”",
+      "ko": "다른이로서는 구원을 얻을 수 없나니 천하 인간에 구원을 얻을만한 다른 이름을 우리에게 주신 일이 없음이니라 하였더라",
+      "source_text_hash": "46cb326d670b162828f3ed9b32ef1f57d521428220662db0e1b5461e9991f931",
+      "translation_text_hash": "447ae908abba161509befeda4608d74bc0461df000f95381a23cfadc1359f749",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른이로서는 구원을 얻을 수 없나니 천하 인간에 구원을 얻을만한 다른 이름을 우리에게 주신 일이 없음이니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "447ae908abba161509befeda4608d74bc0461df000f95381a23cfadc1359f749"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:13",
+      "sequence": 27035,
+      "chapter_label": "ACT 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Now when they saw the boldness of Peter and John, and had perceived that they were unlearned and ignorant men, they marveled. They recognized that they had been with Jesus.",
+      "ko": "저희가 베드로와 요한이 기탄없이 말함을 보고 그 본래 학문 없는 범인으로 알았다가 이상히 여기며 또 그 전에 예수와 함께 있던 줄도 알고",
+      "source_text_hash": "7782d833e95db4fb606c110c61156f36e1ca247f2199e7a6da2928e5136080ee",
+      "translation_text_hash": "c80f2ad55456631e9f3ba041e34624d9b6d97c7fc7b856f62ad028e802c3e035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 베드로와 요한이 기탄없이 말함을 보고 그 본래 학문 없는 범인으로 알았다가 이상히 여기며 또 그 전에 예수와 함께 있던 줄도 알고"
+      ],
+      "raw_text_hashes": [
+        "c80f2ad55456631e9f3ba041e34624d9b6d97c7fc7b856f62ad028e802c3e035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:14",
+      "sequence": 27036,
+      "chapter_label": "ACT 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Seeing the man who was healed standing with them, they could say nothing against it.",
+      "ko": "또 병 나은 사람이 그들과 함께 섰는 것을 보고 힐난할 말이 없는지라",
+      "source_text_hash": "d6f96abbff6cde068c3543ec38585fdb5d5f972f75a7224e43307f51004c7368",
+      "translation_text_hash": "246531b5b688fd247864de9c22ca38341cb0d58750a49bcc3d37842cb8a2fc72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 병 나은 사람이 그들과 함께 섰는 것을 보고 힐난할 말이 없는지라"
+      ],
+      "raw_text_hashes": [
+        "246531b5b688fd247864de9c22ca38341cb0d58750a49bcc3d37842cb8a2fc72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:15",
+      "sequence": 27037,
+      "chapter_label": "ACT 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "But when they had commanded them to go aside out of the council, they conferred among themselves,",
+      "ko": "명하여 공회에서 나가라 하고 서로 의논하여 가로되",
+      "source_text_hash": "11a521a2c2ccc3f0898b60db4787ec3851ae781ff7ed0f54001e600fb5a0576d",
+      "translation_text_hash": "b376daa989aaae7e63ccfe7aa7b7a3b828bdb6faf2a98e47a5f71ab6fe372f6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 공회에서 나가라 하고 서로 의논하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "b376daa989aaae7e63ccfe7aa7b7a3b828bdb6faf2a98e47a5f71ab6fe372f6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:16",
+      "sequence": 27038,
+      "chapter_label": "ACT 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "saying, “What shall we do to these men? Because indeed a notable miracle has been done through them, as can be plainly seen by all who dwell in Jerusalem, and we can’t deny it.",
+      "ko": "이 사람들을 어떻게 할꼬 저희로 인하여 유명한 표적 나타난 것이 예루살렘에 사는 모든 사람에게 알려졌으니 우리도 부인할 수 없는지라",
+      "source_text_hash": "df36d939b12d60466fc29ea91deb6b02336f4209048a6953270eb65a4f790c00",
+      "translation_text_hash": "9815c3644facfcbe4af408d62c71d25b639e64faae63ffd8ed44e63d0e57859a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들을 어떻게 할꼬 저희로 인하여 유명한 표적 나타난 것이 예루살렘에 사는 모든 사람에게 알려졌으니 우리도 부인할 수 없는지라"
+      ],
+      "raw_text_hashes": [
+        "9815c3644facfcbe4af408d62c71d25b639e64faae63ffd8ed44e63d0e57859a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:17",
+      "sequence": 27039,
+      "chapter_label": "ACT 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "But so that this spreads no further among the people, let’s threaten them, that from now on they don’t speak to anyone in this name.”",
+      "ko": "이것이 민간에 더 퍼지지 못하게 저희를 위협하여 이 후에는 이 이름으로 아무 사람에게도 말하지 말게 하자 하고",
+      "source_text_hash": "47e3463c0d7174242503c0ab7a757084f7ed657d3af5c249abb49dd23bce78a6",
+      "translation_text_hash": "c99c9907d7c539fa0b05825212a2d081fb88c10201b8a4f24d143d13c172dab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 민간에 더 퍼지지 못하게 저희를 위협하여 이 후에는 이 이름으로 아무 사람에게도 말하지 말게 하자 하고"
+      ],
+      "raw_text_hashes": [
+        "c99c9907d7c539fa0b05825212a2d081fb88c10201b8a4f24d143d13c172dab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:18",
+      "sequence": 27040,
+      "chapter_label": "ACT 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "They called them, and commanded them not to speak at all nor teach in the name of Jesus.",
+      "ko": "그들을 불러 경계하여 도무지 예수의 이름으로 말하지도 말고 가르치지도 말라 하니",
+      "source_text_hash": "f187c9031771cbe1dbb2cdc6832680b48bfabc85f12538627f542b52e07d6736",
+      "translation_text_hash": "f81dc880f9ad17aa45ec11a5142c848aec97cea5e3961fbc4d0e668bf182aec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 불러 경계하여 도무지 예수의 이름으로 말하지도 말고 가르치지도 말라 하니"
+      ],
+      "raw_text_hashes": [
+        "f81dc880f9ad17aa45ec11a5142c848aec97cea5e3961fbc4d0e668bf182aec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:19",
+      "sequence": 27041,
+      "chapter_label": "ACT 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "But Peter and John answered them, “Whether it is right in the sight of God to listen to you rather than to God, judge for yourselves,",
+      "ko": "베드로와 요한이 대답하여 가로되 하나님 앞에서 너희 말 듣는 것이 하나님 말씀 듣는 것보다 옳은가 판단하라",
+      "source_text_hash": "c59edf0d01066f7d34d61ee6d5c38869395e98f175bf331e562769d064cd989f",
+      "translation_text_hash": "7e45a85f8daa83ae4e83046fc643bd968c761358ba9366078ae5c0e20f87533f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 요한이 대답하여 가로되 하나님 앞에서 너희 말 듣는 것이 하나님 말씀 듣는 것보다 옳은가 판단하라"
+      ],
+      "raw_text_hashes": [
+        "7e45a85f8daa83ae4e83046fc643bd968c761358ba9366078ae5c0e20f87533f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:20",
+      "sequence": 27042,
+      "chapter_label": "ACT 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "for we can’t help telling the things which we saw and heard.”",
+      "ko": "우리는 보고 들은 것을 말하지 아니할 수 없다 하니",
+      "source_text_hash": "7c7bb4d52632124c84e4731901b1c19c74e438956c8e20bdb6f02fc6a55a297f",
+      "translation_text_hash": "ee611afdbeba0b34ab22a073261028a102880aba617a078c4a13978e2ec41675",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 보고 들은 것을 말하지 아니할 수 없다 하니"
+      ],
+      "raw_text_hashes": [
+        "ee611afdbeba0b34ab22a073261028a102880aba617a078c4a13978e2ec41675"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:21",
+      "sequence": 27043,
+      "chapter_label": "ACT 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "When they had further threatened them, they let them go, finding no way to punish them, because of the people; for everyone glorified God for that which was done.",
+      "ko": "관원들이 백성을 인하여 저희를 어떻게 벌할 도리를 찾지 못하고 다시 위협하여 놓아 주었으니 이는 모든 사람이 그 된 일을 보고 하나님께 영광을 돌림이러라",
+      "source_text_hash": "54a40a1cb08f4c5b3b39455dca0c1274cad0e1c72194a3244dcc96e186898865",
+      "translation_text_hash": "8844ca9830f2eeda708183d0e5c5cdccf9b3d62d41d5fe9aa0d8b26cbaecb375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관원들이 백성을 인하여 저희를 어떻게 벌할 도리를 찾지 못하고 다시 위협하여 놓아 주었으니 이는 모든 사람이 그 된 일을 보고 하나님께 영광을 돌림이러라"
+      ],
+      "raw_text_hashes": [
+        "8844ca9830f2eeda708183d0e5c5cdccf9b3d62d41d5fe9aa0d8b26cbaecb375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:22",
+      "sequence": 27044,
+      "chapter_label": "ACT 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "For the man on whom this miracle of healing was performed was more than forty years old.",
+      "ko": "이 표적으로 병 나은 사람은 사십 여세나 되었더라",
+      "source_text_hash": "3431a7651324ed6bfb5a156a14b41444c3e3f8848e9c68cf5d75b42b905ba982",
+      "translation_text_hash": "12eb692e677fb293d6486252ef51224abb1cf9f0fcfa1e4568c2748b31789e19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 표적으로 병 나은 사람은 사십 여세나 되었더라"
+      ],
+      "raw_text_hashes": [
+        "12eb692e677fb293d6486252ef51224abb1cf9f0fcfa1e4568c2748b31789e19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:23",
+      "sequence": 27045,
+      "chapter_label": "ACT 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Being let go, they came to their own company and reported all that the chief priests and the elders had said to them.",
+      "ko": "사도들이 놓이매 그 동류에게 가서 제사장들과 장로들의 말을 다 고하니",
+      "source_text_hash": "d46067d428e8dd3d2d60d8f7965ccce7f5b9d58da6a179ae710be5def86580ee",
+      "translation_text_hash": "b2672ac3db02067b8a2f9e4929665e77464f91c38a74c68cd154879b672f115d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 놓이매 그 동류에게 가서 제사장들과 장로들의 말을 다 고하니"
+      ],
+      "raw_text_hashes": [
+        "b2672ac3db02067b8a2f9e4929665e77464f91c38a74c68cd154879b672f115d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:24",
+      "sequence": 27046,
+      "chapter_label": "ACT 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "When they heard it, they lifted up their voice to God with one accord and said, “O Lord, you are God, who made the sky, the earth, the sea, and all that is in them;",
+      "ko": "저희가 듣고 일심으로 하나님께 소리를 높여 가로되 대주재여 천지와 바다와 그 가운데 만유를 지은 이시요",
+      "source_text_hash": "4ebc542f0071255471cd5e92e4674e6a136a17b713bf2e96ab306126b0f3c694",
+      "translation_text_hash": "db95a7516cc88b4c7c755375d3a0d4fc51e6a0c84f57cb2296052cabb69b3e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 일심으로 하나님께 소리를 높여 가로되 대주재여 천지와 바다와 그 가운데 만유를 지은 이시요"
+      ],
+      "raw_text_hashes": [
+        "db95a7516cc88b4c7c755375d3a0d4fc51e6a0c84f57cb2296052cabb69b3e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:25",
+      "sequence": 27047,
+      "chapter_label": "ACT 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "who by the mouth of your servant David, said, ‘Why do the nations rage, and the peoples plot a vain thing?",
+      "ko": "또 주의 종 우리 조상 다윗의 입을 의탁하사 성령으로 말씀하시기를 어찌하여 열방이 분노하며 족속들이 허사를 경영하였는고",
+      "source_text_hash": "8df656d8925568390826947195a59c8183d1be55a5d8a88963b717c833a194be",
+      "translation_text_hash": "3210ee9ce5dd66aba8eeff350753e215be0d676b96d77d499901fd5c6702007d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 종 우리 조상 다윗의 입을 의탁하사 성령으로 말씀하시기를 어찌하여 열방이 분노하며 족속들이 허사를 경영하였는고"
+      ],
+      "raw_text_hashes": [
+        "3210ee9ce5dd66aba8eeff350753e215be0d676b96d77d499901fd5c6702007d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:26",
+      "sequence": 27048,
+      "chapter_label": "ACT 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "The kings of the earth take a stand, and the rulers plot together, against the Lord, and against his Christ.’",
+      "ko": "세상의 군왕들이 나서며 관원들이 함께 모여 주와 그 그리스도를 대적하도다 하신 이로소이다",
+      "source_text_hash": "fc526fc2d888c8ebbd75a8a6ad84d3143b3776b32a597a9c5572e574814e82af",
+      "translation_text_hash": "bd5bf007084e74067531b0869e48699d7caba2625140cb1127788a5f556f7f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 군왕들이 나서며 관원들이 함께 모여 주와 그 그리스도를 대적하도다 하신 이로소이다"
+      ],
+      "raw_text_hashes": [
+        "bd5bf007084e74067531b0869e48699d7caba2625140cb1127788a5f556f7f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:27",
+      "sequence": 27049,
+      "chapter_label": "ACT 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "“For truly, both Herod and Pontius Pilate, with the Gentiles and the people of Israel, were gathered together against your holy servant Jesus, whom you anointed,",
+      "ko": "과연 헤롯과 본디오 빌라도는 이방인과 이스라엘 백성과 합동하여 하나님의 기름부으신 거룩한 종 예수를 거스려",
+      "source_text_hash": "af09f7651f9fceed9c7132305cd9bbd1eb9ff0a3f969d1c1f69e1366bdf47c7c",
+      "translation_text_hash": "28f9c7a3495e69f02c51c6d792b7aaddf0dad09855f54f09885f1215a11b2834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과연 헤롯과 본디오 빌라도는 이방인과 이스라엘 백성과 합동하여 하나님의 기름부으신 거룩한 종 예수를 거스려"
+      ],
+      "raw_text_hashes": [
+        "28f9c7a3495e69f02c51c6d792b7aaddf0dad09855f54f09885f1215a11b2834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:28",
+      "sequence": 27050,
+      "chapter_label": "ACT 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "to do whatever your hand and your counsel foreordained to happen.",
+      "ko": "하나님의 권능과 뜻대로 이루려고 예정하신 그것을 행하려고 이 성에 모였나이다",
+      "source_text_hash": "e7c803a10694c251a732deef535008d7cb0f25f08cf44e3c0450590aaefad4a7",
+      "translation_text_hash": "63be7bcfd148a77ddd1e77db240d8c8ef8e9148300b110e7fae7a455a8479c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 권능과 뜻대로 이루려고 예정하신 그것을 행하려고 이 성에 모였나이다"
+      ],
+      "raw_text_hashes": [
+        "63be7bcfd148a77ddd1e77db240d8c8ef8e9148300b110e7fae7a455a8479c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:29",
+      "sequence": 27051,
+      "chapter_label": "ACT 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "Now, Lord, look at their threats, and grant to your servants to speak your word with all boldness,",
+      "ko": "주여 이제도 저희의 위협함을 하감하옵시고 또 종들로 하여금 담대히 하나님의 말씀을 전하게 하여 주옵시며",
+      "source_text_hash": "c93ca7526c1a96f02b9f2ba2fd42c8ba8acfc05aee320fe546c27bf128ecea35",
+      "translation_text_hash": "410f21c93d90f0bb197de1820ec8601f7197f36c2cf3d764c872daf2bcf6b1d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 이제도 저희의 위협함을 하감하옵시고 또 종들로 하여금 담대히 하나님의 말씀을 전하게 하여 주옵시며"
+      ],
+      "raw_text_hashes": [
+        "410f21c93d90f0bb197de1820ec8601f7197f36c2cf3d764c872daf2bcf6b1d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:30",
+      "sequence": 27052,
+      "chapter_label": "ACT 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "while you stretch out your hand to heal; and that signs and wonders may be done through the name of your holy Servant Jesus.”",
+      "ko": "손을 내밀어 병을 낫게 하옵시고 표적과 기사가 거룩한 종 예수의 이름으로 이루어지게 하옵소서 하더라",
+      "source_text_hash": "d3a6813012d56275d27a19f60e7fa09d68575e36cd9679ba932c4dad44faf0c0",
+      "translation_text_hash": "26c6bff568f3b2e7195e5df5443cbcb90bb6fddcbc39ebe2b497f39de022445c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 내밀어 병을 낫게 하옵시고 표적과 기사가 거룩한 종 예수의 이름으로 이루어지게 하옵소서 하더라"
+      ],
+      "raw_text_hashes": [
+        "26c6bff568f3b2e7195e5df5443cbcb90bb6fddcbc39ebe2b497f39de022445c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:31",
+      "sequence": 27053,
+      "chapter_label": "ACT 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "When they had prayed, the place was shaken where they were gathered together. They were all filled with the Holy Spirit, and they spoke the word of God with boldness.",
+      "ko": "빌기를 다하매 모인 곳이 진동하더니 무리가 다 성령이 충만하여 담대히 하나님의 말씀을 전하니라",
+      "source_text_hash": "a3ad930543926dedcb375efd428acaf729d9597a179b172ddeccbf7b728f53f1",
+      "translation_text_hash": "cae854897415dae5514d63c251c96945696c8f0fe8f259fd655457e7214caa48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌기를 다하매 모인 곳이 진동하더니 무리가 다 성령이 충만하여 담대히 하나님의 말씀을 전하니라"
+      ],
+      "raw_text_hashes": [
+        "cae854897415dae5514d63c251c96945696c8f0fe8f259fd655457e7214caa48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:32",
+      "sequence": 27054,
+      "chapter_label": "ACT 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "The multitude of those who believed were of one heart and soul. Not one of them claimed that anything of the things which he possessed was his own, but they had all things in common.",
+      "ko": "믿는 무리가 한 마음과 한 뜻이 되어 모든 물건을 서로 통용하고 제 재물을 조금이라도 제 것이라 하는 이가 하나도 없더라",
+      "source_text_hash": "cc397c8bada808f0b0a6aa0375d7d3cad86e80fcb0b618cb3df58a0e356916ad",
+      "translation_text_hash": "7e4b84b5b3b3fc15df2aa1f5cfacf41a91b79a4de84c2082099ebe2e213607bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿는 무리가 한 마음과 한 뜻이 되어 모든 물건을 서로 통용하고 제 재물을 조금이라도 제 것이라 하는 이가 하나도 없더라"
+      ],
+      "raw_text_hashes": [
+        "7e4b84b5b3b3fc15df2aa1f5cfacf41a91b79a4de84c2082099ebe2e213607bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:33",
+      "sequence": 27055,
+      "chapter_label": "ACT 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "With great power, the apostles gave their testimony of the resurrection of the Lord Jesus. Great grace was on them all.",
+      "ko": "사도들이 큰 권능으로 주 예수의 부활을 증거하니 무리가 큰 은혜를 얻어",
+      "source_text_hash": "232a6e4599ddaf2409a488e80fff9b69a0684d14b00c15fca2160ec2af3e9c0f",
+      "translation_text_hash": "a93a496350fb657a185e45f91b24765b6aeb93732880900562ba4dbc8c7887de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 큰 권능으로 주 예수의 부활을 증거하니 무리가 큰 은혜를 얻어"
+      ],
+      "raw_text_hashes": [
+        "a93a496350fb657a185e45f91b24765b6aeb93732880900562ba4dbc8c7887de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:34",
+      "sequence": 27056,
+      "chapter_label": "ACT 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "For neither was there among them any who lacked, for as many as were owners of lands or houses sold them, and brought the proceeds of the things that were sold,",
+      "ko": "그 중에 핍절한 사람이 없으니 이는 밭과 집 있는 자는 팔아 그 판 것의 값을 가져다가",
+      "source_text_hash": "95b68d3ebb3fa602daf21c817115b637b1665bff7b2ab37bceebbc7f08cd1fdd",
+      "translation_text_hash": "3daf036f062cf8c1d43dc24315ddabe85bd70499fefed909a23b5388e4bfe994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 핍절한 사람이 없으니 이는 밭과 집 있는 자는 팔아 그 판 것의 값을 가져다가"
+      ],
+      "raw_text_hashes": [
+        "3daf036f062cf8c1d43dc24315ddabe85bd70499fefed909a23b5388e4bfe994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:35",
+      "sequence": 27057,
+      "chapter_label": "ACT 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "and laid them at the apostles’ feet; and distribution was made to each, according as anyone had need.",
+      "ko": "사도들의 발 앞에 두매 저희가 각 사람의 필요를 따라 나눠줌이러라",
+      "source_text_hash": "545ade4dfa29f65aebba307724b1e9674cbcc07381ab2a0541a25d19237cc66e",
+      "translation_text_hash": "77d1b5fe02e889e62be4aac9a2d3f2e66333f967bb673b1983021d6df638f5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들의 발 앞에 두매 저희가 각 사람의 필요를 따라 나눠줌이러라"
+      ],
+      "raw_text_hashes": [
+        "77d1b5fe02e889e62be4aac9a2d3f2e66333f967bb673b1983021d6df638f5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:36",
+      "sequence": 27058,
+      "chapter_label": "ACT 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "Joses, who by the apostles was also called Barnabas (which is, being interpreted, Son of Encouragement), a Levite, a man of Cyprus by race,",
+      "ko": "구브로에서 난 레위족인이 있으니 이름은 요셉이라 사도들이 일컬어 바나바(번역하면 권위자)라 하니",
+      "source_text_hash": "26dac6cd50fd84b7009ca9d406d2105db79835ceeb6f8dc18973732f04d39820",
+      "translation_text_hash": "790351cd9c9e37f7c5ebc2905f061160dfcdf746fc8e7bd823531691b9b37ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구브로에서 난 레위족인이 있으니 이름은 요셉이라 사도들이 일컬어 바나바(번역하면 권위자)라 하니"
+      ],
+      "raw_text_hashes": [
+        "790351cd9c9e37f7c5ebc2905f061160dfcdf746fc8e7bd823531691b9b37ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:4:37",
+      "sequence": 27059,
+      "chapter_label": "ACT 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "having a field, sold it and brought the money and laid it at the apostles’ feet.",
+      "ko": "그가 밭이 있으매 팔아 값을 가지고 사도들의 발 앞에 두니라",
+      "source_text_hash": "a283d7a8c6b9a041f7feb945bb70ea2f5ea6f2ff2720bd1a73e5857a7bc5af0d",
+      "translation_text_hash": "271c00de07aabdc6c02895f0f0dda7675dc3d7f4688f7939274ef928663c999e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 밭이 있으매 팔아 값을 가지고 사도들의 발 앞에 두니라"
+      ],
+      "raw_text_hashes": [
+        "271c00de07aabdc6c02895f0f0dda7675dc3d7f4688f7939274ef928663c999e"
+      ]
+    }
+  ]
+}

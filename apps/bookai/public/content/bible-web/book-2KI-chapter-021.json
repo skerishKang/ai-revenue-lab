@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:021",
+  "unit_ordinal": 334,
+  "unit_label": "2KI 21",
+  "book_code": "2KI",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:21:1",
+      "sequence": 10121,
+      "chapter_label": "2KI 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Manasseh was twelve years old when he began to reign, and he reigned fifty-five years in Jerusalem. His mother’s name was Hephzibah.",
+      "ko": "므낫세가 위에 나아갈 때에 나이 십 이세라 예루살렘에서 오십 오년을 치리하니라 그 모친의 이름은 헵시바더라",
+      "source_text_hash": "3f91773eaf54e89dca86d1475dc34cdb997d39ad8785d06204c199bb64150678",
+      "translation_text_hash": "004cb2eb5d98e37a2e732ce1baa5da257f18ee7879f31f58e884a26c47cc9ab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 위에 나아갈 때에 나이 십 이세라 예루살렘에서 오십 오년을 치리하니라 그 모친의 이름은 헵시바더라"
+      ],
+      "raw_text_hashes": [
+        "004cb2eb5d98e37a2e732ce1baa5da257f18ee7879f31f58e884a26c47cc9ab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:2",
+      "sequence": 10122,
+      "chapter_label": "2KI 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, after the abominations of the nations whom the LORD cast out before the children of Israel.",
+      "ko": "므낫세가 여호와 보시기에 악을 행하여 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아서",
+      "source_text_hash": "81cd4386be472d93ff5540c3ef964a117a29ede426359f861f5fc5f260200163",
+      "translation_text_hash": "209c6b6011ed58876bf2376f7a6511a2dc52de162c18107e34469b458e8dbecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 여호와 보시기에 악을 행하여 여호와께서 이스라엘 자손 앞에서 쫓아내신 이방 사람의 가증한 일을 본받아서"
+      ],
+      "raw_text_hashes": [
+        "209c6b6011ed58876bf2376f7a6511a2dc52de162c18107e34469b458e8dbecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:3",
+      "sequence": 10123,
+      "chapter_label": "2KI 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "For he built again the high places which Hezekiah his father had destroyed; and he raised up altars for Baal, and made an Asherah, as Ahab king of Israel did, and worshiped all the army of the sky, and served them.",
+      "ko": "그 부친 히스기야의 헐어 버린 산당을 다시 세우며 이스라엘 왕 아합의 소위를 본받아 바알을 위하여 단을 쌓으며 아세라 목상을 만들며 하늘의 일월 성신을 숭배하여 섬기며",
+      "source_text_hash": "acd8dbbf2ae3dd8d7937434ab4b60fea179181814ec401c1a029579c0f43be9a",
+      "translation_text_hash": "519e0db389590270bded90a61190b75ee52ac543240e4222866dfef137903e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친 히스기야의 헐어 버린 산당을 다시 세우며 이스라엘 왕 아합의 소위를 본받아 바알을 위하여 단을 쌓으며 아세라 목상을 만들며 하늘의 일월 성신을 숭배하여 섬기며"
+      ],
+      "raw_text_hashes": [
+        "519e0db389590270bded90a61190b75ee52ac543240e4222866dfef137903e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:4",
+      "sequence": 10124,
+      "chapter_label": "2KI 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "He built altars in the LORD’s house, of which the LORD said, “I will put my name in Jerusalem.”",
+      "ko": "여호와께서 전에 이르시기를 내가 내 이름을 예루살렘에 두리라 하신 여호와의 전의 단들을 쌓고",
+      "source_text_hash": "b7efb6299f29f7fa4ad0f6cae148502e4741e4b2c0d6156c4b6473e33d11cda0",
+      "translation_text_hash": "2858a9eadabbbb0f297446d31062ce074439256d9e9410b2c919ba06309963fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 전에 이르시기를 내가 내 이름을 예루살렘에 두리라 하신 여호와의 전의 단들을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "2858a9eadabbbb0f297446d31062ce074439256d9e9410b2c919ba06309963fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:5",
+      "sequence": 10125,
+      "chapter_label": "2KI 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "He built altars for all the army of the sky in the two courts of the LORD’s house.",
+      "ko": "또 여호와의 전 두 마당에 하늘의 일월 성신을 위하여 단들을 쌓고",
+      "source_text_hash": "03b2cede9be1df004e055717c8abd37dfb14984206726f0d80ba6e2444387292",
+      "translation_text_hash": "915cdbb60c80fd445e768775d08fd70ed45cedcc874fa88a4591e27d9c87a701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 전 두 마당에 하늘의 일월 성신을 위하여 단들을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "915cdbb60c80fd445e768775d08fd70ed45cedcc874fa88a4591e27d9c87a701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:6",
+      "sequence": 10126,
+      "chapter_label": "2KI 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "He made his son to pass through the fire, practiced sorcery, used enchantments, and dealt with those who had familiar spirits and with wizards. He did much evil in the LORD’s sight, to provoke him to anger.",
+      "ko": "또 그 아들을 불 가운데로 지나게 하며 점치며 사술을 행하며 신접한 자와 박수를 신임하여 여호와 보시기에 악을 많이 행하여 그 진노를 격발하였으며",
+      "source_text_hash": "036dd00db4112bc548c4e4e7b8c0d7cf2170b6c60310d35f9bb319ad5e4f5bad",
+      "translation_text_hash": "0f14424afae2aa23233f03a83b4dbdd54214538484cb154fd2508c9f46fe163c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 아들을 불 가운데로 지나게 하며 점치며 사술을 행하며 신접한 자와 박수를 신임하여 여호와 보시기에 악을 많이 행하여 그 진노를 격발하였으며"
+      ],
+      "raw_text_hashes": [
+        "0f14424afae2aa23233f03a83b4dbdd54214538484cb154fd2508c9f46fe163c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:7",
+      "sequence": 10127,
+      "chapter_label": "2KI 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "He set the engraved image of Asherah that he had made in the house of which the LORD said to David and to Solomon his son, “In this house, and in Jerusalem, which I have chosen out of all the tribes of Israel, I will put my name forever;",
+      "ko": "또 자기가 만든 아로새긴 아세라 목상을 전에 세웠더라 옛적에 여호와께서 이 전에 대하여 다윗과 그 아들 솔로몬에게 이르시기를 내가 이스라엘 모든 지파 중에서 택한 이 전과 예루살렘에 내 이름을 영원히 둘찌라",
+      "source_text_hash": "d4b33cebfe513190ae6575c8c1efacc066f7946bf306787ed8565446631c0e90",
+      "translation_text_hash": "486e77e8066eb907d66af262d29f7d81e38eacbf0cab7bcf8236faf0c8aa1c9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기가 만든 아로새긴 아세라 목상을 전에 세웠더라 옛적에 여호와께서 이 전에 대하여 다윗과 그 아들 솔로몬에게 이르시기를 내가 이스라엘 모든 지파 중에서 택한 이 전과 예루살렘에 내 이름을 영원히 둘찌라"
+      ],
+      "raw_text_hashes": [
+        "486e77e8066eb907d66af262d29f7d81e38eacbf0cab7bcf8236faf0c8aa1c9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:8",
+      "sequence": 10128,
+      "chapter_label": "2KI 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "I will not cause the feet of Israel to wander any more out of the land which I gave their fathers, if only they will observe to do according to all that I have commanded them, and according to all the law that my servant Moses commanded them.”",
+      "ko": "만일 이스라엘이 나의 모든 명령과 나의 종 모세의 명한 모든 율법을 지켜 행하면 내가 그들의 발로 다시는 그 열조에게 준 땅에서 떠나 유리하지 않게 하리라 하셨으나",
+      "source_text_hash": "9189e11d53cabf4606a7c38bed4719bc04248530f67ceca5c99fc20bd364bf5e",
+      "translation_text_hash": "5bc00ea4c39b87fd1b72156951df30835d3222b96f7ec98e00e5062bc3acb12d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이스라엘이 나의 모든 명령과 나의 종 모세의 명한 모든 율법을 지켜 행하면 내가 그들의 발로 다시는 그 열조에게 준 땅에서 떠나 유리하지 않게 하리라 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "5bc00ea4c39b87fd1b72156951df30835d3222b96f7ec98e00e5062bc3acb12d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:9",
+      "sequence": 10129,
+      "chapter_label": "2KI 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "But they didn’t listen, and Manasseh seduced them to do that which is evil more than the nations did whom the LORD destroyed before the children of Israel.",
+      "ko": "이 백성이 듣지 아니하였고 므낫세의 꾀임을 받고 악을 행한 것이 여호와께서 이스라엘 자손 앞에서 멸하신 열방보다 더욱 심하였더라",
+      "source_text_hash": "68cc29ef32aa0c4bcbe6280bf4ab123dc497e4b165009423acb610bae2c89b04",
+      "translation_text_hash": "d968d77662034128708056fddfba8a2fcbca6313c996bf85eeefd919c853b8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 듣지 아니하였고 므낫세의 꾀임을 받고 악을 행한 것이 여호와께서 이스라엘 자손 앞에서 멸하신 열방보다 더욱 심하였더라"
+      ],
+      "raw_text_hashes": [
+        "d968d77662034128708056fddfba8a2fcbca6313c996bf85eeefd919c853b8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:10",
+      "sequence": 10130,
+      "chapter_label": "2KI 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD spoke by his servants the prophets, saying,",
+      "ko": "여호와께서 그 종 모든 선지자들로 말씀하여 가라사대",
+      "source_text_hash": "1eb8f66ec2e16bf64b0bc7b02b4fc41c1d183394c3d453defa6911d5fe8761b6",
+      "translation_text_hash": "5494762a2df4d8fd409a4bf45aa5a987257d48045dde1f58da6b305b1d8fe647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 종 모든 선지자들로 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "5494762a2df4d8fd409a4bf45aa5a987257d48045dde1f58da6b305b1d8fe647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:11",
+      "sequence": 10131,
+      "chapter_label": "2KI 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "“Because Manasseh king of Judah has done these abominations, and has done wickedly above all that the Amorites did, who were before him, and has also made Judah to sin with his idols;",
+      "ko": "유다 왕 므낫세가 이 가증한 일과 악을 행함이 그 전에 있던 아모리 사람의 행위보다 더욱 심하였고 또 그 우상으로 유다를 범죄케 하였도다",
+      "source_text_hash": "1b73435aa70fea6194417b34b7a858fa0a65958a0913354c48293262234cfcb6",
+      "translation_text_hash": "3f85bb9c75ecd9aaf0fd9256347b74e129b75cc313cefc896b80940448d58f48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 므낫세가 이 가증한 일과 악을 행함이 그 전에 있던 아모리 사람의 행위보다 더욱 심하였고 또 그 우상으로 유다를 범죄케 하였도다"
+      ],
+      "raw_text_hashes": [
+        "3f85bb9c75ecd9aaf0fd9256347b74e129b75cc313cefc896b80940448d58f48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:12",
+      "sequence": 10132,
+      "chapter_label": "2KI 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "therefore the LORD the God of Israel says, ‘Behold, I will bring such evil on Jerusalem and Judah that whoever hears of it, both his ears will tingle.",
+      "ko": "그러므로 이스라엘 하나님 여호와가 말하노니 내가 이제 예루살렘과 유다에 재앙을 내리리니 듣는 자마다 두 귀가 울리리라",
+      "source_text_hash": "69ce5181423525f1f548f377a192b345c53b1fb7533006364af7a3c1264a0b01",
+      "translation_text_hash": "aab362a05f21144f928ad0e260c4be8830b831d2bd0e5760c1ccbe21d57fe142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 하나님 여호와가 말하노니 내가 이제 예루살렘과 유다에 재앙을 내리리니 듣는 자마다 두 귀가 울리리라"
+      ],
+      "raw_text_hashes": [
+        "aab362a05f21144f928ad0e260c4be8830b831d2bd0e5760c1ccbe21d57fe142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:13",
+      "sequence": 10133,
+      "chapter_label": "2KI 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "I will stretch over Jerusalem the line of Samaria, and the plumb line of Ahab’s house; and I will wipe Jerusalem as a man wipes a dish, wiping it and turning it upside down.",
+      "ko": "내가 사마리아를 잰 줄과 아합의 집을 다림보던 추로 예루살렘에 베풀고 또 사람이 그릇을 씻어 엎음 같이 예루살렘을 씻어 버릴찌라",
+      "source_text_hash": "d2a923ee3309b18927011ea419663ee2e1c4f98e2d3926eb2160babcd4da4db0",
+      "translation_text_hash": "f5a3396ce9475dbb0b11c76ef3241a2250984f7bc37015d6e49dbf6c097012a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사마리아를 잰 줄과 아합의 집을 다림보던 추로 예루살렘에 베풀고 또 사람이 그릇을 씻어 엎음 같이 예루살렘을 씻어 버릴찌라"
+      ],
+      "raw_text_hashes": [
+        "f5a3396ce9475dbb0b11c76ef3241a2250984f7bc37015d6e49dbf6c097012a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:14",
+      "sequence": 10134,
+      "chapter_label": "2KI 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "I will cast off the remnant of my inheritance and deliver them into the hands of their enemies. They will become a prey and a plunder to all their enemies,",
+      "ko": "내가 나의 기업에서 남은 자를 버려 그 대적의 손에 붙인즉 저희가 모든 대적에게 노략과 겁탈이 되리니",
+      "source_text_hash": "994f1ebac03be9157168b843a882cbba934d69ab9e9e07ae5259fb0f1e6df387",
+      "translation_text_hash": "4bf5fe498f16dc3f76228a1403f7ba6e7a2a9d179c2b9b40fe14895648f764cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 기업에서 남은 자를 버려 그 대적의 손에 붙인즉 저희가 모든 대적에게 노략과 겁탈이 되리니"
+      ],
+      "raw_text_hashes": [
+        "4bf5fe498f16dc3f76228a1403f7ba6e7a2a9d179c2b9b40fe14895648f764cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:15",
+      "sequence": 10135,
+      "chapter_label": "2KI 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "because they have done that which is evil in my sight, and have provoked me to anger since the day their fathers came out of Egypt, even to this day.’”",
+      "ko": "이는 애굽에서 나온 그 열조 때부터 오늘까지 나의 보기에 악을 행하여 나의 노를 격발하였음이니라 하셨더라",
+      "source_text_hash": "07f66f10d781e7abd4f71bb8df175d206c562d9be166e75aa7c41508d35e95fb",
+      "translation_text_hash": "ecdb7a443de4e6b19ebcc64026a787c80fc004700dafbe86ca781550c899ad3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 애굽에서 나온 그 열조 때부터 오늘까지 나의 보기에 악을 행하여 나의 노를 격발하였음이니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "ecdb7a443de4e6b19ebcc64026a787c80fc004700dafbe86ca781550c899ad3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:16",
+      "sequence": 10136,
+      "chapter_label": "2KI 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "Moreover Manasseh shed innocent blood very much, until he had filled Jerusalem from one end to another; in addition to his sin with which he made Judah to sin, in doing that which was evil in the LORD’s sight.",
+      "ko": "므낫세가 여호와 보시기에 악을 행하여 유다로 범하게한 그 죄 외에 또 무죄한 자의 피를 심히 많이 흘려 예루살렘 이 가에서 저 가까지 가득하게 하였더라",
+      "source_text_hash": "c01e4c03860508a8076be92095688ffd4c409ecab4597f8d22c05ad9428c902e",
+      "translation_text_hash": "2af1a9e370d8684b944075d9548b80b967b95621b26599ada70a85970e021a6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 여호와 보시기에 악을 행하여 유다로 범하게한 그 죄 외에 또 무죄한 자의 피를 심히 많이 흘려 예루살렘 이 가에서 저 가까지 가득하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2af1a9e370d8684b944075d9548b80b967b95621b26599ada70a85970e021a6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:17",
+      "sequence": 10137,
+      "chapter_label": "2KI 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "Now the rest of the acts of Manasseh, and all that he did, and his sin that he sinned, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "므낫세의 남은 사적과 무릇 그 행한바와 범한 죄는 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "15170c6f8b7ae278e98c9bcf3a060777fb192c7d636040557a2d15e4a3cea595",
+      "translation_text_hash": "15af19af9f2162a9f6e5378a876ebcf1b78ec069bafacd723a9a442b43e585a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 남은 사적과 무릇 그 행한바와 범한 죄는 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "15af19af9f2162a9f6e5378a876ebcf1b78ec069bafacd723a9a442b43e585a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:18",
+      "sequence": 10138,
+      "chapter_label": "2KI 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Manasseh slept with his fathers, and was buried in the garden of his own house, in the garden of Uzza; and Amon his son reigned in his place.",
+      "ko": "므낫세가 그 열조와 함께 자매 그 궁궐 동산 곧 웃사의 동산에 장사되고 그 아들 아몬이 대신하여 왕이 되니라",
+      "source_text_hash": "96feeb644d55ebc15a2b98bb5992e06c480310a5b0c55ee55dad60e95f156480",
+      "translation_text_hash": "8f5c68f8460f22a89635aefa1ced0a6dd15cd128d349d824885103fa4b9bf430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세가 그 열조와 함께 자매 그 궁궐 동산 곧 웃사의 동산에 장사되고 그 아들 아몬이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "8f5c68f8460f22a89635aefa1ced0a6dd15cd128d349d824885103fa4b9bf430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:19",
+      "sequence": 10139,
+      "chapter_label": "2KI 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "Amon was twenty-two years old when he began to reign; and he reigned two years in Jerusalem. His mother’s name was Meshullemeth the daughter of Haruz of Jotbah.",
+      "ko": "아몬이 위에 나아갈 때에 나이 이십 이세라 예루살렘에서 이년을 치리하니라 그 모친의 이름은 므술레멧이라 욧바 하루스의 딸이더라",
+      "source_text_hash": "d0528962cc77fc26f825e692aeefb9eb82ef5a35df4728c459055d095cc6c366",
+      "translation_text_hash": "5da3fed0516bb103d9cf7fa1b9f606bbb1d3b92cbb365feec0f24752f05a8644",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬이 위에 나아갈 때에 나이 이십 이세라 예루살렘에서 이년을 치리하니라 그 모친의 이름은 므술레멧이라 욧바 하루스의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "5da3fed0516bb103d9cf7fa1b9f606bbb1d3b92cbb365feec0f24752f05a8644"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:20",
+      "sequence": 10140,
+      "chapter_label": "2KI 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, as Manasseh his father did.",
+      "ko": "아몬이 그 부친 므낫세의 행함 같이 여호와 보시기에 악을 행하되",
+      "source_text_hash": "5c583e1330c1733bf9cfa67b19bd764a2051ae816b7c9db7c8d3b1b549ff9029",
+      "translation_text_hash": "69a661543fde5eb02b81d80cfce92771bedad1fafe13756ce4e43fa23ecb395f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬이 그 부친 므낫세의 행함 같이 여호와 보시기에 악을 행하되"
+      ],
+      "raw_text_hashes": [
+        "69a661543fde5eb02b81d80cfce92771bedad1fafe13756ce4e43fa23ecb395f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:21",
+      "sequence": 10141,
+      "chapter_label": "2KI 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "He walked in all the ways that his father walked in, and served the idols that his father served, and worshiped them;",
+      "ko": "그 부친의 행한 모든 길로 행하여 그 부친의 섬기던 우상을 섬겨 경배하고",
+      "source_text_hash": "3120c77b77b7c671733cd5c113912d00ddc4645e8c9c3c37594ed294c9b9bd5d",
+      "translation_text_hash": "582da95bff49710456a47b7ce3b40d77277e1bef3b6167f84b8add750f76b151",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친의 행한 모든 길로 행하여 그 부친의 섬기던 우상을 섬겨 경배하고"
+      ],
+      "raw_text_hashes": [
+        "582da95bff49710456a47b7ce3b40d77277e1bef3b6167f84b8add750f76b151"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:22",
+      "sequence": 10142,
+      "chapter_label": "2KI 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "and he abandoned the LORD, the God of his fathers, and didn’t walk in the way of the LORD.",
+      "ko": "그 열조의 하나님 여호와를 버리고 그 길로 행치 아니하더니",
+      "source_text_hash": "114d2c0ea28535faaf119f2aa157efb5007d3cbb13d9306890245554581aa212",
+      "translation_text_hash": "2b631257c735f21255420431d3cb4c59bae8272abd8449852ff6175fdbdeff96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열조의 하나님 여호와를 버리고 그 길로 행치 아니하더니"
+      ],
+      "raw_text_hashes": [
+        "2b631257c735f21255420431d3cb4c59bae8272abd8449852ff6175fdbdeff96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:23",
+      "sequence": 10143,
+      "chapter_label": "2KI 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "The servants of Amon conspired against him, and put the king to death in his own house.",
+      "ko": "그 신복들이 반역하여 왕을 궁중에서 죽이매",
+      "source_text_hash": "0ef7824a034580a9a9279f0b9202bbe96aaa240903db848ed2a83e49313bb655",
+      "translation_text_hash": "3c31787bf7984c329e1f0e71aece90d3f5a1bf8094cf9de5d56973f4ee1559fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복들이 반역하여 왕을 궁중에서 죽이매"
+      ],
+      "raw_text_hashes": [
+        "3c31787bf7984c329e1f0e71aece90d3f5a1bf8094cf9de5d56973f4ee1559fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:24",
+      "sequence": 10144,
+      "chapter_label": "2KI 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "But the people of the land killed all those who had conspired against King Amon; and the people of the land made Josiah his son king in his place.",
+      "ko": "그 국민이 아몬왕을 반역한 사람들을 다 죽이고 그 아들 요시야로 대신하여 왕을 삼았더라",
+      "source_text_hash": "f054497ad4baa200d17ae1c8e91d568ff3dfed05bcefa0876093505209628cee",
+      "translation_text_hash": "877d23026dd6529ba2102f79207aa8a0328bcf0526b95dcea1af3f38ba620394",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 국민이 아몬왕을 반역한 사람들을 다 죽이고 그 아들 요시야로 대신하여 왕을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "877d23026dd6529ba2102f79207aa8a0328bcf0526b95dcea1af3f38ba620394"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:25",
+      "sequence": 10145,
+      "chapter_label": "2KI 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "Now the rest of the acts of Amon which he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "아몬의 행한바 남은 사적은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "dcfb95cb313e655e629ff4ce8f57ae7dd4cd34e8bbdb141df2bf56dfedefd2b3",
+      "translation_text_hash": "f092be744657bb29be9148b845f2029ad2ceb8de5f4a03746a6efae83d25beed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬의 행한바 남은 사적은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "f092be744657bb29be9148b845f2029ad2ceb8de5f4a03746a6efae83d25beed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:21:26",
+      "sequence": 10146,
+      "chapter_label": "2KI 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "He was buried in his tomb in the garden of Uzza, and Josiah his son reigned in his place.",
+      "ko": "아몬이 웃시야의 동산 자기 묘실에 장사되고 그 아들 요시야가 대신하여 왕이 되니라",
+      "source_text_hash": "2420bca6410d91bdca85fbe42228e346e8bcc9cc94f3ca8910f888754fa04cb2",
+      "translation_text_hash": "3ca6573e02bf0a8f84068dd66c512187606ea274758352d9b20d3accc746d515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬이 웃시야의 동산 자기 묘실에 장사되고 그 아들 요시야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "3ca6573e02bf0a8f84068dd66c512187606ea274758352d9b20d3accc746d515"
+      ]
+    }
+  ]
+}

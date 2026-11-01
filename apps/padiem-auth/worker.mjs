@@ -42,6 +42,15 @@ function one(params, name) {
   return values.length === 1 ? values[0] : '';
 }
 
+// A Python Worker answering over a service binding can hand back a Map (or a
+// proxy with toJs) instead of a plain object; read it the same way either way.
+function plainRpc(value) {
+  if (value instanceof Map) return Object.fromEntries([...value].map(([k, v]) => [k, plainRpc(v)]));
+  if (Array.isArray(value)) return value.map(plainRpc);
+  if (value && typeof value === 'object' && typeof value.toJs === 'function') return plainRpc(value.toJs({ dict_converter: Object.fromEntries }));
+  return value;
+}
+
 async function diagnosed(stage, operation) {
     try { return await operation(); }
     catch (error) {
@@ -208,11 +217,13 @@ export class AuthStateObject extends AuthState {
       const linked = await diagnosed('identity_authority_rpc_failed', async () => {
         const request = { product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
-        const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request);
+        const result = plainRpc(await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request));
         if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) {
           // Only the authority's closed error code and the product id: no subject, fingerprint or user id.
           const code = typeof result?.error?.code === 'string' && /^[a-z0-9_]{1,64}$/.test(result.error.code) ? result.error.code : (result?.ok === true ? 'link_shape_mismatch' : 'unknown');
-          console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, expected_subject_sent: Boolean(current) }));
+          const shape = result === null ? 'null' : typeof result === 'object' ? (result.constructor?.name || 'object') + ':' + Object.keys(result).sort().join(',') : typeof result;
+          const errorKeys = result && typeof result.error === 'object' && result.error ? Object.keys(result.error).sort().join(',') : '';
+          console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, shape, error_keys: errorKeys, expected_subject_sent: Boolean(current) }));
           throw new Error('identity authority failed');
         }
         return result;

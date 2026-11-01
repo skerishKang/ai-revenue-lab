@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:014",
+  "unit_ordinal": 943,
+  "unit_label": "MAT 14",
+  "book_code": "MAT",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:14:1",
+      "sequence": 23599,
+      "chapter_label": "MAT 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "At that time, Herod the tetrarch heard the report concerning Jesus,",
+      "ko": "그 때에 분봉왕 헤롯이 예수의 소문을 듣고",
+      "source_text_hash": "b29a184e945b1f341f43aa239e02c2d03c8f7efd07d4733a40684fab5db5e617",
+      "translation_text_hash": "b674b50b01f14421b2decce7a2d0c9a21427999039b949512a9d41dca86b89ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 분봉왕 헤롯이 예수의 소문을 듣고"
+      ],
+      "raw_text_hashes": [
+        "b674b50b01f14421b2decce7a2d0c9a21427999039b949512a9d41dca86b89ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:2",
+      "sequence": 23600,
+      "chapter_label": "MAT 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "and said to his servants, “This is John the Baptizer. He is risen from the dead. That is why these powers work in him.”",
+      "ko": "그 신하들에게 이르되 이는 세례 요한이라 저가 죽은 자 가운데서 살아났으니 그러므로 이런 권능이 그 속에서 운동하는도다 하더라",
+      "source_text_hash": "e7df9b42bccf319f4becfe286f8fe1b6ce69c404ae4bc825648b5f440d0d03ae",
+      "translation_text_hash": "186a893b96984a1b59eceafad3920c4be97b66d6400c406ba61587ab110a3f3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신하들에게 이르되 이는 세례 요한이라 저가 죽은 자 가운데서 살아났으니 그러므로 이런 권능이 그 속에서 운동하는도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "186a893b96984a1b59eceafad3920c4be97b66d6400c406ba61587ab110a3f3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:3",
+      "sequence": 23601,
+      "chapter_label": "MAT 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "For Herod had arrested John, bound him, and put him in prison for the sake of Herodias, his brother Philip’s wife.",
+      "ko": "전에 헤롯이 그 동생 빌립의 아내 헤로디아의 일로 요한을 잡아 결박하여 옥에 가두었으니",
+      "source_text_hash": "cd151b09de060d7a8984d06b34b7bccf8a83938f206e901bf27a44efd1d6c3ca",
+      "translation_text_hash": "dc252f435bef324f59acc86c2462aa461d1cf6b373d129c4a267b67c49527ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 헤롯이 그 동생 빌립의 아내 헤로디아의 일로 요한을 잡아 결박하여 옥에 가두었으니"
+      ],
+      "raw_text_hashes": [
+        "dc252f435bef324f59acc86c2462aa461d1cf6b373d129c4a267b67c49527ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:4",
+      "sequence": 23602,
+      "chapter_label": "MAT 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "For John said to him, “It is not lawful for you to have her.”",
+      "ko": "이는 요한이 헤롯에게 말하되 당신이 그 여자를 취한 것이 옳지 않다 하였음이라",
+      "source_text_hash": "0da6b87c172bf03954c0adf3359cc4cba9e2543a2dbafbb123d7638d7ad54c0a",
+      "translation_text_hash": "396f3bb0c5bd5399be528cb7a9571fb3c2acbc71bbf86d91f4f436ed905aca8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 요한이 헤롯에게 말하되 당신이 그 여자를 취한 것이 옳지 않다 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "396f3bb0c5bd5399be528cb7a9571fb3c2acbc71bbf86d91f4f436ed905aca8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:5",
+      "sequence": 23603,
+      "chapter_label": "MAT 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "When he would have put him to death, he feared the multitude, because they counted him as a prophet.",
+      "ko": "헤롯이 요한을 죽이려 하되 민중이 저를 선지자로 여기므로 민중을 두려워하더니",
+      "source_text_hash": "b321d6731ceeb7225e48091d7492edf07c1a2098a0a7dccd3240557c7a281096",
+      "translation_text_hash": "9e3310d2e55759e1c34e0cad191d31fe25d8c32e841c4e5fed65e6795a078ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 요한을 죽이려 하되 민중이 저를 선지자로 여기므로 민중을 두려워하더니"
+      ],
+      "raw_text_hashes": [
+        "9e3310d2e55759e1c34e0cad191d31fe25d8c32e841c4e5fed65e6795a078ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:6",
+      "sequence": 23604,
+      "chapter_label": "MAT 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "But when Herod’s birthday came, the daughter of Herodias danced among them and pleased Herod.",
+      "ko": "마침 헤롯의 생일을 당하여 헤로디아의 딸이 연석 가운데서 춤을 추어 헤롯을 기쁘게 하니",
+      "source_text_hash": "f78bdb8c5bdc067f58743dbf5e3fbc8c2e85cecb3a1fafb5e006346b5eeaf7fe",
+      "translation_text_hash": "bc7a512f06d97ab084544c2025c79d8633ee989c77c686f7eebd51f27ea93a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 헤롯의 생일을 당하여 헤로디아의 딸이 연석 가운데서 춤을 추어 헤롯을 기쁘게 하니"
+      ],
+      "raw_text_hashes": [
+        "bc7a512f06d97ab084544c2025c79d8633ee989c77c686f7eebd51f27ea93a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:7",
+      "sequence": 23605,
+      "chapter_label": "MAT 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore he promised with an oath to give her whatever she should ask.",
+      "ko": "헤롯이 맹세로 그에게 무엇이든지 달라는대로 주겠다 허락하거늘",
+      "source_text_hash": "d05e775fc0de48e9ff5aab8daa6a75593e16b70a03d4912827ee97072933c0d7",
+      "translation_text_hash": "6528cc5873c143d6325253e70eb0d4670e7cabadb0c67900d6f881bcc255a1d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 맹세로 그에게 무엇이든지 달라는대로 주겠다 허락하거늘"
+      ],
+      "raw_text_hashes": [
+        "6528cc5873c143d6325253e70eb0d4670e7cabadb0c67900d6f881bcc255a1d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:8",
+      "sequence": 23606,
+      "chapter_label": "MAT 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "She, being prompted by her mother, said, “Give me here on a platter the head of John the Baptizer.”",
+      "ko": "그가 제 어미의 시킴을 듣고 가로되 세례 요한의 머리를 소반에 담아 여기서 내게 주소서 하니",
+      "source_text_hash": "a0025e4e06790f089f0a78740574abac6c49440ad3fb54c095eea018de5373d4",
+      "translation_text_hash": "204a7043777c26d9460d8099bc069507124b7da2eb19222850da45a690a91048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 제 어미의 시킴을 듣고 가로되 세례 요한의 머리를 소반에 담아 여기서 내게 주소서 하니"
+      ],
+      "raw_text_hashes": [
+        "204a7043777c26d9460d8099bc069507124b7da2eb19222850da45a690a91048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:9",
+      "sequence": 23607,
+      "chapter_label": "MAT 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "The king was grieved, but for the sake of his oaths and of those who sat at the table with him, he commanded it to be given,",
+      "ko": "왕이 근심하나 자기의 맹세한 것과 그 함께 앉은 사람들을 인하여 주라 명하고",
+      "source_text_hash": "d1a95907297632125833e585f1235d6e67bd9591533f9b12ca173455d0b48701",
+      "translation_text_hash": "6384f8888951aa95d0515b6c8ae9897fd92014d2a9f0f41c9f7fa3b22e50064c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 근심하나 자기의 맹세한 것과 그 함께 앉은 사람들을 인하여 주라 명하고"
+      ],
+      "raw_text_hashes": [
+        "6384f8888951aa95d0515b6c8ae9897fd92014d2a9f0f41c9f7fa3b22e50064c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:10",
+      "sequence": 23608,
+      "chapter_label": "MAT 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "and he sent and beheaded John in the prison.",
+      "ko": "사람을 보내어 요한을 옥에서 목 베어",
+      "source_text_hash": "c123562c2cd6e26412ee4d6badc569f5f6da2806f4e3d6244bbf0020f1484e0b",
+      "translation_text_hash": "5803e0d7efcb0a8e206feb476b476f86c5654a9e2899c8658757e94fabd191ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 보내어 요한을 옥에서 목 베어"
+      ],
+      "raw_text_hashes": [
+        "5803e0d7efcb0a8e206feb476b476f86c5654a9e2899c8658757e94fabd191ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:11",
+      "sequence": 23609,
+      "chapter_label": "MAT 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "His head was brought on a platter and given to the young lady; and she brought it to her mother.",
+      "ko": "그 머리를 소반에 담아다가 그 여아에게 주니 그가 제 어미에게 가져가니라",
+      "source_text_hash": "f843fe0a6427d17f1da231419d5e778d52736591a0136ce5621e43cad056a077",
+      "translation_text_hash": "f417837e54325bdfa8f4aaf3cecc3cd749778f0361501cda91899eec5a8b7a05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리를 소반에 담아다가 그 여아에게 주니 그가 제 어미에게 가져가니라"
+      ],
+      "raw_text_hashes": [
+        "f417837e54325bdfa8f4aaf3cecc3cd749778f0361501cda91899eec5a8b7a05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:12",
+      "sequence": 23610,
+      "chapter_label": "MAT 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "His disciples came, took the body, and buried it. Then they went and told Jesus.",
+      "ko": "요한의 제자들이 와서 시체를 가져다가 장사하고 가서 예수께 고하니라",
+      "source_text_hash": "18bb96f3c8004d75cd1ac3d33cfe2594d2d8e4328f67433ff1429238639f8cdb",
+      "translation_text_hash": "22931508153873b469c2458b3b5748c789e8ec99011b7d723da7fb0a93262c3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 제자들이 와서 시체를 가져다가 장사하고 가서 예수께 고하니라"
+      ],
+      "raw_text_hashes": [
+        "22931508153873b469c2458b3b5748c789e8ec99011b7d723da7fb0a93262c3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:13",
+      "sequence": 23611,
+      "chapter_label": "MAT 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Now when Jesus heard this, he withdrew from there in a boat to a deserted place apart. When the multitudes heard it, they followed him on foot from the cities.",
+      "ko": "예수께서 들으시고 배를 타고 떠나사 따로 빈 들에 가시니 무리가 듣고 여러 고을로부터 걸어서 좇아간지라",
+      "source_text_hash": "5d077cfc41c79f6539dba506941d7208261231e3fd1273aa706607b24c1cbfcd",
+      "translation_text_hash": "54d78f52938a0fcfb0db316ab29abbe5dd5b4ab21bd51952dea0f1593ea18b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 배를 타고 떠나사 따로 빈 들에 가시니 무리가 듣고 여러 고을로부터 걸어서 좇아간지라"
+      ],
+      "raw_text_hashes": [
+        "54d78f52938a0fcfb0db316ab29abbe5dd5b4ab21bd51952dea0f1593ea18b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:14",
+      "sequence": 23612,
+      "chapter_label": "MAT 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "Jesus went out, and he saw a great multitude. He had compassion on them and healed their sick.",
+      "ko": "예수께서 나오사 큰 무리를 보시고 불쌍히 여기사 그 중에 있는 병인을 고쳐 주시니라",
+      "source_text_hash": "426924fde7b83109f8c927855ee9f16d3a1c48f97b040e1d87ade90fc9198780",
+      "translation_text_hash": "f220a305650911e66925756731436226a5c5ef123d7cf8584fe59d02a0ab7290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나오사 큰 무리를 보시고 불쌍히 여기사 그 중에 있는 병인을 고쳐 주시니라"
+      ],
+      "raw_text_hashes": [
+        "f220a305650911e66925756731436226a5c5ef123d7cf8584fe59d02a0ab7290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:15",
+      "sequence": 23613,
+      "chapter_label": "MAT 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "When evening had come, his disciples came to him, saying, “This place is deserted, and the hour is already late. Send the multitudes away, that they may go into the villages, and buy themselves food.”",
+      "ko": "저녁이 되매 제자들이 나아와 가로되 이곳은 빈 들이요 때도 이미 저물었으니 무리를 보내어 마을에 들어가 먹을 것을 사먹게 하소서",
+      "source_text_hash": "aabee7de82eee025967aea88b9973bea1a0c5fd74a24c68f162f34c08468de4c",
+      "translation_text_hash": "45544ea62d36b81e42cabf22936998d2b22be9e99ffaad51d07239bccec51032",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁이 되매 제자들이 나아와 가로되 이곳은 빈 들이요 때도 이미 저물었으니 무리를 보내어 마을에 들어가 먹을 것을 사먹게 하소서"
+      ],
+      "raw_text_hashes": [
+        "45544ea62d36b81e42cabf22936998d2b22be9e99ffaad51d07239bccec51032"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:16",
+      "sequence": 23614,
+      "chapter_label": "MAT 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "But Jesus said to them, “They don’t need to go away. You give them something to eat.”",
+      "ko": "예수께서 가라사대 갈것 없다 너희가 먹을 것을 주어라",
+      "source_text_hash": "7527bdff17d64345acdf93f9f8f484bc4c5e84869317905e5ed78a4f52f1365d",
+      "translation_text_hash": "cb03bfc197df62a03508906057c14c8b8e7388bc070127f38e496470e956d7fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 갈것 없다 너희가 먹을 것을 주어라"
+      ],
+      "raw_text_hashes": [
+        "cb03bfc197df62a03508906057c14c8b8e7388bc070127f38e496470e956d7fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:17",
+      "sequence": 23615,
+      "chapter_label": "MAT 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "They told him, “We only have here five loaves and two fish.”",
+      "ko": "제자들이 가로되 여기 우리에게 있는 것은 떡 다섯 개와 물고기 두 마리 뿐이니이다",
+      "source_text_hash": "c85c2f08cb7f48b8ef0b217f007e26fbca3a1ca2709362f704eaf0eb9b2995b0",
+      "translation_text_hash": "296ed7e743214701cb221bb9292222acc59a9ba249e67d2f39d3c7eb00df14de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가로되 여기 우리에게 있는 것은 떡 다섯 개와 물고기 두 마리 뿐이니이다"
+      ],
+      "raw_text_hashes": [
+        "296ed7e743214701cb221bb9292222acc59a9ba249e67d2f39d3c7eb00df14de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:18",
+      "sequence": 23616,
+      "chapter_label": "MAT 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “Bring them here to me.”",
+      "ko": "가라사대 그것을 내게 가져오라 하시고",
+      "source_text_hash": "2363fafa59afd0b36030c0f43cac676567524f405dfbf75430c469ad3475e66e",
+      "translation_text_hash": "05178fdd63deea6aac54d207154251e54810552c66acb30ce108faa9e083d23a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 그것을 내게 가져오라 하시고"
+      ],
+      "raw_text_hashes": [
+        "05178fdd63deea6aac54d207154251e54810552c66acb30ce108faa9e083d23a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:19",
+      "sequence": 23617,
+      "chapter_label": "MAT 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "He commanded the multitudes to sit down on the grass; and he took the five loaves and the two fish, and looking up to heaven, he blessed, broke and gave the loaves to the disciples; and the disciples gave to the multitudes.",
+      "ko": "무리를 명하여 잔디 위에 앉히시고 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떡을 떼어 제자들에게 주시매 제자들이 무리에게 주니",
+      "source_text_hash": "9f11aa19996d5e965ce5112f315ec8732c826bb16a9d4f9a5fb211fe22709272",
+      "translation_text_hash": "561ea2e3c2fdba92494ee664648d00ac02a7040eb9dff4ef8507e4c64e9b5f03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 명하여 잔디 위에 앉히시고 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떡을 떼어 제자들에게 주시매 제자들이 무리에게 주니"
+      ],
+      "raw_text_hashes": [
+        "561ea2e3c2fdba92494ee664648d00ac02a7040eb9dff4ef8507e4c64e9b5f03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:20",
+      "sequence": 23618,
+      "chapter_label": "MAT 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "They all ate and were filled. They took up twelve baskets full of that which remained left over from the broken pieces.",
+      "ko": "다 배불리 먹고 남은 조각을 열 두 바구니에 차게 거두었으며",
+      "source_text_hash": "489ad29cafd4689d2550b3bfc124c8157b607522f72cbc73597ff3bdc4f5a648",
+      "translation_text_hash": "b1493a8a17e1665e2d299e9ddcd8046fa15c5cf3797f7cf1ac2b3b1f6b9ffcb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 배불리 먹고 남은 조각을 열 두 바구니에 차게 거두었으며"
+      ],
+      "raw_text_hashes": [
+        "b1493a8a17e1665e2d299e9ddcd8046fa15c5cf3797f7cf1ac2b3b1f6b9ffcb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:21",
+      "sequence": 23619,
+      "chapter_label": "MAT 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "Those who ate were about five thousand men, in addition to women and children.",
+      "ko": "먹은 사람은 여자와 아이 외에 오천 명이나 되었더라",
+      "source_text_hash": "9e9a4bddd9a24ce432d22465e842fad8c43833239c48f2a463a12c552cda521e",
+      "translation_text_hash": "89b7bc9b08733660aaf235678d3b23266ec3b3a94fb0ccde4a20f9dba847a712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹은 사람은 여자와 아이 외에 오천 명이나 되었더라"
+      ],
+      "raw_text_hashes": [
+        "89b7bc9b08733660aaf235678d3b23266ec3b3a94fb0ccde4a20f9dba847a712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:22",
+      "sequence": 23620,
+      "chapter_label": "MAT 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Immediately Jesus made the disciples get into the boat and go ahead of him to the other side, while he sent the multitudes away.",
+      "ko": "예수께서 즉시 제자들을 재촉하사 자기가 무리를 보내는 동안에 배를 타고 앞서 건너편으로 가게 하시고",
+      "source_text_hash": "ea91a1049a0d934f9373c3ff1e793bb0f295093b7ec92dec55761a0ea5502ede",
+      "translation_text_hash": "c76ebfe67bca86453a4234a84af9c8ded1f949517ce4ab78dfc3eb294c19b5f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 즉시 제자들을 재촉하사 자기가 무리를 보내는 동안에 배를 타고 앞서 건너편으로 가게 하시고"
+      ],
+      "raw_text_hashes": [
+        "c76ebfe67bca86453a4234a84af9c8ded1f949517ce4ab78dfc3eb294c19b5f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:23",
+      "sequence": 23621,
+      "chapter_label": "MAT 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "After he had sent the multitudes away, he went up into the mountain by himself to pray. When evening had come, he was there alone.",
+      "ko": "무리를 보내신 후에 기도하러 따로 산에 올라가시다 저물매 거기 혼자 계시더니",
+      "source_text_hash": "68ad0f30cda44820d4961027f4a29432d0a6532523402406cef0f92e47147f01",
+      "translation_text_hash": "99614ad4d6ee8733f57597be1c99f7cda178be5826ef138ff4e55254df8e8b6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 보내신 후에 기도하러 따로 산에 올라가시다 저물매 거기 혼자 계시더니"
+      ],
+      "raw_text_hashes": [
+        "99614ad4d6ee8733f57597be1c99f7cda178be5826ef138ff4e55254df8e8b6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:24",
+      "sequence": 23622,
+      "chapter_label": "MAT 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "But the boat was now in the middle of the sea, distressed by the waves, for the wind was contrary.",
+      "ko": "배가 이미 육지에서 수리나 떠나서 바람이 거슬리므로 물결을 인하여 고난을 당하더라",
+      "source_text_hash": "bb7b861d1cf5f00e73830891880763456d5cf587f6bee23842fa8339e5235b08",
+      "translation_text_hash": "b5348a9c3994fb0ed1fb6d02782e40083d257b5b89360eaf24afb872346edb89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배가 이미 육지에서 수리나 떠나서 바람이 거슬리므로 물결을 인하여 고난을 당하더라"
+      ],
+      "raw_text_hashes": [
+        "b5348a9c3994fb0ed1fb6d02782e40083d257b5b89360eaf24afb872346edb89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:25",
+      "sequence": 23623,
+      "chapter_label": "MAT 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "In the fourth watch of the night, Jesus came to them, walking on the sea.",
+      "ko": "밤 사경에 예수께서 바다 위로 걸어서 제자들에게 오시니",
+      "source_text_hash": "1e528d5b198bdd2181e2d019c536031b26a2eda00ce765da7e8cf7541e36051e",
+      "translation_text_hash": "91a51069f71fcec3ab8c42aa156a50b37a3cee56367f1ab9171556b92e34bbc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤 사경에 예수께서 바다 위로 걸어서 제자들에게 오시니"
+      ],
+      "raw_text_hashes": [
+        "91a51069f71fcec3ab8c42aa156a50b37a3cee56367f1ab9171556b92e34bbc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:26",
+      "sequence": 23624,
+      "chapter_label": "MAT 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "When the disciples saw him walking on the sea, they were troubled, saying, “It’s a ghost!” and they cried out for fear.",
+      "ko": "제자들이 그 바다 위로 걸어 오심을 보고 놀라 유령이라 하며 무서워하여 소리지르거늘",
+      "source_text_hash": "74f79759fa2984d2afabbeed548baef7c250597dbfcaa9b61bed3fa68ef9866d",
+      "translation_text_hash": "d9a9f00c2f54799d717f61aa432ea20bf1c705ff0c50366e7c79dd9814aa44b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 그 바다 위로 걸어 오심을 보고 놀라 유령이라 하며 무서워하여 소리지르거늘"
+      ],
+      "raw_text_hashes": [
+        "d9a9f00c2f54799d717f61aa432ea20bf1c705ff0c50366e7c79dd9814aa44b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:27",
+      "sequence": 23625,
+      "chapter_label": "MAT 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "But immediately Jesus spoke to them, saying, “Cheer up! It is I! Don’t be afraid.”",
+      "ko": "예수께서 즉시 일러 가라사대 안심하라 내니 두려워 말라",
+      "source_text_hash": "704ea80a258d345249cff3ccd99012daae9113a4e960e64f29a0731bdbfeb198",
+      "translation_text_hash": "7b91567c2cd13873640f20e5d00dacc7449c21b1d91ac3dad167384b92403fc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 즉시 일러 가라사대 안심하라 내니 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "7b91567c2cd13873640f20e5d00dacc7449c21b1d91ac3dad167384b92403fc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:28",
+      "sequence": 23626,
+      "chapter_label": "MAT 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Peter answered him and said, “Lord, if it is you, command me to come to you on the waters.”",
+      "ko": "베드로가 대답하여 가로되 주여 만일 주시어든 나를 명하사 물 위로 오라 하소서 한대",
+      "source_text_hash": "e61080528d7a53ee4af9bb599838c36a1c027a218977873b5f22da61c301e7e6",
+      "translation_text_hash": "0832afa30d1a894651d4ee7d0e5aba26887309ab39f05349cf991ce3034dd593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 대답하여 가로되 주여 만일 주시어든 나를 명하사 물 위로 오라 하소서 한대"
+      ],
+      "raw_text_hashes": [
+        "0832afa30d1a894651d4ee7d0e5aba26887309ab39f05349cf991ce3034dd593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:29",
+      "sequence": 23627,
+      "chapter_label": "MAT 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "He said, “Come!”Peter stepped down from the boat and walked on the waters to come to Jesus.",
+      "ko": "오라 하시니 베드로가 배에서 내려 물 위로 걸어서 예수께로 가되",
+      "source_text_hash": "ea15ad4741228b9d1346a3d470a51cd5c0f24a6f2e8cfce33ba5e8a45c23522f",
+      "translation_text_hash": "4148c290593ea90a8708f4abf198cc3323d93c509da1fd9e04268f5b2fb9ed76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오라 하시니 베드로가 배에서 내려 물 위로 걸어서 예수께로 가되"
+      ],
+      "raw_text_hashes": [
+        "4148c290593ea90a8708f4abf198cc3323d93c509da1fd9e04268f5b2fb9ed76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:30",
+      "sequence": 23628,
+      "chapter_label": "MAT 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "But when he saw that the wind was strong, he was afraid, and beginning to sink, he cried out, saying, “Lord, save me!”",
+      "ko": "바람을 보고 무서워 빠져 가는지라 소리질러 가로되 주여 나를 구원하소서 하니",
+      "source_text_hash": "2ce04928859561998c442833e5d2cb830b788d8a88050a8a8ef52ff5e33ab3c4",
+      "translation_text_hash": "601f4ca30c1d970283714b4036177556487a1fa8c77f732bc203e634c812cf9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람을 보고 무서워 빠져 가는지라 소리질러 가로되 주여 나를 구원하소서 하니"
+      ],
+      "raw_text_hashes": [
+        "601f4ca30c1d970283714b4036177556487a1fa8c77f732bc203e634c812cf9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:31",
+      "sequence": 23629,
+      "chapter_label": "MAT 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "Immediately Jesus stretched out his hand, took hold of him, and said to him, “You of little faith, why did you doubt?”",
+      "ko": "예수께서 즉시 손을 내밀어 저를 붙잡으시며 가라사대 믿음이 적은 자여 왜 의심하였느냐 하시고",
+      "source_text_hash": "893a9e2218761da5eb8060aaeab55350f3680206e9da58d1f64c5a6e0b69cf41",
+      "translation_text_hash": "e6000c07d0838dd9d20a79196aeae871068820ea8f8ed931a212aa1b49dd3ca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 즉시 손을 내밀어 저를 붙잡으시며 가라사대 믿음이 적은 자여 왜 의심하였느냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "e6000c07d0838dd9d20a79196aeae871068820ea8f8ed931a212aa1b49dd3ca5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:32",
+      "sequence": 23630,
+      "chapter_label": "MAT 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "When they got up into the boat, the wind ceased.",
+      "ko": "배에 함께 오르매 바람이 그치는지라",
+      "source_text_hash": "31c1c058b46146b11c38481e8c7cf546b2d14b566b13e7bd334e686dfee77d93",
+      "translation_text_hash": "a9246b45d82f2dd839b6db69bc1c089d1ee95709e4958f1f04b259052a4adebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에 함께 오르매 바람이 그치는지라"
+      ],
+      "raw_text_hashes": [
+        "a9246b45d82f2dd839b6db69bc1c089d1ee95709e4958f1f04b259052a4adebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:33",
+      "sequence": 23631,
+      "chapter_label": "MAT 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "Those who were in the boat came and worshiped him, saying, “You are truly the Son of God!”",
+      "ko": "배에 있는 사람들이 예수께 절하며 가로되 진실로 하나님의 아들이로소이다 하더라",
+      "source_text_hash": "2c5918e5c843f37e2c03d4ab3fdab0641240a047b48e08648260d2a1aaf4cde0",
+      "translation_text_hash": "c02b7a4672d372d8fa1beaab17ad97db6cdf8647b2839afd51378b11bd010be2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에 있는 사람들이 예수께 절하며 가로되 진실로 하나님의 아들이로소이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "c02b7a4672d372d8fa1beaab17ad97db6cdf8647b2839afd51378b11bd010be2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:34",
+      "sequence": 23632,
+      "chapter_label": "MAT 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "When they had crossed over, they came to the land of Gennesaret.",
+      "ko": "저희가 건너가 게네사렛 땅에 이르니",
+      "source_text_hash": "87c8c7e33301c0f64eea2617fd7b9d5ff23d566fe8788e1df8115aa8ae3560da",
+      "translation_text_hash": "40c4fc217f0ec77a8d922b0f3b01966d915ef7f4ae085ca852d6d40a6047ba81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 건너가 게네사렛 땅에 이르니"
+      ],
+      "raw_text_hashes": [
+        "40c4fc217f0ec77a8d922b0f3b01966d915ef7f4ae085ca852d6d40a6047ba81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:35",
+      "sequence": 23633,
+      "chapter_label": "MAT 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "When the people of that place recognized him, they sent into all that surrounding region and brought to him all who were sick;",
+      "ko": "그 곳 사람들이 예수신 줄을 알고 그 근방에 두루 통지하여 모든 병든 자를 예수께 데리고 와서",
+      "source_text_hash": "ebc260cf56a76fd82260e3d55e081f702e7c7f8ae9e2f8a7bf9d13624345dd11",
+      "translation_text_hash": "78f02ca63a650e3283c65514ab6b176c2f410770cb7b8adc9e2e4e3cfaa80970",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곳 사람들이 예수신 줄을 알고 그 근방에 두루 통지하여 모든 병든 자를 예수께 데리고 와서"
+      ],
+      "raw_text_hashes": [
+        "78f02ca63a650e3283c65514ab6b176c2f410770cb7b8adc9e2e4e3cfaa80970"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:14:36",
+      "sequence": 23634,
+      "chapter_label": "MAT 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "and they begged him that they might just touch the fringe of his garment. As many as touched it were made whole.",
+      "ko": "다만 예수의 옷가에라도 손을 대게 하시기를 간구하니 손을 대는 자는 다 나음을 얻으니라",
+      "source_text_hash": "eb56a70b469817038ea70e5e0879e67f00945a51f09e550d3ac809e14b73ce39",
+      "translation_text_hash": "8346788635b0a9b7f2c46791b9e0d96150921c53f7e33bd0679b15967eaa20e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 예수의 옷가에라도 손을 대게 하시기를 간구하니 손을 대는 자는 다 나음을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "8346788635b0a9b7f2c46791b9e0d96150921c53f7e33bd0679b15967eaa20e7"
+      ]
+    }
+  ]
+}

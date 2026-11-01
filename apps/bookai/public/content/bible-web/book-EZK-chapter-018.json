@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:018",
+  "unit_ordinal": 820,
+  "unit_label": "EZK 18",
+  "book_code": "EZK",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:18:1",
+      "sequence": 20851,
+      "chapter_label": "EZK 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me again, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "75e00c1ef64aec17e19233e5c7e19ad541bb14634f6810aff1329c92f9d2c6f9",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:2",
+      "sequence": 20852,
+      "chapter_label": "EZK 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "“What do you mean, that you use this proverb concerning the land of Israel, saying, ‘The fathers have eaten sour grapes, and the children’s teeth are set on edge’?",
+      "ko": "너희가 이스라엘 땅에 대한 속담에 이르기를 아비가 신 포도를 먹었으므로 아들의 이가 시다고 함은 어찜이뇨",
+      "source_text_hash": "324eba1940dc34632bf95b1a6f6dbb9acd86e9ba932032fd7aca63b36a371788",
+      "translation_text_hash": "a33a0c7f03af22689963b8ce41e388516ec8dcf9727ac53c0cb0dedf9e85f6d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이스라엘 땅에 대한 속담에 이르기를 아비가 신 포도를 먹었으므로 아들의 이가 시다고 함은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "a33a0c7f03af22689963b8ce41e388516ec8dcf9727ac53c0cb0dedf9e85f6d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:3",
+      "sequence": 20853,
+      "chapter_label": "EZK 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "“As I live,” says the Lord GOD, “you shall not use this proverb any more in Israel.",
+      "ko": "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 이스라엘 가운데서 다시는 이 속담을 쓰지 못하게 되리라",
+      "source_text_hash": "13194fd2300b14c68a51f7f01b824a9bbc69b2391f46aafc30480370445daffd",
+      "translation_text_hash": "54552f0361740efb2d81e8222dffc78a11f9f04b66dd480517574af8ddd44600",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 이스라엘 가운데서 다시는 이 속담을 쓰지 못하게 되리라"
+      ],
+      "raw_text_hashes": [
+        "54552f0361740efb2d81e8222dffc78a11f9f04b66dd480517574af8ddd44600"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:4",
+      "sequence": 20854,
+      "chapter_label": "EZK 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, all souls are mine; as the soul of the father, so also the soul of the son is mine. The soul who sins, he shall die.",
+      "ko": "모든 영혼이 다 내게 속한지라 아비의 영혼이 내게 속함 같이 아들의 영혼도 내게 속하였나니 범죄하는 그 영혼이 죽으리라",
+      "source_text_hash": "dce12b52165aa26af5f2b8c4c40e84f85900061d351d7d96de94cb751151eb95",
+      "translation_text_hash": "ac38b31d9460144f2d904176a7768efd788178caaa753370b5989ef8673d036f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 영혼이 다 내게 속한지라 아비의 영혼이 내게 속함 같이 아들의 영혼도 내게 속하였나니 범죄하는 그 영혼이 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "ac38b31d9460144f2d904176a7768efd788178caaa753370b5989ef8673d036f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:5",
+      "sequence": 20855,
+      "chapter_label": "EZK 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "“But if a man is just, and does that which is lawful and right,",
+      "ko": "사람이 만일 의로워서 법과 의를 따라 행하며",
+      "source_text_hash": "60638214bcb336a313588da7f510d64eb810342bb778a189d4a30b53327177ba",
+      "translation_text_hash": "7f39f176ad3388cd46dccfebcb0a072ced24bcf49e7a41f206259d3df13f60c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 의로워서 법과 의를 따라 행하며"
+      ],
+      "raw_text_hashes": [
+        "7f39f176ad3388cd46dccfebcb0a072ced24bcf49e7a41f206259d3df13f60c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:6",
+      "sequence": 20856,
+      "chapter_label": "EZK 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "and has not eaten on the mountains, hasn’t lifted up his eyes to the idols of the house of Israel, hasn’t defiled his neighbor’s wife, hasn’t come near a woman in her impurity,",
+      "ko": "산 위에서 제물을 먹지 아니하며 이스라엘 족속의 우상에게 눈을 들지 아니하며 이웃의 아내를 더럽히지 아니하며 월경 중에 있는 여인을 가까이 하지 아니하며",
+      "source_text_hash": "fe8f331e479768c529b34c63e7f2f9b45caa1227e73ccdcda9d746f6be5d7454",
+      "translation_text_hash": "cc424396995549e679fe60a0189ae1359e0006b8482b9595a23f46b0a96f7f78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산 위에서 제물을 먹지 아니하며 이스라엘 족속의 우상에게 눈을 들지 아니하며 이웃의 아내를 더럽히지 아니하며 월경 중에 있는 여인을 가까이 하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "cc424396995549e679fe60a0189ae1359e0006b8482b9595a23f46b0a96f7f78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:7",
+      "sequence": 20857,
+      "chapter_label": "EZK 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "and has not wronged any, but has restored to the debtor his pledge, has taken nothing by robbery, has given his bread to the hungry, and has covered the naked with a garment;",
+      "ko": "사람을 학대하지 아니하며 빚진 자의 전당물을 도로 주며 억탈하지 아니하며 주린 자에게 식물을 주며 벗은 자에게 옷을 입히며",
+      "source_text_hash": "d2f07959903d05cbc30bb5fb297e5a3e8d3fc2e722590be7b0e5c513033ffee1",
+      "translation_text_hash": "c72184ad5e652fb43efe03624e8a7241b98c47f726c3ffb18dc86bc12e0281e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 학대하지 아니하며 빚진 자의 전당물을 도로 주며 억탈하지 아니하며 주린 자에게 식물을 주며 벗은 자에게 옷을 입히며"
+      ],
+      "raw_text_hashes": [
+        "c72184ad5e652fb43efe03624e8a7241b98c47f726c3ffb18dc86bc12e0281e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:8",
+      "sequence": 20858,
+      "chapter_label": "EZK 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "he who hasn’t lent to them with interest, hasn’t taken any increase from them, who has withdrawn his hand from iniquity, has executed true justice between man and man,",
+      "ko": "변을 위하여 꾸이지 아니하며 이식을 받지 아니하며 스스로 손을 금하여 죄악을 짓지 아니하며 사람 사람 사이에 진실히 판단하며",
+      "source_text_hash": "095ac7c047e172265e2dcc97340ea00f35f62a21baf56f6d4efbdb5ea2d969c2",
+      "translation_text_hash": "cb8de3aff7ec8062e297f1515b6cc388950dabd67f237527a8da1baab4d6b982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "변을 위하여 꾸이지 아니하며 이식을 받지 아니하며 스스로 손을 금하여 죄악을 짓지 아니하며 사람 사람 사이에 진실히 판단하며"
+      ],
+      "raw_text_hashes": [
+        "cb8de3aff7ec8062e297f1515b6cc388950dabd67f237527a8da1baab4d6b982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:9",
+      "sequence": 20859,
+      "chapter_label": "EZK 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "has walked in my statutes, and has kept my ordinances, to deal truly; he is just, he shall surely live,” says the Lord GOD.",
+      "ko": "내 율례를 좇으며 내 규례를 지켜 진실히 행할진대 그는 의인이니 정녕 살리라 나 주 여호와의 말이니라",
+      "source_text_hash": "49cd9e538390698a8e4bae41f3b7a3232164ded16d13ef92f9db61f61e1d306e",
+      "translation_text_hash": "7daa4a7f4591389af75e73418afad2e5d9167d01751b62dbbdec8c4f1975cb62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 율례를 좇으며 내 규례를 지켜 진실히 행할진대 그는 의인이니 정녕 살리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "7daa4a7f4591389af75e73418afad2e5d9167d01751b62dbbdec8c4f1975cb62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:10",
+      "sequence": 20860,
+      "chapter_label": "EZK 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "“If he fathers a son who is a robber who sheds blood, and who does any one of these things,",
+      "ko": "가령 그가 아들을 낳았다 하자 그 아들이 이 모든 선은 하나도 행치 아니하고 이 악중 하나를 범하여 강포하거나 살인하거나",
+      "source_text_hash": "66a5cd9e7371e16553619c919a46515c9b69e9b76f82aa6ad0c9a81898f6f9ac",
+      "translation_text_hash": "2a9582252f97628241964937f5a8b556e6615c915e047f4900d3b445f8e74d0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 그가 아들을 낳았다 하자 그 아들이 이 모든 선은 하나도 행치 아니하고 이 악중 하나를 범하여 강포하거나 살인하거나"
+      ],
+      "raw_text_hashes": [
+        "2a9582252f97628241964937f5a8b556e6615c915e047f4900d3b445f8e74d0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:11",
+      "sequence": 20861,
+      "chapter_label": "EZK 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "or who does not do any of those things but has eaten at the mountain shrines and defiled his neighbor’s wife,",
+      "ko": "산 위에서 제물을 먹거나 이웃의 아내를 더럽히거나",
+      "source_text_hash": "936479127b75c7d46cdf114ecf6c865ef509759ee4ba003e900400a31523bdf2",
+      "translation_text_hash": "e7511e660ed746fede44656dc70fe987bac8dfef8894032097f5e6521159f9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산 위에서 제물을 먹거나 이웃의 아내를 더럽히거나"
+      ],
+      "raw_text_hashes": [
+        "e7511e660ed746fede44656dc70fe987bac8dfef8894032097f5e6521159f9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:12",
+      "sequence": 20862,
+      "chapter_label": "EZK 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "has wronged the poor and needy, has taken by robbery, has not restored the pledge, and has lifted up his eyes to the idols, has committed abomination,",
+      "ko": "가난하고 궁핍한 자를 학대하거나 억탈하거나 빚진 자의 전당물을 도로 주지 아니하거나 우상에게 눈을 들거나 가증한 일을 행하거나",
+      "source_text_hash": "90f027a5b6ec9cb8a7d4bdc10ba460c8a1628b1028d4a936e956cd2c4bdf65aa",
+      "translation_text_hash": "417cc229b364305d9823a97c9cf3b170032d6b434fd2d013cf169c2ca4c89780",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난하고 궁핍한 자를 학대하거나 억탈하거나 빚진 자의 전당물을 도로 주지 아니하거나 우상에게 눈을 들거나 가증한 일을 행하거나"
+      ],
+      "raw_text_hashes": [
+        "417cc229b364305d9823a97c9cf3b170032d6b434fd2d013cf169c2ca4c89780"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:13",
+      "sequence": 20863,
+      "chapter_label": "EZK 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "has lent with interest, and has taken increase from the poor, shall he then live? He shall not live. He has done all these abominations. He shall surely die. His blood will be on him.",
+      "ko": "변을 위하여 꾸이거나 이식을 받거나 할진대 그가 살겠느냐 살지 못하리니 이 모든 가증한 일을 행하였은즉 정녕 죽을지라 자기의 피가 자기에게로 돌아가리라",
+      "source_text_hash": "646f247c5b63ee5db7d90d191f68fe1d1468b564caddf72c00bc6cb73c37bb6b",
+      "translation_text_hash": "79c5b6925b6aff12934316aa6f207b183e930d69ef2328a2ccde29dd94c3d768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "변을 위하여 꾸이거나 이식을 받거나 할진대 그가 살겠느냐 살지 못하리니 이 모든 가증한 일을 행하였은즉 정녕 죽을지라 자기의 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "79c5b6925b6aff12934316aa6f207b183e930d69ef2328a2ccde29dd94c3d768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:14",
+      "sequence": 20864,
+      "chapter_label": "EZK 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "“Now, behold, if he fathers a son who sees all his father’s sins which he has done, and fears, and doesn’t do likewise,",
+      "ko": "또 가령 그가 아들을 낳았다 하자 그 아들이 그 아비의 행한 모든 죄를 보고 두려워하여 그대로 행하지 아니하고",
+      "source_text_hash": "262e49ff1eb966de78ce00c872d10397206ee9c93b749d436607b7fcad7b51ad",
+      "translation_text_hash": "7b3994ed0f910e0ad3a9b2b06ed604da0af8eeb5ceb2e9ad0ab7c95d45298b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가령 그가 아들을 낳았다 하자 그 아들이 그 아비의 행한 모든 죄를 보고 두려워하여 그대로 행하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "7b3994ed0f910e0ad3a9b2b06ed604da0af8eeb5ceb2e9ad0ab7c95d45298b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:15",
+      "sequence": 20865,
+      "chapter_label": "EZK 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "who hasn’t eaten on the mountains, hasn’t lifted up his eyes to the idols of the house of Israel, hasn’t defiled his neighbor’s wife,",
+      "ko": "산 위에서 제물을 먹지도 아니하며 이스라엘 족속의 우상에게 눈을 들지도 아니하며 이웃의 아내를 더럽히지도 아니하며",
+      "source_text_hash": "29ffc049170e95fbfcb3b2bdab0cfdc46d3485fb78d0e9e74a68832df203f253",
+      "translation_text_hash": "1f9db6dee829bd3addf5322efff9eb9214a49672ad77fcc438f2d29d257b3d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산 위에서 제물을 먹지도 아니하며 이스라엘 족속의 우상에게 눈을 들지도 아니하며 이웃의 아내를 더럽히지도 아니하며"
+      ],
+      "raw_text_hashes": [
+        "1f9db6dee829bd3addf5322efff9eb9214a49672ad77fcc438f2d29d257b3d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:16",
+      "sequence": 20866,
+      "chapter_label": "EZK 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "hasn’t wronged any, hasn’t taken anything to pledge, hasn’t taken by robbery, but has given his bread to the hungry, and has covered the naked with a garment;",
+      "ko": "사람을 학대하지도 아니하며 전당을 잡지도 아니하며 억탈하지도 아니하고 주린 자에게 식물을 주며 벗은 자에게 옷을 입히며",
+      "source_text_hash": "8fa71c76ae8d1dd2e0f0a84036feb6d8128f9b76521de7c75103a2b1e45b739c",
+      "translation_text_hash": "d879e25382bf1ca219e15b10734f79addae04fd59a1518cdfb8eb6e35afecc3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 학대하지도 아니하며 전당을 잡지도 아니하며 억탈하지도 아니하고 주린 자에게 식물을 주며 벗은 자에게 옷을 입히며"
+      ],
+      "raw_text_hashes": [
+        "d879e25382bf1ca219e15b10734f79addae04fd59a1518cdfb8eb6e35afecc3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:17",
+      "sequence": 20867,
+      "chapter_label": "EZK 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "who has withdrawn his hand from the poor, who hasn’t received interest or increase, has executed my ordinances, has walked in my statutes; he shall not die for the iniquity of his father. He shall surely live.",
+      "ko": "손을 금하여 가난한 자를 압제하지 아니하며 변이나 이식을 취하지 아니하여 내 규례를 지키며 내 율례를 행할찐대 이 사람은 그 아비의 죄악으로 인하여 죽지 아니하고 정녕 살겠고",
+      "source_text_hash": "bffc7b61585ddce318e80a3d50b60fcf48db7eded52956236c2811f12acb3289",
+      "translation_text_hash": "146af1234d9b300cfde9c4d91aa2ed7ab22b9bd3420b0cf28b4d116945ad14b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 금하여 가난한 자를 압제하지 아니하며 변이나 이식을 취하지 아니하여 내 규례를 지키며 내 율례를 행할찐대 이 사람은 그 아비의 죄악으로 인하여 죽지 아니하고 정녕 살겠고"
+      ],
+      "raw_text_hashes": [
+        "146af1234d9b300cfde9c4d91aa2ed7ab22b9bd3420b0cf28b4d116945ad14b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:18",
+      "sequence": 20868,
+      "chapter_label": "EZK 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "As for his father, because he cruelly oppressed, robbed his brother, and did that which is not good among his people, behold, he will die in his iniquity.",
+      "ko": "그 아비는 심히 포학하여 그 동족을 억탈하고 민간에 불선을 행하였으므로 그는 그 죄악으로 인하여 죽으리라",
+      "source_text_hash": "ec8d303400c0ea1a9a0f2b6c159fec2baea92a4457f597ddc8616f0990d0dec6",
+      "translation_text_hash": "7cda563b5eafcdafd3ceb3821b8d722a620f210a36d2d77e984f5b3c3d794dde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비는 심히 포학하여 그 동족을 억탈하고 민간에 불선을 행하였으므로 그는 그 죄악으로 인하여 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "7cda563b5eafcdafd3ceb3821b8d722a620f210a36d2d77e984f5b3c3d794dde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:19",
+      "sequence": 20869,
+      "chapter_label": "EZK 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "“Yet you say, ‘Why doesn’t the son bear the iniquity of the father?’ When the son has done that which is lawful and right, and has kept all my statutes, and has done them, he will surely live.",
+      "ko": "그런데 너희는 이르기를 아들이 어찌 아비의 죄를 담당치 않겠느뇨 하는도다 아들이 법과 의를 행하며 내 모든 율례를 지켜 행하였으면 그는 정녕 살려니와",
+      "source_text_hash": "968074e4088b928043995a054c3e77749bcb6478e1e0ecb3cb46521dc9d14042",
+      "translation_text_hash": "2972c5f8a76f04e6d22fd230261f5713b28d1e0557c2053f51e669e6dd898658",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 너희는 이르기를 아들이 어찌 아비의 죄를 담당치 않겠느뇨 하는도다 아들이 법과 의를 행하며 내 모든 율례를 지켜 행하였으면 그는 정녕 살려니와"
+      ],
+      "raw_text_hashes": [
+        "2972c5f8a76f04e6d22fd230261f5713b28d1e0557c2053f51e669e6dd898658"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:20",
+      "sequence": 20870,
+      "chapter_label": "EZK 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "The soul who sins, he shall die. The son shall not bear the iniquity of the father, neither shall the father bear the iniquity of the son. The righteousness of the righteous shall be on him, and the wickedness of the wicked shall be on him.",
+      "ko": "범죄하는 그 영혼은 죽을찌라 아들은 아비의 죄악을 담당치 아니할 것이요 아비는 아들의 죄악을 담당치 아니하리니 의인의 의도 자기에게로 돌아 가고 악인의 악도 자기에게로 돌아가리라",
+      "source_text_hash": "8056c33e8a0cbcda232eeaadb899911c79dd1cbb5942007aa5b05e752654d8a9",
+      "translation_text_hash": "cce717cabba1fadfcd8520b183b5794fda9343619e9ac89d9eb5eac7744bdf80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범죄하는 그 영혼은 죽을찌라 아들은 아비의 죄악을 담당치 아니할 것이요 아비는 아들의 죄악을 담당치 아니하리니 의인의 의도 자기에게로 돌아 가고 악인의 악도 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "cce717cabba1fadfcd8520b183b5794fda9343619e9ac89d9eb5eac7744bdf80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:21",
+      "sequence": 20871,
+      "chapter_label": "EZK 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "“But if the wicked turns from all his sins that he has committed, and keeps all my statutes, and does that which is lawful and right, he shall surely live. He shall not die.",
+      "ko": "그러나 악인이 만일 그 행한 모든 죄에서 돌이켜 떠나 내 모든 율례를 지키고 법과 의를 행하면 정녕 살고 죽지 아니할 것이라",
+      "source_text_hash": "5471125d37ffd40e9e0398c3117e29bc74ddde609faa1f9fa9c7071572ff0e6b",
+      "translation_text_hash": "868954482e9ff29f9ab913d4dc4fbbe367af80c2991ad412d122ef784e1be183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 악인이 만일 그 행한 모든 죄에서 돌이켜 떠나 내 모든 율례를 지키고 법과 의를 행하면 정녕 살고 죽지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "868954482e9ff29f9ab913d4dc4fbbe367af80c2991ad412d122ef784e1be183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:22",
+      "sequence": 20872,
+      "chapter_label": "EZK 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "None of his transgressions that he has committed will be remembered against him. In his righteousness that he has done, he shall live.",
+      "ko": "그 범죄한 것이 하나도 기억함이 되지 아니하리니 그 행한 의로 인하여 살리라",
+      "source_text_hash": "d85eccf2e0d595d6cbb4c1ba70a6cfe6cc1885a820049aa118c7a927bd82e403",
+      "translation_text_hash": "be98ec497a25f615b8b0d44a72daf1e54c663a7ae0d228f647ba453304f8f17a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 범죄한 것이 하나도 기억함이 되지 아니하리니 그 행한 의로 인하여 살리라"
+      ],
+      "raw_text_hashes": [
+        "be98ec497a25f615b8b0d44a72daf1e54c663a7ae0d228f647ba453304f8f17a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:23",
+      "sequence": 20873,
+      "chapter_label": "EZK 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Have I any pleasure in the death of the wicked?” says the Lord GOD, “and not rather that he should return from his way, and live?",
+      "ko": "나 주 여호와가 말하노라 내가 어찌 악인의 죽는 것을 조금인들 기뻐하랴 그가 돌이켜 그 길에서 떠나서 사는 것을 어찌 기뻐하지 아니하겠느냐",
+      "source_text_hash": "abad57449517f7ec0cde414fca02a6479cc0ed2ff631b34646c1c04bb2c878a7",
+      "translation_text_hash": "058a90c1ef05bdfa711b7066dd25335bafeb7fcb830a9dfd3dac65e5f02006f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 어찌 악인의 죽는 것을 조금인들 기뻐하랴 그가 돌이켜 그 길에서 떠나서 사는 것을 어찌 기뻐하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "058a90c1ef05bdfa711b7066dd25335bafeb7fcb830a9dfd3dac65e5f02006f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:24",
+      "sequence": 20874,
+      "chapter_label": "EZK 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "“But when the righteous turns away from his righteousness, and commits iniquity, and does according to all the abominations that the wicked man does, should he live? None of his righteous deeds that he has done will be remembered. In his trespass that he has trespassed, and in his sin that he has sinned, in them he shall die.",
+      "ko": "만일 의인이 돌이켜 그 의에서 떠나서 범죄하고 악인의 행하는 모든 가증한 일대로 행하면 살겠느냐 그 행한 의로운 일은 하나도 기억함이 되지 아니하리니 그가 그 범한 허물과 그 지은 죄로 인하여 죽으리라",
+      "source_text_hash": "6ee37ebba97df5c50f722898d3c2e34578d4d1749e0d494b2d39012ab97391dd",
+      "translation_text_hash": "478d0647d83b2f56331892240311ecc62391f8eae12f453f865b65041db3c56a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 의인이 돌이켜 그 의에서 떠나서 범죄하고 악인의 행하는 모든 가증한 일대로 행하면 살겠느냐 그 행한 의로운 일은 하나도 기억함이 되지 아니하리니 그가 그 범한 허물과 그 지은 죄로 인하여 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "478d0647d83b2f56331892240311ecc62391f8eae12f453f865b65041db3c56a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:25",
+      "sequence": 20875,
+      "chapter_label": "EZK 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "“Yet you say, ‘The way of the Lord is not equal.’ Hear now, house of Israel: Is my way not equal? Aren’t your ways unequal?",
+      "ko": "그런데 너희는 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 들을찌어다 내 길이 어찌 공평치 아니하냐 너희 길이 공평치 않은 것이 아니냐",
+      "source_text_hash": "074ae0048fbae446db812a8f90e2dd05e6f72f37aed86ceac6ae5e3cdb786fdf",
+      "translation_text_hash": "58669fdcc716c34280a700fe49ec559b78c4cb46d0f608cfe7bfc8341e22ce1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 너희는 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 들을찌어다 내 길이 어찌 공평치 아니하냐 너희 길이 공평치 않은 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "58669fdcc716c34280a700fe49ec559b78c4cb46d0f608cfe7bfc8341e22ce1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:26",
+      "sequence": 20876,
+      "chapter_label": "EZK 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "When the righteous man turns away from his righteousness, and commits iniquity, and dies in it, then he dies in his iniquity that he has done.",
+      "ko": "만일 의인이 그 의를 떠나 죄악을 행하고 인하여 죽으면 그 행한 죄악으로 인하여 죽는 것이요",
+      "source_text_hash": "405186fafef59e3733b695c5b1fcffbf101b0749745a87c893d30b687403c973",
+      "translation_text_hash": "6502e695bbe35c3704f65ea4f950a3a0cf64a2a339145facdae8ba49de90aa9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 의인이 그 의를 떠나 죄악을 행하고 인하여 죽으면 그 행한 죄악으로 인하여 죽는 것이요"
+      ],
+      "raw_text_hashes": [
+        "6502e695bbe35c3704f65ea4f950a3a0cf64a2a339145facdae8ba49de90aa9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:27",
+      "sequence": 20877,
+      "chapter_label": "EZK 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Again, when the wicked man turns away from his wickedness that he has committed, and does that which is lawful and right, he will save his soul alive.",
+      "ko": "만일 악인이 그 행한 악을 떠나 법과 의를 행하면 그 영혼을 보전하리라",
+      "source_text_hash": "c95f1a01eb662e188fb2544891a31350b75d5aec2be51639c471e2cde142887d",
+      "translation_text_hash": "671759f57bd88e9bcce4ef47d4b90c55dce7b34fc7fc473da55d5557ab668d75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 악인이 그 행한 악을 떠나 법과 의를 행하면 그 영혼을 보전하리라"
+      ],
+      "raw_text_hashes": [
+        "671759f57bd88e9bcce4ef47d4b90c55dce7b34fc7fc473da55d5557ab668d75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:28",
+      "sequence": 20878,
+      "chapter_label": "EZK 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "Because he considers, and turns away from all his transgressions that he has committed, he shall surely live. He shall not die.",
+      "ko": "그가 스스로 헤아리고 그 행한 모든 죄악에서 돌이켜 떠났으니 정녕 살고 죽지 아니하리라",
+      "source_text_hash": "306f17e2a588e1e52eace4bc73ba0e236996c3854be9bd1cf5aa91029881a980",
+      "translation_text_hash": "42c30cc6482ef89de7b3051e138e1bf72c58fe95bdbcc19a070a881cff6b7a8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 스스로 헤아리고 그 행한 모든 죄악에서 돌이켜 떠났으니 정녕 살고 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "42c30cc6482ef89de7b3051e138e1bf72c58fe95bdbcc19a070a881cff6b7a8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:29",
+      "sequence": 20879,
+      "chapter_label": "EZK 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "Yet the house of Israel says, ‘The way of the Lord is not fair.’ House of Israel, aren’t my ways fair? Aren’t your ways unfair?",
+      "ko": "그런데 이스라엘 족속은 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 나의 길이 어찌 공평치 아니하냐 너희 길이 공평치 않은 것이 아니냐",
+      "source_text_hash": "b3f2757ead7792b6bf2eac57c29fb0e89ed234a2fbdd4ef50c9c25fdb3634c17",
+      "translation_text_hash": "e4489bd9b5ec740376582fa9efa9c34100614045942640c397d4025ff3766857",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 이스라엘 족속은 이르기를 주의 길이 공평치 않다 하는도다 이스라엘 족속아 나의 길이 어찌 공평치 아니하냐 너희 길이 공평치 않은 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "e4489bd9b5ec740376582fa9efa9c34100614045942640c397d4025ff3766857"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:30",
+      "sequence": 20880,
+      "chapter_label": "EZK 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore I will judge you, house of Israel, everyone according to his ways,” says the Lord GOD. “Return, and turn yourselves from all your transgressions, so iniquity will not be your ruin.",
+      "ko": "나 주 여호와가 말하노라 이스라엘 족속아 내가 너희 각 사람의 행한대로 국문할찌라 너희는 돌이켜 회개하고 모든 죄에서 떠날찌어다 그리한즉 죄악이 너희를 패망케 아니하리라",
+      "source_text_hash": "1891444eb042e52bb71892bc8bedc6866c54d9fdae6aa11aaca7897ad7ff9246",
+      "translation_text_hash": "1865415c11088194ceae5a54f9d4af020f245dc2cc05b16d64aaed0d301aae17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 이스라엘 족속아 내가 너희 각 사람의 행한대로 국문할찌라 너희는 돌이켜 회개하고 모든 죄에서 떠날찌어다 그리한즉 죄악이 너희를 패망케 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "1865415c11088194ceae5a54f9d4af020f245dc2cc05b16d64aaed0d301aae17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:31",
+      "sequence": 20881,
+      "chapter_label": "EZK 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "Cast away from you all your transgressions in which you have transgressed; and make yourself a new heart and a new spirit. For why will you die, house of Israel?",
+      "ko": "너희는 범한 모든 죄악을 버리고 마음과 영을 새롭게 할찌어다 이스라엘 족속아 너희가 어찌하여 죽고자 하느냐",
+      "source_text_hash": "68f03027c9d8151775374df999901f48581755fa913e8777b925771240703fee",
+      "translation_text_hash": "f6979e9c9d827d0504358f4a09ed21a1eec274c080e650d72142a85284ea53c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 범한 모든 죄악을 버리고 마음과 영을 새롭게 할찌어다 이스라엘 족속아 너희가 어찌하여 죽고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "f6979e9c9d827d0504358f4a09ed21a1eec274c080e650d72142a85284ea53c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:18:32",
+      "sequence": 20882,
+      "chapter_label": "EZK 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "For I have no pleasure in the death of him who dies,” says the Lord GOD. “Therefore turn yourselves, and live!",
+      "ko": "나 주 여호와가 말하노라 죽는 자의 죽는 것은 내가 기뻐하지 아니하노니 너희는 스스로 돌이키고 살찌니라",
+      "source_text_hash": "0db75db5b40f169d11ecb46f53e337f88e07e6e76cedb90658c099e0f88eaa3d",
+      "translation_text_hash": "837eadde39444da9fedbf19414001b5eb5c4bf87b8a24a04288b0395233c3a00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 죽는 자의 죽는 것은 내가 기뻐하지 아니하노니 너희는 스스로 돌이키고 살찌니라"
+      ],
+      "raw_text_hashes": [
+        "837eadde39444da9fedbf19414001b5eb5c4bf87b8a24a04288b0395233c3a00"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:006",
+  "unit_ordinal": 1103,
+  "unit_label": "EPH 6",
+  "book_code": "EPH",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:6:1",
+      "sequence": 29335,
+      "chapter_label": "EPH 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Children, obey your parents in the Lord, for this is right.",
+      "ko": "자녀들아 너희 부모를 주 안에서 순종하라 이것이 옳으니라",
+      "source_text_hash": "b8b8a5b4005bddaecf61e305c11088e3cec4a8630b107937a543ae6f42614b91",
+      "translation_text_hash": "99986cb9e6d1dfd75b3469fffbdc2f759f2a13826f592b3dba9b6b9459f45fef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 너희 부모를 주 안에서 순종하라 이것이 옳으니라"
+      ],
+      "raw_text_hashes": [
+        "99986cb9e6d1dfd75b3469fffbdc2f759f2a13826f592b3dba9b6b9459f45fef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:2",
+      "sequence": 29336,
+      "chapter_label": "EPH 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "“Honor your father and mother,” which is the first commandment with a promise:",
+      "ko": "네 아버지와 어머니를 공경하라 이것이 약속 있는 첫계명이니",
+      "source_text_hash": "adfb3806ec1bc92e0a504609e77d1153cb399f9d1efcf12a637aabc9624a84a9",
+      "translation_text_hash": "64b3dbf328c97d2fd94d24499ac25839e4e9a8dd7e231ed02a58d9e66c90b313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아버지와 어머니를 공경하라 이것이 약속 있는 첫계명이니"
+      ],
+      "raw_text_hashes": [
+        "64b3dbf328c97d2fd94d24499ac25839e4e9a8dd7e231ed02a58d9e66c90b313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:3",
+      "sequence": 29337,
+      "chapter_label": "EPH 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "“that it may be well with you, and you may live long on the earth.”",
+      "ko": "이는 네가 잘 되고 땅에서 장수하리라",
+      "source_text_hash": "81f157f402744be22e05f13f7eb32322c5d127f2a861c10f54b45e190fcaf806",
+      "translation_text_hash": "26da0ea86b069dcd6d6efd5f748e7750247740c46e7727959301278d6347fd81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네가 잘 되고 땅에서 장수하리라"
+      ],
+      "raw_text_hashes": [
+        "26da0ea86b069dcd6d6efd5f748e7750247740c46e7727959301278d6347fd81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:4",
+      "sequence": 29338,
+      "chapter_label": "EPH 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "You fathers, don’t provoke your children to wrath, but nurture them in the discipline and instruction of the Lord.",
+      "ko": "또 아비들아 너희 자녀를 노엽게 하지 말고 오직 주의 교양과 훈계로 양육하라",
+      "source_text_hash": "fcae57af7ffe83f407030274f07a89812998e398d1c32c399e817abe0a4fc22c",
+      "translation_text_hash": "691c231811fde707f4b16e5a0e861e6b3303de120f9871a5be124470e5909c92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아비들아 너희 자녀를 노엽게 하지 말고 오직 주의 교양과 훈계로 양육하라"
+      ],
+      "raw_text_hashes": [
+        "691c231811fde707f4b16e5a0e861e6b3303de120f9871a5be124470e5909c92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:5",
+      "sequence": 29339,
+      "chapter_label": "EPH 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Servants, be obedient to those who according to the flesh are your masters, with fear and trembling, in singleness of your heart, as to Christ,",
+      "ko": "종들아 두려워하고 떨며 성실한 마음으로 육체의 상전에게 순종하기를 그리스도께 하듯하여",
+      "source_text_hash": "c535ec87721ddd73dc35afe95139587c9304eb55e1424117e5c9a56ef7a8fab9",
+      "translation_text_hash": "c13ba211a75e38e9584a8d6e9c9c9b846d94509fc334c519c535563d18381c70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들아 두려워하고 떨며 성실한 마음으로 육체의 상전에게 순종하기를 그리스도께 하듯하여"
+      ],
+      "raw_text_hashes": [
+        "c13ba211a75e38e9584a8d6e9c9c9b846d94509fc334c519c535563d18381c70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:6",
+      "sequence": 29340,
+      "chapter_label": "EPH 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "not in the way of service only when eyes are on you, as men pleasers, but as servants of Christ, doing the will of God from the heart,",
+      "ko": "눈가림만 하여 사람을 기쁘게 하는 자처럼 하지 말고 그리스도의 종들처럼 마음으로 하나님의 뜻을 행하여",
+      "source_text_hash": "e680aa06b4676ade6a38956af57399db04e73b7239b1b65df6b7b2d293d4148f",
+      "translation_text_hash": "8bb92c52e5cc2e0db519c88ef1eac632acee021f77ebb3be0f033ab466be60cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈가림만 하여 사람을 기쁘게 하는 자처럼 하지 말고 그리스도의 종들처럼 마음으로 하나님의 뜻을 행하여"
+      ],
+      "raw_text_hashes": [
+        "8bb92c52e5cc2e0db519c88ef1eac632acee021f77ebb3be0f033ab466be60cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:7",
+      "sequence": 29341,
+      "chapter_label": "EPH 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "with good will doing service as to the Lord and not to men,",
+      "ko": "단 마음으로 섬기기를 주께 하듯하고 사람들에게 하듯하지 말라",
+      "source_text_hash": "dbff10c8b8498f3ad433905b7f77b267eb19d87aba7d92e650b9d9e79d32c20c",
+      "translation_text_hash": "3ed57ecfb51a60384d158b97707f756a93fcc8b0b2e26b4408050a4562337b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 마음으로 섬기기를 주께 하듯하고 사람들에게 하듯하지 말라"
+      ],
+      "raw_text_hashes": [
+        "3ed57ecfb51a60384d158b97707f756a93fcc8b0b2e26b4408050a4562337b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:8",
+      "sequence": 29342,
+      "chapter_label": "EPH 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "knowing that whatever good thing each one does, he will receive the same good again from the Lord, whether he is bound or free.",
+      "ko": "이는 각 사람이 무슨 선을 행하든지 종이나 자유하는 자나 주에게 그대로 받을 줄을 앎이니라",
+      "source_text_hash": "4846e0f17ac5a8ae6c41dc6cc058f59f6843367c2606f95dd94d891f61f0ff2b",
+      "translation_text_hash": "ab6404df3d61bde61e478302d589d33754c856cd1958683bcc4ea472b8397541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 각 사람이 무슨 선을 행하든지 종이나 자유하는 자나 주에게 그대로 받을 줄을 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "ab6404df3d61bde61e478302d589d33754c856cd1958683bcc4ea472b8397541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:9",
+      "sequence": 29343,
+      "chapter_label": "EPH 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "You masters, do the same things to them, and give up threatening, knowing that he who is both their Master and yours is in heaven, and there is no partiality with him.",
+      "ko": "상전들아 너희도 저희에게 이와 같이 하고 공갈을 그치라 이는 저희와 너희의 상전이 하늘에 계시고 그에게는 외모로 사람을 취하는 일이 없는줄 너희가 앎이니라",
+      "source_text_hash": "b50737ce7fccac95fb592a90f1c42e0a492724d7bb6404034b97e3845c0b83dd",
+      "translation_text_hash": "8eb725157e1c93d7811e9c5f9562bcde87ffcdb097fb265cc29f4ad9a39ad584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상전들아 너희도 저희에게 이와 같이 하고 공갈을 그치라 이는 저희와 너희의 상전이 하늘에 계시고 그에게는 외모로 사람을 취하는 일이 없는줄 너희가 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "8eb725157e1c93d7811e9c5f9562bcde87ffcdb097fb265cc29f4ad9a39ad584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:10",
+      "sequence": 29344,
+      "chapter_label": "EPH 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Finally, be strong in the Lord and in the strength of his might.",
+      "ko": "종말로 너희가 주 안에서와 그 힘의 능력으로 강건하여지고",
+      "source_text_hash": "5d344b289c069b4431774decd7f2b75d605d09a6aa742938b9d50f0756263bd5",
+      "translation_text_hash": "a27877bf5e2402ad1855d380eae4e9b30a679ede92df3c0b59bbc88b6bfab2f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종말로 너희가 주 안에서와 그 힘의 능력으로 강건하여지고"
+      ],
+      "raw_text_hashes": [
+        "a27877bf5e2402ad1855d380eae4e9b30a679ede92df3c0b59bbc88b6bfab2f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:11",
+      "sequence": 29345,
+      "chapter_label": "EPH 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Put on the whole armor of God, that you may be able to stand against the wiles of the devil.",
+      "ko": "마귀의 궤계를 능히 대적하기 위하여 하나님의 전신갑주를 입으라",
+      "source_text_hash": "79dbd0ded8ae73136963bdf46d91b8c020fbb234e88135d1f66aad654b024517",
+      "translation_text_hash": "0f02afb49c49dbb03b47bd8e3e97c5f67f7cf29c1fe6d0841a018d6f058ded4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀의 궤계를 능히 대적하기 위하여 하나님의 전신갑주를 입으라"
+      ],
+      "raw_text_hashes": [
+        "0f02afb49c49dbb03b47bd8e3e97c5f67f7cf29c1fe6d0841a018d6f058ded4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:12",
+      "sequence": 29346,
+      "chapter_label": "EPH 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "For our wrestling is not against flesh and blood, but against the principalities, against the powers, against the world’s rulers of the darkness of this age, and against the spiritual forces of wickedness in the heavenly places.",
+      "ko": "우리의 씨름은 혈과 육에 대한 것이 아니요 정사와 권세와 이 어두움의 세상 주관자들과 하늘에 있는 악의 영들에게 대함이라",
+      "source_text_hash": "3ca55aabfa48039d6a5cd6bb46e7ab96a0bd84a582f41ae733584ff24cb5d245",
+      "translation_text_hash": "50184e112b1afc486fe4b70d6ce35488e3b1ce8b1839b74870caa02ad847e19e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 씨름은 혈과 육에 대한 것이 아니요 정사와 권세와 이 어두움의 세상 주관자들과 하늘에 있는 악의 영들에게 대함이라"
+      ],
+      "raw_text_hashes": [
+        "50184e112b1afc486fe4b70d6ce35488e3b1ce8b1839b74870caa02ad847e19e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:13",
+      "sequence": 29347,
+      "chapter_label": "EPH 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore put on the whole armor of God, that you may be able to withstand in the evil day, and having done all, to stand.",
+      "ko": "그러므로 하나님의 전신갑주를 취하라 이는 악한 날에 너희가 능히 대적하고 모든 일을 행한 후에 서기 위함이라",
+      "source_text_hash": "fe6b9fbbfdb5cfac42659f8c696d0c07254c7b09fba71e87e3d53b92708aeac5",
+      "translation_text_hash": "1386552fe74833a70a407a5a0008d200449a2d4ea8582179203134d7d7d67029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님의 전신갑주를 취하라 이는 악한 날에 너희가 능히 대적하고 모든 일을 행한 후에 서기 위함이라"
+      ],
+      "raw_text_hashes": [
+        "1386552fe74833a70a407a5a0008d200449a2d4ea8582179203134d7d7d67029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:14",
+      "sequence": 29348,
+      "chapter_label": "EPH 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Stand therefore, having the utility belt of truth buckled around your waist, and having put on the breastplate of righteousness,",
+      "ko": "그런즉 서서 진리로 너희 허리 띠를 띠고 의의 흉배를 붙이고",
+      "source_text_hash": "126ad4864db6b4ae514bbf99a900d8e5a2360b57aa46378adf29c105dd538ea5",
+      "translation_text_hash": "07f8ad8ae02f2ed06e575ef0372058853fc7c7f0674e1bf6622979bc96413f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 서서 진리로 너희 허리 띠를 띠고 의의 흉배를 붙이고"
+      ],
+      "raw_text_hashes": [
+        "07f8ad8ae02f2ed06e575ef0372058853fc7c7f0674e1bf6622979bc96413f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:15",
+      "sequence": 29349,
+      "chapter_label": "EPH 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "and having fitted your feet with the preparation of the Good News of peace,",
+      "ko": "평안의 복음의 예비한 것으로 신을 신고",
+      "source_text_hash": "063f050f5e7aa05df1ee27260b6d6bfa44470471fb245d5f75331e18e7abd754",
+      "translation_text_hash": "2f3f8745ed812a31ca0402500c8ec34c5fc5a1e0f0b767bd30d3faa5907abcab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평안의 복음의 예비한 것으로 신을 신고"
+      ],
+      "raw_text_hashes": [
+        "2f3f8745ed812a31ca0402500c8ec34c5fc5a1e0f0b767bd30d3faa5907abcab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:16",
+      "sequence": 29350,
+      "chapter_label": "EPH 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "above all, taking up the shield of faith, with which you will be able to quench all the fiery darts of the evil one.",
+      "ko": "모든 것 위에 믿음의 방패를 가지고 이로써 능히 악한 자의 모든 화전을 소멸하고",
+      "source_text_hash": "9ba2e1eaee71acfd8e220ea3de66254926adbda97a4520c588a90be16c6b4846",
+      "translation_text_hash": "6d145149b9e87fa6a8e97a7f35af665a441847c505d0dc0ab5db833888ba7ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것 위에 믿음의 방패를 가지고 이로써 능히 악한 자의 모든 화전을 소멸하고"
+      ],
+      "raw_text_hashes": [
+        "6d145149b9e87fa6a8e97a7f35af665a441847c505d0dc0ab5db833888ba7ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:17",
+      "sequence": 29351,
+      "chapter_label": "EPH 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "And take the helmet of salvation, and the sword of the Spirit, which is the word of God;",
+      "ko": "구원의 투구와 성령의 검 곧 하나님의 말씀을 가지라",
+      "source_text_hash": "76dd38462a0ed3e3acfc74a8736f6d10cf567c618b8679a588b1263555636e4a",
+      "translation_text_hash": "33a2a9262d52121221417ffb134002ba4075a9f1204c5aba7c4632881450f7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구원의 투구와 성령의 검 곧 하나님의 말씀을 가지라"
+      ],
+      "raw_text_hashes": [
+        "33a2a9262d52121221417ffb134002ba4075a9f1204c5aba7c4632881450f7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:18",
+      "sequence": 29352,
+      "chapter_label": "EPH 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "with all prayer and requests, praying at all times in the Spirit, and being watchful to this end in all perseverance and requests for all the saints.",
+      "ko": "모든 기도와 간구로 하되 무시로 성령 안에서 기도하고 이를 위하여 깨어 구하기를 항상 힘쓰며 여러 성도를 위하여 구하고",
+      "source_text_hash": "f32d11fa2460e9a2b070a7f6612f987fcdd262ae6ae94454c4e9a3c9a1f2fe7f",
+      "translation_text_hash": "68f689cda12edbcc37470def0ab8c90dafb5f8cc85ba91174677e73400aefca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 기도와 간구로 하되 무시로 성령 안에서 기도하고 이를 위하여 깨어 구하기를 항상 힘쓰며 여러 성도를 위하여 구하고"
+      ],
+      "raw_text_hashes": [
+        "68f689cda12edbcc37470def0ab8c90dafb5f8cc85ba91174677e73400aefca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:19",
+      "sequence": 29353,
+      "chapter_label": "EPH 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Pray for me, that utterance may be given to me in opening my mouth, to make known with boldness the mystery of the Good News,",
+      "ko": "또 나를 위하여 구할 것은 내게 말씀을 주사 나로 입을 벌려 복음의 비밀을 담대히 알리게 하옵소서 할 것이니",
+      "source_text_hash": "9592752d4bc019749388d6712269688aeab7caf974d510733f479606d4904a06",
+      "translation_text_hash": "85a8ea457e4e2de5f676f169f0496fbddc38c6f94b778f93f3072d4796784543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나를 위하여 구할 것은 내게 말씀을 주사 나로 입을 벌려 복음의 비밀을 담대히 알리게 하옵소서 할 것이니"
+      ],
+      "raw_text_hashes": [
+        "85a8ea457e4e2de5f676f169f0496fbddc38c6f94b778f93f3072d4796784543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:20",
+      "sequence": 29354,
+      "chapter_label": "EPH 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "for which I am an ambassador in chains; that in it I may speak boldly, as I ought to speak.",
+      "ko": "이 일을 위하여 내가 쇠사슬에 매인 사신이 된 것은 나로 이 일에 당연히 할 말을 담대히 하게 하려 하심이니라",
+      "source_text_hash": "c68074ca14f6ce3a47c0ce9aeb735437f24633bae38395332719ac56f7ec2cd4",
+      "translation_text_hash": "707619e38647e31719503be85e10bc3e6a3cf292bd96462800b3ba993a9addcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 위하여 내가 쇠사슬에 매인 사신이 된 것은 나로 이 일에 당연히 할 말을 담대히 하게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "707619e38647e31719503be85e10bc3e6a3cf292bd96462800b3ba993a9addcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:21",
+      "sequence": 29355,
+      "chapter_label": "EPH 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "But that you also may know my affairs, how I am doing, Tychicus, the beloved brother and faithful servant in the Lord, will make known to you all things.",
+      "ko": "나의 사정 곧 내가 무엇을 하는지 너희에게도 알게 하려 하노니 사랑을 받은 형제요 주 안에서 진실한 일군인 두기고가 모든 일을 너희에게 알게 하리라",
+      "source_text_hash": "cd3e76277291596cf2e10f2dfe1613a2117faf0dd232fe7795a2738411efc20f",
+      "translation_text_hash": "a1fd4b40ed065516edb9b28e2d63d9928c5fc862d8a62bc9065c1f80004c483e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사정 곧 내가 무엇을 하는지 너희에게도 알게 하려 하노니 사랑을 받은 형제요 주 안에서 진실한 일군인 두기고가 모든 일을 너희에게 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "a1fd4b40ed065516edb9b28e2d63d9928c5fc862d8a62bc9065c1f80004c483e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:22",
+      "sequence": 29356,
+      "chapter_label": "EPH 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "I have sent him to you for this very purpose, that you may know our state and that he may comfort your hearts.",
+      "ko": "우리 사정을 알게 하고 또 너희 마음을 위로하게 하기 위하여 내가 특별히 저를 너희에게 보내었노라",
+      "source_text_hash": "51653bf5a45ddd7ec3a1d9224b01f416b2170648490445d5f09096602988c547",
+      "translation_text_hash": "00b9f1e5c1214df74e1cebeca51632a6a88d7c2d63afd9513a64b596ff27ba3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 사정을 알게 하고 또 너희 마음을 위로하게 하기 위하여 내가 특별히 저를 너희에게 보내었노라"
+      ],
+      "raw_text_hashes": [
+        "00b9f1e5c1214df74e1cebeca51632a6a88d7c2d63afd9513a64b596ff27ba3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:23",
+      "sequence": 29357,
+      "chapter_label": "EPH 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Peace be to the brothers, and love with faith, from God the Father and the Lord Jesus Christ.",
+      "ko": "아버지 하나님과 주 예수 그리스도에게로부터 평안과 믿음을 겸한 사랑이 형제들에게 있을찌어다",
+      "source_text_hash": "7aad9be210ce9676b89a236c1b62b9819361811c5be717cf2aa3d6983dbdcec7",
+      "translation_text_hash": "e6c75f8d2a894770968bd7fb7e613597f15ecccecba9ee8dc1a6ad602efd1703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지 하나님과 주 예수 그리스도에게로부터 평안과 믿음을 겸한 사랑이 형제들에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "e6c75f8d2a894770968bd7fb7e613597f15ecccecba9ee8dc1a6ad602efd1703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:6:24",
+      "sequence": 29358,
+      "chapter_label": "EPH 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "EPH",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "Grace be with all those who love our Lord Jesus Christ with incorruptible love. Amen.",
+      "ko": "우리 주 예수 그리스도를 변함 없이 사랑하는 모든 자에게 은혜가 있을찌어다",
+      "source_text_hash": "9ffd56f709c82b71088649a773c1e8bfe2c835104c8b8d03d00e8744acf14574",
+      "translation_text_hash": "5f51e03cd9f3cf8c11324a51937b6dc271a433672a8873600ebeceb4201dbc64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도를 변함 없이 사랑하는 모든 자에게 은혜가 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5f51e03cd9f3cf8c11324a51937b6dc271a433672a8873600ebeceb4201dbc64"
+      ]
+    }
+  ]
+}

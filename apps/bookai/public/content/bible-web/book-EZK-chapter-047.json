@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:047",
+  "unit_ordinal": 849,
+  "unit_label": "EZK 47",
+  "book_code": "EZK",
+  "chapter_number": 47,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:47:1",
+      "sequence": 21681,
+      "chapter_label": "EZK 47",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 1
+        }
+      ],
+      "en": "He brought me back to the door of the temple; and behold, waters flowed out from under the threshold of the temple eastward, for the front of the temple faced toward the east. The waters came down from underneath, from the right side of the temple, on the south of the altar.",
+      "ko": "그가 나를 데리고 전 문에 이르시니 전의 전면이 동을 향하였는데 그 문지방 밑에서 물이 나와서 동으로 흐르다가 전 우편 제단 남편으로 흘러 내리더라",
+      "source_text_hash": "5929ab97557e12d83add6354aa3b3e11aa59c0d72b47b88d0fe04459bf8c50d5",
+      "translation_text_hash": "be4f324c9e00843d94f101b38a797f0d8825ca66a1d052af9a06df5aadb46aba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 데리고 전 문에 이르시니 전의 전면이 동을 향하였는데 그 문지방 밑에서 물이 나와서 동으로 흐르다가 전 우편 제단 남편으로 흘러 내리더라"
+      ],
+      "raw_text_hashes": [
+        "be4f324c9e00843d94f101b38a797f0d8825ca66a1d052af9a06df5aadb46aba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:2",
+      "sequence": 21682,
+      "chapter_label": "EZK 47",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 2
+        }
+      ],
+      "en": "Then he brought me out by the way of the gate northward, and led me around by the way outside to the outer gate, by the way of the gate that looks toward the east. Behold, waters ran out on the right side.",
+      "ko": "그가 또 나를 데리고 북문으로 나가서 바깥 길로 말미암아 꺾여 동향한 바깥 문에 이르시기로 본즉 물이 그 우편에서 스미어 나오더라",
+      "source_text_hash": "8a008c8c5d441383152bb90f0e649aa4f665f26cd6f8129be6fd9d64a295014e",
+      "translation_text_hash": "eba1158679c768f589b625a90ee40e19b94fb8598b0b19c55efbdd200489acaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 나를 데리고 북문으로 나가서 바깥 길로 말미암아 꺾여 동향한 바깥 문에 이르시기로 본즉 물이 그 우편에서 스미어 나오더라"
+      ],
+      "raw_text_hashes": [
+        "eba1158679c768f589b625a90ee40e19b94fb8598b0b19c55efbdd200489acaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:3",
+      "sequence": 21683,
+      "chapter_label": "EZK 47",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 3
+        }
+      ],
+      "en": "When the man went out eastward with the line in his hand, he measured one thousand cubits, and he caused me to pass through the waters, waters that were to the ankles.",
+      "ko": "그 사람이 손에 줄을 잡고 동으로 나아가며 일천척을 척량한 후에 나로 그 물을 건너게 하시니 물이 발목에 오르더니",
+      "source_text_hash": "ba33ff6f19818cf3d407d71df85d0800fdf3170e19879923cd4331ad9e8ce0e0",
+      "translation_text_hash": "91425e64aa579b4e259edca24e21990c9b39adc88cc69b4649afd390b4236af3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 손에 줄을 잡고 동으로 나아가며 일천척을 척량한 후에 나로 그 물을 건너게 하시니 물이 발목에 오르더니"
+      ],
+      "raw_text_hashes": [
+        "91425e64aa579b4e259edca24e21990c9b39adc88cc69b4649afd390b4236af3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:4",
+      "sequence": 21684,
+      "chapter_label": "EZK 47",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 4
+        }
+      ],
+      "en": "Again he measured one thousand, and caused me to pass through the waters, waters that were to the knees. Again he measured one thousand, and caused me to pass through waters that were to the waist.",
+      "ko": "다시 일천척을 척량하고 나로 물을 건너게 하시니 물이 무릎에 오르고 다시 일천척을 척량하고 나로 물을 건너게 하시니 물이 허리에 오르고",
+      "source_text_hash": "97541679484f186b03657f5a8d111facdff0955aefa3aae9756af80dcb00cfec",
+      "translation_text_hash": "969b5b6704dfd6620e89bebcd4f9ef71b3c1abe82b27d502c1a5cb54bc16dde1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 일천척을 척량하고 나로 물을 건너게 하시니 물이 무릎에 오르고 다시 일천척을 척량하고 나로 물을 건너게 하시니 물이 허리에 오르고"
+      ],
+      "raw_text_hashes": [
+        "969b5b6704dfd6620e89bebcd4f9ef71b3c1abe82b27d502c1a5cb54bc16dde1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:5",
+      "sequence": 21685,
+      "chapter_label": "EZK 47",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 5
+        }
+      ],
+      "en": "Afterward he measured one thousand; and it was a river that I could not pass through, for the waters had risen, waters to swim in, a river that could not be walked through.",
+      "ko": "다시 일천척을 척량하시니 물이 내가 건너지 못할 강이 된지라 그 물이 창일하여 헤엄할 물이요 사람이 능히 건너지 못할 강이더라",
+      "source_text_hash": "57d12a12693aff1dcd99abc4ab4abb357c3e7a7147addede9425e8efa4b7bc2b",
+      "translation_text_hash": "b3f804cb5d6eb29eeef047e6880e789bd9d890c10864dcc24fec988342e8765f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 일천척을 척량하시니 물이 내가 건너지 못할 강이 된지라 그 물이 창일하여 헤엄할 물이요 사람이 능히 건너지 못할 강이더라"
+      ],
+      "raw_text_hashes": [
+        "b3f804cb5d6eb29eeef047e6880e789bd9d890c10864dcc24fec988342e8765f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:6",
+      "sequence": 21686,
+      "chapter_label": "EZK 47",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 6
+        }
+      ],
+      "en": "He said to me, “Son of man, have you seen this?” Then he brought me and caused me to return to the bank of the river.",
+      "ko": "그가 내게 이르시되 인자야 네가 이것을 보았느냐 하시고 나를 인도하여 강 가로 돌아가게 하시기로",
+      "source_text_hash": "5aa859f66e6b4165f9669e4b29face6550417b3eb4d23c34b75958d9f64e727b",
+      "translation_text_hash": "15605c1a82eb056d784b7eab392d0b2be3a968cfd47eee1c363520e85d69fc30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 네가 이것을 보았느냐 하시고 나를 인도하여 강 가로 돌아가게 하시기로"
+      ],
+      "raw_text_hashes": [
+        "15605c1a82eb056d784b7eab392d0b2be3a968cfd47eee1c363520e85d69fc30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:7",
+      "sequence": 21687,
+      "chapter_label": "EZK 47",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 7
+        }
+      ],
+      "en": "Now when I had returned, behold, on the bank of the river were very many trees on the one side and on the other.",
+      "ko": "내가 돌아간즉 강 좌우편에 나무가 심히 많더라",
+      "source_text_hash": "43556fe434290d7fc494eddea39de0d8f0c660287e2216447132c78b9572de21",
+      "translation_text_hash": "dcc6ece0f8c7a487be761b502768d639557a7681240dda05025f838654786dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌아간즉 강 좌우편에 나무가 심히 많더라"
+      ],
+      "raw_text_hashes": [
+        "dcc6ece0f8c7a487be761b502768d639557a7681240dda05025f838654786dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:8",
+      "sequence": 21688,
+      "chapter_label": "EZK 47",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 8
+        }
+      ],
+      "en": "Then he said to me, “These waters flow out toward the eastern region and will go down into the Arabah. Then they will go toward the sea and flow into the sea which will be made to flow out; and the waters will be healed.",
+      "ko": "그가 내게 이르시되 이 물이 동방으로 향하여 흘러 아라바로 내려가서 바다에 이르리니 이 흘러 내리는 물로 그 바다의 물이 소성함을 얻을찌라",
+      "source_text_hash": "d87cfed849f0fcc1e54edc3d8ff82636b5285cb760a88d7b393a2e6c256ebeac",
+      "translation_text_hash": "416984830153240fe830b891df0a792a597a0f47eb74270589536f517ec0c3f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 이 물이 동방으로 향하여 흘러 아라바로 내려가서 바다에 이르리니 이 흘러 내리는 물로 그 바다의 물이 소성함을 얻을찌라"
+      ],
+      "raw_text_hashes": [
+        "416984830153240fe830b891df0a792a597a0f47eb74270589536f517ec0c3f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:9",
+      "sequence": 21689,
+      "chapter_label": "EZK 47",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 9
+        }
+      ],
+      "en": "It will happen that every living creature which swarms, in every place where the rivers come, will live. Then there will be a very great multitude of fish; for these waters have come there, and the waters of the sea will be healed, and everything will live wherever the river comes.",
+      "ko": "이 강물이 이르는 곳마다 번성하는 모든 생물이 살고 또 고기가 심히 많으리니 이 물이 흘러 들어 가므로 바닷물이 소성함을 얻겠고 이 강이 이르는 각처에 모든 것이 살 것이며",
+      "source_text_hash": "7ed15b4d9f424dfaee9db3e4967c59085ce99cf3e3c0d7b3fe3e2e8a506ca88d",
+      "translation_text_hash": "dfea073be068e34b790597f38f3923559e7b77520b0bc22e24e81b24f6c1584a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 강물이 이르는 곳마다 번성하는 모든 생물이 살고 또 고기가 심히 많으리니 이 물이 흘러 들어 가므로 바닷물이 소성함을 얻겠고 이 강이 이르는 각처에 모든 것이 살 것이며"
+      ],
+      "raw_text_hashes": [
+        "dfea073be068e34b790597f38f3923559e7b77520b0bc22e24e81b24f6c1584a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:10",
+      "sequence": 21690,
+      "chapter_label": "EZK 47",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 10
+        }
+      ],
+      "en": "It will happen that fishermen will stand by it. From En Gedi even to En Eglaim will be a place for the spreading of nets. Their fish will be after their kinds, as the fish of the great sea, exceedingly many.",
+      "ko": "또 이 강 가에 어부가 설 것이니 엔게디에서부터 에네글라임까지 그물 치는 곳이 될 것이라 그 고기가 각기 종류를 따라 큰 바다의 고기 같이 심히 많으려니와",
+      "source_text_hash": "afd8246e6a1c549c1edb1615267ce7d75ccae9bc4440611c940c6143c13b38f3",
+      "translation_text_hash": "da836306ed1350f8e96fc802391663e639b98a07c33b0de472476837617cda64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 강 가에 어부가 설 것이니 엔게디에서부터 에네글라임까지 그물 치는 곳이 될 것이라 그 고기가 각기 종류를 따라 큰 바다의 고기 같이 심히 많으려니와"
+      ],
+      "raw_text_hashes": [
+        "da836306ed1350f8e96fc802391663e639b98a07c33b0de472476837617cda64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:11",
+      "sequence": 21691,
+      "chapter_label": "EZK 47",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 11
+        }
+      ],
+      "en": "But its swamps and marshes will not be healed. They will be given up to salt.",
+      "ko": "그 진펄과 개펄은 소성되지 못하고 소금 땅이 될 것이며",
+      "source_text_hash": "8885ac7eb9aa535e15e4b3cfdadcd44789ab89ae8fd7081ab6ee373f13f51ded",
+      "translation_text_hash": "d9670265c12118d122f1025495cf406a75202d0d8d843bca2cc68f388cc6886c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 진펄과 개펄은 소성되지 못하고 소금 땅이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "d9670265c12118d122f1025495cf406a75202d0d8d843bca2cc68f388cc6886c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:12",
+      "sequence": 21692,
+      "chapter_label": "EZK 47",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 12
+        }
+      ],
+      "en": "By the river banks, on both sides, will grow every tree for food, whose leaf won’t wither, neither will its fruit fail. It will produce new fruit every month, because its waters issue out of the sanctuary. Its fruit will be for food, and its leaf for healing.”",
+      "ko": "강 좌우 가에는 각종 먹을 실과나무가 자라서 그 잎이 시들지 아니하며 실과가 끊치지 아니하고 달마다 새 실과를 맺으리니 그 물이 성소로 말미암아 나옴이라 그 실과는 먹을 만하고 그 잎사귀는 약 재료가 되리라",
+      "source_text_hash": "aed78efde94639d8958c72bc3bd8c318f8d09a6ec2432c2fa8e951a53e734954",
+      "translation_text_hash": "af6beb8a5670e68957b6c6de70ffe7092d6db3fc9640bb82b050c699665dfbda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강 좌우 가에는 각종 먹을 실과나무가 자라서 그 잎이 시들지 아니하며 실과가 끊치지 아니하고 달마다 새 실과를 맺으리니 그 물이 성소로 말미암아 나옴이라 그 실과는 먹을 만하고 그 잎사귀는 약 재료가 되리라"
+      ],
+      "raw_text_hashes": [
+        "af6beb8a5670e68957b6c6de70ffe7092d6db3fc9640bb82b050c699665dfbda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:13",
+      "sequence": 21693,
+      "chapter_label": "EZK 47",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 13
+        }
+      ],
+      "en": "The Lord GOD says: “This shall be the border by which you shall divide the land for inheritance according to the twelve tribes of Israel. Joseph shall have two portions.",
+      "ko": "나 주 여호와가 말하노라 너희는 이 지계대로 이스라엘 십 이 지파에게 이 땅을 나누어 기업이 되게 하되 요셉에게는 두 분깃이니라",
+      "source_text_hash": "9acf577115ccc86010aa9228db649c6a083779fe15ef45953f5d7a1d35f26e81",
+      "translation_text_hash": "32c4f7085733e82e71bf9c2cf30272952e3f8629f35c8b3d319d840bc6d0c10c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 너희는 이 지계대로 이스라엘 십 이 지파에게 이 땅을 나누어 기업이 되게 하되 요셉에게는 두 분깃이니라"
+      ],
+      "raw_text_hashes": [
+        "32c4f7085733e82e71bf9c2cf30272952e3f8629f35c8b3d319d840bc6d0c10c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:14",
+      "sequence": 21694,
+      "chapter_label": "EZK 47",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 14
+        }
+      ],
+      "en": "You shall inherit it, one as well as another; for I swore to give it to your fathers. This land will fall to you for inheritance.",
+      "ko": "내가 옛적에 맹세하여 이 땅으로 너희 열조에게 주마 하였었나니 너희는 피차 없이 나누어 기업을 삼으라 이 땅이 너희의 기업이 되리라",
+      "source_text_hash": "15b3e4c2948bd70ccb9133799141e64883d030a4fcd23caba61f49287031e505",
+      "translation_text_hash": "a2b5f4c3aa0d685d9bd175a2a2869a6f7c652164c39b71d7eee843351834c47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 옛적에 맹세하여 이 땅으로 너희 열조에게 주마 하였었나니 너희는 피차 없이 나누어 기업을 삼으라 이 땅이 너희의 기업이 되리라"
+      ],
+      "raw_text_hashes": [
+        "a2b5f4c3aa0d685d9bd175a2a2869a6f7c652164c39b71d7eee843351834c47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:15",
+      "sequence": 21695,
+      "chapter_label": "EZK 47",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 15
+        }
+      ],
+      "en": "“This shall be the border of the land: “On the north side, from the great sea, by the way of Hethlon, to the entrance of Zedad;",
+      "ko": "이 땅 지계는 이러하니라 북방은 대해에서 헤들론 길로 말미암아 스닷 어귀까지니",
+      "source_text_hash": "89be49a2064acce09767e48fb4157f8faa1536bb9d5c6d1886f265cbdb65eb33",
+      "translation_text_hash": "0a9bd5ec63637065c7ff80fe91dee0fff53fb419cc62a248e59002f3552c3e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 지계는 이러하니라 북방은 대해에서 헤들론 길로 말미암아 스닷 어귀까지니"
+      ],
+      "raw_text_hashes": [
+        "0a9bd5ec63637065c7ff80fe91dee0fff53fb419cc62a248e59002f3552c3e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:16",
+      "sequence": 21696,
+      "chapter_label": "EZK 47",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 16
+        }
+      ],
+      "en": "Hamath, Berothah, Sibraim (which is between the border of Damascus and the border of Hamath), to Hazer Hatticon, which is by the border of Hauran.",
+      "ko": "곧 하맛과 브로다며 다메섹 지계와 하맛 지계 사이에 있는 시브라임과 하우란 지계 곁에 있는 하셀핫디곤이라",
+      "source_text_hash": "070159427db961c8f4a62834d098677114c5228b884877d15c33d3aeaa9273a4",
+      "translation_text_hash": "adaccf3cfe292598252326042de73d22f6a7f6c568850af4955d9e96049cdcd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 하맛과 브로다며 다메섹 지계와 하맛 지계 사이에 있는 시브라임과 하우란 지계 곁에 있는 하셀핫디곤이라"
+      ],
+      "raw_text_hashes": [
+        "adaccf3cfe292598252326042de73d22f6a7f6c568850af4955d9e96049cdcd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:17",
+      "sequence": 21697,
+      "chapter_label": "EZK 47",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 17
+        }
+      ],
+      "en": "The border from the sea shall be Hazar Enon at the border of Damascus; and on the north northward is the border of Hamath. This is the north side.",
+      "ko": "그 지계가 바닷가에서부터 다메섹 지계에 있는 하살에논까지요 그 지계가 또 극북방에 있는 하맛 지계에 미쳤나니 이는 그 북방이요",
+      "source_text_hash": "9559aa26264be79b495ee766c7667814d2f1ac7dbeea49777f1ab5b558800267",
+      "translation_text_hash": "748593109c6cf40edcb93b98fc521ce0d2133a5e77b50e45d90c5750fff50620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지계가 바닷가에서부터 다메섹 지계에 있는 하살에논까지요 그 지계가 또 극북방에 있는 하맛 지계에 미쳤나니 이는 그 북방이요"
+      ],
+      "raw_text_hashes": [
+        "748593109c6cf40edcb93b98fc521ce0d2133a5e77b50e45d90c5750fff50620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:18",
+      "sequence": 21698,
+      "chapter_label": "EZK 47",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 18
+        }
+      ],
+      "en": "“The east side, between Hauran, Damascus, Gilead, and the land of Israel, shall be the Jordan; from the north border to the east sea you shall measure. This is the east side.",
+      "ko": "동방은 하우란과 다메섹과 및 길르앗과 이스라엘 땅 사이에 있는 요단강이니 북편 지계에서부터 동해까지 척량하라 이는 그 동방이요",
+      "source_text_hash": "dc52312c5dc3921ec6da1625005f054ac2960e0f65f8c2c5987b32611ec59028",
+      "translation_text_hash": "e337ed06a0a36ee16167789a1208f60c204ec07688a0dc0305951df6218d6fb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동방은 하우란과 다메섹과 및 길르앗과 이스라엘 땅 사이에 있는 요단강이니 북편 지계에서부터 동해까지 척량하라 이는 그 동방이요"
+      ],
+      "raw_text_hashes": [
+        "e337ed06a0a36ee16167789a1208f60c204ec07688a0dc0305951df6218d6fb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:19",
+      "sequence": 21699,
+      "chapter_label": "EZK 47",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 19
+        }
+      ],
+      "en": "“The south side southward shall be from Tamar as far as the waters of Meriboth Kadesh, to the brook, to the great sea. This is the south side southward.",
+      "ko": "남방은 다말에서부터 므리봇 가데스 물에 이르고 애굽 시내를 따라 대해에 이르나니 이는 그 남방이요",
+      "source_text_hash": "02cdf3a3c596a49547605e357308f689bfef723d63f1834a0010066323f107a2",
+      "translation_text_hash": "42d5538d1a417bbde8de50e1d452677124f122a704a8346e8a5eb81fa4fe3462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방은 다말에서부터 므리봇 가데스 물에 이르고 애굽 시내를 따라 대해에 이르나니 이는 그 남방이요"
+      ],
+      "raw_text_hashes": [
+        "42d5538d1a417bbde8de50e1d452677124f122a704a8346e8a5eb81fa4fe3462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:20",
+      "sequence": 21700,
+      "chapter_label": "EZK 47",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 20
+        }
+      ],
+      "en": "“The west side shall be the great sea, from the south border as far as opposite the entrance of Hamath. This is the west side.",
+      "ko": "서방은 대해라 남편 지계에서부터 맞은편 하맛 어귀까지 이르나니 이는 그 서방이니라",
+      "source_text_hash": "d17f5ec676c24d7743e4d2b1b44a8205b79deff86219515e8093de0ed7213539",
+      "translation_text_hash": "1223a7ebe7f40da27b2597472b4abc5e1963eac132ac10741aa682866c74f7b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서방은 대해라 남편 지계에서부터 맞은편 하맛 어귀까지 이르나니 이는 그 서방이니라"
+      ],
+      "raw_text_hashes": [
+        "1223a7ebe7f40da27b2597472b4abc5e1963eac132ac10741aa682866c74f7b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:21",
+      "sequence": 21701,
+      "chapter_label": "EZK 47",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 21
+        }
+      ],
+      "en": "“So you shall divide this land to yourselves according to the tribes of Israel.",
+      "ko": "그런즉 너희가 이스라엘 모든 지파대로 이 땅을 나누어 차지하라",
+      "source_text_hash": "ded3c89bf48b4ef3fb6ccf3f23fc617c300563873fbda1a3ddfbdcb2c8275d78",
+      "translation_text_hash": "3058c6da48bed5ac0f93367dcf41c3ad97e0a83690a285fa39fd50128b1e1954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 이스라엘 모든 지파대로 이 땅을 나누어 차지하라"
+      ],
+      "raw_text_hashes": [
+        "3058c6da48bed5ac0f93367dcf41c3ad97e0a83690a285fa39fd50128b1e1954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:22",
+      "sequence": 21702,
+      "chapter_label": "EZK 47",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 22
+        }
+      ],
+      "en": "You shall divide it by lot for an inheritance to you and to the aliens who live among you, who will father children among you. Then they shall be to you as the native-born among the children of Israel. They shall have inheritance with you among the tribes of Israel.",
+      "ko": "너희는 이 땅을 나누되 제비 뽑아 너희와 너희 가운데 우거하는 외인 곧 너희 가운데서 자녀를 낳은 자의 기업이 되게 할찌니 너희는 그 외인을 본토에서 난 이스라엘 족속 같이 여기고 그들로 이스라엘 지파 중에서 너희와 함께 기업을 얻게 하되",
+      "source_text_hash": "3739796197a2d4113b3541f490d4ec8feceac5316e334892532e6e9522d531aa",
+      "translation_text_hash": "55460679f83f992b657818c3eada0bdcd6ea9de6e888c9831f93047d83af8f0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 땅을 나누되 제비 뽑아 너희와 너희 가운데 우거하는 외인 곧 너희 가운데서 자녀를 낳은 자의 기업이 되게 할찌니 너희는 그 외인을 본토에서 난 이스라엘 족속 같이 여기고 그들로 이스라엘 지파 중에서 너희와 함께 기업을 얻게 하되"
+      ],
+      "raw_text_hashes": [
+        "55460679f83f992b657818c3eada0bdcd6ea9de6e888c9831f93047d83af8f0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:47:23",
+      "sequence": 21703,
+      "chapter_label": "EZK 47",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 47,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 47,
+          "verse": 23
+        }
+      ],
+      "en": "In whatever tribe the stranger lives, there you shall give him his inheritance,” says the Lord GOD.",
+      "ko": "외인이 우거하는 그 지파에서 그 기업을 줄찌니라 나 주 여호와의 말이니라",
+      "source_text_hash": "7d8a99fdb885553d518648dbf30ef25d92c71c612238d925c43359b52d306d4e",
+      "translation_text_hash": "59e8e2a71e388f6d45abf67316c6d08fee28b3fd5dbcba331494821458649c50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인이 우거하는 그 지파에서 그 기업을 줄찌니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "59e8e2a71e388f6d45abf67316c6d08fee28b3fd5dbcba331494821458649c50"
+      ]
+    }
+  ]
+}

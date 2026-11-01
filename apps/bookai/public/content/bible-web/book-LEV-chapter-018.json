@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:018",
+  "unit_ordinal": 108,
+  "unit_label": "LEV 18",
+  "book_code": "LEV",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:18:1",
+      "sequence": 3253,
+      "chapter_label": "LEV 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "2107ad08e36bba002a0ea0ed1b7434c6fc889eb004b31c22c06230506600a25a",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:2",
+      "sequence": 3254,
+      "chapter_label": "LEV 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and say to them, ‘I am the LORD your God.",
+      "ko": "너는 이스라엘 자손에게 고하여 이르라 나는 여호와 너희 하나님이라",
+      "source_text_hash": "b5c6d19d38fa1231b9d0dc5aef5463017a561fd817c46862028a1705070a0768",
+      "translation_text_hash": "06c498939c639edf37bd90e243cd0e19f0803419d2bb077dbc76cc193f29062e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 고하여 이르라 나는 여호와 너희 하나님이라"
+      ],
+      "raw_text_hashes": [
+        "06c498939c639edf37bd90e243cd0e19f0803419d2bb077dbc76cc193f29062e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:3",
+      "sequence": 3255,
+      "chapter_label": "LEV 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "You shall not do as they do in the land of Egypt, where you lived. You shall not do as they do in the land of Canaan, where I am bringing you. You shall not follow their statutes.",
+      "ko": "너희는 그 거하던 애굽 땅의 풍속을 좇지 말며 내가 너희를 인도할 가나안 땅의 풍속과 규례도 행하지 말고",
+      "source_text_hash": "c75fa64622914af6dc26e30957933db626a2aa98b7dd98922ac5abeba12762f7",
+      "translation_text_hash": "cbdec099d981ae9a40dd2e2db865febf8fe310d9e356bc56283cd83d0d6528af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그 거하던 애굽 땅의 풍속을 좇지 말며 내가 너희를 인도할 가나안 땅의 풍속과 규례도 행하지 말고"
+      ],
+      "raw_text_hashes": [
+        "cbdec099d981ae9a40dd2e2db865febf8fe310d9e356bc56283cd83d0d6528af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:4",
+      "sequence": 3256,
+      "chapter_label": "LEV 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "You shall do my ordinances. You shall keep my statutes and walk in them. I am the LORD your God.",
+      "ko": "너희는 나의 법도를 좇으며 나의 규례를 지켜 그대로 행하라 나는 너희의 하나님 여호와니라",
+      "source_text_hash": "14a5da2f9ae41f1ee4d7796d0c6e014360d7a2b8b46fab60aa8b2f54457c2bf4",
+      "translation_text_hash": "903a849494cec70ee3ceba5ec97e918713ab59237d14f8090e9192ea70c0e22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 법도를 좇으며 나의 규례를 지켜 그대로 행하라 나는 너희의 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "903a849494cec70ee3ceba5ec97e918713ab59237d14f8090e9192ea70c0e22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:5",
+      "sequence": 3257,
+      "chapter_label": "LEV 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "You shall therefore keep my statutes and my ordinances, which if a man does, he shall live in them. I am the LORD.",
+      "ko": "너희는 나의 규례와 법도를 지키라 사람이 이를 행하면 그로 인하여 살리라 나는 여호와니라",
+      "source_text_hash": "e17cf3c8e71ff6fe98948f57417434b026c85cd55b74a3d902b0f7825fe47adc",
+      "translation_text_hash": "0ee8e76c89f24ae05feceb5c6c3acab2c1a903463238019f3b83c2897a0aa9c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 규례와 법도를 지키라 사람이 이를 행하면 그로 인하여 살리라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "0ee8e76c89f24ae05feceb5c6c3acab2c1a903463238019f3b83c2897a0aa9c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:6",
+      "sequence": 3258,
+      "chapter_label": "LEV 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "“‘None of you shall approach any close relatives, to uncover their nakedness: I am the LORD.",
+      "ko": "너희는 골육지친을 가까이하여 그 하체를 범치 말라 나는 여호와니라",
+      "source_text_hash": "131d8ad18b4a6ae34346342920dc164b6d01e79fb13486927e67b9fbb452e90a",
+      "translation_text_hash": "038e21bca1711957180b754f5d57453a4a8ca4e1b8e6ebacda1021d498028d4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 골육지친을 가까이하여 그 하체를 범치 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "038e21bca1711957180b754f5d57453a4a8ca4e1b8e6ebacda1021d498028d4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:7",
+      "sequence": 3259,
+      "chapter_label": "LEV 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your father, nor the nakedness of your mother: she is your mother. You shall not uncover her nakedness.",
+      "ko": "네 어미의 하체는 곧 네 아비의 하체니 너는 범치 말라 그는 네 어미인즉 너는 그의 하체를 범치 말찌니라",
+      "source_text_hash": "67b39c07a8f2c9df5febd36901318cbdec7f309001e2daf290601bbe8330826f",
+      "translation_text_hash": "e138a36a21c4b1d88e071a701c689e908ae03fe543075547d48c84b9296ccb29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 어미의 하체는 곧 네 아비의 하체니 너는 범치 말라 그는 네 어미인즉 너는 그의 하체를 범치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "e138a36a21c4b1d88e071a701c689e908ae03fe543075547d48c84b9296ccb29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:8",
+      "sequence": 3260,
+      "chapter_label": "LEV 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your father’s wife. It is your father’s nakedness.",
+      "ko": "너는 계모의 하체를 범치 말라 이는 네 아비의 하체니라",
+      "source_text_hash": "5673c8622339e03bddada36d9e3c2ae14e2a35ab0e6bbb280266676275b0fca6",
+      "translation_text_hash": "f9a21883fffc58e896a7f479650a70aa2c3b44be08175d742e068f4b0266d7e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 계모의 하체를 범치 말라 이는 네 아비의 하체니라"
+      ],
+      "raw_text_hashes": [
+        "f9a21883fffc58e896a7f479650a70aa2c3b44be08175d742e068f4b0266d7e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:9",
+      "sequence": 3261,
+      "chapter_label": "LEV 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your sister, the daughter of your father, or the daughter of your mother, whether born at home or born abroad.",
+      "ko": "너는 네 자매 곧 네 아비의 딸이나 네 어미의 딸이나 집에서나 타처에서 출생하였음을 물론하고 그들의 하체를 범치 말찌니라",
+      "source_text_hash": "5113f84f14fef1505271327ff20fb12dd4d25a57b704adfece570eb1a1debc34",
+      "translation_text_hash": "2d3c9fa4c36d3d5176e1c1d11893e703a97cb3d713c665f280399e15274d1fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 자매 곧 네 아비의 딸이나 네 어미의 딸이나 집에서나 타처에서 출생하였음을 물론하고 그들의 하체를 범치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "2d3c9fa4c36d3d5176e1c1d11893e703a97cb3d713c665f280399e15274d1fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:10",
+      "sequence": 3262,
+      "chapter_label": "LEV 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your son’s daughter, or of your daughter’s daughter, even their nakedness; for theirs is your own nakedness.",
+      "ko": "너는 손녀나 외손녀의 하체를 범치 말라 이는 너의 하체니라",
+      "source_text_hash": "d27b232311f575e6c41912c3343fa425a535f58acbba0bd7766154876c628896",
+      "translation_text_hash": "c251c26ff8b70acff01bf701869586a5461a8430b497d3a633695c4a7fffcafd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 손녀나 외손녀의 하체를 범치 말라 이는 너의 하체니라"
+      ],
+      "raw_text_hashes": [
+        "c251c26ff8b70acff01bf701869586a5461a8430b497d3a633695c4a7fffcafd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:11",
+      "sequence": 3263,
+      "chapter_label": "LEV 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your father’s wife’s daughter, conceived by your father, since she is your sister.",
+      "ko": "네 계모가 네 아비에게 낳은 딸은 네 누이니 너는 그 하체를 범치 말찌니라",
+      "source_text_hash": "91fc2e83779a9e3190b4c82e12409dd589ecdaca85000a66ed5a9ad02a0e9849",
+      "translation_text_hash": "23e93ee9ba7d2bdfdfb33c8f9bb5fd0c5a01ba724f77295fd0e4f935279287f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 계모가 네 아비에게 낳은 딸은 네 누이니 너는 그 하체를 범치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "23e93ee9ba7d2bdfdfb33c8f9bb5fd0c5a01ba724f77295fd0e4f935279287f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:12",
+      "sequence": 3264,
+      "chapter_label": "LEV 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your father’s sister. She is your father’s near kinswoman.",
+      "ko": "너는 고모의 하체를 범치 말라 그는 네 아비의 골육지친이니라",
+      "source_text_hash": "b5f1a5d127810a8d49fb29ea6bdac4e194657b8a0223ed4a6598c8e0cab76194",
+      "translation_text_hash": "980fda6532f4fdf1f0b3b098410c88ff16758615d5c2d9b450f234e20bafe0c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 고모의 하체를 범치 말라 그는 네 아비의 골육지친이니라"
+      ],
+      "raw_text_hashes": [
+        "980fda6532f4fdf1f0b3b098410c88ff16758615d5c2d9b450f234e20bafe0c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:13",
+      "sequence": 3265,
+      "chapter_label": "LEV 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your mother’s sister, for she is your mother’s near kinswoman.",
+      "ko": "너는 이모의 하체를 범치 말라 그는 네 어미의 골육지친이니라",
+      "source_text_hash": "3333eba38b16832c306e8bc08b7e4f410b9d5b230249c1cbf26280971f27838e",
+      "translation_text_hash": "92abd34d3f1b54e66561f0905f4673213dd0491ff0fee3901fb382e011c79765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이모의 하체를 범치 말라 그는 네 어미의 골육지친이니라"
+      ],
+      "raw_text_hashes": [
+        "92abd34d3f1b54e66561f0905f4673213dd0491ff0fee3901fb382e011c79765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:14",
+      "sequence": 3266,
+      "chapter_label": "LEV 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your father’s brother. You shall not approach his wife. She is your aunt.",
+      "ko": "너는 네 아비 형제의 아내를 가까이하여 그 하체를 범치 말라 그는 네 백숙모니라",
+      "source_text_hash": "4729ba00b7c00b8274c54c851ddec9cbd8fa8be754633aacfdb436b696fba4bb",
+      "translation_text_hash": "4f034392a71bb343ed0c72f528b8f2e208aa6a7299b324f88fc7cb4611bda75a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 아비 형제의 아내를 가까이하여 그 하체를 범치 말라 그는 네 백숙모니라"
+      ],
+      "raw_text_hashes": [
+        "4f034392a71bb343ed0c72f528b8f2e208aa6a7299b324f88fc7cb4611bda75a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:15",
+      "sequence": 3267,
+      "chapter_label": "LEV 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your daughter-in-law. She is your son’s wife. You shall not uncover her nakedness.",
+      "ko": "너는 자부의 하체를 범치 말라 그는 네 아들의 아내니 그 하체를 범치 말찌니라",
+      "source_text_hash": "b62b7914fa7c349a6cfe224938b2fc203202d10ed99006cdfaf031bf5af17dc0",
+      "translation_text_hash": "e5ce54b2c2ef556e88d178ff06c8f40d5c3500e301a18e5c6639df31567b4f60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 자부의 하체를 범치 말라 그는 네 아들의 아내니 그 하체를 범치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "e5ce54b2c2ef556e88d178ff06c8f40d5c3500e301a18e5c6639df31567b4f60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:16",
+      "sequence": 3268,
+      "chapter_label": "LEV 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your brother’s wife. It is your brother’s nakedness.",
+      "ko": "너는 형제의 아내의 하체를 범치 말라 이는 네 형제의 하체니라",
+      "source_text_hash": "b3185d6fae21a6c172915ffd8ce21e717ec32dc124b20d0c3b448c5a8ce3b20e",
+      "translation_text_hash": "95d1a0c32e01e7cb30ab6ce9f3fd206f7011b3d01512295e4c3b64a4406007cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 형제의 아내의 하체를 범치 말라 이는 네 형제의 하체니라"
+      ],
+      "raw_text_hashes": [
+        "95d1a0c32e01e7cb30ab6ce9f3fd206f7011b3d01512295e4c3b64a4406007cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:17",
+      "sequence": 3269,
+      "chapter_label": "LEV 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of a woman and her daughter. You shall not take her son’s daughter, or her daughter’s daughter, to uncover her nakedness. They are near kinswomen. It is wickedness.",
+      "ko": "너는 여인과 그 여인의 딸의 하체를 아울러 범치 말며 또 그 여인의 손녀나 외손녀를 아울러 취하여 그 하체를 범치 말라 그들은 그의 골육지친이니 이는 악행이니라",
+      "source_text_hash": "67860ba2cf9a153afb2cccc09222035e5eadc198cf8a0f33dbeb643b8634036e",
+      "translation_text_hash": "76b69f1d58842b961847c1435233337e4772356b33917bf24db8691300c11cb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여인과 그 여인의 딸의 하체를 아울러 범치 말며 또 그 여인의 손녀나 외손녀를 아울러 취하여 그 하체를 범치 말라 그들은 그의 골육지친이니 이는 악행이니라"
+      ],
+      "raw_text_hashes": [
+        "76b69f1d58842b961847c1435233337e4772356b33917bf24db8691300c11cb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:18",
+      "sequence": 3270,
+      "chapter_label": "LEV 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "“‘You shall not take a wife in addition to her sister, to be a rival, to uncover her nakedness, while her sister is still alive.",
+      "ko": "너는 아내가 생존할 동안에 그 형제를 취하여 하체를 범하여 그로 투기케 하지 말찌니라",
+      "source_text_hash": "1d941ece49632d5e4a9c1925efa2bb918a91b0c9b6a9e57647deee8cc649a032",
+      "translation_text_hash": "8c468096c3f939eda38419f460182e0d0de4d4bdf021b85446379b23f8eea639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아내가 생존할 동안에 그 형제를 취하여 하체를 범하여 그로 투기케 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "8c468096c3f939eda38419f460182e0d0de4d4bdf021b85446379b23f8eea639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:19",
+      "sequence": 3271,
+      "chapter_label": "LEV 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "“‘You shall not approach a woman to uncover her nakedness, as long as she is impure by her uncleanness.",
+      "ko": "너는 여인이 경도로 불결할 동안에 그에게 가까이하여 그 하체를 범치 말찌니라",
+      "source_text_hash": "4a142c340ab9705582adb94f18cc2a823f0c2042e2d85943850a27b8aa6e6d55",
+      "translation_text_hash": "4315ebdb22b3b5507fc115504abe51e528ad24deb64761d58a1398918f3cd3f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여인이 경도로 불결할 동안에 그에게 가까이하여 그 하체를 범치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "4315ebdb22b3b5507fc115504abe51e528ad24deb64761d58a1398918f3cd3f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:20",
+      "sequence": 3272,
+      "chapter_label": "LEV 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "“‘You shall not lie carnally with your neighbor’s wife, and defile yourself with her.",
+      "ko": "너는 타인의 아내와 통간하여 그로 자기를 더럽히지 말찌니라",
+      "source_text_hash": "a781f1830d698e0b871a31455905b9bcfdb50b0562294c770c95487123f0b865",
+      "translation_text_hash": "9e26cb9c94916804cf80d7db55733f271f58f73fbb0b52bdb0ee638122e69a9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 타인의 아내와 통간하여 그로 자기를 더럽히지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "9e26cb9c94916804cf80d7db55733f271f58f73fbb0b52bdb0ee638122e69a9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:21",
+      "sequence": 3273,
+      "chapter_label": "LEV 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "“‘You shall not give any of your children as a sacrifice to Molech. You shall not profane the name of your God. I am the LORD.",
+      "ko": "너는 결단코 자녀를 몰렉에게 주어 불로 통과케 말아서 네 하나님의 이름을 욕되게 하지 말라 나는 여호와니라",
+      "source_text_hash": "334116fc0c49ea51898799ca8e7aa5470deecd3ecfd8219867c8dc5d50eb1e2c",
+      "translation_text_hash": "701abdc38f23721e1b539a79bc0d3e3ddfcd00807733ed4746c13204ea8e39a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 결단코 자녀를 몰렉에게 주어 불로 통과케 말아서 네 하나님의 이름을 욕되게 하지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "701abdc38f23721e1b539a79bc0d3e3ddfcd00807733ed4746c13204ea8e39a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:22",
+      "sequence": 3274,
+      "chapter_label": "LEV 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "“‘You shall not lie with a man as with a woman. That is detestable.",
+      "ko": "너는 여자와 교합함 같이 남자와 교합하지 말라 이는 가증한 일이니라",
+      "source_text_hash": "d5c8fd1193f5a1a06af2f4ea49635fa8bcdc0269476ba578827d80ea4802e17f",
+      "translation_text_hash": "a4e063de7ce2e78008c4b84d38f31c0540821fe5c931aafc02ac00f47e73a559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여자와 교합함 같이 남자와 교합하지 말라 이는 가증한 일이니라"
+      ],
+      "raw_text_hashes": [
+        "a4e063de7ce2e78008c4b84d38f31c0540821fe5c931aafc02ac00f47e73a559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:23",
+      "sequence": 3275,
+      "chapter_label": "LEV 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "“‘You shall not lie with any animal to defile yourself with it. No woman may give herself to an animal, to lie down with it: it is a perversion.",
+      "ko": "너는 짐승과 교합하여 자기를 더럽히지 말며 여자가 된 자는 짐승 앞에 서서 그것과 교접하지 말라 이는 문란한 일이니라",
+      "source_text_hash": "73695a4c7a5ea2e4ced3cb8afdb9ea22ee0861ae5745e5cf10721b8e773151c1",
+      "translation_text_hash": "0d265ed476b8a8e36d516e3a065d0234f5388ce26c3909a0a1e036e448589cae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 짐승과 교합하여 자기를 더럽히지 말며 여자가 된 자는 짐승 앞에 서서 그것과 교접하지 말라 이는 문란한 일이니라"
+      ],
+      "raw_text_hashes": [
+        "0d265ed476b8a8e36d516e3a065d0234f5388ce26c3909a0a1e036e448589cae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:24",
+      "sequence": 3276,
+      "chapter_label": "LEV 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "“‘Don’t defile yourselves in any of these things; for in all these the nations which I am casting out before you were defiled.",
+      "ko": "너희는 이 모든 일로 스스로 더럽히지 말라 내가 너희의 앞에서 쫓아 내는 족속들이 이 모든 일로 인하여 더러워졌고",
+      "source_text_hash": "7c660b663bc1998c7f9405e1965204da61b9c42f96a12c47aa185d866aa42761",
+      "translation_text_hash": "1bb972b840f21f271a6f477b34c9bd4b4969321b9f987b2e203bc1ecfb6ff240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 모든 일로 스스로 더럽히지 말라 내가 너희의 앞에서 쫓아 내는 족속들이 이 모든 일로 인하여 더러워졌고"
+      ],
+      "raw_text_hashes": [
+        "1bb972b840f21f271a6f477b34c9bd4b4969321b9f987b2e203bc1ecfb6ff240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:25",
+      "sequence": 3277,
+      "chapter_label": "LEV 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "The land was defiled. Therefore I punished its iniquity, and the land vomited out her inhabitants.",
+      "ko": "그 땅도 더러워졌으므로 내가 그 악을 인하여 벌하고 그 땅도 스스로 그 거민을 토하여 내느니라",
+      "source_text_hash": "5cf50cf2875d3efac43e285320c83a22beaf9660472a257a6f926d7d1ad61536",
+      "translation_text_hash": "eb2032dd7ac101821f0daeb0ecc0c8f230bbc82af4b3b146d656d8cddeaaf530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅도 더러워졌으므로 내가 그 악을 인하여 벌하고 그 땅도 스스로 그 거민을 토하여 내느니라"
+      ],
+      "raw_text_hashes": [
+        "eb2032dd7ac101821f0daeb0ecc0c8f230bbc82af4b3b146d656d8cddeaaf530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:26",
+      "sequence": 3278,
+      "chapter_label": "LEV 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "You therefore shall keep my statutes and my ordinances, and shall not do any of these abominations; neither the native-born, nor the stranger who lives as a foreigner among you",
+      "ko": "그러므로 너희 곧 너희의 동족이나 혹시 너희 중에 우거하는 타국인이나 나의 규례와 법도를 지키고 이런 가증한 일의 하나도 행하지 말라",
+      "source_text_hash": "bcdbc7110c2d76d814c794cb1c39ef9b40b46b9bba7527661446511b41dab80d",
+      "translation_text_hash": "13d75bb0a0967d75dc1c5adc7094cda6a15718080aeced77de89306b84c53eca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희 곧 너희의 동족이나 혹시 너희 중에 우거하는 타국인이나 나의 규례와 법도를 지키고 이런 가증한 일의 하나도 행하지 말라"
+      ],
+      "raw_text_hashes": [
+        "13d75bb0a0967d75dc1c5adc7094cda6a15718080aeced77de89306b84c53eca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:27",
+      "sequence": 3279,
+      "chapter_label": "LEV 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "(for the men of the land that were before you had done all these abominations, and the land became defiled),",
+      "ko": "너희의 전에 있던 그 땅 거민이 이 모든 가증한 일을 행하였고 그 땅도 더러워졌느니라",
+      "source_text_hash": "a52f3c2731c8b25dad031c1068548646b7b404d359f0f62615a61814929e0036",
+      "translation_text_hash": "4a183652f25afda866c7dadb1912458c6e24cd0a85e2745e271e8ec3e433c4d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 전에 있던 그 땅 거민이 이 모든 가증한 일을 행하였고 그 땅도 더러워졌느니라"
+      ],
+      "raw_text_hashes": [
+        "4a183652f25afda866c7dadb1912458c6e24cd0a85e2745e271e8ec3e433c4d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:28",
+      "sequence": 3280,
+      "chapter_label": "LEV 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "that the land not vomit you out also, when you defile it, as it vomited out the nation that was before you.",
+      "ko": "너희도 더럽히면 그 땅이 너희 있기 전 거민을 토함 같이 너희를 토할까 하노라",
+      "source_text_hash": "3604874e7f2f6581f61bd6618ed31a442d35ba7cf3f3b0f141746dcb626ef1c8",
+      "translation_text_hash": "38a3c2bc83699125b7fce17c06f0cdcf81a996dea4f30449e3e7c783b5c7475d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 더럽히면 그 땅이 너희 있기 전 거민을 토함 같이 너희를 토할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "38a3c2bc83699125b7fce17c06f0cdcf81a996dea4f30449e3e7c783b5c7475d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:29",
+      "sequence": 3281,
+      "chapter_label": "LEV 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "“‘For whoever shall do any of these abominations, even the souls that do them shall be cut off from among their people.",
+      "ko": "무릇 이 가증한 일을 하나라도 행하는 자는 그 백성 중에서 끊쳐지리라",
+      "source_text_hash": "05025db76625a2525e43698114d34b48f0ddecd31a149ba6b933e79b1df976f2",
+      "translation_text_hash": "07f670def5d6126f3161d0a3b2775f5b5d6c0f8d725741ee689fa196b91883ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이 가증한 일을 하나라도 행하는 자는 그 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "07f670def5d6126f3161d0a3b2775f5b5d6c0f8d725741ee689fa196b91883ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:18:30",
+      "sequence": 3282,
+      "chapter_label": "LEV 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "Therefore you shall keep my requirements, that you do not practice any of these abominable customs which were practiced before you, and that you do not defile yourselves with them. I am the LORD your God.’”",
+      "ko": "그러므로 너희는 내 명령을 지키고 너희 있기 전에 행하던 가증한 풍속을 하나라도 좇음으로 스스로 더럽히지 말라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "47ed091f4c654b34ea8b846bf153a3888b1600f0023d9b38bedbaf790ce05d13",
+      "translation_text_hash": "b1e244d01ba738a5cad89d26596f724a1982a99df80c5f2ea7d76bd657a2cbbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 내 명령을 지키고 너희 있기 전에 행하던 가증한 풍속을 하나라도 좇음으로 스스로 더럽히지 말라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "b1e244d01ba738a5cad89d26596f724a1982a99df80c5f2ea7d76bd657a2cbbf"
+      ]
+    }
+  ]
+}

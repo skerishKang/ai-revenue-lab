@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:002",
+  "unit_ordinal": 155,
+  "unit_label": "DEU 2",
+  "book_code": "DEU",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:2:1",
+      "sequence": 4940,
+      "chapter_label": "DEU 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Then we turned, and took our journey into the wilderness by the way to the Red Sea, as the LORD spoke to me; and we encircled Mount Seir many days.",
+      "ko": "우리가 회정하여 여호와께서 내게 명하신대로 홍해 길로 광야에 들어가서 여러날 동안 세일산을 두루 행하더니",
+      "source_text_hash": "779f7f356ce89cb1e367a47ddb20b17b98a61f8d4e6d6adf30cdc9058a175b69",
+      "translation_text_hash": "a757986be30c1284983d54062bc9d0dd001c9fd44cf67e2c89a4e5ed3d263789",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 회정하여 여호와께서 내게 명하신대로 홍해 길로 광야에 들어가서 여러날 동안 세일산을 두루 행하더니"
+      ],
+      "raw_text_hashes": [
+        "a757986be30c1284983d54062bc9d0dd001c9fd44cf67e2c89a4e5ed3d263789"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:2",
+      "sequence": 4941,
+      "chapter_label": "DEU 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD spoke to me, saying,",
+      "ko": "여호와께서 내게 고하여 이르시되",
+      "source_text_hash": "d4cca539cc5ca338bfec03a15ec680755ab4cea6e0b1f24ff5c1643e05fa1fc6",
+      "translation_text_hash": "bfdc3a529ef09a9704ddf9d831fe33cb590db86ef00eb1f412701827aa5b53ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 고하여 이르시되"
+      ],
+      "raw_text_hashes": [
+        "bfdc3a529ef09a9704ddf9d831fe33cb590db86ef00eb1f412701827aa5b53ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:3",
+      "sequence": 4942,
+      "chapter_label": "DEU 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "“You have encircled this mountain long enough. Turn northward.",
+      "ko": "너희가 이 산을 두루 행한지 오래니 돌이켜 북으로 나아가라",
+      "source_text_hash": "5f40741ec5817f55431736d789c2917ffada2021fcc2d2bbb5669a8d9e16d779",
+      "translation_text_hash": "f370e468849a3061b3f3e275bb5b6970fc3d0054d51a3b33f60a717f0e6886a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 산을 두루 행한지 오래니 돌이켜 북으로 나아가라"
+      ],
+      "raw_text_hashes": [
+        "f370e468849a3061b3f3e275bb5b6970fc3d0054d51a3b33f60a717f0e6886a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:4",
+      "sequence": 4943,
+      "chapter_label": "DEU 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Command the people, saying, ‘You are to pass through the border of your brothers, the children of Esau, who dwell in Seir; and they will be afraid of you. Therefore be careful.",
+      "ko": "너는 또 백성에게 명하여 이르기를 너희는 세일에 거하는 너희 동족 에서의 자손의 지경으로 지날찐대 그들이 너희를 두려워하리니 너희는 깊이 스스로 삼가고",
+      "source_text_hash": "61646a889add19545477308f182a54304626628c44ba29c20e1aafdd5710c445",
+      "translation_text_hash": "41812c31180e76e12e02645a7fe91716ce015d2b47730aaebb29718378528f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 백성에게 명하여 이르기를 너희는 세일에 거하는 너희 동족 에서의 자손의 지경으로 지날찐대 그들이 너희를 두려워하리니 너희는 깊이 스스로 삼가고"
+      ],
+      "raw_text_hashes": [
+        "41812c31180e76e12e02645a7fe91716ce015d2b47730aaebb29718378528f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:5",
+      "sequence": 4944,
+      "chapter_label": "DEU 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t contend with them; for I will not give you any of their land, no, not so much as for the sole of the foot to tread on, because I have given Mount Seir to Esau for a possession.",
+      "ko": "그들과 다투지 말라 그들의 땅은 한 발자국도 너희에게 주지 아니하리니 이는 내가 세일산을 에서에게 기업으로 주었음이로라",
+      "source_text_hash": "b2f68deb647131104197ee106250a7217551afd17a4b1b4918f057b62d209ed5",
+      "translation_text_hash": "dd8bd96c63475d227687dc369f449221ab9213325e27dd77944d72688e625a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 다투지 말라 그들의 땅은 한 발자국도 너희에게 주지 아니하리니 이는 내가 세일산을 에서에게 기업으로 주었음이로라"
+      ],
+      "raw_text_hashes": [
+        "dd8bd96c63475d227687dc369f449221ab9213325e27dd77944d72688e625a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:6",
+      "sequence": 4945,
+      "chapter_label": "DEU 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "You shall purchase food from them for money, that you may eat. You shall also buy water from them for money, that you may drink.’”",
+      "ko": "너희는 돈으로 그들에게서 양식을 사서 먹으며 돈으로 그들에게서 물을 사서 마시라",
+      "source_text_hash": "613f8cdfae48653116a332307691acb95b4b2a9be25983329f5eb02bac514f1a",
+      "translation_text_hash": "b62bc38dce11990e6bd39121f76f46ac58168ab46e5eb14874d941a68a0e1bdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 돈으로 그들에게서 양식을 사서 먹으며 돈으로 그들에게서 물을 사서 마시라"
+      ],
+      "raw_text_hashes": [
+        "b62bc38dce11990e6bd39121f76f46ac58168ab46e5eb14874d941a68a0e1bdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:7",
+      "sequence": 4946,
+      "chapter_label": "DEU 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "For the LORD your God has blessed you in all the work of your hands. He has known your walking through this great wilderness. These forty years, the LORD your God has been with you. You have lacked nothing.",
+      "ko": "네 하나님 여호와가 너의 하는 모든 일에 네게 복을 주고 네가 이 큰 광야에 두루 행함을 알고 네 하나님 여호와가 이 사십년 동안을 너와 함께하였으므로 네게 부족함이 없었느니라 하셨다 하라 하시기로",
+      "source_text_hash": "92c6a9ec7d825ad5da3c9d720f49b83862b45045bc204253c68f85df50ad70b4",
+      "translation_text_hash": "5a1b32e9d711ac342729405914250b6b39faf6df58e43efbe1f8a566464f8524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와가 너의 하는 모든 일에 네게 복을 주고 네가 이 큰 광야에 두루 행함을 알고 네 하나님 여호와가 이 사십년 동안을 너와 함께하였으므로 네게 부족함이 없었느니라 하셨다 하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "5a1b32e9d711ac342729405914250b6b39faf6df58e43efbe1f8a566464f8524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:8",
+      "sequence": 4947,
+      "chapter_label": "DEU 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "So we passed by from our brothers, the children of Esau, who dwell in Seir, from the way of the Arabah from Elath and from Ezion Geber. We turned and passed by the way of the wilderness of Moab.",
+      "ko": "우리가 세일산에 거하는 우리 동족 에서의 자손을 떠나서 아라바를 지나며 엘랏과 에시온 게벨 곁으로 지나 행하고 돌이켜 모압 광야 길로 진행할 때에",
+      "source_text_hash": "fec268681ec62f1f00cff7f6743a40484384ab1eb8b143154aebf74f740b73fb",
+      "translation_text_hash": "ecf76e37a0d6b5243a7b0acf7f4b5a658b66cb482dd61dd4325350f869fd8bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 세일산에 거하는 우리 동족 에서의 자손을 떠나서 아라바를 지나며 엘랏과 에시온 게벨 곁으로 지나 행하고 돌이켜 모압 광야 길로 진행할 때에"
+      ],
+      "raw_text_hashes": [
+        "ecf76e37a0d6b5243a7b0acf7f4b5a658b66cb482dd61dd4325350f869fd8bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:9",
+      "sequence": 4948,
+      "chapter_label": "DEU 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to me, “Don’t bother Moab, neither contend with them in battle; for I will not give you any of his land for a possession, because I have given Ar to the children of Lot for a possession.”",
+      "ko": "여호와께서 내게 이르시되 모압을 괴롭게 말라 그와 싸우지도 말라 그 땅을 내가 네게 기업으로 주지 아니하리니 이는 내가 롯 자손에게 아르를 기업으로 주었음이로라",
+      "source_text_hash": "bed112a0d545e5ef6334cac46916340b5d547e5f14e6db96f55a5a1a7f881fdf",
+      "translation_text_hash": "9f3827167bcb6e83795e03c225bf9c8ce548979f6fb1442940251804881012a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 모압을 괴롭게 말라 그와 싸우지도 말라 그 땅을 내가 네게 기업으로 주지 아니하리니 이는 내가 롯 자손에게 아르를 기업으로 주었음이로라"
+      ],
+      "raw_text_hashes": [
+        "9f3827167bcb6e83795e03c225bf9c8ce548979f6fb1442940251804881012a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:10",
+      "sequence": 4949,
+      "chapter_label": "DEU 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "(The Emim lived there before, a great and numerous people, and tall as the Anakim.",
+      "ko": "(옛적에 엠 사람이 거기 거하여 강하고 많고 아낙 족속과 같이 키가 크므로",
+      "source_text_hash": "2b96c876f120fec744e1669a7aa8632b2236b6d1aad2f1c35bcddaae53b0cd6f",
+      "translation_text_hash": "7712e4df1e1928c8b0c21da8e52b5aad7287994a9b7053d3a0324142490be68d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(옛적에 엠 사람이 거기 거하여 강하고 많고 아낙 족속과 같이 키가 크므로"
+      ],
+      "raw_text_hashes": [
+        "7712e4df1e1928c8b0c21da8e52b5aad7287994a9b7053d3a0324142490be68d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:11",
+      "sequence": 4950,
+      "chapter_label": "DEU 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "These also are considered to be Rephaim, as the Anakim; but the Moabites call them Emim.",
+      "ko": "그들을 아낙 족속과 같이 르바임이라 칭하였으나 모압 사람은 그들을 에밈이라 칭하였으며",
+      "source_text_hash": "aa3dd3df312aee8dc4f6595280a7cca2804c6ea60d06798f8a1fa310f88ebcfc",
+      "translation_text_hash": "08eafced50034bc4ef6767d46145e2951ee0088a4450d757ebd6867c9914a8b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 아낙 족속과 같이 르바임이라 칭하였으나 모압 사람은 그들을 에밈이라 칭하였으며"
+      ],
+      "raw_text_hashes": [
+        "08eafced50034bc4ef6767d46145e2951ee0088a4450d757ebd6867c9914a8b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:12",
+      "sequence": 4951,
+      "chapter_label": "DEU 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The Horites also lived in Seir in the past, but the children of Esau succeeded them. They destroyed them from before them, and lived in their place, as Israel did to the land of his possession, which the LORD gave to them.)",
+      "ko": "호리 사람도 세일에 거하였더니 에서의 자손이 그들을 멸하고 대신하여 그 땅에 거하였으니 이스라엘이 여호와의 주신 기업의 땅에서 행한 것과 일반이었느니라)",
+      "source_text_hash": "b5b27758fbd2811d27472d97f60be833b404de1e70973396e534bfde9435915e",
+      "translation_text_hash": "0d072accf84a9eabb3c0dc3824a06b3c6a61439f9ee425d351f199f6f0afb28c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호리 사람도 세일에 거하였더니 에서의 자손이 그들을 멸하고 대신하여 그 땅에 거하였으니 이스라엘이 여호와의 주신 기업의 땅에서 행한 것과 일반이었느니라)"
+      ],
+      "raw_text_hashes": [
+        "0d072accf84a9eabb3c0dc3824a06b3c6a61439f9ee425d351f199f6f0afb28c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:13",
+      "sequence": 4952,
+      "chapter_label": "DEU 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "“Now rise up and cross over the brook Zered.” We went over the brook Zered.",
+      "ko": "이제 너희는 일어나서 세렛 시내를 건너가라 하시기로 우리가 세렛 시내를 건넜으니",
+      "source_text_hash": "014be492fcd03942fbc74f532bce2fe2d74b9cb4167aa5fe4f5010dbb4241351",
+      "translation_text_hash": "6d0697aa97ec74a47e43747b49718c8a6d89a8634f318206c1971fc757c588a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 일어나서 세렛 시내를 건너가라 하시기로 우리가 세렛 시내를 건넜으니"
+      ],
+      "raw_text_hashes": [
+        "6d0697aa97ec74a47e43747b49718c8a6d89a8634f318206c1971fc757c588a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:14",
+      "sequence": 4953,
+      "chapter_label": "DEU 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The days in which we came from Kadesh Barnea until we had come over the brook Zered were thirty-eight years, until all the generation of the men of war were consumed from the middle of the camp, as the LORD swore to them.",
+      "ko": "가데스 바네아에서 떠나 세렛 시내를 건너기까지 삼십 팔년 동안이라 이 때에는 그 시대의 모든 군인들이 여호와께서 그들에게 맹세하신대로 진 중에서 다 멸절되었나니",
+      "source_text_hash": "cc02e06c9b1c5b7e1f6dc2784da0e2b30604a656455751453723423ec7804c4f",
+      "translation_text_hash": "1c466a29494cd74241d4f888e68e0c39bc3126236ea7656360d87262a2ed00d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가데스 바네아에서 떠나 세렛 시내를 건너기까지 삼십 팔년 동안이라 이 때에는 그 시대의 모든 군인들이 여호와께서 그들에게 맹세하신대로 진 중에서 다 멸절되었나니"
+      ],
+      "raw_text_hashes": [
+        "1c466a29494cd74241d4f888e68e0c39bc3126236ea7656360d87262a2ed00d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:15",
+      "sequence": 4954,
+      "chapter_label": "DEU 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Moreover the LORD’s hand was against them, to destroy them from the middle of the camp, until they were consumed.",
+      "ko": "여호와께서 손으로 그들을 치사 진 중에서 멸하신고로 필경은 다 멸절되었느니라",
+      "source_text_hash": "1ddcf798231cd9f32c83b43c566bcaea43949a0e47546883a2108b9a461d0c76",
+      "translation_text_hash": "d0cd86fa1d44fcdf96c988b47bb1604fdf05a8bbee85b64655fca626366c9143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 손으로 그들을 치사 진 중에서 멸하신고로 필경은 다 멸절되었느니라"
+      ],
+      "raw_text_hashes": [
+        "d0cd86fa1d44fcdf96c988b47bb1604fdf05a8bbee85b64655fca626366c9143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:16",
+      "sequence": 4955,
+      "chapter_label": "DEU 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "So, when all the men of war were consumed and dead from among the people,",
+      "ko": "모든 군인이 사망하여 백성 중에서 진멸된 후에",
+      "source_text_hash": "8424b78f75cd2d846f35d0cf53f12f0e13885e9c8d36bbf492d3fa9fe916e225",
+      "translation_text_hash": "6a98774da1ad1f28549cf7bb271dac8f18e91c3612d6e8e2b6e08553d1fc5196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 군인이 사망하여 백성 중에서 진멸된 후에"
+      ],
+      "raw_text_hashes": [
+        "6a98774da1ad1f28549cf7bb271dac8f18e91c3612d6e8e2b6e08553d1fc5196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:17",
+      "sequence": 4956,
+      "chapter_label": "DEU 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "the LORD spoke to me, saying,",
+      "ko": "여호와께서 내게 일러 가라사대",
+      "source_text_hash": "9f14ca1a2a1e2d20d1ccf13212a8b81eb00adb3b67304a7286de934306d54c10",
+      "translation_text_hash": "51060e036dcec26cd61d766269d54740a6681faeefce5672d09c747d269b0555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "51060e036dcec26cd61d766269d54740a6681faeefce5672d09c747d269b0555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:18",
+      "sequence": 4957,
+      "chapter_label": "DEU 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "“You are to pass over Ar, the border of Moab, today.",
+      "ko": "네가 오늘 모압 변경 아르를 지나리니",
+      "source_text_hash": "705d5e65ee1b3f44ea6c60de330a699714c508cb1882c011315e9ef1775e37b6",
+      "translation_text_hash": "d2c9b3c8e797e6747209dd5e8f6698f9ea5ea836d472a621c51dafb33754bda4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 오늘 모압 변경 아르를 지나리니"
+      ],
+      "raw_text_hashes": [
+        "d2c9b3c8e797e6747209dd5e8f6698f9ea5ea836d472a621c51dafb33754bda4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:19",
+      "sequence": 4958,
+      "chapter_label": "DEU 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "When you come near the border of the children of Ammon, don’t bother them, nor contend with them; for I will not give you any of the land of the children of Ammon for a possession, because I have given it to the children of Lot for a possession.”",
+      "ko": "암몬 족속에게 가까이 이르거든 그들을 괴롭게 말라 그들과 다투지도 말라 암몬 족속의 땅은 내가 네게 기업으로 주지 아니하리니 이는 내가 그것을 롯 자손에게 기업으로 주었음이로라",
+      "source_text_hash": "402d5dba5b9356f5c14af6990cbcb21bd6155b58f1d800094320b8efbf45eecf",
+      "translation_text_hash": "d6f625fc5659f79e73fd95c47c2994017a0b9536109db6fc2caad08bf420e462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 족속에게 가까이 이르거든 그들을 괴롭게 말라 그들과 다투지도 말라 암몬 족속의 땅은 내가 네게 기업으로 주지 아니하리니 이는 내가 그것을 롯 자손에게 기업으로 주었음이로라"
+      ],
+      "raw_text_hashes": [
+        "d6f625fc5659f79e73fd95c47c2994017a0b9536109db6fc2caad08bf420e462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:20",
+      "sequence": 4959,
+      "chapter_label": "DEU 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "(That also is considered a land of Rephaim. Rephaim lived there in the past, but the Ammonites call them Zamzummim,",
+      "ko": "(이곳도 르바임의 땅이라 하였었나니 전에 르바임이 거기 거하였었음이요 암몬 족속은 그들을 삼숨밈이라 일컬었었으며",
+      "source_text_hash": "514468ba6ae8406900b368c46a8dd77444baf7b5ad86943b310f38a57bd3662d",
+      "translation_text_hash": "fcdeb1fbbbebffad1a35986d8ef989e428d25b7dea2ade48e509852caa77a264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이곳도 르바임의 땅이라 하였었나니 전에 르바임이 거기 거하였었음이요 암몬 족속은 그들을 삼숨밈이라 일컬었었으며"
+      ],
+      "raw_text_hashes": [
+        "fcdeb1fbbbebffad1a35986d8ef989e428d25b7dea2ade48e509852caa77a264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:21",
+      "sequence": 4960,
+      "chapter_label": "DEU 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "a great people, many, and tall, as the Anakim; but the LORD destroyed them from before Israel, and they succeeded them, and lived in their place,",
+      "ko": "그 백성은 강하고 많고 아낙 족속과 같이 키가 크나 여호와께서 암몬 족속 앞에서 그들을 멸하셨으므로 암몬 족속이 대신하여 그 땅에 거하였으니",
+      "source_text_hash": "dac49e3aa1c360d71c0e955a50ba45809af24a455d81894bb5066aa67793d6b5",
+      "translation_text_hash": "8cd3b3b71ae558888c60561c813bafffb48cf08ce18506f7a7bf3b168450dcb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성은 강하고 많고 아낙 족속과 같이 키가 크나 여호와께서 암몬 족속 앞에서 그들을 멸하셨으므로 암몬 족속이 대신하여 그 땅에 거하였으니"
+      ],
+      "raw_text_hashes": [
+        "8cd3b3b71ae558888c60561c813bafffb48cf08ce18506f7a7bf3b168450dcb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:22",
+      "sequence": 4961,
+      "chapter_label": "DEU 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "as he did for the children of Esau who dwell in Seir, when he destroyed the Horites from before them; and they succeeded them, and lived in their place even to this day.",
+      "ko": "마치 세일에 거한 에서 자손 앞에 호리 사람을 멸하심과 일반이라 그들이 호리 사람을 쫓아내고 대신하여 오늘까지 거기 거하였으며",
+      "source_text_hash": "715a0e66d320dcc37d4936660e844975c0696c26588644d3eab3e1200c3628d4",
+      "translation_text_hash": "c6f7e53746bda36ddb5dae5f241ec2afa04d138b646de25b28a4c87d56c200f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 세일에 거한 에서 자손 앞에 호리 사람을 멸하심과 일반이라 그들이 호리 사람을 쫓아내고 대신하여 오늘까지 거기 거하였으며"
+      ],
+      "raw_text_hashes": [
+        "c6f7e53746bda36ddb5dae5f241ec2afa04d138b646de25b28a4c87d56c200f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:23",
+      "sequence": 4962,
+      "chapter_label": "DEU 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Then the Avvim, who lived in villages as far as Gaza: the Caphtorim, who came out of Caphtor, destroyed them and lived in their place.)",
+      "ko": "또 갑돌에서 나온 갑돌 사람이 가사까지 각 촌에 거하는 아위 사람을 멸하고 그들을 대신하여 거기 거하였었느니라)",
+      "source_text_hash": "e0c1487d0daf11c5ff18a75dc087c4f1617f6f5d9f3072c6a3f643137ba4a496",
+      "translation_text_hash": "744b9707d0e0e6f505ceb16eca1e198d383df089076e6acfcfa82ba07abf8783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 갑돌에서 나온 갑돌 사람이 가사까지 각 촌에 거하는 아위 사람을 멸하고 그들을 대신하여 거기 거하였었느니라)"
+      ],
+      "raw_text_hashes": [
+        "744b9707d0e0e6f505ceb16eca1e198d383df089076e6acfcfa82ba07abf8783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:24",
+      "sequence": 4963,
+      "chapter_label": "DEU 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "“Rise up, take your journey, and pass over the valley of the Arnon. Behold, I have given into your hand Sihon the Amorite, king of Heshbon, and his land; begin to possess it, and contend with him in battle.",
+      "ko": "너희는 일어나 진행하여 아르논 골짜기를 건너라 내가 헤스본 왕 아모리 사람 시혼과 그 땅을 네 손에 붙였은즉 비로소 더불어 싸워서 그 땅을 얻으라",
+      "source_text_hash": "9b07988b2d064481f6178fc52d967c18c6a32d906e60eb2857dedf7d8bd86b9e",
+      "translation_text_hash": "77787e4952cb3ab6c7874a39bc8a887258d910cf4360af15d73631d7598639e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 일어나 진행하여 아르논 골짜기를 건너라 내가 헤스본 왕 아모리 사람 시혼과 그 땅을 네 손에 붙였은즉 비로소 더불어 싸워서 그 땅을 얻으라"
+      ],
+      "raw_text_hashes": [
+        "77787e4952cb3ab6c7874a39bc8a887258d910cf4360af15d73631d7598639e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:25",
+      "sequence": 4964,
+      "chapter_label": "DEU 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "Today I will begin to put the dread of you and the fear of you on the peoples who are under the whole sky, who shall hear the report of you, and shall tremble and be in anguish because of you.”",
+      "ko": "오늘부터 내가 천하 만민으로 너를 무서워하며 너를 두려워하게 하리니 그들이 네 명성을 듣고 떨며 너로 인하여 근심하리라 하셨느니라",
+      "source_text_hash": "5ba622c58ea09caafe419286dd69bb44395003cd6c49d8985e4220c261632f6d",
+      "translation_text_hash": "9c39c4d2b193c3a715d7b8e0f06e26d4d2f7f2b5b55eaf10cf529b6bd4e773c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘부터 내가 천하 만민으로 너를 무서워하며 너를 두려워하게 하리니 그들이 네 명성을 듣고 떨며 너로 인하여 근심하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9c39c4d2b193c3a715d7b8e0f06e26d4d2f7f2b5b55eaf10cf529b6bd4e773c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:26",
+      "sequence": 4965,
+      "chapter_label": "DEU 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "I sent messengers out of the wilderness of Kedemoth to Sihon king of Heshbon with words of peace, saying,",
+      "ko": "내가 그데못 광야에서 헤스본 왕 시혼에게 사자를 보내어 평화의 말로 이르기를",
+      "source_text_hash": "7980648138b179b0a9dfcfbe013a39cbfcb504253591452124ae341bd20279c2",
+      "translation_text_hash": "4ca9ffe873286be5d9484ebb9d94053e66af711bc791d494f56f1d7f77ff8eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그데못 광야에서 헤스본 왕 시혼에게 사자를 보내어 평화의 말로 이르기를"
+      ],
+      "raw_text_hashes": [
+        "4ca9ffe873286be5d9484ebb9d94053e66af711bc791d494f56f1d7f77ff8eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:27",
+      "sequence": 4966,
+      "chapter_label": "DEU 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "“Let me pass through your land. I will go along by the highway. I will turn neither to the right hand nor to the left.",
+      "ko": "나를 네 땅으로 통과하게 하라 내가 대로로만 행하고 좌로나 우로나 치우치지 아니하리라",
+      "source_text_hash": "92d0e9a29328f868bbcfbfc954e3a4e2e98b14d9b55fba1cf382b45390594574",
+      "translation_text_hash": "0c985398d89612891f50ceb3545d22d382dfaf38d9a50400b8c45f333cbfc614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 네 땅으로 통과하게 하라 내가 대로로만 행하고 좌로나 우로나 치우치지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "0c985398d89612891f50ceb3545d22d382dfaf38d9a50400b8c45f333cbfc614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:28",
+      "sequence": 4967,
+      "chapter_label": "DEU 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "You shall sell me food for money, that I may eat; and give me water for money, that I may drink. Just let me pass through on my feet,",
+      "ko": "너는 돈을 받고 양식을 팔아 나로 먹게 하고 돈을 받고 물을 주어 나로 마시게 하라 나는 도보로 지날 뿐인즉",
+      "source_text_hash": "c0bd07a95d8429d31626b31e0dfd70bb90d9b41e3bf363b3adf387bf178cb213",
+      "translation_text_hash": "bc70d52c9a8962e8be5b5e76a08e4014744eb9a0c37730ca01f176085126f5d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 돈을 받고 양식을 팔아 나로 먹게 하고 돈을 받고 물을 주어 나로 마시게 하라 나는 도보로 지날 뿐인즉"
+      ],
+      "raw_text_hashes": [
+        "bc70d52c9a8962e8be5b5e76a08e4014744eb9a0c37730ca01f176085126f5d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:29",
+      "sequence": 4968,
+      "chapter_label": "DEU 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "as the children of Esau who dwell in Seir, and the Moabites who dwell in Ar, did to me, until I pass over the Jordan into the land which the LORD our God gives us.”",
+      "ko": "세일에 거하는 에서 자손과 아르에 거하는 모압 사람이 내게 행한것 같이 하라 그리하면 내가 요단을 건너서 우리 하나님 여호와께서 우리에게 주시는 땅에 이르리라 하나",
+      "source_text_hash": "912ed93ec4e6d4403fcca21988eae6aaec81790784637658434786bbceee413d",
+      "translation_text_hash": "048ca712e5bf68fea25a61bada1d597a01af88ef2d53d5b54abf4446dfc8f8fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세일에 거하는 에서 자손과 아르에 거하는 모압 사람이 내게 행한것 같이 하라 그리하면 내가 요단을 건너서 우리 하나님 여호와께서 우리에게 주시는 땅에 이르리라 하나"
+      ],
+      "raw_text_hashes": [
+        "048ca712e5bf68fea25a61bada1d597a01af88ef2d53d5b54abf4446dfc8f8fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:30",
+      "sequence": 4969,
+      "chapter_label": "DEU 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "But Sihon king of Heshbon would not let us pass by him, for the LORD your God hardened his spirit and made his heart obstinate, that he might deliver him into your hand, as it is today.",
+      "ko": "헤스본 왕 시혼이 우리의 통과하기를 허락지 아니하였으니 이는 너의 하나님 여호와께서 그를 네 손에 붙이시려고 그 성품을 완강케 하셨고 그 마음을 강퍅케 하셨음이라 오늘날과 같으니라",
+      "source_text_hash": "4cd03ea735dc4ba8555981e1825fbe46f4eaa930302f3448748e782138774064",
+      "translation_text_hash": "cd1154f4bda3b6426d539a96e33c839b38c41980c6a65a406598b9dcfd46130d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본 왕 시혼이 우리의 통과하기를 허락지 아니하였으니 이는 너의 하나님 여호와께서 그를 네 손에 붙이시려고 그 성품을 완강케 하셨고 그 마음을 강퍅케 하셨음이라 오늘날과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "cd1154f4bda3b6426d539a96e33c839b38c41980c6a65a406598b9dcfd46130d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:31",
+      "sequence": 4970,
+      "chapter_label": "DEU 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "The LORD said to me, “Behold, I have begun to deliver up Sihon and his land before you. Begin to possess, that you may inherit his land.”",
+      "ko": "때에 여호와께서 내게 이르시되 내가 비로소 시혼과 그 땅을 네게 붙이노니 너는 이제부터 그 땅을 얻어서 기업을 삼으라 하시더니",
+      "source_text_hash": "610e9458deb531581a72b915f7260f51845320cc217b8b109845923885a771c6",
+      "translation_text_hash": "315cf4cea4e5f0de6dbe115fdcb0fefcdba0a4c313e49c2c8633d37d3423e5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 내게 이르시되 내가 비로소 시혼과 그 땅을 네게 붙이노니 너는 이제부터 그 땅을 얻어서 기업을 삼으라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "315cf4cea4e5f0de6dbe115fdcb0fefcdba0a4c313e49c2c8633d37d3423e5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:32",
+      "sequence": 4971,
+      "chapter_label": "DEU 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "Then Sihon came out against us, he and all his people, to battle at Jahaz.",
+      "ko": "시혼이 그 모든 백성을 거느리고 나와서 우리를 대적하여 야하스에서 싸울 때에",
+      "source_text_hash": "807a96fc0cc21c39dfc2a963597d445a0514603d9b890af51e7093f25714fb4d",
+      "translation_text_hash": "ffd4b70ea82afdbd90e8d544ee2180ef23d3076997481374a4e9e202a6e6bee7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시혼이 그 모든 백성을 거느리고 나와서 우리를 대적하여 야하스에서 싸울 때에"
+      ],
+      "raw_text_hashes": [
+        "ffd4b70ea82afdbd90e8d544ee2180ef23d3076997481374a4e9e202a6e6bee7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:33",
+      "sequence": 4972,
+      "chapter_label": "DEU 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD our God delivered him up before us; and we struck him, his sons, and all his people.",
+      "ko": "우리 하나님 여호와께서 그를 우리에게 붙이시매 우리가 그와 그 아들들과 그 모든 백성을 쳤고",
+      "source_text_hash": "1cbd037bb5885feb70d8a8b7d6e1abda465341b2781825b11526b9ab8de70133",
+      "translation_text_hash": "48cfe2925c3edc82620d1662787c27eef60f691e7d658c47fc141118f3403248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 그를 우리에게 붙이시매 우리가 그와 그 아들들과 그 모든 백성을 쳤고"
+      ],
+      "raw_text_hashes": [
+        "48cfe2925c3edc82620d1662787c27eef60f691e7d658c47fc141118f3403248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:34",
+      "sequence": 4973,
+      "chapter_label": "DEU 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "We took all his cities at that time, and utterly destroyed every inhabited city, with the women and the little ones. We left no one remaining.",
+      "ko": "그 때에 우리가 그 모든 성읍을 취하고 그 각 성읍을 그 남녀와 유아와 함께 하나도 남기지 아니하고 진멸하였고",
+      "source_text_hash": "1941ba23c52ad6ea03f1c3f69bc852dd83f8d89a0c9ec58e87c33a8c511ad8ae",
+      "translation_text_hash": "5ef53c58d0d8488db42b28260abd0d95ea540b55851fb9d13f773ca2fecc9f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 우리가 그 모든 성읍을 취하고 그 각 성읍을 그 남녀와 유아와 함께 하나도 남기지 아니하고 진멸하였고"
+      ],
+      "raw_text_hashes": [
+        "5ef53c58d0d8488db42b28260abd0d95ea540b55851fb9d13f773ca2fecc9f37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:35",
+      "sequence": 4974,
+      "chapter_label": "DEU 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "Only the livestock we took for plunder for ourselves, with the plunder of the cities which we had taken.",
+      "ko": "오직 그 육축과 성읍에서 탈취한 것은 우리의 소유로 삼았으며",
+      "source_text_hash": "148bfcbcc46951ffcb4c366af098a637ba87c80c1bf6eb748385e366e220c46a",
+      "translation_text_hash": "71415da0e663edda047848b843bf660be9b4ff8e2f83847f64230751e494e1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 육축과 성읍에서 탈취한 것은 우리의 소유로 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "71415da0e663edda047848b843bf660be9b4ff8e2f83847f64230751e494e1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:36",
+      "sequence": 4975,
+      "chapter_label": "DEU 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "From Aroer, which is on the edge of the valley of the Arnon, and the city that is in the valley, even to Gilead, there was not a city too high for us. The LORD our God delivered up all before us.",
+      "ko": "우리 하나님 여호와께서 그 모든 땅을 우리에게 붙이심으로 아르논 골짜기 가에 있는 아로엘과 골짜기 가운데 있는 성읍으로부터 길르앗에까지 우리가 모든 높은 성읍을 취하지 못한 것이 하나도 없었으나",
+      "source_text_hash": "20603c8332440aec9623981fc64155261c477e426b3b39d4cec6ecbacf98d0da",
+      "translation_text_hash": "24e58ffb40c68df1a37c3d92ac5e654a1d31c78a78ec23543ad7d2245a57705c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 그 모든 땅을 우리에게 붙이심으로 아르논 골짜기 가에 있는 아로엘과 골짜기 가운데 있는 성읍으로부터 길르앗에까지 우리가 모든 높은 성읍을 취하지 못한 것이 하나도 없었으나"
+      ],
+      "raw_text_hashes": [
+        "24e58ffb40c68df1a37c3d92ac5e654a1d31c78a78ec23543ad7d2245a57705c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:2:37",
+      "sequence": 4976,
+      "chapter_label": "DEU 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "DEU",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "Only to the land of the children of Ammon you didn’t come near: all the banks of the river Jabbok, and the cities of the hill country, and wherever the LORD our God forbade us.",
+      "ko": "오직 암몬 족속의 땅 얍복강 가와 산지에 있는 성읍들과 무릇 우리 하나님 여호와께서 우리의 가기를 금하신 곳은 네가 가까이 하지 못하였느니라",
+      "source_text_hash": "1049bc0c558771a8825b02148a8e1e8d0173abd37d55ee4e5d6de29155f439a7",
+      "translation_text_hash": "c56bdd132fe8fe66f6bb3c96e54b14be2456e96fe26265975f9776a563ff08d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 암몬 족속의 땅 얍복강 가와 산지에 있는 성읍들과 무릇 우리 하나님 여호와께서 우리의 가기를 금하신 곳은 네가 가까이 하지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c56bdd132fe8fe66f6bb3c96e54b14be2456e96fe26265975f9776a563ff08d4"
+      ]
+    }
+  ]
+}

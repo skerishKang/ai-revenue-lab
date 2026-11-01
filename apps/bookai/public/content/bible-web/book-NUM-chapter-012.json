@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:012",
+  "unit_ordinal": 129,
+  "unit_label": "NUM 12",
+  "book_code": "NUM",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:12:1",
+      "sequence": 4061,
+      "chapter_label": "NUM 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Miriam and Aaron spoke against Moses because of the Cushite woman whom he had married; for he had married a Cushite woman.",
+      "ko": "모세가 구스 여자를 취하였더니 그 구스 여자를 취하였으므로 미리암과 아론이 모세를 비방하니라",
+      "source_text_hash": "91db7e22e5e17c280cead84d9ce8a008d23924ea708ee137993cfaab5dce64c5",
+      "translation_text_hash": "f208dff4172b99e7bba5f18b40e05328bb0a00a6ad4ff7ec31eae1729cd646c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 구스 여자를 취하였더니 그 구스 여자를 취하였으므로 미리암과 아론이 모세를 비방하니라"
+      ],
+      "raw_text_hashes": [
+        "f208dff4172b99e7bba5f18b40e05328bb0a00a6ad4ff7ec31eae1729cd646c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:2",
+      "sequence": 4062,
+      "chapter_label": "NUM 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "They said, “Has the LORD indeed spoken only with Moses? Hasn’t he spoken also with us?” And the LORD heard it.",
+      "ko": "그들이 이르되 여호와께서 모세와만 말씀하셨느냐 우리와도 말씀하지 아니하셨느냐 하매 여호와께서 이 말을 들으셨더라",
+      "source_text_hash": "e2b3a0a7fce1d00b8f75c99d26455bb53b0e97f80ce933bf1b00bfce93cf3e1a",
+      "translation_text_hash": "446bdfdba9956eb9f05619c56e30b1c630eaa477a9a1f6b7eafe0a46ab6e622f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이르되 여호와께서 모세와만 말씀하셨느냐 우리와도 말씀하지 아니하셨느냐 하매 여호와께서 이 말을 들으셨더라"
+      ],
+      "raw_text_hashes": [
+        "446bdfdba9956eb9f05619c56e30b1c630eaa477a9a1f6b7eafe0a46ab6e622f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:3",
+      "sequence": 4063,
+      "chapter_label": "NUM 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Now the man Moses was very humble, more than all the men who were on the surface of the earth.",
+      "ko": "이 사람 모세는 온유함이 지면의 모든 사람보다 승하더라",
+      "source_text_hash": "14e602a6b65702efd45ed70eb92fff8ff13d2b71eb4192c0b3067205d66f69de",
+      "translation_text_hash": "6fc75c54ab34947f3ef04a0e10e63a83a5985a83ac91b217bbce54690482195e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람 모세는 온유함이 지면의 모든 사람보다 승하더라"
+      ],
+      "raw_text_hashes": [
+        "6fc75c54ab34947f3ef04a0e10e63a83a5985a83ac91b217bbce54690482195e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:4",
+      "sequence": 4064,
+      "chapter_label": "NUM 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD spoke suddenly to Moses, to Aaron, and to Miriam, “You three come out to the Tent of Meeting!” The three of them came out.",
+      "ko": "여호와께서 갑자기 모세와 아론과 미리암에게 이르시되 너희 삼인은 회막으로 나아오라 하시니 그 삼인이 나아가매",
+      "source_text_hash": "d96c1dc3c960581542a8a651a6650f1c8a407f0095ce5f6cac6391c441133ab0",
+      "translation_text_hash": "f80793fd9a5def64c2d5cc8d09dc2dfd7b577e441dec1f348bc02d0fa16b927b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 갑자기 모세와 아론과 미리암에게 이르시되 너희 삼인은 회막으로 나아오라 하시니 그 삼인이 나아가매"
+      ],
+      "raw_text_hashes": [
+        "f80793fd9a5def64c2d5cc8d09dc2dfd7b577e441dec1f348bc02d0fa16b927b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:5",
+      "sequence": 4065,
+      "chapter_label": "NUM 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD came down in a pillar of cloud, and stood at the door of the Tent, and called Aaron and Miriam; and they both came forward.",
+      "ko": "여호와께서 구름 기둥 가운데로서 강림하사 장막 문에 서시고 아론과 미리암을 부르시는지라 그 두 사람이 나아가매",
+      "source_text_hash": "7bd4fed4ce9d054e6cdb3a6f87a0d2d3d5e02191e7f3f4c6c421db6faa00f5cf",
+      "translation_text_hash": "fc388a0fb34460919396c10acda0b48b9ba3783c666473eb8ec7bbb293e1a93c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 구름 기둥 가운데로서 강림하사 장막 문에 서시고 아론과 미리암을 부르시는지라 그 두 사람이 나아가매"
+      ],
+      "raw_text_hashes": [
+        "fc388a0fb34460919396c10acda0b48b9ba3783c666473eb8ec7bbb293e1a93c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:6",
+      "sequence": 4066,
+      "chapter_label": "NUM 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "He said, “Now hear my words. If there is a prophet among you, I, the LORD, will make myself known to him in a vision. I will speak with him in a dream.",
+      "ko": "이르시되 내 말을 들으라 너희 중에 선지자가 있으면 나 여호와가 이상으로 나를 그에게 알리기도 하고 꿈으로 그와 말하기도 하거니와",
+      "source_text_hash": "3ce776f17466263d44f51069504c91efc005787ec1ae830d25b959aa79a46591",
+      "translation_text_hash": "47e498b988da61d5acc4ad7a6129c7ec0b74a65d0f98a72f9fb824d938dd8f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 내 말을 들으라 너희 중에 선지자가 있으면 나 여호와가 이상으로 나를 그에게 알리기도 하고 꿈으로 그와 말하기도 하거니와"
+      ],
+      "raw_text_hashes": [
+        "47e498b988da61d5acc4ad7a6129c7ec0b74a65d0f98a72f9fb824d938dd8f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:7",
+      "sequence": 4067,
+      "chapter_label": "NUM 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "My servant Moses is not so. He is faithful in all my house.",
+      "ko": "내 종 모세와는 그렇지 아니하니 그는 나의 온 집에 충성됨이라",
+      "source_text_hash": "0c4872fb30ce75bfd43dbaf92b2ec6a7e6b299d85da4146d8f23f56b4ad798ad",
+      "translation_text_hash": "2b626855c8f76cc8154abd3e99b0dd67c3f49350f269e50660f88c7f8e79ce62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 종 모세와는 그렇지 아니하니 그는 나의 온 집에 충성됨이라"
+      ],
+      "raw_text_hashes": [
+        "2b626855c8f76cc8154abd3e99b0dd67c3f49350f269e50660f88c7f8e79ce62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:8",
+      "sequence": 4068,
+      "chapter_label": "NUM 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "With him, I will speak mouth to mouth, even plainly, and not in riddles; and he shall see the LORD’s form. Why then were you not afraid to speak against my servant, against Moses?”",
+      "ko": "그와는 내가 대면하여 명백히 말하고 은밀한 말로 아니하며 그는 또 여호와의 형상을 보겠거늘 너희가 어찌하여 내 종 모세 비방하기를 두려워 아니하느냐",
+      "source_text_hash": "b64679e6247dc2c2e8a72aaf73898bba8abd531908d3ce0b2669c01c22c24183",
+      "translation_text_hash": "a49d4056a8fbe5afcb9bb6987b23b56b3f681ac53aba78517c049aada70fbbec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와는 내가 대면하여 명백히 말하고 은밀한 말로 아니하며 그는 또 여호와의 형상을 보겠거늘 너희가 어찌하여 내 종 모세 비방하기를 두려워 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "a49d4056a8fbe5afcb9bb6987b23b56b3f681ac53aba78517c049aada70fbbec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:9",
+      "sequence": 4069,
+      "chapter_label": "NUM 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD’s anger burned against them; and he departed.",
+      "ko": "여호와께서 그들을 향하여 진노하시고 떠나시매",
+      "source_text_hash": "a1442c1491ce48cfa07e33c9aab49e3585b46f2ffaa160df1300e98d311b1b4e",
+      "translation_text_hash": "240ad1d0567f8afc34e9073555b2555539ba30655076bd3b108cc9c0c2b04361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 향하여 진노하시고 떠나시매"
+      ],
+      "raw_text_hashes": [
+        "240ad1d0567f8afc34e9073555b2555539ba30655076bd3b108cc9c0c2b04361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:10",
+      "sequence": 4070,
+      "chapter_label": "NUM 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "The cloud departed from over the Tent; and behold, Miriam was leprous, as white as snow. Aaron looked at Miriam, and behold, she was leprous.",
+      "ko": "구름이 장막 위에서 떠나갔고 미리암은 문둥병이 들려 눈과 같더라 아론이 미리암을 본즉 문둥병이 들었는지라",
+      "source_text_hash": "ab6a7fe3f712864f86e1c8135a302de01fabc6ed631eb3fcb24277d9f7a88fb7",
+      "translation_text_hash": "3bf23b85acc454ca9bd16d05272fdbd3e00d5d2a8a3b3ece39af9423dfcfabbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 장막 위에서 떠나갔고 미리암은 문둥병이 들려 눈과 같더라 아론이 미리암을 본즉 문둥병이 들었는지라"
+      ],
+      "raw_text_hashes": [
+        "3bf23b85acc454ca9bd16d05272fdbd3e00d5d2a8a3b3ece39af9423dfcfabbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:11",
+      "sequence": 4071,
+      "chapter_label": "NUM 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "Aaron said to Moses, “Oh, my lord, please don’t count this sin against us, in which we have done foolishly, and in which we have sinned.",
+      "ko": "아론이 이에 모세에게 이르되 슬프다 내 주여 우리가 우매한 일을 하여 죄를 얻었으나 청컨대 그 허물을 우리에게 돌리지 마소서",
+      "source_text_hash": "2d41a6e80f8031752c87865fd7f36cbb5015419b9e56ace56f62edaf3ca58bdc",
+      "translation_text_hash": "e4c6864eb330c216717ba2c7b3f1878b24fd575214cb5cd82305cb9ca670d1ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 이에 모세에게 이르되 슬프다 내 주여 우리가 우매한 일을 하여 죄를 얻었으나 청컨대 그 허물을 우리에게 돌리지 마소서"
+      ],
+      "raw_text_hashes": [
+        "e4c6864eb330c216717ba2c7b3f1878b24fd575214cb5cd82305cb9ca670d1ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:12",
+      "sequence": 4072,
+      "chapter_label": "NUM 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Let her not, I pray, be as one dead, of whom the flesh is half consumed when he comes out of his mother’s womb.”",
+      "ko": "그로 살이 반이나 썩고 죽어서 모태에서 나온 자 같이 되게 마옵소서",
+      "source_text_hash": "d8a745d4cfc461c048a1b5021634f2bafa1f996b8f76c964c43c89c4f8048260",
+      "translation_text_hash": "c52927395b6abd44a414399e523e94ba51038ff34d78ab9250b38d22ecdb8e7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그로 살이 반이나 썩고 죽어서 모태에서 나온 자 같이 되게 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "c52927395b6abd44a414399e523e94ba51038ff34d78ab9250b38d22ecdb8e7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:13",
+      "sequence": 4073,
+      "chapter_label": "NUM 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Moses cried to the LORD, saying, “Heal her, God, I beg you!”",
+      "ko": "모세가 여호와께 부르짖어 가로되 하나님이여 원컨대 그를 고쳐 주옵소서",
+      "source_text_hash": "cfaac6c73c432132146b290fe92472ee5cae526cdb62a4a7083c4192416ebe84",
+      "translation_text_hash": "de4fae2327974871fc973964e1cc5421628cb610e2deab5939b6dbebd5acdb52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 부르짖어 가로되 하나님이여 원컨대 그를 고쳐 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "de4fae2327974871fc973964e1cc5421628cb610e2deab5939b6dbebd5acdb52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:14",
+      "sequence": 4074,
+      "chapter_label": "NUM 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD said to Moses, “If her father had but spit in her face, shouldn’t she be ashamed seven days? Let her be shut up outside of the camp seven days, and after that she shall be brought in again.”",
+      "ko": "여호와께서 모세에게 이르시되 그의 아비가 그의 얼굴에 침을 뱉았을찌라도 그가 칠일간 부끄러워하지 않겠느냐 그런즉 그를 진 밖에 칠일을 가두고 그 후에 들어 오게 할찌니라 하시니",
+      "source_text_hash": "ae739cb1ffc313888fe750e29a0b08546fb62e4bc0adca11985cb51c5027af60",
+      "translation_text_hash": "414fe0efea277443e2d2d1b3144fbef846da84656c1061922601d935c1b51956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 그의 아비가 그의 얼굴에 침을 뱉았을찌라도 그가 칠일간 부끄러워하지 않겠느냐 그런즉 그를 진 밖에 칠일을 가두고 그 후에 들어 오게 할찌니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "414fe0efea277443e2d2d1b3144fbef846da84656c1061922601d935c1b51956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:15",
+      "sequence": 4075,
+      "chapter_label": "NUM 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Miriam was shut up outside of the camp seven days, and the people didn’t travel until Miriam was brought in again.",
+      "ko": "이에 미리암이 진 밖에 칠일동안 갇혔고 백성은 그를 다시 들어오게 하기까지 진행치 아니하다가",
+      "source_text_hash": "74ce7f0f0f5e4f0b92a509776bae89bad52fceab6ddf38e5c3de8021ae311f8b",
+      "translation_text_hash": "419ded847d52caff70c6727b58925250b65563bbead93ba653c8dfbce3c2b716",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 미리암이 진 밖에 칠일동안 갇혔고 백성은 그를 다시 들어오게 하기까지 진행치 아니하다가"
+      ],
+      "raw_text_hashes": [
+        "419ded847d52caff70c6727b58925250b65563bbead93ba653c8dfbce3c2b716"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:12:16",
+      "sequence": 4076,
+      "chapter_label": "NUM 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "Afterward the people traveled from Hazeroth, and encamped in the wilderness of Paran.",
+      "ko": "그 후에 백성이 하세롯에서 진행하여 바란 광야에 진을 치니라",
+      "source_text_hash": "47eb8856ab252decc2973cf6a9e069ad6d83cdfc02c3ca99fe25e766f4c89e20",
+      "translation_text_hash": "39dd9fba0bfdd06e5b7dbe10e9d8ba2e8d4f74dcad3085e0a0ab4c4c278e7999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 백성이 하세롯에서 진행하여 바란 광야에 진을 치니라"
+      ],
+      "raw_text_hashes": [
+        "39dd9fba0bfdd06e5b7dbe10e9d8ba2e8d4f74dcad3085e0a0ab4c4c278e7999"
+      ]
+    }
+  ]
+}

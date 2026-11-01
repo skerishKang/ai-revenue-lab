@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:102",
+  "unit_ordinal": 580,
+  "unit_label": "PSA 102",
+  "book_code": "PSA",
+  "chapter_number": 102,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:102:1",
+      "sequence": 15523,
+      "chapter_label": "PSA 102",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 1
+        }
+      ],
+      "en": "Hear my prayer, LORD! Let my cry come to you.",
+      "ko": "여호와여 내 기도를 들으시고 나의 부르짖음을 주께 상달케 하소서",
+      "source_text_hash": "b34cc788d96c3b5bc8fa24a8f13c5248639e80999fcdf21e39302dd4aa9f906a",
+      "translation_text_hash": "c5f83db19527f6f164d72a025011936f783ac4cfcc613fc271a77984a84410f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 기도를 들으시고 나의 부르짖음을 주께 상달케 하소서"
+      ],
+      "raw_text_hashes": [
+        "c5f83db19527f6f164d72a025011936f783ac4cfcc613fc271a77984a84410f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:2",
+      "sequence": 15524,
+      "chapter_label": "PSA 102",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 2
+        }
+      ],
+      "en": "Don’t hide your face from me in the day of my distress. Turn your ear to me. Answer me quickly in the day when I call.",
+      "ko": "나의 괴로운 날에 주의 얼굴을 내게 숨기지 마소서 주의 귀를 기울이사 내가 부르짖는 날에 속히 내게 응답하소서",
+      "source_text_hash": "2a9a8585be478428fbbc101e9b3d95a075c6f6c0b56b36bcc94844fbd8049d15",
+      "translation_text_hash": "e59aca393a4619a0c867f851be06d697f818bf5f8944ccd48ec16a4f6e9ef43e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 괴로운 날에 주의 얼굴을 내게 숨기지 마소서 주의 귀를 기울이사 내가 부르짖는 날에 속히 내게 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "e59aca393a4619a0c867f851be06d697f818bf5f8944ccd48ec16a4f6e9ef43e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:3",
+      "sequence": 15525,
+      "chapter_label": "PSA 102",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 3
+        }
+      ],
+      "en": "For my days consume away like smoke. My bones are burned as a torch.",
+      "ko": "대저 내 날이 연기 같이 소멸하며 내 뼈가 냉과리 같이 탔나이다",
+      "source_text_hash": "6bbf75926cb6396eea40164f7554d454ec08b2a64680df6279898e7356d1d3b4",
+      "translation_text_hash": "e7e0ab9a83a12cea1a4e91c741426f9616b7524cc4a33e5ac89a472728dec8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내 날이 연기 같이 소멸하며 내 뼈가 냉과리 같이 탔나이다"
+      ],
+      "raw_text_hashes": [
+        "e7e0ab9a83a12cea1a4e91c741426f9616b7524cc4a33e5ac89a472728dec8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:4",
+      "sequence": 15526,
+      "chapter_label": "PSA 102",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 4
+        }
+      ],
+      "en": "My heart is blighted like grass, and withered, for I forget to eat my bread.",
+      "ko": "내가 음식 먹기도 잊었음으로 내 마음이 풀 같이 쇠잔하였사오며",
+      "source_text_hash": "124475cbddbe62a5ff85d76619899468c6e17f0c8f15f6559a7028314f0cb9e6",
+      "translation_text_hash": "a7480b2d4cc3d2de03ad2e9744d909c527a364c725d1e76ae04e43aaf6016d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 음식 먹기도 잊었음으로 내 마음이 풀 같이 쇠잔하였사오며"
+      ],
+      "raw_text_hashes": [
+        "a7480b2d4cc3d2de03ad2e9744d909c527a364c725d1e76ae04e43aaf6016d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:5",
+      "sequence": 15527,
+      "chapter_label": "PSA 102",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 5
+        }
+      ],
+      "en": "By reason of the voice of my groaning, my bones stick to my skin.",
+      "ko": "나의 탄식 소리를 인하여 나의 살이 뼈에 붙었나이다",
+      "source_text_hash": "e50192e98bee14b0fc4dd684c2b4cf356bb407a32761e4ce0cfa797911f506f2",
+      "translation_text_hash": "73b5de35f411bb67c1e5b997f0b5a42071b443600e835b25be9ff4768faf50ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 탄식 소리를 인하여 나의 살이 뼈에 붙었나이다"
+      ],
+      "raw_text_hashes": [
+        "73b5de35f411bb67c1e5b997f0b5a42071b443600e835b25be9ff4768faf50ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:6",
+      "sequence": 15528,
+      "chapter_label": "PSA 102",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 6
+        }
+      ],
+      "en": "I am like a pelican of the wilderness. I have become as an owl of the waste places.",
+      "ko": "나는 광야의 당아새 같고 황폐한 곳의 부엉이 같이 되었사오며",
+      "source_text_hash": "139328cd8b932802d663fbb9209cb6ede354401845f65d97e387da13dac0f418",
+      "translation_text_hash": "c53497dca30b6d10eff112fdfffc117b2d91ab652e5f197edf04fa6060c61889",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 광야의 당아새 같고 황폐한 곳의 부엉이 같이 되었사오며"
+      ],
+      "raw_text_hashes": [
+        "c53497dca30b6d10eff112fdfffc117b2d91ab652e5f197edf04fa6060c61889"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:7",
+      "sequence": 15529,
+      "chapter_label": "PSA 102",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 7
+        }
+      ],
+      "en": "I watch, and have become like a sparrow that is alone on the housetop.",
+      "ko": "내가 밤을 새우니 지붕 위에 외로운 참새 같으니이다",
+      "source_text_hash": "d3aa2f47f3b6779830bec279a0dcafa4cab9011edfb95b1b84fc075ff043c9a2",
+      "translation_text_hash": "b14ab24e0f52596a8915f8bfdcf34c25b6c53349e012bb26614358e066856116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 밤을 새우니 지붕 위에 외로운 참새 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "b14ab24e0f52596a8915f8bfdcf34c25b6c53349e012bb26614358e066856116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:8",
+      "sequence": 15530,
+      "chapter_label": "PSA 102",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 8
+        }
+      ],
+      "en": "My enemies reproach me all day. Those who are mad at me use my name as a curse.",
+      "ko": "내 원수들이 종일 나를 훼방하며 나를 대하여 미칠듯이 날치는 자들이 나를 가리켜 맹세하나이다",
+      "source_text_hash": "cd9833debb017eaa1802a50952f1b8213c8c3b848eb83c4faa66c2c7c6739b7d",
+      "translation_text_hash": "c426352d439abc53a63a299e21bd91558ef382df84fccbb9bb6428950edf02b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 원수들이 종일 나를 훼방하며 나를 대하여 미칠듯이 날치는 자들이 나를 가리켜 맹세하나이다"
+      ],
+      "raw_text_hashes": [
+        "c426352d439abc53a63a299e21bd91558ef382df84fccbb9bb6428950edf02b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:9",
+      "sequence": 15531,
+      "chapter_label": "PSA 102",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 9
+        }
+      ],
+      "en": "For I have eaten ashes like bread, and mixed my drink with tears,",
+      "ko": "나는 재를 양식 같이 먹으며 나의 마심에는 눈물을 섞었사오니",
+      "source_text_hash": "f41dfc1a89cc0b6dd82194f75ce18b6f63ea25f1e8dab7ba443ab46cf67034fe",
+      "translation_text_hash": "a0213edc7c69151ec031aae8ff56e91144e5d4a5825adb621377b4a629282c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 재를 양식 같이 먹으며 나의 마심에는 눈물을 섞었사오니"
+      ],
+      "raw_text_hashes": [
+        "a0213edc7c69151ec031aae8ff56e91144e5d4a5825adb621377b4a629282c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:10",
+      "sequence": 15532,
+      "chapter_label": "PSA 102",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 10
+        }
+      ],
+      "en": "because of your indignation and your wrath; for you have taken me up and thrown me away.",
+      "ko": "이는 주의 분과 노를 인함이라 주께서 나를 드셨다가 던지셨나이다",
+      "source_text_hash": "0d54077a5d491381425460a32dea0693dc6435cdeb952d1276418ae019fac40c",
+      "translation_text_hash": "b5615276ae735000a13a9cba020be3389dc17031e1391aa0a3757934b389f149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주의 분과 노를 인함이라 주께서 나를 드셨다가 던지셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b5615276ae735000a13a9cba020be3389dc17031e1391aa0a3757934b389f149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:11",
+      "sequence": 15533,
+      "chapter_label": "PSA 102",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 11
+        }
+      ],
+      "en": "My days are like a long shadow. I have withered like grass.",
+      "ko": "내 날이 기울어지는 그림자 같고 내가 풀의 쇠잔함 같으니이다",
+      "source_text_hash": "c743d57c37baa2371094b224ebb16668f015b9430f7d4204f3b3ac5f8a550556",
+      "translation_text_hash": "9efd64fc68e1b5b15a4a151e50ecaf07d2e148e213b9b048b4122e2184c0e4c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 날이 기울어지는 그림자 같고 내가 풀의 쇠잔함 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "9efd64fc68e1b5b15a4a151e50ecaf07d2e148e213b9b048b4122e2184c0e4c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:12",
+      "sequence": 15534,
+      "chapter_label": "PSA 102",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 12
+        }
+      ],
+      "en": "But you, LORD, will remain forever; your renown endures to all generations.",
+      "ko": "여호와여 주는 영원히 계시고 주의 기념 명칭은 대대에 이르리이다",
+      "source_text_hash": "d8519381c20bdc95d037d6fad5078b5036ba0b0f16e8d22714537b91bb16fb8b",
+      "translation_text_hash": "53b6c49f6857c211c278ff00596b3603a8235667c726f14074191d5bdefa1f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 영원히 계시고 주의 기념 명칭은 대대에 이르리이다"
+      ],
+      "raw_text_hashes": [
+        "53b6c49f6857c211c278ff00596b3603a8235667c726f14074191d5bdefa1f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:13",
+      "sequence": 15535,
+      "chapter_label": "PSA 102",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 13
+        }
+      ],
+      "en": "You will arise and have mercy on Zion, for it is time to have pity on her. Yes, the set time has come.",
+      "ko": "주께서 일어나사 시온을 긍휼히 여기시리니 지금은 그를 긍휼히 여기실 때라 정한 기한이 옴이니이다",
+      "source_text_hash": "91c806bb8b26418d55eb0f5c45931badd8793424d487e35ee92dbad6c27915e1",
+      "translation_text_hash": "3796b4832dd273bdeccf31f795cfe1e0fe691b3ce6d1aa4a884a38266a993d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 일어나사 시온을 긍휼히 여기시리니 지금은 그를 긍휼히 여기실 때라 정한 기한이 옴이니이다"
+      ],
+      "raw_text_hashes": [
+        "3796b4832dd273bdeccf31f795cfe1e0fe691b3ce6d1aa4a884a38266a993d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:14",
+      "sequence": 15536,
+      "chapter_label": "PSA 102",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 14
+        }
+      ],
+      "en": "For your servants take pleasure in her stones, and have pity on her dust.",
+      "ko": "주의 종들이 시온의 돌들을 즐거워하며 그 티끌도 연휼히 여기나이다",
+      "source_text_hash": "9743fcebb00042aacf98dac2ac2fee31e10df3d6ebb43a6e06dc87a4d96d6beb",
+      "translation_text_hash": "84465218f7b5518839e61e076cef83f50e6a3ff3083c06a49392ae169150dc58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종들이 시온의 돌들을 즐거워하며 그 티끌도 연휼히 여기나이다"
+      ],
+      "raw_text_hashes": [
+        "84465218f7b5518839e61e076cef83f50e6a3ff3083c06a49392ae169150dc58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:15",
+      "sequence": 15537,
+      "chapter_label": "PSA 102",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 15
+        }
+      ],
+      "en": "So the nations will fear the LORD’s name, all the kings of the earth your glory.",
+      "ko": "이에 열방이 여호와의 이름을 경외하며 세계 열왕이 주의 영광을 경외하리니",
+      "source_text_hash": "0f63f752a6cb6455240d1bf5902a1ce4738c56accb777166956644c69461ef62",
+      "translation_text_hash": "e56b39e720072c36128585b81149a1208ded74b4d9c4bfb337eae953f627a11f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 열방이 여호와의 이름을 경외하며 세계 열왕이 주의 영광을 경외하리니"
+      ],
+      "raw_text_hashes": [
+        "e56b39e720072c36128585b81149a1208ded74b4d9c4bfb337eae953f627a11f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:16",
+      "sequence": 15538,
+      "chapter_label": "PSA 102",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 16
+        }
+      ],
+      "en": "For the LORD has built up Zion. He has appeared in his glory.",
+      "ko": "대저 여호와께서 시온을 건설하시고 그 영광 중에 나타나셨음이라",
+      "source_text_hash": "2473509b93f6fa1ad0b4bde0dc22c51c99ec0507a143d1ecc18614dd6220b6cf",
+      "translation_text_hash": "3b8ee9f7875d06efeb2fd14f0d71257b5eeca425f1fa8ec1755d1881b344bfb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 시온을 건설하시고 그 영광 중에 나타나셨음이라"
+      ],
+      "raw_text_hashes": [
+        "3b8ee9f7875d06efeb2fd14f0d71257b5eeca425f1fa8ec1755d1881b344bfb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:17",
+      "sequence": 15539,
+      "chapter_label": "PSA 102",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 17
+        }
+      ],
+      "en": "He has responded to the prayer of the destitute, and has not despised their prayer.",
+      "ko": "여호와께서 빈궁한 자의 기도를 돌아보시며 저희 기도를 멸시치 아니하셨도다",
+      "source_text_hash": "a2a853e1a6d3471cb98d93a4b9c54bf6a8bdef87ca07eeb1b53e72f90afeed45",
+      "translation_text_hash": "26a61c7e1b3302dff75f947b5ab2ae6f36963e052ce0114109f9a623a6a17716",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 빈궁한 자의 기도를 돌아보시며 저희 기도를 멸시치 아니하셨도다"
+      ],
+      "raw_text_hashes": [
+        "26a61c7e1b3302dff75f947b5ab2ae6f36963e052ce0114109f9a623a6a17716"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:18",
+      "sequence": 15540,
+      "chapter_label": "PSA 102",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 18
+        }
+      ],
+      "en": "This will be written for the generation to come. A people which will be created will praise the LORD,",
+      "ko": "이 일이 장래 세대를 위하여 기록되리니 창조함을 받을 백성이 여호와를 찬송하리로다",
+      "source_text_hash": "c7e629d8369e57046bb0acaa543be38cec0b8bd75707a7e808c22706b2b99db6",
+      "translation_text_hash": "8b1a7374288935bcdd0c314f945688bcb92b7757a151c665bf33a1d3eba38dd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 장래 세대를 위하여 기록되리니 창조함을 받을 백성이 여호와를 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "8b1a7374288935bcdd0c314f945688bcb92b7757a151c665bf33a1d3eba38dd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:19",
+      "sequence": 15541,
+      "chapter_label": "PSA 102",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 19
+        }
+      ],
+      "en": "for he has looked down from the height of his sanctuary. From heaven, the LORD saw the earth,",
+      "ko": "여호와께서 그 높은 성소에서 하감하시며 하늘에서 땅을 감찰하셨으니",
+      "source_text_hash": "4bfda899a13dcf13c577a47dbc9800d2f64149430c5e183cb145f9749aeec4fe",
+      "translation_text_hash": "ab46e8fc7e00ac852327842420606ce1eb3ec0929dc9437c71742d83489759ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 높은 성소에서 하감하시며 하늘에서 땅을 감찰하셨으니"
+      ],
+      "raw_text_hashes": [
+        "ab46e8fc7e00ac852327842420606ce1eb3ec0929dc9437c71742d83489759ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:20",
+      "sequence": 15542,
+      "chapter_label": "PSA 102",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 20
+        }
+      ],
+      "en": "to hear the groans of the prisoner, to free those who are condemned to death,",
+      "ko": "이는 갇힌 자의 탄식을 들으시며 죽이기로 정한 자를 해방하사",
+      "source_text_hash": "851d0b7376f52aa2a764955153113d187b9e92832fdf4cb7993ae30db542ff0c",
+      "translation_text_hash": "87d868af7b74e503df4104f7b81a813cd9c151d0cd44fb990c9d952be9d09871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 갇힌 자의 탄식을 들으시며 죽이기로 정한 자를 해방하사"
+      ],
+      "raw_text_hashes": [
+        "87d868af7b74e503df4104f7b81a813cd9c151d0cd44fb990c9d952be9d09871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:21",
+      "sequence": 15543,
+      "chapter_label": "PSA 102",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 21
+        }
+      ],
+      "en": "that men may declare the LORD’s name in Zion, and his praise in Jerusalem,",
+      "ko": "여호와의 이름을 시온에서, 그 영예를 예루살렘에서 선포케 하려 하심이라",
+      "source_text_hash": "057e7a5d18e66bc089d11a42457449c3eff1f2dfade4e9f626d1dc4875a313cf",
+      "translation_text_hash": "5c9b715c463ebdfd4001a158303e56b34fa9e1f5b0ba45c5cdf2e29ee7446478",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름을 시온에서, 그 영예를 예루살렘에서 선포케 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "5c9b715c463ebdfd4001a158303e56b34fa9e1f5b0ba45c5cdf2e29ee7446478"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:22",
+      "sequence": 15544,
+      "chapter_label": "PSA 102",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 22
+        }
+      ],
+      "en": "when the peoples are gathered together, the kingdoms, to serve the LORD.",
+      "ko": "때에 민족들과 나라들이 모여 여호와를 섬기리로다",
+      "source_text_hash": "61b78ce5789df428ca51d8bb355e8b4de6d23b0d041f16ec2fdaaaf70d998ebb",
+      "translation_text_hash": "d0ac99e82cf8cd03d6014f150e929130457dda7612648b47d9b59d8888c9404e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 민족들과 나라들이 모여 여호와를 섬기리로다"
+      ],
+      "raw_text_hashes": [
+        "d0ac99e82cf8cd03d6014f150e929130457dda7612648b47d9b59d8888c9404e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:23",
+      "sequence": 15545,
+      "chapter_label": "PSA 102",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 23
+        }
+      ],
+      "en": "He weakened my strength along the course. He shortened my days.",
+      "ko": "저가 내 힘을 중도에 쇠약케 하시며 내 날을 단촉케 하셨도다",
+      "source_text_hash": "64b5b36c9646fc7243e01e6647a1d378a5832df3943b74837e226d15b6cabb6c",
+      "translation_text_hash": "9cbd43651cff77913aaee6a7b3098eaec0874d77716c9dbe3d94ab20eb7b34e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 내 힘을 중도에 쇠약케 하시며 내 날을 단촉케 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "9cbd43651cff77913aaee6a7b3098eaec0874d77716c9dbe3d94ab20eb7b34e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:24",
+      "sequence": 15546,
+      "chapter_label": "PSA 102",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 24
+        }
+      ],
+      "en": "I said, “My God, don’t take me away in the middle of my days. Your years are throughout all generations.",
+      "ko": "나의 말이 나의 하나님이여 나의 중년에 나를 데려가지 마옵소서 주의 년대는 대대에 무궁하니이다",
+      "source_text_hash": "d8f3f0aadced0ab255da87599c63bbc2abfbf318fe67d3d171ea1f8de690d5e3",
+      "translation_text_hash": "9b4646461e1dea119a95a4d47e551cc4bf83dc29529e12ab165cc6a23598936c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 말이 나의 하나님이여 나의 중년에 나를 데려가지 마옵소서 주의 년대는 대대에 무궁하니이다"
+      ],
+      "raw_text_hashes": [
+        "9b4646461e1dea119a95a4d47e551cc4bf83dc29529e12ab165cc6a23598936c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:25",
+      "sequence": 15547,
+      "chapter_label": "PSA 102",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 25
+        }
+      ],
+      "en": "Of old, you laid the foundation of the earth. The heavens are the work of your hands.",
+      "ko": "주께서 옛적에 땅의 기초를 두셨사오며 하늘도 주의 손으로 지으신바니이다",
+      "source_text_hash": "d09feaae56c6a1497abd086065c7101872547821d27a025702b873a646ca60a4",
+      "translation_text_hash": "def29e9da6a9d6ac0d9cb05040749e1cc72db872821f0386c5e49189291c4ff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 옛적에 땅의 기초를 두셨사오며 하늘도 주의 손으로 지으신바니이다"
+      ],
+      "raw_text_hashes": [
+        "def29e9da6a9d6ac0d9cb05040749e1cc72db872821f0386c5e49189291c4ff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:26",
+      "sequence": 15548,
+      "chapter_label": "PSA 102",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 26
+        }
+      ],
+      "en": "They will perish, but you will endure. Yes, all of them will wear out like a garment. You will change them like a cloak, and they will be changed.",
+      "ko": "천지는 없어지려니와 주는 영존하시겠고 그것들은 다 옷 같이 낡으리니 의복 같이 바꾸시면 바뀌려니와",
+      "source_text_hash": "e8102df366b24bed1e5bcb7add2a912b2ffb00bf4524073194a28a07cec79296",
+      "translation_text_hash": "3d300d235fea505cc4276aecb188bd3ade115acd8c1046cd39c02d79fddd83a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지는 없어지려니와 주는 영존하시겠고 그것들은 다 옷 같이 낡으리니 의복 같이 바꾸시면 바뀌려니와"
+      ],
+      "raw_text_hashes": [
+        "3d300d235fea505cc4276aecb188bd3ade115acd8c1046cd39c02d79fddd83a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:27",
+      "sequence": 15549,
+      "chapter_label": "PSA 102",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 27
+        }
+      ],
+      "en": "But you are the same. Your years will have no end.",
+      "ko": "주는 여상하시고 주의 년대는 무궁하리이다",
+      "source_text_hash": "8fce4a5a30baa6aaaf1fcd47f01df63f1942a300fbe8d6491c17d05b1fe9396a",
+      "translation_text_hash": "9ea5fd52bf95e732b9d38190d53fc6b9863382d578e21d2dc9af13d501940882",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 여상하시고 주의 년대는 무궁하리이다"
+      ],
+      "raw_text_hashes": [
+        "9ea5fd52bf95e732b9d38190d53fc6b9863382d578e21d2dc9af13d501940882"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:102:28",
+      "sequence": 15550,
+      "chapter_label": "PSA 102",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 102,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 102,
+          "verse": 28
+        }
+      ],
+      "en": "The children of your servants will continue. Their offspring will be established before you.”",
+      "ko": "주의 종들의 자손이 항상 있고 그 후손이 주의 앞에 굳게 서리이다 하였도다",
+      "source_text_hash": "d87eedcbaab6b03f97d31ce8754518e7cabbec5ba6988f1be2916ec7216a7a9b",
+      "translation_text_hash": "65eed017cda90718e57236df0d9a24b32ad8bfe95ff37ed3790a04b1fc1f00c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종들의 자손이 항상 있고 그 후손이 주의 앞에 굳게 서리이다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "65eed017cda90718e57236df0d9a24b32ad8bfe95ff37ed3790a04b1fc1f00c6"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:002",
+  "unit_ordinal": 293,
+  "unit_label": "1KI 2",
+  "book_code": "1KI",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:2:1",
+      "sequence": 8772,
+      "chapter_label": "1KI 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Now the days of David came near that he should die; and he commanded Solomon his son, saying,",
+      "ko": "다윗이 죽을 날이 임박하매 그 아들 솔로몬에게 명하여 가로되",
+      "source_text_hash": "b6ca256bb191dedd569a728fd9cfdf4be4f6ca461b409c8572e9340e2e062beb",
+      "translation_text_hash": "df8d251cc5198b8226068610e36cca8344ed1989caf687b271e3910b8f1aaa57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 죽을 날이 임박하매 그 아들 솔로몬에게 명하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "df8d251cc5198b8226068610e36cca8344ed1989caf687b271e3910b8f1aaa57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:2",
+      "sequence": 8773,
+      "chapter_label": "1KI 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "“I am going the way of all the earth. You be strong therefore, and show yourself a man;",
+      "ko": "내가 이제 세상 모든 사람의 가는 길로 가게 되었노니 너는 힘써 대장부가 되고",
+      "source_text_hash": "ae72eb907f254e58d90133b86168c07c52528e232dce68bb382a141025b05afa",
+      "translation_text_hash": "56822a3774cc40e743763d48abec46ee68f05d5a388631697a9f94a3c5688559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제 세상 모든 사람의 가는 길로 가게 되었노니 너는 힘써 대장부가 되고"
+      ],
+      "raw_text_hashes": [
+        "56822a3774cc40e743763d48abec46ee68f05d5a388631697a9f94a3c5688559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:3",
+      "sequence": 8774,
+      "chapter_label": "1KI 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "and keep the instruction of the LORD your God, to walk in his ways, to keep his statutes, his commandments, his ordinances, and his testimonies, according to that which is written in the law of Moses, that you may prosper in all that you do and wherever you turn yourself.",
+      "ko": "네 하나님 여호와의 명을 지켜 그 길로 행하여 그 법률과 계명과 율례와 증거를 모세의 율법에 기록된대로 지키라 그리하면 네가 무릇 무엇을 하든지 어디로 가든지 형통할찌라",
+      "source_text_hash": "57da4e476c88f42bf28c1cda3bcd9815ab377360a44c3bdb535faa57a485ecdb",
+      "translation_text_hash": "29cfbcb368f9088895af6fac67d14b317e76479c3977b0260766e8b74e43fecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와의 명을 지켜 그 길로 행하여 그 법률과 계명과 율례와 증거를 모세의 율법에 기록된대로 지키라 그리하면 네가 무릇 무엇을 하든지 어디로 가든지 형통할찌라"
+      ],
+      "raw_text_hashes": [
+        "29cfbcb368f9088895af6fac67d14b317e76479c3977b0260766e8b74e43fecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:4",
+      "sequence": 8775,
+      "chapter_label": "1KI 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Then the LORD may establish his word which he spoke concerning me, saying, ‘If your children are careful of their way, to walk before me in truth with all their heart and with all their soul, there shall not fail you,’ he said, ‘a man on the throne of Israel.’",
+      "ko": "여호와께서 내 일에 대하여 말씀하시기를 만일 네 자손이 그 길을 삼가 마음을 다하고 성품을 다하여 진실히 내 앞에서 행하면 이스라엘 왕위에 오를 사람이 네게서 끊어지지 아니하리라 하신 말씀을 확실히 이루게 하시리라",
+      "source_text_hash": "7832a6a1d3de3c5d35bca71e78c4934ea843ea146ae5f24a0dcfd1dea7eec563",
+      "translation_text_hash": "1d20b387cad870bf6b7fce08d782e6cda2b6803025d4adc75bbc81825a2c3661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 일에 대하여 말씀하시기를 만일 네 자손이 그 길을 삼가 마음을 다하고 성품을 다하여 진실히 내 앞에서 행하면 이스라엘 왕위에 오를 사람이 네게서 끊어지지 아니하리라 하신 말씀을 확실히 이루게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "1d20b387cad870bf6b7fce08d782e6cda2b6803025d4adc75bbc81825a2c3661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:5",
+      "sequence": 8776,
+      "chapter_label": "1KI 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "“Moreover you know also what Joab the son of Zeruiah did to me, even what he did to the two captains of the armies of Israel, to Abner the son of Ner and to Amasa the son of Jether, whom he killed, and shed the blood of war in peace, and put the blood of war on his sash that was around his waist and in his sandals that were on his feet.",
+      "ko": "스루야의 아들 요압이 내게 행한 일 곧 이스라엘 군대의 두 장관 넬의 아들 아브넬과 예델의 아들 아마사에게 행한 일을 네가 알거니와 저가 저희를 죽여 태평시대에 전쟁의 피를 흘리고 전쟁의 피로 자기의 허리에 띤 띠와 발에 신은 신에 묻혔으니",
+      "source_text_hash": "a2f29657d4ee6f99b6ad87d382f8baa0aa782c176d01b082423bbd5612851b30",
+      "translation_text_hash": "dc88603d29041bf6a7a1115199e65f98981232bc6ce547098b0dd3410b062b7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 요압이 내게 행한 일 곧 이스라엘 군대의 두 장관 넬의 아들 아브넬과 예델의 아들 아마사에게 행한 일을 네가 알거니와 저가 저희를 죽여 태평시대에 전쟁의 피를 흘리고 전쟁의 피로 자기의 허리에 띤 띠와 발에 신은 신에 묻혔으니"
+      ],
+      "raw_text_hashes": [
+        "dc88603d29041bf6a7a1115199e65f98981232bc6ce547098b0dd3410b062b7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:6",
+      "sequence": 8777,
+      "chapter_label": "1KI 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Do therefore according to your wisdom, and don’t let his gray head go down to Sheol in peace.",
+      "ko": "네 지혜대로 행하여 그 백발로 평안히 음부에 내려가지 못하게 하라",
+      "source_text_hash": "624df7cd32d752492af1bdb53b55bfa858708108274a3fad6a3392bb99e604c7",
+      "translation_text_hash": "f6fdee78adc22add24b0720c2d1d05da67ab113dcdfdb599b0e46482a017fab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 지혜대로 행하여 그 백발로 평안히 음부에 내려가지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "f6fdee78adc22add24b0720c2d1d05da67ab113dcdfdb599b0e46482a017fab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:7",
+      "sequence": 8778,
+      "chapter_label": "1KI 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "But show kindness to the sons of Barzillai the Gileadite, and let them be among those who eat at your table; for so they came to me when I fled from Absalom your brother.",
+      "ko": "마땅히 길르앗 바실래의 아들들에게 은총을 베풀어 저희로 네 상에서 먹는 자 중에 참예하게 하라 내가 네 형 압살롬의 낯을 피하여 도망할 때에 저희가 내게 나아왔었느니라",
+      "source_text_hash": "5f51c085b0438bf1cb7b14675c9b9483e37b3eb034643aa059ac17e0aa7ee7ff",
+      "translation_text_hash": "4bd844728d46a7f6da4949cc6a3a3213cd76c7be916078a2a6a62af07a7aa699",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마땅히 길르앗 바실래의 아들들에게 은총을 베풀어 저희로 네 상에서 먹는 자 중에 참예하게 하라 내가 네 형 압살롬의 낯을 피하여 도망할 때에 저희가 내게 나아왔었느니라"
+      ],
+      "raw_text_hashes": [
+        "4bd844728d46a7f6da4949cc6a3a3213cd76c7be916078a2a6a62af07a7aa699"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:8",
+      "sequence": 8779,
+      "chapter_label": "1KI 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "“Behold, there is with you Shimei the son of Gera, the Benjamite of Bahurim, who cursed me with a grievous curse in the day when I went to Mahanaim; but he came down to meet me at the Jordan, and I swore to him by the LORD, saying, ‘I will not put you to death with the sword.’",
+      "ko": "바후림 베냐민 사람 게라의 아들 시므이가 너와 함께 있나니 저는 내가 마하나임으로 갈 때에 독한 말로 나를 저주하였느니라 그러나 저가 요단에 내려와서 나를 영접하기로 내가 여호와를 가리켜 맹세하여 이르기를 내가 칼로 너를 죽이지 아니하리라 하였노라",
+      "source_text_hash": "472557c19200a572f431ef67d6c2cfc77528388629f2efafe4e62d5e02c0d0f5",
+      "translation_text_hash": "99355d7cbea4069f1a838f998b8ad2ec566ea5bcd1c7898a2e594523abf41677",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바후림 베냐민 사람 게라의 아들 시므이가 너와 함께 있나니 저는 내가 마하나임으로 갈 때에 독한 말로 나를 저주하였느니라 그러나 저가 요단에 내려와서 나를 영접하기로 내가 여호와를 가리켜 맹세하여 이르기를 내가 칼로 너를 죽이지 아니하리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "99355d7cbea4069f1a838f998b8ad2ec566ea5bcd1c7898a2e594523abf41677"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:9",
+      "sequence": 8780,
+      "chapter_label": "1KI 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Now therefore don’t hold him guiltless, for you are a wise man; and you will know what you ought to do to him, and you shall bring his gray head down to Sheol with blood.”",
+      "ko": "그러나 저를 무죄한 자로 여기지 말찌어다 너는 지혜 있는 사람인즉 저에게 행할 일을 알찌니 그 백발의 피를 흘려 저로 음부에 내려가게 하라",
+      "source_text_hash": "bd103dc395923a74e7f1cd610151cb6213536dee818b3e64ff4701e4afd3ff1a",
+      "translation_text_hash": "ee47c737d85c7144d2cf77c04ec5e4af83b03bda06d11afc8d0e70170b3774a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저를 무죄한 자로 여기지 말찌어다 너는 지혜 있는 사람인즉 저에게 행할 일을 알찌니 그 백발의 피를 흘려 저로 음부에 내려가게 하라"
+      ],
+      "raw_text_hashes": [
+        "ee47c737d85c7144d2cf77c04ec5e4af83b03bda06d11afc8d0e70170b3774a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:10",
+      "sequence": 8781,
+      "chapter_label": "1KI 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "David slept with his fathers, and was buried in David’s city.",
+      "ko": "다윗이 그 열조와 함께 누워자서 다윗성에 장사되니",
+      "source_text_hash": "d865b728dfe66423a8e91f87a29f75e71935f3289f6584c50a2a8f6805c7e41a",
+      "translation_text_hash": "797c07c25499e6cb06666aa8c1a6975a1c03338c1aec7e5fe1691123d7dc6db9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 열조와 함께 누워자서 다윗성에 장사되니"
+      ],
+      "raw_text_hashes": [
+        "797c07c25499e6cb06666aa8c1a6975a1c03338c1aec7e5fe1691123d7dc6db9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:11",
+      "sequence": 8782,
+      "chapter_label": "1KI 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The days that David reigned over Israel were forty years; he reigned seven years in Hebron, and he reigned thirty-three years in Jerusalem.",
+      "ko": "다윗이 이스라엘 왕이 된지 사십년이라 헤브론에서 칠년을 치리하였고 예루살렘에서 삼십 삼년을 치리하였더라",
+      "source_text_hash": "63674b0d8799756bf20eb4e34d167a6831527ca549b62b20d310b3fa498e643a",
+      "translation_text_hash": "92a12a48df71e259d4e04fad50bf66f02a47f22eda14a309a60eb721878a77f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이스라엘 왕이 된지 사십년이라 헤브론에서 칠년을 치리하였고 예루살렘에서 삼십 삼년을 치리하였더라"
+      ],
+      "raw_text_hashes": [
+        "92a12a48df71e259d4e04fad50bf66f02a47f22eda14a309a60eb721878a77f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:12",
+      "sequence": 8783,
+      "chapter_label": "1KI 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Solomon sat on David his father’s throne; and his kingdom was firmly established.",
+      "ko": "솔로몬이 그 아비 다윗의 위에 앉으니 그 나라가 심히 견고하니라",
+      "source_text_hash": "4655a090a39d86a2de56ba7566cd00d326d223d39cbc1a15ec54fc9327b6b9aa",
+      "translation_text_hash": "fa10516fba889a927c09be165defb3e8d038df487dd9deb9e5543f0af9b84f32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 그 아비 다윗의 위에 앉으니 그 나라가 심히 견고하니라"
+      ],
+      "raw_text_hashes": [
+        "fa10516fba889a927c09be165defb3e8d038df487dd9deb9e5543f0af9b84f32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:13",
+      "sequence": 8784,
+      "chapter_label": "1KI 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Then Adonijah the son of Haggith came to Bathsheba the mother of Solomon. She said, “Do you come peaceably?” He said, “Peaceably.",
+      "ko": "학깃의 아들 아도니야가 솔로몬의 모친 밧세바에게 나아온지라 밧세바가 이르되 네가 화평한 목적으로 왔느뇨 대답하되 화평한 목적이니이다",
+      "source_text_hash": "d4b8e94143bd21bcd3fb853a54f8bb1b11c94cc5f83eead8ebda0ad42a83c693",
+      "translation_text_hash": "0a153577b57d69da62b133d59cbed5fa2740e094b57205b3a408110adb1fd095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학깃의 아들 아도니야가 솔로몬의 모친 밧세바에게 나아온지라 밧세바가 이르되 네가 화평한 목적으로 왔느뇨 대답하되 화평한 목적이니이다"
+      ],
+      "raw_text_hashes": [
+        "0a153577b57d69da62b133d59cbed5fa2740e094b57205b3a408110adb1fd095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:14",
+      "sequence": 8785,
+      "chapter_label": "1KI 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "He said moreover, I have something to tell you.” She said, “Say on.”",
+      "ko": "또 가로되 내가 말씀할 일이 있나이다 밧세바가 가로되 말하라",
+      "source_text_hash": "78d23a4ac4b9480ac171f3a13e8f913fa6641352da66e146648884d18e8f9c81",
+      "translation_text_hash": "c686948188cb15f823d3fcea8ea6c5928ad0c1891d78efd6e57917d8ea56a1ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 내가 말씀할 일이 있나이다 밧세바가 가로되 말하라"
+      ],
+      "raw_text_hashes": [
+        "c686948188cb15f823d3fcea8ea6c5928ad0c1891d78efd6e57917d8ea56a1ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:15",
+      "sequence": 8786,
+      "chapter_label": "1KI 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "He said, “You know that the kingdom was mine, and that all Israel set their faces on me, that I should reign. However, the kingdom is turned around, and has become my brother’s; for it was his from the LORD.",
+      "ko": "저가 가로되 당신도 아시는바여니와 이 왕위는 내 것이었고 온 이스라엘은 다 얼굴을 내게로 향하여 왕을 삼으려 하였는데 그 왕위가 돌이켜 내 아우의 것이 되었음은 여호와께로 말미암음이니이다",
+      "source_text_hash": "48f22fdf8748db024c65627c12323df45f947864e5df3f729dd2fd66d7156cbe",
+      "translation_text_hash": "626a4c684615e00ae8f0a8d7213a7bb6fdb51a76b4de6f775632ad4a12f8fcb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가로되 당신도 아시는바여니와 이 왕위는 내 것이었고 온 이스라엘은 다 얼굴을 내게로 향하여 왕을 삼으려 하였는데 그 왕위가 돌이켜 내 아우의 것이 되었음은 여호와께로 말미암음이니이다"
+      ],
+      "raw_text_hashes": [
+        "626a4c684615e00ae8f0a8d7213a7bb6fdb51a76b4de6f775632ad4a12f8fcb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:16",
+      "sequence": 8787,
+      "chapter_label": "1KI 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Now I ask one petition of you. Don’t deny me.” She said to him, “Say on.”",
+      "ko": "이제 내가 한가지 소원을 당신에게 구하오니 내 얼굴을 괄시하지 마옵소서 밧세바가 가로되 말하라",
+      "source_text_hash": "144cad79f1d8294ed1a1bf4f3768fe050b0284208490fe3bcf3700f7091da0b3",
+      "translation_text_hash": "789d9a95b7b2116da2e55802b0ec365a07ad20478578b001720d523cfba2efcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 한가지 소원을 당신에게 구하오니 내 얼굴을 괄시하지 마옵소서 밧세바가 가로되 말하라"
+      ],
+      "raw_text_hashes": [
+        "789d9a95b7b2116da2e55802b0ec365a07ad20478578b001720d523cfba2efcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:17",
+      "sequence": 8788,
+      "chapter_label": "1KI 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "He said, “Please speak to Solomon the king (for he will not tell you ‘no’), that he give me Abishag the Shunammite as wife.”",
+      "ko": "가로되 청컨대 솔로몬왕에게 말씀하여 저로 수넴 여자 아비삭을 내게 주어 아내를 삼게 하소서 왕이 당신의 얼굴을 괄시치 아니하리이다",
+      "source_text_hash": "13c41cadb524d07891bfd231dcf2ab16def6573448fd0139a2d7381d5892b91e",
+      "translation_text_hash": "487fd1c786a450b3ca7a0a3b98fc0faf2cc25dc70d6bea39e00d7b25e9952e46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 청컨대 솔로몬왕에게 말씀하여 저로 수넴 여자 아비삭을 내게 주어 아내를 삼게 하소서 왕이 당신의 얼굴을 괄시치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "487fd1c786a450b3ca7a0a3b98fc0faf2cc25dc70d6bea39e00d7b25e9952e46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:18",
+      "sequence": 8789,
+      "chapter_label": "1KI 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Bathsheba said, “All right. I will speak for you to the king.”",
+      "ko": "밧세바가 가로되 좋다 내가 너를 위하여 왕께 말하리라",
+      "source_text_hash": "5763acaf1a10703d22129df33294b7e1870d405753dd9c12353bd1097ef1df8e",
+      "translation_text_hash": "29268ea4fa6bfd7c8c69edcff0117b63658acffeee82fc53f884290c3503f00b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밧세바가 가로되 좋다 내가 너를 위하여 왕께 말하리라"
+      ],
+      "raw_text_hashes": [
+        "29268ea4fa6bfd7c8c69edcff0117b63658acffeee82fc53f884290c3503f00b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:19",
+      "sequence": 8790,
+      "chapter_label": "1KI 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Bathsheba therefore went to King Solomon, to speak to him for Adonijah. The king rose up to meet her and bowed himself to her, and sat down on his throne and caused a throne to be set for the king’s mother; and she sat on his right hand.",
+      "ko": "밧세바가 이에 아도니야를 위하여 말하려고 솔로몬왕에게 이르니 왕이 일어나 영접하여 절한 후에 다시 위에 앉고 그 모친을 위하여 자리를 베풀게 하고 그 우편에 앉게 하는지라",
+      "source_text_hash": "6ea8aa384a12fdf2fcf9feb727f81d58001e609dbf4e927df994d9386d5ee476",
+      "translation_text_hash": "0a24fd4522006815b3b32607cab984472b767638891cfce97f165ed06ec8b49d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밧세바가 이에 아도니야를 위하여 말하려고 솔로몬왕에게 이르니 왕이 일어나 영접하여 절한 후에 다시 위에 앉고 그 모친을 위하여 자리를 베풀게 하고 그 우편에 앉게 하는지라"
+      ],
+      "raw_text_hashes": [
+        "0a24fd4522006815b3b32607cab984472b767638891cfce97f165ed06ec8b49d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:20",
+      "sequence": 8791,
+      "chapter_label": "1KI 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Then she said, “I ask one small petition of you; don’t deny me.” The king said to her, “Ask on, my mother, for I will not deny you.”",
+      "ko": "밧세바가 이르되 내가 한가지 작은 일로 왕께 구하오니 내 얼굴을 괄시하지 마소서 왕이 대답하되 내 어머니여 구하시옵소서 내가 어머니의 얼굴을 괄시하지 아니하리이다",
+      "source_text_hash": "1931dfdf2434441ff185102ff3558ea3856d4f78a9f06cd74327f41d99ad3517",
+      "translation_text_hash": "30751896d87fa4fdaf1b5a8739f6d05cebab3df84344827b006b4f43406feb99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밧세바가 이르되 내가 한가지 작은 일로 왕께 구하오니 내 얼굴을 괄시하지 마소서 왕이 대답하되 내 어머니여 구하시옵소서 내가 어머니의 얼굴을 괄시하지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "30751896d87fa4fdaf1b5a8739f6d05cebab3df84344827b006b4f43406feb99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:21",
+      "sequence": 8792,
+      "chapter_label": "1KI 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "She said, “Let Abishag the Shunammite be given to Adonijah your brother as wife.”",
+      "ko": "가로되 청컨대 수넴 여자 아비삭을 아도니야에게 주어 아내를 삼게 하소서",
+      "source_text_hash": "d5c4e2fa62cfa25705a539b09a727c341ebd2a9a6998da7915b15a72b076da34",
+      "translation_text_hash": "581e0da90ac093e77f38478672d58bb8d371068ec7caa19dd165a34dabe30ae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 청컨대 수넴 여자 아비삭을 아도니야에게 주어 아내를 삼게 하소서"
+      ],
+      "raw_text_hashes": [
+        "581e0da90ac093e77f38478672d58bb8d371068ec7caa19dd165a34dabe30ae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:22",
+      "sequence": 8793,
+      "chapter_label": "1KI 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "King Solomon answered his mother, “Why do you ask Abishag the Shunammite for Adonijah? Ask for him the kingdom also, for he is my elder brother; even for him, and for Abiathar the priest, and for Joab the son of Zeruiah.”",
+      "ko": "솔로몬왕이 그 모친에게 대답하여 가로되 어찌하여 아도니야를 위하여 수넴 여자 아비삭을 구하시나이까 저는 나의 형이오니 저를 위하여 왕위도 구하옵소서 저뿐 아니라 제사장 아비아달과 스루야의 아들 요압도 위하여 구하옵소서 하고",
+      "source_text_hash": "9084491da2eb8accf6a6a2026d415eac7133ab851b32e3c83c25121245a2360a",
+      "translation_text_hash": "66213d8d438f94091bfc0faf21864770964605dcf3d94f61e296abfb5656e593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 그 모친에게 대답하여 가로되 어찌하여 아도니야를 위하여 수넴 여자 아비삭을 구하시나이까 저는 나의 형이오니 저를 위하여 왕위도 구하옵소서 저뿐 아니라 제사장 아비아달과 스루야의 아들 요압도 위하여 구하옵소서 하고"
+      ],
+      "raw_text_hashes": [
+        "66213d8d438f94091bfc0faf21864770964605dcf3d94f61e296abfb5656e593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:23",
+      "sequence": 8794,
+      "chapter_label": "1KI 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Then King Solomon swore by the LORD, saying, “God do so to me, and more also, if Adonijah has not spoken this word against his own life.",
+      "ko": "여호와를 가리켜 맹세하여 가로되 아도니야가 이런 말을 하였은즉 그 생명을 잃지 아니하면 하나님은 내게 벌 위에 벌을 내리심이 마땅하니이다",
+      "source_text_hash": "d2a330689926ec7bdab6c25ef235b0e32a6893e3c2e19340b93e181b716c60e4",
+      "translation_text_hash": "ae52f809e6c822530c611fb26dcecfd7be9775e009a82a0e477270216f6e1cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 가리켜 맹세하여 가로되 아도니야가 이런 말을 하였은즉 그 생명을 잃지 아니하면 하나님은 내게 벌 위에 벌을 내리심이 마땅하니이다"
+      ],
+      "raw_text_hashes": [
+        "ae52f809e6c822530c611fb26dcecfd7be9775e009a82a0e477270216f6e1cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:24",
+      "sequence": 8795,
+      "chapter_label": "1KI 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "Now therefore as the LORD lives, who has established me and set me on my father David’s throne, and who has made me a house as he promised, surely Adonijah shall be put to death today.”",
+      "ko": "나를 세워 내 부친 다윗의 위에 오르게 하시고 허락하신 말씀대로 나를 위하여 집을 세우신 여호와의 사심을 가리켜 맹세하노니 아도니야는 오늘날 죽임을 당하리라 하고",
+      "source_text_hash": "14423e9b9911eba9709473ff61bc5995758d12665083226de7c6782222547954",
+      "translation_text_hash": "5896c8b4109d7812411253ee4890fedd5b16a765aadeab39928911c0c0ca2a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 세워 내 부친 다윗의 위에 오르게 하시고 허락하신 말씀대로 나를 위하여 집을 세우신 여호와의 사심을 가리켜 맹세하노니 아도니야는 오늘날 죽임을 당하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "5896c8b4109d7812411253ee4890fedd5b16a765aadeab39928911c0c0ca2a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:25",
+      "sequence": 8796,
+      "chapter_label": "1KI 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "King Solomon sent Benaiah the son of Jehoiada; and he fell on him, so that he died.",
+      "ko": "여호야다의 아들 브나야를 보내매 저가 아도니야를 쳐서 죽였더라",
+      "source_text_hash": "30cd80e91d6b6f99d3a54fbddf523bd99ec5a497bd397f1289e4dc84c8b52d44",
+      "translation_text_hash": "9e511c51eb35abaf04c444e534ca8495f1aa3eba218926a51858e883f10b8116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야를 보내매 저가 아도니야를 쳐서 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "9e511c51eb35abaf04c444e534ca8495f1aa3eba218926a51858e883f10b8116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:26",
+      "sequence": 8797,
+      "chapter_label": "1KI 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "To Abiathar the priest the king said, “Go to Anathoth, to your own fields, for you are worthy of death. But I will not at this time put you to death, because you bore the Lord GOD’s ark before David my father, and because you were afflicted in all in which my father was afflicted.”",
+      "ko": "왕이 제사장 아비아달에게 이르되 네 고향 아나돗으로 가라 너는 마땅히 죽을 자로되 네가 내 부친 다윗 앞에서 주 여호와의 궤를 메었고 또 내 부친이 모든 환난을 받을 때에 너도 환난을 받았은즉 내가 오늘날 너를 죽이지 아니하노라 하고",
+      "source_text_hash": "b2d0f11705307dedf7933c91d4dbfcddf0d784a6a64db6502051391d6e653ce2",
+      "translation_text_hash": "18c1cd6059438f0349ca91f916dab0fccccd708cd378baa0ec41a902532136ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 제사장 아비아달에게 이르되 네 고향 아나돗으로 가라 너는 마땅히 죽을 자로되 네가 내 부친 다윗 앞에서 주 여호와의 궤를 메었고 또 내 부친이 모든 환난을 받을 때에 너도 환난을 받았은즉 내가 오늘날 너를 죽이지 아니하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "18c1cd6059438f0349ca91f916dab0fccccd708cd378baa0ec41a902532136ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:27",
+      "sequence": 8798,
+      "chapter_label": "1KI 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "So Solomon thrust Abiathar out from being priest to the LORD, that he might fulfill the LORD’s word which he spoke concerning the house of Eli in Shiloh.",
+      "ko": "아비아달을 쫓아내어 여호와의 제사장 직분을 파면하니 여호와께서 실로에서 엘리의 집에 대하여 하신 말씀을 응하게 함이더라",
+      "source_text_hash": "10d46860f9e5b00b2c65fbcc11aedc4526ff12f908dd0a6767248a998106db11",
+      "translation_text_hash": "781447f35c351c86c1b0f6e7d9887437c764d56bfd71c97939c5a585ba3529dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비아달을 쫓아내어 여호와의 제사장 직분을 파면하니 여호와께서 실로에서 엘리의 집에 대하여 하신 말씀을 응하게 함이더라"
+      ],
+      "raw_text_hashes": [
+        "781447f35c351c86c1b0f6e7d9887437c764d56bfd71c97939c5a585ba3529dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:28",
+      "sequence": 8799,
+      "chapter_label": "1KI 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "This news came to Joab; for Joab had followed Adonijah, although he didn’t follow Absalom. Joab fled to the LORD’s Tent, and held onto the horns of the altar.",
+      "ko": "그 소문이 요압에게 들리매 저가 여호와의 장막으로 도망하여 단 뿔을 잡으니 이는 저가 다윗을 떠나 압살롬을 좇지 아니하였으나 아도니야를 좇았음이더라",
+      "source_text_hash": "b187c28589e391f161af24055b7f64f8b24c30a1aa12d515ed07d33fac9b0c5a",
+      "translation_text_hash": "58b760d10bd31d9bbbbbf72c1dcc403438e64d4f547d0a02169b0948b66fabcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소문이 요압에게 들리매 저가 여호와의 장막으로 도망하여 단 뿔을 잡으니 이는 저가 다윗을 떠나 압살롬을 좇지 아니하였으나 아도니야를 좇았음이더라"
+      ],
+      "raw_text_hashes": [
+        "58b760d10bd31d9bbbbbf72c1dcc403438e64d4f547d0a02169b0948b66fabcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:29",
+      "sequence": 8800,
+      "chapter_label": "1KI 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "King Solomon was told, “Joab has fled to the LORD’s Tent; and behold, he is by the altar.” Then Solomon sent Benaiah the son of Jehoiada, saying, “Go, fall on him.”",
+      "ko": "혹이 솔로몬왕에게 고하되 요압이 여호와의 장막으로 도망하여 단 곁에 있나이다 솔로몬이 여호야다의 아들 브나야를 보내며 가로되 너는 가서 저를 치라",
+      "source_text_hash": "2aa3af9628133708b73f06a901fdbdb246f281e8bdede7b2ba0bc84f66fed120",
+      "translation_text_hash": "9bdaacdfdc4dd7ed1b1ff3184d0b057275b3284abaf595477fc91c9bb301c6b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 솔로몬왕에게 고하되 요압이 여호와의 장막으로 도망하여 단 곁에 있나이다 솔로몬이 여호야다의 아들 브나야를 보내며 가로되 너는 가서 저를 치라"
+      ],
+      "raw_text_hashes": [
+        "9bdaacdfdc4dd7ed1b1ff3184d0b057275b3284abaf595477fc91c9bb301c6b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:30",
+      "sequence": 8801,
+      "chapter_label": "1KI 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "Benaiah came to the LORD’s Tent, and said to him, “The king says, ‘Come out!’” He said, “No; but I will die here.” Benaiah brought the king word again, saying, “This is what Joab said, and this is how he answered me.”",
+      "ko": "브나야가 여호와의 장막에 이르러 저에게 이르되 왕께서 나오라 하시느니라 저가 대답하되 아니라 내가 여기서 죽겠노라 브나야가 돌아가서 왕께 고하여 가로되 요압이 이리이리 내게 대답하더이다",
+      "source_text_hash": "cc0b22359996f1d874528a11252e08657cf977fc4bdd55574b2f282473de7bc0",
+      "translation_text_hash": "6cbb31fa77aa92d298297fe261fab70cc23821c4750195c485532757fbcc804c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브나야가 여호와의 장막에 이르러 저에게 이르되 왕께서 나오라 하시느니라 저가 대답하되 아니라 내가 여기서 죽겠노라 브나야가 돌아가서 왕께 고하여 가로되 요압이 이리이리 내게 대답하더이다"
+      ],
+      "raw_text_hashes": [
+        "6cbb31fa77aa92d298297fe261fab70cc23821c4750195c485532757fbcc804c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:31",
+      "sequence": 8802,
+      "chapter_label": "1KI 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "The king said to him, “Do as he has said, and fall on him, and bury him, that you may take away the blood, which Joab shed without cause, from me and from my father’s house.",
+      "ko": "왕이 이르되 저의 말과 같이 하여 저를 죽여 묻으라 요압이 까닭 없이 흘린 피를 나와 내 부친의 집에서 네가 제하리라",
+      "source_text_hash": "73da6e50751df028fd740f678950393ecf31ccdf248a91870f2bd471736d8c4b",
+      "translation_text_hash": "91002f8af60d6bc883ac72651513bed366e3d6c90caa65b9dfc4871e724d49c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이르되 저의 말과 같이 하여 저를 죽여 묻으라 요압이 까닭 없이 흘린 피를 나와 내 부친의 집에서 네가 제하리라"
+      ],
+      "raw_text_hashes": [
+        "91002f8af60d6bc883ac72651513bed366e3d6c90caa65b9dfc4871e724d49c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:32",
+      "sequence": 8803,
+      "chapter_label": "1KI 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "The LORD will return his blood on his own head, because he fell on two men more righteous and better than he, and killed them with the sword, and my father David didn’t know it: Abner the son of Ner, captain of the army of Israel, and Amasa the son of Jether, captain of the army of Judah.",
+      "ko": "여호와께서 요압의 피를 그 머리로 돌려 보내실 것은 저가 자기보다 의롭고 선한 두 사람을 쳤음이니 곧 이스라엘 군대장관 넬의 아들 아브넬과 유다 군대장관 예델의 아들 아마사를 칼로 죽였음이라 이 일을 내 부친 다윗은 알지 못하셨나니",
+      "source_text_hash": "0bb3c17f23a9f1befbbe907effef00cf23140a99fed68b011131c19dfaa0a2e7",
+      "translation_text_hash": "2b697380ade2ba8a0521454e61552ca0bf4ff9d7cf94df02c9ec9ee3cc57c60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 요압의 피를 그 머리로 돌려 보내실 것은 저가 자기보다 의롭고 선한 두 사람을 쳤음이니 곧 이스라엘 군대장관 넬의 아들 아브넬과 유다 군대장관 예델의 아들 아마사를 칼로 죽였음이라 이 일을 내 부친 다윗은 알지 못하셨나니"
+      ],
+      "raw_text_hashes": [
+        "2b697380ade2ba8a0521454e61552ca0bf4ff9d7cf94df02c9ec9ee3cc57c60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:33",
+      "sequence": 8804,
+      "chapter_label": "1KI 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "So their blood will return on the head of Joab and on the head of his offspring forever. But for David, for his offspring, for his house, and for his throne, there will be peace forever from the LORD.”",
+      "ko": "저희의 피는 영영히 요압의 머리와 그 자손의 머리로 돌아 갈찌라도 다윗과 그 자손과 그 집과 그 위에는 여호와께로 말미암은 평강이 영원히 있으리라",
+      "source_text_hash": "37ce1d08a7aa0462248bec3f70dcf76caae6ec1094c98bcc913faa73dd00a9e6",
+      "translation_text_hash": "e27bcf7cc940d861eee8e13d2a547bd22de2245541e635e05696e6a889d8111d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 피는 영영히 요압의 머리와 그 자손의 머리로 돌아 갈찌라도 다윗과 그 자손과 그 집과 그 위에는 여호와께로 말미암은 평강이 영원히 있으리라"
+      ],
+      "raw_text_hashes": [
+        "e27bcf7cc940d861eee8e13d2a547bd22de2245541e635e05696e6a889d8111d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:34",
+      "sequence": 8805,
+      "chapter_label": "1KI 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "Then Benaiah the son of Jehoiada went up and fell on him, and killed him; and he was buried in his own house in the wilderness.",
+      "ko": "여호야다의 아들 브나야가 곧 올라가서 저를 쳐죽이매 저가 거친 땅에 있는 자기의 집에 매장되니라",
+      "source_text_hash": "c00158be069f8a66c6ae079e04e5bfdf105ee96d6265ac96f93a4cd7b9622877",
+      "translation_text_hash": "bed19f7ed40f7bea65da73a07c598ea125e83b84bdbe8717ee817d80e21b71bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야가 곧 올라가서 저를 쳐죽이매 저가 거친 땅에 있는 자기의 집에 매장되니라"
+      ],
+      "raw_text_hashes": [
+        "bed19f7ed40f7bea65da73a07c598ea125e83b84bdbe8717ee817d80e21b71bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:35",
+      "sequence": 8806,
+      "chapter_label": "1KI 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "The king put Benaiah the son of Jehoiada in his place over the army; and the king put Zadok the priest in the place of Abiathar.",
+      "ko": "왕이 이에 여호야다의 아들 브나야로 요압을 대신하여 군대장관을 삼고 또 제사장 사독으로 아비아달을 대신하게 하니라",
+      "source_text_hash": "1773d6b4cc52ca62a27a35bb6389b6c752d7339b76e1e15a492f4d4777097049",
+      "translation_text_hash": "71e82cb29ad9c2d80d8fd65b6cb8730a8ef623e5595b95a7a8e1965e483f47b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이에 여호야다의 아들 브나야로 요압을 대신하여 군대장관을 삼고 또 제사장 사독으로 아비아달을 대신하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "71e82cb29ad9c2d80d8fd65b6cb8730a8ef623e5595b95a7a8e1965e483f47b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:36",
+      "sequence": 8807,
+      "chapter_label": "1KI 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "The king sent and called for Shimei, and said to him, “Build yourself a house in Jerusalem, and live there, and don’t go anywhere else.",
+      "ko": "왕이 보내어 시므이를 불러서 이르되 너는 예루살렘에서 너를 위하여 집을 짓고 거기서 살고 어디든지 나가지 말라",
+      "source_text_hash": "310db02fb896dae21db1fd62bc8e359d3e098a8f4d0151ab61c5ef034cfc4645",
+      "translation_text_hash": "4fe9642b6a4e60a97ddc573eafa75e669cc18663ff795fc6f507bcf185b337f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 보내어 시므이를 불러서 이르되 너는 예루살렘에서 너를 위하여 집을 짓고 거기서 살고 어디든지 나가지 말라"
+      ],
+      "raw_text_hashes": [
+        "4fe9642b6a4e60a97ddc573eafa75e669cc18663ff795fc6f507bcf185b337f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:37",
+      "sequence": 8808,
+      "chapter_label": "1KI 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "For on the day you go out and pass over the brook Kidron, know for certain that you will surely die. Your blood will be on your own head.”",
+      "ko": "너는 분명히 알라 네가 나가서 기드론 시내를 건너는 날에는 정녕 죽임을 당하리니 네 피가 네 머리로 돌아가리라",
+      "source_text_hash": "ef83ac1f81b65d7def51ddbefe713b52623f33a8dd2ccbe725ef63dccc7dcc6e",
+      "translation_text_hash": "dc2e89e2a31220c657efb548d65c15b04b14a56e1090e27d4413fbade8f09a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 분명히 알라 네가 나가서 기드론 시내를 건너는 날에는 정녕 죽임을 당하리니 네 피가 네 머리로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "dc2e89e2a31220c657efb548d65c15b04b14a56e1090e27d4413fbade8f09a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:38",
+      "sequence": 8809,
+      "chapter_label": "1KI 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "Shimei said to the king, “What you say is good. As my lord the king has said, so will your servant do.” Shimei lived in Jerusalem many days.",
+      "ko": "시므이가 왕께 대답하되 이 말씀이 좋사오니 내 주 왕의 말씀대로 종이 그리하겠나이다 하고 이에 날이 오래도록 예루살렘에 머무니라",
+      "source_text_hash": "36f17bef8010fa24aeb3dafb606934c38b5dea7bd7c7f063933a87fe21cbdd84",
+      "translation_text_hash": "416103fef0e1cc9ec756eabfe0cc8cb00de506ef38533e3c40289b184e412ba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이가 왕께 대답하되 이 말씀이 좋사오니 내 주 왕의 말씀대로 종이 그리하겠나이다 하고 이에 날이 오래도록 예루살렘에 머무니라"
+      ],
+      "raw_text_hashes": [
+        "416103fef0e1cc9ec756eabfe0cc8cb00de506ef38533e3c40289b184e412ba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:39",
+      "sequence": 8810,
+      "chapter_label": "1KI 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "At the end of three years, two of Shimei’s slaves ran away to Achish, son of Maacah, king of Gath. They told Shimei, saying, “Behold, your slaves are in Gath.”",
+      "ko": "삼년 후에 시므이의 두 종이 가드 왕 마아가의 아들 아기스에게로 도망하여 간지라 혹이 시므이에게 고하여 가로되 당신의 종이 가드에 있나이다",
+      "source_text_hash": "7abc9504783fdc92dcdde224cdd587af6070773011778e548c05af6e43ffa7f8",
+      "translation_text_hash": "9fda325d6ad85108e799acac3b620dc89785d718eb436df6da6319aae8acd326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼년 후에 시므이의 두 종이 가드 왕 마아가의 아들 아기스에게로 도망하여 간지라 혹이 시므이에게 고하여 가로되 당신의 종이 가드에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "9fda325d6ad85108e799acac3b620dc89785d718eb436df6da6319aae8acd326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:40",
+      "sequence": 8811,
+      "chapter_label": "1KI 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "Shimei arose, saddled his donkey, and went to Gath to Achish to seek his slaves; and Shimei went and brought his slaves from Gath.",
+      "ko": "시므이가 그 종을 찾으려고 일어나 그 나귀에 안장을 지우고 가드로 가서 아기스에게 나아가 그 종을 가드에서 데려왔더니",
+      "source_text_hash": "8c3051eebd5d14e431a023f041a38ab39a5e7e620bbc94505b4ea0bad2404cb8",
+      "translation_text_hash": "7196b76dea061e1550d469de5e7df13290c7602ae4776a0d61a26920be4a508a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이가 그 종을 찾으려고 일어나 그 나귀에 안장을 지우고 가드로 가서 아기스에게 나아가 그 종을 가드에서 데려왔더니"
+      ],
+      "raw_text_hashes": [
+        "7196b76dea061e1550d469de5e7df13290c7602ae4776a0d61a26920be4a508a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:41",
+      "sequence": 8812,
+      "chapter_label": "1KI 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "Solomon was told that Shimei had gone from Jerusalem to Gath, and had come again.",
+      "ko": "시므이가 예루살렘에서부터 가드에 갔다가 돌아온 일을 혹이 솔로몬에게 고한지라",
+      "source_text_hash": "470de28575613a0538ed2d2b37b8dc2d817a83e507034c0768f564a1d8d0ac8f",
+      "translation_text_hash": "8cd78f528445eb124c60e558025c71592f4738c44202481aa0aa53b56c965497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이가 예루살렘에서부터 가드에 갔다가 돌아온 일을 혹이 솔로몬에게 고한지라"
+      ],
+      "raw_text_hashes": [
+        "8cd78f528445eb124c60e558025c71592f4738c44202481aa0aa53b56c965497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:42",
+      "sequence": 8813,
+      "chapter_label": "1KI 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "The king sent and called for Shimei, and said to him, “Didn’t I adjure you by the LORD and warn you, saying, ‘Know for certain that on the day you go out and walk anywhere else, you shall surely die’? You said to me, ‘The saying that I have heard is good.’",
+      "ko": "왕이 사람을 보내어 시므이를 불러서 이르되 내가 너로 여호와를 가리켜 맹세하게 하고 경계하여 이르기를 너는 분명히 알라 네가 밖으로 나가서 어디든지 가는 날에는 죽임을 당하리라 하지 아니하였느냐 너도 내게 말하기를 내가 들은 말씀이 좋으니이다 하였거늘",
+      "source_text_hash": "69a2203c7d43097b7f30a5959a67855ceea8c7182f3a57222a488bdca58e3d35",
+      "translation_text_hash": "c7f8491bc46d8ebce51037e15e92fa0ca2e77862872da6711fdd1aa7850b43c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사람을 보내어 시므이를 불러서 이르되 내가 너로 여호와를 가리켜 맹세하게 하고 경계하여 이르기를 너는 분명히 알라 네가 밖으로 나가서 어디든지 가는 날에는 죽임을 당하리라 하지 아니하였느냐 너도 내게 말하기를 내가 들은 말씀이 좋으니이다 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "c7f8491bc46d8ebce51037e15e92fa0ca2e77862872da6711fdd1aa7850b43c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:43",
+      "sequence": 8814,
+      "chapter_label": "1KI 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "Why then have you not kept the oath of the LORD and the commandment that I have instructed you with?”",
+      "ko": "네가 어찌하여 여호와를 가리켜 한 맹세와 내가 네게 이른 명령을 지키지 아니하였느냐",
+      "source_text_hash": "ffd0ed1c927fcca938e42fe21bb2323f6a34527b62aaf6125deb5a3882526a6c",
+      "translation_text_hash": "51074759f384d9d0c2c4bf3dee6b860f19e2c77b49cea6751f0918375698dd47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌하여 여호와를 가리켜 한 맹세와 내가 네게 이른 명령을 지키지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "51074759f384d9d0c2c4bf3dee6b860f19e2c77b49cea6751f0918375698dd47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:44",
+      "sequence": 8815,
+      "chapter_label": "1KI 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "The king said moreover to Shimei, “You know in your heart all the wickedness that you did to David my father. Therefore the LORD will return your wickedness on your own head.",
+      "ko": "왕이 또 시므이에게 이르되 네가 무릇 네 마음의 아는 모든 악 곧 내 부친에게 행한바를 네가 스스로 아나니 여호와께서 네 악을 네 머리로 돌려 보내시리라",
+      "source_text_hash": "d31fcf0d0ea16d33f46b84ed1b9582b433ba582658541a8bd40fbc995dd3f54c",
+      "translation_text_hash": "170996aeac6648cd362afd24f2eee9681fec63c8f92273d88eb27c5fd75971ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 시므이에게 이르되 네가 무릇 네 마음의 아는 모든 악 곧 내 부친에게 행한바를 네가 스스로 아나니 여호와께서 네 악을 네 머리로 돌려 보내시리라"
+      ],
+      "raw_text_hashes": [
+        "170996aeac6648cd362afd24f2eee9681fec63c8f92273d88eb27c5fd75971ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:45",
+      "sequence": 8816,
+      "chapter_label": "1KI 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "But King Solomon will be blessed, and David’s throne will be established before the LORD forever.”",
+      "ko": "그러나 솔로몬왕은 복을 받고 다윗의 위는 영원히 여호와 앞에서 견고히 서리라 하고",
+      "source_text_hash": "c7af0b2a171d6060cce6a2dfb3bddce91a0abcb0349040ec768e03dcca0febf2",
+      "translation_text_hash": "96db1f4d9c1169f9bd88ef01f40430a281f0292411f641dbbc572ee4b9f1080f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 솔로몬왕은 복을 받고 다윗의 위는 영원히 여호와 앞에서 견고히 서리라 하고"
+      ],
+      "raw_text_hashes": [
+        "96db1f4d9c1169f9bd88ef01f40430a281f0292411f641dbbc572ee4b9f1080f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:2:46",
+      "sequence": 8817,
+      "chapter_label": "1KI 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "1KI",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "So the king commanded Benaiah the son of Jehoiada; and he went out, and fell on him, so that he died. The kingdom was established in the hand of Solomon.",
+      "ko": "여호야다의 아들 브나야에게 명하매 저가 나가서 시므이를 쳐서 죽게 한지라 이에 나라가 솔로몬의 손에 견고하여지니라",
+      "source_text_hash": "afd51a431066094a1ffa4e263f7256ae979e0771e430ee11b113c5707e86a990",
+      "translation_text_hash": "c6ccb7d7509f023402de4c88402a9c089e78a499409d0cd6fcc25ed90f3c8457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야에게 명하매 저가 나가서 시므이를 쳐서 죽게 한지라 이에 나라가 솔로몬의 손에 견고하여지니라"
+      ],
+      "raw_text_hashes": [
+        "c6ccb7d7509f023402de4c88402a9c089e78a499409d0cd6fcc25ed90f3c8457"
+      ]
+    }
+  ]
+}
