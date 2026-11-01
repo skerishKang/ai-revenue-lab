@@ -92,3 +92,45 @@ sudo systemctl stop padiem-chat-com2.service   # 병행 호스트만 멈춘다
 5. 브라우저에서 가입 → 로그인 → 대화 목록 → mock 채팅 1회(모델은 mock 기본).
 6. health/backup 타이머 enable, 백업 1회 수동 실행 결과 확인.
 7. 보고: 설치 PASS/실패 단계, health, 터널 hostname, mock 채팅 확인 여부.
+
+## 8. 11-01 운영 교훈
+
+11-01 배포·로그인 운영에서 확인한 사실. 근거: PR #6558·#6559·#6561·#6563,
+`docs/operations/CHAT_SPEED_20261101.md`.
+
+### 8-1. 서비스 쓰기 가능 경로 (systemd)
+
+- `padiem-chat-com2.service`는 `ProtectSystem=strict`라서 `ReadWritePaths`에 적힌
+  두 곳만 쓸 수 있다: `/mnt/d/padiem/chat-com2`, `/opt/padiem/chat-com2/data`.
+- 새 파일·새 DB는 이 두 경로 안에만 만든다. 그 밖에 두면 쓰기가 막혀
+  "readonly database" 오류로 서비스가 멈추고 재시작을 반복한다(크래시 루프).
+
+### 8-2. 앞단 검증 replay DB
+
+- 위치: `PADIEM_COM2_EDGE_REPLAY_DB=/opt/padiem/chat-com2/data/edge-replay.sqlite3`(ext4).
+- `/mnt/d`(9p)에 두면 동시 검증 때 잠금 경쟁이 생겨 정상 서명 요청도 403이 될 수
+  있다(#6563). 11-01부터 검증은 한 번에 하나씩(직렬화) 처리한다.
+
+### 8-3. deploy_from_main.sh
+
+- 서비스 시작·롤백 확인의 health 검사는 최대 30초 재시도한다. 6~8초 기동 지연을
+  실패로 오탐하지 않는다(#6558).
+- B14 install.sh는 우리 유닛(Description·ExecStart 일치)이면 채택한다.
+  logrotate·드롭인도 우리 파일이 있으면 채택하고, `20-log-to-file.conf`는 있을
+  때만 갱신한다(#6558·#6563).
+- 미러 설치에 B14와 메시 큐 코드가 포함된다. 롤백 대상에도 `padiem_ai_core`
+  오버레이를 보장한다(#6563).
+
+### 8-4. 공통 로그인
+
+- padiem-auth는 클라이언트 설정에 `profile_claims`가 있을 때만 /token 본문에
+  account_id·profile을 실는다. 새 서비스 등록 시 운영·스테이징 설정을 똑같이
+  맞춘다. 11-01에는 운영 b62에만 profile_claims가 빠져 로그인이 실패했다(#6561).
+- 앞단 타임아웃: `/auth/shared/callback`만 30초, 나머지 `/auth/*`는 8초(#6561).
+- 11-01 운영 실측: 콜백 전체 3~3.4초, 그중 identity 1.1~1.3초.
+
+### 8-5. 업로드 한도 (Cloudflare 무료 요금제)
+
+- Cloudflare 무료 요금제는 요청 본문이 최대 100MB다(공식 한도).
+  `chat.padiem.net`을 거치는 업로드는 100MB를 넘길 수 없다.
+- 1GB 업로드를 내려면 앞단을 우회하는 구조가 필요하다. 아직 착수 전이다.
