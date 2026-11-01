@@ -218,7 +218,7 @@
     header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
     panel.appendChild(header);
     if (PDFMD_NEW_WORK_DISABLED) {
-      header.querySelector(".pdfmd-desc").textContent = "문서 처리 서버를 COM2로 이전 중입니다. 신규 PDF·ZIP 업로드 및 변환은 일시 중단하며, 기존 작업 이력과 결과 다운로드는 이용할 수 있습니다.";
+      header.querySelector(".pdfmd-desc").textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
       const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
       notice.setAttribute("role", "status");
       panel.appendChild(notice);
@@ -283,7 +283,7 @@
       drop.style.cursor = "not-allowed";
       drop.style.opacity = "0.65";
       dropTitle.textContent = "PDF 업로드 준비 중";
-      dropSub.textContent = "COM2 이전 완료 후 이용할 수 있습니다.";
+      dropSub.textContent = "곧 다시 이용할 수 있어요.";
       dropCta.textContent = "업로드 일시 중단";
     }
 
