@@ -42,6 +42,8 @@
   if (!filesTab || !imagesTab || !note || !filesPanel || !imagesPanel) return;
   if (!fileList || !imageList) return;
 
+  const quickFiles = document.getElementById("quickRecentFiles");
+  const quickAll = document.getElementById("quickAllFiles");
   let signedIn = false;
   let projectFilesReady = false;
   let authSignature = "";
@@ -181,6 +183,7 @@
     fileList.replaceChildren();
     imageList.replaceChildren();
     setNote("");
+    renderQuickFiles();
   }
 
   function buildRow({ title, meta, detail, action }) {
@@ -212,6 +215,40 @@
       item.appendChild(button);
     }
     return item;
+  }
+
+  function renderQuickFiles() {
+    if (!quickFiles) return;
+    quickFiles.replaceChildren();
+    const locale = window.__padiemLocale;
+    const t = (key) => locale && typeof locale.text === "function" ? locale.text(key) : "";
+    let key = !signedIn ? "quick-files-login" : loading ? "quick-files-loading" :
+      outcome === "error" || outcome === "storage-off" ? "quick-files-error" :
+      outcome === "ready" && rows.length === 0 ? "quick-files-empty" : null;
+    if (key) {
+      const status = document.createElement("span");
+      status.textContent = t(key);
+      quickFiles.appendChild(status);
+    }
+    if (outcome !== "ready" || !signedIn) return;
+    rows.slice(0, 5).forEach((file) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = file.name;
+      button.title = file.name;
+      button.addEventListener("click", async () => {
+        const opener = window.PadiemChatProjectOpener;
+        if (opener && typeof opener.openFile === "function" &&
+            await opener.openFile(file.project_id, file.id)) {
+          closeSidebar();
+        } else {
+          const status = document.createElement("span");
+          status.textContent = t("quick-files-error");
+          quickFiles.appendChild(status);
+        }
+      });
+      quickFiles.appendChild(button);
+    });
   }
 
   function renderFiles() {
@@ -299,6 +336,7 @@
     imagesTab.setAttribute("aria-selected", activeTab === "images" ? "true" : "false");
     filesPanel.hidden = activeTab !== "files";
     imagesPanel.hidden = activeTab !== "images";
+    renderQuickFiles();
     if (activeTab === "files") {
       renderFiles();
     } else {
@@ -340,16 +378,18 @@
     syncVisibility();
     closeSidebar();
     filesPanel.focus();
-    if (activeTab === "files") loadFiles();
+    if (activeTab === "files" && outcome !== "ready" && !loading) loadFiles();
   }
 
   // The canonical dialog path owns project-file permission and every edit guard.
   // A project that is not in the loaded owner list resolves to nothing here.
-  function openProject(projectId) {
+  function openProject(projectId, fileId = null) {
     const opener = window.PadiemChatProjectOpener;
-    if (!opener || typeof opener.open !== "function" || !opener.open(projectId)) {
+    if (!opener || typeof opener.open !== "function" || !opener.open(projectId, fileId)) {
       setNote(TEXT.openBlocked());
+      return false;
     }
+    return true;
   }
 
   // Exactly one fetch site for this whole surface: every read is a bounded, owner-scoped
@@ -412,6 +452,7 @@
     } finally {
       if (seq === generation) {
         loading = false;
+        renderQuickFiles();
         if (isOpen() && activeTab === "files") render();
       }
     }
@@ -465,6 +506,7 @@
     // the previous owner's rendered rows.
     if (changed || projectionChanged) invalidate();
     if (!signedIn && isOpen()) leaveLibrary();
+    if (signedIn && projectFilesReady && !isOpen() && (changed || projectionChanged)) loadFiles();
     if (isOpen()) {
       render();
       // If the same signed-in state was refreshed while Library is open,
@@ -495,6 +537,7 @@
   filesTab.addEventListener("click", () => selectTab("files"));
   imagesTab.addEventListener("click", () => selectTab("images"));
   navButton.addEventListener("click", openLibrary);
+  if (quickAll) quickAll.addEventListener("click", openLibrary);
   closeButton.addEventListener("click", leaveLibrary);
 
   window.addEventListener("padiem:capabilitychange", (event) => {
@@ -503,6 +546,7 @@
   });
 
   window.addEventListener("padiem:localechange", () => {
+    renderQuickFiles();
     if (isOpen()) render();
   });
 

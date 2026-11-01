@@ -1041,10 +1041,11 @@
     const known = projectById(id);
     if (known) return known;
     if (!authState.authenticated || !projectsReady) return null;
+    const requestAuth = authState;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.project || typeof data.project.id !== "string") return null;
+      if (authState !== requestAuth || !authState.authenticated || !response.ok || !data || !data.project || typeof data.project.id !== "string") return null;
       projects.unshift(data.project);
       renderProjects();
       return data.project;
@@ -1074,6 +1075,7 @@
     }
     renderProjectState();
   }
+  let highlightedProjectFileId = null;
   function renderProjectFiles() {
     projectFilesList.replaceChildren();
     const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
@@ -1088,6 +1090,16 @@
     dialogProjectFiles.forEach((file) => {
       const row = document.createElement("div");
       row.className = "project-file-row";
+      if (file.id === highlightedProjectFileId) {
+        row.classList.add("quick-selected-file");
+        row.tabIndex = -1;
+        requestAnimationFrame(() => {
+          if (projectDialog.open && editingProjectId && row.isConnected) {
+            row.scrollIntoView({ block: "nearest" });
+            row.focus({ preventScroll: true });
+          }
+        });
+      }
       const copy = document.createElement("div");
       const strong = document.createElement("strong");
       strong.textContent = file.name;
@@ -1109,7 +1121,9 @@
       return;
     }
     try {
-      dialogProjectFiles = await fetchProjectFiles(projectId);
+      const files = await fetchProjectFiles(projectId);
+      if (!projectDialog.open || editingProjectId !== projectId) return;
+      dialogProjectFiles = files;
       renderProjectFiles();
       if (activeProject && activeProject.id === projectId) {
         activeProjectFileCount = dialogProjectFiles.length;
@@ -1268,9 +1282,10 @@
     activeProjectFileCount = 0;
     resetConversationView(false);
   }
-  function openProjectDialog(project = null) {
+  function openProjectDialog(project = null, selectedFileId = null) {
     if (!projectsReady || !authState.authenticated || inFlight) return;
     editingProjectId = project ? project.id : null;
+    highlightedProjectFileId = selectedFileId;
     projectDialogTitle.textContent = project ? uiT("project-edit-title") : uiT("project-new");
     projectNameInput.value = project ? project.name : "";
     projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
@@ -2641,9 +2656,17 @@
   // #4489: the Library opens a stored project file through that file's owning
   // project in the existing Project dialog, so project-file permission, the
   // files panel and every edit guard stay on the one canonical path. The project
-  // resolves only from the already-loaded owner list, so a foreign or stale id
-  // opens nothing. Read-only handle: it grants no new authority.
+  // resolves from the owner list or its existing authenticated project lookup;
+  // a foreign or stale id opens nothing. This handle grants no new authority.
   window.PadiemChatProjectOpener = Object.freeze({
+    openFile: async (projectId, fileId) => {
+      if (!projectsReady || !authState.authenticated || inFlight) return false;
+      const requestAuth = authState;
+      const project = await ensureProject(projectId);
+      if (!project || authState !== requestAuth || !authState.authenticated || inFlight) return false;
+      openProjectDialog(project, fileId);
+      return true;
+    },
     open: (projectId) => {
       if (!projectsReady || !authState.authenticated || inFlight) return false;
       const project = projects.find((item) => item && item.id === projectId);

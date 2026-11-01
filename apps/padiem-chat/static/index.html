@@ -50,6 +50,7 @@
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
+  <link rel="stylesheet" href="./quick-launch.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-connection-guide.css" />
@@ -131,6 +132,19 @@
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
       </nav>
+      <section class="recent-section quick-launch" aria-labelledby="quickLaunchTitle">
+        <h2 id="quickLaunchTitle" data-locale-key="quick-launch-title">빠른 실행</h2>
+        <div class="quick-launch-tools">
+          <button type="button" data-quick-util="speech" data-locale-key="quick-speech">축사</button>
+          <button type="button" data-quick-util="sns" data-locale-key="quick-sns">SNS</button>
+          <button type="button" data-quick-util="meeting" data-locale-key="quick-meeting">회의정리</button>
+          <button type="button" data-quick-util="claw-quote" data-locale-key="quick-quote">견적</button>
+          <button type="button" data-quick-util="pdfmd" data-locale-key="quick-pdfmd">PDF → MD</button>
+        </div>
+        <h3 data-locale-key="quick-recent-files">최근 프로젝트 파일</h3>
+        <div id="quickRecentFiles" class="quick-recent-files" aria-live="polite"></div>
+        <button type="button" id="quickAllFiles" data-locale-key="quick-all-files">파일 더 보기</button>
+      </section>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
           <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
