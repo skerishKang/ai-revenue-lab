@@ -69,10 +69,12 @@ def test_no_application_byte_total_remains_on_the_released_d1_surfaces() -> None
     ):
         text = (APP / name).read_text(encoding="utf-8")
         # #5573 keeps generic D1 metadata free of byte ceilings. The separately
-        # authorized WEB XLSX input limit is now 10MiB and is not that surface.
+        # authorized WEB XLSX input limit is now 1GiB and is not that surface.
         if name == "workspace_storage.py":
             text = "\n".join(line for line in text.splitlines()
                              if not line.startswith("MAX_WEB_XLSX_BYTES = "))
+            # Transport switch, not a limit on generic metadata or document size.
+            text = text.replace("WEB_XLSX_INLINE_MAX_BYTES", "WEB_XLSX_INLINE_THRESHOLD")
         assert "10 * 1024 * 1024" not in text, name
         assert "10485760" not in text, name
         assert "SINGLE_FILE_MAX_BYTES" not in text, name

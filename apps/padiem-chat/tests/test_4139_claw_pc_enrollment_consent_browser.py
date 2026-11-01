@@ -363,7 +363,8 @@ def test_locale_switch_and_mobile_touch_targets(browser, server):
     panel_text = page.locator("#clawPcConsentPanel").inner_text()
     assert "Allowed once connected" in panel_text
     assert "Not allowed by connecting" in panel_text
-    assert "separate P01 approval" in panel_text
+    assert "File reads and writes run right away inside the folders you registered" in panel_text
+    assert "overwrites and deletes are backed up automatically first" in panel_text
     # Touch-target floor of 44px on the interactive controls.
     for selector in ("#clawPcConsentToggle", "#clawPcConsentConfirm", "#clawPcConsentCancel",
                      ".claw-pc-consent-close", ".claw-pc-consent-ack"):
