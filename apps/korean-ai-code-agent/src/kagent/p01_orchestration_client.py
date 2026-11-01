@@ -568,6 +568,10 @@ class P01EngineOrchestrationClient:
             # `engine_execution_failed` error.
             payload["agent_plan"] = request.agent_plan.to_public_dict()
             payload["pc_action_context"] = [dict(item) for item in request.pc_action_context]
+            if request.pc_delegation is not None:
+                from padiem_ai_core.pc_delegation import parse_pc_delegation
+
+                payload["pc_delegation"] = parse_pc_delegation(request.pc_delegation)
             if request.tool_arguments is not None:
                 payload["tool_arguments"] = {
                     step: dict(arguments)
@@ -647,6 +651,12 @@ class P01EngineOrchestrationClient:
     def _reject_unsupported_authority(self, request: OrchestrationRequest) -> None:
         trusted_capture = self._is_trusted_capture_request(request)
         trusted_pc_query = self._is_trusted_pc_query_request(request)
+        if request.pc_delegation is not None and not trusted_pc_query:
+            raise P01AdapterError(
+                "p01_authority_field_unsupported",
+                "PC delegation requires the server-owned PC query lane.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         if request.pc_action_context and not trusted_pc_query:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",

@@ -18,6 +18,7 @@ name: B14 Ledger D1 Provision Gate
 # b14_model_call to add the pool/user credential label (#5824 PR-3a). An ALTER is
 # not replay-safe, so the ordering matters — this gate must run for a revision
 # before the worker that writes the new column is deployed against it.
+# 0003 adds the immutable PC-turn annotation columns and their lookup index.
 
 on:
   workflow_dispatch:
@@ -109,7 +110,8 @@ jobs:
           # 0002 adds a column with an ALTER, which is not replay-safe on its
           # own. Wrangler's own migrations table is what keeps it one run.
           echo 'D1_MIGRATION_0002=APPLIED_ONCE_BY_MIGRATIONS_TABLE'
-          echo 'D1_MIGRATIONS=0001,0002'
+          echo 'D1_MIGRATION_0003=APPLIED_ONCE_BY_MIGRATIONS_TABLE'
+          echo 'D1_MIGRATIONS=0001,0002,0003'
 
       - name: Post-apply migrations list and schema readback
         shell: bash
@@ -140,6 +142,7 @@ jobs:
               'b14_model_call_product',
               'b14_model_call_subject',
               'b14_model_call_attempt_log',
+              'b14_model_call_pc_turn',
           }
           def results(path):
               rows = json.load(open(path))
@@ -148,20 +151,20 @@ jobs:
               return rows
           call = {row['name'] for row in results('/tmp/b14-ledger-call-columns.json')}
           attempt = {row['name'] for row in results('/tmp/b14-ledger-attempt-columns.json')}
-          assert len(call) == 43, f'b14_model_call must have 43 columns, found {len(call)}'
+          assert len(call) == 45, f'b14_model_call must have 45 columns, found {len(call)}'
           assert len(attempt) == 27, f'b14_model_call_attempt must have 27 columns, found {len(attempt)}'
           assert 'log_id' in call and 'log_id' in attempt
           print('B14_LEDGER_COLUMN_ASSERT=PASS')
-          print('B14_LEDGER_COLUMNS=43,27')
+          print('B14_LEDGER_COLUMNS=45,27')
           indexes = {row['name'] for row in results('/tmp/b14-ledger-indexes.json')}
           declared = {name for name in indexes if not name.startswith('sqlite_autoindex')}
           assert declared == DECLARED_INDEXES, (
               f'declared index set drift: expected {sorted(DECLARED_INDEXES)}, '
               f'found {sorted(declared)}'
           )
-          assert len(declared) == 7, f'expected 7 declared indexes, found {len(declared)}'
+          assert len(declared) == 8, f'expected 8 declared indexes, found {len(declared)}'
           print('B14_LEDGER_INDEX_ASSERT=PASS')
-          print('B14_LEDGER_INDEXES=7')
+          print('B14_LEDGER_INDEXES=8')
           PY
 
       - name: Final evidence
@@ -169,11 +172,12 @@ jobs:
         run: |
           echo 'B14_LEDGER_D1_PROVISION=PASS'
           echo 'D1_PROVISION_TARGET=padiem-b14-call-ledger'
-          echo 'D1_MIGRATIONS=0001,0002'
+          echo 'D1_MIGRATIONS=0001,0002,0003'
           echo 'D1_MIGRATION_0001=APPLIED_OR_REPLAY_SAFE'
           echo 'D1_MIGRATION_0002=APPLIED_ONCE_BY_MIGRATIONS_TABLE'
-          echo 'B14_LEDGER_COLUMNS=43,27'
-          echo 'B14_LEDGER_INDEXES=7'
+          echo 'D1_MIGRATION_0003=APPLIED_ONCE_BY_MIGRATIONS_TABLE'
+          echo 'B14_LEDGER_COLUMNS=45,27'
+          echo 'B14_LEDGER_INDEXES=8'
           echo 'D1_DATABASE_CREATED=0'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'

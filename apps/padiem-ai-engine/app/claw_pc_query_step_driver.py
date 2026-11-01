@@ -110,6 +110,9 @@ _DRIVE_ROOT_SHAPE = re.compile(r"([A-Za-z]:)(?:/(?P<rest>.*))?\Z")
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
 _PC_CALL_PROGRESS: ContextVar[Any] = ContextVar("pc_call_progress", default=None)
+# Request-local marker: once a mutation dispatch has been attempted, losing its
+# reply means "not verified", never an inferred success or an automatic retry.
+_PC_ACTION_ATTEMPT: ContextVar[Any] = ContextVar("pc_action_attempt", default=None)
 
 
 def _pc_progress_emitter(owner, dispatch_id, kind):
@@ -262,22 +265,48 @@ def _pc_refusal(stage):
 
 
 def _pc_observing_handler(handler, *, tool_id, unexpected_stage="pc_files_internal_error"):
+    from app.pc_work_metrics import observe_pc_handler
+
+    handler = observe_pc_handler(handler, tool_id=tool_id)
+
+    def unverified_mutation():
+        attempt = _PC_ACTION_ATTEMPT.get()
+        if not isinstance(attempt, dict):
+            return None
+        from app.pc_action_verification import mutation_observation, unavailable_action
+
+        verification = unavailable_action(**attempt)
+        emit = _PC_CALL_PROGRESS.get()
+        if emit is not None:
+            emit("result")
+        return mutation_observation(verification=verification)
+
     async def observed(arguments):
         token = _PC_CALL_PROGRESS.set(None)
+        action_token = _PC_ACTION_ATTEMPT.set(None)
         try:
             print("pc_tool_invoke tool=%s args_present=%s" % (
                 tool_id, arguments is not None), flush=True)
             return await handler(arguments)
         except ToolHandlerError as exc:
+            unverified = unverified_mutation()
+            if unverified is not None:
+                print("pc_files_chat_call mode=verification stage=check_unavailable", flush=True)
+                return unverified
             print("pc_files_chat_call mode=refusal stage=%s" % exc.code, flush=True)
             return _pc_refusal(exc.code)
         except Exception as exc:
+            unverified = unverified_mutation()
+            if unverified is not None:
+                print("pc_files_chat_call mode=verification stage=check_unavailable", flush=True)
+                return unverified
             # A handler bug is a refused observation, not an abandoned PC turn.
             # Cancellation still propagates; never log arguments or exception text.
             print("pc_files_chat_call mode=refusal stage=%s reason=%s" % (
                 unexpected_stage, type(exc).__name__), flush=True)
             return _pc_refusal(unexpected_stage)
         finally:
+            _PC_ACTION_ATTEMPT.reset(action_token)
             _PC_CALL_PROGRESS.reset(token)
     return observed
 
@@ -576,6 +605,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             identity = (identity + "\n" + hashlib.sha256(
                 extra["content"].encode("utf-8")).hexdigest())
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
+        if op in ("write", "move", "delete"):
+            _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
+                                    "destination": extra.get("destination")})
         dispatched = await _signed_files_call(
             service=service, request_factory=request_factory, secret=secret,
             owner=owner, mode="dispatch",
@@ -659,23 +691,21 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
-            if row.get("state") == "failed" and op in ("write", "move", "delete"):
-                # The refusal reason lives in the account line the command
-                # printed, so a backup that failed is answered as such instead of
-                # as an anonymous execution failure.
-                try:
-                    _pc_write_account((await _final_result())["output"])
-                except ToolHandlerError:
-                    raise
-                except Exception:
-                    raise ToolHandlerError(
-                        "pc_files_execution_failed",
-                        "PC executor reported failure",
-                    ) from None
-                raise ToolHandlerError(
-                    "pc_files_execution_failed",
-                    "PC executor reported failure",
+            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete"):
+                from app.pc_action_verification import mutation_observation, verify_pc_action
+
+                final = await _final_result()
+                account = _pc_write_result(final["output"])
+                verification = verify_pc_action(
+                    operation=op, path=path, extra=extra, account=account,
+                    state=row["state"], termination=final.get("termination"),
+                    exit_code=final.get("exit_code"),
                 )
+                # The postcondition result is tool data even when it failed.
+                # The common driver sees it before producing the final answer.
+                emit_progress("result")
+                return mutation_observation(verification=verification, account=account,
+                                            final=final, dispatch_id=dispatch_id)
             if row.get("state") == "failed":
                 if op == "read":
                     # A failed read keeps its verified marker body in the same
@@ -748,17 +778,6 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
-                if op in ("write", "move", "delete"):
-                    account = _pc_write_account(output)
-                    # The account is what the record and the rollback depend on:
-                    # where the change landed and where the original now lives.
-                    output = json.dumps({
-                        "ok": True,
-                        "op": op,
-                        "target": account.get("target"),
-                        "backup": account.get("backup"),
-                        "bytes": account.get("bytes"),
-                    }, ensure_ascii=False, separators=(",", ":"))
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -834,6 +853,9 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     and registers the PC file handlers that still live in the Engine.
     """
     contract = build_pc_query_product_contract(app_id=app_id, agent_id=agent_id)
+    from app.pc_work_metrics import observe_pc_transport
+
+    service, request_factory = observe_pc_transport(service, request_factory)
     runtime = runtime or ToolRuntime()
     runtime.register(pc_drives_tool_spec(), _pc_observing_handler(
         _make_query_drives_handler(service=service, request_factory=request_factory,
@@ -944,11 +966,18 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
 
         self._action_harness = PcActionHarness(records)
 
+    def configure_delegation(self, policy) -> None:
+        from app.pc_action_delegation import PcActionDelegation
+
+        self._action_delegation = PcActionDelegation(policy)
+
     def _decision(self, decision, observations):
+        from app.pc_action_result_answer import append_pc_action_facts
+
         selected = super()._decision(decision, observations)
         invocation = selected.invocation
         if invocation is None:
-            return selected
+            return AgentStepDecision.complete(append_pc_action_facts(selected.answer, observations))
         harness = getattr(self, "_action_harness", None)
         if harness is None:
             # Missing provenance never treats flattened model context as a
@@ -958,7 +987,25 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
         question = harness.question(
             invocation.tool_id, invocation.arguments, observations=observations,
         )
-        return AgentStepDecision.complete(question) if question else selected
+        # Evidence always runs first: delegation cannot authorize instructions
+        # embedded in a file/web/tool result or choose an unsupported target.
+        if question is None:
+            delegation = getattr(self, "_action_delegation", None)
+            if delegation is not None:
+                owner = _PC_QUERY_OWNER.get()
+                question = delegation.question(
+                    invocation.tool_id, invocation.arguments, records=harness.records,
+                    device_id=owner[3] if isinstance(owner, tuple) and len(owner) == 4 else None,
+                    context=getattr(self, "_delegation_context", None),
+                )
+        if question:
+            from app.pc_work_metrics import current_pc_work_metrics
+
+            metrics = current_pc_work_metrics()
+            if metrics is not None:
+                metrics.mark_confirmation_required()
+            return AgentStepDecision.complete(append_pc_action_facts(question, observations))
+        return selected
 
 
 def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
@@ -996,6 +1043,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                     service=service, request_factory=request_factory,
                     secret=secret, owner=owner, mode="context", payload={},
                 )
+                driver._delegation_context = ctx
                 text = json.dumps(
                     {"device": ctx.get("device"), "tools": ctx.get("tools")},
                     ensure_ascii=False,
@@ -1078,9 +1126,20 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         request = B14ChatRequest(model=model_id, messages=({"role": "user", "content": prompt},), max_tokens=None,
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
                 max_retries=model_policy.get("max_retries") if model_policy else None))
+        from app.pc_work_metrics import current_pc_work_metrics
+
+        metrics = current_pc_work_metrics()
+        try:
+            model_call = metrics.model_start(messages=request.messages, tool_results=observations) if metrics else None
+        except Exception:
+            # Measurement cannot block a model/PC turn or expose its content.
+            print("pc_work_metrics_model_start_failed", flush=True)
+            metrics, model_call = None, None
+        model_response = None
         print("pc_step_model_call stage=start", flush=True)
         try:
             response = await b14_client.execute(request)
+            model_response = response
         except asyncio.CancelledError:
             print("pc_step_model_call stage=done status=cancelled", flush=True)
             raise
@@ -1089,6 +1148,9 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             # execute returned. Only the typed error's bounded HTTP code may
             # enter this log. Never stringify model output or exception text.
             status = exc.upstream_status_code if isinstance(exc, B14ExecutionError) else None
+            if metrics is not None:
+                metrics.mark_failure("model_timeout" if isinstance(exc, asyncio.TimeoutError) or status == 504
+                                     else "model_failed")
             print("pc_step_model_call stage=done status=%s" % (
                 status if isinstance(status, int) and not isinstance(status, bool)
                 and 100 <= status <= 599 else "error"), flush=True)
@@ -1098,6 +1160,12 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             raise PCQueryStepError(
                 "model call failed", detail="model_call_failed",
             ) from exc
+        finally:
+            if metrics is not None:
+                try:
+                    metrics.model_finish(model_call, usage=getattr(model_response, "usage", None))
+                except Exception:
+                    print("pc_work_metrics_model_finish_failed", flush=True)
         print("pc_step_model_call stage=done status=ok", flush=True)
         answer = getattr(response, "answer", None)
         if not isinstance(answer, str):

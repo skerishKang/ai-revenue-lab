@@ -420,6 +420,7 @@ class B62EngineOrchestrationBridge:
         pc_tools: Mapping[str, Any] | None = None,
         byok_selection: Mapping[str, str] | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -501,6 +502,10 @@ class B62EngineOrchestrationBridge:
             request["pc_tools"] = {"device_id": pc_tools["device_id"], "allowed_scopes": list(scopes)}
         if pc_action_context is not None:
             request["pc_action_context"] = [dict(record) for record in pc_action_context]
+        if pc_delegation is not None:
+            from padiem_ai_core.pc_delegation import parse_pc_delegation
+
+            request["pc_delegation"] = parse_pc_delegation(pc_delegation)
         return request
 
     async def _persist_pause(
@@ -543,6 +548,7 @@ class B62EngineOrchestrationBridge:
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -557,6 +563,7 @@ class B62EngineOrchestrationBridge:
             session_id=session_id,
             product_identity=product_identity,
             pc_action_context=pc_action_context,
+            pc_delegation=pc_delegation,
         )
         try:
             raw = await self._client.orchestrate(engine_request)
@@ -580,6 +587,7 @@ class B62EngineOrchestrationBridge:
         user_credential_ref: str | None = None, byok_selection: Mapping[str, str] | None = None,
         additional_system_context: str | None = None, product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
     ):
         request = self.build_engine_request(
             user_id=user_id, messages=messages, skill=skill, model_id=model_id,
@@ -587,6 +595,7 @@ class B62EngineOrchestrationBridge:
             subject_id=subject_id, session_id=session_id,
             additional_system_context=additional_system_context, product_identity=product_identity,
             pc_action_context=pc_action_context,
+            pc_delegation=pc_delegation,
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
         wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}

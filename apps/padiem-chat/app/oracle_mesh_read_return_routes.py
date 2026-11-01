@@ -3701,6 +3701,13 @@ def _pc_write_command(
         )
     if destination is not None:
         statements.append("$destination = " + _pc_ps_literal(destination))
+    # Keep both observation targets before a move rewrites $target for the
+    # legacy account. These paths come from the server's resolved grant, not
+    # from model-provided verification fields.
+    statements.extend([
+        "$verifySource = $target",
+        "$verifyTarget = " + ("$destination" if op == "move" else "$target"),
+    ])
 
     if op == "write":
         body = (
@@ -3739,9 +3746,37 @@ def _pc_write_command(
         )
 
     statements.append(body)
+    # A command's $ok and its expected payload length are not filesystem
+    # evidence. Inspect the result after the mutation's catch, even when the
+    # mutation reported failure. Inspection failures have their own state and
+    # never leak an exception or turn an unobserved result into success.
+    statements.extend([
+        "$verification = [ordered]@{version=1; status='unavailable'}",
+        "try {"
+        " $sourceExists = Test-Path -LiteralPath $verifySource -ErrorAction Stop;"
+        " $targetExists = Test-Path -LiteralPath $verifyTarget -ErrorAction Stop;"
+        " $targetIsFile = Test-Path -LiteralPath $verifyTarget -PathType Leaf -ErrorAction Stop;"
+        " $targetBytes = $null; $targetSha256 = $null;"
+        " if ($targetIsFile) {"
+        " $targetItem = Get-Item -LiteralPath $verifyTarget -Force -ErrorAction Stop;"
+        " $targetBytes = [int64]$targetItem.Length;"
+        " if ($op -eq 'write') {"
+        " $fileHash = Get-FileHash -LiteralPath $verifyTarget -Algorithm SHA256 -ErrorAction Stop;"
+        " $targetSha256 = $fileHash.Hash.ToLowerInvariant() } };"
+        " $backupExists = $null; $backupIsFile = $null;"
+        " if ($null -ne $backup) {"
+        " $backupExists = Test-Path -LiteralPath $backup -ErrorAction Stop;"
+        " $backupIsFile = Test-Path -LiteralPath $backup -PathType Leaf -ErrorAction Stop };"
+        " $verification = [ordered]@{version=1; status='observed';"
+        " source_exists=[bool]$sourceExists; target_exists=[bool]$targetExists;"
+        " target_is_file=[bool]$targetIsFile; target_bytes=$targetBytes;"
+        " target_sha256=$targetSha256; backup_exists=$backupExists;"
+        " backup_is_file=$backupIsFile}"
+        " } catch { $verification = [ordered]@{version=1; status='unavailable'} }",
+    ])
     statements.extend([
         "$account = [ordered]@{ok=$ok; op=$op; reason=$reason; target=$target; "
-        "backup=$backup; bytes=$bytes}",
+        "backup=$backup; bytes=$bytes; verification=$verification}",
         "$json = ConvertTo-Json -InputObject $account -Compress",
         "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))",
         "Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)",
@@ -4174,6 +4209,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _response({
             "ok": True,
             "roots": [{"label": label} for label in labels],
+            # Engine guard only. The model projection remains device/tools;
+            # matching a saved absolute folder to a labeled relative tool path
+            # must use these owner-verified roots, never guess a home directory.
+            "delegation_roots": [{"label": root["label"], "path": root["path"]} for root in roots],
             "device": {
                 "device_id": device_id,
                 "status": "configured",

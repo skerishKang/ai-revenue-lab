@@ -37,6 +37,7 @@ from app.orchestration_service import (
     _pc_tool_arguments_gate,
     _validated_pc_declared_plan,
     _validated_pc_action_context,
+    _validated_pc_delegation,
     _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
@@ -80,6 +81,8 @@ def _wire_allowed_fields(payload: Any) -> frozenset[str]:
         allowed |= {"declared_plan"}
     if _validated_pc_action_context(payload) is not None:
         allowed |= {"pc_action_context"}
+    if _validated_pc_delegation(payload) is not None:
+        allowed |= {"pc_delegation"}
     return allowed
 
 
@@ -243,13 +246,16 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
                 declared_plan=payload.get("declared_plan"),
                 pc_action_context=_validated_pc_action_context(payload),
+                pc_delegation=_validated_pc_delegation(payload),
             )
             if isinstance(attached, ServiceResponse):
                 return attached
             orch_req = attached
             runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
-            result = await runner.run(orch_req)
+            result = await self._run_pc_measured(
+                runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+            )
         except IdempotencyConflictError:
             return _service_error(
                 "idempotency_conflict",
