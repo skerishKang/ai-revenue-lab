@@ -336,11 +336,24 @@ class ChatScenarioTest(DeployHarness):
     def test_ai_401_required_rolls_back(self) -> None:
         self.env["FAKE_AI_CODE"] = "qa_login_refused"
         self.env["FAKE_AI_MODE"] = "required"
+        self.env["B66_CGI_ALPHA_USERNAME"] = "qa-fixture"
+        self.env["B66_CGI_ALPHA_PASSWORD"] = "qa-fixture"
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("chat:ROLLBACK", result.stdout)
         self.assertIn("ai:FAIL error_code=qa_login_refused", result.stdout)
         self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 2)
+
+    def test_missing_required_credentials_stop_before_service_changes(self) -> None:
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env["B66_CGI_ALPHA_USERNAME"] = ""
+        self.env["B66_CGI_ALPHA_PASSWORD"] = ""
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("AI_CHECK_REQUIRED_CREDENTIALS_MISSING", result.stderr)
+        self.assertIn("RERUN_WITH_CREDENTIALS_OR_EXPLICIT_WARN", result.stderr)
+        self.assertEqual(self._head(), self.first)
+        self.assertEqual(self._calls(), [])
 
     def test_ai_pass_has_no_error_code(self) -> None:
         result = self._run_apply()

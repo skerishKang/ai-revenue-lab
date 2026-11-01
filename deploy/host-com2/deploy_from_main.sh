@@ -388,6 +388,16 @@ run_deploy() {
     say 'PENDING_MIGRATIONS=none'
   fi
 
+  # Check the required QA capability before touching the checkout or services.
+  # The operator can explicitly select --ai-check=warn on the next run.
+  if (( apply )) && [[ $ai_check == required ]] && {
+      [[ -z ${B66_CGI_ALPHA_USERNAME:-} ]] || [[ -z ${B66_CGI_ALPHA_PASSWORD:-} ]];
+  }; then
+    printf '%s\n' 'COM2_DEPLOY_AI_CHECK=REQUIRED_UNAVAILABLE' \
+      'COM2_DEPLOY_AI_CHECK_ACTION=RERUN_WITH_CREDENTIALS_OR_EXPLICIT_WARN' >&2
+    fail AI_CHECK_REQUIRED_CREDENTIALS_MISSING
+  fi
+
   if ! (( apply )); then
     for line in chat p01 b14; do
       if (( wanted[$line] )); then result[$line]=WOULD_DEPLOY; fi
