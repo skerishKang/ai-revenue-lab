@@ -29,15 +29,11 @@ from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 #: challenge, never from the request.
 PAIRING_REDEEM_DEVICE_ROUTE = "/v1/broker/pairings/redeem"
 _PAIRING_REDEEM_REQUEST_KEYS = frozenset({"challenge_id", "device_id", "proof_ref", "now"})
-#: The Connector may self-report its product version on redemption (#6011
-#: follow-up). Optional and additive: an old Connector omits it, and the same
-#: grammar as ``kagent.connector_version_compat`` is restated here because the
-#: device HTTP service never imports the Agent's display module.
 _CLIENT_VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:-rc\d{1,9})?$")
 _CLIENT_VERSION_MAX_CHARS = 32
 
 
-def _client_version(value: Any) -> str | None:
+def _client_version(value):
     """One bounded, shape-checked version, or ``None`` (drop, not fail)."""
     if not isinstance(value, str):
         return None

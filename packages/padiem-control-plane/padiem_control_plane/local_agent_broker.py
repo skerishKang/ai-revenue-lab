@@ -140,7 +140,7 @@ class BrokerDeviceBinding:
     issued_at: datetime
     credential_expires_at: datetime
     state: BrokerBindingState = BrokerBindingState.ACTIVE
-    #: The Connector's self-reported product version (0.3.0-rc1 shape), captured
+    # The Connector's self-reported product version (0.3.0-rc1 shape), captured
     # at registration time. ``None`` means the Connector never reported one —
     # the same "version unknown" the device directory shows.
     client_version: str | None = None

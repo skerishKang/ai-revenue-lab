@@ -34,35 +34,10 @@ _PAIRING_ROUTES = frozenset({PAIRING_CHALLENGE_ROUTE, PAIRING_REDEEM_ROUTE})
 
 _CHALLENGE_REQUEST_KEYS = frozenset({"account_ref", "workspace_ref", "now", "ttl_seconds"})
 _REDEEM_REQUEST_KEYS = frozenset({"challenge_id", "device_id", "proof_ref", "now"})
-#: The Connector may self-report its product version on redemption (#6011
-#: follow-up). Optional and additive: an old Connector omits it and every other
-#: field stays mandatory. The grammar matches ``kagent.connector_version_compat``
-#: (``MAJOR.MINOR.PATCH`` with an optional ``-rc<N>`` run), restated here because
-#: the control plane never imports the Agent's display module.
-_CLIENT_VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:-rc\d{1,9})?$")
-_CLIENT_VERSION_MAX_CHARS = 32
 _CHALLENGE_RESPONSE_KEYS = frozenset(
     {"ok", "challenge", "pairing_code", "pairing_code_returned_once", "proof_transcript"}
 )
 _ENROLLMENT_RESPONSE_KEYS = frozenset({"ok", "enrollment", "credential_b64", "credential_returned_once"})
-
-
-def _client_version(value: Any) -> str | None:
-    """One bounded, shape-checked self-reported version, or ``None`` (drop, not fail).
-
-    The same drop-don't-fail rule the Chat device directory applies to the
-    stored fact: an over-length, control-laden or wrongly-shaped string is
-    simply "version unknown" — it never rejects a pairing.
-    """
-
-    if not isinstance(value, str):
-        return None
-    trimmed = value.strip()
-    if not trimmed or len(trimmed) > _CLIENT_VERSION_MAX_CHARS:
-        return None
-    if _CLIENT_VERSION_RE.fullmatch(trimmed) is None:
-        return None
-    return trimmed
 
 
 def _ref(value: Any, field_name: str) -> str:
@@ -202,11 +177,7 @@ class PairingEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
         *,
         server_now: datetime,
     ) -> LocalAgentBrokerHttpResponse:
-        # The four mandatory keys are today's exact contract; client_version is
-        # the one additive optional key an old Connector simply omits.
-        payload = _closed_mapping(
-            payload, _REDEEM_REQUEST_KEYS | {"client_version"}, "pairing redeem request"
-        )
+        payload = _closed_mapping(payload, _REDEEM_REQUEST_KEYS, "pairing redeem request")
         _timestamp(payload["now"], "client_now")  # request evidence only; server clock owns redemption
         challenge_id = _ref(payload["challenge_id"], "challenge_id")
         device_id = _ref(payload["device_id"], "device_id")
@@ -220,7 +191,6 @@ class PairingEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
             device_id=device_id,
             proof_ref=proof_ref,
             now=server_now,
-            client_version=_client_version(payload.get("client_version")),
         )
         if not isinstance(enrollment, BrokerPairingEnrollment):
             raise ValueError("pairing authority returned an invalid enrollment")
