@@ -76,23 +76,24 @@ def local_data_dir() -> Path:
 
 def apply_migrations(connection: sqlite3.Connection, migrations_dir: Path = MIGRATIONS_DIR) -> int:
     """Apply every pending migration in filename order; return how many ran."""
-
-    connection.execute(
-        f"CREATE TABLE IF NOT EXISTS {LOCAL_LEDGER_TABLE} ("
-        "name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
-    )
-    applied = {row[0] for row in connection.execute(f"SELECT name FROM {LOCAL_LEDGER_TABLE}")}
-    count = 0
-    for path in sorted(migrations_dir.glob("*.sql")):
-        if path.name in applied:
-            continue
-        connection.executescript(path.read_text(encoding="utf-8"))
+    from .local_bootstrap import migration_lock
+    with migration_lock(connection):
         connection.execute(
-            f"INSERT INTO {LOCAL_LEDGER_TABLE} (name, applied_at) VALUES (?, ?)",
-            (path.name, datetime.now(timezone.utc).isoformat()),
+            f"CREATE TABLE IF NOT EXISTS {LOCAL_LEDGER_TABLE} ("
+            "name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
         )
-        count += 1
-    return count
+        applied = {row[0] for row in connection.execute(f"SELECT name FROM {LOCAL_LEDGER_TABLE}")}
+        count = 0
+        for path in sorted(migrations_dir.glob("*.sql")):
+            if path.name in applied:
+                continue
+            connection.executescript(path.read_text(encoding="utf-8"))
+            connection.execute(
+                f"INSERT INTO {LOCAL_LEDGER_TABLE} (name, applied_at) VALUES (?, ?)",
+                (path.name, datetime.now(timezone.utc).isoformat()),
+            )
+            count += 1
+        return count
 
 
 def _ensure_session_secret(data_dir: Path) -> None:
@@ -238,7 +239,8 @@ def build_app():
     if applied:
         print(f"[local] migrations applied: {applied}")
 
-    db = SqliteD1(connection, threaded=True)
+    db = SqliteD1(connection, threaded=True,
+                  read_workers=_nonnegative_env('PADIEM_CHAT_SQLITE_READERS', 2))
     r2 = ThreadedLocalDiskR2(data_dir / "objects")
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
@@ -284,6 +286,13 @@ def build_app():
         control_plane_identity_authority=identity_authority,
         identity_shadow_store=identity_shadow_store,
         b66_pdf_renderer_client=pdf_renderer,
+    )
+    app.router.on_shutdown.append(db.close_readers)
+    # Optional short-lived validation results; roles/entitlements stay live.
+    from .auth_validation_cache import SqliteAuthValidationCache
+    cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
+    app.state.auth_validation_cache = (
+        SqliteAuthValidationCache(db, ttl_seconds=cache_seconds) if cache_seconds else None
     )
 
     # Match the Worker's staged entry layout while keeping the council app as
@@ -455,6 +464,13 @@ def build_app():
         app.user_middleware.insert(0, timing)
     app = apply_write_freeze(app)
     return app
+
+
+def _nonnegative_env(name: str, default: int) -> int:
+    value = os.getenv(name, str(default)).strip()
+    if not value.isascii() or not value.isdecimal():
+        raise ConfigError(name + ' must be a non-negative integer')
+    return int(value)
 
 
 def _optional_pair(origin_env: str, secret_env: str) -> tuple[str | None, str | None]:

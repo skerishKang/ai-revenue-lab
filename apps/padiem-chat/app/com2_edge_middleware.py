@@ -1,4 +1,5 @@
 """Opt-in COM2 ingress authentication; no client proof header is trusted."""
+import asyncio
 from starlette.datastructures import Headers
 from .request_timing import measure
 
@@ -23,7 +24,7 @@ class EdgeProofMiddleware:
         valid = all(names.count(name) == 1 for name in _PROOF_HEADERS)
         if valid:
             with measure('edge'):
-                valid = self.verifier.verify(
+                valid = await asyncio.to_thread(self.verifier.verify,
                     method="GET" if kind == "websocket" else scope.get("method", ""),
                     path=scope.get("path", ""), headers=Headers(scope=scope),
                 )

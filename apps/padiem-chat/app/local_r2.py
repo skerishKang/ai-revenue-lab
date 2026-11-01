@@ -16,7 +16,9 @@ root here — a `..`/absolute/drive-shaped key raises instead of escaping.
 from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
+import tempfile
 from typing import Any
 
 __all__ = ["LocalDiskR2", "LocalR2Object"]
@@ -67,7 +69,17 @@ class LocalDiskR2:
             raise TypeError("LocalDiskR2.put accepts bytes only")
         path = self._path(key)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(bytes(body))
+        descriptor, temporary = tempfile.mkstemp(prefix=".r2-", dir=path.parent)
+        try:
+            with os.fdopen(descriptor, "wb") as output:
+                output.write(body)
+                output.flush()
+                os.fsync(output.fileno())
+            # Same filesystem rename: readers see the complete old or new
+            # object, including when another Chat worker writes concurrently.
+            os.replace(temporary, path)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
 
     def get(self, key: str) -> LocalR2Object | None:
         path = self._path(key)
@@ -83,7 +95,13 @@ class LocalDiskR2:
 
 
 class ThreadedLocalDiskR2(LocalDiskR2):
-    """Host binding: perform file reads outside the ASGI event loop."""
+    """Host binding: perform object I/O outside the ASGI event loop."""
 
     async def get(self, key: str) -> LocalR2Object | None:
         return await asyncio.to_thread(super().get, key)
+
+    async def put(self, key: str, body: bytes, httpMetadata: dict[str, Any] | None = None) -> None:
+        await asyncio.to_thread(super().put, key, body, httpMetadata)
+
+    async def delete(self, key: str) -> None:
+        await asyncio.to_thread(super().delete, key)

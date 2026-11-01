@@ -153,6 +153,8 @@ async def b66_admin_member_access(request: Request) -> JSONResponse:
             actor_id=actor_id, user_id=user_id, status=data["status"],
             tier=data["tier"], expected_revision=data["expected_revision"]
         )
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=user_id)
     except MemberMissing:
         return _error(404, "member_not_found")
     except MemberConflict:

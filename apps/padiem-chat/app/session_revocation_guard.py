@@ -14,8 +14,10 @@ facts without adding a second session store:
 
 * the login binds the canonical session id into the signed cookie;
 * the logout revokes that exact canonical session in the Control Plane;
-* every cookie-bearing request re-reads that one canonical session and refuses
-  the request when the canonical session is no longer effective-ACTIVE.
+* every cookie-bearing request checks that canonical session and refuses the
+  request when it is no longer effective-ACTIVE. The COM2 composition may reuse
+  a successful check for 30 seconds in SQLite; logout and permission changes
+  invalidate that shared cache before returning success.
 
 Scope and boundaries
 --------------------
@@ -85,6 +87,10 @@ class SessionVerdict:
     user_id: str | None = None
     canonical_session_id: str | None = None
     reason: str = "absent"
+
+
+class _InactiveCachedSession(Exception):
+    """Do not put a negative or revoked authority result in the success cache."""
 
 
 def session_verdict(request: Any) -> SessionVerdict | None:
@@ -206,11 +212,24 @@ class SessionRevocationGuardMiddleware:
             # the guard refuses authority it cannot check, it never withholds
             # a session the server itself issued.
             return None
+        cache = getattr(state, 'auth_validation_cache', None)
         try:
-            session = await resolve(session_id=canonical_session_id)
+            if cache is not None:
+                async def load_active_session():
+                    session = await resolve(session_id=canonical_session_id)
+                    if not _is_effective_active(session, now=datetime.now(timezone.utc)):
+                        raise _InactiveCachedSession()
+                    return claims.user_id, session.expires_at.timestamp()
+                cached_user = await cache.get_or_load(
+                    'legacy', claims.user_id, canonical_session_id, load_active_session)
+                active = cached_user == claims.user_id
+            else:
+                session = await resolve(session_id=canonical_session_id)
+                active = _is_effective_active(session, now=datetime.now(timezone.utc))
         except Exception as exc:
             code = getattr(exc, "code", "")
-            if code in _TERMINAL_SESSION_CODES or getattr(exc, "status_code", None) == 401:
+            if (isinstance(exc, _InactiveCachedSession) or code in _TERMINAL_SESSION_CODES
+                    or getattr(exc, "status_code", None) == 401):
                 # The canonical session is gone or no longer active.
                 return SessionVerdict(
                     authenticated=False,
@@ -227,7 +246,7 @@ class SessionRevocationGuardMiddleware:
                 canonical_session_id=canonical_session_id,
                 reason="unavailable",
             )
-        if not _is_effective_active(session, now=datetime.now(timezone.utc)):
+        if not active:
             return SessionVerdict(
                 authenticated=False,
                 user_id=claims.user_id,

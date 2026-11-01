@@ -25,6 +25,8 @@ fail() { echo "CHAT_COM2_INSTALL=$1" >&2; exit 1; }
 [[ ${EUID} -eq 0 ]] || fail ROOT_REQUIRED
 for required in \
   apps/padiem-chat/app/local_cpython.py \
+  apps/padiem-chat/app/local_server.py \
+  apps/padiem-chat/app/local_bootstrap.py \
   apps/padiem-chat/static/councillor/councillor.html \
   apps/padiem-council-apps/static/index.html \
   apps/padiem-council-apps/static/council-app.css \
@@ -65,6 +67,22 @@ install -m 0700 "$here/backup.py" "$app/backup.py"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/.env.example" "$app/.env"; fi
 chown root:root "$app/.env"
 chmod 0600 "$app/.env"
+# Prepare the reviewed Linux data location only when the operator selected it.
+# This never copies, moves or changes the live database; CTO owns that cutover.
+if "$app/venv/bin/python" - "$app/.env" "$app/data" <<'PY'
+from pathlib import Path
+import sys
+selected = None
+for line in Path(sys.argv[1]).read_text(encoding="utf-8").splitlines():
+    name, separator, value = line.strip().partition("=")
+    if separator and name == "PADIEM_CHAT_LOCAL_DATA_DIR":
+        selected = value.strip().strip("\"'")
+raise SystemExit(0 if selected == sys.argv[2] else 1)
+PY
+then
+  data="$app/data"
+  install -d -m 0700 -o padiem-chat -g padiem-chat "$data"
+fi
 if ! runuser -u padiem-chat -- env "PADIEM_CHAT_LOCAL_DATA_DIR=$data" "$app/venv/bin/python" -c \
   "import os, pathlib, tempfile, uvicorn; fd, name=tempfile.mkstemp(dir=os.environ['PADIEM_CHAT_LOCAL_DATA_DIR']); os.close(fd); pathlib.Path(name).unlink()" >/dev/null 2>&1; then
   fail RUNTIME_OR_HDD_PERMISSION_FAILED

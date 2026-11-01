@@ -7,6 +7,7 @@ arrive. Output contains durations and counts only. Run from any working director
 from __future__ import annotations
 
 import asyncio
+import argparse
 import json
 from pathlib import Path
 import sqlite3
@@ -21,7 +22,7 @@ from app.d1_sqlite import SqliteD1
 from app.request_timing import reset_timing, start_timing
 
 
-async def measure() -> dict:
+async def measure(read_workers=0) -> dict:
     with tempfile.TemporaryDirectory(prefix="padiem-sqlite-measure-") as folder:
         connection = sqlite3.connect(str(Path(folder) / "measure.sqlite3"),
                                      isolation_level=None, check_same_thread=False)
@@ -37,7 +38,7 @@ async def measure() -> dict:
             return value + 1
 
         connection.create_function("hold", 1, hold)
-        db = SqliteD1(connection, threaded=True)
+        db = SqliteD1(connection, threaded=True, read_workers=read_workers)
         try:
             writer = asyncio.create_task(db.prepare("UPDATE sample SET value=hold(value)").run())
             if not await asyncio.to_thread(entered.wait, 5):
@@ -59,10 +60,16 @@ async def measure() -> dict:
             samples = await asyncio.gather(*(read(index) for index in range(1, 6)))
             await writer
             return {"source": "offline_synthetic_writer_contention", "writer_hold_ms": 120,
+                    "read_workers": read_workers,
                     "read_count": len(samples), "samples": samples}
         finally:
+            await db.close_readers()
             connection.close()
 
 
 if __name__ == "__main__":
-    print(json.dumps(asyncio.run(measure()), sort_keys=True))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--read-workers", type=int, default=0,
+                        help="0 reproduces the serial writer lock; 2 uses the host read-pool default")
+    args = parser.parse_args()
+    print(json.dumps(asyncio.run(measure(args.read_workers)), sort_keys=True))

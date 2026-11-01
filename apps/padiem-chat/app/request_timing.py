@@ -1,7 +1,6 @@
 """Request-local wall-clock spans; fixed names, no request or SQL material."""
 from __future__ import annotations
 
-from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
 from threading import Lock
@@ -45,13 +44,28 @@ def record_duration(stage: str, duration_ms: float) -> None:
         timing.add(stage, duration_ms)
 
 
-@contextmanager
+class _Measurement:
+    """Do not rewrite exceptions: canonical errors can be frozen dataclasses.
+
+    A generator context manager assigns ``exception.__traceback__`` on exit.
+    Frozen exception objects reject that assignment, replacing their original
+    status/code with a TypeError. A plain context manager propagates them intact.
+    """
+    __slots__ = ('stage', 'started')
+
+    def __init__(self, stage):
+        self.stage = stage
+
+    def __enter__(self):
+        self.started = perf_counter()
+
+    def __exit__(self, error_type, error, traceback):
+        record_duration(self.stage, (perf_counter() - self.started) * 1000)
+        return False
+
+
 def measure(stage: str):
-    started = perf_counter()
-    try:
-        yield
-    finally:
-        record_duration(stage, (perf_counter() - started) * 1000)
+    return _Measurement(stage)
 
 
 def timed_async(stage: str):

@@ -83,6 +83,33 @@ async def test_duration_decorator_records_failure_without_changing_exception():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('decorated', [False, True])
+async def test_measurement_preserves_frozen_canonical_exception(decorated):
+    from app.control_plane_identity import IdentityBridgeError
+
+    failure = IdentityBridgeError(401, 'inactive_auth_session', 'Synthetic canonical refusal')
+    timing, token = start_timing()
+
+    @timed_async('identity')
+    async def refused():
+        raise failure
+
+    try:
+        with pytest.raises(IdentityBridgeError) as caught:
+            if decorated:
+                await refused()
+            else:
+                with measure('identity'):
+                    raise failure
+        assert caught.value is failure
+        assert caught.value.status_code == 401
+        assert caught.value.code == 'inactive_auth_session'
+        assert timing.snapshot()['identity'] > 0
+    finally:
+        reset_timing(token)
+
+
+@pytest.mark.asyncio
 async def test_middleware_records_only_template_and_fixed_timing_dimensions():
     private = 'synthetic-private-document-token'
     events, wire = [], []

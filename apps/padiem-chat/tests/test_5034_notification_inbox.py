@@ -56,6 +56,8 @@ NEW_KEYS = (
     "notification-inbox-alerts-section",
     "notification-inbox-tasks-section",
     "notification-inbox-tasks-empty",
+    "notification-inbox-refreshing",
+    "notification-inbox-stale",
     "notification-inbox-open",
     "notification-inbox-read",
     "notification-inbox-restore",
@@ -429,7 +431,7 @@ function run(spec) {
   const sandbox = {
     console, Intl, Date, JSON, Math, RegExp, String, Number, Array, Object, Boolean, Promise,
     encodeURIComponent, URLSearchParams, TextEncoder, TextDecoder,
-    CustomEvent, setImmediate,
+    CustomEvent, setImmediate, AbortController, setTimeout, clearTimeout,
     window, document, fetch: recorder.fetch,
   };
   vm.createContext(sandbox);
@@ -796,8 +798,11 @@ def test_module_renders_server_text_without_html_injection() -> None:
 
 def test_module_adds_no_polling_loop() -> None:
     module = _read(MODULE_JS)
-    for forbidden in ("setInterval", "setTimeout"):
-        assert forbidden not in module, forbidden
+    assert "setInterval" not in module
+    # One cancellation timer bounds a display GET; it never retries or polls.
+    assert module.count("setTimeout") == 1
+    assert "setTimeout(() => controller.abort(), DISPLAY_READ_TIMEOUT_MS)" in module
+    assert "clearTimeout(timer)" in module
     assert module.count("addEventListener") >= 5
 
 
