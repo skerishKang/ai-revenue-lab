@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./pc-pairing-card.css" />
   <link rel="stylesheet" href="./pc-connect-flow.css" />
+  <link rel="stylesheet" href="./pc-delegation-settings.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./util-menu.css" />
@@ -267,6 +268,35 @@
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
+            </div>
+          </section>
+          <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
+            <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
+            <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
+            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록하기는 항상 확인합니다.</p>
+            <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
+            <div class="pc-delegation-toolbar">
+              <button type="button" class="settings-action" id="pcDelegationRefresh" data-locale-key="pc-delegation-refresh">목록 새로 보기</button>
+            </div>
+            <ul class="pc-delegation-list" id="pcDelegationList" data-locale-aria-label="pc-delegation-list" aria-label="현재 맡긴 일"></ul>
+            <div class="pc-delegation-editor" id="pcDelegationEditor">
+              <label for="pcDelegationDevice" data-locale-key="pc-delegation-device">어느 PC인가요?</label>
+              <select id="pcDelegationDevice" disabled></select>
+              <label for="pcDelegationFolder" data-locale-key="pc-delegation-folder">어느 폴더인가요?</label>
+              <input id="pcDelegationFolder" type="text" autocomplete="off" spellcheck="false" data-locale-placeholder="pc-delegation-folder-placeholder" placeholder="예: C:/Users/me/Documents" aria-describedby="pcDelegationFolderHelp" disabled />
+              <small id="pcDelegationFolderHelp" data-locale-key="pc-delegation-folder-help">이 폴더와 그 안의 폴더에 적용합니다. 이동은 출발·도착 폴더가 모두 범위 안이어야 합니다.</small>
+              <fieldset id="pcDelegationActions" disabled>
+                <legend data-locale-key="pc-delegation-actions">어떤 일을 맡길까요?</legend>
+                <label><input id="pcDelegationWrite" type="checkbox" value="write" /><span data-locale-key="pc-delegation-write">파일 저장·수정</span></label>
+                <label><input id="pcDelegationMove" type="checkbox" value="move" /><span data-locale-key="pc-delegation-move">파일 정리·이동</span></label>
+                <label><input id="pcDelegationDelete" type="checkbox" value="delete" /><span data-locale-key="pc-delegation-delete">파일 삭제</span></label>
+              </fieldset>
+              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 처리할까요?</label>
+              <select id="pcDelegationMode" disabled>
+                <option value="allow" data-locale-key="pc-delegation-allow">이 범위에서는 다시 묻지 않기</option>
+                <option value="ask" data-locale-key="pc-delegation-ask">항상 물어보기</option>
+              </select>
+              <button type="button" class="settings-action" id="pcDelegationAdd" data-locale-key="pc-delegation-add" disabled>규칙 저장</button>
             </div>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
@@ -1374,6 +1404,7 @@
   <script src="./claw-device-manager.js"></script>
   <script src="./pc-pairing-card.js"></script>
   <script src="./pc-connect-flow.js"></script>
+  <script src="./pc-delegation-settings.js"></script>
   <!-- The composer computer connection status. It is a view over the snapshot
        the existing device directory module published and it opens the existing
        management panel; it adds no endpoint, no pairing and no polling loop. -->

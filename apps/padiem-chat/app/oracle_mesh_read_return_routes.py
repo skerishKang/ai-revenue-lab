@@ -4209,6 +4209,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _response({
             "ok": True,
             "roots": [{"label": label} for label in labels],
+            # Engine guard only. The model projection remains device/tools;
+            # matching a saved absolute folder to a labeled relative tool path
+            # must use these owner-verified roots, never guess a home directory.
+            "delegation_roots": [{"label": root["label"], "path": root["path"]} for root in roots],
             "device": {
                 "device_id": device_id,
                 "status": "configured",

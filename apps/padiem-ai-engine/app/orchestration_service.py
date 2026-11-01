@@ -491,6 +491,26 @@ def _validated_pc_action_context(payload: Any) -> tuple[dict[str, Any], ...] | N
         ) from None
 
 
+def _validated_pc_delegation(payload: Any) -> dict[str, Any] | None:
+    """Owner settings are separate PC-only metadata, never model instructions."""
+    if not isinstance(payload, Mapping) or "pc_delegation" not in payload:
+        return None
+    from app.pc_tools_turn import parse_pc_tools
+    from padiem_ai_core.pc_delegation import parse_pc_delegation
+
+    try:
+        plan = _parse_agent_plan(payload.get("agent_plan"))
+        if _canonical_pc_plan(payload.get("app_id"), plan) is None and parse_pc_tools(payload) is None:
+            raise ValueError("Delegation requires a canonical PC request")
+        if payload["pc_delegation"] is None:
+            raise ValueError("An explicit policy must be an object")
+        return parse_pc_delegation(payload["pc_delegation"])
+    except (TypeError, ValueError):
+        raise ServiceContractError(
+            "invalid_pc_delegation", "PC delegation policy is invalid.", status_code=422,
+        ) from None
+
+
 def _validated_pc_tool_arguments(
     payload: Any,
 ) -> dict[str, dict[str, Any]] | None:
@@ -514,7 +534,7 @@ def _pc_query_selected_device(tool_arguments: Any) -> str | None:
     """The server-provided device hint for the PC tool plan, never model text."""
     if not isinstance(tool_arguments, dict):
         return None
-    for target_key in ("query_drives", "files", "files_list"):
+    for target_key in ("query_drives", "files", "files_list", "files_write"):
         if set(tool_arguments) != {target_key}:
             continue
         target = tool_arguments.get(target_key)
@@ -799,6 +819,7 @@ class OrchestrationEngineService:
         declared_plan: str | None = None,
         initial_decision: Mapping[str, Any] | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
     ) -> OrchestrationRequest | ServiceResponse:
         """Bind the owner-selected step driver to the exact product PC plan.
 
@@ -868,6 +889,14 @@ class OrchestrationEngineService:
         elif pc_action_context is not None:
             return _service_error(
                 "pc_query_model_unavailable", "PC action evidence inspection is unavailable.",
+                status_code=503,
+            )
+        configure_delegation = getattr(driver, "configure_delegation", None)
+        if callable(configure_delegation):
+            configure_delegation(pc_delegation)
+        elif pc_delegation is not None:
+            return _service_error(
+                "pc_query_model_unavailable", "PC delegation inspection is unavailable.",
                 status_code=503,
             )
         return replace(orch_req, agent_step_driver=driver)
@@ -1125,6 +1154,7 @@ class OrchestrationEngineService:
         try:
             _validated_pc_declared_plan(payload)
             _validated_pc_action_context(payload)
+            _validated_pc_delegation(payload)
             from app.pc_tools_turn import parse_pc_tools
             parse_pc_tools(payload)
             _, exec_req, ctx = build_execution_request(exec_payload)
@@ -1226,6 +1256,7 @@ class OrchestrationEngineService:
             app_id=app_id, orch_req=orch_req, exec_req=exec_req,
             declared_plan=payload.get("declared_plan"),
             pc_action_context=_validated_pc_action_context(payload),
+            pc_delegation=_validated_pc_delegation(payload),
         )
         if isinstance(attached, ServiceResponse):
             return attached
@@ -1836,6 +1867,7 @@ class OrchestrationEngineService:
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
                 declared_plan=payload.get("declared_plan"),
                 pc_action_context=_validated_pc_action_context(payload),
+                pc_delegation=_validated_pc_delegation(payload),
             )
             if isinstance(attached, ServiceResponse):
                 return attached
@@ -1860,9 +1892,9 @@ class OrchestrationEngineService:
         from kagent.pc_query_adapter import PC_QUERY_RUN_SCOPE
 
         declared_identity_token = None
-        if "declared_plan" in payload or "pc_action_context" in payload:
+        if "declared_plan" in payload or "pc_action_context" in payload or "pc_delegation" in payload:
             # The stream task needs the same material replay identity as JSON.
-            # Leave legacy requests untouched when both fields are absent.
+            # Leave legacy requests untouched when all PC metadata is absent.
             from app.orchestration_idempotency_service import _initial_execution_fingerprint
             from app.idempotency_identity import (
                 set_canonical_idempotency_fingerprint,

@@ -492,6 +492,7 @@ class P01RequestFactory:
         central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
@@ -653,6 +654,7 @@ class P01RequestFactory:
             agent_plan=desktop_plan,
             tool_arguments=desktop_arguments,
             pc_action_context=tuple(dict(item) for item in (pc_action_context or ())),
+            pc_delegation=pc_delegation,
         )
         return P01RequestBundle(
             execution_request=execution_request,
@@ -893,6 +895,7 @@ class P01CoreOrchestrationAdapter:
         central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
@@ -911,6 +914,7 @@ class P01CoreOrchestrationAdapter:
                 central_route_model_id=central_route_model_id,
                 additional_system_context=additional_system_context,
                 pc_action_context=pc_action_context,
+                pc_delegation=pc_delegation,
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,
                 pc_drive_query=pc_drive_query,

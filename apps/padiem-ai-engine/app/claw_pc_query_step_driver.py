@@ -959,6 +959,11 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
 
         self._action_harness = PcActionHarness(records)
 
+    def configure_delegation(self, policy) -> None:
+        from app.pc_action_delegation import PcActionDelegation
+
+        self._action_delegation = PcActionDelegation(policy)
+
     def _decision(self, decision, observations):
         from app.pc_action_result_answer import append_pc_action_facts
 
@@ -975,6 +980,17 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
         question = harness.question(
             invocation.tool_id, invocation.arguments, observations=observations,
         )
+        # Evidence always runs first: delegation cannot authorize instructions
+        # embedded in a file/web/tool result or choose an unsupported target.
+        if question is None:
+            delegation = getattr(self, "_action_delegation", None)
+            if delegation is not None:
+                owner = _PC_QUERY_OWNER.get()
+                question = delegation.question(
+                    invocation.tool_id, invocation.arguments, records=harness.records,
+                    device_id=owner[3] if isinstance(owner, tuple) and len(owner) == 4 else None,
+                    context=getattr(self, "_delegation_context", None),
+                )
         return AgentStepDecision.complete(append_pc_action_facts(question, observations)) if question else selected
 
 
@@ -1013,6 +1029,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                     service=service, request_factory=request_factory,
                     secret=secret, owner=owner, mode="context", payload={},
                 )
+                driver._delegation_context = ctx
                 text = json.dumps(
                     {"device": ctx.get("device"), "tools": ctx.get("tools")},
                     ensure_ascii=False,
