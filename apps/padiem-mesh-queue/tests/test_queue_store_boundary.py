@@ -34,6 +34,7 @@ from app.d1_sqlite import _Statement  # noqa: E402
 from app.history import D1HistoryStore  # noqa: E402
 from app.mesh_device_presence_store import (  # noqa: E402
     D1MeshDevicePresenceStore, MeshDevicePresenceStoreError)
+from app.mesh_device_drive_store import D1MeshDeviceDriveStore
 from app.pc_device_pairing_store import D1PcPairingStore  # noqa: E402
 from internal_store import (  # noqa: E402
     INTERNAL_STORE_PATH, MOMENT_ARGUMENTS, QUEUE_SERVICE_SECRET_HEADER,
@@ -109,9 +110,10 @@ def test_every_moment_argument_of_every_allowed_method_is_coerced():
     """`received_at` was the name this test would have caught before it reached 컴2."""
 
     allowed = (internal_store.DISPATCH_METHODS | internal_store.PAIRING_METHODS
-               | internal_store.PRESENCE_METHODS)
+               | internal_store.PRESENCE_METHODS | internal_store.DRIVE_METHODS)
     moments = set()
-    for store in (D1HistoryStore, D1MeshDevicePresenceStore, D1PcPairingStore):
+    for store in (D1HistoryStore, D1MeshDevicePresenceStore, D1MeshDeviceDriveStore,
+                  D1PcPairingStore):
         for name in allowed:
             method = getattr(store, name, None)
             if not callable(method):

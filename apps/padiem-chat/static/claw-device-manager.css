@@ -168,6 +168,10 @@
 .claw-device-manager-detail { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
 .claw-device-manager-detail strong { font-size: .9rem; overflow-wrap: anywhere; }
 .claw-device-manager-detail small { font-size: .76rem; color: var(--text-dim, #607a89); }
+.claw-device-manager-drives { flex-basis: 100%; display: grid; gap: 5px; min-width: 0; }
+.claw-device-manager-drive { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 9px; }
+.claw-device-manager-drive-name { font-size: .8rem; overflow-wrap: anywhere; }
+.claw-device-manager-drive-updated { opacity: .8; }
 /* The full server-owned device ID is a detail value, not a headline: it stays
  * on one truncated line and reveals the whole ID on hover or focus. */
 .claw-device-manager-id {

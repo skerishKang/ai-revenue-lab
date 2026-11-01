@@ -7,7 +7,9 @@
 
   const ENDPOINT = "/api/claw/local-access/devices";
   const SELECT_ENDPOINT = "/api/claw/local-access/devices/select";
-  const MAX_RESPONSE_BYTES = 32768;
+  // Match the owner's drive comparison interval; only an open, visible
+  // directory reads again. This never sends a PC command or confirmation.
+  const DRIVE_REFRESH_MS = 30000;
   const READ_TIMEOUT_MS = 12000;
   const SAVE_TIMEOUT_MS = 12000;
   const COPY = Object.freeze({
@@ -39,6 +41,14 @@
       required: "연결 확인 필요",
       executable: "실행 대상 준비 · 온라인 상태 미확인",
       choose: "작업 대상 후보로 선택",
+      drivesTitle: "드라이브",
+      drivesPending: "드라이브 목록을 기다리고 있어요.",
+      drivesUnavailable: "드라이브 목록을 확인하지 못했습니다.",
+      drivesEmpty: "현재 보고된 드라이브가 없습니다.",
+      drivesUpdated: "마지막 확인",
+      driveFree: "여유 {size}",
+      driveFreeUnknown: "여유 공간 확인 안 됨",
+      driveKinds: { fixed: "내장 디스크", removable: "이동식 디스크", network: "네트워크 드라이브", cdrom: "CD/DVD", ramdisk: "메모리 디스크", unknown: "종류 확인 안 됨" },
     },
     en: {
       title: "My connected computers",
@@ -68,6 +78,14 @@
       required: "Connection needs verification",
       executable: "Execution target ready · online status unverified",
       choose: "Select as candidate device",
+      drivesTitle: "Drives",
+      drivesPending: "Waiting for the drive list.",
+      drivesUnavailable: "Could not read the drive list.",
+      drivesEmpty: "No drives are currently reported.",
+      drivesUpdated: "Last checked",
+      driveFree: "{size} free",
+      driveFreeUnknown: "Free space not available",
+      driveKinds: { fixed: "Fixed disk", removable: "Removable disk", network: "Network drive", cdrom: "CD/DVD", ramdisk: "RAM disk", unknown: "Unknown type" },
     },
   });
 
@@ -84,6 +102,19 @@
     if (className) el.className = className;
     if (typeof text === "string") el.textContent = text;
     return el;
+  }
+
+  function formatBytes(value) {
+    const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"];
+    let amount = value;
+    let unit = 0;
+    while (amount >= 1024 && unit < units.length - 1) {
+      amount /= 1024;
+      unit += 1;
+    }
+    return new Intl.NumberFormat(locale() === COPY.en ? "en" : "ko", {
+      maximumFractionDigits: unit ? 1 : 0,
+    }).format(amount) + " " + units[unit];
   }
 
   // Never display a server-supplied HTML fragment, token or exception detail.
@@ -164,6 +195,22 @@
     let opened = false;
     let stateCode = "unavailable";
     let readCompleted = false;
+    let refreshTimer = null;
+
+    function stopRefresh() {
+      if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+      refreshTimer = null;
+    }
+
+    function scheduleRefresh() {
+      stopRefresh();
+      if (!opened || document.visibilityState === "hidden") return;
+      refreshTimer = window.setTimeout(() => {
+        refreshTimer = null;
+        if (pendingController || pendingSelection) scheduleRefresh();
+        else void load({ backgroundRefresh: true });
+      }, DRIVE_REFRESH_MS);
+    }
 
     // The shared directory snapshot. The composer status control reads this
     // instead of opening a second connection to the directory endpoint, so
@@ -191,6 +238,11 @@
           expired: device.expired === true,
           executable: device.executable === true,
           selectable: device.selectable === true,
+          drivesStatus: device.drivesStatus,
+          ...(device.drivesStatus === "ready" ? {
+            drives: device.drives,
+            drivesUpdatedAt: device.drivesUpdatedAt,
+          } : {}),
         })),
       };
       window.PadiemClawDeviceDirectory = snapshot;
@@ -296,6 +348,30 @@
         const chip = element("span", "claw-device-manager-state", deviceLabel(device));
         chip.dataset.state = device.state;
         detail.append(chip);
+        const drives = element("div", "claw-device-manager-drives");
+        drives.setAttribute("aria-label", t.drivesTitle);
+        if (device.drivesStatus === "ready") {
+          if (!device.drives.length) {
+            drives.append(element("small", "claw-device-manager-drive-empty", t.drivesEmpty));
+          }
+          for (const drive of device.drives) {
+            const line = element("div", "claw-device-manager-drive");
+            const label = drive.name ? drive.name + " (" + drive.path + ")" : drive.path;
+            line.append(element("span", "claw-device-manager-drive-name", label));
+            line.append(element("small", "claw-device-manager-drive-kind", t.driveKinds[drive.kind]));
+            const free = drive.free_bytes === null ? t.driveFreeUnknown :
+              t.driveFree.replace("{size}", formatBytes(drive.free_bytes));
+            line.append(element("small", "claw-device-manager-drive-free", free));
+            drives.append(line);
+          }
+          drives.append(element("small", "claw-device-manager-drive-updated",
+            t.drivesUpdated + ": " + new Date(device.drivesUpdatedAt).toLocaleString(
+              locale() === COPY.en ? "en" : "ko")));
+        } else {
+          drives.append(element("small", "claw-device-manager-drive-status",
+            device.drivesStatus === "unavailable" ? t.drivesUnavailable : t.drivesPending));
+        }
+        detail.append(drives);
         const pick = element("button", "claw-device-manager-select", t.choose);
         pick.type = "button";
         pick.disabled = !device.selectable;
@@ -328,6 +404,7 @@
 
     let lastEnvelope = null;
     function reset() {
+      stopRefresh();
       if (pendingController) pendingController.abort();
       pendingController = null;
       if (pendingSelection) pendingSelection.abort();
@@ -393,7 +470,7 @@
     async function load(options = {}) {
       // Opening the panel reads the directory. One authenticated-session
       // restore also reads it without opening, so a new conversation can use
-      // the saved target; no idle polling is created.
+      // the saved target. Only an open visible panel refreshes its inventory.
       if (window.PadiemAuthGate?.authenticated() === false) {
         reset(); if (opened) setStatus("login"); return;
       }
@@ -405,10 +482,17 @@
       const controller = new AbortController();
       pendingController = controller;
       const request = ++sequence;
-      lastEnvelope = null;
-      lastDirectory = null;
-      list.replaceChildren();
-      list.hidden = true;
+      const clearDirectory = () => {
+        lastEnvelope = null;
+        lastDirectory = null;
+        list.replaceChildren();
+        list.hidden = true;
+      };
+      // A scheduled read is not a deselection. Keep the last verified target
+      // while HTTP is pending so a concurrent Chat message still carries it.
+      // Account changes reset it immediately; every settled response replaces
+      // it, including denial, disappearance and a failed read.
+      if (options.backgroundRefresh !== true) clearDirectory();
       panel.setAttribute("aria-busy", "true");
       setStatus("loading");
       // Cover both HTTP dispatch and response body reads, not only fetch().
@@ -422,6 +506,7 @@
           signal: controller.signal,
         });
         if (request !== sequence) return;
+        if (!response.ok) clearDirectory();
         if (response.status === 401 || response.status === 403) {
           selectedId = null;
           setStatus("login");
@@ -439,7 +524,7 @@
         }
         const rawText = await response.text();
         if (request !== sequence) return;
-        if (rawText.length > MAX_RESPONSE_BYTES) throw Error("oversize");
+        clearDirectory();
         const payload = JSON.parse(rawText);
         // The reviewed unavailable envelope distinguishes "not configured yet"
         // from "the read failed and should be retried". Only these two reason
@@ -486,6 +571,11 @@
             expired: d.expired,
             executable: d.executable,
             selectable: d.selectable,
+            drivesStatus: d.drivesStatus,
+            ...(d.drivesStatus === "ready" ? {
+              drives: d.drives,
+              drivesUpdatedAt: d.drivesUpdatedAt,
+            } : {}),
           })),
         };
         lastDirectory = directory;
@@ -503,8 +593,7 @@
       } catch {
         if (request === sequence) {
           selectedId = null;
-          lastEnvelope = null;
-          lastDirectory = null;
+          clearDirectory();
           setStatus("failed");
         }
       } finally {
@@ -518,6 +607,7 @@
           // already gone.
           readCompleted = true;
           publishDirectory();
+          scheduleRefresh();
         }
       }
     }
@@ -616,6 +706,8 @@
         // Returning from pairing may change device truth; GET only.
         selectedId = null;
         void load();
+      } else {
+        stopRefresh();
       }
     });
     window.addEventListener("pageshow", (event) => {

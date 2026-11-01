@@ -117,6 +117,7 @@ class PcPairingStore(Protocol):
 
     async def links_for_owner(self, *, user_id: str) -> list[dict[str, Any]]: ...
 
+    async def list_active_device_ids(self) -> list[str]: ...
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None: ...
 
@@ -913,6 +914,15 @@ class D1PcPairingStore:
                 if single is not None and single not in drives:
                     drives.append(single)
         return drives
+
+    async def list_active_device_ids(self) -> list[str]:
+        """Executor inventory targets: active linked PCs, without account data."""
+        rows = await self._all(
+            "SELECT DISTINCT mesh_node_id FROM pc_device_links "
+            "WHERE state='active' AND paused_at IS NULL ORDER BY mesh_node_id"
+        )
+        return [row["mesh_node_id"] for row in rows
+                if isinstance(row, dict) and is_pc_device_id(row.get("mesh_node_id"))]
 
     async def device_scope(self, *, device_id: Any) -> dict[str, Any] | None:
         """Who owns a reported Mesh identity, from the link directory only.

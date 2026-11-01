@@ -311,6 +311,31 @@
   // refused it would drop a device the server had already verified.
   const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.$:@+-]{1,128}$|^node\/[A-Za-z0-9._-]{0,64}\/[A-Za-z0-9_.$:@+-]{1,128}$/;
 
+  function driveInventory(item) {
+    if (item.drivesStatus !== "ready") {
+      return { drivesStatus: item.drivesStatus === "unavailable" ? "unavailable" : "pending" };
+    }
+    const unavailable = { drivesStatus: "unavailable" };
+    if (!Array.isArray(item.drives) || typeof item.drivesUpdatedAt !== "string" ||
+        !Number.isFinite(Date.parse(item.drivesUpdatedAt))) return unavailable;
+    const kinds = ["fixed", "removable", "network", "cdrom", "ramdisk", "unknown"];
+    const seen = new Set();
+    const drives = [];
+    for (const drive of item.drives) {
+      if (!_isPlainObject(drive) || typeof drive.path !== "string" || !drive.path ||
+          seen.has(drive.path) || typeof drive.name !== "string" || !kinds.includes(drive.kind) ||
+          [drive.free_bytes, drive.total_bytes].some((value) => value !== null &&
+            (!Number.isSafeInteger(value) || value < 0)) ||
+          (drive.free_bytes !== null && drive.total_bytes !== null && drive.free_bytes > drive.total_bytes)) {
+        return unavailable;
+      }
+      seen.add(drive.path);
+      drives.push(Object.freeze({ path: drive.path, name: drive.name, kind: drive.kind,
+        free_bytes: drive.free_bytes, total_bytes: drive.total_bytes }));
+    }
+    return { drivesStatus: "ready", drives: Object.freeze(drives), drivesUpdatedAt: item.drivesUpdatedAt };
+  }
+
   function deriveDeviceDirectory(raw, selectedDeviceId) {
     const empty = (reason) => Object.freeze({
       available: false,
@@ -363,6 +388,7 @@
         expired: projection.expired === true,
         executable,
         selectable,
+        ...driveInventory(item),
       }));
     }
 

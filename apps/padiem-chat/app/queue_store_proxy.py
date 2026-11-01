@@ -87,10 +87,11 @@ QUEUE_PAIRING_METHODS = frozenset({
 })
 
 QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
+QUEUE_DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
 
 __all__ = [
     "INTERNAL_STORE_PATH", "build_queue_client", "QUEUE_BACKEND_COM2", "QUEUE_BACKEND_D1",
-    "QUEUE_DISPATCH_METHODS", "QUEUE_PAIRING_METHODS", "QUEUE_PRESENCE_METHODS",
+    "QUEUE_DISPATCH_METHODS", "QUEUE_DRIVE_METHODS", "QUEUE_PAIRING_METHODS", "QUEUE_PRESENCE_METHODS",
     "QUEUE_SERVICE_SECRET_HEADER", "QueueForwardingHistoryStore", "QueueStoreClient",
     "QueueUnavailable", "queue_backend",
 ]
@@ -210,7 +211,7 @@ class QueueStoreClient:
         # Only declared operation names are observable. Never log arguments,
         # origins, headers, body bytes or exception messages/tracebacks.
         safe_method = method if method in (
-            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
+            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS | QUEUE_DRIVE_METHODS
         ) else "other"
 
         def record(outcome, reason, exception="none", transport_phase="none"):
@@ -322,6 +323,19 @@ class QueueBackedPresenceStore:
 
     async def load(self, **arguments: Any) -> Any:
         return await self._client.call("load", **arguments)
+
+
+class QueueBackedDriveStore:
+    """The latest complete drive snapshots, served by the production queue."""
+
+    def __init__(self, client: QueueStoreClient):
+        self._client = client
+
+    async def upsert_drives(self, **arguments: Any) -> Any:
+        return await self._client.call("upsert_drives", **arguments)
+
+    async def load_drives(self, **arguments: Any) -> Any:
+        return await self._client.call("load_drives", **arguments)
 
 
 #: Reads whose rows arrive already scoped to one owner, so they may carry the handle.

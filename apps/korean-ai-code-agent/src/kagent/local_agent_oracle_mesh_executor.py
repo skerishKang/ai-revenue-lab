@@ -485,7 +485,11 @@ class OracleMeshExecutor:
             raise OracleMeshChannelRefused("chat channel transport refused",
                                            leg=self._leg_for(path)) from exc
         finally:
-            self._last_round_at = time.monotonic()
+            # Inventory is independent of command progress. Its background
+            # traffic must not conceal a stalled dispatch loop from the watchdog.
+            from .local_agent_mesh_drive_reporter import DRIVES_PATH, DRIVE_TARGETS_PATH
+            if path not in {DRIVES_PATH, DRIVE_TARGETS_PATH}:
+                self._last_round_at = time.monotonic()
         try:
             decoded = json.loads(raw.decode("utf-8")) if raw else {}
         except (UnicodeDecodeError, json.JSONDecodeError):
@@ -1729,6 +1733,20 @@ class OracleMeshExecutor:
         thread.start()
         return stop
 
+    def start_drive_reporting(self, source):
+        """Use the production queue channel; no Broker or PC grant is involved."""
+        from .local_agent_mesh_drive_reporter import MeshDriveReporter
+
+        if self._queue_origin is None:
+            return None
+        reporter = getattr(self, "_drive_reporter", None)
+        if reporter is None:
+            reporter = MeshDriveReporter(post=self._post, source=source,
+                                         may_report=self._claim_gate)
+            self._drive_reporter = reporter
+        reporter.start()
+        return reporter
+
     # ---- watchdog ------------------------------------------------------
     def channel_stalled(self, now: float | None = None) -> bool:
         """True when no channel round has finished for CHANNEL_STALL_SECONDS."""
@@ -2185,6 +2203,15 @@ def main(environ: Optional[dict[str, str]] = None) -> int:
     # The loop, never the command: a channel that stopped completing rounds cannot be
     # revived from inside the round that is stuck.
     executor.start_channel_watchdog()
+
+    if queue_origin:
+        from .local_agent_mesh_drive_inventory import MeshDriveInventorySource
+
+        executor.start_drive_reporting(MeshDriveInventorySource(
+            meshctrl_js=need("ORACLE_MESH_MESHCTRL_JS"), mesh_url=mesh_url,
+            login_user=need("ORACLE_MESH_LOGIN_USER"),
+            password_provider=password_provider,
+        ))
 
     #: The wait before the next ask. It grows only across rounds the lane itself
     #: answered empty, and resets the moment the queue produces work.
