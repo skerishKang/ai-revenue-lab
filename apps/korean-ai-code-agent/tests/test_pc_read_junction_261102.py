@@ -9,9 +9,18 @@ from __future__ import annotations
 import os
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+import pytest
+
+# The junction/symlink fixtures are real Windows reparse points: cmd /c mklink
+# does not exist on the Linux runner, so the machine-level tests run on Windows
+# only. The source-contract tests below stay on every platform.
+WIN_REAL = pytest.mark.skipif(sys.platform != "win32",
+                              reason="real Windows junction fixtures")
 
 import importlib.util as _ilu
 
@@ -44,6 +53,7 @@ def _rmdir(link: Path) -> None:
     subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True)
 
 
+@WIN_REAL
 class WalkHitTests(unittest.TestCase):
     def setUp(self):
         self._previous = tempfile.TemporaryDirectory()
@@ -112,3 +122,96 @@ class ExecutorSourceContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PcReparseCheckUnitTests(unittest.TestCase):
+    """The executor's PC-side reparse walk through a fake command port.
+
+    All machine behavior is mocked at the command-channel seam the executor
+    already owns; no PowerShell runs here. The contract: a reported hit (or a
+    check that cannot complete) refuses the read before the download, a clear
+    walk lets the read proceed, and the verdict does not depend on which read
+    bound the dispatch carries.
+    """
+
+    def _executor(self, *, marker_hit=None, no_marker=False, raises=False):
+        from kagent.local_agent_oracle_mesh_executor import (
+            OracleMeshExecutor, PC_FILE_LINK_REFUSED_MARKER,
+        )
+        import base64 as _b64
+
+        class _Outcome:
+            def __init__(self, body: bytes):
+                self.body = body
+                self.termination = "exited"
+                self.exit_code = 0
+
+        if raises:
+            class _Port:
+                def run_command(self, **_):
+                    raise RuntimeError("SECRET_COMMAND_PATH")
+        else:
+            class _Port:
+                def run_command(self, **_):
+                    if marker_hit is None and not no_marker:
+                        payload = {"hit": True}
+                    elif no_marker:
+                        payload = {"unexpected": "shape"}
+                    else:
+                        payload = {"hit": bool(marker_hit)}
+                    encoded = _b64.b64encode(json.dumps(payload).encode("utf-8")).decode("ascii")
+                    return _Outcome(("PADIEM_PC_REPARSE=" + encoded).encode("utf-8"))
+
+        executor = OracleMeshExecutor.__new__(OracleMeshExecutor)
+        executor._command_port = _Port()
+        executor._read_port = None  # must never be reached on a refusal
+        executor._timeout = None
+        return executor
+
+    def _dispatch(self):
+        from kagent.local_agent_oracle_mesh_executor import OracleMeshDispatch
+        return OracleMeshDispatch(
+            dispatch_id="dsp-junction", kind="read", node_ref="node-pc",
+            root_ref="root-pc-files", file_path="C:/granted/보고서.docx",
+            granted_root="C:/granted", max_bytes=20_000_000,
+        )
+
+    def test_a_reported_junction_refuses_the_download(self):
+        executor = self._executor(marker_hit=True)
+        outcome = executor._execute_read(self._dispatch())
+        assert outcome.body == (
+            __import__("kagent.local_agent_oracle_mesh_executor",
+                       fromlist=["PC_FILE_LINK_REFUSED_MARKER"])
+            .PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"))
+        assert outcome.exit_code == 1
+
+    def test_a_clear_walk_lets_the_read_proceed(self):
+        executor = self._executor(marker_hit=False)
+        reached = {}
+
+        class _ReadPort:
+            def read_bytes(self, **call):
+                reached.update(call)
+                return b"inside content"
+
+        executor = self._executor(marker_hit=False)
+        executor._read_port = _ReadPort()
+        outcome = executor._execute_read(self._dispatch())
+        assert outcome.body == b"inside content"
+        assert reached["node_ref"] == "node-pc"
+
+    def test_a_check_that_cannot_report_refuses_closed(self):
+        executor = self._executor(no_marker=True)
+        outcome = executor._execute_read(self._dispatch())
+        from kagent.local_agent_oracle_mesh_executor import (
+            PC_FILE_LINK_REFUSED_MARKER,
+        )
+        assert outcome.body == PC_FILE_LINK_REFUSED_MARKER.encode("utf-8")
+
+    def test_a_command_channel_failure_refuses_closed(self):
+        executor = self._executor(raises=True)
+        outcome = executor._execute_read(self._dispatch())
+        from kagent.local_agent_oracle_mesh_executor import (
+            PC_FILE_LINK_REFUSED_MARKER,
+        )
+        assert outcome.body == PC_FILE_LINK_REFUSED_MARKER.encode("utf-8")
