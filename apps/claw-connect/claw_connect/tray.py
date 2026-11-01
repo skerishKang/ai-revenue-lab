@@ -22,19 +22,20 @@ from .menu_model import ACTION_QUIT, ITEM_STATUS, build_menu
 WM_TRAY = 0x8000 + 21  # WM_APP + 21
 WM_TRAY_TOOLTIP = WM_TRAY + 1
 NIM_ADD = 0x0
+NIM_MODIFY = 0x1
 NIM_DELETE = 0x2
 NIF_MESSAGE = 0x1
 NIF_ICON = 0x2
 NIF_TIP = 0x4
 
 _STATE_SUFFIX: dict[ConnectionState, str] = {
-    ConnectionState.DISCONNECTED: "disconnected",
-    ConnectionState.CONNECTING: "connecting...",
-    ConnectionState.CONNECTED: "connected",
-    ConnectionState.PAUSED: "paused",
-    ConnectionState.UNREGISTERED: "not registered",
-    ConnectionState.OFFLINE: "offline",
-    ConnectionState.REVOKED: "revoked",
+    ConnectionState.DISCONNECTED: "연결 끊김",
+    ConnectionState.CONNECTING: "다시 연결 중",
+    ConnectionState.CONNECTED: "연결됨",
+    ConnectionState.PAUSED: "일시중지",
+    ConnectionState.UNREGISTERED: "등록 안 됨",
+    ConnectionState.OFFLINE: "연결 끊김",
+    ConnectionState.REVOKED: "권한 철회됨",
 }
 
 
@@ -78,6 +79,7 @@ class ConnectTray:
         window_class.lpfnWndProc = {
             win32con.WM_CREATE: self._on_create,
             WM_TRAY: self._on_tray,
+            WM_TRAY_TOOLTIP: self._on_refresh,
             win32con.WM_COMMAND: self._on_command,
             win32con.WM_DESTROY: self._on_destroy,
         }
@@ -101,14 +103,14 @@ class ConnectTray:
         self._apply_icon(hwnd)
         return 0
 
-    def _apply_icon(self, hwnd: int) -> None:
+    def _apply_icon(self, hwnd: int, *, update: bool = False) -> None:
         """Add or refresh the icon; the standard glyph needs no binary asset."""
         import win32con  # noqa: PLC0415
         import win32gui  # noqa: PLC0415
 
         icon = win32gui.LoadIcon(0, win32con.IDI_APPLICATION)
         win32gui.Shell_NotifyIcon(
-            NIM_ADD,
+            NIM_MODIFY if update else NIM_ADD,
             (hwnd, self._notify_id, NIF_MESSAGE | NIF_ICON | NIF_TIP, WM_TRAY, icon,
              f"{CONNECT_PRODUCT} - {_STATE_SUFFIX[self._state_source()]}"),
         )
@@ -120,6 +122,10 @@ class ConnectTray:
         import win32api  # noqa: PLC0415
 
         win32api.PostMessage(self._hwnd, WM_TRAY_TOOLTIP, 0, 0)
+
+    def _on_refresh(self, hwnd: int, _msg: int, _wparam: int, _lparam: int) -> int:
+        self._apply_icon(hwnd, update=True)
+        return 0
 
     # -- interaction --------------------------------------------------------
     def _on_tray(self, hwnd: int, _msg: int, wparam: int, lparam: int) -> int:
@@ -133,8 +139,6 @@ class ConnectTray:
             callback = self._actions.get("open_web")
             if callback is not None:
                 callback()
-        elif lparam == WM_TRAY_TOOLTIP:
-            self._apply_icon(hwnd)
         return 0
 
     def _show_menu(self, hwnd: int) -> None:

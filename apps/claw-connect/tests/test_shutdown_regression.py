@@ -35,7 +35,7 @@ import pytest
 from claw_connect.connection import ConnectionState
 from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.runtime import ConnectApp
-from claw_connect.tray import ConnectTray, NIM_ADD, NIM_DELETE, WM_TRAY
+from claw_connect.tray import ConnectTray, NIM_ADD, NIM_DELETE, WM_TRAY, WM_TRAY_TOOLTIP
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -196,7 +196,7 @@ def test_create_registers_the_four_handlers_with_a_four_argument_contract(monkey
     message_map = captured["lpfnWndProc"]
     assert isinstance(message_map, dict)
     # Exactly the four Win32 messages the tray dispatches.
-    assert set(message_map) == {0x0001, WM_TRAY, 0x0111, 0x0002}
+    assert set(message_map) == {0x0001, WM_TRAY, WM_TRAY_TOOLTIP, 0x0111, 0x0002}
     for handler in message_map.values():
         signature = inspect.signature(handler)
         assert len(signature.parameters) == 4, (

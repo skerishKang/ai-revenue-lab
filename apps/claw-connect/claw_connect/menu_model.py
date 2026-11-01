@@ -25,6 +25,8 @@ from .connection import ConnectionState
 #: Stable action ids. The renderer maps these to callbacks; nothing else may
 #: invent a menu action.
 ACTION_OPEN_WEB = "open_web"
+ACTION_VIEW_STATUS = "view_status"
+ACTION_OPEN_LOGS = "open_logs"
 ACTION_TOGGLE_PAUSE = "toggle_pause"
 ACTION_RECONNECT = "reconnect"
 ACTION_DISCONNECT = "disconnect"
@@ -72,6 +74,8 @@ def build_menu(
         MenuItem(ITEM_STATUS, STATE_LABELS[state], enabled=False),
         MenuItem("sep1", "", separator=True),
         MenuItem(ACTION_OPEN_WEB, "PADIEM Chat 열기"),
+        MenuItem(ACTION_VIEW_STATUS, "상태 보기"),
+        MenuItem(ACTION_OPEN_LOGS, "로그 폴더 열기"),
         MenuItem("sep2", "", separator=True),
         # The reviewed login is only offered when it is actually required.
         MenuItem(

@@ -17,6 +17,8 @@ from claw_connect.menu_model import (
     ACTION_DISCONNECT,
     ACTION_LOGIN,
     ACTION_OPEN_WEB,
+    ACTION_VIEW_STATUS,
+    ACTION_OPEN_LOGS,
     ACTION_QUIT,
     ACTION_RECONNECT,
     ACTION_TOGGLE_PAUSE,
@@ -69,7 +71,7 @@ def test_quit_is_always_selectable_and_disconnect_only_when_busy():
 
 def test_every_selectable_action_is_one_of_the_known_callbacks():
     known = {
-        ACTION_OPEN_WEB, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
+        ACTION_OPEN_WEB, ACTION_VIEW_STATUS, ACTION_OPEN_LOGS, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
         ACTION_DISCONNECT, ACTION_QUIT,
         ACTION_AUTOSTART_ON, ACTION_AUTOSTART_OFF,
     }
