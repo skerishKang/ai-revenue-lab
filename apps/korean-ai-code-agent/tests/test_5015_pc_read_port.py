@@ -152,11 +152,12 @@ class _ReadPort:
         return self.result
 
 
-def _executor(read_port) -> OracleMeshExecutor:
+def _executor(read_port, **overrides) -> OracleMeshExecutor:
     return OracleMeshExecutor(
         chat_origin="https://chat.padiem.net",
         channel_secret=SECRET,
         read_port=read_port,
+        **overrides,
     )
 
 
@@ -341,10 +342,13 @@ def test_other_read_consumers_keep_the_shared_six_mb_default():
     # No per-call bound is sent, so the port's 6 MB envelope applies.
     assert "max_bytes" not in port.calls[0]
     assert MAX_READ_BYTES == 6_000_000
-    assert MAX_READ_BYTES_ENVELOPE == 20_000_000
+    # #6606 report follow-up: the read envelope is no product bound — the same
+    # owner decision MAX_COMMAND_BYTES already carries. The server's
+    # per-dispatch bound is the only limit one read call has.
+    assert MAX_READ_BYTES_ENVELOPE is None
 
 
-def test_poll_parses_and_rejects_an_unbounded_server_value():
+def test_poll_takes_any_positive_server_bound_and_refuses_malformed_values():
     payload = {
         "ok": True,
         "dispatch": {
@@ -363,9 +367,17 @@ def test_poll_parses_and_rejects_an_unbounded_server_value():
     assert dispatch is not None
     assert dispatch.max_bytes == 1_000_000
 
-    payload["dispatch"]["max_bytes"] = MAX_READ_BYTES_ENVELOPE + 1
-    with pytest.raises(OracleMeshChannelRefused):
-        executor.poll_once()
+    payload["dispatch"]["max_bytes"] = 20_000_001
+    dispatch = executor.poll_once()
+    assert dispatch is not None
+    assert dispatch.max_bytes == 20_000_001
+
+    # The shape checks survive the envelope's removal: a bool, zero, a
+    # negative, a float and a string are all still refused outright.
+    for malformed in (True, 0, -1, 1.5, "20000000"):
+        payload["dispatch"]["max_bytes"] = malformed
+        with pytest.raises(OracleMeshChannelRefused):
+            executor.poll_once()
 
 
 def test_marker_constants_are_the_engine_prefix():
@@ -395,3 +407,25 @@ def test_twenty_mb_explicit_read_bound_survives_execution_and_restart(tmp_path):
     assert restored._pending[1].body == raw
     too_large = _executor(_ReadPort(result=raw + b"a")).execute(dispatch)
     assert too_large.body == PC_FILE_TOO_LARGE_MARKER.encode()
+
+
+def test_a_read_bound_above_the_old_envelope_reaches_the_port_unchanged():
+    """#6606 report follow-up: the server's bound travels to the port unclamped."""
+    port = _ReadPort(result=b"y" * 32)
+    outcome = _executor(port).execute(_dispatch(max_bytes=64_000_000))
+    assert outcome.exit_code == 0
+    assert port.calls[0]["max_bytes"] == 64_000_000
+
+
+def test_pending_restart_keeps_a_bound_above_the_old_envelope(tmp_path):
+    raw = b"b" * 64
+    port = _ReadPort(result=raw)
+    executor = _executor(port, pending_dir=str(tmp_path))
+    dispatch = _dispatch(max_bytes=64_000_000)
+    outcome = executor.execute(dispatch)
+    assert outcome.body == raw
+    assert executor.submit(dispatch, outcome)["retryable"] is True
+    restored = _executor(port, pending_dir=str(tmp_path))
+    assert restored.load_pending() is True
+    assert restored._pending[0].max_bytes == 64_000_000
+    assert restored._pending[1].body == raw
