@@ -437,6 +437,7 @@ link_b14_app() {
   # deleted: it is the only rollback left when no previous mirror exists.
   local target=$1 displaced
   [[ -d $target ]] || { say "B14_SOURCE_MISSING PATH=$target"; return 1; }
+  stage_b14_shared_module "$target" || return 1
   if [[ ! -L $b14_app && -d $b14_app ]]; then
     displaced="${b14_app}.displaced-$(date +%Y%m%dT%H%M%S)"
     mv -- "$b14_app" "$displaced" || { say 'B14_DISPLACE_FAILED'; return 1; }
@@ -446,8 +447,28 @@ link_b14_app() {
   say "B14_LINK=$target"
 }
 
-b14_rollback_source() {
-  # The newest thing that is provably the previous code, or nothing.
+# The installer puts one shared Core module inside B14's app tree. A rollback never
+# runs the installer, and a tree without that module exits on import — so the link,
+# forward or back, has to guarantee it.
+stage_b14_shared_module() {
+  local target=$1 package source root
+  package="$target/padiem_ai_core"
+  [[ -f $package/pc_work_metrics.py ]] && return 0
+  source=''
+  for root in "$source_stage_dir/$resolved" "$source_stage_dir/$old" "$staged"; do
+    [[ -n $root && -f "$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py" ]] \
+      && { source="$root/packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"; break; }
+  done
+  [[ -n $source ]] || { say 'B14_SHARED_MODULE_MISSING'; return 1; }
+  install -d -m 0755 -- "$package" || return 1
+  [[ -e $package/__init__.py ]] \
+    || printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$package/__init__.py"
+  install -m 0644 -- "$source" "$package/pc_work_metrics.py" || return 1
+  chmod -R a+rX,go-w -- "$package" || return 1
+  say "B14_SHARED_MODULE=$source"
+}
+
+b14_rollback_source() {  # The newest thing that is provably the previous code, or nothing.
   local candidate displaced
   displaced=$(ls -1dt "$b14_app".displaced-* 2>/dev/null | head -1 || true)
   for candidate in "$source_stage_dir/$old/apps/korean-ai-platform" \
