@@ -96,6 +96,14 @@ PC_SEARCH_CONTENT_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-search-contents@1"
 # already carries; the range keeps a large file out of one model input.
 PC_READ_CHUNK_TOOL_ID = "claw.pc.read_file_chunk"
 PC_READ_CHUNK_CANONICAL_TOOL_ID = "tool:padiem:claw-pc-read-file-chunk@1"
+PC_BROWSER_OPEN_TOOL_ID = "claw.pc.browser_open"
+PC_BROWSER_READ_TOOL_ID = "claw.pc.browser_read"
+PC_BROWSER_SCREENSHOT_TOOL_ID = "claw.pc.browser_screenshot"
+PC_BROWSER_ACT_TOOL_ID = "claw.pc.browser_act"
+PC_BROWSER_TOOL_IDS = frozenset({
+    PC_BROWSER_OPEN_TOOL_ID, PC_BROWSER_READ_TOOL_ID,
+    PC_BROWSER_SCREENSHOT_TOOL_ID, PC_BROWSER_ACT_TOOL_ID,
+})
 PC_QUERY_SCOPE = "claw.pc.query_drives"
 PC_LIST_FILES_SCOPE = "claw.pc.list_files"
 PC_READ_FILE_SCOPE = "claw.pc.read_file"
