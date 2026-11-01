@@ -113,7 +113,10 @@ def test_every_relative_reference_of_the_entry_page_resolves_in_the_staged_tree(
     assert references, "the entry page must load its own css/js"
     destinations = staged_map()
     for reference in references:
-        served = reference[len("./"):]
+        # 2026-11-01: the entry's local references carry a ?v=<content hash>
+        # (council PR #6574). The query picks a version, not a path — the staged
+        # tree, and the Assets/StaticFiles serving it, key on the bare path.
+        served = reference[len("./"):].split("?", 1)[0]
         assert f"{ENTRY_PREFIX}/{served}" in destinations, (
             f"{reference} is referenced by the page but staged nowhere, so it would 404")
     # Measured live 2026-10-27: href="../" on this page resolved to /apps/ (404),

@@ -660,3 +660,30 @@ def test_hwpx_schema_migration_keeps_existing_rows_and_indexes():
     with pytest.raises(sqlite3.IntegrityError):
         con.execute("INSERT INTO project_files (id,project_id,user_id,name,media_type,content_text,content_chars,created_at,updated_at) VALUES ('bad','p','u','x','unknown','hi',2,'a','b')")
     con.close()
+
+def test_the_council_entry_answers_no_cache(local_client):
+    """2026-11-01: local_cpython is the production path for /apps/council/ — it
+    serves the council app's own index.html verbatim. The entry must revalidate
+    on every load, so a new deploy's entry can never be masked by a stored copy
+    (the same contract the council app's own app_factory pins for standalone)."""
+    res = local_client.get("/apps/council/")
+    assert res.status_code == 200
+    assert res.headers["cache-control"] == "no-cache"
+    # The served entry carries the council app's content-hashed asset
+    # references, so the immutable asset caching below always rides versioned URLs.
+    assert "?v=" in res.text
+
+
+def test_the_council_static_answers_long_immutable_cache(local_client):
+    """/apps/council/static/* files are addressed with content-hashed URLs
+    (council PR #6574), so a year of immutable caching is safe: a deploy
+    changes the URL, not the file. A miss keeps Starlette's own answer — the
+    header marks real hits only."""
+    immutable = "public, max-age=31536000, immutable"
+    for name in ("council-app.js", "council-app.css", "assets/speech-card.jpg"):
+        res = local_client.get(f"/apps/council/static/{name}")
+        assert res.status_code == 200, name
+        assert res.headers["cache-control"] == immutable, name
+    miss = local_client.get("/apps/council/static/definitely-missing-261101.js")
+    assert miss.status_code == 404
+    assert "cache-control" not in miss.headers

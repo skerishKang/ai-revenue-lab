@@ -489,6 +489,27 @@ function spawnSession(windowState = {}) {
     root.append(section);
   });
 
+  // nav_search 시나리오용: 시안(04) 상단 메뉴와 검색 상자. index.html의 마크업을
+  // 그대로 받아 본다(항목은 data-nav, 검색은 #councilSearchForm/#councilSearch).
+  const nav = mk("nav", "councilNav", "council-nav");
+  ["home", "tools", "speech", "sns", "meeting"].forEach((name) => {
+    const item = mk("button", null, "council-nav-item");
+    item.setAttribute("data-nav", name);
+    item.textContent = name;
+    nav.append(item);
+  });
+  root.append(nav);
+  const searchWrap = mk("div", null, "council-tool-search-wrap");
+  const searchForm = mk("form", "councilSearchForm", "council-tool-search");
+  const searchInput = mk("input", "councilSearch", "council-tool-search-input");
+  const searchGo = mk("button", "councilSearchGo", "council-tool-search-go");
+  searchGo.type = "submit";
+  const searchStatus = mk("p", "councilSearchStatus", "council-tool-search-status");
+  searchStatus.hidden = true;
+  searchForm.append(searchInput, searchGo);
+  searchWrap.append(searchForm, searchStatus);
+  root.append(searchWrap);
+
   // The shipped module binds document-level listeners (the Escape rule, the
   // popover's outside click). The fake document must actually deliver them, or
   // a scenario would prove nothing about those handlers.
@@ -1903,6 +1924,83 @@ const SCENARIOS = {
     if (builder === "meeting") return { prompt: api.meeting.buildPrompt(toForm(payload)) };
     if (builder === "book") return { prompt: api.meeting.buildBookPrompt(payload.contents || []) };
     throw new Error("unknown builder: " + builder);
+  },
+  async nav_search() {
+    // 2026-11-01: 시안(04) 상단 메뉴·검색 상자. 메뉴 항목은 실제 있는 화면으로만
+    // 연결되고(홈·업무 도구·도구 3종), 검색은 도구 3종 안에서만 길을 찾는다.
+    // fail-closed 게이트는 메뉴·검색 경로에서도 동일하게 유지된다.
+    const sessionOf = (state) => {
+      authState = state;
+      return spawnSession();
+    };
+    const navItem = (s, name) => s.root.querySelectorAll("[data-nav]")
+      .find((n) => n.getAttribute("data-nav") === name);
+    const snapshotState = (s) => ({
+      inWorkspace: s.root.classList.contains("council-in-workspace"),
+      activeTool: s.root.dataset.activeTool || null,
+      barHidden: find(s, "councilWorkspaceBar").hidden,
+      title: text(find(s, "councilWorkspaceTitle")),
+      openBodies: ["councilSpeechBody", "councilSnsBody", "councilMeetingBody"]
+        .filter((id) => !find(s, id).hidden),
+      forms: s.root.querySelectorAll(".council-form").length,
+    });
+
+    const s = sessionOf({ authenticated: true, user: { name: "테스트 사용자" } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    const out = { signedIn: {} };
+
+    await navItem(s, "speech").dispatch("click");
+    await sleep(40);
+    out.signedIn.navSpeech = snapshotState(s);
+
+    await navItem(s, "tools").dispatch("click");
+    await sleep(40);
+    out.signedIn.navTools = snapshotState(s);
+
+    await navItem(s, "meeting").dispatch("click");
+    await sleep(40);
+    out.signedIn.navMeeting = snapshotState(s);
+
+    await navItem(s, "home").dispatch("click");
+    await sleep(40);
+    out.signedIn.navHome = snapshotState(s);
+
+    const form = find(s, "councilSearchForm");
+    const input = find(s, "councilSearch");
+    const status = find(s, "councilSearchStatus");
+    input.value = "축사";
+    await form.dispatch("submit");
+    await sleep(40);
+    out.signedIn.searchSpeech = { state: snapshotState(s), statusHidden: status.hidden };
+
+    input.value = "전혀 어울리지 않는 낱말";
+    await form.dispatch("submit");
+    await sleep(40);
+    out.signedIn.searchMiss = {
+      state: snapshotState(s),
+      statusShown: !status.hidden,
+      statusText: text(status),
+    };
+
+    const off = sessionOf({ authenticated: false, methods: { password: true } });
+    const apiOff = off.ctx.window.PadiemCouncilApps;
+    await apiOff.init();
+    await sleep(30);
+    await navItem(off, "sns").dispatch("click");
+    await sleep(40);
+    out.signedOut = {
+      navSns: snapshotState(off),
+      panelHidden: find(off, "councilAuthPanel").hidden,
+    };
+    const formOff = find(off, "councilSearchForm");
+    const inputOff = find(off, "councilSearch");
+    inputOff.value = "SNS";
+    await formOff.dispatch("submit");
+    await sleep(40);
+    out.signedOut.searchSns = snapshotState(off);
+    return out;
   },
 };
 

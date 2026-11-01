@@ -623,6 +623,8 @@
       const head = document.head || document.body;
       const script = document.createElement("script");
       script.src = "./static/photo-resize.js";
+      // ?v=<content hash> from the served map; the bare URL stays the fallback.
+      script.src = versionedAsset(script.src);
       script.addEventListener("load", () => {
         if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
         else reject(new Error("photo-resize-unavailable"));
@@ -734,14 +736,19 @@
     if (pcExchangeLoading) return pcExchangeLoading;
     pcExchangeLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
-      if (head && !document.querySelector('link[href="./static/pc-file-exchange.css"]')) {
+      if (head && !document.querySelector("link[data-council-pc-exchange]")) {
         const css = document.createElement("link");
         css.rel = "stylesheet";
         css.href = "./static/pc-file-exchange.css";
+        // ?v=<content hash> from the served map; the bare URL stays the fallback.
+        css.href = versionedAsset(css.href);
+        css.setAttribute("data-council-pc-exchange", "1");
         head.appendChild(css);
       }
       const script = document.createElement("script");
       script.src = "./static/pc-file-exchange.js";
+      // ?v=<content hash> from the served map; the bare URL stays the fallback.
+      script.src = versionedAsset(script.src);
       script.addEventListener("load", () => {
         if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
         else reject(new Error("pc-exchange-unavailable"));
@@ -2455,6 +2462,23 @@
   let bodies = {};
 
   function host(id) { return document.getElementById(id); }
+
+  // ── 정적 자산 버전(2026-11-01 캐시 무효화) ──────────────────────────────
+  // app_factory가 서빙 때 index.html에 싣는 내용 해시 지도(?v=<sha1 앞 8자)를
+  // 읽어 동적 로더의 URL에도 같은 버전을 붙인다. 지도가 없으면(파일 직접 열기,
+  // 시험 하네스) 버전 없는 원래 주소를 그대로 쓴다 — 서빙 계약의 변화가 없다.
+  const ASSET_VERSIONS = (function () {
+    try {
+      const el = document.getElementById("padiem-asset-versions");
+      const parsed = el ? JSON.parse(el.textContent || "{}") : {};
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (_) { return {}; }
+  })();
+  function versionedAsset(url) {
+    const match = /^(?:\.\/|\/)?static\/(.+)$/.exec(url);
+    const digest = match && ASSET_VERSIONS[match[1]];
+    return digest ? url.split("?")[0] + "?v=" + digest : url;
+  }
   function setBadge(text) { const node = host("councilAuthBadge"); if (node) node.textContent = text; }
   function setStatus(text) {
     const node = host("councilAuthStatus");
@@ -2530,8 +2554,9 @@
       button.setAttribute("aria-expanded", active ? "true" : "false");
       if (button.classList) button.classList[active ? "add" : "remove"]("active");
       const label = LABELS[button.dataset.tool] || "";
-      button.textContent = active ? "닫기" : "열기";
-      button.setAttribute("aria-label", label + " " + (active ? "닫기" : "열기"));
+      // 시안 04의 카드 동작 문구. 열린 카드는 "닫기"로 되돌아온다.
+      button.textContent = active ? "닫기" : "바로 시작하기 →";
+      button.setAttribute("aria-label", label + " " + (active ? "닫기" : "바로 시작하기"));
     });
     if (tool) {
       rememberTool(tool);
@@ -2801,6 +2826,11 @@
     const bar = host("councilWorkspaceBar");
     const title = host("councilWorkspaceTitle");
     if (root && root.classList) root.classList[tool ? "add" : "remove"]("council-in-workspace");
+    // 도구 화면 머리(작업실 막대)가 카드의 색·사진을 이어받는 키 — 시안 04의 시네마틱 어휘.
+    if (root && root.dataset) {
+      if (tool) root.dataset.activeTool = tool;
+      else delete root.dataset.activeTool;
+    }
     if (bar) bar.hidden = !tool;
     if (title) title.textContent = tool ? (LABELS[tool] || "") : "";
     // focusToolPanel brought the open card to the top, which carried this bar off the
@@ -2831,6 +2861,87 @@
     });
   }
 
+  // ── 시안(04) 상단 메뉴: 실제 있는 화면으로만 연결한다 ──────────────────
+  // 시안의 활용 사례·가이드·공지사항은 이 앱에 화면이 없으므로 만들지 않았다.
+  function wireMenu() {
+    document.querySelectorAll("[data-nav]").forEach((item) => {
+      item.addEventListener("click", () => {
+        const nav = item.getAttribute("data-nav");
+        if (nav === "home") { leaveWorkspace(); return; }
+        if (nav === "tools") {
+          if (session.selected) applySelection(null, false);
+          scrollToWorks();
+          const first = cardButtons()[0];
+          if (first && typeof first.focus === "function") first.focus();
+          return;
+        }
+        if (TOOLS.indexOf(nav) >= 0) {
+          if (!session.signedIn) { openLoginHere(nav); return; }
+          applySelection(nav, true);
+        }
+      });
+    });
+  }
+
+  // ── 시안(04) 검색 상자: 실제 있는 도구 3종 안에서만 길을 찾아준다 ────────
+  // 결과를 꾸미지 않는다: 어느 도구에도 걸리지 않으면 그 사실을 알리고
+  // 실제 있는 업무 도구 목록으로 안내한다.
+  function bestToolFor(query) {
+    const terms = String(query || "").toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return null;
+    let best = null;
+    let bestScore = -1;
+    TOOLS.forEach((tool) => {
+      const card = host("council-" + tool);
+      const hay = (((card && card.textContent) || "") || (LABELS[tool] || "")).toLowerCase();
+      let all = true;
+      let score = 0;
+      terms.forEach((term) => {
+        const hits = hay.split(term).length - 1;
+        if (hits <= 0) all = false;
+        score += hits;
+      });
+      if (all && score > bestScore) { best = tool; bestScore = score; }
+    });
+    return best;
+  }
+  function showSearchStatus(message) {
+    const status = host("councilSearchStatus");
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = false;
+  }
+  function hideSearchStatus() {
+    const status = host("councilSearchStatus");
+    if (!status) return;
+    status.hidden = true;
+    status.textContent = "";
+  }
+  function scrollToWorks() {
+    const heading = host("councilWorksTitle");
+    if (heading && typeof heading.scrollIntoView === "function") {
+      try { heading.scrollIntoView({ block: "start" }); } catch (_) {}
+    }
+  }
+  function wireSearch() {
+    const form = host("councilSearchForm");
+    const input = host("councilSearch");
+    if (!form || !input) return;
+    form.addEventListener("submit", (event) => {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      const tool = bestToolFor(input.value);
+      if (tool) {
+        hideSearchStatus();
+        if (!session.signedIn) { openLoginHere(tool); return; }
+        applySelection(tool, true);
+        return;
+      }
+      showSearchStatus("일치하는 업무 도구가 없습니다. 아래 도구 3종에서 확인해 보세요.");
+      if (session.selected) applySelection(null, false);
+      scrollToWorks();
+    });
+  }
+
   async function init() {
     bodies = {
       speech: host("councilSpeechBody"),
@@ -2843,6 +2954,8 @@
     // the cinematic home and may change country and style before logging in.
     wireTheme();
     wireHome();
+    wireMenu();
+    wireSearch();
     // The page runs init() once at load; a second call must not stack a second
     // set of listeners, or one click would open and immediately close the panel.
     session.bound = true;
