@@ -88,7 +88,9 @@ async def claw_artifact_inline_preview(request: Request) -> JSONResponse | Respo
     if store is None:
         return _deny(503, "workspace_storage_unavailable")
     try:
-        result = await store.get_for_tenant(tenant_id=tenant, document_id=document_id)
+        result = await store.get_for_tenant(
+            tenant_id=tenant, document_id=document_id, user_id=product_user_id
+        )
     except WorkspaceStorageAccessError:
         return _deny(404, "artifact_not_found")
     except Exception:

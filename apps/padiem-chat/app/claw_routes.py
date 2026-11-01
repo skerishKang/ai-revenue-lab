@@ -623,15 +623,19 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # Artifact-producing actions require canonical tenant + storage authority
     # before quota consumption or any P01/Engine/B14 dispatch (#2583).
     artifact_tenant_id: str | None = None
+    artifact_owner_id: str | None = None
     artifact_store: Any = None
     if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
-        artifact_tenant_id = await _resolve_canonical_tenant(request)
-        if artifact_tenant_id is None:
+        # #6323: the document records its owner, so the same resolution yields
+        # both the tenant and the id the row is bound to.
+        artifact_owner = await _resolve_canonical_owner(request)
+        if artifact_owner is None:
             return _error(
                 503,
                 "workspace_scope_unavailable",
                 "문서 저장 권한을 확인할 수 없습니다.",
             )
+        artifact_owner_id, artifact_tenant_id = artifact_owner
         artifact_store = getattr(request.app.state, "workspace_document_store", None)
         if artifact_store is None:
             return _error(
@@ -850,6 +854,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             )
             metadata = await artifact_store.put_generated_docx(
                 tenant_id=artifact_tenant_id,
+                user_id=artifact_owner_id,
                 filename=artifact.filename,
                 body=artifact.content_bytes(),
             )
@@ -931,6 +936,7 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
         result = await workspace_store.get_for_tenant(
             tenant_id=tenant_id,
             document_id=document_id,
+            user_id=product_user_id,
         )
     except WorkspaceStorageAccessError:
         # #2308: a canonical-tenant denial must be observationally identical to
