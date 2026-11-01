@@ -164,12 +164,29 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     return maintenanceResponse(isWrite ? "write_refused" : "read_fallback_static");
   }
 
+  // Static answers carry a short fresh window plus background revalidation.
+  // The static URLs are not content-versioned, so a long immutable lifetime
+  // would pin a stale UI after a deploy; 300s keeps a session's repeat
+  // navigations off the network (the ~150-request first-load spike) while
+  // (no stale-while-revalidate: static URLs carry no version yet, so an old script must not outlive a deploy by more than the 5-minute window) refreshes
+  // it in the background. HTML is never cached: it must pick up a new deploy.
+  const STATIC_CACHE_CONTROL = "private, max-age=300";
+  function withStaticCache(response) {
+    const type = response.headers.get("content-type") || "";
+    if (!response.ok || type.includes("text/html")) return response;
+    const headers = new Headers(response.headers);
+    headers.set("cache-control", STATIC_CACHE_CONTROL);
+    return new Response(response.body, {
+      status: response.status, statusText: response.statusText, headers,
+    });
+  }
+
   return async function handle(request, env) {
     const url = new URL(request.url);
     const staticPath = request.method === "GET" || request.method === "HEAD";
     if (staticPath && env.ASSETS && (url.pathname === "/" || /^\/[^/]+\.(?:js|css|png|jpg|jpeg|svg|ico|webp|woff2?)$/i.test(url.pathname) || url.pathname.startsWith("/static/"))) {
       const asset = await env.ASSETS.fetch(request);
-      if (asset.status !== 404) return asset;
+      if (asset.status !== 404) return withStaticCache(asset);
     }
     const origin = originEnv(env);
     const target = new URL(url.pathname + url.search, origin);
