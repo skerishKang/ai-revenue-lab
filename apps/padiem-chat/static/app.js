@@ -6876,6 +6876,17 @@
         if (!memory || typeof memory.memory_id !== "string") return;
         clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
       });
+      // #5882: 서버가 다음 위치를 주면 목록 끝에 "더 보기" — 커서는 버튼에 보관한다.
+      if (clawApprovedList && typeof data.next_cursor === "string" && data.next_cursor) {
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "recent-item memory-more";
+        more.id = "clawApprovedMore";
+        more.dataset.cursor = data.next_cursor;
+        more.textContent = "더 보기";
+        more.addEventListener("click", () => { void loadMoreApprovedMemories(more.dataset.cursor); });
+        clawApprovedList.appendChild(more);
+      }
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
@@ -6887,6 +6898,40 @@
     approvedMemoryInFlight = true;
     try {
       await fetchApprovedMemoryList();
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  async function loadMoreApprovedMemories(cursor) {
+    if (!cursor || approvedMemoryInFlight || !clawApprovedList) return;
+    approvedMemoryInFlight = true;
+    const more = document.getElementById("clawApprovedMore");
+    if (more) more.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/memory?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 400) {
+        // 만료·위조 커서: 더 시도하지 않고 버튼을 지운 뒤 안내한다.
+        if (more) more.remove();
+        setApprovedMemoryStatus("목록을 이어 볼 수 없어요. 목록을 다시 열어 주세요.", "error");
+        return;
+      }
+      if (!response.ok || !data || !Array.isArray(data.memories)) return;
+      data.memories.forEach((memory) => {
+        if (!memory || typeof memory.memory_id !== "string") return;
+        clawApprovedList.appendChild(renderApprovedMemoryCard(memory));
+      });
+      const next = typeof data.next_cursor === "string" ? data.next_cursor : "";
+      if (more && next) {
+        more.dataset.cursor = next;
+        more.disabled = false;
+      } else if (more) {
+        more.remove();
+      }
     } finally {
       approvedMemoryInFlight = false;
     }
