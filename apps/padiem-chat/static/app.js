@@ -2281,6 +2281,21 @@
     }
   }
 
+  // #6659: the usage guide offers example sentences as ./?say=<text>. One press
+  // brings the words here, typed but unsent, on the screen the person already
+  // uses. Read once at load like the reset link below, and the address is
+  // cleaned so a refresh cannot re-type over what the person has since written.
+  function examplePromptFromLocation() {
+    try {
+      const raw = window.location.search || "";
+      const match = /[?&]say=([^&]{1,2048})(?:&|$)/.exec(raw);
+      if (!match) return "";
+      return String(decodeURIComponent(match[1].replace(/\+/g, " "))).slice(0, 400);
+    } catch (_) {
+      return "";
+    }
+  }
+
   function passwordResetTokenFromLocation() {
     try {
       const raw = window.location.hash || "";
@@ -6492,6 +6507,16 @@
   setNote(idleNote());
   renderProjectState();
   updateComposer();
+  // A guide example arrives as text only: it fills the composer, sends nothing,
+  // and leaves no query in the address bar for the next refresh to replay.
+  const exampleOnLoad = examplePromptFromLocation();
+  if (exampleOnLoad) {
+    input.value = exampleOnLoad;
+    updateComposer();
+    try {
+      window.history.replaceState(null, "", window.location.pathname);
+    } catch (_) {}
+  }
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
   const resetLinkOnLoad = passwordResetTokenFromLocation();
