@@ -360,7 +360,14 @@ class _EnvironmentMap:
 class LocalB14Binding:
     """Loopback B14 reached through the Service Binding's own ``fetch`` call."""
 
-    def __init__(self, origin: str, *, values: Mapping[str, str] | None = None, timeout: float = 600.0) -> None:
+    def __init__(
+        self,
+        origin: str,
+        *,
+        values: Mapping[str, str] | None = None,
+        timeout: float = 600.0,
+        client: Any = None,
+    ) -> None:
         parsed = urlsplit(origin)
         if (
             parsed.scheme not in {"http", "https"}
@@ -375,8 +382,38 @@ class LocalB14Binding:
             raise LocalRuntimeError("p01_local_b14_origin_invalid")
         self._origin = f"{parsed.scheme}://{parsed.netloc}"
         self._timeout = timeout
+        # One client per event loop, created on first use and then reused for every
+        # later B14 call (#6614/#6616's pattern). A fresh client per request paid a
+        # full TCP handshake and pool teardown on every P01 model request.
+        # An injected client belongs to the caller and is never closed here.
+        self._client = client
+        self._clients: dict[int, tuple[asyncio.AbstractEventLoop, Any]] = {}
         source = os.environ if values is None else values
         self._values = {name: source.get(name, "") for name in (B14_PROOF_SECRET_ENV, B14_SECRET_DIR_ENV)}
+
+    def _loop_client(self) -> Any:
+        """The running loop's B14 client, created on first use."""
+        if self._client is not None:
+            return self._client
+        loop = asyncio.get_running_loop()
+        loop_key = id(loop)
+        # id(loop) is reused once a finished loop is collected: drop clients of
+        # closed loops and check the owner, so a later loop never gets a client
+        # bound to a dead loop (and entries do not pile up per cron tick).
+        for key in [k for k, (owner, _) in self._clients.items() if owner.is_closed()]:
+            del self._clients[key]
+        entry = self._clients.get(loop_key)
+        client = entry[1] if entry is not None and entry[0] is loop else None
+        if client is None:
+            client = httpx.AsyncClient(follow_redirects=False, timeout=self._timeout)
+            self._clients[loop_key] = (loop, client)
+        return client
+
+    async def aclose(self) -> None:
+        """Close every pooled client on host shutdown; an injected one is the caller's."""
+        clients, self._clients = self._clients, {}
+        for _owner, client in clients.values():
+            await client.aclose()
 
     def _proof_secret(self) -> str:
         """Environment first, then the private named file used by B14."""
@@ -424,16 +461,16 @@ class LocalB14Binding:
         headers = {k: v for k, v in headers.items() if str(k).lower() not in {B14_PROOF_HEADER, B14_PROOF_TIME_HEADER}}
         headers[B14_PROOF_TIME_HEADER] = timestamp
         headers[B14_PROOF_HEADER] = proof
-        async with httpx.AsyncClient(follow_redirects=False, timeout=self._timeout) as client:
-            try:
-                response = await client.request(
-                    getattr(request, "method", "POST"),
-                    self._origin + path,
-                    headers=headers,
-                    content=payload,
-                )
-            except httpx.HTTPError:
-                raise LocalRuntimeError("p01_local_b14_unreachable") from None
+        client = self._loop_client()
+        try:
+            response = await client.request(
+                getattr(request, "method", "POST"),
+                self._origin + path,
+                headers=headers,
+                content=payload,
+            )
+        except httpx.HTTPError:
+            raise LocalRuntimeError("p01_local_b14_unreachable") from None
         return LocalResponse(
             # The binding transport reads ``body.getReader()``; hand it a stream
             # rather than raw bytes so a real B14 answer is readable.
@@ -477,6 +514,12 @@ def bind_address(values: Mapping[str, str]) -> tuple[str, int]:
     return host, port
 
 
+#: Every B14 binding this process composed, so host shutdown can close the
+#: pooled clients it handed out. Process-local and append-only; the lifespan hook
+#: drains it once.
+_B14_BINDINGS: list["LocalB14Binding"] = []
+
+
 def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     bindings: dict[str, Any] = {}
     origin = str(values.get(B14_ORIGIN_ENV, "")).strip()
@@ -484,6 +527,7 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
         binding = LocalB14Binding(origin, values=values)
         if len(binding._proof_secret()) < 32:
             logger.warning("p01_local_b14_proof_unconfigured")
+        _B14_BINDINGS.append(binding)
         bindings["B14_SERVICE"] = binding
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
@@ -669,6 +713,14 @@ async def _lifespan(receive: Any, send: Any) -> None:
         if message.get("type") == "lifespan.startup":
             await send({"type": "lifespan.startup.complete"})
         elif message.get("type") == "lifespan.shutdown":
+            # The pooled B14 clients outlive individual requests, so the host owns
+            # closing them; a failure here must not skip the shutdown handshake.
+            while _B14_BINDINGS:
+                binding = _B14_BINDINGS.pop()
+                try:
+                    await binding.aclose()
+                except Exception:  # noqa: BLE001 - shutdown never masks the exit
+                    logger.warning("p01_local_b14_client_close_failed")
             await send({"type": "lifespan.shutdown.complete"})
             return
 

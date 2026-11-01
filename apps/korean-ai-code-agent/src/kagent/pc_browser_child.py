@@ -7,7 +7,10 @@ from the console, so a Korean page title or a browser warning on stderr cannot
 corrupt the answer.
 
 Request:  {"tool_id": "claw.pc.browser_open", "arguments": {...}}
-Answer:   {"ok": true, "result": {...}}  or  {"ok": false, "code": ...}
+Answer:   {"ok": true, "result": {...}}  or
+          {"ok": false, "code": ..., "message": <user guidance>} — a refused
+          step keeps its closed code and adds the guidance the representative
+          can show; the extra key is additive, so older readers are safe.
 """
 from __future__ import annotations
 
@@ -75,7 +78,12 @@ def run(request: object, *, session: PcBrowserSession | None = None) -> dict[str
             return _refused("browser_action_unsupported")
         return {"ok": "true", "result": result}
     except PcBrowserError as exc:
-        return _refused(exc.code)
+        # The code stays the closed contract; the guidance rides beside it so
+        # the refused answer can tell the representative what to install
+        # instead of only naming a code. The extra key is additive.
+        refused = _refused(exc.code)
+        refused["message"] = str(exc)
+        return refused
     except (ContractError, ValueError, TypeError):
         return _refused("browser_internal_error")
     finally:

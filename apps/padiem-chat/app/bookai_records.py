@@ -166,7 +166,7 @@ class BookAIRecordsService:
                 return _error("unsupported_media_type", 415)
             records = _records(body)
             return _reply(await self.store.merge(subject, records))
-        except (ValueError, UnicodeError):
+        except (ValueError, UnicodeError, RecursionError):
             return _error("invalid_records" if request.method == "POST" else "invalid_query", 400)
         except sqlite3.Error:
             # Preserve the client's durable retry queue without exposing record/SQL values.

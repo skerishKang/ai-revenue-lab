@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from kagent import pc_browser_child
+from kagent import pc_browser_child, pc_browser_tools
 from kagent.pc_browser_tools import (
     BROWSER_ACT_TOOL_ID,
     BROWSER_OPEN_TOOL_ID,
@@ -14,6 +14,8 @@ from kagent.pc_browser_tools import (
     MAX_INLINE_TEXT,
     PcBrowserError,
     PcBrowserSession,
+    _backend_browser_found,
+    _mcp_command,
     needs_confirmation,
     page_title,
     parse_snapshot,
@@ -206,3 +208,50 @@ def test_child_refuses_a_private_url_without_a_traceback(monkeypatch, capsys):
     assert pc_browser_child.main([]) == 1
     answer = json.loads(capsys.readouterr().out)
     assert answer == {**answer, "ok": "false", "code": "browser_url_rejected"}
+
+
+# ------------------------------------------------ missing-prerequisite fallback
+def test_missing_npx_turns_only_the_browser_lane_off_with_guidance(monkeypatch):
+    """No Node.js on the PC: the lane is off with guidance — never an install
+    failure and never a crash of the other connector lanes."""
+    monkeypatch.setattr(pc_browser_tools.shutil, "which", lambda name: None)
+    with pytest.raises(PcBrowserError) as excinfo:
+        _mcp_command()
+    assert excinfo.value.code == "browser_unavailable"
+    guidance = str(excinfo.value)
+    assert "Node.js" in guidance and "18" in guidance
+
+
+def test_missing_backend_browser_turns_only_the_browser_lane_off_with_guidance(monkeypatch):
+    """Node is present but no Chrome/Edge: the same closed code, guidance
+    naming the browser to install."""
+    monkeypatch.setattr(
+        pc_browser_tools.shutil, "which",
+        lambda name: "npx" if name.startswith("npx") else None)
+    monkeypatch.setattr(pc_browser_tools, "_backend_browser_found", lambda backend: False)
+    with pytest.raises(PcBrowserError) as excinfo:
+        _mcp_command()
+    assert excinfo.value.code == "browser_unavailable"
+    assert "Chrome" in str(excinfo.value)
+
+
+def test_backend_browser_probe_checks_the_standard_windows_locations(tmp_path, monkeypatch):
+    monkeypatch.setattr(pc_browser_tools.shutil, "which", lambda name: None)
+    monkeypatch.setenv("ProgramFiles", str(tmp_path))
+    monkeypatch.delenv("ProgramFiles(x86)", raising=False)
+    monkeypatch.delenv("LOCALAPPDATA", raising=False)
+    assert _backend_browser_found("chrome") is False
+    installed = tmp_path / "Google" / "Chrome" / "Application" / "chrome.exe"
+    installed.parent.mkdir(parents=True)
+    installed.write_bytes(b"MZ")
+    assert _backend_browser_found("chrome") is True
+    assert _backend_browser_found("opera") is False  # an unsupported backend stays off
+
+
+def test_child_refusal_keeps_the_guidance_message(monkeypatch):
+    monkeypatch.setattr(pc_browser_tools, "_backend_browser_found", lambda backend: False)
+    answer = pc_browser_child.run(
+        {"tool_id": BROWSER_OPEN_TOOL_ID, "arguments": {"url": "https://example.com"}})
+    assert answer["ok"] == "false"
+    assert answer["code"] == "browser_unavailable"
+    assert "Chrome" in answer["message"]

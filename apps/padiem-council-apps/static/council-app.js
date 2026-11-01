@@ -87,7 +87,8 @@
   });
   const GEN_ERROR_FALLBACK = "생성에 실패했습니다. 잠시 후 다시 시도해 주세요.";
   const GEN_OFFLINE_COPY = "인터넷 연결을 확인해 주세요.";
-  const GEN_TIMEOUT_MS = 120000;
+  // 임시 완화(2026-11-02 한도 감사): 120초는 긴 생성을 시간으로 죽인다. 근본 해결은 진행 표시 전환.
+  const GEN_TIMEOUT_MS = 300000;
 
   function generationFailureText(error) {
     if (error && error.emptyResult) return "생성 실패: 답을 받지 못했습니다. 다시 시도해 주세요.";
@@ -759,14 +760,23 @@
     preview: "가져온 글",
     unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
     unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    hwpLegacy: "한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요. HWPX로 저장하기: ① 한글에서 문서를 열고 ② 파일 - 다른 이름으로 저장을 고른 뒤 ③ 파일 형식을 HWPX로 정해 저장하세요.",
     hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
     hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
+    // #6598과 같은 사유 코드(legacy_hwp_unsupported)의 문장 — 구형 .hwp는
+    // 어느 경로로도 읽지 않고 곧바로 이 안내로 거절한다.
+    hwpLegacy: "기존 HWP 파일은 아직 지원하지 않습니다.",
     laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    docReading: "가져온 문서를 읽는 중…",
     noPc: "컴퓨터를 연결하면 예전 글을 가져올 수 있습니다.",
     connect: "컴퓨터 연결하기",
     save: "내 PC에 저장",
     saveNoPc: "컴퓨터를 연결하면 내 PC에 저장할 수 있습니다.",
     saveUnavailable: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    chooseFormat: "어떤 형식으로 저장할까요?",
+    prepare: "PC에 저장할 준비 중…",
+    uploadFailed: "문서를 프로젝트에 올리지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    savedIn: "내 PC의 {folder} 폴더에 저장했어요.",
     saved: "내 PC에 저장했습니다.",
   });
 
@@ -853,6 +863,36 @@
     return pcExchangeLoading;
   }
 
+  // 문서 참고 글의 tus 업로더(#6584): 공용 화면 모듈(tus-upload.js)과 프로젝트
+  // 파일 레인 어댑터(project-file-upload.js) — 둘 다 이 앱의 사본이고, 내 PC에
+  // 저장이 문서를 프로젝트에 올릴 때 쓰는 것과 같은 경로다. 진행률·끊김 이어
+  // 올리기·1차 한국어 안내는 공용 모듈이 한 곳에서 맡는다.
+  let projectUploadLoading = null;
+  function loadProjectUpload() {
+    if (window.PadiemProjectFileUpload) return Promise.resolve(window.PadiemProjectFileUpload);
+    if (projectUploadLoading) return projectUploadLoading;
+    projectUploadLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      const load = (src) => new Promise((done, fail) => {
+        const script = document.createElement("script");
+        script.src = src;
+        // ?v=<content hash> from the served map; the bare URL stays the fallback.
+        script.src = versionedAsset(script.src);
+        script.addEventListener("load", done, { once: true });
+        script.addEventListener("error", () => fail(new Error("project-upload-unavailable")), { once: true });
+        head.appendChild(script);
+      });
+      load("./static/tus-upload.js")
+        .then(() => load("./static/project-file-upload.js"))
+        .then(() => {
+          if (window.PadiemProjectFileUpload) resolve(window.PadiemProjectFileUpload);
+          else reject(new Error("project-upload-unavailable"));
+        })
+        .catch(() => reject(new Error("project-upload-unavailable")));
+    });
+    return projectUploadLoading;
+  }
+
   async function pcLinked() {
     try {
       const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
@@ -867,6 +907,12 @@
 
   function openComputerConnect() {
     try { window.location.assign(COMPUTER_CONNECT_HREF); } catch (_) {}
+  }
+
+  function pcRefExtension(name) {
+    const value = String(name || "");
+    const dot = value.lastIndexOf(".");
+    return dot < 0 ? "" : value.slice(dot).toLowerCase();
   }
 
   async function pcReferenceEntry(picked) {
@@ -887,8 +933,11 @@
         const refused = await res.json().catch(() => null);
         const code = refused && refused.error && typeof refused.error.code === "string"
           ? refused.error.code : "";
+        if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
         if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
+        // #6598이 이 경로에 같은 사유 코드를 싣는 순간에도 같은 문장이 나온다.
+        if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };
         return null;
       }
@@ -901,6 +950,70 @@
     } catch (_) {
       return null;
     }
+  }
+
+  // 참고 글로 가져올 수 있는 문서 형식과 그 형식이 다니는 길. 텍스트(.txt·.md)는
+  // #5895의 /api/pc/reference 읽기를 그대로 쓰고, 문서(.hwpx·.docx·.pdf)는 PC에서
+  // 읽은 원본 바이트를 #6584의 tus 프로젝트 파일 경로로 올린다 — 완료 때 Chat의
+  // 문서 해석 권위가 추출한 본문이 곧 참고 글이 된다. 새 업로드·추출 경로는
+  // 만들지 않는다. 구형 .hwp는 지원 목록이 아니라 #6598의 안내 대상이다 —
+  // 목록에서 숨기지 않고, 골랐을 때 같은 사유 코드의 문장으로 거절한다.
+  const PC_REF_DOC_MEDIA = Object.freeze({
+    ".hwpx": "application/hwp+zip",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pdf": "application/pdf",
+  });
+  const PC_REF_ACCEPT = Object.freeze([".hwpx", ".docx", ".txt", ".md", ".pdf", ".hwp"]);
+
+  // 문서 한 편을 참고 글로: 원본 바이트는 기존 소유자 검증 경로(/api/pc/file)로
+  // 읽고, 올리는 곳은 이 앱이 초안을 저장하는 같은 프로젝트의 tus 레인이다.
+  // 어떤 실패든 참고 글 하나가 오류 화면이 되지 않게 안내 문장으로 끝난다.
+  async function pcReferenceDocumentEntry(picked, mediaType) {
+    if (!picked || !picked.fileId) return null;
+    const name = picked.name || "가져온 문서";
+    let bytes;
+    try {
+      const res = await fetch(
+        "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+        { credentials: "include", cache: "no-store" },
+      );
+      if (!res.ok) return { error: PC_REF_COPY.unreadable };
+      bytes = new Uint8Array(await (await res.blob()).arrayBuffer());
+    } catch (_) {
+      return { error: PC_REF_COPY.laneDown };
+    }
+    const pid = await councilProject.ensure();
+    if (!pid) return { error: PC_REF_COPY.uploadFailed };
+    let uploader;
+    try { uploader = await loadProjectUpload(); } catch (_) { uploader = null; }
+    if (!uploader || typeof uploader.upload !== "function") {
+      return { error: PC_REF_COPY.uploadFailed };
+    }
+    let stored = null;
+    try {
+      const data = await uploader.upload({
+        file: new File([bytes], name, { type: mediaType }),
+        projectId: pid,
+        mediaType,
+      });
+      stored = data && data.file ? data.file : null;
+    } catch (_) { stored = null; }
+    if (!stored || !stored.id) return { error: PC_REF_COPY.uploadFailed };
+    // tus 완료분은 저장 때 Chat의 해석 권위가 추출한 본문을 이미 품고 있다 —
+    // 프로젝트 파일 읽기 계약(GET …/files/{id} → file.content)으로 그대로 꺼낸다.
+    let text = "";
+    try {
+      const res = await fetch(
+        "/api/projects/" + pid + "/files/" + encodeURIComponent(stored.id),
+        { credentials: "include", cache: "no-store" },
+      );
+      if (res.ok) {
+        const body = await res.json().catch(() => null);
+        text = body && body.file && typeof body.file.content === "string" ? body.file.content : "";
+      }
+    } catch (_) { text = ""; }
+    if (!String(text).trim()) return { error: PC_REF_COPY.unreadable };
+    return { name, text };
   }
 
   // One section per tool: the pick button, the files the owner chose with their
@@ -954,7 +1067,17 @@
 
     async function addPicked(picked) {
       say("");
-      const entry = await pcReferenceEntry(picked);
+      const ext = pcRefExtension(picked && picked.name);
+      // 구형 .hwp: 어떤 읽기도 부르지 않고 형식에 대한 안내로 거절한다 —
+      // 서비스 상태가 아니라 형식이 거절 이유다.
+      if (ext === ".hwp") { say(PC_REF_COPY.hwpLegacy); return; }
+      let entry;
+      if (PC_REF_DOC_MEDIA[ext]) {
+        say(PC_REF_COPY.docReading);
+        entry = await pcReferenceDocumentEntry(picked, PC_REF_DOC_MEDIA[ext]);
+      } else {
+        entry = await pcReferenceEntry(picked);
+      }
       if (entry && typeof entry.error === "string") { say(entry.error); return; }
       if (!entry) { say(PC_REF_COPY.unreadable); return; }
       files.push(entry);
@@ -969,7 +1092,10 @@
         say(PC_REF_COPY.unavailable);
         return;
       }
-      component.open({ onSelect: (picked) => { void addPicked(picked); } });
+      component.open({
+        accept: PC_REF_ACCEPT,
+        onSelect: (picked) => { void addPicked(picked); },
+      });
     });
 
     let checked = false;
@@ -993,9 +1119,9 @@
     };
   }
 
-  function pcSaveFileName(base) {
+  function pcSaveFileName(base, ext) {
     const title = fileNamePart(base) || "글";
-    return title + "_" + todayStamp() + ".txt";
+    return title + "_" + todayStamp() + "." + (ext || "txt");
   }
 
   // Returns "empty" | "no-pc" | "unavailable" | "opened". A save always offers
@@ -1017,16 +1143,124 @@
     return "opened";
   }
 
-  function wirePcSave(button, output, notice, baseName) {
+  function wirePcSave(button, output, notice, baseName, document) {
     if (!button) return;
     button.addEventListener("click", async () => {
-      const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
-      if (outcome === "no-pc") {
-        setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
-      } else if (outcome === "unavailable") {
-        setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
+      if (!document) {
+        // 텍스트: #5895의 원래 흐름 그대로.
+        const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
+        if (outcome === "no-pc") {
+          setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+        } else if (outcome === "unavailable") {
+          setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
+        }
+        return;
       }
+      // 2026-11-02: 한글(HWPX)·워드(DOCX) — PC 연결을 먼저 확인해 어느 글자도
+      // 올리지 않고 안내하고, 형식을 고르게 한다(기본은 한글, 첫 버튼).
+      const linked = await pcLinked();
+      if (linked !== true) {
+        setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+        return;
+      }
+      pcSaveChooser(notice, {
+        hwpx: () => void saveDocumentToPc(notice, document, "hwpx", output),
+        docx: () => void saveDocumentToPc(notice, document, "docx", output),
+        text: async () => {
+          const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
+          if (outcome === "no-pc") {
+            setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+          } else if (outcome === "unavailable") {
+            setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
+          }
+        },
+      });
     });
+  }
+
+  function pcSaveChooser(line, options) {
+    if (!line) return;
+    line.textContent = PC_REF_COPY.chooseFormat;
+    const choose = (label, run) => {
+      const button = el("button", "council-notice-retry", label);
+      button.type = "button";
+      button.addEventListener("click", () => {
+        setNotice(line, "");
+        run();
+      });
+      line.appendChild(button);
+    };
+    choose("한글", options.hwpx);
+    choose("워드", options.docx);
+    choose("텍스트", options.text);
+    line.hidden = false;
+    line.dataset.tone = "info";
+  }
+
+  async function saveDocumentToPc(notice, document, format, output) {
+    const text = String(output.value || "").trim();
+    if (!text) return;
+    let lib;
+    try { lib = await loadDocumentExport(); }
+    catch (_) { setNotice(notice, PC_REF_COPY.saveUnavailable, "error"); return; }
+    const blocks = resultExportBlocks(document.kind, text, { title: document.title() });
+    const titleBlock = blocks.find((block) => block.kind === "title");
+    const docTitle = (titleBlock && titleBlock.text) || document.title() || "문서";
+    const bytes = format === "hwpx"
+      ? lib.buildHwpx({ title: docTitle, creator: "PADIEM 의원3종", blocks })
+      : lib.buildDocx({ title: docTitle, blocks });
+    const pid = await councilProject.ensure();
+    if (!pid) {
+      setNotice(notice, "저장할 프로젝트를 찾지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
+      return;
+    }
+    // 새 이름 저장 규칙 유지: 종류_이름_날짜.확장자 — 프로젝트 원본과 PC 사본이
+    // 같은 이름을 쓴다. 원본은 프로젝트에 남아 라이브러리에서 다시 받을 수 있다.
+    const name = pcSaveFileName(document.baseName(), format);
+    setNotice(notice, PC_REF_COPY.prepare, "busy");
+    let file = null;
+    try {
+      file = await uploadProjectDocument(pid, name, bytes, lib.MIME[format], document.kind);
+    } catch (_) { file = null; }
+    if (!file || !file.id) {
+      setNoticeWithRetry(notice, PC_REF_COPY.uploadFailed,
+        () => void saveDocumentToPc(notice, document, format, output));
+      return;
+    }
+    let component;
+    try { component = await loadPcExchange(); } catch (_) { component = null; }
+    if (!component || typeof component.open !== "function") {
+      setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
+      return;
+    }
+    component.open({
+      mode: "save",
+      fileId: file.id,
+      fileName: name,
+      onSave: (_saved, folder) => {
+        const label = String(folder || "");
+        setNotice(notice, label
+          ? PC_REF_COPY.savedIn.replace("{folder}", label)
+          : PC_REF_COPY.saved, "info");
+      },
+    });
+  }
+
+  async function uploadProjectDocument(pid, name, bytes, mediaType, docKind) {
+    const res = await fetch("/api/projects/" + pid + "/files", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Padiem-Filename": encodeURIComponent(name),
+        "X-Padiem-Media-Type": mediaType,
+        "X-Padiem-Doc-Kind": docKind || "",
+      },
+      body: bytes,
+    });
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return data && data.file ? data.file : null;
   }
 
   function setNoticeWithLink(line, text, label, href) {
@@ -1332,6 +1566,16 @@
       wirePcSave(pcSaveBtn, output, notice, () => {
         const event = form.querySelector("[name=event]");
         return "축사_" + (fileNamePart(event ? event.value : "") || "행사");
+      }, {
+        kind: "speech",
+        baseName: () => {
+          const event = form.querySelector("[name=event]");
+          return "축사_" + (fileNamePart(event ? event.value : "") || "행사");
+        },
+        title: () => {
+          const event = form.querySelector("[name=event]");
+          return fileNamePart(event ? event.value : "") || "행사";
+        },
       });
       saveBtn.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -1961,6 +2205,13 @@
       wirePcSave(pcSaveBtn, output, notice, () => {
         const event = form.querySelector("[name=event]");
         return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글");
+      }, {
+        kind: "sns",
+        baseName: () => {
+          const event = form.querySelector("[name=event]");
+          return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글");
+        },
+        title: () => title.textContent || "게시글",
       });
       saveBtn.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -2136,6 +2387,16 @@
       wirePcSave(pcSaveBtn, output, notice, () => {
         const title = form.querySelector("[name=title]");
         return "회의_" + (fileNamePart(title ? title.value : "") || "회의");
+      }, {
+        kind: "meeting",
+        baseName: () => {
+          const title = form.querySelector("[name=title]");
+          return "회의_" + (fileNamePart(title ? title.value : "") || "회의");
+        },
+        title: () => {
+          const title = form.querySelector("[name=title]");
+          return fileNamePart(title ? title.value : "") || "회의";
+        },
       });
       formSaveB.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -2419,6 +2680,13 @@
         wirePcSave(bookPcSave, bookOutput, bookNotice, () => {
           const firstLine = String(bookOutput.value || "").split("\n", 1)[0].trim();
           return "활동집_" + (fileNamePart(firstLine.replace(/^[0-9]+\.\s*/, "")) || "초안");
+        }, {
+          kind: "book",
+          baseName: () => {
+            const firstLine = String(bookOutput.value || "").split("\n", 1)[0].trim();
+            return "활동집_" + (fileNamePart(firstLine.replace(/^[0-9]+\.\s*/, "")) || "초안");
+          },
+          title: () => fileNamePart(String(bookOutput.value || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "")) || "활동집",
         });
         bookDl.addEventListener("click", () => {
           const text = String(bookOutput.value || "").trim();

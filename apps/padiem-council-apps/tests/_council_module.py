@@ -69,7 +69,7 @@ SCENARIOS = ("generate", "restore", "errors", "calendar_words", "auth",
              "auth_routing", "auth_states", "country_filter", "selection", "book", "period_book",
              "meeting_archive",
              "cinematic", "storage", "conflict", "roster", "runtime", "speech_form",
-             "pc", "streaming", "parity", "nav_search", "export")
+             "pc", "pc_import", "streaming", "parity", "nav_search", "export", "pc_save_binary")
 
 
 @lru_cache(maxsize=len(SCENARIOS))
