@@ -93,6 +93,12 @@ class N {
     }
   }
   focus() {}
+  // The module scrolls the panel it just opened; recording the call is how the
+  // 390px entry is proven without a layout engine.
+  scrollIntoView(options) {
+    this.scrolledIntoView = options || null;
+    this.scrollCalls = (this.scrollCalls || 0) + 1;
+  }
   click() { return this.dispatch("click"); }
   querySelector(sel) { return this.findAll(sel)[0] || null; }
   querySelectorAll(sel) { return this.findAll(sel); }
@@ -1037,6 +1043,68 @@ const SCENARIOS = {
     return { status, selected, payload, generated,
       reopened: find(reopened, "councilBookOutput").value,
       endpoints: endpointSet(), alerts, pageErrors };
+  },
+  async meeting_archive() {
+    // #6446: a meeting record is stored as <회의명>.txt with doc_kind="meeting". The
+    // archive must read BOTH rules — the recorded kind, and the name rule that files
+    // stored before kinds existed still carry — and a reopen must bring back the
+    // body, the meeting time AND the meeting name that names the export.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    stored("예전 회의 기록.txt", "옛 회의 본문입니다.", "text/plain");
+
+    const A = spawnSession();
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const openMeeting = async (session) => {
+      const card = session.root.querySelectorAll(".council-card-select")
+        .find((b) => b.dataset.tool === "meeting");
+      await card.dispatch("click");
+      await sleep(40);
+    };
+    await openMeeting(A);
+    const formA = find(A, "councilMeetingForm");
+    formA.querySelector("[name=title]").value = "11월 민원 회의";
+    formA.querySelector("[name=when]").value = "2026-11-01T14:00";
+    formA.querySelector("[name=content]").value = "항구 도로 보수 일정을 논의했습니다.";
+    await formA.dispatch("submit");
+    await sleep(30);
+    const draft = find(A, "councilMeetingOutput").value;
+    await find(A, "councilMeetingSave").dispatch("click");
+    await sleep(60);
+    const labelsA = find(A, "councilMeetingArchive").querySelectorAll("li button")
+      .map(text).filter((label) => label.indexOf("자)") >= 0);
+    // Re-entry: a fresh session of the same account, the stored list rebuilt.
+    const B = spawnSession();
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(60);
+    await openMeeting(B);
+    const archiveB = find(B, "councilMeetingArchive");
+    const labelsB = archiveB.querySelectorAll("li button")
+      .map(text).filter((label) => label.indexOf("자)") >= 0);
+    const row = archiveB.querySelectorAll("li button")
+      .find((b) => text(b).indexOf("11월 민원 회의") === 0);
+    if (!row) throw new Error("saved meeting row missing: " + JSON.stringify(labelsB));
+    await row.dispatch("click");
+    await sleep(40);
+
+    const bodyB = find(B, "councilMeetingBody");
+    const sectionB = find(B, "council-meeting");
+    const formB = find(B, "councilMeetingForm");
+    return {
+      draft,
+      labelsA,
+      labelsB,
+      storedKinds: storedFiles.map((f) => [f.name, f.doc_kind || ""]),
+      reopened: find(B, "councilMeetingOutput").value,
+      reopenedTitle: formB.querySelector("[name=title]").value,
+      reopenedWhen: formB.querySelector("[name=when]").value,
+      exportArmed: !find(B, "councilMeetingDownloadHwpx").disabled,
+      bodyScrolled: bodyB.scrolledIntoView !== undefined,
+      sectionScrolled: sectionB.scrolledIntoView !== undefined,
+      endpoints: endpointSet(),
+      alerts,
+      pageErrors,
+    };
   },
   async book() {
     // #5942: the book is a product, so it must survive a page refresh. One
