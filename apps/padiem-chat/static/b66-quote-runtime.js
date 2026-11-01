@@ -410,6 +410,7 @@
           filled = null;
           savedFormId = null;
           nodes.save.hidden = true;
+          nodes.pdf.hidden = true;
           if (nodes.remember) nodes.remember.hidden = true;
           clearReview();
           nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
@@ -440,6 +441,7 @@
         }
         filled = body;
         nodes.save.hidden = false;
+        nodes.pdf.hidden = false;
         // #3180 ③: the fill this owner just reviewed can become their saved
         // quote form, so the next quote starts from the list instead of a
         // fresh picker trip.
@@ -448,6 +450,31 @@
         say(pcCopy().made);
       } catch (_) {
         say(pcCopy().failed);
+      }
+    });
+    nodes.pdf.addEventListener("click", async () => {
+      if (!filled || !filled.filled_file_id) return;
+      nodes.pdf.disabled = true;
+      say("PDF를 만드는 중입니다.");
+      try {
+        const response = await nativeFetch("/api/b66/pc-quote/pdf?file_id=" + encodeURIComponent(filled.filled_file_id), {
+          credentials: "same-origin", cache: "no-store",
+        });
+        if (!response.ok) throw new Error("pdf_unavailable");
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = (filled.filled_name || "quote.xlsx").replace(/\.xlsx$/i, "") + ".pdf";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        say("PDF를 내려받았습니다.");
+      } catch (_) {
+        say("PDF를 만들지 못했습니다. 엑셀 파일을 저장한 뒤 다시 시도해 주세요.");
+      } finally {
+        nodes.pdf.disabled = false;
       }
     });
     nodes.save.addEventListener("click", async () => {
@@ -531,6 +558,7 @@
         nodes.chosen.hidden = false;
         nodes.make.hidden = false;
         nodes.save.hidden = false;
+        nodes.pdf.hidden = false;
         if (nodes.remember) nodes.remember.hidden = true;
         renderReview(body);
         say(pcCopy().made);
@@ -725,17 +753,21 @@
     pcSave.id = "b66QuotePcSave";
     pcSave.type = "button";
     pcSave.hidden = true;
+    const pcPdf = el("button", "b66-quote-pcform-pdf", "PDF 내려받기");
+    pcPdf.id = "b66QuotePcPdf";
+    pcPdf.type = "button";
+    pcPdf.hidden = true;
     const pcFormStatus = el("p", "b66-quote-pcform-status", "");
     pcFormStatus.id = "b66QuotePcFormStatus";
     pcFormStatus.setAttribute("role", "status");
     pcFormStatus.setAttribute("aria-live", "polite");
     pcFormStatus.hidden = true;
-    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcRemember, pcSave, pcFormStatus);
+    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcRemember, pcSave, pcPdf, pcFormStatus);
     // #5895: the section rides the form's own append below. Calling after() on
     // the still-detached pair was a per-DOM no-op, so the dialog shipped
     // without the PC form its launcher promises.
     pcFormBridge = wirePcForm({
-      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave,
+      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave, pdf: pcPdf,
       review: pcReview, remember: pcRemember, status: pcFormStatus,
       request: () => message.value,
     });

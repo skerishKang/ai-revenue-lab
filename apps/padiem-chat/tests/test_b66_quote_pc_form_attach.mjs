@@ -357,3 +357,14 @@ test("filling my PC form shows what went into which cell before saving", async (
   // The review is plain text, never markup built from the fill answer.
   assert.equal(review.innerHTML, undefined, "no markup is written from the model's values");
 });
+
+
+test("PDF failure leaves the filled XLSX save available with useful guidance", async () => {
+  const pdf = doc.getElementById("b66QuotePcPdf");
+  const save = doc.getElementById("b66QuotePcSave");
+  assert.equal(pdf.hidden, false);
+  pdf.click();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(save.hidden, false);
+  assert.ok(doc.getElementById("b66QuotePcFormStatus").textContent.includes("엑셀 파일을 저장한 뒤 다시 시도"));
+});

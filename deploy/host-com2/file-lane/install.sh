@@ -25,6 +25,11 @@ fail() { echo "FILE_LANE_INSTALL=$1" >&2; exit 1; }
 [[ -f "$source_root/apps/padiem-file-lane/pyproject.toml" ]] || fail SOURCE_MISSING
 mountpoint -q /mnt/d || fail HDD_NOT_MOUNTED
 if systemctl is-active --quiet "$unit"; then fail STOP_FILE_LANE_BEFORE_UPDATE; fi
+if ! command -v soffice >/dev/null 2>&1; then
+  DEBIAN_FRONTEND=noninteractive apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libreoffice-calc
+fi
+command -v soffice >/dev/null 2>&1 || fail LIBREOFFICE_UNAVAILABLE
 install -d -m 0755 "$app"
 if ! getent passwd padiem-file-lane >/dev/null; then
   useradd --system --user-group --home-dir "$app" --shell /usr/sbin/nologin padiem-file-lane

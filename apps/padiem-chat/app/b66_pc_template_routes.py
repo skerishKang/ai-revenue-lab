@@ -26,7 +26,7 @@ from typing import Any
 
 import httpx
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_saved_quote_skill_store import (
@@ -355,4 +355,34 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
         "mapping": decided["mapping"],
         "extend": decided["extend"],
         "form_id": saved_record.get("saved_skill_id") if saved_record else None,
+    })
+
+
+async def pc_quote_pdf(request: Request) -> Response:
+    """Render a file-lane workbook belonging to the authenticated owner."""
+    uid = _owner(request)
+    if isinstance(uid, JSONResponse):
+        return uid
+    file_id = request.query_params.get("file_id", "")
+    if re.fullmatch(r"file_[a-f0-9]{32}", file_id) is None:
+        return _error(404, "quote_file_not_found")
+    client = _cli(request)
+    if client is None or getattr(client, "ready", False) is not True:
+        return _error(503, "file_lane_unavailable")
+    try:
+        async with httpx.AsyncClient(
+            transport=getattr(client, "_transport", None), timeout=100,
+            follow_redirects=False, trust_env=False,
+        ) as http:
+            response = await http.get(
+                client.origin + "/files/" + file_id + "/pdf",
+                headers=_lane_headers(client, uid),
+            )
+        if response.status_code != 200 or not response.content.startswith(b"%PDF-"):
+            return _error(503, "quote_pdf_unavailable")
+    except Exception:
+        return _error(503, "quote_pdf_unavailable")
+    return Response(response.content, media_type="application/pdf", headers={
+        "Cache-Control": "no-store, max-age=0",
+        "Content-Disposition": 'attachment; filename="quote.pdf"',
     })

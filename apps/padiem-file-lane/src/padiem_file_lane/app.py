@@ -9,7 +9,7 @@ from starlette.applications import Starlette
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import ClientDisconnect, Request
-from starlette.responses import FileResponse, JSONResponse, PlainTextResponse
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 from starlette.routing import Route
 
 from .storage import FileError, Store, disk_error, require_space
@@ -163,6 +163,15 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
         return JSONResponse({"ok": True, **meta}, status_code=201,
                             headers={"Cache-Control": "no-store"})
 
+    async def quote_pdf(request):
+        from .xlsx_pdf import convert
+        claims = ticket(request)
+        data, meta = await run_in_threadpool(_xlsx_source, store, claims.user_id,
+                                             request.path_params["file_id"])
+        pdf = await run_in_threadpool(convert, data)
+        mark(request, size=len(pdf))
+        return Response(pdf, media_type="application/pdf", headers={"Cache-Control": "no-store"})
+
     async def raw(request):
         claims = ticket(request)
         directory = await run_in_threadpool(store.directory, claims.user_id,
@@ -220,6 +229,7 @@ def create_app(*, root: Path | None = None, secret: str | None = None, origins=N
                             Route("/files/{file_id}/meta", metadata), Route("/files/{file_id}/text", text),
                             Route("/files/{file_id}/structure", structure),
                             Route("/files/{file_id}/fill", fill, methods=["POST"]),
+                            Route("/files/{file_id}/pdf", quote_pdf, methods=["GET"]),
                             Route("/files/{file_id}/raw", raw),
                             Route("/files/hwp-text", hwp_reference, methods=["POST"])],
                     exception_handlers={InvalidTicket: denied, FileError: failed, OSError: disk_failed})
