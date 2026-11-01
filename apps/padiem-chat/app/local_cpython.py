@@ -29,6 +29,7 @@ from padiem_control_plane import AuthSessionSnapshot, SubjectType
 from .app_factory import create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
+from .cpython_aes_gcm import CPythonAesGcmPort
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
 from .control_plane_identity_shadow import D1IdentityShadowStore
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
@@ -256,6 +257,7 @@ def build_app():
         settings=settings,
         history_store=D1HistoryStore(db, full_context_bucket=r2),
         d1_binding=db,
+        custom_credential_cipher=CPythonAesGcmPort(),
         r2_binding=r2,
         project_file_store=D1ProjectFileStore(db),
         saved_output_store=D1SavedOutputStore(db),
