@@ -447,6 +447,12 @@ def build_app():
     if edge_required:
         from .com2_edge_middleware import EdgeProofMiddleware
         app.add_middleware(EdgeProofMiddleware, verifier=verifier)
+        # Include ingress replay-store waits in the existing request event.
+        from .request_telemetry import RequestTelemetryMiddleware
+        timing = next(item for item in app.user_middleware
+                      if item.cls is RequestTelemetryMiddleware)
+        app.user_middleware.remove(timing)
+        app.user_middleware.insert(0, timing)
     app = apply_write_freeze(app)
     return app
 

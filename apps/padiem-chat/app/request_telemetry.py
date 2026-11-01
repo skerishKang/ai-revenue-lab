@@ -51,6 +51,7 @@ from typing import Any
 
 from starlette.datastructures import MutableHeaders
 from starlette.routing import Match, Route
+from .request_timing import start_timing, reset_timing, record_duration
 
 SERVICE_NAME = "padiem-chat"
 REQUEST_ID_HEADER = "X-Request-Id"
@@ -193,6 +194,7 @@ def build_request_event(
     service: str = SERVICE_NAME,
     occurred_at: datetime | None = None,
     error_code: str | None = None,
+    timings_ms: dict[str, float] | None = None,
 ) -> dict[str, object]:
     """Build the single bounded event emitted per request."""
     moment = occurred_at or datetime.now(timezone.utc)
@@ -209,6 +211,8 @@ def build_request_event(
         "duration_ms": duration_ms,
         "outcome": classify_outcome(status),
     }
+    if timings_ms is not None:
+        event['timings_ms'] = timings_ms
     # Only a refused request carries the code, and only when it is the bounded
     # identifier shape. A successful request never gains an empty field.
     if status >= 400 and isinstance(error_code, str) and _REFUSAL_CODE_RE.fullmatch(error_code):
@@ -285,6 +289,10 @@ def emit_stage_event(*, stage: str, outcome: str, duration_ms: float,
                      provider: str | None = None,
                      b14_request_id: str | None = None) -> None:
     """Emit when inside a traced HTTP request; never fail model execution."""
+    # Reuse the existing completed/stream B14 boundary timers. First-delta
+    # latency is a subset and must not be added a second time.
+    if stage in {'b14.complete', 'b14.stream'}:
+        record_duration('b14', duration_ms)
     request_id = current_request_id()
     if request_id is None:
         return
@@ -347,6 +355,7 @@ class RequestTelemetryMiddleware:
         scope["request_id"] = request_id
         trace_context_token = _CURRENT_REQUEST_ID.set(request_id)
         stage_context_token = _CURRENT_STAGE_EVENTS.set([])
+        request_timing, timing_token = start_timing()
 
         status_holder: dict[str, int] = {}
         # #5015: a refusal body is read once, capped, and discarded. The bytes
@@ -402,6 +411,7 @@ class RequestTelemetryMiddleware:
                     route=resolve_route_template(scope.get("app"), scope),
                     status=status,
                     duration_ms=elapsed_ms,
+                    timings_ms=request_timing.snapshot(),
                     error_code=(
                         refusal_code_from_body(b"".join(refusal_body))
                         if refusal_body and not refusal_overflow else None
@@ -439,6 +449,7 @@ class RequestTelemetryMiddleware:
                 # Telemetry must never turn a healthy request into a failure.
                 pass
             finally:
+                reset_timing(timing_token)
                 _CURRENT_STAGE_EVENTS.reset(stage_context_token)
                 _CURRENT_REQUEST_ID.reset(trace_context_token)
 

@@ -17,7 +17,10 @@ from __future__ import annotations
 import asyncio
 import sqlite3
 import threading
+from time import perf_counter
 from typing import Any
+
+from .request_timing import record_duration
 
 __all__ = ["SqliteD1", "connect"]
 
@@ -103,9 +106,18 @@ class SqliteD1:
         self._lock = threading.RLock()
 
     async def _invoke(self, function):
+        submitted = perf_counter()
+
         def locked():
             with self._lock:
-                return function()
+                started = perf_counter()
+                # Includes executor scheduling and writer-lock contention.
+                # Only aggregate durations leave this facade; never SQL/data.
+                record_duration("sqlite_wait", (started - submitted) * 1000)
+                try:
+                    return function()
+                finally:
+                    record_duration("sqlite_execute", (perf_counter() - started) * 1000)
         if self._threaded:
             return await asyncio.to_thread(locked)
         return locked()

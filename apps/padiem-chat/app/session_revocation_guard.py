@@ -42,6 +42,7 @@ from typing import Any, Awaitable, Callable, MutableMapping
 from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE, decode_session_claims
+from .request_timing import measure
 
 # The request-state key that carries the resolved verdict.  ``request.state``
 # is backed by the ASGI ``scope["state"]`` mapping, so the route layer reads
@@ -249,7 +250,8 @@ class SessionRevocationGuardMiddleware:
         if scope.get("type") != "http":
             await self.app(scope, receive, send)
             return
-        verdict = await self.resolve_verdict(scope)
+        with measure('auth'):
+            verdict = await self.resolve_verdict(scope)
         if verdict is None:
             await self.app(scope, receive, send)
             return

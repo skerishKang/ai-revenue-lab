@@ -5,6 +5,7 @@ from starlette.requests import Request
 
 from .shared_auth_adapter import SharedAuthUnavailable
 from .shared_login_flow import ACCESS_COOKIE
+from .request_timing import measure
 
 
 class SharedSessionMiddleware:
@@ -17,7 +18,8 @@ class SharedSessionMiddleware:
             token = request.cookies.get(ACCESS_COOKIE)
             if token:
                 try:
-                    user = await self.flow.auth.user_id(request, token)
+                    with measure('auth'):
+                        user = await self.flow.auth.user_id(request, token)
                     if isinstance(user, str) and user:
                         scope.setdefault('state', {})['padiem_shared_user_id'] = user
                 except SharedAuthUnavailable:
