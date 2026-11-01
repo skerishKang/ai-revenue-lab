@@ -1210,26 +1210,33 @@
     setProjectFileBusy(true);
     try {
       const projectBinary = projectBinaryMediaType(file);
-      let payload;
       if (projectBinary) {
-        // Send binary directly; do not materialize a Base64 JSON copy.
-        payload = null;
+        // 1GB 통일 1단계 — 바이너리는 크기와 무관하게 공용 tus 모듈로 보낸다:
+        // 진행률은 상태 줄에, 끊기면 이어 올리기, 안내 문구는 모듈의 1차 문구를 쓴다.
+        if (!window.PadiemProjectFileUpload) throw mappedUiError(uiT("project-file-save-failed"), null);
+        const uploaded = await window.PadiemProjectFileUpload.upload({
+          file,
+          projectId: editingProjectId,
+          mediaType: projectBinary,
+          onProgress: (sent, total) => {
+            if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
+              const percent = Math.min(100, Math.round((sent / total) * 100));
+              projectFileStatus.textContent = `${uiT("document-saving")} ${percent}%`;
+            }
+          },
+        });
+        if (!uploaded || !uploaded.file) throw mappedUiError(uiT("project-file-save-failed"), null);
       } else {
         const documentFile = await readDocumentFile(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
-      }
-      const requestOptions = projectBinary
-        ? { method: "POST", headers: {
-            "Content-Type": "application/octet-stream", "Accept": "application/json",
-            "X-Padiem-Filename": encodeURIComponent(file.name),
-            "X-Padiem-Media-Type": projectBinary,
-          }, body: file }
-        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload) };
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.file) {
-        throw mappedUiError(uiT("project-file-save-failed"), data);
+        const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
+        const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
+          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || !data.file) {
+          throw mappedUiError(uiT("project-file-save-failed"), data);
+        }
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {

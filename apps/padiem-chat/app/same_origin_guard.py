@@ -302,6 +302,17 @@ class SameOriginGuardMiddleware:
             and path.endswith("/files")
         ):
             return None
+        # 1GB 통일 1단계 — tus resumable chunks append raw offset+octet-stream
+        # bytes to the project file path. The exact Origin, cookie and
+        # route-local owner checks above still apply; only the JSON body rule
+        # is waived for the append verb on the one tus route shape.
+        if (
+            scope.get("method") == "PATCH"
+            and media_type == "application/offset+octet-stream"
+            and path.startswith("/api/projects/")
+            and "/files/tus/" in path
+        ):
+            return None
         # #5568 PDF/ZIP originals for the Markdown utility are raw binary on one
         # owner-scoped upload route, declaring their document type in a header. The
         # exact Origin, cookie and route-local owner checks above still apply.
