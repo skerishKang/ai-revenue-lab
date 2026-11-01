@@ -1,3 +1,4 @@
+let bookaiAuth;
 const AI_PATH = "/api/storymemory-ai";
 const AI_HEALTH_PATH = "/api/storymemory-ai/health";
 // V2: fixed ingress URL. Caller/body must never choose the target URL.
@@ -201,6 +202,11 @@ function buildEnginePayload(question, bounded, model) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith('/auth/') || url.pathname === '/api/bookai/records') {
+      bookaiAuth ||= (await import('./bookai-auth.mjs')).createBookAIAuth();
+      const authResponse = await bookaiAuth(request, env);
+      if (authResponse) return authResponse;
+    }
     if (url.pathname === AI_HEALTH_PATH) {
       if (request.method !== "GET") return json({ ok: false, error: "method_not_allowed" }, 405);
       return json({
